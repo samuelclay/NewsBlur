@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags zebra_tags %}
+
+{% block bodyclass %}NB-static NB-static-oauth NB-static-login{% endblock %}
+{% block extra_head_js %}
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $("input[name=username]").focus();
+        });
+    </script>
+    
+  {% include_stylesheets "common" %}
+{% endblock %}
+
+{% block title %}Create an Account{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-title">
+    Create an Account
+</div>
+
+<div class="NB-static-form-wrapper" style="overflow:hidden">
+    <form method="post" class="NB-static-form" action="{% url "signup" %}">
+        {% if form.errors %}
+            {% if form.errors.username %}
+                <p class="NB-error error">{{ form.errors.username.as_text }}</p>
+            {% else %}{% if form.errors.email %}
+                <p class="NB-error error">{{ form.errors.email.as_text }}</p>
+            {% else %}
+                <p class="NB-error error">{{ form.non_field_errors.as_text }}</p>
+            {% endif %}{% endif %}
+        {% else %}{% if next %}
+        <p class="NB-error error">Please create an account to continue.</p>
+        {% endif %}{% endif %}
+
+        {% csrf_token %}
+        <div class="NB-static-form-label">{{ form.username.label_tag }}</div>
+        <div class="NB-static-form-input">{{ form.username }}</div>
+        <div class="NB-static-form-label">{{ form.password.label_tag }}</div>
+        <div class="NB-static-form-input">{{ form.password }}</div>
+        <div class="NB-static-form-label">{{ form.email.label_tag }}</div>
+        <div class="NB-static-form-input">{{ form.email }}</div>
+
+        <input type="submit" value="Sign Up" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
+        <input type="hidden" name="next" value="{{ next }}" />
+        <p class="NB-static-form-alttext"><a href="{% url "login" %}?next={{ next|urlencode }}">Login to your account</a></a>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -59,12 +59,20 @@ public class NewsblurWebview extends WebView {
     }
 
     public void setTextSize(float textSize) {
-        Log.d("Reading", "Setting textsize to " + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize));
-        String script = "javascript:document.body.style.fontSize='" + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize) + "em';";
+        Log.d("Reading", "Setting textsize to " + textSize);
+        String script = "javascript:document.body.style.fontSize='" + textSize + "em';";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             evaluateJavascript(script, null);
         } else {
             loadUrl(script);
         }
 	}
+
+    /**
+     * http://stackoverflow.com/questions/5994066/webview-ontouch-handling-when-the-user-does-not-click-a-link
+     */
+    public boolean wasLinkClicked() {
+        WebView.HitTestResult result = getHitTestResult();
+        return (result != null && result.getExtra() != null);
+    }
 }

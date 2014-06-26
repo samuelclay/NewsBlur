@@ -1,19 +1,16 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.content.CursorLoader;
+import android.content.Loader;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
-import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
@@ -38,15 +35,16 @@ public class FeedReading extends Reading {
         feedCursor.close();
         setTitle(feed.title);
 
-        readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, classifier);
+        readingAdapter = new FeedReadingAdapter(getFragmentManager(), feed, classifier, defaultFeedView);
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     protected int getUnreadCount() {
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
         Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
+        if (feedCursor.getCount() == 0) return 0;
         Feed feed = Feed.fromCursor(feedCursor);
         feedCursor.close();
         return FeedUtils.getFeedUnreadCount(feed, this.currentState);

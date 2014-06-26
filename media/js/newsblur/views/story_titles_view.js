@@ -5,7 +5,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     events: {
         "click .NB-feed-story-premium-only a" : function(e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_feedchooser_modal();
+            NEWSBLUR.reader.open_feedchooser_modal({premium_only: true});
         }
     },
     
@@ -75,6 +75,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (NEWSBLUR.reader.flags['starred_view']) {
             message = [
                 'Reading saved stories by tag is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
+            ];
+        }
+        if (NEWSBLUR.reader.active_feed == "read") {
+            message = [
+                'This read stories list is a ',
                 $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
                 '.'
             ];

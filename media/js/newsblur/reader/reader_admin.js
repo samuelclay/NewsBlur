@@ -33,6 +33,10 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 model: this.user
             }),
             $.make('fieldset', [
+                $.make('legend', 'Statistics')
+            ]),
+            $.make('div', { className: 'NB-admin-statistics' }),
+            $.make('fieldset', [
                 $.make('legend', 'Payments')
             ]),
             $.make('ul', { className: 'NB-account-payments' }, [
@@ -54,6 +58,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         this.model.fetch_payment_history(this.user.get('user_id'), _.bind(function(data) {
             var $history = $('.NB-account-payments', this.$modal).empty();
             var $actions = $(".NB-admin-actions", this.$modal).empty();
+            var $statistics = $(".NB-admin-statistics", this.$modal).empty();
             
             _.each(data.payments, function(payment) {
                 $history.append($.make('li', { className: 'NB-account-payment' }, [
@@ -76,6 +81,23 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             } else {
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "Upgrade to premium"));
             }
+            
+            $statistics.append($.make('dl', [
+                $.make('dt', 'Stripe Id:'),
+                $.make('dd', $.make('a', { href: "https://manage.stripe.com/customers/" + data.statistics.stripe_id, className: 'NB-splash-link' }, data.statistics.stripe_id)),
+                $.make('dt', 'Last seen:'),
+                $.make('dd', data.statistics.last_seen_date),
+                $.make('dt', 'Timezone:'),
+                $.make('dd', data.statistics.timezone),
+                $.make('dt', 'Email:'),
+                $.make('dd', data.statistics.email),
+                $.make('dt', 'Feeds:'),
+                $.make('dd', Inflector.commas(data.statistics.feeds)),
+                $.make('dt', 'Feed opens:'),
+                $.make('dd', Inflector.commas(data.statistics.feed_opens)),
+                $.make('dt', 'Read Stories:'),
+                $.make('dd', Inflector.commas(data.statistics.read_story_count))
+            ]));
             $(window).resize();
         }, this));
     },

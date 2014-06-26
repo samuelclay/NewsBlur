@@ -3,22 +3,19 @@ package com.newsblur.fragment;
 import java.io.Serializable;
 import java.util.Map;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.util.Log;
+import android.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.domain.Classifier;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefsUtils;
 
 public class ClassifierDialogFragment extends DialogFragment {
 
@@ -49,7 +46,12 @@ public class ClassifierDialogFragment extends DialogFragment {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.dialog);
+        if (PrefsUtils.isLightThemeSelected(getActivity())) {
+            setStyle(DialogFragment.STYLE_NO_TITLE, R.style.classifyDialog);
+        } else {
+            setStyle(DialogFragment.STYLE_NO_TITLE, R.style.darkClassifyDialog);
+        }
+
 		feedId = getArguments().getString(FEED_ID);
 		key = getArguments().getString(KEY);
 		classifierType = getArguments().getInt(TYPE);

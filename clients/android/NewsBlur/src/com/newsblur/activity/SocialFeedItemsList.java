@@ -2,11 +2,11 @@ package com.newsblur.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SocialFeedItemListFragment;
@@ -50,7 +50,7 @@ public class SocialFeedItemsList extends ItemsList {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.itemslist, menu);
 		return true;
 	}
@@ -58,7 +58,7 @@ public class SocialFeedItemsList extends ItemsList {
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
             FeedUtils.updateSocialFeed(this, this, userId, username, page, getStoryOrder(), PrefsUtils.getReadFilterForFeed(this, userId));
 		}
 	}

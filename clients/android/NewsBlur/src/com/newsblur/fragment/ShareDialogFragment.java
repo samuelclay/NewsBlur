@@ -2,22 +2,20 @@ package com.newsblur.fragment;
 
 import java.io.Serializable;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.text.Editable;
+import android.app.DialogFragment;
 import android.text.Html;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
@@ -44,7 +42,7 @@ public class ShareDialogFragment extends DialogFragment {
 	private Comment previousComment;
 	private String previouslySavedShareText;
 	private boolean hasShared = false;
-	private EditText commentEditText;
+    private EditText commentEditText;
 
 	public static ShareDialogFragment newInstance(final SharedCallbackDialog sharedCallback, final Story story, final String previouslySavedShareText) {
 		ShareDialogFragment frag = new ShareDialogFragment();
@@ -54,107 +52,85 @@ public class ShareDialogFragment extends DialogFragment {
 		args.putSerializable(CALLBACK, sharedCallback);
 		frag.setArguments(args);
 		return frag;
-	}	
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.dialog);
-		super.onCreate(savedInstanceState);
-		story = (Story) getArguments().getSerializable(STORY);
-		callback = (SharedCallbackDialog) getArguments().getSerializable(CALLBACK);
-		user = PrefsUtils.getUserDetails(getActivity());
-		previouslySavedShareText = getArguments().getString(PREVIOUSLY_SAVED_SHARE_TEXT);
-		
-		apiManager = new APIManager(getActivity());
-		resolver = getActivity().getContentResolver();
-
-		for (String sharedUserId : story.sharedUserIds) {
-			if (TextUtils.equals(user.id, sharedUserId)) {
-				hasBeenShared = true;
-				break;
-			}
-		}
-		
-		if (hasBeenShared) {
-			commentCursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id, user.id }, null);
-			commentCursor.moveToFirst();
-			previousComment = Comment.fromCursor(commentCursor);
-		}
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-		final String shareString = getResources().getString(R.string.share_newsblur);
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-		View v = inflater.inflate(R.layout.fragment_dialog, container, false);
-		final TextView message = (TextView) v.findViewById(R.id.dialog_message);
-		commentEditText = (EditText) v.findViewById(R.id.dialog_share_comment);
-		final Button shareButton = (Button) v.findViewById(R.id.dialog_button_okay);
-		shareButton.setText(R.string.share_this_story);
-		
-		commentEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void afterTextChanged(Editable editable) {
-				if (editable.length() > 0) {
-					shareButton.setText(R.string.share_with_comments);
-				} else {
-					shareButton.setText(R.string.share_this_story);
-				}
-			}
+        final Activity activity = getActivity();
+        story = (Story) getArguments().getSerializable(STORY);
+        callback = (SharedCallbackDialog) getArguments().getSerializable(CALLBACK);
+        user = PrefsUtils.getUserDetails(activity);
+        previouslySavedShareText = getArguments().getString(PREVIOUSLY_SAVED_SHARE_TEXT);
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+        apiManager = new APIManager(getActivity());
+        resolver = getActivity().getContentResolver();
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) { }
-		});
-		
-		message.setText(String.format(shareString, Html.fromHtml(story.title)));
+        for (String sharedUserId : story.sharedUserIds) {
+            if (TextUtils.equals(user.id, sharedUserId)) {
+                hasBeenShared = true;
+                break;
+            }
+        }
 
-		if (hasBeenShared) {
-			shareButton.setText(R.string.edit);
-			commentEditText.setText(previousComment.commentText);
-		} else if (!TextUtils.isEmpty(previouslySavedShareText)) {
-			commentEditText.setText(previouslySavedShareText);
-		}
+        if (hasBeenShared) {
+            commentCursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id, user.id }, null);
+            commentCursor.moveToFirst();
+            previousComment = Comment.fromCursor(commentCursor);
+        }
 
-		Button okayButton = (Button) v.findViewById(R.id.dialog_button_okay);
-		okayButton.setOnClickListener(new OnClickListener() {
-			public void onClick(final View v) {
-				final String shareComment = commentEditText.getText().toString();
-				v.setEnabled(false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final String shareString = getResources().getString(R.string.share_newsblur);
+        builder.setTitle(String.format(shareString, Html.fromHtml(story.title)));
 
-				new AsyncTask<Void, Void, Boolean>() {
-					@Override
-					protected Boolean doInBackground(Void... arg) {
-						return apiManager.shareStory(story.id, story.feedId, shareComment, story.sourceUserId);
-					}
+        LayoutInflater layoutInflater = LayoutInflater.from(activity);
+        View replyView = layoutInflater.inflate(R.layout.share_dialog, null);
+        builder.setView(replyView);
+        commentEditText = (EditText) replyView.findViewById(R.id.comment_field);
 
-					@Override
-					protected void onPostExecute(Boolean result) {
-						if (result) {
-							hasShared = true;
-							UIUtils.safeToast(getActivity(), R.string.shared, Toast.LENGTH_LONG);
-							callback.sharedCallback(shareComment, hasBeenShared);
-						} else {
-							UIUtils.safeToast(getActivity(), R.string.error_sharing, Toast.LENGTH_LONG);
-						}
-						v.setEnabled(true);
-						ShareDialogFragment.this.dismiss();
-					};
-				}.execute();
-			}
-		});
+        int positiveButtonText = R.string.share_this_story;
+        if (hasBeenShared) {
+            positiveButtonText = R.string.edit;
+            commentEditText.setText(previousComment.commentText);
+        } else if (!TextUtils.isEmpty(previouslySavedShareText)) {
+            commentEditText.setText(previouslySavedShareText);
+        }
 
-		Button cancelButton = (Button) v.findViewById(R.id.dialog_button_cancel);
-		cancelButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				ShareDialogFragment.this.dismiss();
-			}
-		});
+        builder.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
 
-		return v;
-	}
+                final String shareComment = commentEditText.getText().toString();
+
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... arg) {
+                        return apiManager.shareStory(story.id, story.feedId, shareComment, story.sourceUserId);
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        if (result) {
+                            hasShared = true;
+                            UIUtils.safeToast(activity, R.string.shared, Toast.LENGTH_LONG);
+                            callback.sharedCallback(shareComment, hasBeenShared);
+                        } else {
+                            UIUtils.safeToast(activity, R.string.error_sharing, Toast.LENGTH_LONG);
+                        }
+
+                        ShareDialogFragment.this.dismiss();
+                    };
+                }.execute();
+            }
+        });
+        builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ShareDialogFragment.this.dismiss();
+            }
+        });
+        return builder.create();
+    }
 	
 	@Override
 	public void onDestroy() {

@@ -13,22 +13,12 @@
 #import "TransparentToolbar.h"
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
-#import "UIActivitiesControl.h"
 #import "NBBarButtonItem.h"
 
 @implementation OriginalStoryViewController
 
 @synthesize appDelegate;
-@synthesize closeButton;
 @synthesize webView;
-@synthesize back;
-@synthesize forward;
-@synthesize refresh;
-@synthesize pageAction;
-@synthesize pageTitle;
-@synthesize pageUrl;
-@synthesize toolbar;
-@synthesize navBar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
@@ -38,29 +28,24 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-//    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
-
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
-    [self updateAddress:request];
-    [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
-    
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self layoutForInterfaceOrientation:orientation];
-    
-    [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-    HUD.labelText = @"On its way...";
-    [HUD hide:YES afterDelay:2];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [self layoutNavBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    self.navigationController.navigationBar.alpha = 1;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
     if ([self.webView isLoading]) {
         [self.webView stopLoading];
+    }
+    activeUrl = nil;
+    titleView.alpha = 1.0;
+    if (![appDelegate.navigationController.viewControllers containsObject:self]) {
+        [self.webView loadHTMLString:@"" baseURL:nil];
     }
 }
 
@@ -68,101 +53,165 @@
     return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self layoutForInterfaceOrientation:toInterfaceOrientation];
-}
-
 - (void)viewDidLoad {    
-    CGRect labelFrame = CGRectMake(kMargin, kSpacer + 20,
-                                   navBar.bounds.size.width - 2*kMargin,
-                                   kLabelHeight);
+//    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
     
-    UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
-    label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    label.backgroundColor = [UIColor clearColor];
-    label.font = [UIFont systemFontOfSize:12];
-    label.textColor = UIColorFromRGB(0x404040);
-    label.shadowColor = UIColorFromRGB(0xFAFAFA);
-    label.shadowOffset = CGSizeMake(0.0f, -1.0f);
-    label.textAlignment = NSTextAlignmentCenter;
-    label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
-    [navBar addSubview:label];
-    self.pageTitle = label;
-    
-    UIBarButtonItem *close = [[UIBarButtonItem alloc]
-                              initWithTitle:@"Close"
-                              style:UIBarButtonItemStyleBordered
-                              target:self
-                              action:@selector(doCloseOriginalStoryViewController)];
-    close.width = kButtonWidth;
-    CGRect closeButtonFrame = CGRectMake(-20,
-                                         kSpacer*2.0 + kLabelHeight - 7.0f + 20,
-                                         kButtonWidth + kMargin,
-                                         44.0);
-    TransparentToolbar* tools = [[TransparentToolbar alloc]
-                                 initWithFrame:closeButtonFrame];
-    [tools setItems:[NSArray arrayWithObject:close] animated:NO];
-    [tools setTintColor:UIColorFromRGB(0x183353)];
-    [navBar addSubview:tools];
-    
-    CGRect addressFrame = CGRectMake(closeButtonFrame.origin.x +
-                                     closeButtonFrame.size.width +
-                                     kMargin,
-                                     kSpacer*2.0 + kLabelHeight + 20,
-                                     labelFrame.size.width
-                                     - kButtonWidth - kMargin*2 + 20,
-                                     kAddressHeight);
-    UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
-    address.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    address.borderStyle = UITextBorderStyleRoundedRect;
-    address.font = [UIFont systemFontOfSize:14];
-    address.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-    address.adjustsFontSizeToFitWidth = NO;
-    address.keyboardType = UIKeyboardTypeURL;
-    address.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    address.clearButtonMode = UITextFieldViewModeWhileEditing;
-    address.enablesReturnKeyAutomatically = YES;
-    address.returnKeyType = UIReturnKeyGo;
-    address.delegate = self;
-    [navBar addSubview:address];
-    self.pageUrl = address;
+    self.view.layer.masksToBounds = NO;
+    self.view.layer.shadowRadius = 5;
+    self.view.layer.shadowOpacity = 0.5;
+    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
 
-    UIImage *backImage = [UIImage imageNamed:@"barbutton_back.png"];
-    NBBarButtonItem *backButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    backButton.bounds = CGRectMake(0, 0, 44, 44);
-    [backButton setImage:backImage forState:UIControlStateNormal];
-    [backButton addTarget:self action:@selector(webViewGoBack:) forControlEvents:UIControlEventTouchUpInside];
-    [back setCustomView:backButton];
+    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
+                                                                     target:nil
+                                                                     action:nil];
+    [separatorBarButton setEnabled:NO];
     
-    UIImage *forwardImage = [UIImage imageNamed:@"barbutton_forward.png"];
-    NBBarButtonItem *forwardButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    forwardButton.bounds = CGRectMake(0, 0, 44, 44);
-    [forwardButton setImage:forwardImage forState:UIControlStateNormal];
-    [forwardButton addTarget:self action:@selector(webViewGoForward:) forControlEvents:UIControlEventTouchUpInside];
-    [forward setCustomView:forwardButton];
+    UIBarButtonItem *sendToBarButton = [UIBarButtonItem
+                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto.png"]
+                                        target:self
+                                        action:@selector(doOpenActionSheet:)];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
+                                                 target:self
+                                                 action:@selector(closeOriginalView)];
+        self.navigationItem.leftBarButtonItem = closeButton;
+    }
     
-    UIImage *refreshImage = [UIImage imageNamed:@"barbutton_refresh.png"];
-    NBBarButtonItem *refreshButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    refreshButton.bounds = CGRectMake(0, 0, 44, 44);
-    [refreshButton setImage:refreshImage forState:UIControlStateNormal];
-    [refreshButton addTarget:self action:@selector(webViewRefresh:) forControlEvents:UIControlEventTouchUpInside];
-    [refresh setCustomView:refreshButton];
+    backBarButton = [UIBarButtonItem
+                     barItemWithImage:[UIImage imageNamed:@"barbutton_back.png"]
+                     target:self
+                     action:@selector(webViewGoBack:)];
+    backBarButton.enabled = NO;
     
-    UIImage *sendtoImage = [UIImage imageNamed:@"barbutton_sendto.png"];
-    NBBarButtonItem *sendtoButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    sendtoButton.bounds = CGRectMake(0, 0, 44, 44);
-    [sendtoButton setImage:sendtoImage forState:UIControlStateNormal];
-    [sendtoButton addTarget:self action:@selector(doOpenActionSheet:) forControlEvents:UIControlEventTouchUpInside];
-    [pageAction setCustomView:sendtoButton];
+    titleView = [[UILabel alloc] init];
+    titleView.textColor = UIColorFromRGB(0x303030);
+    titleView.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    titleView.text = @"Loading...";
+    [titleView sizeToFit];
+    titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.navigationItem.titleView = titleView;
+    
+    self.navigationItem.rightBarButtonItems = @[sendToBarButton,
+                                                separatorBarButton,
+                                                backBarButton
+                                                ];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
+                                           initWithTarget:self action:@selector(handlePanGesture:)];
+        gesture.delegate = self;
+        [self.webView.scrollView addGestureRecognizer:gesture];
+    }
+    
+    [self.webView loadHTMLString:@"" baseURL:nil];
 }
 
-- (void)layoutNavBar {
-    CGRect navBarFrame = self.view.bounds;
-    navBarFrame.size.height = kNavBarHeight;
-    navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    navBar.frame = navBarFrame;
-    navBar.translucent = NO;
-    toolbar.translucent = NO;
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    CGPoint velocity = CGPointMake(0, 0);
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
+    }
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        velocity.x > 0 && abs(velocity.y) < 200) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer{
+    CGPoint velocity = CGPointMake(0, 0);
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
+    }
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        velocity.x > 0 && abs(velocity.y) < 200) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    CGPoint velocity = CGPointMake(0, 0);
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
+    }
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        velocity.x > 0 && abs(velocity.y) < 200) {
+        return YES;
+    }
+    return NO;
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
+    CGFloat percentage = 1 - (self.view.frame.size.width - self.view.frame.origin.x) / self.view.frame.size.width;
+    CGPoint center = self.view.center;
+    CGPoint translation = [recognizer translationInView:self.view];
+    
+    if (self.webView.scrollView.contentOffset.x != 0) {
+        return;
+    }
+    
+    if (recognizer.state == UIGestureRecognizerStateChanged) {
+        center = CGPointMake(MAX(self.view.frame.size.width / 2, center.x + translation.x),
+                             center.y);
+        self.view.center = center;
+        [recognizer setTranslation:CGPointZero inView:self.view];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
+        } else {
+            
+        }
+    }
+    
+    if ([recognizer state] == UIGestureRecognizerStateEnded ||
+        [recognizer state] == UIGestureRecognizerStateCancelled) {
+        CGFloat velocity = [recognizer velocityInView:self.view].x;
+        if ((percentage > 0.25 && velocity > 0) ||
+            (percentage > 0.05 && velocity > 1000)) {
+//            NSLog(@"Original velocity ESCAPED: %f (at %.2f%%)", velocity, percentage*100);
+            [self transitionToFeedDetail:recognizer];
+        } else {
+//            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                [appDelegate.masterContainerViewController transitionToOriginalView:NO];
+            } else {
+                
+            }
+        }
+    }
+}
+
+- (void)transitionToFeedDetail:(UIGestureRecognizer *)recognizer {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController transitionFromOriginalView];
+    } else {
+        
+    }
+}
+
+- (void)loadInitialStory {
+    [self loadAddress:nil];
+    
+    titleView.text = [[[appDelegate activeStory] objectForKey:@"story_title"]
+                      stringByDecodingHTMLEntities];
+    [titleView sizeToFit];
+
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    HUD.labelText = @"On its way...";
+    [HUD hide:YES afterDelay:2];
+    HUD.userInteractionEnabled = NO;
 }
 
 - (IBAction)webViewGoBack:(id)sender {
@@ -177,85 +226,46 @@
     [webView reload];
 }
 
-- (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    [self layoutNavBar];
-    
-    CGSize toolbarSize = [self.toolbar sizeThatFits:self.view.bounds.size];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.toolbar.frame = CGRectMake(-10.0f,
-                                        CGRectGetHeight(self.view.bounds) - toolbarSize.height,
-                                        toolbarSize.width + 20, toolbarSize.height);
-    } else {
-        self.toolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) -
-                                                  toolbarSize.height), toolbarSize};
-        self.webView.frame = (CGRect){CGPointMake(0, kNavBarHeight), CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.toolbar.frame) - kNavBarHeight)};
-    }
-}
-
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [self loadAddress:nil];
-    return YES;
-}
-
-- (IBAction)loadAddress:(id)sender {
-    NSString* urlString = self.pageUrl.text;
-    NSURL* url = [NSURL URLWithString:urlString];
-
-    if (!url.scheme) {
-        NSString* modifiedURLString = [NSString stringWithFormat:@"%@", urlString];
-        url = [NSURL URLWithString:modifiedURLString];
-    }
-    if ([self.webView isLoading]) {
-        [self.webView stopLoading];
-    }
-    NSURLRequest* request = [NSURLRequest requestWithURL:url];
-    [self.webView loadRequest:request];
-    [self.pageUrl resignFirstResponder];
-    [self.pageTitle setText:@"Loading..."];
-}
-
 # pragma mark: -
 # pragma mark: UIWebViewDelegate protocol
 
-- (BOOL)webView:(UIWebView *)webView 
+- (BOOL)webView:(UIWebView *)aWebView
         shouldStartLoadWithRequest:(NSURLRequest *)request 
         navigationType:(UIWebViewNavigationType)navigationType {
 
-
+    if ([aWebView canGoBack]) {
+        [backBarButton setEnabled:YES];
+    } else {
+        [backBarButton setEnabled:NO];
+    }
+    
     if ([[[request URL] scheme] isEqual:@"mailto"]) {
         [[UIApplication sharedApplication] openURL:[request URL]];
         return NO;
     } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        [self updateAddress:request];
+        activeUrl = [[request URL] absoluteString];
+        [self loadAddress:nil];
         return NO;
     }
     
-    
-    NSURL* mainUrl = [request mainDocumentURL];
-    NSString* absoluteString = [mainUrl absoluteString];
-    self.pageUrl.text = absoluteString;
     return YES;
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)aWebView
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [self updateButtons];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)aWebView
 {
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    [self updateButtons];
     [self updateTitle:aWebView];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    [self updateButtons];
     
     // User clicking on another link before the page loads is OK.
     if ([error code] != NSURLErrorCancelled) {
@@ -266,20 +276,27 @@
 - (void)updateTitle:(UIWebView*)aWebView
 {
     NSString *pageTitleValue = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
-    self.pageTitle.text = [pageTitleValue stringByDecodingHTMLEntities];
+    titleView.text = [pageTitleValue stringByDecodingHTMLEntities];
+    [titleView sizeToFit];
 }
 
-- (void)updateAddress:(NSURLRequest*)request
-{
-    NSURL *url = [request URL];
-    self.pageUrl.text = [url absoluteString];
-    [self loadAddress:nil];
-}
-
-- (void)updateButtons
-{
-    self.forward.enabled = self.webView.canGoForward;
-    self.back.enabled = self.webView.canGoBack;
+- (IBAction)loadAddress:(id)sender {
+    if (!activeUrl) {
+        activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
+    }
+    NSString* urlString = activeUrl;
+    NSURL* url = [NSURL URLWithString:urlString];
+    if (!url.scheme) {
+        NSString* modifiedURLString = [NSString stringWithFormat:@"%@", urlString];
+        url = [NSURL URLWithString:modifiedURLString];
+    }
+    if ([self.webView isLoading]) {
+        [self.webView stopLoading];
+    }
+    NSURLRequest* request = [NSURLRequest requestWithURL:url];
+    [self.webView loadRequest:request];
+    titleView.text = @"Loading...";
+    [titleView sizeToFit];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -289,22 +306,24 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
-
-- (IBAction)doCloseOriginalStoryViewController {
-//    NSLog(@"Close Original Story: %@", appDelegate);
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 - (IBAction)doOpenActionSheet:(id)sender {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
-    NSURL *url = [NSURL URLWithString:self.pageUrl.text];
+    NSURL *url = [NSURL URLWithString:self.webView.request.URL.absoluteString];
+    NSString *title = [[webView stringByEvaluatingJavaScriptFromString:@"document.title"]
+                       stringByDecodingHTMLEntities];
+    
+    [appDelegate showSendTo:self
+                     sender:sender
+                    withUrl:url
+                 authorName:nil
+                       text:nil
+                      title:title
+                  feedTitle:nil
+                     images:nil];
+}
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSendToPopover:sender];
-    } else {
-        UIActivityViewController *shareSheet = [UIActivitiesControl activityViewControllerForView:self withUrl:url];
-        [self presentViewController:shareSheet animated:YES completion:nil];
-    }
+- (void)closeOriginalView {
+    [appDelegate closeOriginalStory];
 }
 
 @end

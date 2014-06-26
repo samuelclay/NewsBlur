@@ -1,21 +1,17 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.content.CursorLoader;
+import android.content.Loader;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.StoryOrder;
 
 public class SocialFeedReading extends Reading {
 
@@ -31,15 +27,16 @@ public class SocialFeedReading extends Reading {
 
         setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     protected int getUnreadCount() {
         Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
         Cursor cursor = contentResolver.query(socialFeedUri, null, null, null, null);
+        if (cursor.getCount() == 0) return 0;
         SocialFeed socialFeed = SocialFeed.fromCursor(cursor);
         cursor.close();
         return FeedUtils.getFeedUnreadCount(socialFeed, this.currentState);

@@ -22,6 +22,7 @@ import com.newsblur.activity.Profile;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.PrefsUtils;
 
 public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 
@@ -52,9 +53,14 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		sharedStory = resources.getString(R.string.profile_shared_story);
 		withComment = resources.getString(R.string.profile_with_comment);
 		ago = resources.getString(R.string.profile_ago);
-		
-		highlight = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
-		darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
+
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            highlight = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
+            darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
+        } else {
+            highlight = new ForegroundColorSpan(resources.getColor(R.color.dark_linkblue));
+            darkgray = new ForegroundColorSpan(resources.getColor(R.color.white));
+        }
 	}
 	
 	@Override

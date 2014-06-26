@@ -11,7 +11,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             left: 0
         },
         'overlay_top': true,
-        'popover_class': 'NB-filter-popover-container'
+        'popover_class': 'NB-filter-popover-container',
+        'show_readfilter': true,
+        'show_order': true
     },
     
     events: {
@@ -22,6 +24,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     initialize: function(options) {
         this.options = _.extend({}, this.options, options);
+        if (NEWSBLUR.reader.active_feed == "read") {
+            this.options['show_readfilter'] = false;
+        }
+        if (NEWSBLUR.reader.flags['starred_view']) {
+            this.options.feed_id = "starred"; // Ignore tags
+            this.options['show_readfilter'] = false;
+        }
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
         this.model = NEWSBLUR.assets;
         this.render();
@@ -43,14 +52,14 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 (feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Filter Options'),
-                $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                (this.options.show_readfilter && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread' }, 'Unread only')
-                ]),
-                $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                ])),
+                (this.options.show_order && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active' }, 'Newest first'),
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest' }, 'Oldest')
-                ])
+                ]))
             ]),
             (feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-stats-icon' }),
@@ -102,17 +111,22 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     change_view_setting: function(e) {
         var $target = $(e.target);
+        var options = {};
         
         if ($target.hasClass("NB-view-setting-order-newest")) {
-            this.update_feed({order: 'newest'});
+            options = {order: 'newest'};
         } else if ($target.hasClass("NB-view-setting-order-oldest")) {
-            this.update_feed({order: 'oldest'});
+            options = {order: 'oldest'};
         } else if ($target.hasClass("NB-view-setting-readfilter-all")) {
-            this.update_feed({read_filter: 'all'});
+            options = {read_filter: 'all'};
         } else if ($target.hasClass("NB-view-setting-readfilter-unread")) {
-            this.update_feed({read_filter: 'unread'});
+            options = {read_filter: 'unread'};
         }
         
+        if (NEWSBLUR.reader.flags.search) {
+            options.search = NEWSBLUR.reader.flags.search;
+        }
+        this.update_feed(options);
         this.show_correct_feed_view_options_in_menu();
     },
     
@@ -120,7 +134,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var changed = NEWSBLUR.assets.view_setting(this.options.feed_id, setting);
         if (!changed) return;
         
-        NEWSBLUR.reader.reload_feed();
+        NEWSBLUR.reader.reload_feed(setting);
     },
     
     open_site_settings: function() {

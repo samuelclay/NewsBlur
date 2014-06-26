@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Title</key>
+			<string>Story list</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story order</string>
+			<key>Titles</key>
+			<array>
+				<string>Newest first</string>
+				<string>Oldest first</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>newest</string>
+			<key>Values</key>
+			<array>
+				<string>newest</string>
+				<string>oldest</string>
+			</array>
+			<key>Key</key>
+			<string>default_order</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Stories in a folder</string>
+			<key>Titles</key>
+			<array>
+				<string>All stories</string>
+				<string>Unread only</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>unread</string>
+			<key>Values</key>
+			<array>
+				<string>all</string>
+				<string>unread</string>
+			</array>
+			<key>Key</key>
+			<string>default_folder_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Stories in a site</string>
+			<key>Titles</key>
+			<array>
+				<string>All stories</string>
+				<string>Unread only</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>all</string>
+			<key>Values</key>
+			<array>
+				<string>all</string>
+				<string>unread</string>
+			</array>
+			<key>Key</key>
+			<string>default_feed_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story titles layout</string>
+			<key>Titles</key>
+			<array>
+				<string>Titles on left</string>
+				<string>Titles on bottom</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>titles_on_left</string>
+			<key>Values</key>
+			<array>
+				<string>titles_on_left</string>
+				<string>titles_on_bottom</string>
+			</array>
+			<key>Key</key>
+			<string>story_titles_position</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Preview descriptions</string>
+			<key>Key</key>
+			<string>story_list_preview_description</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Preview images</string>
+			<key>Key</key>
+			<string>story_list_preview_images</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Text Size</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Use system size</string>
+			<key>Key</key>
+			<string>use_system_font_size</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Feed and story list</string>
+			<key>Titles</key>
+			<array>
+				<string>Extra small</string>
+				<string>Small</string>
+				<string>Medium</string>
+				<string>Large</string>
+				<string>Extra Large</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Values</key>
+			<array>
+				<string>xs</string>
+				<string>small</string>
+				<string>medium</string>
+				<string>large</string>
+				<string>xl</string>
+			</array>
+			<key>Key</key>
+			<string>feed_list_font_size</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story detail</string>
+			<key>Titles</key>
+			<array>
+				<string>Extra small</string>
+				<string>Small</string>
+				<string>Medium</string>
+				<string>Large</string>
+				<string>Extra Large</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Values</key>
+			<array>
+				<string>xs</string>
+				<string>small</string>
+				<string>medium</string>
+				<string>large</string>
+				<string>xl</string>
+			</array>
+			<key>Key</key>
+			<string>story_font_size</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Offline stories</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download stories</string>
+			<key>Key</key>
+			<string>offline_allowed</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download images</string>
+			<key>Key</key>
+			<string>offline_image_download</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Download using</string>
+			<key>Titles</key>
+			<array>
+				<string>Wifi + Cellular</string>
+				<string>Wifi only</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>cellular</string>
+			<key>Values</key>
+			<array>
+				<string>cellular</string>
+				<string>wifi</string>
+			</array>
+			<key>Key</key>
+			<string>offline_download_connection</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>More stories take more disk space, but otherwise storing more stories has no noticable effect on performance.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Store</string>
+			<key>Titles</key>
+			<array>
+				<string>100 stories</string>
+				<string>500 stories</string>
+				<string>1,000 stories</string>
+				<string>2,000 stories</string>
+				<string>5,000 stories</string>
+				<string>10,000 stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<integer>1000</integer>
+			<key>Values</key>
+			<array>
+				<integer>100</integer>
+				<integer>500</integer>
+				<integer>1000</integer>
+				<integer>2000</integer>
+				<integer>5000</integer>
+				<integer>10000</integer>
+			</array>
+			<key>Key</key>
+			<string>offline_store_limit</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Delete offline stories...</string>
+			<key>Key</key>
+			<string>offline_cache_empty_stories</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Gestures</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Double tap story</string>
+			<key>Titles</key>
+			<array>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>open_original_story</string>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>double_tap_story</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Double tap with two fingers to use this gesture.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Two finger double tap</string>
+			<key>Titles</key>
+			<array>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>show_original_text</string>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>two_finger_double_tap</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Also known as tap-and-hold, just hold down a feed/folder title for a couple seconds.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Long press feed/folder</string>
+			<key>Titles</key>
+			<array>
+				<string>Mark read X days back...</string>
+				<string>Mark everything read</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>mark_read_choose_days</string>
+			<key>Values</key>
+			<array>
+				<string>mark_read_choose_days</string>
+				<string>mark_read_immediate</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>long_press_feed_title</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Also known as tap-and-hold, just hold down a story title for a couple seconds.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Long press story title</string>
+			<key>Titles</key>
+			<array>
+				<string>Send to third-party</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Train story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>open_send_to</string>
+			<key>Values</key>
+			<array>
+				<string>open_send_to</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>train_story</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>long_press_story_title</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Every other view uses a left edge swipe to return to the previous screen. But the story detail view has this option because you may wish to traverse stories and not accidentally jump to the previous screen.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe left edge</string>
+			<key>Titles</key>
+			<array>
+				<string>Go back to story list</string>
+				<string>Previous story</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>pop_to_story_list</string>
+			<key>Values</key>
+			<array>
+				<string>pop_to_story_list</string>
+				<string>previous_story</string>
+			</array>
+			<key>Key</key>
+			<string>story_detail_swipe_left_edge</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Reading Stories</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show public comments</string>
+			<key>Key</key>
+			<string>show_public_comments</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Default browser</string>
+			<key>Titles</key>
+			<array>
+				<string>In-app browser</string>
+				<string>Safari</string>
+				<string>Chrome</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>inapp</string>
+			<key>Values</key>
+			<array>
+				<string>inapp</string>
+				<string>safari</string>
+				<string>chrome</string>
+			</array>
+			<key>Key</key>
+			<string>story_browser</string>
+		</dict>
+	</array>
+	<key>StringsTable</key>
+	<string>Root</string>
+</dict>
+</plist>

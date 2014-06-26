@@ -19,7 +19,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     score: function() {
         if (NEWSBLUR.reader.flags['starred_view']) {
-            return 1;
+            return 2;
         } else {
             return NEWSBLUR.utils.compute_story_score(this);
         }
@@ -31,6 +31,74 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         if (score > 0) score_name = 'positive';
         if (score < 0) score_name = 'negative';
         return score_name;
+    },
+    
+    content_preview: function(attribute) {
+        var content = this.get(attribute || 'story_content');
+        content = content && Inflector.stripTags(content);
+        
+        return _.string.prune(_.string.trim(content), 150, "...");
+    },
+    
+    formatted_short_date: function() {
+        var timestamp = this.get('story_timestamp');
+        var dateformat = NEWSBLUR.assets.preference('dateformat');
+        var date = new Date(parseInt(timestamp, 10) * 1000);
+        var midnight_today = function() {
+            var midnight = new Date();
+            midnight.setHours(0);
+            midnight.setMinutes(0);
+            midnight.setSeconds(0);
+            return midnight;
+        };
+        var midnight_yesterday = function(midnight) {
+            return new Date(midnight - 60*60*24*1000);
+        };
+        var midnight = midnight_today();
+        var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
+
+        if (date > midnight) {
+            return time;
+        } else if (date > midnight_yesterday(midnight)) {
+            return "Yesterday, " + time;
+        } else {
+            return date.format("d M Y, ") + time;
+        }
+    },
+    
+    formatted_long_date: function() {
+        var timestamp = this.get('story_timestamp');
+        var dateformat = NEWSBLUR.assets.preference('dateformat');
+        var date = new Date(parseInt(timestamp, 10) * 1000);
+        var midnight_today = function() {
+            var midnight = new Date();
+            midnight.setHours(0);
+            midnight.setMinutes(0);
+            midnight.setSeconds(0);
+            return midnight;
+        };
+        var midnight_yesterday = function(midnight) {
+            return new Date(midnight - 60*60*24*1000);
+        };
+        var beginning_of_month = function() {
+            var month = new Date();
+            month.setHours(0);
+            month.setMinutes(0);
+            month.setSeconds(0);
+            month.setDate(1);
+            return month;
+        };
+        var midnight = midnight_today();
+        var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
+        if (date > midnight) {
+            return "Today, " + date.format("F jS ") + time;
+        } else if (date > midnight_yesterday(midnight)) {
+            return "Yesterday, " + date.format("F jS ") + time;
+        } else if (date > beginning_of_month()) {
+            return date.format("l, F jS ") + time;
+        } else {
+            return date.format("l, F jS Y ") + time;
+        }
     },
     
     has_modifications: function() {
@@ -120,7 +188,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         
         return tags || [];
     },
-        
+    
     unused_story_tags: function() {
         var tags = _.reduce(this.get('user_tags') || [], function(m, t) {
             return _.without(m, t);
@@ -281,6 +349,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     clear_previous_stories_stack: function() {
         this.previous_stories_stack = [];
+        this.active_story = null;
     },
     
     select_previous_story: function() {

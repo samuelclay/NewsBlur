@@ -242,7 +242,14 @@ def strip_comments__lxml(html_string=""):
         return lxml.etree.tostring(clean_html)
     except (XMLSyntaxError, ParserError):
         return html_string
-        
+
+def prep_for_search(html):
+    html = strip_tags_django(html)
+    html = html.lower()
+    html = xhtml_unescape_tornado(html)
+    
+    return html[:100000]
+    
 def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     

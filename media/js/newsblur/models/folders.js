@@ -167,7 +167,8 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         var found_folder;
         this.any(function(folder) {
             if (folder.is_folder()) {
-                if (folder.get('folder_title').toLowerCase() == folder_name) {
+                if (folder.get('folder_title').toLowerCase() == folder_name ||
+                    folder.get('folder_title').toLowerCase().replace(/-/g, ' ') == folder_name) {
                     found_folder = folder;
                     return found_folder;
                 }

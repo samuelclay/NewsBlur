@@ -48,7 +48,7 @@
     NSArray *hashes = [self unfetchedStoryHashes];
     
     if ([hashes count] == 0) {
-        NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
+//        NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         dispatch_async(dispatch_get_main_queue(), ^{
             if (![[[NSUserDefaults standardUserDefaults]
@@ -78,7 +78,7 @@
                                            NSLog(@"Failed fetch all unreads.");
                                            [lock signal];
                                        }];
-    request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+    request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                              (unsigned long)NULL);
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [request start];
@@ -140,6 +140,7 @@
     }
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"appDelegate.remainingUnfetchedStoryCount %d (%f)", appDelegate.remainingUnfetchedStoryCount, progress);
+        if (self.isCancelled) return;
         [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
     });
 }

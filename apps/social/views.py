@@ -542,6 +542,11 @@ def mark_story_as_shared(request):
             'message': 'Could not find the original story and no copies could be found.'
         })
     
+    if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, feed_id):
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'Only premium users can share multiple stories per day from the same site.'
+        })
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
                                                story_hash=story['story_hash']).limit(1).first()
@@ -581,6 +586,16 @@ def mark_story_as_shared(request):
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], relative_user_id,
                                                                         check_all=check_all)
     story = stories[0]
+    starred_stories = MStarredStory.objects(user_id=request.user.pk, 
+                                             story_feed_id=story['story_feed_id'], 
+                                             story_hash=story['story_hash'])\
+                                       .only('story_hash', 'starred_date', 'user_tags').limit(1)
+    if starred_stories:
+        story['user_tags'] = starred_stories[0]['user_tags']
+        story['starred'] = True
+        starred_date = localtime_for_timezone(starred_stories[0]['starred_date'],
+                                              request.user.profile.timezone)
+        story['starred_date'] = format_story_link_date__long(starred_date, now)
     story['shared_comments'] = strip_tags(shared_story['comments'] or "")
     story['shared_by_user'] = True
     story['shared'] = True
@@ -1105,10 +1120,18 @@ def ignore_follower(request):
 def find_friends(request):
     query = request.GET['query']
     limit = int(request.GET.get('limit', 3))
-    profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
+    profiles = []
+    
+    if '@' in query:
+        results = re.search(r'[\w\.-]+@[\w\.-]+', query)
+        if results:
+            email = results.group(0)
+            profiles = MSocialProfile.objects.filter(email__iexact=email)[:limit]
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
-    if not profiles:
+    if not profiles and request.user.is_staff:
         profiles = MSocialProfile.objects.filter(email__icontains=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:limit]

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <PreferenceCategory 
-        android:title="@string/settings_default_story_order">
+        android:title="@string/settings_cat_story_list">
         <ListPreference
             android:key="default_story_order"
             android:title="@string/menu_story_order"
@@ -9,7 +10,6 @@
             android:entries="@array/default_story_order_entries"
             android:entryValues="@array/default_story_order_values"
             android:defaultValue="@string/default_story_order_value" />
-        
         <ListPreference
             android:key="default_read_filter"
             android:title="@string/menu_read_filter"
@@ -17,8 +17,22 @@
             android:entries="@array/default_read_filter_entries"
             android:entryValues="@array/default_read_filter_values"
             android:defaultValue="@string/default_read_filter_value" />
-
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_show_content_preview"
+            android:title="@string/settings_show_content_preview" />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_reading"
+        android:key="reading">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="immersive_enter_single_tap"
+            android:title="@string/settings_immersive_enter_single_tap" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
     <PreferenceCategory 
         android:title="@string/settings_social">
         <CheckBoxPreference
@@ -26,6 +40,17 @@
             android:key="show_public_comments"
             android:title="@string/settings_show_public_comments" >
         </CheckBoxPreference>
-        
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/theme">
+        <ListPreference
+            android:key="theme"
+            android:title="@string/theme"
+            android:dialogTitle="@string/theme"
+            android:entries="@array/default_theme_entries"
+            android:entryValues="@array/default_theme_values"
+            android:defaultValue="@string/default_theme_value" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

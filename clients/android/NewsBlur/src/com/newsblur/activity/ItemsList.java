@@ -2,12 +2,12 @@ package com.newsblur.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.app.FragmentManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
@@ -23,7 +23,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbFragmentActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
+public abstract class ItemsList extends NbActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
@@ -33,14 +33,14 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
+    public static final String BUNDLE_FEED_IDS = "feedIds";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
 	protected int currentState;
-	private Menu menu;
 	
 	protected boolean stopLoading = false;
-	
+
 	@Override
 	protected void onCreate(Bundle bundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -48,12 +48,11 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
 		super.onCreate(bundle);
 
 		setContentView(R.layout.activity_itemslist);
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 
         // our intel state is entirely determined by the state of the Main view
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
     protected void onResume() {
@@ -77,17 +76,17 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
 		} else if (item.getItemId() == R.id.menu_story_order) {
             StoryOrder currentValue = getStoryOrder();
             StoryOrderDialogFragment storyOrder = StoryOrderDialogFragment.newInstance(currentValue);
-            storyOrder.show(getSupportFragmentManager(), STORY_ORDER);
+            storyOrder.show(getFragmentManager(), STORY_ORDER);
             return true;
         } else if (item.getItemId() == R.id.menu_read_filter) {
             ReadFilter currentValue = getReadFilter();
             ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
-            readFilter.show(getSupportFragmentManager(), READ_FILTER);
+            readFilter.show(getFragmentManager(), READ_FILTER);
             return true;
         } else if (item.getItemId() == R.id.menu_default_view) {
             DefaultFeedView currentValue = getDefaultFeedView();
             DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
-            readFilter.show(getSupportFragmentManager(), DEFAULT_FEED_VIEW);
+            readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
             return true;
         }
 	
@@ -106,7 +105,7 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
 			itemListFragment.hasUpdated();
 			itemListFragment.syncDone();;
 		}
-        setSupportProgressBarIndeterminateVisibility(false);
+        setProgressBarIndeterminateVisibility(false);
         if (noMoreData) {
             stopLoading = true;
         }

@@ -2,23 +2,15 @@ package com.newsblur.fragment;
 
 import com.newsblur.R;
 import com.newsblur.activity.Main;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
 
 import android.app.Activity;
-import android.net.Uri;
-import android.os.AsyncTask;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.app.DialogFragment;
 
 public class DeleteFeedFragment extends DialogFragment {
 	private static final String FEED_ID = "feed_url";
@@ -35,54 +27,31 @@ public class DeleteFeedFragment extends DialogFragment {
 		return frag;
 	}
 
-	private FragmentManager fragmentManager;
-	private SyncUpdateFragment syncFragment;	
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.dialog);
-		super.onCreate(savedInstanceState);
-
-		fragmentManager = super.getFragmentManager();
-		
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-		}
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
-		View v = inflater.inflate(R.layout.fragment_confirm_dialog, null);
-		TextView messageView = (TextView) v.findViewById(R.id.dialog_message);
-		messageView.setText(String.format(getResources().getString(R.string.delete_feed_message), getArguments().getString(FEED_NAME)));
-		
-		Button okayButton = (Button) v.findViewById(R.id.dialog_button_okay);
-        okayButton.setOnClickListener(new OnClickListener() {
-			public void onClick(final View v) {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(String.format(getResources().getString(R.string.delete_feed_message), getArguments().getString(FEED_NAME)));
+        builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
                 FeedUtils.deleteFeed(getArguments().getLong(FEED_ID), getArguments().getString(FOLDER_NAME), getActivity(), new APIManager(getActivity()));
                 // if called from main view then refresh otherwise it was
                 // called from the feed view so finish
                 Activity activity = DeleteFeedFragment.this.getActivity();
                 if (activity instanceof Main) {
-                   ((Main)activity).updateAfterSync();
+                    ((Main)activity).updateAfterSync();
                 } else {
-                   activity.finish();
+                    activity.finish();
                 }
                 DeleteFeedFragment.this.dismiss();
             }
-				
-		});
-		
-		Button cancelButton = (Button) v.findViewById(R.id.dialog_button_cancel);
-		cancelButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				DeleteFeedFragment.this.dismiss();
-			}
-		});
-
-		return v;
-	}
-
+        });
+        builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DeleteFeedFragment.this.dismiss();
+            }
+        });
+        return builder.create();
+    }
 }

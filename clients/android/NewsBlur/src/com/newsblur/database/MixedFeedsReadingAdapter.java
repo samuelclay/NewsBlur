@@ -3,21 +3,21 @@ package com.newsblur.database;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 
 import com.newsblur.activity.ReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
-import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
+import com.newsblur.util.DefaultFeedView;
 
 public class MixedFeedsReadingAdapter extends ReadingAdapter {
 
 	private final ContentResolver resolver; 
 
-	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final ContentResolver resolver) {
-		super(fragmentManager);
+	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final ContentResolver resolver, DefaultFeedView defaultFeedView) {
+		super(fragmentManager, defaultFeedView);
 		this.resolver = resolver;
 	}
 
@@ -36,7 +36,7 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
         Cursor feedClassifierCursor = resolver.query(classifierUri, null, null, null, null);
         Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
         
-        return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true);
+        return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true, defaultFeedView);
 	}
 	
 }

@@ -12,11 +12,13 @@
 @class InteractionsModule;
 @class ActivityModule;
 @class FeedbackModule;
+@class FeedDetailViewController;
 
 @interface DashboardViewController : UIViewController <UIPopoverControllerDelegate, UIWebViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     InteractionsModule *interactionsModule;
     ActivityModule *activitiesModule;
+    FeedDetailViewController *storiesModule;
     UIWebView *feedbackWebView;
     UIToolbar *toolbar;
     UINavigationBar *topToolbar;
@@ -26,6 +28,7 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet InteractionsModule *interactionsModule;
 @property (nonatomic) IBOutlet ActivityModule *activitiesModule;
+@property (nonatomic) IBOutlet FeedDetailViewController *storiesModule;
 @property (nonatomic) IBOutlet UIWebView *feedbackWebView;
 
 @property (nonatomic) IBOutlet UINavigationBar *topToolbar;
@@ -33,6 +36,7 @@
 @property (nonatomic) IBOutlet UISegmentedControl *segmentedButton;
 
 - (IBAction)doLogout:(id)sender;
+- (void)refreshStories;
 - (void)refreshInteractions;
 - (void)refreshActivity;
 - (IBAction)tapSegmentedButton:(id)sender;

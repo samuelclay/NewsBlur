@@ -25,7 +25,7 @@
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
-#import "UIActivitiesControl.h"
+#import "StoriesCollection.h"
 
 @implementation StoryPageControl
 
@@ -52,6 +52,7 @@
 @synthesize storyHUD;
 @synthesize scrollingToPage;
 @synthesize traverseView;
+@synthesize isAnimatedIntoPlace;
 @synthesize progressView, progressViewContainer;
 @synthesize traversePinned, traverseFloating;
 
@@ -192,42 +193,46 @@
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (!appDelegate.isSocialView) {
+        if (!appDelegate.storiesCollection.isSocialView) {
             UIImage *titleImage;
-            if (appDelegate.isSocialRiverView && [appDelegate.activeFolder
-                                                  isEqualToString:@"river_global"]) {
+            if (appDelegate.storiesCollection.isSocialRiverView &&
+                [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
-            } else if (appDelegate.isSocialRiverView && [appDelegate.activeFolder
-                                                         isEqualToString:@"river_blurblogs"]) {
+            } else if (appDelegate.storiesCollection.isSocialRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder
-                                                   isEqualToString:@"everything"]) {
+            } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder
-                                                   isEqualToString:@"saved_stories"]) {
+            } else if (appDelegate.storiesCollection.isSavedView &&
+                       appDelegate.storiesCollection.activeSavedStoryTag) {
+                titleImage = [UIImage imageNamed:@"tag.png"];
+            } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"clock.png"];
-            } else if (appDelegate.isRiverView) {
+            } else if (appDelegate.storiesCollection.isRiverView) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-                titleImage = [Utilities getImage:feedIdStr];
+                titleImage = [appDelegate getFavicon:feedIdStr];
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-            if (appDelegate.isRiverView) {
+            if (appDelegate.storiesCollection.isRiverView) {
                 titleImageView.frame = CGRectMake(0.0, 2.0, 22.0, 22.0);
             } else {
                 titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
             }
             titleImageView.hidden = YES;
             titleImageView.contentMode = UIViewContentModeScaleAspectFit;
-            self.navigationItem.titleView = titleImageView;
+            if (!self.navigationItem.titleView) {
+                self.navigationItem.titleView = titleImageView;
+            }
             titleImageView.hidden = NO;
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                                   [appDelegate.activeFeed objectForKey:@"id"]];
-            UIImage *titleImage  = [Utilities getImage:feedIdStr];
+                                   [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+            UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -240,22 +245,34 @@
     
     previousPage.view.hidden = YES;
     self.traverseView.alpha = 1;
+    self.isAnimatedIntoPlace = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
+    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@" "
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil action:nil];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     // set the subscribeButton flag
     if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
-                                      [appDelegate.activeFeed objectForKey:@"username"]];
+                                      [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+    NSLog(@"Story Page Control did appear");
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -286,6 +303,11 @@
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+//        appDelegate.masterContainerViewController.originalViewIsVisible) {
+//        return;
+//    }
+    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
         [self refreshPages];
@@ -333,6 +355,8 @@
 }
 
 - (void)resetPages {
+    self.navigationItem.titleView = nil;
+
     [currentPage clearStory];
     [nextPage clearStory];
     [previousPage clearStory];
@@ -369,16 +393,23 @@
 }
 
 - (void)refreshHeaders {
-    [currentPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:currentPage.activeStoryId]];
-    [nextPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:nextPage.activeStoryId]];
-    [previousPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:previousPage.activeStoryId]];
+    [currentPage setActiveStoryAtIndex:[appDelegate.storiesCollection
+                                        indexOfStoryId:currentPage.activeStoryId]];
+    [nextPage setActiveStoryAtIndex:[appDelegate.storiesCollection
+                                     indexOfStoryId:nextPage.activeStoryId]];
+    [previousPage setActiveStoryAtIndex:[appDelegate.storiesCollection
+                                         indexOfStoryId:previousPage.activeStoryId]];
 
     [currentPage refreshHeader];
     [nextPage refreshHeader];
     [previousPage refreshHeader];
+
+    [currentPage refreshSideoptions];
+    [nextPage refreshSideoptions];
+    [previousPage refreshSideoptions];
 }
 - (void)resizeScrollView {
-    NSInteger widthCount = self.appDelegate.storyLocationsCount;
+    NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
@@ -424,7 +455,7 @@
 
 - (void)applyNewIndex:(NSInteger)newIndex
        pageController:(StoryDetailViewController *)pageController {
-	NSInteger pageCount = [[appDelegate activeFeedStoryLocations] count];
+	NSInteger pageCount = [[appDelegate.storiesCollection activeFeedStoryLocations] count];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
@@ -447,9 +478,9 @@
 	pageController.pageIndex = newIndex;
 //    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count], outOfBounds);
     
-    if (newIndex > 0 && newIndex >= [appDelegate.activeFeedStoryLocations count]) {
+    if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
-        if (self.appDelegate.feedDetailViewController.feedPage < 100 &&
+        if (self.appDelegate.storiesCollection.feedPage < 100 &&
             !self.appDelegate.feedDetailViewController.pageFinished &&
             !self.appDelegate.feedDetailViewController.pageFetching) {
             [self.appDelegate.feedDetailViewController fetchNextPage:^() {
@@ -465,7 +496,7 @@
             [appDelegate hideStoryDetailView];
         }
     } else if (!outOfBounds) {
-        NSInteger location = [appDelegate indexFromLocation:pageController.pageIndex];
+        NSInteger location = [appDelegate.storiesCollection indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
         [pageController clearStory];
         if (self.isDraggingScrollview ||
@@ -496,7 +527,7 @@
 	NSInteger upperNumber = lowerNumber + 1;
 	NSInteger previousNumber = lowerNumber - 1;
 	
-    NSInteger storyCount = [appDelegate.activeFeedStoryLocations count];
+    NSInteger storyCount = [appDelegate.storiesCollection.activeFeedStoryLocations count];
     if (storyCount == 0 || lowerNumber > storyCount) return;
     
 //    NSLog(@"Did Scroll: %f = %d (%d/%d/%d)", fractionalPage, lowerNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
@@ -586,13 +617,34 @@
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
         NSInteger nearestNumber = lround(fractionalPage);
         
-        if (![appDelegate.activeFeedStories count]) return;
+        if (![appDelegate.storiesCollection.activeFeedStories count]) return;
         
-        NSInteger storyIndex = [appDelegate indexFromLocation:nearestNumber];
-        if (storyIndex != [appDelegate indexOfActiveStory]) {
-            appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+        NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:nearestNumber];
+        if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory]) {
+            appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories
+                                       objectAtIndex:storyIndex];
             [appDelegate changeActiveFeedDetailRow];
         }
+    }
+}
+
+- (void)animateIntoPlace:(BOOL)animated {
+    // Move view into position if no story is selected yet
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        !self.isAnimatedIntoPlace) {
+        CGRect frame = self.scrollView.frame;
+        frame.origin.x = frame.size.width;
+        self.scrollView.frame = frame;
+        [UIView animateWithDuration:(animated ? .22 : 0) delay:0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^
+        {
+            CGRect frame = self.scrollView.frame;
+            frame.origin.x = 0;
+            self.scrollView.frame = frame;
+        } completion:^(BOOL finished) {
+            self.isAnimatedIntoPlace = YES;
+        }];
     }
 }
 
@@ -604,7 +656,6 @@
 //    NSLog(@"changePage to %d (animated: %d)", pageIndex, animated);
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
-
     CGRect frame = self.scrollView.frame;
     frame.origin.x = frame.size.width * pageIndex;
     frame.origin.y = 0;
@@ -672,10 +723,14 @@
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
         self.scrollingToPage = -1;
-        NSInteger storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
-        appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+        NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
+        appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
-        [self markStoryAsRead];
+        if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
+            [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
+            [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
+        }
+        [appDelegate.feedDetailViewController redrawUnreadStory];
     }
 }
 
@@ -689,7 +744,7 @@
 }
 
 - (void)updatePageWithActiveStory:(NSInteger)location {
-    [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
+    [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
     [self.view setNeedsLayout];
     
@@ -729,7 +784,7 @@
     NSInteger readStoryCount = [appDelegate.readStories count];
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
+         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"story_hash"])) {
         [buttonPrevious setEnabled:NO];
     } else {
         [buttonPrevious setEnabled:YES];
@@ -737,9 +792,10 @@
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
-    NSInteger nextIndex = [appDelegate indexOfNextUnreadStory];
+    NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
-    if ((nextIndex == -1 && unreadCount > 0) ||
+    BOOL pageFinished = self.appDelegate.feedDetailViewController.pageFinished;
+    if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
         nextIndex != -1) {
         [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
         [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"]
@@ -782,80 +838,10 @@
     }
 }
 
-- (void)markStoryAsRead {
-    if (!appDelegate.activeStory) return;
-    
-    if ([appDelegate isStoryUnread:appDelegate.activeStory]) {
-        
-        [appDelegate markActiveStoryRead];
-        [self.currentPage refreshHeader];
-        [appDelegate.feedDetailViewController redrawUnreadStory];
-        
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[appDelegate.activeStory objectForKey:@"story_hash"]
-                       forKey:@"story_hash"];
-        [request setUserInfo:@{@"story_feed_id":[appDelegate.activeStory
-                                                 objectForKey:@"story_feed_id"],
-                                @"story_hash":[appDelegate.activeStory
-                                               objectForKey:@"story_hash"]}];
-        [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-        [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-        [request setDelegate:self];
-        [request startAsynchronous];
-    }
-}
-
-- (void)finishMarkAsRead:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self requestFailedMarkStoryRead:request];
-    }
-    
-    //    NSString *responseString = [request responseString];
-    //    NSDictionary *results = [[NSDictionary alloc]
-    //                             initWithDictionary:[responseString JSONValue]];
-    //    NSLog(@"results in mark as read is %@", results);
-}
-
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    //    [self informError:@"Failed to mark story as read"];
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
-    
-    [appDelegate queueReadStories:@{storyFeedId: @[storyHash]}];
-}
-
 - (IBAction)openSendToDialog:(id)sender {
     [self endTouchDown:sender];
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSendToPopover:sender];
-    } else {
-        [self presentViewController:[UIActivitiesControl activityViewControllerForView:self]
-                           animated:YES
-                         completion:nil];
-    }
-}
-
-- (void)markStoryAsSaved {
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [appDelegate showSendTo:self sender:sender];
 }
 
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
@@ -863,31 +849,20 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markStory:appDelegate.activeStory asSaved:YES];
+    [appDelegate.storiesCollection markStory:request.userInfo asSaved:YES];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
 }
 
-- (void)markStoryAsUnsaved {
-    //    [appDelegate markActiveStoryUnread];
-    
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+- (BOOL)failedMarkAsSaved:(ASIFormDataRequest *)request {
+    if (![[request.userInfo objectForKey:@"story_hash"]
+          isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
+        return NO;
+    }
+
+    [self informError:@"Failed to save story"];
+    return YES;
 }
 
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
@@ -895,74 +870,32 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markStory:appDelegate.activeStory asSaved:NO];
+    [appDelegate.storiesCollection markStory:[request.userInfo objectForKey:@"story"] asSaved:NO];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];
 }
 
-- (void)markStoryAsUnread {
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] == 1) {
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        
-        [request setPostValue:[appDelegate.activeStory
-                               objectForKey:@"story_hash"]
-                       forKey:@"story_id"];
-        [request setPostValue:[appDelegate.activeStory
-                               objectForKey:@"story_feed_id"]
-                       forKey:@"feed_id"];
-        
-        [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
-        [request setDidFailSelector:@selector(failedMarkAsUnread:)];
-        [request setDelegate:self];
-        [request setUserInfo:appDelegate.activeStory];
-        [request startAsynchronous];
+
+- (BOOL)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
+    if (![[request.userInfo objectForKey:@"story_hash"]
+          isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
+        return NO;
     }
+    
+    [self informError:@"Failed to unsave story"];
+    return YES;
 }
 
-- (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self failedMarkAsUnread:request];
+- (BOOL)failedMarkAsUnread:(ASIFormDataRequest *)request {
+    if (![[request.userInfo objectForKey:@"story_hash"]
+          isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
+        return NO;
     }
     
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc]
-                             initWithDictionary:[responseString JSONValue]];
-    
-    if ([[results objectForKey:@"code"] intValue] < 0) {
-        return [self requestFailed:[results objectForKey:@"message"]];
-    }
-    
-    [appDelegate markActiveStoryUnread];
-    [appDelegate.feedDetailViewController redrawUnreadStory];
-    currentPage.isRecentlyUnread = YES;
-    [currentPage refreshHeader];
-    [self setNextPreviousButtons];
-    [self.currentPage flashCheckmarkHud:@"unread"];
+    [self informError:@"Failed to unread story"];
+    return YES;
 }
-
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
-    
-    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
-    if (!dequeued) {
-        [self informError:@"Failed to unread story"];
-        [appDelegate markStoryRead:storyHash feedId:storyFeedId];
-    } else {
-        [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
-        [appDelegate markActiveStoryUnread];
-        [appDelegate.feedDetailViewController redrawUnreadStory];
-        [self setNextPreviousButtons];
-        [self.currentPage flashCheckmarkHud:@"unread"];
-    }
-    
-    [self refreshHeaders];
-}
-
 
 - (IBAction)showOriginalSubview:(id)sender {
     [appDelegate.masterContainerViewController hidePopover];
@@ -1019,7 +952,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*7-2)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*8-2)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny
                                                        animated:YES];
@@ -1036,6 +969,12 @@
     [self.currentPage changeFontSize:fontSize];
     [self.nextPage changeFontSize:fontSize];
     [self.previousPage changeFontSize:fontSize];
+}
+
+- (void)changeLineSpacing:(NSString *)lineSpacing {
+    [self.currentPage changeLineSpacing:lineSpacing];
+    [self.nextPage changeLineSpacing:lineSpacing];
+    [self.previousPage changeLineSpacing:lineSpacing];
 }
 
 #pragma mark -
@@ -1058,15 +997,17 @@
 
 - (IBAction)doNextUnreadStory:(id)sender {
     FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
-    NSInteger nextLocation = [appDelegate locationOfNextUnreadStory];
+    NSInteger nextLocation = [appDelegate.storiesCollection locationOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
+    BOOL pageFinished = self.appDelegate.feedDetailViewController.pageFinished;
+
     [self.loadingIndicator stopAnimating];
     
     [self endTouchDown:sender];
 //    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
     
-    if (nextLocation == -1 && unreadCount > 0 &&
-        fdvc.feedPage < 100) {
+    if (nextLocation == -1 && unreadCount > 0 && !pageFinished &&
+        appDelegate.storiesCollection.feedPage < 100) {
         [self.loadingIndicator startAnimating];
         self.circularProgressView.hidden = YES;
         self.buttonNext.enabled = NO;
@@ -1088,15 +1029,15 @@
     [self endTouchDown:sender];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
-    id previousStoryId = [appDelegate popReadStory];
-    if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
+    id previousStoryId = [appDelegate.storiesCollection popReadStory];
+    if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        NSInteger previousLocation = [appDelegate locationOfStoryId:previousStoryId];
+        NSInteger previousLocation = [appDelegate.storiesCollection locationOfStoryId:previousStoryId];
         if (previousLocation == -1) {
             return [self doPreviousStory:sender];
         }

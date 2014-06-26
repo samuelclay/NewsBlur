@@ -1,14 +1,12 @@
 package com.newsblur.fragment;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+import android.app.DialogFragment;
 import android.widget.Toast;
 
 import com.newsblur.R;
@@ -28,57 +26,45 @@ public class AddFeedFragment extends DialogFragment {
 		args.putString(FEED_NAME, feedName);
 		frag.setArguments(args);
 		return frag;
-	}	
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.dialog);
-		super.onCreate(savedInstanceState);
-	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-		final String addFeedString = getResources().getString(R.string.add_feed_message);
-		
-		apiManager = new APIManager(getActivity());
-		View v = inflater.inflate(R.layout.fragment_confirm_dialog, container, false);
-		final TextView message = (TextView) v.findViewById(R.id.dialog_message);
-		message.setText(String.format(addFeedString, getArguments().getString(FEED_NAME)));
-		
-		Button okayButton = (Button) v.findViewById(R.id.dialog_button_okay);
-		okayButton.setOnClickListener(new OnClickListener() {
-			public void onClick(final View v) {
-				v.setEnabled(false);
-				
-				new AsyncTask<Void, Void, Boolean>() {
-					@Override
-					protected Boolean doInBackground(Void... arg) {
-						return apiManager.addFeed(getArguments().getString(FEED_ID), null);
-					}
-					
-					@Override
-					protected void onPostExecute(Boolean result) {
-						if (result) {
-							AddFeedFragment.this.dismiss();
-							AddFeedFragment.this.getActivity().finish();
-						} else {
-							AddFeedFragment.this.dismiss();
-							Toast.makeText(getActivity(), "Error adding feed", Toast.LENGTH_SHORT).show();
-						}
-					};
-				}.execute();
-				
-			}
-		});
-		
-		Button cancelButton = (Button) v.findViewById(R.id.dialog_button_cancel);
-		cancelButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				AddFeedFragment.this.dismiss();
-			}
-		});
-
-		return v;
 	}
 
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final String addFeedString = getResources().getString(R.string.add_feed_message);
+        final Activity activity = getActivity();
+        apiManager = new APIManager(activity);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setMessage(String.format(addFeedString, getArguments().getString(FEED_NAME)));
+        builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... arg) {
+                        return apiManager.addFeed(getArguments().getString(FEED_ID), null);
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        if (result) {
+                            activity.finish();
+                            AddFeedFragment.this.dismiss();
+                        } else {
+                            AddFeedFragment.this.dismiss();
+                            Toast.makeText(activity, "Error adding feed", Toast.LENGTH_SHORT).show();
+                        }
+                    };
+                }.execute();
+            }
+        });
+        builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                AddFeedFragment.this.dismiss();
+            }
+        });
+        return builder.create();
+    }
 }

@@ -8,6 +8,7 @@
 
 #import "Utilities.h"
 #import <CommonCrypto/CommonCrypto.h>
+#import "TMCache.h"
 
 void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor, 
                         CGColorRef  endColor) {
@@ -34,59 +35,6 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 
 @implementation Utilities
 
-static NSMutableDictionary *imageCache;
-
-+ (void)saveImage:(UIImage *)image feedId:(NSString *)filename {
-    if (!imageCache) {
-        imageCache = [NSMutableDictionary dictionary];
-    }
-    
-    // Save image to memory-based cache, for performance when reading.
-//    NSLog(@"Saving %@", [imageCache allKeys]);
-    if (image && filename && ![image isKindOfClass:[NSNull class]] &&
-        [filename class] != [NSNull class]) {
-        [imageCache setObject:image forKey:filename];
-    } else {
-//        NSLog(@"%@ has no image!!!", filename);
-    }
-}
-
-+ (UIImage *)getImage:(NSString *)filename {
-    return [self getImage:filename isSocial:NO];
-}
-
-+ (UIImage *)getImage:(NSString *)filename isSocial:(BOOL)isSocial {
-    UIImage *image;
-    if (filename && [imageCache objectForKey:filename]) {
-        image = [imageCache objectForKey:filename];
-    }
-    
-    if (!image || [image class] == [NSNull class]) {
-        // Image not in cache, search on disk.
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *cacheDirectory = [paths objectAtIndex:0];
-        if (isSocial) {
-            cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"avatars"];
-        } else {
-            cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"favicons"];
-        }
-        NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
-        
-        image = [UIImage imageWithContentsOfFile:path];
-    }
-    
-    if (image) {  
-        return image;
-    } else {
-        if (isSocial) {
-//            return [UIImage imageNamed:@"user_light.png"];
-            return nil;
-        } else {
-            return [UIImage imageNamed:@"world.png"];
-        }
-    }
-}
-
 + (void)drawLinearGradientWithRect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor {
     CGContextRef context = UIGraphicsGetCurrentContext(); 
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -109,27 +57,6 @@ static NSMutableDictionary *imageCache;
     
     CGGradientRelease(gradient);
     CGColorSpaceRelease(colorSpace);
-}
-
-+ (void)saveimagesToDisk {
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
-    
-    dispatch_async(queue, [^{
-        for (NSString *filename in [imageCache allKeys]) {
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-            NSString *cacheDirectory = [paths objectAtIndex:0];
-            if ([filename hasPrefix:@"social"]) {
-                cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"avatars"];
-            } else {
-                cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"favicons"];
-            }
-            NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
-            
-            // Save image to disk
-            UIImage *image = [imageCache objectForKey:filename];
-            [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
-        }
-    } copy]);
 }
 
 + (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {

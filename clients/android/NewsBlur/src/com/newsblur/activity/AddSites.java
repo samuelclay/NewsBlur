@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -15,7 +15,7 @@ import com.newsblur.R;
 import com.newsblur.fragment.AddSitesListFragment;
 import com.newsblur.network.APIManager;
 
-public class AddSites extends NbFragmentActivity {
+public class AddSites extends NbActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "addsitesFragment";
@@ -28,7 +28,7 @@ public class AddSites extends NbFragmentActivity {
 		setContentView(R.layout.activity_addsites);
 		apiManager = new APIManager(this);
 		
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 
 		if (fragmentManager.findFragmentByTag(currentTag ) == null) {
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -60,7 +60,7 @@ public class AddSites extends NbFragmentActivity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent i) {
-		if (resultCode == RESULT_OK) {
+		if ((resultCode == RESULT_OK) && (sitesList != null)) {
 			sitesList.setGoogleReaderImported();
 		}
 	}

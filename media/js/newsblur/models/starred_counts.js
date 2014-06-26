@@ -26,7 +26,7 @@ NEWSBLUR.Models.StarredFeed = Backbone.Model.extend({
     },
     
     tag_slug: function() {
-        return Inflector.sluggify(this.get('tag'));
+        return Inflector.sluggify(this.get('tag') || '');
     }
     
 });
@@ -37,7 +37,7 @@ NEWSBLUR.Collections.StarredFeeds = Backbone.Collection.extend({
     
     parse: function(models) {
         _.each(models, function(feed) {
-            feed.id = 'starred:' + feed.tag;
+            feed.id = 'starred:' + (feed.tag || feed.feed_id);
             // feed.selected = false;
             feed.ps = feed.count;
         });
@@ -78,6 +78,12 @@ NEWSBLUR.Collections.StarredFeeds = Backbone.Collection.extend({
     
     all_tags: function() {
         return this.pluck('tag');
+    },
+    
+    get_feed: function(feed_id) {
+        return this.detect(function(feed) {
+            return feed.get('feed_id') == feed_id;
+        });
     }
     
 });

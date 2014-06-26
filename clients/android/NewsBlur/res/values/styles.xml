@@ -1,22 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="dialog" parent="@android:style/Theme.Dialog">
+    <style name="classifyDialog" parent="@android:style/Theme.Dialog">
         <item name="android:background">@drawable/actionbar_background</item>
         <item name="android:textColor">@color/darkgray</item>
         <item name="android:textSize">15dp</item>
         <item name="android:padding">10dp</item>
     </style>
 
-    <style name="actionbar" parent="Widget.Sherlock.Light.ActionBar">
-        <item name="android:background">@drawable/actionbar_background</item>
-        <item name="background">@drawable/actionbar_background</item>
-        <item name="android:titleTextStyle">@style/actionbarTitleText</item>
-        <item name="titleTextStyle">@style/actionbarTitleText</item>
+    <style name="darkClassifyDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:background">@drawable/dark_actionbar_background</item>
+        <item name="android:textColor">@color/lightgray</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:padding">10dp</item>
     </style>
 
-    <style name="actionbarTitleText" parent="TextAppearance.Sherlock.Widget.ActionBar.Title">
+    <style name="actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@drawable/actionbar_background</item>
+    </style>
+
+    <style name="actionbar.dark" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@drawable/dark_actionbar_background</item>
+    </style>
+
+    <style name="expandableListView" parent="@android:style/Widget.Holo.Light.ExpandableListView">
+        <item name="android:background">@drawable/list_background</item>
+    </style>
+
+    <style name="expandableListView.dark" parent="@android:style/Widget.Holo.ExpandableListView">
+        <item name="android:background">@drawable/dark_list_background</item>
+    </style>
+
+    <style name="selectorFolderBackground">
+        <item name="android:background">@drawable/selector_folder_background</item>
+    </style>
+
+    <style name="selectorFolderBackground.dark">
+        <item name="android:background">@drawable/dark_selector_folder_background</item>
+    </style>
+
+    <style name="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_background</item>
+    </style>
+
+    <style name="selectorFeedBackground.dark">
+        <item name="android:background">@drawable/dark_selector_feed_background</item>
+    </style>
+
+    <style name="selectorRowFolderName">
+        <item name="android:textColor">@color/folder_text</item>
+        <item name="android:shadowColor">@color/white</item>
+    </style>
+
+    <style name="selectorRowFolderName.dark">
+        <item name="android:textColor">@color/dark_folder_text</item>
+        <item name="android:shadowColor">@color/white</item>
+    </style>
+
+    <style name="selectorRowFeedName">
+        <item name="android:textColor">@color/folder_text</item>
+    </style>
+
+    <style name="selectorRowFeedName.dark">
+        <item name="android:textColor">@color/dark_folder_text</item>
+    </style>
+
+    <style name="actionbarBackground">
+        <item name="android:background">@drawable/actionbar_background</item>
+    </style>
+
+    <style name="actionbarBackground.dark">
+        <item name="android:background">@drawable/dark_actionbar_background</item>
+    </style>
+
+    <style name="listBackground">
+        <item name="android:background">@drawable/list_background</item>
+    </style>
+
+    <style name="listBackground.dark">
+        <item name="android:background">@drawable/dark_list_background</item>
+    </style>
+
+    <style name="itemBackground">
+        <item name="android:background">@color/item_background</item>
+    </style>
+
+    <style name="itemBackground.dark">
+        <item name="android:background">@color/dark_item_background</item>
+    </style>
+
+    <style name="defaultText">
+        <item name="android:textColorLink">@color/linkblue</item>
         <item name="android:textColor">@color/darkgray</item>
     </style>
 
+    <style name="defaultText.dark">
+        <item name="android:textColorLink">@color/dark_linkblue</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="selectorStoryBackground">
+        <item name="android:background">@drawable/selector_story_background</item>
+    </style>
+
+    <style name="selectorStoryBackground.dark">
+        <item name="android:background">@drawable/dark_selector_story_background</item>
+    </style>
+
+    <style name="rowItemHeaderBackground">
+        <item name="android:background">@drawable/row_item_header_background</item>
+    </style>
+
+    <style name="rowItemHeaderBackground.dark">
+        <item name="android:background">@drawable/dark_row_item_header_background</item>
+    </style>
+
+    <style name="rowItemFeedHeader">
+      <item name="android:background">@drawable/row_item_feed_header</item>
+    </style>
+
+    <style name="rowItemFeedHeader.dark">
+        <item name="android:background">@drawable/dark_row_item_feed_header</item>
+    </style>
+
+    <style name="storyTitleUnread">
+        <item name="android:textColor">@color/story_title_unread</item>
+    </style>
+
+    <style name="storyTitleUnread.dark">
+        <item name="android:textColor">@color/dark_story_title_unread</item>
+    </style>
+
+    <style name="readingItemMetadata">
+        <item name="android:textColor">@color/half_darkgray</item>
+    </style>
+
+    <style name="readingItemMetadata.dark">
+        <item name="android:textColor">@color/half_white</item>
+    </style>
+
+    <style name="tag">
+        <item name="android:textColor">@color/tag_gray_text</item>
+        <item name="android:background">@drawable/tag_background_neutral</item>
+    </style>
+
+    <style name="tag.dark">
+        <item name="android:textColor">@color/tag_gray_shadow</item>
+        <item name="android:background">@drawable/tag_background_dark</item>
+    </style>
+
+    <style name="storyButtons">
+        <item name="android:textColor">@color/half_darkgray</item>
+    </style>
+
+    <style name="storyButtons.dark">
+        <item name="android:textColor">@color/story_buttons_dark</item>
+    </style>
+
+    <style name="shareBarBackground">
+        <item name="android:background">@color/share_bar_background</item>
+    </style>
+
+    <style name="shareBarBackground.dark">
+        <item name="android:background">@color/dark_share_bar_background</item>
+    </style>
+
+    <style name="shareBarText">
+        <item name="android:textColor">@color/midgray</item>
+        <item name="android:shadowColor">@color/white</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="shareBarText.dark">
+        <item name="android:textColor">@color/midgray</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">0</item>
+    </style>
+
+    <style name="commentsHeader">
+        <item name="android:background">@drawable/gradient_background_default</item>
+        <item name="android:textColor">@color/darkgray</item>
+    </style>
+
+    <style name="commentsHeader.dark">
+        <item name="android:background">@drawable/dark_gradient_background_default</item>
+        <item name="android:textColor">@color/midgray</item>
+    </style>
+
+    <style name="folderBorderTop">
+        <item name="android:background">@color/folder_border_top</item>
+    </style>
+
+    <style name="folderBorderTop.dark">
+        <item name="android:background">@color/dark_folder_border_top</item>
+    </style>
+
+    <style name="folderBorderBottom">
+        <item name="android:background">@color/folder_border_bottom</item>
+    </style>
+
+    <style name="folderBorderBottom.dark">
+        <item name="android:background">@color/dark_folder_border_bottom</item>
+    </style>
+
+    <style name="divider">
+        <item name="android:divider">@drawable/divider_light</item>
+    </style>
+
+    <style name="divider.dark">
+        <item name="android:divider">@drawable/divider_dark</item>
+    </style>
+
+    <style name="profileCount">
+        <item name="android:background">@color/item_background</item>
+        <item name="android:textColor">@color/darkgray</item>
+    </style>
+
+    <style name="profileCount.dark">
+        <item name="android:background">@color/dark_item_background</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="profileActivityList">
+        <item name="android:background">@color/item_background</item>
+        <item name="android:divider">@drawable/divider_light</item>
+    </style>
+
+    <style name="profileActivityList.dark">
+        <item name="android:background">@color/dark_item_background</item>
+        <item name="android:divider">@drawable/divider_dark</item>
+    </style>
 </resources>

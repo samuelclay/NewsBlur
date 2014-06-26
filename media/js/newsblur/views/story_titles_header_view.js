@@ -36,6 +36,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-search-container"></div>\
+                    <div class="NB-feedbar-options-container">\
+                        <span class="NB-feedbar-options">\
+                            <div class="NB-icon"></div>\
+                            <%= NEWSBLUR.assets.view_setting("starred", "order") %>\
+                        </span>\
+                    </div>\
                     <div class="NB-starred-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
                     <span class="folder_title_text">Saved Stories<% if (tag) { %> - <%= tag %><% } %></span>\
@@ -48,9 +54,24 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             }).render();
             this.search_view.blur_search();
             $(".NB-search-container", $view).html(this.search_view.$el);
+        } else if (NEWSBLUR.reader.active_feed == "read") {
+            $view = $(_.template('\
+                <div class="NB-folder NB-no-hover">\
+                    <div class="NB-feedbar-options-container">\
+                        <span class="NB-feedbar-options">\
+                            <div class="NB-icon"></div>\
+                            <%= NEWSBLUR.assets.view_setting("read", "order") %>\
+                        </span>\
+                    </div>\
+                    <div class="NB-read-icon"></div>\
+                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="folder_title_text">Read Stories</div>\
+                </div>\
+            ', {}));
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
+                    <div class="NB-search-container"></div>\
                     <% if (show_options) { %>\
                         <div class="NB-feedbar-options-container">\
                             <span class="NB-feedbar-options">\
@@ -75,6 +96,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 show_options: !NEWSBLUR.reader.active_folder.get('fake') ||
                               NEWSBLUR.reader.active_folder.get('show_options')
             }));
+            this.search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
+            this.search_view.blur_search();
+            $(".NB-search-container", $view).html(this.search_view.$el);
         } else if (NEWSBLUR.reader.flags['river_view'] && 
                    NEWSBLUR.reader.active_folder &&
                    NEWSBLUR.reader.active_folder.get('folder_title')) {
@@ -115,6 +141,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     remove: function() {
         if (this.view) {
             this.view.remove();
+            delete this.view;
         }
         // Backbone.View.prototype.remove.call(this);
     },
@@ -126,6 +153,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     show_feed_hidden_story_title_indicator: function(is_feed_load) {
         if (!is_feed_load) return;
         if (!NEWSBLUR.reader.active_feed) return;
+        if (NEWSBLUR.reader.flags.search) return;
+        if (NEWSBLUR.reader.flags['feed_list_showing_starred']) return;
         NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
         
         var unread_view_name = NEWSBLUR.reader.get_unread_view_name();
@@ -198,7 +227,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
     
     open_options_popover: function(e) {
-        if (!this.showing_fake_folder) return;
+        if (!(this.showing_fake_folder ||
+              NEWSBLUR.reader.active_feed == "read" ||
+              NEWSBLUR.reader.flags['starred_view'])) return;
         
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),

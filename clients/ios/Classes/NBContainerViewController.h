@@ -13,22 +13,31 @@
 @interface NBContainerViewController : UIViewController
 <UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
+    
+    BOOL interactiveOriginalTransition;
 }
 
 @property (readonly) BOOL storyTitlesOnLeft;
+@property (readwrite) BOOL interactiveOriginalTransition;
 @property (readonly) int storyTitlesYCoordinate;
+@property (readwrite) BOOL originalViewIsVisible;
 @property (nonatomic) CALayer *leftBorder;
+@property (nonatomic) CALayer *rightBorder;
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 
 - (void)syncNextPreviousButtons;
 
-- (void)adjustDashboardScreen;
-- (void)adjustFeedDetailScreen;
+- (void)layoutDashboardScreen;
+- (void)layoutFeedDetailScreen;
 - (void)adjustFeedDetailScreenForStoryTitles;
 
 - (void)transitionToFeedDetail;
 - (void)transitionToFeedDetail:(BOOL)resetLayout;
+- (void)transitionToOriginalView;
+- (void)transitionToOriginalView:(BOOL)resetLayout;
+- (void)transitionFromOriginalView;
+- (void)interactiveTransitionFromOriginalView:(CGFloat)percentage;
 - (void)interactiveTransitionFromFeedDetail:(CGFloat)percentage;
 - (void)transitionFromFeedDetail;
 - (void)transitionFromFeedDetail:(BOOL)resetLayout;

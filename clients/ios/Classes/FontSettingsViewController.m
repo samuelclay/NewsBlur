@@ -13,6 +13,7 @@
 #import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
 #import "NBContainerViewController.h"
+#import "StoriesCollection.h"
 
 @implementation FontSettingsViewController
 
@@ -21,6 +22,7 @@
 @synthesize appDelegate;
 @synthesize fontStyleSegment;
 @synthesize fontSizeSegment;
+@synthesize lineSpacingSegment;
 @synthesize menuTableView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -45,17 +47,25 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if ([userPreferences stringForKey:@"fontStyle"]) {
-        if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-san-serif"]) {
+        if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-helvetica"]) {
             [fontStyleSegment setSelectedSegmentIndex:0];
-        } else if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-serif"]) {    
+        } else if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-palatino"]) {
             [fontStyleSegment setSelectedSegmentIndex:1];
+        } else if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-georgia"]) {
+            [fontStyleSegment setSelectedSegmentIndex:2];
+        } else if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-avenir"]) {
+            [fontStyleSegment setSelectedSegmentIndex:3];
+        } else if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-avenirnext"]) {
+            [fontStyleSegment setSelectedSegmentIndex:4];
+        } else if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-f1"]) {
+            [fontStyleSegment setSelectedSegmentIndex:5];
         }
     }
 
     if([userPreferences stringForKey:@"story_font_size"]){
         NSString *fontSize = [userPreferences stringForKey:@"story_font_size"];
         if ([fontSize isEqualToString:@"xs"]) {
-            [fontSizeSegment setSelectedSegmentIndex:0]; 
+            [fontSizeSegment setSelectedSegmentIndex:0];
         } else if ([fontSize isEqualToString:@"small"]) {
             [fontSizeSegment setSelectedSegmentIndex:1];
         } else if ([fontSize isEqualToString:@"medium"]) {
@@ -64,6 +74,21 @@
             [fontSizeSegment setSelectedSegmentIndex:3];
         } else if ([fontSize isEqualToString:@"xl"]) {
             [fontSizeSegment setSelectedSegmentIndex:4];
+        }
+    }
+    
+    if([userPreferences stringForKey:@"story_line_spacing"]){
+        NSString *lineSpacing = [userPreferences stringForKey:@"story_line_spacing"];
+        if ([lineSpacing isEqualToString:@"xs"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:0];
+        } else if ([lineSpacing isEqualToString:@"small"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:1];
+        } else if ([lineSpacing isEqualToString:@"medium"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:2];
+        } else if ([lineSpacing isEqualToString:@"large"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:3];
+        } else if ([lineSpacing isEqualToString:@"xl"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:4];
         }
     }
     
@@ -85,10 +110,18 @@
 
 - (IBAction)changeFontStyle:(id)sender {
     if ([sender selectedSegmentIndex] == 0) {
-        [self setSanSerif];
-    } else {
-        [self setSerif];
+        [self setHelvetica];
+    } else if ([sender selectedSegmentIndex] == 1) {
+        [self setPalatino];
+    } else if ([sender selectedSegmentIndex] == 2) {
+        [self setGeorgia];
+    } else if ([sender selectedSegmentIndex] == 3) {
+        [self setAvenir];
+    } else if ([sender selectedSegmentIndex] == 4) {
+        [self setAvenirNext];
     }
+    
+    [self.menuTableView reloadData];
 }
 
 - (IBAction)changeFontSize:(id)sender {
@@ -112,22 +145,59 @@
     [userPreferences synchronize];
 }
 
-- (void)setSanSerif {
+- (IBAction)changeLineSpacing:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([sender selectedSegmentIndex] == 0) {
+        [appDelegate.storyPageControl changeLineSpacing:@"xs"];
+        [userPreferences setObject:@"xs" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 1) {
+        [appDelegate.storyPageControl changeLineSpacing:@"small"];
+        [userPreferences setObject:@"small" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 2) {
+        [appDelegate.storyPageControl changeLineSpacing:@"medium"];
+        [userPreferences setObject:@"medium" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 3) {
+        [appDelegate.storyPageControl changeLineSpacing:@"large"];
+        [userPreferences setObject:@"large" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 4) {
+        [appDelegate.storyPageControl changeLineSpacing:@"xl"];
+        [userPreferences setObject:@"xl" forKey:@"story_line_spacing"];
+    }
+    [userPreferences synchronize];
+}
+
+- (void)setHelvetica {
     [fontStyleSegment setSelectedSegmentIndex:0];
     [appDelegate.storyPageControl setFontStyle:@"Helvetica"];
 }
-        
-- (void)setSerif {
+
+- (void)setPalatino {
     [fontStyleSegment setSelectedSegmentIndex:1];
+    [appDelegate.storyPageControl setFontStyle:@"Palatino"];
+}
+
+- (void)setGeorgia {
+    [fontStyleSegment setSelectedSegmentIndex:2];
     [appDelegate.storyPageControl setFontStyle:@"Georgia"];
 }
+
+- (void)setAvenir {
+    [fontStyleSegment setSelectedSegmentIndex:3];
+    [appDelegate.storyPageControl setFontStyle:@"Avenir"];
+}
+
+- (void)setAvenirNext {
+    [fontStyleSegment setSelectedSegmentIndex:4];
+    [appDelegate.storyPageControl setFontStyle:@"AvenirNext"];
+}
+
 
 #pragma mark -
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 7;
+    return 8;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -140,6 +210,8 @@
         return [self makeFontSelectionTableCell];
     } else if (indexPath.row == 6) {
         return [self makeFontSizeTableCell];
+    } else if (indexPath.row == 7) {
+        return [self makeLineSpacingTableCell];
     }
     
     if (cell == nil) {
@@ -192,20 +264,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0) {
-        bool isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
-        if (isSaved) {
-            [appDelegate.storyPageControl markStoryAsUnsaved];
-        } else {
-            [appDelegate.storyPageControl markStoryAsSaved];
-        }
+        [appDelegate.storiesCollection toggleStorySaved];
+        [appDelegate.feedDetailViewController reloadData];
+        [appDelegate.storyPageControl refreshHeaders];
     } else if (indexPath.row == 1) {
-        bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
-        if (isRead) {
-            [appDelegate.storyPageControl markStoryAsUnread];
-        } else {
-            [appDelegate.storyPageControl markStoryAsRead];
-            [appDelegate.feedDetailViewController redrawUnreadStory];
-        }
+        [appDelegate.storiesCollection toggleStoryUnread];
+        [appDelegate.feedDetailViewController reloadData];
+        [appDelegate.storyPageControl refreshHeaders];
     } else if (indexPath.row == 2) {
         [appDelegate.storyPageControl openSendToDialog:appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 3) {
@@ -233,15 +298,40 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
     fontStyleSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
-    [fontStyleSegment setTitle:[@"Helvetica" uppercaseString] forSegmentAtIndex:0];
-    [fontStyleSegment setTitle:[@"Georgia" uppercaseString] forSegmentAtIndex:1];
+    if (fontStyleSegment.selectedSegmentIndex == 0) {
+        [fontStyleSegment setTitle:[@"Helvetica" uppercaseString] forSegmentAtIndex:0];
+    } else {
+        [fontStyleSegment setTitle:[@"Helv" uppercaseString] forSegmentAtIndex:0];
+    }
+    if (fontStyleSegment.selectedSegmentIndex == 1) {
+        [fontStyleSegment setTitle:[@"Palatino" uppercaseString] forSegmentAtIndex:1];
+    } else {
+        [fontStyleSegment setTitle:[@"Pala" uppercaseString] forSegmentAtIndex:1];
+    }
+    if (fontStyleSegment.selectedSegmentIndex == 2) {
+        [fontStyleSegment setTitle:[@"Georgia" uppercaseString] forSegmentAtIndex:2];
+    } else {
+        [fontStyleSegment setTitle:[@"Geor" uppercaseString] forSegmentAtIndex:2];
+    }
+    if (fontStyleSegment.selectedSegmentIndex == 3) {
+        [fontStyleSegment setTitle:[@"Avenir" uppercaseString] forSegmentAtIndex:3];
+    } else {
+        [fontStyleSegment setTitle:[@"Aven" uppercaseString] forSegmentAtIndex:3];
+    }
+    if (fontStyleSegment.selectedSegmentIndex == 4) {
+        [fontStyleSegment setTitle:[@"Av. Cond." uppercaseString] forSegmentAtIndex:4];
+    } else {
+        [fontStyleSegment setTitle:[@"AvCd" uppercaseString] forSegmentAtIndex:4];
+    }
     [fontStyleSegment setTintColor:UIColorFromRGB(0x738570)];
     [fontStyleSegment
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
      forState:UIControlStateNormal];
-    [fontStyleSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
-    [fontStyleSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    for (int i=0; i <= 4; i++) {
+        [fontStyleSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:i];
+    }
+    fontStyleSegment.apportionsSegmentWidthsByContent = YES;
     
     [cell addSubview:fontStyleSegment];
     
@@ -255,11 +345,11 @@
     cell.separatorInset = UIEdgeInsetsZero;
     
     fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
-    [fontSizeSegment setTitle:@"12pt" forSegmentAtIndex:0];
-    [fontSizeSegment setTitle:@"13pt" forSegmentAtIndex:1];
-    [fontSizeSegment setTitle:@"14pt" forSegmentAtIndex:2];
-    [fontSizeSegment setTitle:@"15pt" forSegmentAtIndex:3];
-    [fontSizeSegment setTitle:@"17pt" forSegmentAtIndex:4];
+    [fontSizeSegment setTitle:@"XS" forSegmentAtIndex:0];
+    [fontSizeSegment setTitle:@"S" forSegmentAtIndex:1];
+    [fontSizeSegment setTitle:@"M" forSegmentAtIndex:2];
+    [fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
+    [fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
     [fontSizeSegment setTintColor:UIColorFromRGB(0x738570)];
     [fontSizeSegment
      setTitleTextAttributes:@{NSFontAttributeName:
@@ -273,7 +363,26 @@
     
     [cell addSubview:fontSizeSegment];
     
-    return cell;    
+    return cell;
+}
+
+- (UITableViewCell *)makeLineSpacingTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    
+    lineSpacingSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xs"] forSegmentAtIndex:0];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_s"] forSegmentAtIndex:1];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_m"] forSegmentAtIndex:2];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_l"] forSegmentAtIndex:3];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xl"] forSegmentAtIndex:4];
+    [lineSpacingSegment setTintColor:UIColorFromRGB(0x738570)];
+    
+    [cell addSubview:lineSpacingSegment];
+    
+    return cell;
 }
 
 

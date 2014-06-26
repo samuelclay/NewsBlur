@@ -47,19 +47,8 @@
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     int countWidth = 0;
     
-    if (isFolderCollapsed) {
-        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
-        unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
-        unreadCount.appDelegate = appDelegate;
-        unreadCount.opaque = NO;
-        unreadCount.psCount = counts.ps;
-        unreadCount.ntCount = counts.nt;
-        
-        [unreadCount calculateOffsets:counts.ps nt:counts.nt];
-        countWidth = [unreadCount offsetWidth];
-        [self addSubview:unreadCount];
-    } else if ([folderName isEqual:@"saved_stories"]) {
-        unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
+    if ([folderName isEqual:@"saved_stories"]) {
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
         unreadCount.psCount = appDelegate.savedStoriesCount;
@@ -68,8 +57,18 @@
         [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
+    } else if (isFolderCollapsed) {
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
+        unreadCount.appDelegate = appDelegate;
+        unreadCount.opaque = NO;
+        unreadCount.psCount = counts.ps;
+        unreadCount.ntCount = counts.nt;
+        
+        [unreadCount calculateOffsets:counts.ps nt:counts.nt];
+        countWidth = [unreadCount offsetWidth];
+        [self addSubview:unreadCount];
     }
-    
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
@@ -145,20 +144,34 @@
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntappedOutside:) forControlEvents:UIControlEventTouchUpOutside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(didSelectSectionHeader:)
+                    forControlEvents:UIControlEventTouchUpInside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionTapped:)
+                    forControlEvents:UIControlEventTouchDown];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntappedOutside:)
+                    forControlEvents:UIControlEventTouchUpOutside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntappedOutside:)
+                    forControlEvents:UIControlEventTouchCancel];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntappedOutside:)
+                    forControlEvents:UIControlEventTouchDragOutside];
     [customView addSubview:invisibleHeaderButton];
     
     if (!appDelegate.hasNoSites) {
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 1, 29, 29);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 3, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2 && ![folderName isEqual:@"saved_stories"]) {
+        if (section != 0 && section != 2) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -169,7 +182,7 @@
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 1, 29, 29)];
+            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 3, 29, 29)];
         } else {
             // Everything/Saved folder doesn't get a button
             [disclosureButton setUserInteractionEnabled:NO];
@@ -221,7 +234,7 @@
         }
         allowLongPress = YES;
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 6, 20, 20)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 8, 20, 20)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
@@ -243,16 +256,23 @@
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     if (section < 2) return;
-    
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *longPressTitle = [preferences stringForKey:@"long_press_feed_title"];
+
     NSString *folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
-    
-    UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:folderTitle
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Cancel"
-                                                 destructiveButtonTitle:@"Mark folder as read"
-                                                      otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
-    markReadSheet.accessibilityValue = folderTitle;
-    [markReadSheet showInView:appDelegate.feedsViewController.view];
+    NSArray *feedIds = [appDelegate.dictFolders objectForKey:folderTitle];
+
+    if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
+        UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:folderTitle
+                                                                   delegate:self
+                                                          cancelButtonTitle:@"Cancel"
+                                                     destructiveButtonTitle:@"Mark folder as read"
+                                                          otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
+        markReadSheet.accessibilityValue = folderTitle;
+        [markReadSheet showInView:appDelegate.feedsViewController.view];
+    } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
+        [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+    }
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

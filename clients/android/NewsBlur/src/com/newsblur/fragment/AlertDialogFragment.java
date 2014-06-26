@@ -1,30 +1,34 @@
 package com.newsblur.fragment;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.app.DialogFragment;
 
 import com.newsblur.R;
 
 public class AlertDialogFragment extends DialogFragment {
+    private static final String MESSAGE = "message";
 
-	public String message = "";
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setStyle(DialogFragment.STYLE_NO_TITLE | DialogFragment.STYLE_NO_FRAME, R.style.dialog);
-		setCancelable(true);
-	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_dialog, null);
-		TextView messageView = (TextView) v.findViewById(R.id.dialog_message);
-		messageView.setText(message);
-		return v;
-	}
+    public static AlertDialogFragment newAlertDialogFragment(String message) {
+        AlertDialogFragment fragment = new AlertDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(MESSAGE, message);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(getArguments().getString(MESSAGE));
+        builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                AlertDialogFragment.this.dismiss();
+            }
+        });
+        return builder.create();
+    }
 }

@@ -14,7 +14,7 @@
 @class ASIHTTPRequest;
 
 @interface StoryDetailViewController : BaseViewController
-<UIScrollViewDelegate> {
+<UIScrollViewDelegate, UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
@@ -24,6 +24,7 @@
     NSInteger pageIndex;
     BOOL pullingScrollview;
     BOOL inTextView;
+    BOOL inDoubleTap;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -56,6 +57,7 @@
 - (void)checkTryFeedStory;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
+- (void)changeLineSpacing:(NSString *)lineSpacing;
 - (void)refreshComments:(NSString *)replyId;
 
 - (void)openShareDialog;
@@ -72,6 +74,7 @@
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(NSString *)key;
 - (void)refreshHeader;
+- (void)refreshSideoptions;
 
 - (void)fetchTextView;
 - (void)finishFetchTextView:(ASIHTTPRequest *)request;

@@ -10,7 +10,10 @@
 #import "NewsBlurAppDelegate.h"
 #import "ActivityModule.h"
 #import "InteractionsModule.h"
+#import "FeedDetailViewController.h"
 #import "UserProfileViewController.h"
+#import "TMCache.h"
+#import "StoriesCollection.h"
 
 #define FEEDBACK_URL @"http://www.newsblur.com/about"
 
@@ -19,6 +22,7 @@
 @synthesize appDelegate;
 @synthesize interactionsModule;
 @synthesize activitiesModule;
+@synthesize storiesModule;
 @synthesize feedbackWebView;
 @synthesize topToolbar;
 @synthesize toolbar;
@@ -36,7 +40,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.interactionsModule.hidden = NO;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.interactionsModule.hidden = YES;
+    } else {
+        self.interactionsModule.hidden = NO;
+    }
     self.activitiesModule.hidden = YES;
     self.feedbackWebView.hidden = YES;
     self.feedbackWebView.delegate = self;
@@ -61,19 +69,17 @@
     CGRect topToolbarFrame = self.topToolbar.frame;
     topToolbarFrame.size.height += 20;
     self.topToolbar.frame = topToolbarFrame;
-}
-
-- (void)viewDidUnload {
-    [self setAppDelegate:nil];
-    [self setInteractionsModule:nil];
-    [self setActivitiesModule:nil];
-    [self setToolbar:nil];
-    [self setSegmentedButton:nil];
-    [self setFeedbackWebView:nil];
-    [self setTopToolbar:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.storiesModule = [FeedDetailViewController new];
+        self.storiesModule.isDashboardModule = YES;
+        self.storiesModule.storiesCollection = [StoriesCollection new];
+//        NSLog(@"Dashboard story module view: %@ (%@)", self.storiesModule, self.storiesModule.storiesCollection);
+        self.storiesModule.view.frame = self.activitiesModule.frame;
+        [self.view insertSubview:self.storiesModule.view belowSubview:self.activitiesModule];
+        [self addChildViewController:self.storiesModule];
+        [self.storiesModule didMoveToParentViewController:self];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -94,19 +100,41 @@
 - (IBAction)tapSegmentedButton:(id)sender {
     NSInteger selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
     
-    if (selectedSegmentIndex == 0) {
-        self.interactionsModule.hidden = NO;
-        self.activitiesModule.hidden = YES;
-        self.feedbackWebView.hidden = YES;
-    } else if (selectedSegmentIndex == 1) {
-        self.interactionsModule.hidden = YES;
-        self.activitiesModule.hidden = NO;
-        self.feedbackWebView.hidden = YES;
-    } else if (selectedSegmentIndex == 2) {
-        self.interactionsModule.hidden = YES;
-        self.activitiesModule.hidden = YES;
-        self.feedbackWebView.hidden = NO;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (selectedSegmentIndex == 0) {
+            self.storiesModule.view.hidden = NO;
+            self.interactionsModule.hidden = YES;
+            self.activitiesModule.hidden = YES;
+        } else if (selectedSegmentIndex == 1) {
+            [self refreshInteractions];
+            self.storiesModule.view.hidden = YES;
+            self.interactionsModule.hidden = NO;
+            self.activitiesModule.hidden = YES;
+        } else if (selectedSegmentIndex == 2) {
+            [self refreshActivity];
+            self.storiesModule.view.hidden = YES;
+            self.interactionsModule.hidden = YES;
+            self.activitiesModule.hidden = NO;
+        }
+    } else {
+        if (selectedSegmentIndex == 0) {
+            self.interactionsModule.hidden = NO;
+            self.activitiesModule.hidden = YES;
+        } else if (selectedSegmentIndex == 1) {
+            self.interactionsModule.hidden = YES;
+            self.activitiesModule.hidden = NO;
+        }
     }
+}
+
+#pragma mark - Stories
+
+- (void)refreshStories {
+    [appDelegate.cachedStoryImages removeAllObjects:^(TMCache *cache) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
+        });
+    }];
 }
 
 # pragma mark

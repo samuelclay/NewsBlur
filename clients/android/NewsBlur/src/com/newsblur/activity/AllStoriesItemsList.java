@@ -9,11 +9,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -34,6 +34,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 
 	private APIManager apiManager;
 	private ContentResolver resolver;
+	private ArrayList<String> feedIds;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -44,9 +45,26 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 		apiManager = new APIManager(this);
 		resolver = getContentResolver();
 
+        if (bundle != null) {
+            feedIds = bundle.getStringArrayList(BUNDLE_FEED_IDS);
+        }
+
+        if (feedIds == null) {
+            feedIds = new ArrayList<String>(); // default to a wildcard search
+
+            // if we're in Focus mode, only query for feeds with a nonzero focus count
+            if (this.currentState == AppConstants.STATE_BEST) {
+                Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.FEED_FILTER_FOCUS, null, null);
+                while (cursor.moveToNext() && (feedIds.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
+                    feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
+                }
+                cursor.close();
+            }
+        }
+
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(AllStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder(), getDefaultFeedView());
+			itemListFragment = AllStoriesItemListFragment.newInstance(feedIds, currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllStoriesItemListFragment.class.getName());
@@ -57,23 +75,11 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
 
-            String[] feedIds = new String[0]; // default to a wildcard search
-
-            // if we're in Focus mode, only query for feeds with a nonzero focus count
-            if (this.currentState == AppConstants.STATE_BEST) {
-                Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.FEED_FILTER_FOCUS, null, null);
-                List<String> feedList = new ArrayList<String>();
-                while (cursor.moveToNext() && (feedList.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
-                    feedList.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-                }
-                feedIds = new String[feedList.size()];
-                feedList.toArray(feedIds);
-                cursor.close();
-            }
-
-            FeedUtils.updateFeeds(this, this, feedIds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
+            String[] feedIdArray = new String[feedIds.size()];
+            feedIds.toArray(feedIdArray);
+            FeedUtils.updateFeeds(this, this, feedIdArray, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
 		}
 	}
 
@@ -86,7 +92,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.allstories_itemslist, menu);
 		return true;
 	}
@@ -154,5 +160,13 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
     @Override
     public void onCancel() {
         // do nothing
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        if (this.feedIds != null) {
+            bundle.putStringArrayList(BUNDLE_FEED_IDS, this.feedIds);
+        }
+        super.onSaveInstanceState(bundle);
     }
 }

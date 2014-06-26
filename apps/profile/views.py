@@ -2,7 +2,10 @@ import stripe
 import datetime
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import logout as logout_user
+from django.contrib.auth import login as login_user
+from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -13,9 +16,10 @@ from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
+from apps.reader.forms import SignupForm, LoginForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -76,6 +80,40 @@ def get_preference(request):
         
     response = dict(code=code, payload=payload)
     return response
+
+@csrf_protect
+def login(request):
+    form = LoginForm()
+
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            login_user(request, form.get_user())
+            logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
+            return HttpResponseRedirect(request.POST['next'] or reverse('index'))
+
+    return render_to_response('accounts/login.html', {
+        'form': form,
+        'next': request.REQUEST.get('next', "")
+    }, context_instance=RequestContext(request))
+    
+@csrf_protect
+def signup(request):
+    form = SignupForm()
+
+    if request.method == "POST":
+        form = SignupForm(data=request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            login_user(request, new_user)
+            logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
+            new_user.profile.activate_free()
+            return HttpResponseRedirect(request.POST['next'] or reverse('index'))
+
+    return render_to_response('accounts/signup.html', {
+        'form': form,
+        'next': request.REQUEST.get('next', "")
+    }, context_instance=RequestContext(request))
     
 @ajax_login_required
 @require_POST
@@ -229,22 +267,36 @@ def stripe_form(request):
             user.email = zebra_form.cleaned_data['email']
             user.save()
             
-            try:
-                customer = stripe.Customer.create(**{
-                    'card': zebra_form.cleaned_data['stripe_token'],
-                    'plan': zebra_form.cleaned_data['plan'],
-                    'email': user.email,
-                    'description': user.username,
-                })
-            except stripe.CardError:
-                error = "This card was declined."
+            current_premium = (user.profile.is_premium and 
+                               user.profile.premium_expire and
+                               user.profile.premium_expire > datetime.datetime.now())
+            # Are they changing their existing card?
+            if user.profile.stripe_id and current_premium:
+                customer = stripe.Customer.retrieve(user.profile.stripe_id)
+                try:
+                    card = customer.cards.create(card=zebra_form.cleaned_data['stripe_token'])
+                except stripe.CardError:
+                    error = "This card was declined."
+                else:
+                    customer.default_card = card.id
+                    customer.save()
+                    success_updating = True
             else:
-                user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
-                user.profile.stripe_id = customer.id
-                user.profile.save()
-                user.profile.activate_premium() # TODO: Remove, because webhooks are slow
-
-                success_updating = True
+                try:
+                    customer = stripe.Customer.create(**{
+                        'card': zebra_form.cleaned_data['stripe_token'],
+                        'plan': zebra_form.cleaned_data['plan'],
+                        'email': user.email,
+                        'description': user.username,
+                    })
+                except stripe.CardError:
+                    error = "This card was declined."
+                else:
+                    user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
+                    user.profile.stripe_id = customer.id
+                    user.profile.save()
+                    user.profile.activate_premium() # TODO: Remove, because webhooks are slow
+                    success_updating = True
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
@@ -297,11 +349,22 @@ def payment_history(request):
         user = User.objects.get(pk=user_id)
 
     history = PaymentHistory.objects.filter(user=user)
-
+    statistics = {
+        "last_seen_date": user.profile.last_seen_on,
+        "timezone": unicode(user.profile.timezone),
+        "stripe_id": user.profile.stripe_id,
+        "profile": user.profile,
+        "feeds": UserSubscription.objects.filter(user=user).count(),
+        "email": user.email,
+        "read_story_count": RUserStory.read_story_count(user.pk),
+        "feed_opens": UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum'],
+    }
+    
     return {
         'is_premium': user.profile.is_premium,
         'premium_expire': user.profile.premium_expire,
-        'payments': history
+        'payments': history,
+        'statistics': statistics,
     }
 
 @ajax_login_required
@@ -309,7 +372,9 @@ def payment_history(request):
 def cancel_premium(request):
     canceled = request.user.profile.cancel_premium()
     
-    return {'code': 1 if canceled else -1}
+    return {
+        'code': 1 if canceled else -1, 
+    }
 
 @staff_member_required
 @ajax_login_required
@@ -417,3 +482,16 @@ def delete_all_sites(request):
     logging.user(request.user, "~BC~FRDeleting %s sites" % sub_count)
 
     return dict(code=1)
+
+
+@login_required
+@render_to('profile/email_optout.xhtml')
+def email_optout(request):
+    user = request.user
+    user.profile.send_emails = False
+    user.profile.save()
+    
+    return {
+        "user": user,
+    }
+    

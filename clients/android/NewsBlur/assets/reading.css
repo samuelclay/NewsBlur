@@ -1,10 +1,10 @@
 body {
-	background-color: #FFF;
     overflow: hidden;
     line-height: 1.5em;
-    margin: 0;
     width: 100%;
     max-width: 100%;
+    margin: 0px !important;
+    padding: 0px !important;
 }
 
 .NB-story {
@@ -15,50 +15,38 @@ body {
 
 p, div, table {
 	line-height: 1.5em;
-    margin: 0px 0px 20px 0;
     clear: both;
+	width: auto !important;
     max-width: 100% !important;
-    overflow: hidden;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }
 
-div + p {
-    margin: 20px 0px 20px 0;
+p {
+    margin-bottom: 0.6em !important;
 }
 
-img {
-    margin: 20px auto;
-}
-
-img, video, embed, object, iframe, div {
-	max-width: 95% !important;
-	width: auto;
+img, video, embed, object, iframe, div, figure, dl, dt {
+	width: auto !important;
+    max-width: 100% !important;
 	height: auto !important;	
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }
-
 
 a {
-	color: #405BA8;	
 	text-decoration: none;
 }
 
-a:visited {
-	color: #405BA8;
+code {
+    word-wrap: break-word !important;
 }
 
-blockquote {
-    background-color: #F0F0F0;
+pre, blockquote {
     border-left: 1px solid #C2C5BE;
-    color: rgba(10, 12, 38, .8);
-    padding: 10px 1.5em;
-    margin: 20px 0;
-}
-
-pre {
-    width: 100%;
-}
-
-pre, code {
-    overflow: auto;
+    padding: 0.6em;
+    margin: 0.6em;
+    word-wrap: break-word !important;
 }
 
 ins { 

@@ -12,6 +12,7 @@
 #import "Utilities.h"
 #import "Base64.h"
 #import "AFNetworking.h"
+#import "StoriesCollection.h"
 
 @implementation TrainerViewController
 
@@ -65,15 +66,14 @@
                    [[UIMenuItem alloc] initWithTitle:@"👍 Focus" action:@selector(focusTitle:)],
                    nil]];
     
-    UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
+    UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
     self.navigationItem.titleView = titleLabel;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     
     if (!feedLoaded) {
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"Loading trainer...";
-        NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
-
+        NSString *feedId = [self feedId];
         NSURL *url = [NSURL URLWithString:[NSString
                                            stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
                                            NEWSBLUR_URL, feedId]];
@@ -83,10 +83,10 @@
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
                 NSDictionary *results = [JSON objectAtIndex:0];
                 NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-                [appDelegate.activeClassifiers setObject:newClassifiers
+                [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
                                                   forKey:feedId];
-                appDelegate.activePopularAuthors = [results objectForKey:@"feed_authors"];
-                appDelegate.activePopularTags = [results objectForKey:@"feed_tags"];
+                appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
+                appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
                 [self renderTrainer];
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                 NSLog(@"Failed fetch trainer.");
@@ -104,6 +104,19 @@
     } else {
         [self renderTrainer];
     }
+}
+
+- (NSString *)feedId {
+    NSString *feedId;
+    if (appDelegate.storiesCollection.activeFeed &&
+        !appDelegate.storiesCollection.isSocialView) {
+        feedId = [NSString stringWithFormat:@"%@",
+                  [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+    } else if (appDelegate.activeStory) {
+        feedId = [NSString stringWithFormat:@"%@",
+                  [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    }
+    return feedId;
 }
 
 - (void)renderTrainer {
@@ -214,7 +227,7 @@
         NSString *author = [NSString stringWithFormat:@"%@",
                             [appDelegate.activeStory objectForKey:@"story_authors"]];
         if (author && [author class] != [NSNull class]) {
-            int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+            int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
             storyAuthor = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
@@ -233,27 +246,47 @@
 }
 
 - (NSString *)makeFeedAuthors {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+    NSString *feedId = [self feedId];
     NSString *feedAuthors = @"";
-    NSArray *authorArray = appDelegate.activePopularAuthors;
-    
-    if ([authorArray count] > 0) {
+    NSArray *authorArray = appDelegate.storiesCollection.activePopularAuthors;
+    NSMutableArray *userAuthorArray = [NSMutableArray array];
+    for (NSString *trainedAuthor in [[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
+                                      objectForKey:@"authors"] allKeys]) {
+        BOOL found = NO;
+        for (NSArray *classifierAuthor in authorArray) {
+            if ([trainedAuthor isEqualToString:[classifierAuthor objectAtIndex:0]]) {
+                found = YES;
+                break;
+            }
+        }
+        if (!found) {
+            [userAuthorArray addObject:@[trainedAuthor, [NSNumber numberWithInt:0]]];
+        }
+    }
+    NSArray *authors = [userAuthorArray arrayByAddingObjectsFromArray:authorArray];
+
+    if ([authors count] > 0) {
         NSMutableArray *authorStrings = [NSMutableArray array];
-        for (NSArray *authorObj in authorArray) {
+        for (NSArray *authorObj in authors) {
             NSString *author = [authorObj objectAtIndex:0];
             int authorCount = [[authorObj objectAtIndex:1] intValue];
-            int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+            int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                               objectForKey:@"authors"]
                              objectForKey:author] intValue];
+            NSString *authorCountString = @"";
+            if (authorCount) {
+                authorCountString = [NSString stringWithFormat:@"<span class=\"NB-classifier-count\">&times;&nbsp; %d</span>",
+                                  authorCount];
+            }
             NSString *authorHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
                                     "  <a href=\"http://ios.newsblur.com/classify-author/%@\" "
                                     "     class=\"NB-story-author %@\">%@</a>"
-                                    "  <span class=\"NB-classifier-count\">&times;&nbsp; %d</span>"
+                                    "  %@"
                                     "</div>",
                                     author,
                                     authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
                                     [self makeClassifier:author withType:@"author" score:authorScore],
-                                    authorCount];
+                                    authorCountString];
             [authorStrings addObject:authorHtml];
         }
         feedAuthors = [NSString
@@ -273,8 +306,7 @@
 
 
 - (NSString *)makeStoryTags {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
-                                                          objectForKey:@"story_feed_id"]];
+    NSString *feedId = [self feedId];
     NSString *storyTags = @"";
     
     if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
@@ -282,7 +314,7 @@
         if ([tagArray count] > 0) {
             NSMutableArray *tagStrings = [NSMutableArray array];
             for (NSString *tag in tagArray) {
-                int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                int tagScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
                 NSString *tagHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
@@ -311,27 +343,47 @@
 }
 
 - (NSString *)makeFeedTags {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+    NSString *feedId = [self feedId];
     NSString *feedTags = @"";
-    NSArray *tagArray = appDelegate.activePopularTags;
-    
-    if ([tagArray count] > 0) {
+    NSArray *tagArray = appDelegate.storiesCollection.activePopularTags;
+    NSMutableArray *userTagArray = [NSMutableArray array];
+    for (NSString *trainedTag in [[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
+                                   objectForKey:@"tags"] allKeys]) {
+        BOOL found = NO;
+        for (NSArray *classifierTag in tagArray) {
+            if ([trainedTag isEqualToString:[classifierTag objectAtIndex:0]]) {
+                found = YES;
+                break;
+            }
+        }
+        if (!found) {
+            [userTagArray addObject:@[trainedTag, [NSNumber numberWithInt:0]]];
+        }
+    }
+    NSArray *tags = [userTagArray arrayByAddingObjectsFromArray:tagArray];
+
+    if ([tags count] > 0) {
         NSMutableArray *tagStrings = [NSMutableArray array];
-        for (NSArray *tagObj in tagArray) {
+        for (NSArray *tagObj in tags) {
             NSString *tag = [tagObj objectAtIndex:0];
             int tagCount = [[tagObj objectAtIndex:1] intValue];
-            int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+            int tagScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                               objectForKey:@"tags"]
                              objectForKey:tag] intValue];
+            NSString *tagCountString = @"";
+            if (tagCount) {
+                tagCountString = [NSString stringWithFormat:@"<span class=\"NB-classifier-count\">&times;&nbsp; %d</span>",
+                                  tagCount];
+            }
             NSString *tagHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
                                  "  <a href=\"http://ios.newsblur.com/classify-tag/%@\" "
                                  "     class=\"NB-story-tag %@\">%@</a>"
-                                 "  <span class=\"NB-classifier-count\">&times;&nbsp; %d</span>"
+                                 "  %@"
                                  "</div>",
                                  tag,
                                  tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
                                  [self makeClassifier:tag withType:@"Tag" score:tagScore],
-                                 tagCount];
+                                 tagCountString];
             [tagStrings addObject:tagHtml];
         }
         feedTags = [NSString
@@ -354,18 +406,18 @@
     NSString *feedTitle;
     
     if (self.feedTrainer) {
-        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
-        feedTitle = [appDelegate.activeFeed objectForKey:@"feed_title"];
+        feedId = [NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+        feedTitle = [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
     } else {
         feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                     objectForKey:@"story_feed_id"]];
         NSDictionary *feed = [appDelegate getFeed:feedId];
         feedTitle = [feed objectForKey:@"feed_title"];
     }
-    int publisherScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+    int publisherScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                             objectForKey:@"feeds"] objectForKey:feedId] intValue];
     
-    UIImage *favicon = [Utilities getImage:feedId];
+    UIImage *favicon = [appDelegate getFavicon:feedId];
     NSData *faviconData = UIImagePNGRepresentation(favicon);
     NSString *feedImageUrl = [NSString stringWithFormat:@"data:image/png;charset=utf-8;base64,%@",
                               [faviconData base64Encoding]];
@@ -398,7 +450,7 @@
         return @"";
     }
     
-    NSMutableDictionary *classifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+    NSMutableDictionary *classifiers = [[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                              objectForKey:@"titles"];
     NSMutableArray *titleStrings = [NSMutableArray array];
     for (NSString *title in classifiers) {
@@ -474,14 +526,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
     NSString *action = @"";
-    NSString *feedId;
-    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
-                                                    objectForKey:@"story_feed_id"]];
-    } else {
-        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed
-                                                    objectForKey:@"id"]];
-    }
+    NSString *feedId = [self feedId];
     
     if ([urlComponents count] > 1) {
         action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];

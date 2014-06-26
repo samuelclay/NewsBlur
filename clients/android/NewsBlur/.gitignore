@@ -1,10 +1,11 @@
 build.xml
 local.properties
-libs/ActionBarSherlock/build.xml
 *.java.swp
 *.xml.swp
+*.css.swp
+*.iml
 out/
 bin/
 .metadata/
 gen/
-libs/ActionBarSherlock/gen/
+libs/ActionBarSherlock/

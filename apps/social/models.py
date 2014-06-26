@@ -9,6 +9,7 @@ import random
 import requests
 import HTMLParser
 from collections import defaultdict
+from pprint import pprint
 from BeautifulSoup import BeautifulSoup
 from mongoengine.queryset import Q
 from django.conf import settings
@@ -1118,7 +1119,8 @@ class MSocialSubscription(mongo.Document):
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
             
-            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares)
+            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares,
+                                 aggregated=mark_all_read)
             
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
@@ -1399,7 +1401,7 @@ class MSharedStory(mongo.Document):
     meta = {
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
-                    'shared_date', 'story_guid', 'story_feed_id'],
+                    'shared_date', 'story_guid', 'story_feed_id', 'story_hash'],
         'index_drop_dups': True,
         'ordering': ['-shared_date'],
         'allow_inheritance': False,
@@ -1486,7 +1488,30 @@ class MSharedStory(mongo.Document):
             socialsub.save()
 
         self.delete()
+    
+    @classmethod
+    def feed_quota(cls, user_id, feed_id, days=1, quota=1):
+        day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
+        shared_count = cls.objects.filter(shared_date__gte=day_ago, story_feed_id=feed_id).count()
 
+        return shared_count >= quota
+    
+    @classmethod
+    def count_potential_spammers(cls, days=1):
+        day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
+        stories = cls.objects.filter(shared_date__gte=day_ago)
+        shared = [{'u': s.user_id, 'f': s.story_feed_id} for s in stories]
+        ddusers = defaultdict(lambda: defaultdict(int))
+        for story in shared:
+            ddusers[story['u']][story['f']] += 1
+
+        users = {}
+        for user_id, feeds in ddusers.items():
+            users[user_id] = dict(feeds)
+
+        pprint(users)
+        return users
+        
     @classmethod
     def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
         your_story = cls.objects.filter(story_feed_id=feed_id,
@@ -1676,7 +1701,21 @@ class MSharedStory(mongo.Document):
             shared_story.publish_update_to_subscribers()
         
         return shared
-            
+
+    @staticmethod
+    def check_shared_story_hashes(user_id, story_hashes, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        pipeline = r.pipeline()
+        
+        for story_hash in story_hashes:
+            feed_id, guid_hash = MStory.split_story_hash(story_hash)
+            share_key = "S:%s:%s" % (feed_id, guid_hash)
+            pipeline.sismember(share_key, user_id)
+        shared_hashes = pipeline.execute()
+        
+        return [story_hash for s, story_hash in enumerate(story_hashes) if shared_hashes[s]]
+
     @classmethod
     def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1758,7 +1797,7 @@ class MSharedStory(mongo.Document):
             'shared_date': relative_timesince(self.shared_date),
             'date': self.shared_date,
             'replies': [reply.canonical() for reply in self.replies],
-            'liking_users': self.liking_users,
+            'liking_users': self.liking_users and list(self.liking_users),
             'source_user_id': self.source_user_id,
         }
         return comments
@@ -1924,10 +1963,11 @@ class MSharedStory(mongo.Document):
             if include_url and truncate:
                 message = truncate_chars(message, truncate - 18 - 30)
             feed = Feed.get_by_id(self.story_feed_id)
-            if truncate:
-                message += " (%s)" % truncate_chars(feed.feed_title, 18)
-            else:
-                message += " (%s)" % truncate_chars(feed.feed_title, 30)
+            if feed:
+                if truncate:
+                    message += " (%s)" % truncate_chars(feed.feed_title, 18)
+                else:
+                    message += " (%s)" % truncate_chars(feed.feed_title, 30)
             if include_url:
                 message += " " + self.blurblog_permalink()
         elif include_url:
@@ -2530,14 +2570,41 @@ class MSocialServices(mongo.Document):
         profile.save()
         return profile
     
+    @classmethod
+    def sync_all_twitter_photos(cls, days=14):
+        week_ago = datetime.datetime.now() - datetime.timedelta(days=days)
+        shares = MSharedStory.objects.filter(shared_date__gte=week_ago)
+        sharers = sorted(set([s.user_id for s in shares]))
+        print " ---> %s sharing user_ids" % len(sorted(sharers))
+
+        for user_id in sharers:
+            profile = MSocialProfile.objects.get(user_id=user_id)
+            if not profile.photo_service == 'twitter': continue
+            ss = MSocialServices.objects.get(user_id=user_id)
+            try:
+                ss.sync_twitter_photo()
+                print " ---> Syncing %s" % user_id
+            except Exception, e:
+                print " ***> Exception on %s: %s" % (user_id, e)
+
     def sync_twitter_photo(self):
         profile = MSocialProfile.get_user(self.user_id)
 
         if profile.photo_service != "twitter":
             return
         
-        api = self.twitter_api()
-        me = api.me()
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~FCSyncing Twitter profile photo...")
+        
+        try:
+            api = self.twitter_api()
+            me = api.me()
+        except tweepy.TweepError, e:
+            logging.user(user, "~FRException (%s): ~FCsetting to blank profile photo" % e)
+            self.twitter_picture_url = None
+            self.set_photo("nothing")
+            return
+
         self.twitter_picture_url = me.profile_image_url_https
         self.save()
         self.set_photo('twitter')

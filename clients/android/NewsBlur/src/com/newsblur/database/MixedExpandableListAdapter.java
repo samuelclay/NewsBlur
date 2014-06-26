@@ -12,7 +12,7 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -306,20 +306,22 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 					((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
 				}
 			});
-			String neutCount = sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
-			if (currentState == AppConstants.STATE_BEST || TextUtils.isEmpty(neutCount) || TextUtils.equals(neutCount, "0")) {
+			int neutCount = sharedStoriesCountCursor.getInt(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
+            neutCount = checkNegativeUnreads(neutCount);
+			if (currentState == AppConstants.STATE_BEST || (neutCount == 0)) {
 				v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
 			} else {
 				v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
-				((TextView) v.findViewById(R.id.row_foldersumneu)).setText(neutCount);	
+				((TextView) v.findViewById(R.id.row_foldersumneu)).setText(Integer.toString(neutCount));	
 			}
 			
-			String posCount = sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS));
-			if (TextUtils.isEmpty(posCount) || TextUtils.equals(posCount, "0")) {
+			int posCount = sharedStoriesCountCursor.getInt(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS));
+            posCount = checkNegativeUnreads(posCount);
+			if (posCount == 0) {
 				v.findViewById(R.id.row_foldersumpos).setVisibility(View.GONE);
 			} else {
 				v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
-				((TextView) v.findViewById(R.id.row_foldersumpos)).setText(posCount);
+				((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));
 			}
 			
 			v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
@@ -329,21 +331,25 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			cursor = allStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
 			allStoriesCountCursor.moveToFirst();
+            int posCount = allStoriesCountCursor.getInt(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS));
+            posCount = checkNegativeUnreads(posCount);
+            int neutCount = allStoriesCountCursor.getInt(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
+            neutCount = checkNegativeUnreads(neutCount);
 			switch (currentState) {
 				case AppConstants.STATE_BEST:
 					v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
 					v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
-					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));
 					break;
 				default:
 					v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
-                    if (TextUtils.equals("0", allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)))) {
+                    if (posCount == 0) {
                         v.findViewById(R.id.row_foldersumpos).setVisibility(View.GONE);
                     } else {
                         v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
                     }
-					((TextView) v.findViewById(R.id.row_foldersumneu)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
-					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+					((TextView) v.findViewById(R.id.row_foldersumneu)).setText(Integer.toString(neutCount));
+					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));
 					break;
 			}
         } else if (isRowSavedStories(groupPosition)) {
@@ -567,4 +573,15 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 	}
 
+    /**
+     * Utility method to filter out and carp about negative unread counts.  These tend to indicate
+     * a problem in the app or API, but are very confusing to users.
+     */
+    private int checkNegativeUnreads(int count) {
+        if (count < 0) {
+            Log.w(this.getClass().getName(), "Negative unread count found and rounded up to zero.");
+            return 0;
+        }
+        return count;
+    }
 }

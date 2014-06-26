@@ -78,7 +78,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 fieldName: "tags",
                 availableTags: this.model.all_tags(),
                 autocomplete: {delay: 0, minLength: 0},
-                showAutocompleteOnFocus: false,
+                showAutocompleteOnFocus: true,
                 createTagOnBlur: false,
                 removeConfirmation: true,
                 caseSensitive: false,
@@ -229,7 +229,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         // Reset story content height to get an accurate height measurement.
         $story_content.stop(true, true).css('height', 'auto');
         $story_content.removeData('original_height');
-        
+
         this.resize({change_tag: true});
     },
     

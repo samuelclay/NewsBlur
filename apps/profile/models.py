@@ -28,6 +28,7 @@ from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful
 from vendor.paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
+from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
 from zebra.signals import zebra_webhook_charge_succeeded
 
@@ -87,10 +88,15 @@ class Profile(models.Model):
         except DatabaseError:
             print " ---> Profile not saved. Table isn't there yet."
     
-    def delete_user(self, confirm=False):
+    def delete_user(self, confirm=False, fast=False):
         if not confirm:
             print " ---> You must pass confirm=True to delete this user."
             return
+        
+        try:
+            self.cancel_premium()
+        except:
+            logging.user(self.user, "~BR~SK~FWError cancelling premium renewal for: %s" % self.user.username)
         
         from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
         from apps.social.models import MActivity, MInteraction
@@ -113,8 +119,9 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting %s shared stories" % shared_stories.count())
         for story in shared_stories:
             try:
-                original_story = MStory.objects.get(story_hash=story.story_hash)
-                original_story.sync_redis()
+                if not fast:
+                    original_story = MStory.objects.get(story_hash=story.story_hash)
+                    original_story.sync_redis()
             except MStory.DoesNotExist:
                 pass
             story.delete()
@@ -145,6 +152,14 @@ class Profile(models.Model):
         
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
+    
+    def check_if_spammer(self):
+        feed_opens = UserSubscription.objects.filter(user=self.user)\
+                     .aggregate(sum=Sum('feed_opens'))['sum']
+        feed_count = UserSubscription.objects.filter(user=self.user).count()
+        
+        if not feed_opens and not feed_count:
+            return True
         
     def activate_premium(self):
         from apps.profile.tasks import EmailNewPremium
@@ -202,7 +217,7 @@ class Profile(models.Model):
         self.user.save()
         self.send_new_user_queue_email()
         
-    def setup_premium_history(self):
+    def setup_premium_history(self, alt_email=None):
         existing_history = PaymentHistory.objects.filter(user=self.user)
         if existing_history.count():
             print " ---> Deleting existing history: %s payments" % existing_history.count()
@@ -214,6 +229,13 @@ class Profile(models.Model):
         if not paypal_payments.count():
             paypal_payments = PayPalIPN.objects.filter(payer_email=self.user.email,
                                                        txn_type='subscr_payment')
+        if alt_email and not paypal_payments.count():
+            paypal_payments = PayPalIPN.objects.filter(payer_email=alt_email,
+                                                       txn_type='subscr_payment')
+            if paypal_payments.count():
+                # Make sure this doesn't happen again, so let's use Paypal's email.
+                self.user.email = alt_email
+                self.user.save()
         for payment in paypal_payments:
             PaymentHistory.objects.create(user=self.user,
                                           payment_date=payment.payment_date,
@@ -283,7 +305,8 @@ class Profile(models.Model):
             }
             paypal = PayPalInterface(**paypal_opts)
             transaction = PayPalIPN.objects.filter(custom=self.user.username,
-                                                   txn_type='subscr_payment')[0]
+                                                   txn_type='subscr_payment'
+                                                   ).order_by('-payment_date')[0]
             refund = paypal.refund_transaction(transaction.txn_id)
             try:
                 refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
@@ -314,9 +337,12 @@ class Profile(models.Model):
         paypal = PayPalInterface(**paypal_opts)
         transaction = transactions[0]
         profileid = transaction.subscr_id
-        paypal.manage_recurring_payments_profile_status(profileid=profileid, action='Cancel')
-        
-        logging.user(self.user, "~FRCanceling Paypal subscription")
+        try:
+            paypal.manage_recurring_payments_profile_status(profileid=profileid, action='Cancel')
+        except PayPalAPIResponseError:
+            logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription")
+        else:
+            logging.user(self.user, "~FRCanceling Paypal subscription")
         
         return True
         
@@ -367,7 +393,7 @@ class Profile(models.Model):
     def import_reader_starred_items(self, count=20):
         importer = GoogleReaderImporter(self.user)
         importer.import_starred_items(count=count)
-        
+                     
     def send_new_user_email(self):
         if not self.user.email or not self.send_emails:
             return
@@ -603,7 +629,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                                 email_type='premium_expire_grace')
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
-            if email.date_sent > day_ago:
+            if email.date_sent > day_ago and not force:
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return
         
@@ -635,7 +661,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                                 email_type='premium_expire')
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
-            if email.date_sent > day_ago:
+            if email.date_sent > day_ago and not force:
                 logging.user(self.user, "~FM~SBNot sending premium expire email, already sent before.")
                 return
         
@@ -816,7 +842,12 @@ class RNewUserQueue:
             return
         
         user_id = cls.pop_user()
-        user = User.objects.get(pk=user_id)
+        try:
+            user = User.objects.get(pk=user_id)
+        except user.DoesNotExist:
+            logging.debug("~FRCan't activate free account, can't find user ~SB%s~SN. ~FB%s still in queue." % (user_id, count-1))
+            return
+            
         logging.user(user, "~FBActivating free account. %s still in queue." % (count-1))
 
         user.profile.activate_free()

@@ -4,13 +4,15 @@ from django.db import connection
 from redis.connection import Connection
 from time import time
 
-class RedisDumpMiddleware(object):
-    def __init__(self):
-        if not settings.DEBUG:
-            raise MiddlewareNotUsed()
-
+class RedisDumpMiddleware(object):    
+    def activated(self, request):
+        return (settings.DEBUG_QUERIES or 
+                (hasattr(request, 'activated_segments') and
+                 'db_profiler' in request.activated_segments))
+    
     def process_view(self, request, callback, callback_args, callback_kwargs):
-        if settings.DEBUG and not getattr(Connection, '_logging', False):
+        if not self.activated(request): return
+        if not getattr(Connection, '_logging', False):
             # save old methods
             setattr(Connection, '_logging', True)
             # self.orig_pack_command = \
@@ -18,7 +20,6 @@ class RedisDumpMiddleware(object):
             # instrument methods to record messages
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
-        return None
 
     def process_response(self, request, response):
         # if settings.DEBUG and hasattr(self, 'orig_pack_command'):

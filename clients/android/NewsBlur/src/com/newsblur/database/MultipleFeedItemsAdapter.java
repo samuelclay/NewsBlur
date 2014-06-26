@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,12 +16,14 @@ import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Story;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ThemeUtils;
 
 public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
 	private Cursor cursor;
 	private ImageLoader imageLoader;
-	private int storyTitleUnread, storyAuthorUnread, storyTitleRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
+	private int storyTitleUnread, storyContentUnread, storyAuthorUnread, storyTitleRead, storyContentRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
     private boolean ignoreReadStatus;
 
 	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags, boolean ignoreReadStatus) {
@@ -30,14 +31,16 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;
 
-		storyTitleUnread = context.getResources().getColor(R.color.story_title_unread);
-		storyTitleRead = context.getResources().getColor(R.color.story_title_read);
-		storyAuthorUnread = context.getResources().getColor(R.color.story_author_unread);
-		storyAuthorRead = context.getResources().getColor(R.color.story_author_read);
-		storyDateUnread = context.getResources().getColor(R.color.story_date_unread);
-		storyDateRead = context.getResources().getColor(R.color.story_date_read);
-		storyFeedUnread = context.getResources().getColor(R.color.story_feed_unread);
-		storyFeedRead = context.getResources().getColor(R.color.story_feed_read);
+        storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
+        storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
+        storyContentUnread = ThemeUtils.getStoryContentUnreadColor(context);
+        storyContentRead = ThemeUtils.getStoryContentReadColor(context);
+        storyAuthorUnread = ThemeUtils.getStoryAuthorUnreadColor(context);
+        storyAuthorRead = ThemeUtils.getStoryAuthorReadColor(context);
+        storyDateUnread = ThemeUtils.getStoryDateUnreadColor(context);
+        storyDateRead = ThemeUtils.getStoryDateReadColor(context);
+		storyFeedUnread = ThemeUtils.getStoryFeedUnreadColor(context);
+		storyFeedRead = ThemeUtils.getStoryFeedReadColor(context);
 
         this.ignoreReadStatus = ignoreReadStatus;
 	}
@@ -58,12 +61,12 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 	}
 
 	@Override
-	public View getView(int position, View view, ViewGroup viewGroup) {
-		View v = super.getView(position, view, viewGroup);
+	public void bindView(View v, Context context, Cursor cursor) {
+        super.bindView(v, context, cursor);
+        
 		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
 
-		cursor.moveToPosition(position);
 		String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
         String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
 
@@ -82,7 +85,8 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedUnread);
-			((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
+            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentUnread);
 			
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.BOLD);
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.BOLD);
@@ -96,19 +100,23 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorRead);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateRead);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedRead);
-			((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
+            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentRead);
 			
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.NORMAL);
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.NORMAL);
 			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.NORMAL);
-			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
+            ((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTypeface(null, Typeface.NORMAL);
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setAlpha(125);
 			borderOne.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}
 
-		return v;
+        if (!PrefsUtils.isShowContentPreviews(context)) {
+            v.findViewById(R.id.row_item_content).setVisibility(View.GONE);
+        }
 	}
 	
 	@Override

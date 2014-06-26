@@ -34,7 +34,7 @@
 
 @implementation NBNotifier
 
-@synthesize accessoryView, title = _title, style = _style, view = _view;
+@synthesize accessoryView = _accessoryView, title = _title, style = _style, view = _view;
 @synthesize showing;
 @synthesize progressBar;
 @synthesize offset = _offset;
@@ -105,7 +105,10 @@
         self.progressBar.hidden = YES;
         [self addSubview:self.progressBar];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangedOrientation:) name:UIDeviceOrientationDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(didChangedOrientation:)
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
     }
     
     return self;
@@ -118,23 +121,25 @@
 
 - (void) didChangedOrientation:(NSNotification *)sender {
 //    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+//    NSLog(@"Notifier changed orieintation to: %ld (%@/%@)", (long)orientation, NSStringFromCGRect(self.frame), NSStringFromCGRect(self.view.frame));
     [self setView:self.view];
     self.progressBar.frame = CGRectMake(0, 4, 0, 1);
 }
 
 
-- (void)setAccessoryView:(UIView *)__accessoryView{
-    
-    [[self viewWithTag:1]removeFromSuperview];
-    
+- (void)setAccessoryView:(UIView *)accessoryView{
+    if (_accessoryView) {
+        [_accessoryView removeFromSuperview];
+    }
+    _accessoryView = accessoryView;
     int offset = 0;
     if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
         offset = 1;
     }
-    __accessoryView.tag = 1;
-    [__accessoryView setFrame:CGRectMake((32 - __accessoryView.frame.size.width) / 2 + offset, ((self.frame.size.height -__accessoryView.frame.size.height)/2)+2, __accessoryView.frame.size.width, __accessoryView.frame.size.height)];
+    accessoryView.tag = 1;
+    [accessoryView setFrame:CGRectMake((32 - accessoryView.frame.size.width) / 2 + offset, ((self.frame.size.height -accessoryView.frame.size.height)/2)+2, accessoryView.frame.size.width, accessoryView.frame.size.height)];
     
-    [self addSubview:__accessoryView];
+    [self addSubview:accessoryView];
     if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
         [_txtLabel setFrame:CGRectMake(34, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
     } else {
@@ -147,6 +152,7 @@
 }
 
 - (void)setTitle:(NSString *)title {
+    _title = title;
     [_txtLabel setText:title];
     
     [self setNeedsDisplay];

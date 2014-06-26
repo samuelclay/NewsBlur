@@ -1,11 +1,18 @@
 package com.newsblur.activity;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import android.app.DialogFragment;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Loader;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -13,18 +20,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.network.SearchAsyncTaskLoader;
 import com.newsblur.network.SearchLoaderResponse;
 
-public class SearchForFeeds extends NbFragmentActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
-	private static final int LOADER_TWITTER_SEARCH = 0x01;
+public class SearchForFeeds extends NbActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
+    
+    private static String SUPPORTED_URL_PROTOCOL = "http";
+
 	private ListView resultsList;
 	private Loader<SearchLoaderResponse> searchLoader;
 	private FeedSearchResultAdapter adapter;
@@ -34,7 +39,7 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(arg0);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		setTitle(R.string.title_feed_search);
 		setContentView(R.layout.activity_feed_search);
@@ -44,7 +49,7 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 		resultsList.setEmptyView(emptyView);
 		resultsList.setOnItemClickListener(this);
 		resultsList.setItemsCanFocus(false);
-		searchLoader = getSupportLoaderManager().initLoader(LOADER_TWITTER_SEARCH, new Bundle(), this);
+		searchLoader = getLoaderManager().initLoader(0, new Bundle(), this);
 		
 		onSearchRequested();
 	}
@@ -52,7 +57,7 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.search, menu);
 		return true;
 	}
@@ -66,16 +71,39 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
-			setSupportProgressBarIndeterminateVisibility(true);
+
+            // test to see if a feed URL was passed rather than a search term
+            if (tryAddByURL(query)) { return; }
+
+			setProgressBarIndeterminateVisibility(true);
 			
 			Bundle bundle = new Bundle();
 			bundle.putString(SearchAsyncTaskLoader.SEARCH_TERM, query);
-			searchLoader = getSupportLoaderManager().restartLoader(LOADER_TWITTER_SEARCH, bundle, this);
+			searchLoader = getLoaderManager().restartLoader(0, bundle, this);
 			
 			searchLoader.forceLoad();
 		}
 	}
 
+    /**
+     * See if the text entered in the query field was actually a URL so we can skip the
+     * search step and just let users who know feed URLs directly subscribe.
+     */
+    private boolean tryAddByURL(String s) {
+        URL u = null;
+        try {
+            u = new URL(s);
+        } catch (MalformedURLException mue) {
+            ; // this just signals that the string wasn't a URL, we will return
+        }
+        if (u == null) { return false; }
+        if (!u.getProtocol().equals(SUPPORTED_URL_PROTOCOL)) { return false; };
+        if ((u.getHost() == null) || (u.getHost().trim().isEmpty())) { return false; }
+
+		DialogFragment addFeedFragment = AddFeedFragment.newInstance(s, s);
+		addFeedFragment.show(getFragmentManager(), "dialog");
+        return true;
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -97,7 +125,7 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 
 	@Override
 	public void onLoadFinished(Loader<SearchLoaderResponse> loader, SearchLoaderResponse results) {
-		setSupportProgressBarIndeterminateVisibility(false);
+		setProgressBarIndeterminateVisibility(false);
 		if(!results.hasError()) {
 			adapter = new FeedSearchResultAdapter(this, 0, 0, results.getResults());
 			resultsList.setAdapter(adapter);
@@ -116,7 +144,7 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 	public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
 		FeedResult result = adapter.getItem(position);
 		DialogFragment addFeedFragment = AddFeedFragment.newInstance(result.url, result.label);
-		addFeedFragment.show(getSupportFragmentManager(), "dialog");
+		addFeedFragment.show(getFragmentManager(), "dialog");
 	}
 
 }

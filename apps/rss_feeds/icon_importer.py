@@ -22,7 +22,7 @@ class IconImporter(object):
         self.feed = feed
         self.force = force
         self.page_data = page_data
-        self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
+        self.feed_icon = MFeedIcon.get_feed(feed_id=self.feed.pk)
     
     def save(self):
         if not self.force and self.feed.favicon_not_found:
@@ -39,12 +39,6 @@ class IconImporter(object):
             image, image_file, icon_url = self.fetch_image_from_path(force=self.force)
 
         if image:
-            try:
-                ico_image = self.load_icon(image_file)
-                if ico_image: image = ico_image
-            except ValueError:
-                # print "Bad .ICO"
-                pass
             image     = self.normalize_image(image)
             try:
                 color     = self.determine_dominant_color_in_image(image)
@@ -95,6 +89,8 @@ class IconImporter(object):
         
     def load_icon(self, image_file, index=None):
         '''
+        DEPRECATED
+        
         Load Windows ICO image.
 
         See http://en.wikipedia.org/w/index.php?oldid=264332061 for file format
@@ -165,9 +161,9 @@ class IconImporter(object):
                 # Load AND bitmap
                 image_file.seek(offset)
                 string = image_file.read(size)
-                mask = Image.fromstring('1', image.size, string, 'raw',
-                                        ('1;I', stride, -1))
-
+                mask = Image.frombytes('1', image.size, string, 'raw',
+                                       ('1;I', stride, -1))
+                
                 image = image.convert('RGBA')
                 image.putalpha(mask)
 

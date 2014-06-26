@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_story_background"
+    style="?selectorStoryBackground"
     android:orientation="horizontal" >
 
     <RelativeLayout
@@ -65,11 +65,24 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/row_item_sidebar"
                     android:layout_marginRight="8dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
                     android:maxLines="2"
                     android:ellipsize="end"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
+
+            <TextView
+                    android:id="@+id/row_item_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/row_item_sidebar"
+                    android:layout_below="@+id/row_item_title"
+                    android:layout_marginRight="8dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="4dp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textSize="14sp"/>
 
         </RelativeLayout>
 
@@ -80,8 +93,7 @@
             android:layout_alignParentRight="true"
             android:layout_below="@+id/row_item_title_container"
             android:layout_marginRight="12dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="6dp"
+            android:paddingBottom="4dp"
             android:textColor="@color/darkgray"
             android:textSize="11dp" />
 
@@ -90,8 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/row_item_title_container"
-            android:paddingTop="2dp"
-            android:paddingBottom="6dp"
+            android:paddingBottom="4dp"
             android:layout_toLeftOf="@id/row_item_date"
             android:layout_toRightOf="@id/row_item_favicon_borderbar_2"
             android:layout_marginLeft="22dp"

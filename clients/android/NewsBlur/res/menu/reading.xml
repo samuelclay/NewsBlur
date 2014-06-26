@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/menu_reading_fullscreen"
+        android:icon="@drawable/fullscreen"
+        android:showAsAction="always"
+        android:title="@string/menu_fullscreen"
+        android:visible="false"/>
+    <item
         android:id="@+id/menu_reading_sharenewsblur"
         android:icon="@drawable/newsblur_share"
         android:showAsAction="never"
