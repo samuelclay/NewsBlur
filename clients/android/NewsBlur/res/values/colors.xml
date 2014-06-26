@@ -19,8 +19,8 @@
     <color name="dark_folder_text">#FDFDFD</color>
     <color name="folder_border_top">#FDFDFD</color>
     <color name="folder_border_bottom">#B7BBAA</color>
-    <color name="dark_folder_border_top">#898989</color>
-    <color name="dark_folder_border_bottom">#434343</color>
+    <color name="dark_folder_border_top">#434343</color>
+    <color name="dark_folder_border_bottom">#3B3B3B</color>
     <color name="feed_background">#F7F8F5</color>
     <color name="dark_feed_background">#1A1A1A</color>
     <color name="feed_background_end">#303030</color>
@@ -62,6 +62,7 @@
     <color name="dark_item_header_background_start">#505050</color>
     <color name="dark_item_header_background_end">#303030</color>
     <color name="item_header_border">#C2C5BE</color>
+    <color name="dark_item_header_border">#42453E</color>
     <color name="item_background">#FFF</color>
     <color name="dark_item_background">#1A1A1A</color>
     <color name="share_bar_background">#F5F5EF</color>
