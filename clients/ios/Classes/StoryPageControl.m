@@ -204,8 +204,10 @@
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+            } else if (appDelegate.storiesCollection.isSavedView &&
+                       appDelegate.storiesCollection.activeSavedStoryTag) {
+                titleImage = [UIImage imageNamed:@"tag.png"];
+            } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.storiesCollection.isRiverView) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
@@ -401,6 +403,10 @@
     [currentPage refreshHeader];
     [nextPage refreshHeader];
     [previousPage refreshHeader];
+
+    [currentPage refreshSideoptions];
+    [nextPage refreshSideoptions];
+    [previousPage refreshSideoptions];
 }
 - (void)resizeScrollView {
     NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;
@@ -946,7 +952,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*7-2)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*8-2)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny
                                                        animated:YES];
@@ -963,6 +969,12 @@
     [self.currentPage changeFontSize:fontSize];
     [self.nextPage changeFontSize:fontSize];
     [self.previousPage changeFontSize:fontSize];
+}
+
+- (void)changeLineSpacing:(NSString *)lineSpacing {
+    [self.currentPage changeLineSpacing:lineSpacing];
+    [self.nextPage changeLineSpacing:lineSpacing];
+    [self.previousPage changeLineSpacing:lineSpacing];
 }
 
 #pragma mark -

@@ -18,16 +18,21 @@
 #import "OSKMicrobloggingActivity.h"
 #import "OSKShareableContentItem.h"
 #import "OSKPresentationManager.h"
-#import "OSKTextView.h"
+#import "OSKMicrobloggingTextView.h"
 #import "OSKManagedAccount.h"
 #import "OSKAccountChooserViewController.h"
 #import "UIImage+OSKUtilities.h"
 #import "OSKLinkShorteningUtility.h"
 #import "OSKTwitterText.h"
 
-@interface OSKMicroblogPublishingViewController () <OSKTextViewDelegate, OSKAccountChooserViewControllerDelegate>
+@interface OSKMicroblogPublishingViewController ()
+<
+    OSKUITextViewSubstituteDelegate,
+    OSKMicrobloggingTextViewAttachmentsDelegate,
+    OSKAccountChooserViewControllerDelegate
+>
 
-@property (weak, nonatomic) IBOutlet OSKTextView *textView;
+@property (weak, nonatomic) IBOutlet OSKMicrobloggingTextView *textView;
 
 @property (strong, nonatomic) OSKActivity <OSKMicrobloggingActivity> *activity;
 @property (strong, nonatomic) OSKMicroblogPostContentItem *contentItem;
@@ -96,11 +101,13 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.textView becomeFirstResponder];
+    [self updateDoneButton];
 }
 
 - (void)setupTextView {
-    [self.textView setTextViewDelegate:self];
-    [self.textView setSyntaxHighlighting:[self.activity syntaxHighlightingStyle]];
+    [self.textView setOskDelegate:self];
+    [self.textView setOskAttachmentsDelegate:self];
+    [self.textView setSyntaxHighlighting:[self.activity syntaxHighlighting]];
     [self.textView setText:self.contentItem.text];
     
     [self updateRemainingCharacterCountLabel];
@@ -229,16 +236,22 @@
     [self updateAccountButton];
 }
 
-#pragma mark - OSKTextView Delegate
+#pragma mark - OSKUITextViewSubstituteDelegate
 
-- (void)textViewDidChange:(OSKTextView *)textView {
+- (void)textViewDidChange:(OSKUITextViewSubstitute *)textView {
     [self.contentItem setText:textView.attributedText.string];
     [self updateRemainingCharacterCountLabel];
     [self updateDoneButton];
     [self updateLinkShorteningButton];
 }
 
-- (void)textViewDidTapRemoveAttachment:(OSKTextView *)textView {
+#pragma mark - OSKTextViewAttachmentsDelegate
+
+- (BOOL)textView:(OSKMicrobloggingTextView *)textView shouldAllowAttachmentsToBeEdited:(OSKTextViewAttachment *)attachment {
+    return YES;
+}
+
+- (void)textViewDidTapRemoveAttachment:(OSKMicrobloggingTextView *)textView {
     [textView removeAttachment];
     [self.contentItem setImages:nil];
     [self updateRemainingCharacterCountLabel];
@@ -466,6 +479,11 @@
         OSKManagedAccount *managedAccount = [(OSKActivity <OSKActivity_ManagedAccounts> *)self.activity activeManagedAccount];
         accountName = [managedAccount nonNilDisplayName];
     }
+    
+    if (accountName == nil) {
+        accountName = @"– – –";
+    }
+    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         [self updateAccountButton_Phone:accountName];
     } else {
@@ -474,7 +492,7 @@
 }
 
 - (void)updateAccountButton_Phone:(NSString *)accountName {
-    [self.accountButton setTitle:[NSString stringWithFormat:@"%@", accountName] forState:UIControlStateNormal];
+    [self.accountButton setTitle:accountName forState:UIControlStateNormal];
     CGSize newSize = [self.accountButton sizeThatFits:self.keyboardToolbar.bounds.size];
     CGRect buttonFrame = self.accountButton.frame;
     buttonFrame.size.width = newSize.width;
@@ -505,9 +523,14 @@
 - (void)showSystemAccountChooser {
     OSKSystemAccountStore *store = [OSKSystemAccountStore sharedInstance];
     OSKActivity <OSKActivity_SystemAccounts> *activity = (OSKActivity <OSKActivity_SystemAccounts> *)self.activity;
-    NSArray *accounts = [store accountsForAccountTypeIdentifier:[activity.class systemAccountTypeIdentifier]];
+    NSString *systemAccountTypeIdentifier = [activity.class systemAccountTypeIdentifier];
+    NSArray *accounts = [store accountsForAccountTypeIdentifier:systemAccountTypeIdentifier];
     ACAccount *activeAccount = activity.activeSystemAccount;
-    OSKAccountChooserViewController *chooser = [[OSKAccountChooserViewController alloc] initWithSystemAccounts:accounts activeAccount:activeAccount delegate:self];
+    OSKAccountChooserViewController *chooser = [[OSKAccountChooserViewController alloc]
+                                                initWithSystemAccounts:accounts
+                                                activeAccount:activeAccount
+                                                accountTypeIdentifier:systemAccountTypeIdentifier
+                                                delegate:self];
     [self.navigationController pushViewController:chooser animated:YES];
 }
 

@@ -44,7 +44,9 @@
     }
     activeUrl = nil;
     titleView.alpha = 1.0;
-    [self.webView loadHTMLString:@"" baseURL:nil];
+    if (![appDelegate.navigationController.viewControllers containsObject:self]) {
+        [self.webView loadHTMLString:@"" baseURL:nil];
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

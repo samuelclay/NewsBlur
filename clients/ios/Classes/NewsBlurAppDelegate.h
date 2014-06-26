@@ -213,6 +213,7 @@
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
+@property (nonatomic) NSDictionary *dictSavedStoryTags;
 @property (nonatomic) NSDictionary *dictSocialProfile;
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
@@ -283,6 +284,7 @@
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
+- (BOOL)isSavedFeed:(NSString *)feedIdStr;
 - (BOOL)isPortrait;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
@@ -296,8 +298,6 @@
 - (NSInteger)unreadCountForFolder:(NSString *)folderName;
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
-- (void)markActiveStoryRead;
-- (void)markActiveStoryUnread;
 - (NSDictionary *)markVisibleStoriesRead;
 
 - (void)markActiveFolderAllRead;
@@ -328,6 +328,7 @@
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;

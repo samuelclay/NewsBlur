@@ -30,3 +30,9 @@
 - (void)clearCookiesForBaseURLs:(NSArray *)baseURLstrings;
 
 @end
+
+@interface OSKWebViewController (OnePasswordOptions)
+
++ (NSString *)queryForOnePasswordSearch;
+
+@end

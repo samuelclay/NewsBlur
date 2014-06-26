@@ -9,10 +9,14 @@
 #import "OSKSystemAccountStore.h"
 #import <Accounts/Accounts.h>
 #import "OSKLogger.h"
+#import "OSKFileManager.h"
+
+static NSString * OSKSystemAccountStoreSavedActiveAccountIDsKey = @"OSKSystemAccountStoreSavedActiveAccountIDsKey";
 
 @interface OSKSystemAccountStore ()
 
 @property (nonatomic, strong) ACAccountStore *accountStore;
+@property (strong, nonatomic) NSMutableDictionary *lastUsedAccountIDsByAccountType;
 
 @end
 
@@ -29,6 +33,7 @@
     self = [super init];
     if (self) {
         self.accountStore = [[ACAccountStore alloc] init];
+        [self _loadSavedActiveAccountIDs];
     }
     return self;
 }
@@ -67,6 +72,31 @@
             completion(theRenewResult, theError);
         }
     }];
+}
+
+#pragma mark - Active Accounts
+
+- (NSString *)lastUsedAccountIdentifierForType:(NSString *)accountTypeIdentifier {
+    NSParameterAssert(accountTypeIdentifier);
+    return self.lastUsedAccountIDsByAccountType[accountTypeIdentifier];
+}
+
+- (void)setLastUsedAccountIdentifier:(NSString *)identifier forType:(NSString *)accountTypeIdentifier {
+    NSParameterAssert(identifier);
+    NSParameterAssert(accountTypeIdentifier);
+    [self.lastUsedAccountIDsByAccountType setObject:identifier forKey:accountTypeIdentifier];
+    [[OSKFileManager sharedInstance] saveObject:self.lastUsedAccountIDsByAccountType
+                                         forKey:OSKSystemAccountStoreSavedActiveAccountIDsKey
+                                     completion:nil
+                                completionQueue:nil];
+}
+
+- (void)_loadSavedActiveAccountIDs {
+    NSDictionary *savedDictionary = (NSDictionary *)[[OSKFileManager sharedInstance] loadSavedObjectForKey:OSKSystemAccountStoreSavedActiveAccountIDsKey];
+    _lastUsedAccountIDsByAccountType = [[NSMutableDictionary alloc] init];
+    if (savedDictionary) {
+        [_lastUsedAccountIDsByAccountType addEntriesFromDictionary:savedDictionary];
+    }
 }
 
 @end

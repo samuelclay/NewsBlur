@@ -166,10 +166,15 @@ NSString * const OSKTwitterImageSizeLimitKey = @"photo_size_limit";
                 
             }
             else
-            {                
-                OSKLog(@"[OSKTwitterUtility] Error received when trying to create a new tweet. Server responded with status code %li and response: %@",
-                       (long)statusCode,
-                       responseData);
+            {
+//                NSString *responseString = nil;
+//                if (responseData) {
+//                    responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+//                }
+//                
+//                OSKLog(@"[OSKTwitterUtility] Error received when trying to create a new tweet. Server responded with status code %li and response: %@",
+//                       (long)statusCode,
+//                       responseString);
                 
                 NSError *error = [NSError errorWithDomain:@"com.secondgear.PhotosPlus.Errors" code:statusCode userInfo:nil];
                 dispatch_async(dispatch_get_main_queue(), ^{

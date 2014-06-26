@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pkill -9 -f gunicorn -e
+pkill -9 -f gunicorn
 
 # for i in `ps -o pid,command ax | grep gunicorn | awk '!/awk/ && !/grep/ {print $1}'`
 # do

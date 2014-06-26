@@ -64,7 +64,7 @@
 }
 
 - (BOOL)isReadyToPerform {
-    return [(OSKEmailContentItem *)self.contentItem body].length > 0;
+    return [(OSKEmailContentItem *)self.contentItem body].length > 0 || [(OSKEmailContentItem *)self.contentItem attachments].count;
 }
 
 - (void)performActivity:(OSKActivityCompletionHandler)completion {

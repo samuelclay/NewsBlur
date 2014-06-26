@@ -8,10 +8,10 @@
 
 #import "OSKActivity.h"
 
-#import "OSKMicrobloggingActivity.h"
+#import "OSKFacebookSharing.h"
 #import "OSKActivity_SystemAccounts.h"
 
-@interface OSKFacebookActivity : OSKActivity <OSKMicrobloggingActivity, OSKActivity_SystemAccounts>
+@interface OSKFacebookActivity : OSKActivity <OSKFacebookSharing, OSKActivity_SystemAccounts>
 
 // Defaults to ACFacebookAudienceEveryone. See ACAccountType.h for all options.
 @property (copy, nonatomic) NSString *currentAudience;

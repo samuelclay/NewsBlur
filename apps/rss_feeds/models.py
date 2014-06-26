@@ -441,13 +441,18 @@ class Feed(models.Model):
             UpdateFeeds.apply_async(args=(feed_id,), queue='update_feeds')
     
     @classmethod
-    def drain_task_feeds(cls, empty=False):
+    def drain_task_feeds(cls):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        if not empty:
-            tasked_feeds = r.zrange('tasked_feeds', 0, -1)
-            logging.debug(" ---> ~FRDraining %s feeds..." % len(tasked_feeds))
-            r.sadd('queued_feeds', *tasked_feeds)
+
+        tasked_feeds = r.zrange('tasked_feeds', 0, -1)
+        logging.debug(" ---> ~FRDraining %s tasked feeds..." % len(tasked_feeds))
+        r.sadd('queued_feeds', *tasked_feeds)
         r.zremrangebyrank('tasked_feeds', 0, -1)
+
+        errored_feeds = r.zrange('error_feeds', 0, -1)
+        logging.debug(" ---> ~FRDraining %s errored feeds..." % len(errored_feeds))
+        r.sadd('queued_feeds', *errored_feeds)
+        r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
@@ -881,6 +886,7 @@ class Feed(models.Model):
             'mongodb_replication_lag': kwargs.get('mongodb_replication_lag', None),
             'fake': kwargs.get('fake'),
             'quick': kwargs.get('quick'),
+            'updates_off': kwargs.get('updates_off'),
             'debug': kwargs.get('debug'),
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
@@ -931,7 +937,7 @@ class Feed(models.Model):
         else:
             return [Feed.get_by_id(f) for f in feed_ids][:limit]
         
-    def add_update_stories(self, stories, existing_stories, verbose=False):
+    def add_update_stories(self, stories, existing_stories, verbose=False, updates_off=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
         new_story_hashes = [s.get('story_hash') for s in stories]
@@ -991,7 +997,7 @@ class Feed(models.Model):
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
                 if self.search_indexed:
                     s.index_story_for_search()
-            elif existing_story and story_has_changed:
+            elif existing_story and story_has_changed and not updates_off and ret_values['updated'] < 3:
                 # update story
                 original_content = None
                 try:
@@ -1506,7 +1512,7 @@ class Feed(models.Model):
         
         self.min_to_decay = total
         delta = self.next_scheduled_update - datetime.datetime.now()
-        minutes_to_next_fetch = delta.total_seconds() / 60
+        minutes_to_next_fetch = (delta.seconds + (delta.days * 24 * 3600)) / 60
         if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
             self.next_scheduled_update = next_scheduled_update
             if self.active_subscribers >= 1:
@@ -1623,6 +1629,19 @@ class MFeedIcon(mongo.Document):
         'allow_inheritance' : False,
     }
     
+    @classmethod
+    def get_feed(cls, feed_id, create=True):
+        try:
+            feed_icon = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)\
+                                   .get(feed_id=feed_id)
+        except cls.DoesNotExist:
+            if create:
+                feed_icon = cls.objects.create(feed_id=feed_id)
+            else:
+                feed_icon = None
+        
+        return feed_icon
+            
     def save(self, *args, **kwargs):
         if self.icon_url:
             self.icon_url = unicode(self.icon_url)
@@ -2170,9 +2189,10 @@ class MStarredStory(mongo.Document):
         
 class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
-    tag = mongo.StringField(max_length=128, unique_with=['user_id'])
+    tag = mongo.StringField(max_length=128)
+    feed_id = mongo.IntField()
     slug = mongo.StringField(max_length=128)
-    count = mongo.IntField()
+    count = mongo.IntField(default=0)
 
     meta = {
         'collection': 'starred_stories_counts',
@@ -2183,52 +2203,117 @@ class MStarredStoryCounts(mongo.Document):
 
     @property
     def rss_url(self, secret_token=None):
+        if self.feed_id:
+            return
+        
         if not secret_token:
             user = User.objects.select_related('profile').get(pk=self.user_id)
             secret_token = user.profile.secret_token
-
+        
+        slug = self.slug if self.slug else ""
         return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
-                                                   secret_token, self.slug)
+                                                   secret_token, slug)
     
     @classmethod
     def user_counts(cls, user_id, include_total=False, try_counting=True):
         counts = cls.objects.filter(user_id=user_id)
-        counts = [{'tag': c.tag, 'count': c.count, 'feed_address': c.rss_url} for c in counts]
+        counts = sorted([{'tag': c.tag, 
+                          'count': c.count, 
+                          'feed_address': c.rss_url, 
+                          'feed_id': c.feed_id} 
+                         for c in counts],
+                        key=lambda x: (x.get('tag', '') or '').lower())
         
-        if counts == [] and try_counting:
-            cls.count_tags_for_user(user_id)
+        total = 0
+        feed_total = 0
+        for c in counts:
+            if not c['tag'] and not c['feed_id']:
+                total = c['count']
+            if c['feed_id']:
+                feed_total += c['count']
+        
+        if try_counting and (total != feed_total or not len(counts)):
+            user = User.objects.get(pk=user_id)
+            logging.user(user, "~FC~SBCounting~SN saved stories (%s total vs. %s counted)..." % 
+                                (total, feed_total))
+            cls.count_for_user(user_id)
             return cls.user_counts(user_id, include_total=include_total,
                                    try_counting=False)
         
         if include_total:
-            for c in counts:
-                if c['tag'] == "":
-                    return counts, c['count']
-            return counts, 0
-        
+            return counts, total
         return counts
     
     @classmethod
     def schedule_count_tags_for_user(cls, user_id):
         ScheduleCountTagsForUser.apply_async(kwargs=dict(user_id=user_id))
+    
+    @classmethod
+    def count_for_user(cls, user_id, total_only=False):
+        user_tags = []
+        user_feeds = []
         
+        if not total_only:
+            cls.objects(user_id=user_id).delete()
+            user_tags = cls.count_tags_for_user(user_id)
+            user_feeds = cls.count_feeds_for_user(user_id)
+
+        total_stories_count = MStarredStory.objects(user_id=user_id).count()
+        cls.objects(user_id=user_id, tag=None, feed_id=None).update_one(set__count=total_stories_count,
+                                                                        upsert=True)
+
+        return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds)
+
     @classmethod
     def count_tags_for_user(cls, user_id):
         all_tags = MStarredStory.objects(user_id=user_id,
                                          user_tags__exists=True).item_frequencies('user_tags')
         user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0 and k], 
-                           key=itemgetter(1), 
+                           key=lambda x: x[0].lower(), 
                            reverse=True)
                            
-        cls.objects(user_id=user_id).delete()
         for tag, count in dict(user_tags).items():
-            cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
-        
-        total_stories_count = MStarredStory.objects(user_id=user_id).count()
-        cls.objects.create(user_id=user_id, tag="", count=total_stories_count)
-        
-        return dict(total=total_stories_count, tags=user_tags)
+            cls.objects(user_id=user_id, tag=tag, slug=slugify(tag)).update_one(set__count=count,
+                                                                                upsert=True)
     
+        return user_tags
+    
+    @classmethod
+    def count_feeds_for_user(cls, user_id):
+        all_feeds = MStarredStory.objects(user_id=user_id).item_frequencies('story_feed_id')
+        user_feeds = dict([(k, v) for k, v in all_feeds.items() if v])
+        
+        # Clean up None'd and 0'd feed_ids, so they can be counted against the total
+        if user_feeds.get(None, False):
+            user_feeds[0] = user_feeds.get(0, 0)
+            user_feeds[0] += user_feeds.get(None)
+            del user_feeds[None]
+        if user_feeds.get(0, False):
+            user_feeds[-1] = user_feeds.get(0, 0)
+            del user_feeds[0]
+
+        for feed_id, count in user_feeds.items():
+            cls.objects(user_id=user_id, 
+                        feed_id=feed_id, 
+                        slug="feed:%s" % feed_id).update_one(set__count=count, 
+                                                             upsert=True)
+        
+        return user_feeds
+    
+    @classmethod
+    def adjust_count(cls, user_id, feed_id=None, tag=None, amount=0):
+        params = dict(user_id=user_id)
+        if feed_id:
+            params['feed_id'] = feed_id
+        if tag:
+            params['tag'] = tag
+
+        cls.objects(**params).update_one(inc__count=amount, upsert=True)
+        story_count = cls.objects.get(**params)
+        if story_count.count <= 0:
+            story_count.delete()
+
+
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()

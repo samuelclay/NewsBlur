@@ -9,11 +9,11 @@
 @import Foundation;
 @import Accounts;
 
-@class OSKMicroblogPostContentItem;
+@class OSKFacebookContentItem;
 
 @interface OSKFacebookUtility : NSObject
 
-+ (void)postContentItem:(OSKMicroblogPostContentItem *)item
++ (void)postContentItem:(OSKFacebookContentItem *)item
         toSystemAccount:(ACAccount *)account
                 options:(NSDictionary *)options /* At this time, just ACFacebookAudienceKey */
              completion:(void(^)(BOOL success, NSError *error))completion;

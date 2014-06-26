@@ -66,7 +66,7 @@
                     android:layout_toRightOf="@+id/row_item_sidebar"
                     android:layout_marginRight="8dp"
                     android:paddingTop="4dp"
-                    android:paddingBottom="2dp"
+                    android:paddingBottom="4dp"
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:textSize="14sp"/>
@@ -78,7 +78,7 @@
                     android:layout_toRightOf="@+id/row_item_sidebar"
                     android:layout_below="@+id/row_item_title"
                     android:layout_marginRight="8dp"
-                    android:paddingTop="2dp"
+                    android:paddingTop="0dp"
                     android:paddingBottom="4dp"
                     android:maxLines="2"
                     android:ellipsize="end"

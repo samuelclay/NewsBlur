@@ -11,6 +11,7 @@
 #import "OSKShareableContentItem.h"
 #import "OSKPinboardUtility.h"
 #import "OSKManagedAccount.h"
+#import "OSKManagedAccountCredential.h"
 
 @implementation OSKPinboardActivity
 
@@ -88,7 +89,9 @@
 }
 
 - (BOOL)isReadyToPerform {
-    return ([self linkBookmarkItem].url != nil);
+    return ([self linkBookmarkItem].url.absoluteString.length > 0
+            && self.activeManagedAccount.credential.accountID != nil
+            && self.activeManagedAccount.credential.token != nil);
 }
 
 - (void)performActivity:(OSKActivityCompletionHandler)completion {

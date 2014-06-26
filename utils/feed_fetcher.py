@@ -243,7 +243,8 @@ class ProcessFeed:
         ))
         
         ret_values = self.feed.add_update_stories(stories, existing_stories,
-                                                  verbose=self.options['verbose'])
+                                                  verbose=self.options['verbose'],
+                                                  updates_off=self.options['updates_off'])
 
         if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):

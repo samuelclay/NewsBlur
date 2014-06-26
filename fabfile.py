@@ -1,4 +1,4 @@
-from fabric.api import cd, env, local, parallel, serial
+from fabric.api import cd, lcd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo
 from fabric.operations import prompt
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
@@ -252,6 +252,7 @@ def setup_db(engine=None, skip_common=False):
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
+        setup_mongo_mms()
     elif engine == "redis":
         setup_redis()
     elif engine == "redis_slave":
@@ -293,7 +294,7 @@ def setup_task_image():
 
 def done():
     print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n     %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
+    print "\n\n              %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
     print "\n\n-----------------------------------------------------\n\n\n\n"
 
 def setup_installs():
@@ -313,6 +314,7 @@ def setup_installs():
         'libncurses5-dev',
         'libdbd-pg-perl',
         'libssl-dev',
+        'libffi-dev',
         'make',
         'pgbouncer',
         'python-setuptools',
@@ -596,7 +598,7 @@ def setup_nginx():
         run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
         run('rm nginx-%s.tar.gz' % NGINX_VERSION)
         with cd('nginx-%s' % NGINX_VERSION):
-            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
+            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module ')
             run('make')
             sudo('make install')
     config_nginx()
@@ -674,6 +676,11 @@ def copy_app_settings():
         '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
+def assemble_certificates():
+    with lcd(os.path.join(env.SECRETS_PATH, 'certificates/comodo')):
+        local('pwd')
+        local('cat STAR_newsblur_com.crt EssentialSSLCA_2.crt ComodoUTNSGCCA.crt UTNAddTrustSGCCA.crt AddTrustExternalCARoot.crt > newsblur.com.crt')
+        
 def copy_certificates():
     cert_path = '%s/config/certificates/' % env.NEWSBLUR_PATH
     run('mkdir -p %s' % cert_path)
@@ -738,20 +745,23 @@ def upgrade_django():
         sudo('easy_install -U django gunicorn')
         pull()
         sudo('supervisorctl reload')
+
 def upgrade_pil():
     with cd(env.NEWSBLUR_PATH):
-        sudo('easy_install pillow')
-        # celery_stop()
         pull()
+        sudo('pip install --upgrade pillow')
+        # celery_stop()
         sudo('apt-get remove -y python-imaging')
-        kill()
+        sudo('supervisorctl reload')
+        # kill()
 
 def downgrade_pil():
     with cd(env.NEWSBLUR_PATH):
         sudo('apt-get install -y python-imaging')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
         pull()
-        kill()
+        sudo('supervisorctl reload')
+        # kill()
 
 # ==============
 # = Setup - DB =
@@ -879,13 +889,19 @@ def setup_mongo_mongos():
 
 def setup_mongo_mms():
     pull()
-    put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_settings.py'),
-        '%s/vendor/mms-agent/settings.py' % env.NEWSBLUR_PATH)
-    with cd(env.NEWSBLUR_PATH):
-        put('config/supervisor_mongomms.conf', '/etc/supervisor/conf.d/mongomms.conf', use_sudo=True)
+    sudo('rm -f /etc/supervisor/conf.d/mongomms.conf')
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
-
+    with cd(env.VENDOR_PATH):
+        sudo('apt-get remove -y mongodb-mms-monitoring-agent')
+        run('curl -OL https://mms.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        sudo('dpkg -i mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        run('rm mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_config.txt'),
+            'mongo_mms_config.txt')
+        sudo("echo \"\n\" >> /etc/mongodb-mms/monitoring-agent.config")
+        sudo('cat mongo_mms_config.txt >> /etc/mongodb-mms/monitoring-agent.config')
+        sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
     redis_version = '2.6.16'
@@ -1031,6 +1047,10 @@ def enable_celery_supervisor(queue=None):
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
+@parallel
+def copy_db_settings():
+    return copy_task_settings()
+    
 @parallel
 def copy_task_settings():
     server_hostname = run('hostname')

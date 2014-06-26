@@ -21,6 +21,7 @@
     int _negativeCount;
     NSString *_negativeCountStr;
     BOOL isSocial;
+    BOOL isSaved;
     UIView *cellContent;
     UnreadCountView *unreadCount;
 }
@@ -32,6 +33,7 @@
 @property (assign, nonatomic) int neutralCount;
 @property (assign, nonatomic) int negativeCount;
 @property (assign, nonatomic) BOOL isSocial;
+@property (assign, nonatomic) BOOL isSaved;
 @property (nonatomic) NSString *negativeCountStr;
 @property (nonatomic) UnreadCountView *unreadCount;
 

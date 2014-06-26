@@ -1,7 +1,7 @@
 {% extends "mail/email_base.xhtml" %}
 
 {% block body %}
-    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">您分享的文章现在在你的 Zeitblog 上</p>
+    <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">您分享的文章现在在你的 Zeitblog 上</p>
     <p style="line-height: 20px;">您可以查看你的 Zeitblog：{{ blurblog_url }}</p>
     <p style="line-height: 20px;">您也可以通过 RSS feed 访问你的 Zeitblog：{{ blurblog_rss }}</p>
     <p style="line-height: 20px;">{% if shared_stories > 1 %}您已经分享了 {{ shared_stories }} 篇文章，但是有可能不知道你分享的文章会出现在你的 Zeitblog 上。{% else %}这是您第一次在 NewsZeit 上分享文章，所有你分享的文章都将出现在你的 Zeitblog上。{% endif %}</p>

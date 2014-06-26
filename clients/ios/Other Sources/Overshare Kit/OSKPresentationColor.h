@@ -29,6 +29,7 @@
 - (UIColor *)osk_color_separators;
 - (UIColor *)osk_color_action;
 - (UIColor *)osk_color_text;
+- (UIColor *)osk_color_textViewBackground;
 - (UIColor *)osk_color_pageIndicatorColor_current;
 - (UIColor *)osk_color_pageIndicatorColor_other;
 - (UIColor *)osk_color_cancelButtonColor_BackgroundHighlighted;

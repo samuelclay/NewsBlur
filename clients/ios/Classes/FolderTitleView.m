@@ -47,7 +47,17 @@
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     int countWidth = 0;
     
-    if (isFolderCollapsed) {
+    if ([folderName isEqual:@"saved_stories"]) {
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
+        unreadCount.appDelegate = appDelegate;
+        unreadCount.opaque = NO;
+        unreadCount.psCount = appDelegate.savedStoriesCount;
+        unreadCount.blueCount = appDelegate.savedStoriesCount;
+        
+        [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
+        countWidth = [unreadCount offsetWidth];
+        [self addSubview:unreadCount];
+    } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
         unreadCount.appDelegate = appDelegate;
@@ -58,18 +68,7 @@
         [unreadCount calculateOffsets:counts.ps nt:counts.nt];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
-    } else if ([folderName isEqual:@"saved_stories"]) {
-        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
-        unreadCount.appDelegate = appDelegate;
-        unreadCount.opaque = NO;
-        unreadCount.psCount = appDelegate.savedStoriesCount;
-        unreadCount.blueCount = appDelegate.savedStoriesCount;
-        
-        [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
-        countWidth = [unreadCount offsetWidth];
-        [self addSubview:unreadCount];
     }
-    
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
@@ -172,7 +171,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 3, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2 && ![folderName isEqual:@"saved_stories"]) {
+        if (section != 0 && section != 2) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];

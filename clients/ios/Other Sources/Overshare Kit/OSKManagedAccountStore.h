@@ -64,8 +64,20 @@
  */
 - (void)removeAccount:(OSKManagedAccount *)account forActivityType:(NSString *)activityType;
 
+/**
+ Returns the most recent active account for a given activity type;
+ 
+ @param activityType An OSK activity type.
+ */
 - (OSKManagedAccount *)activeAccountForActivityType:(NSString *)activityType;
 
+/**
+ Registers an account as the the current active account for a given activity type.
+ 
+ @param account The account to be registered.
+ 
+ @param activityType An OSK activity type.
+ */
 - (void)setActiveAccount:(OSKManagedAccount *)account forActivityType:(NSString *)activityType;
 
 @end

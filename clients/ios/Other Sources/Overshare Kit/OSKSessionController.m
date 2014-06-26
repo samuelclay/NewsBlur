@@ -103,10 +103,21 @@
     }
     else {
         OSKSystemAccountStore *accountStore = [OSKSystemAccountStore sharedInstance];
-        NSArray *existingAccounts = [accountStore accountsForAccountTypeIdentifier:[theActivity.class systemAccountTypeIdentifier]];
+        NSString *systemAccountTypeIdentifier = [theActivity.class systemAccountTypeIdentifier];
+        NSArray *existingAccounts = [accountStore accountsForAccountTypeIdentifier:systemAccountTypeIdentifier];
+        NSString *lastUsedAccountID = [accountStore lastUsedAccountIdentifierForType:systemAccountTypeIdentifier];
 
         if (existingAccounts.count > 0) {
-            ACAccount *account = [existingAccounts firstObject];
+            ACAccount *account = nil;
+            for (ACAccount *anAccount in existingAccounts) {
+                if ([anAccount.identifier isEqualToString:lastUsedAccountID]) {
+                    account = anAccount;
+                    break;
+                }
+            }
+            if (account == nil) {
+                account = [existingAccounts firstObject];
+            }
             [theActivity setActiveSystemAccount:account];
             [self handlePublishingStepForActivity:activity];
         }
@@ -162,7 +173,17 @@
                else {
                    NSArray *systemAccounts = [accountStore accountsForAccountTypeIdentifier:systemAccountTypeIdentifier];
                    if (systemAccounts.count > 0) {
-                       ACAccount *account = [systemAccounts firstObject];
+                       ACAccount *account = nil;
+                       NSString *lastUsedAccountID = [accountStore lastUsedAccountIdentifierForType:systemAccountTypeIdentifier];
+                       for (ACAccount *anAccount in systemAccounts) {
+                           if ([anAccount.identifier isEqualToString:lastUsedAccountID]) {
+                               account = anAccount;
+                               break;
+                           }
+                       }
+                       if (account == nil) {
+                           account = [systemAccounts firstObject];
+                       }
                        [activity setActiveSystemAccount:account];
                        [weakSelf handlePublishingStepForActivity:activity];
                    }

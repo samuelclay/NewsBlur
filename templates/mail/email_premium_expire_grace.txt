@@ -6,8 +6,6 @@
 
 你的付费帐户今天已经到期，但我们会给你一个月时间的宽限，在这期间您可以继续使用 NewsZeit 的高级功能。
 
-Here are some easy ways to have a great time on NewsBlur:
-
     * 续费仅需 50 元每年： http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
 
 花一点时间再试试 NewsZeit，希望你能够喜欢。{% endblock body %}

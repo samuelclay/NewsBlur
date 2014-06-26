@@ -32,6 +32,7 @@
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (readwrite) NSDictionary * activeFeed;
+@property (nonatomic) NSString * activeSavedStoryTag;
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSArray * activeFolderFeeds;
 @property (readwrite) NSArray * activeFeedStories;
@@ -49,6 +50,7 @@
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
+@property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
 
 - (id)initForDashboard;

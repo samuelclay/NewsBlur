@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
@@ -61,10 +62,6 @@ class UserSubscription(models.Model):
         feed['subscribed'] = True
         if classifiers:
             feed['classifiers'] = classifiers
-        if not self.active and self.user.profile.is_premium:
-            feed['active'] = True
-            self.active = True
-            self.save()
 
         return feed
             
@@ -72,8 +69,6 @@ class UserSubscription(models.Model):
         user_title_max = self._meta.get_field('user_title').max_length
         if self.user_title and len(self.user_title) > user_title_max:
             self.user_title = self.user_title[:user_title_max]
-        if not self.active and self.user.profile.is_premium:
-            self.active = True
         try:
             super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:
@@ -105,10 +100,14 @@ class UserSubscription(models.Model):
         
     @classmethod
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
-                     include_timestamps=False, group_by_feed=True, cutoff_date=None):
+                     include_timestamps=False, group_by_feed=True, cutoff_date=None,
+                     across_all_feeds=True):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         story_hashes = {} if group_by_feed else []
+        
+        if not feed_ids and not across_all_feeds:
+            return story_hashes
         
         if not usersubs:
             usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
@@ -257,13 +256,15 @@ class UserSubscription(models.Model):
                      order='newest', read_filter='all', usersubs=None, cutoff_date=None,
                      all_feed_ids=None):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
+        across_all_feeds = False
         
         if order == 'oldest':
             range_func = rt.zrange
         else:
             range_func = rt.zrevrange
         
-        if not feed_ids:
+        if feed_ids is None:
+            across_all_feeds = True
             feed_ids = []
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
@@ -290,7 +291,8 @@ class UserSubscription(models.Model):
                                         include_timestamps=True,
                                         group_by_feed=False,
                                         usersubs=usersubs,
-                                        cutoff_date=cutoff_date)
+                                        cutoff_date=cutoff_date,
+                                        across_all_feeds=across_all_feeds)
         if not story_hashes:
             return [], []
         
@@ -413,6 +415,51 @@ class UserSubscription(models.Model):
                 feeds[feed_id]['exception_code'] = sub.feed.exception_code
 
         return feeds
+    
+    @classmethod
+    def recreate_destroyed_feed(cls, new_feed_id, old_feed_id=None, skip=0):
+        user_ids = sorted([int(u) for u in open('users.txt').read().split('\n') if u])
+        
+        count = len(user_ids)
+        
+        for i, user_id in enumerate(user_ids):
+            if i < skip: continue
+            if i % 1000 == 0:
+                print "\n\n ------------------------------------------------"
+                print "\n ---> %s/%s (%s%%)" % (i, count, round(float(i)/count))
+                print "\n ------------------------------------------------\n"
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                print " ***> %s has no account" % user_id
+                continue
+            us, created = UserSubscription.objects.get_or_create(user_id=user_id, feed_id=new_feed_id, defaults={
+                'needs_unread_recalc': True,
+                'active': True,
+                'is_trained': True
+            })
+            if not created:
+                print " ***> %s already subscribed" % user.username
+            try:
+                usf = UserSubscriptionFolders.objects.get(user_id=user_id)
+                usf.add_missing_feeds()
+            except UserSubscriptionFolders.DoesNotExist:
+                print " ***> %s has no USF" % user.username
+                
+            # Move classifiers
+            if old_feed_id:
+                classifier_count = 0
+                for classifier_type in (MClassifierAuthor, MClassifierFeed, MClassifierTag, MClassifierTitle):
+                    classifiers = classifier_type.objects.filter(user_id=user_id, feed_id=old_feed_id)
+                    classifier_count += classifiers.count()
+                    for classifier in classifiers:
+                        classifier.feed_id = new_feed_id
+                        try:
+                            classifier.save()
+                        except NotUniqueError:
+                            continue
+                    if classifier_count:
+                        print " Moved %s classifiers for %s" % (classifier_count, user.username)
     
     def trim_read_stories(self, r=None):
         if not r:
@@ -1259,6 +1306,25 @@ class UserSubscriptionFolders(models.Model):
                     user_sub_folders = add_object_to_folder(feed_id, "", user_sub_folders)
             self.folders = json.encode(user_sub_folders)
             self.save()
+    
+    def auto_activate(self):
+        if self.user.profile.is_premium: return
+            
+        active_count = UserSubscription.objects.filter(user=self.user, active=True).count()
+        if active_count: return
+        
+        all_feeds = self.flat()
+        if not all_feeds: return
+        
+        for feed in all_feeds[:64]:
+            try:
+                sub = UserSubscription.objects.get(user=self.user, feed=feed)
+            except UserSubscription.DoesNotExist:
+                continue
+            sub.active = True
+            sub.save()
+            if sub.feed.active_subscribers <= 0:
+                sub.feed.count_subscribers()
 
 
 class Feature(models.Model):

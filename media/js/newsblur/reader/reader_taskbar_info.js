@@ -14,7 +14,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
     center: function(force) {
         var count_width = this.$el.width();
         var left_buttons_offset = $('.NB-taskbar-view').outerWidth(true);
-        var right_buttons_offset = $(".NB-taskbar-layout").position().left;
+        var right_buttons_offset = $(".NB-taskbar-options-container").position().left;
         var usable_space = right_buttons_offset - left_buttons_offset;
         var left = (usable_space / 2) - (count_width / 2) + left_buttons_offset;
         // console.log(["Taskbar info center", count_width, left, left_buttons_offset, right_buttons_offset, usable_space]);

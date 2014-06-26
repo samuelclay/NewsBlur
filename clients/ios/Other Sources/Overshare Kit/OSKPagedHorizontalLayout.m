@@ -20,6 +20,10 @@
 
 @implementation OSKPagedHorizontalLayout
 
+@dynamic availableWidth;
+@dynamic availableHeight;
+@dynamic edgeInsets;
+
 #pragma mark - Required Methods
 
 - (CGSize)collectionViewContentSize {

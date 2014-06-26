@@ -38,6 +38,8 @@
 
 @implementation OSKActivityIndicatorItem
 
+@dynamic position;
+
 + (instancetype)item:(UIActivityIndicatorViewStyle)style {
     OSKActivityIndicatorView *spinner = [[OSKActivityIndicatorView alloc] initWithActivityIndicatorStyle:style];
     spinner.hidesWhenStopped = YES;

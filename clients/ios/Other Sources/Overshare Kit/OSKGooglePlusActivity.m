@@ -3,9 +3,13 @@
 //  Copyright (c) 2014 Google. All rights reserved.
 //
 
+#import "OSKGooglePlusActivity.h"
+
+@import CoreMotion;
+
 #import <GooglePlus/GooglePlus.h>
 #import <GoogleOpenSource/GoogleOpenSource.h>
-#import "OSKGooglePlusActivity.h"
+
 #import "OSKShareableContentItem.h"
 #import "OSKApplicationCredential.h"
 #import "NSString+OSKEmoji.h"
@@ -98,13 +102,12 @@ static NSInteger OSKGooglePlusActivity_MaxImageCount = 3;
     return [UIImage imageNamed:@"GooglePlus-Icon-29.png"];
 }
 
-
 + (OSKAuthenticationMethod)authenticationMethod {
     return OSKAuthenticationMethod_Generic;
 }
 
 + (BOOL)requiresApplicationCredential {
-    return NO;
+    return YES;
 }
 
 + (OSKPublishingMethod)publishingMethod {
@@ -166,8 +169,8 @@ static NSInteger OSKGooglePlusActivity_MaxImageCount = 3;
     return OSKGooglePlusActivity_MaxImageCount;
 }
 
-- (OSKMicroblogSyntaxHighlightingStyle)syntaxHighlightingStyle {
-    return OSKMicroblogSyntaxHighlightingStyle_LinksOnly;
+- (OSKSyntaxHighlighting)syntaxHighlighting {
+    return OSKSyntaxHighlighting_Links;
 }
 
 - (NSInteger)maximumUsernameLength {
