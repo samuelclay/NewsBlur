@@ -44,7 +44,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@drawable/divider_light" />
+                style="?divider" />
 
             <FrameLayout
                 android:id="@+id/addsites_container"

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/item_background"
+    style="?itemBackground"
     android:focusable="false">
 
     <RelativeLayout
@@ -42,7 +42,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:textStyle="bold"
-            android:textColor="@color/darkgray"
+            style="?defaultText"
             android:textSize="15sp" />
 
         <TextView
@@ -53,7 +53,7 @@
             android:layout_below="@id/row_result_feedicon"
             android:layout_marginRight="8dp"
             android:paddingTop="8dp"
-            android:textColor="@color/darkgray"
+            style="?defaultText"
             android:textSize="20sp" />
         
         <TextView
@@ -63,7 +63,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="8dp"
             android:paddingTop="8dp"
-            android:textColor="@color/darkgray"
+            style="?defaultText"
             android:textSize="15sp" />
         
          <TextView
@@ -75,8 +75,7 @@
             android:layout_marginRight="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="12dp"
-            android:textColor="@color/darkgray"
-            android:textColorLink="@color/linkblue"
+            style="?defaultText"
             android:textSize="13sp" />
         
     </RelativeLayout>

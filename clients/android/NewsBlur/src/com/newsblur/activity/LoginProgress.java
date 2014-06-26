@@ -9,6 +9,7 @@ import android.view.Window;
 
 import com.newsblur.R;
 import com.newsblur.fragment.LoginProgressFragment;
+import com.newsblur.util.PrefsUtils;
 
 public class LoginProgress extends Activity {
 
@@ -18,6 +19,8 @@ public class LoginProgress extends Activity {
 
 	@Override
 	protected void onCreate(Bundle bundle) {
+        PrefsUtils.applyThemePreference(this);
+
 		super.onCreate(bundle);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_loginprogress);

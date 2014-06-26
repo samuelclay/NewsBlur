@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +18,7 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public class Main extends NbActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
@@ -29,12 +29,15 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 	private SyncUpdateFragment syncFragment;
 	private static final String TAG = "MainActivity";
 	private Menu menu;
+    private boolean isLightTheme;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
         PrefsUtils.checkForUpgrade(this);
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
+
+        isLightTheme = PrefsUtils.isLightThemeSelected(this);
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -63,6 +66,11 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
+            UIUtils.restartActivity(this);
+        }
+
         if (PrefsUtils.isTimeToAutoSync(this)) {
             triggerRefresh();
         }
