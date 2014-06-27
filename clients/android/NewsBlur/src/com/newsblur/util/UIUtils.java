@@ -3,13 +3,17 @@ package com.newsblur.util;
 import static android.graphics.Bitmap.Config.ARGB_8888;
 import static android.graphics.Color.WHITE;
 import static android.graphics.PorterDuff.Mode.DST_IN;
+
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -105,5 +109,26 @@ public class UIUtils {
         if (c != null) {
             Toast.makeText(c, rid, duration).show();
         }
+    }
+
+    /**
+     * Restart an activity. See http://stackoverflow.com/a/11651252/70795
+     * We post this on the Handler to allow onResume to finish before the activity restarts
+     * and avoid an exception.
+     */
+    public static void restartActivity(final Activity activity) {
+        new Handler().post(new Runnable() {
+
+            @Override
+            public void run() {
+                Intent intent = activity.getIntent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                activity.overridePendingTransition(0, 0);
+                activity.finish();
+
+                activity.overridePendingTransition(0, 0);
+                activity.startActivity(intent);
+            }
+        });
     }
 }

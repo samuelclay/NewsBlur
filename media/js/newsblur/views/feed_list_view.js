@@ -26,6 +26,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
+            this.show_read_stories_header();
             this.update_dashboard_count();
             this.scroll_to_selected();
         }, this));
@@ -312,6 +313,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             $selected_view = NEWSBLUR.reader.$s.$river_sites_header.closest(".NB-feeds-header-container");
         } else if (!$selected_view && NEWSBLUR.reader.active_feed == 'starred') {
             $selected_view = NEWSBLUR.reader.$s.$starred_header.closest(".NB-feeds-header-container");
+        } else if (!$selected_view && NEWSBLUR.reader.active_feed == 'read') {
+            $selected_view = NEWSBLUR.reader.$s.$read_header.closest(".NB-feeds-header-container");
         }
         if (!$selected_view) return;
         
@@ -344,6 +347,11 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     
     is_sorting: function() {
         return this.options.sorting;
+    },
+    
+    show_read_stories_header: function() {
+        NEWSBLUR.reader.$s.$read_header.closest('.NB-feeds-header-read-container')
+                                       .addClass('NB-block');
     }
     
 });

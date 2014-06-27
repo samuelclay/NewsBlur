@@ -15,6 +15,9 @@ public class NbActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle bundle) {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
+
+        PrefsUtils.applyThemePreference(this);
+
 		super.onCreate(bundle);
 
 		if (bundle != null) {

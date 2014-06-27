@@ -1,5 +1,4 @@
 body {
-	background-color: #FFF;
     overflow: hidden;
     line-height: 1.5em;
     width: 100%;
@@ -36,23 +35,15 @@ img, video, embed, object, iframe, div, figure, dl, dt {
 }
 
 a {
-	color: #405BA8;	
 	text-decoration: none;
 }
 
-a:visited {
-	color: #405BA8;
-}
-
 code {
-    background-color: #F2F2F2;
     word-wrap: break-word !important;
 }
 
 pre, blockquote {
-    background-color: #F2F2F2;
     border-left: 1px solid #C2C5BE;
-    color: rgba(10, 12, 38, .8);
     padding: 0.6em;
     margin: 0.6em;
     word-wrap: break-word !important;

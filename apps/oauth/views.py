@@ -334,7 +334,7 @@ def api_saved_tag_list(request):
     tags = []
     
     for tag in starred_counts:
-        if tag['tag'] == "": continue
+        if not tag['tag'] or tag['tag'] == "": continue
         tags.append(dict(label="%s (%s %s)" % (tag['tag'], tag['count'], 
                                                'story' if tag['count'] == 1 else 'stories'),
                          value=tag['tag']))
@@ -380,7 +380,10 @@ def api_unread_story(request, trigger_slug=None):
 
     if isinstance(feed_or_folder, int) or feed_or_folder.isdigit():
         feed_id = int(feed_or_folder)
-        usersub = UserSubscription.objects.get(user=user, feed_id=feed_id)
+        try:
+            usersub = UserSubscription.objects.get(user=user, feed_id=feed_id)
+        except UserSubscription.DoesNotExist:
+            return dict(data=[])
         found_feed_ids = [feed_id]
         found_trained_feed_ids = [feed_id] if usersub.is_trained else []
         stories = usersub.get_stories(order="newest", read_filter="unread", 

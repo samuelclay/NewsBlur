@@ -7,6 +7,7 @@ import android.app.FragmentTransaction;
 
 import com.newsblur.R;
 import com.newsblur.fragment.RegisterProgressFragment;
+import com.newsblur.util.PrefsUtils;
 
 /**
  * Show progress screen while registering request is being processed. This
@@ -20,6 +21,8 @@ public class RegisterProgress extends Activity {
 
 	@Override
 	protected void onCreate(Bundle bundle) {
+        PrefsUtils.applyThemePreference(this);
+
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_loginprogress);
 		

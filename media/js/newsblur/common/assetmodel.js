@@ -514,6 +514,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
         if (feed_id == this.feed_id) {
             if (data.feeds) {
+                var river = _.any(['river:', 'social:'], function(prefix) { 
+                    return _.isString(feed_id) && _.string.startsWith(feed_id, prefix);
+                });
+                if (river) _.each(data.feeds, function(feed) { feed.temp = true; });
                 this.feeds.add(data.feeds);
             }
             if (data.classifiers) {
@@ -595,8 +599,35 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_stories', {
             page: page,
             query: NEWSBLUR.reader.flags.search,
+            order: this.view_setting('starred', 'order'),
             tag: tag,
             v: 2
+        }, pre_callback, error_callback, {
+            'ajax_group': (page ? 'feed_page' : 'feed'),
+            'request_type': 'GET'
+        });
+    },
+
+    fetch_read_stories: function(page, callback, error_callback, first_load) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
+                if (first_load) {
+                    data.stories = data.stories.splice(0, 3);
+                } else {
+                    data.stories = [];
+                }
+            }
+            return self.load_feed_precallback(data, 'read', callback, first_load);
+        };
+
+        this.feed_id = 'read';
+        
+        this.make_request('/reader/read_stories', {
+            page: page,
+            query: NEWSBLUR.reader.flags.search,
+            order: this.view_setting('read', 'order')
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -609,7 +640,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(data) {
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
                 if (first_load) {
-                    data.stories = data.stories.splice(0, 5);
+                    data.stories = data.stories.splice(0, 3);
                 } else {
                     data.stories = [];
                 }

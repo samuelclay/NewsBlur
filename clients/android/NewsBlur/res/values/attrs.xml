@@ -2,6 +2,29 @@
 <resources>
     <attr name="flow" format="string" />
     <attr name="defaultImageSize" format="integer" />
+    <attr name="selectorFolderBackground" format="string" />
+    <attr name="selectorFeedBackground" format="string" />
+    <attr name="selectorRowFolderName" format="string" />
+    <attr name="selectorRowFeedName" format="string" />
+    <attr name="actionbarBackground" format="string" />
+    <attr name="listBackground" format="string" />
+    <attr name="itemBackground" format="string" />
+    <attr name="defaultText" format="string" />
+    <attr name="selectorStoryBackground" format="string" />
+    <attr name="rowItemHeaderBackground" format="string" />
+    <attr name="rowItemFeedHeader" format="string" />
+    <attr name="storyTitleUnread" format="string" />
+    <attr name="readingItemMetadata" format="string" />
+    <attr name="tag" format="string" />
+    <attr name="storyButtons" format="string" />
+    <attr name="shareBarBackground" format="string" />
+    <attr name="shareBarText" format="string" />
+    <attr name="commentsHeader" format="string" />
+    <attr name="folderBorderTop" format="string" />
+    <attr name="folderBorderBottom" format="string" />
+    <attr name="divider" format="string" />
+    <attr name="profileCount" format="string" />
+    <attr name="profileActivityList" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />

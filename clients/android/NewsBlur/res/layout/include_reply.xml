@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/item_background"
+    style="?itemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingBottom="12dp"
@@ -35,7 +35,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="26dp"
         android:layout_marginTop="5dp"
-        android:textColor="@color/lightgray"
+        style="?defaultText"
         android:textSize="12sp" />
 
     <TextView
@@ -57,7 +57,7 @@
         android:layout_marginTop="5dp"
         android:autoLink="web"
         android:layout_toRightOf="@id/reply_user_image"
-        android:textColor="@color/darkgray"
+        style="?defaultText"
         android:textSize="14dp" />
 
 </RelativeLayout>
