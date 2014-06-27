@@ -138,7 +138,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     
     initialize: function(models, options) {
         _.bindAll(this, 'propagate_feed_selected');
-        this.options = options || {};
+        this.options = _.extend({}, this.options, options);
         this.parent_folder = options && options.parent_folder;
         this.comparator = NEWSBLUR.Collections.Folders.comparator;
         this.bind('change:feed_selected', this.propagate_feed_selected);

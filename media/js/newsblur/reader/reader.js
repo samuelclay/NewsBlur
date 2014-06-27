@@ -3042,14 +3042,13 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-feed-move' }, [
+                        $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-feed-move-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Change folders')
                     ]),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-feed-move-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
-                            $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-feed-move-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
-                            $.make('div', { className: 'NB-menu-manage-image' }),
-                            $.make('div', { className: 'NB-add-folders' })
+                            $.make('div', { className: 'NB-change-folders' })
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
@@ -3708,15 +3707,19 @@
             var $move = $('.NB-menu-manage-feed-move,.NB-menu-manage-folder-move');
             var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
             var $position = $('.NB-menu-manage-confirm-position', $confirm);
-            var $add = $(".NB-add-folders", $confirm);
+            var $add = $(".NB-add-folders,.NB-change-folders", $confirm);
+            var $save = $(".NB-menu-manage-feed-move-save");
             var $select = $('select', $confirm);
+            var isFeed = _.isNumber(feed_id);
             
-            if (_.isNumber(feed_id)) {
+            if (isFeed) {
                 var feed      = this.model.get_feed(feed_id);
                 var feed_view = feed.get_view($feed, true);
                 var in_folder = feed_view.options.folder_title;
+                feed.set('menu_folders', null);
                 var $folders = this.make_folders_multiselect(feed);
                 $add.html($folders);
+                $save.addClass("NB-disabled").attr('disabled', "disabled").text('Select folders');
             } else {
                 folder_view = NEWSBLUR.assets.folders.get_view($feed) ||
                               this.active_folder.folder_view;
@@ -3724,7 +3727,7 @@
             }
             
             $move.addClass('NB-menu-manage-feed-move-cancel');
-            $('.NB-menu-manage-title', $move).text('Cancel move');
+            $('.NB-menu-manage-title', $move).text('Cancel');
             $position.css('position', 'relative');
             var height = $confirm.height();
             $position.css('position', 'absolute');
@@ -3732,6 +3735,9 @@
                 'duration': 380, 
                 'easing': 'easeOutQuart'
             });
+            if (isFeed) {
+                $save.fadeIn(380);
+            }
             this.flags['showing_confirm_input_on_manage_menu'] = true;
             
             if (!_.isNumber(feed_id)) {
@@ -3745,9 +3751,11 @@
             }
         },
         
-        make_folders_multiselect: function(feed) {
+        make_folders_multiselect: function(feed, in_folders) {
             var folders = NEWSBLUR.assets.get_folders();
-            var in_folders = _.pluck(_.pluck(feed.folders, 'options'), 'title');
+            if (!in_folders) in_folders = feed.in_folders();
+            in_folders = _.unique(in_folders.concat(feed.get('menu_folders') || []));
+            feed.set('menu_folders', in_folders);
             var $options = $.make('div', { className: 'NB-folders' });
             var $option = this.make_folder_selectable('Top Level', '', 0, _.any(in_folders, function(folder) {
                 return !folder;
@@ -3764,7 +3772,7 @@
             items.each(function(item) {
                 if (item.is_folder()) {
                     var title = item.get('folder_title');
-                    var $option = self.make_folder_selectable(title, title, _.contains(in_folders, title));
+                    var $option = self.make_folder_selectable(title, title, depth, _.contains(in_folders, title));
                     $options.append($option);
                     $options = self.make_folders_multiselect_options($options, item.folders, depth+1, in_folders);
                 }
@@ -3778,9 +3786,36 @@
                 className: "NB-folder-option " + (selected ? "NB-folder-option-active" : ""),
                 style: 'padding-left: ' + depth*12 + 'px;'
             }, [
+                $.make('div', { className: 'NB-selected-icon' }),
                 $.make('div', { className: 'NB-icon' }),
                 $.make('div', { className: 'NB-folder-option-title' }, folder_title)
             ]).data('folder', folder_value);
+        },
+        
+        switch_change_folder: function(feed_id, folder_value) {
+            var feed       = this.model.get_feed(feed_id);
+            var in_folders = feed.get('menu_folders');
+            var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
+            var $add = $(".NB-add-folders,.NB-change-folders", $confirm);
+            var $save = $(".NB-menu-manage-feed-move-save");
+
+            if (_.contains(in_folders, folder_value)) {
+                in_folders = _.without(in_folders, folder_value);
+            } else {
+                in_folders = in_folders.concat(folder_value);
+            }
+
+            feed.set('menu_folders', in_folders);
+            
+            var $folders = this.make_folders_multiselect(feed, in_folders);
+            $add.html($folders);
+            
+            $save.toggleClass("NB-disabled", !in_folders.length).attr('disabled', !in_folders.length ? "disabled" : false);
+            if (!in_folders.length) {
+                $save.text('Select a folder');
+            } else {
+                $save.text("Save " + Inflector.pluralize(' folder', in_folders.length, true));
+            }
         },
         
         hide_confirm_move_menu_item: function(moved) {
@@ -3788,7 +3823,8 @@
             var $move_feed = $('.NB-menu-manage-feed-move');
             var $confirm_folder = $('.NB-menu-manage-folder-move-confirm');
             var $confirm_feed = $('.NB-menu-manage-feed-move-confirm');
-            
+            var $save = $(".NB-menu-manage-feed-move-save");
+
             $move_folder.removeClass('NB-menu-manage-feed-move-cancel');
             $move_feed.removeClass('NB-menu-manage-feed-move-cancel');
             var text_folder = 'Move to folder';
@@ -3806,6 +3842,7 @@
             $('.NB-menu-manage-title', $move_feed).text(text_feed);
             $confirm_feed.slideUp(500);
             $confirm_folder.slideUp(500);
+            $save.hide();
             this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
         
@@ -5324,6 +5361,12 @@
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.manage_menu_delete_folder(folder_name, $folder);
             });  
+            $.targetIs(e, { tagSelector: '.NB-folder-option', childOf: '.NB-menu-manage' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                self.switch_change_folder(feed_id, $t.data('folder') || '');
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-move' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
@@ -5350,6 +5393,8 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-move-save' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
+                if ($t.hasClass('NB-disabled')) return;
+
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 var $feed = $t.parents('.NB-menu-manage').data('$feed');
                 self.manage_menu_move_feed(feed_id, $feed);

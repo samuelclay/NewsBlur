@@ -86,6 +86,12 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         return names;
     },
     
+    in_folders: function() {
+        var in_folders = _.pluck(_.pluck(this.folders, 'options'), 'title');
+
+        return in_folders;
+    },
+    
     rename: function(new_title) {
         this.set('feed_title', new_title);
         NEWSBLUR.assets.rename_feed(this.id, new_title);

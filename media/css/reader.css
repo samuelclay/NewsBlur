@@ -6550,6 +6550,9 @@ form.opml_import_form input {
     padding-top: 3px;
     padding-bottom: 2px;
 }
+.NB-menu-manage .NB-menu-manage-feed-move-confirm {
+    padding: 0;
+}
 .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-confirm-position {
     position: absolute;
     bottom: 2px;
@@ -6625,6 +6628,56 @@ form.opml_import_form input {
     float: left;
     max-height: 84px;
     overflow-y: auto;
+}
+.NB-menu-manage .NB-menu-manage-feed-move-save {
+    display: none;
+}
+.NB-menu-manage .NB-menu-manage-feed-move-save {
+    float: right;
+    display: none;
+}
+.NB-menu-manage .NB-menu-manage-confirm .NB-change-folders {
+    width: 100%;
+    height: 84px;
+    overflow-y: auto;
+}
+.NB-menu-manage .NB-change-folders .NB-folders {
+    padding: 4px 0;
+}
+.NB-menu-manage .NB-change-folders .NB-folder-option {
+    overflow: hidden;
+    clear: both;
+    cursor: pointer;
+}
+.NB-menu-manage .NB-change-folders .NB-folder-option:hover {
+    background-color: rgba(0, 4, 0, .1);
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
+    background-size: 16px;
+    float: left;
+    margin: 1px 4px;
+}
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_rss.png') no-repeat 0 0;
+    background-size: 16px;    
+}
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-selected-icon {
+    background: transparent url('/media/embed/icons/circular/widget_left.png') no-repeat 0 0;
+    float: right;
+    width: 13px;
+    height: 13px;
+    margin: 3px 4px 0 4px;
+    background-size: 13px 12px;
+}
+.NB-menu-manage .NB-change-folders .NB-folder-option-title {
+    padding: 3px 0 2px;
+}
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-folder-option-title {
+    font-weight: bold;
 }
 .NB-menu-manage .NB-menu-manage-story-share-confirm .NB-sideoption-share {
     overflow: hidden;
