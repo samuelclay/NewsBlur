@@ -3716,7 +3716,7 @@
                 var feed      = this.model.get_feed(feed_id);
                 var feed_view = feed.get_view($feed, true);
                 var in_folder = feed_view.options.folder_title;
-                feed.set('menu_folders', null);
+                feed.set('menu_folders', null, {silent: true});
                 var $folders = this.make_folders_multiselect(feed);
                 $add.html($folders);
                 $save.addClass("NB-disabled").attr('disabled', "disabled").text('Select folders');
@@ -3755,7 +3755,7 @@
             var folders = NEWSBLUR.assets.get_folders();
             if (!in_folders) in_folders = feed.in_folders();
             in_folders = _.unique(in_folders.concat(feed.get('menu_folders') || []));
-            feed.set('menu_folders', in_folders);
+            feed.set('menu_folders', in_folders, {silent: true});
             var $options = $.make('div', { className: 'NB-folders' });
             var $option = this.make_folder_selectable('Top Level', '', 0, _.any(in_folders, function(folder) {
                 return !folder;
@@ -3805,7 +3805,7 @@
                 in_folders = in_folders.concat(folder_value);
             }
 
-            feed.set('menu_folders', in_folders);
+            feed.set('menu_folders', in_folders, {silent: true});
             
             var $folders = this.make_folders_multiselect(feed, in_folders);
             $add.html($folders);
