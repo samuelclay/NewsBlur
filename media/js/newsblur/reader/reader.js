@@ -3866,8 +3866,10 @@
         },
         
         post_add_folder_to_folder: function(e, data) {
-            NEWSBLUR.assets.folders.reset(_.compact(data.folders), {parse: true});
-
+            if (data.folders) {
+                NEWSBLUR.assets.folders.reset(_.compact(data.folders), {parse: true});
+            }
+            
             var feed_id    = $('.NB-menu-manage').data('feed_id');
             var feed       = this.model.get_feed(feed_id);
             var in_folders = feed.get('menu_folders');
