@@ -3815,8 +3815,13 @@
             var $folders = this.make_folders_multiselect(feed, in_folders);
             $add.html($folders);
             
-            $save.toggleClass("NB-disabled", !in_folders.length)
-                 .attr('disabled', !in_folders.length ? "disabled" : false);
+            if (_.isEqual(in_folders, feed.in_folders())) {
+                $save.addClass("NB-disabled").attr('disabled', "disabled").text('Select folders');
+            } else {
+                $save.toggleClass("NB-disabled", !in_folders.length)
+                     .attr('disabled', !in_folders.length ? "disabled" : false);
+            }
+            
             if (!in_folders.length) {
                 $save.text('Select a folder');
             } else {
@@ -3825,6 +3830,8 @@
         },
         
         show_add_folder_in_menu: function(feed_id, $folder, folder) {
+            var self = this;
+            
             if ($folder.siblings('.NB-add-folder-form').length) {
                 var feed       = this.model.get_feed(feed_id);
                 var in_folders = feed.get('menu_folders');
@@ -3839,6 +3846,14 @@
             ]).data('in_folder', $folder.data('folder'));
             $add.css('paddingLeft', parseInt($folder.css('paddingLeft'), 10) + 12);
             $folder.after($add);
+            
+            $('input', $add).focus().bind('keyup', 'return', function(e) {
+                self.add_folder_to_folder();
+            }).bind('keyup', 'esc', function(e) {
+                var feed       = self.model.get_feed(feed_id);
+                var in_folders = feed.get('menu_folders');
+                self.render_change_folders(feed, in_folders);                
+            });
         },
         
         add_folder_to_folder: function() {
