@@ -78,6 +78,29 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         return true;
     },
     
+    move_to_folders: function(to_folders, options) {
+        options = options || {};
+        var view = options.view || this.get_view();
+        var in_folders = this.in_folders();
+        
+        if (_.isEqual(in_folders, to_folders)) return false;
+
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
+        NEWSBLUR.assets.move_feed_to_folders(this.id, in_folders, to_folders, function() {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
+            _.delay(function() {
+                NEWSBLUR.reader.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
+                    'duration': 100, 
+                    'complete': function() {
+                        NEWSBLUR.app.feed_list.make_feeds();
+                    }
+                });
+            }, 250);
+        });
+        
+        return true;
+    },
+    
     parent_folder_names: function() {
         var names = _.compact(_.flatten(_.map(this.folders, function(folder) {
             return folder.parent_folder_names();

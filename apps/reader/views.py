@@ -1582,7 +1582,7 @@ def add_url(request):
 def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST.get('parent_folder', '')
-
+    folders = None
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     
     if folder:
@@ -1590,13 +1590,14 @@ def add_folder(request):
         message = ""
         user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
         user_sub_folders_object.add_folder(parent_folder, folder)
+        folders = json.decode(user_sub_folders_object.folders)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(request.user.username, 'reload:feeds')
     else:
         code = -1
         message = "Gotta write in a folder name."
         
-    return dict(code=code, message=message)
+    return dict(code=code, message=message, folders=folders)
 
 @ajax_login_required
 @json.json_view
@@ -1653,11 +1654,12 @@ def delete_folder(request):
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
+    folders = json.decode(user_sub_folders.folders)
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
     
-    return dict(code=1)
+    return dict(code=1, folders=folders)
     
 @ajax_login_required
 @json.json_view
@@ -1695,13 +1697,30 @@ def rename_folder(request):
     
 @ajax_login_required
 @json.json_view
+def move_feed_to_folders(request):
+    feed_id = int(request.POST['feed_id'])
+    in_folders = request.POST.getlist('in_folders', '')
+    to_folders = request.POST.getlist('to_folders', '')
+
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders = user_sub_folders.move_feed_to_folders(feed_id, in_folders=in_folders,
+                                                             to_folders=to_folders)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+    
+@ajax_login_required
+@json.json_view
 def move_feed_to_folder(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', '')
     to_folder = request.POST.get('to_folder', '')
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
-    user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
+    user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder,
+                                                            to_folder=to_folder)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')

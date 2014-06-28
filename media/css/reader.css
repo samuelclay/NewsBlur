@@ -5009,6 +5009,10 @@ form.opml_import_form input {
     background-size: 16px;
     cursor: pointer;
 }
+.NB-add-form .NB-add-folder-icon:hover {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;    
+    background-size: 16px;
+}
 
 .NB-add-form .NB-loading {
     float: right;
@@ -6653,31 +6657,48 @@ form.opml_import_form input {
     background-color: rgba(0, 4, 0, .1);
 }
 
-.NB-menu-manage .NB-change-folders .NB-folder-option .NB-icon {
+.NB-menu-manage .NB-change-folders .NB-folder-option .NB-icon,
+.NB-menu-manage .NB-change-folders .NB-add-folder-form .NB-icon {
     background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;
     width: 16px;
     height: 16px;
     background-size: 16px;
     float: left;
+    clear: left;
     margin: 1px 4px;
 }
 .NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-icon {
     background: transparent url('/media/embed/icons/circular/g_icn_folder_rss.png') no-repeat 0 0;
     background-size: 16px;    
 }
-.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-selected-icon {
-    background: transparent url('/media/embed/icons/circular/widget_left.png') no-repeat 0 0;
+.NB-menu-manage .NB-change-folders .NB-folder-option:hover .NB-icon-add {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add.png') no-repeat 0 0;
     float: right;
-    width: 13px;
-    height: 13px;
-    margin: 3px 4px 0 4px;
-    background-size: 13px 12px;
+    width: 16px;
+    height: 16px;
+    margin: 1px 4px 0;
+    background-size: 16px;
 }
+.NB-menu-manage .NB-change-folders .NB-folder-option:hover .NB-icon-add:hover {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-menu-manage .NB-change-folders .NB-folder-option-title {
     padding: 3px 0 2px;
 }
 .NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-folder-option-title {
     font-weight: bold;
+}
+.NB-menu-manage .NB-change-folders .NB-input {
+    font-size: 11px;
+    float: left;
+    margin: 0;
+}
+.NB-menu-manage .NB-change-folders .NB-menu-manage-add-folder-save {
+    margin: 0 4px 0 0;
+}
+
 }
 .NB-menu-manage .NB-menu-manage-story-share-confirm .NB-sideoption-share {
     overflow: hidden;

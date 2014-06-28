@@ -1230,6 +1230,20 @@ class UserSubscriptionFolders(models.Model):
         self.folders = json.encode(user_sub_folders)
         self.save()
         
+    def move_feed_to_folders(self, feed_id, in_folders=None, to_folders=None):
+        logging.user(self.user, "~FBMoving feed '~SB%s~SN' in '%s' to: ~SB%s" % (
+                     feed_id, in_folders, to_folders))
+        user_sub_folders = json.decode(self.folders)
+        for in_folder in in_folders:
+            self.delete_feed(feed_id, in_folder, commit_delete=False)
+        user_sub_folders = json.decode(self.folders)
+        for to_folder in to_folders:
+            user_sub_folders = add_object_to_folder(int(feed_id), to_folder, user_sub_folders)
+        self.folders = json.encode(user_sub_folders)
+        self.save()
+        
+        return self
+
     def move_feed_to_folder(self, feed_id, in_folder=None, to_folder=None):
         logging.user(self.user, "~FBMoving feed '~SB%s~SN' in '%s' to: ~SB%s" % (
                      feed_id, in_folder, to_folder))
