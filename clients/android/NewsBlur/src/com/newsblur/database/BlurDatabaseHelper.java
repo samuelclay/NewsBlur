@@ -56,9 +56,10 @@ public class BlurDatabaseHelper {
             String q = "DELETE FROM " + DatabaseConstants.STORY_TABLE + 
                        " WHERE " + DatabaseConstants.STORY_ID + " IN " +
                        "( SELECT " + DatabaseConstants.STORY_ID + " FROM " + DatabaseConstants.STORY_TABLE +
-                       " WHERE " + DatabaseConstants.STORY_FEED_ID + " = " + feedId +
+                       " WHERE " + DatabaseConstants.STORY_READ + " = 1" +
+                       " AND " + DatabaseConstants.STORY_FEED_ID + " = " + feedId +
                        " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
-                       " LIMIT -1 OFFSET " + AppConstants.MAX_STORIES_STORED +
+                       " LIMIT -1 OFFSET " + AppConstants.MAX_READ_STORIES_STORED +
                        ")";
             dbRW.execSQL(q);
         }

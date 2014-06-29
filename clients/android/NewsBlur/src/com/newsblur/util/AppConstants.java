@@ -46,7 +46,7 @@ public class AppConstants {
     public static final int READING_STORY_PRELOAD = 5;
 
     // max old stories to keep in the DB per feed before fetching new unreads
-    public static final int MAX_STORIES_STORED = 500;
+    public static final int MAX_READ_STORIES_STORED = 10;
 
     // how many unread stories to fetch via hash at a time
     public static final int UNREAD_FETCH_BATCH_SIZE = 20;
