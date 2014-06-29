@@ -236,6 +236,7 @@ public class NBSyncService extends Service {
     private void syncUnreads() {
         unreadsyncloop: while (storyHashQueue.size() > 0) {
             if (HaltNow) return;
+
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : storyHashQueue) {
                 hashBatch.add(hash);

@@ -44,13 +44,24 @@ public class BlurDatabaseHelper {
     }
 
     public void cleanupStories() {
-        String q = "DELETE FROM " + DatabaseConstants.STORY_TABLE + 
-                   " WHERE " + DatabaseConstants.STORY_ID + " IN " +
-                   "( SELECT " + DatabaseConstants.STORY_ID + " FROM " + DatabaseConstants.STORY_TABLE +
-                   " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
-                   " LIMIT -1 OFFSET " + AppConstants.MAX_STORIES_STORED +
-                   ")";
-        dbRW.execSQL(q);
+        String q1 = "SELECT " + DatabaseConstants.FEED_ID +
+                    " FROM " + DatabaseConstants.FEED_TABLE;
+        Cursor c = dbRO.rawQuery(q1, null);
+        List<String> feedIds = new ArrayList<String>(c.getCount());
+        while (c.moveToNext()) {
+           feedIds.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_ID)));
+        }
+        c.close();
+        for (String feedId : feedIds) {
+            String q = "DELETE FROM " + DatabaseConstants.STORY_TABLE + 
+                       " WHERE " + DatabaseConstants.STORY_ID + " IN " +
+                       "( SELECT " + DatabaseConstants.STORY_ID + " FROM " + DatabaseConstants.STORY_TABLE +
+                       " WHERE " + DatabaseConstants.STORY_FEED_ID + " = " + feedId +
+                       " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
+                       " LIMIT -1 OFFSET " + AppConstants.MAX_STORIES_STORED +
+                       ")";
+            dbRW.execSQL(q);
+        }
     }
 
     public void cleanupFeedsFolders() {

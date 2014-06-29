@@ -45,8 +45,8 @@ public class AppConstants {
     // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
     public static final int READING_STORY_PRELOAD = 5;
 
-    // max stories to keep in the DB unless actively being read (i.e. for offline reading)
-    public static final int MAX_STORIES_STORED = 1000;
+    // max old stories to keep in the DB per feed before fetching new unreads
+    public static final int MAX_STORIES_STORED = 500;
 
     // how many unread stories to fetch via hash at a time
     public static final int UNREAD_FETCH_BATCH_SIZE = 20;
