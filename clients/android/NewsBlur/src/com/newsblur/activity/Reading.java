@@ -35,6 +35,7 @@ import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.network.APIManager;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
@@ -155,6 +156,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     protected void onResume() {
         super.onResume();
+        // this view shows stories, it is not safe to perform cleanup
+        NBSyncService.enableCleanup(false);
         this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.

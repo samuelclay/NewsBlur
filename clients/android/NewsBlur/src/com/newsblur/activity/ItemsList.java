@@ -13,6 +13,7 @@ import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedUtils;
@@ -57,6 +58,8 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 
     protected void onResume() {
         super.onResume();
+        // this view shows stories, it is not safe to perform cleanup
+        NBSyncService.enableCleanup(false);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();

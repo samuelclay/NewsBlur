@@ -44,6 +44,7 @@ import java.util.Set;
 public class NBSyncService extends Service {
 
     private volatile static boolean SyncRunning = false;
+    private volatile static boolean DoCleanup = false;
     private volatile static boolean DoFeedsFolders = false;
 
     private volatile static boolean HaltNow = false;
@@ -102,9 +103,7 @@ public class NBSyncService extends Service {
             SyncRunning = true;
             NbActivity.updateAllActivities();
 
-            // clean up the DB iff the user isn't actively reading, so we don't delete out from
-            // under the UI.
-            if (NbActivity.getActiveActivityCount() < 1) {
+            if (DoCleanup) {
                 Log.d(this.getClass().getName(), "cleaning up stories");
                 dbHelper.cleanupStories();
             }
@@ -264,6 +263,14 @@ public class NBSyncService extends Service {
      */
     public static void forceFeedsFolders() {
         DoFeedsFolders = true;
+    }
+
+    /**
+     * Indicates whether now is an appropriate time to perform story cleanup because the user is
+     * not actively seeing stories. (e.g. they are on the feed/folder activity)
+     */
+    public static void enableCleanup(boolean doCleanup) {
+        DoCleanup = doCleanup;
     }
 
     @Override
