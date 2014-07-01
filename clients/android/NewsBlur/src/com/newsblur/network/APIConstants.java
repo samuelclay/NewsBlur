@@ -26,7 +26,6 @@ public class APIConstants {
 	public static final String URL_FEED_STORIES = NEWSBLUR_URL + "/reader/feed";
 	public static final String URL_SOCIALFEED_STORIES = NEWSBLUR_URL + "/social/stories";
 	public static final String URL_SIGNUP = NEWSBLUR_URL + "/api/signup";
-	public static final String URL_FEED_COUNTS = NEWSBLUR_URL + "/reader/refresh_feeds/";
 	public static final String URL_MARK_FEED_AS_READ = NEWSBLUR_URL + "/reader/mark_feed_as_read/";
 	public static final String URL_MARK_ALL_AS_READ = NEWSBLUR_URL + "/reader/mark_all_as_read/";
 	public static final String URL_MARK_STORIES_READ = NEWSBLUR_URL + "/reader/mark_story_hashes_as_read/";

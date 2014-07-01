@@ -552,28 +552,6 @@ public class APIManager {
 		}
 	}
 
-    // TODO: is this unused?
-	public void refreshFeedCounts() {
-		final APIResponse response = get(APIConstants.URL_FEED_COUNTS);
-		if (!response.isError()) {
-			final FeedRefreshResponse feedCountUpdate = (FeedRefreshResponse) response.getResponse(gson, FeedRefreshResponse.class);
-			for (String feedId : feedCountUpdate.feedCounts.keySet()) {
-				Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-                if (feedCountUpdate.feedCounts.get(feedId) != null) {
-				    contentResolver.update(feedUri, feedCountUpdate.feedCounts.get(feedId).getValues(), null, null);
-                }
-			}
-
-			for (String socialfeedId : feedCountUpdate.socialfeedCounts.keySet()) {
-				String userId = socialfeedId.split(":")[1];
-				Uri feedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
-                if (feedCountUpdate.socialfeedCounts.get(socialfeedId) != null) {
-				    contentResolver.update(feedUri, feedCountUpdate.socialfeedCounts.get(socialfeedId).getValues(), null, null);
-                }
-			}
-		}
-	}
-
 	public boolean favouriteComment(String storyId, String commentId, String feedId) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
