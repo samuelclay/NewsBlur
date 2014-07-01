@@ -43,7 +43,7 @@ public class BlurDatabaseHelper {
         dbWrapper.close();
     }
 
-    public void cleanupStories() {
+    public void cleanupStories(boolean keepOldStories) {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
         Cursor c = dbRO.rawQuery(q1, null);
@@ -59,7 +59,7 @@ public class BlurDatabaseHelper {
                        " WHERE " + DatabaseConstants.STORY_READ + " = 1" +
                        " AND " + DatabaseConstants.STORY_FEED_ID + " = " + feedId +
                        " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
-                       " LIMIT -1 OFFSET " + AppConstants.MAX_READ_STORIES_STORED +
+                       " LIMIT -1 OFFSET " + (keepOldStories ? AppConstants.MAX_READ_STORIES_STORED : 0) +
                        ")";
             dbRW.execSQL(q);
         }

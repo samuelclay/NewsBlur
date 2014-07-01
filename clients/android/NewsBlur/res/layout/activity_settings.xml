@@ -9,6 +9,12 @@
             android:title="@string/settings_enable_offline" 
             android:summary="@string/settings_enable_offline_sum" >
         </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="keep_old_stories"
+            android:title="@string/settings_keep_old_stories" 
+            android:summary="@string/settings_keep_old_stories_sum" >
+        </CheckBoxPreference>
     </PreferenceCategory>
 
     <PreferenceCategory 

@@ -182,6 +182,8 @@
     <string name="settings_cat_offline">Offline</string>
     <string name="settings_enable_offline">Download in Background</string>
     <string name="settings_enable_offline_sum">Periodically fetch stories for offline reading</string>
+    <string name="settings_keep_old_stories">Keep Stories after Reading</string>
+    <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
 
     <string name="settings_cat_story_list">Story List</string>
     <string-array name="default_story_order_entries">

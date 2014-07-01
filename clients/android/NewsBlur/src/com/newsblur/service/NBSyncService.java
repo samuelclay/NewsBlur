@@ -105,7 +105,7 @@ public class NBSyncService extends Service {
 
             if (DoCleanup) {
                 Log.d(this.getClass().getName(), "cleaning up stories");
-                dbHelper.cleanupStories();
+                dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
             }
 
             if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {

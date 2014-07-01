@@ -48,4 +48,5 @@ public class PrefConstants {
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
+    public static final String KEEP_OLD_STORIES = "keep_old_stories";
 }
