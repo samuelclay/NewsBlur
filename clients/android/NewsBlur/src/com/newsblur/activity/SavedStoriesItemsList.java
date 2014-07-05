@@ -19,6 +19,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.SavedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -47,14 +48,10 @@ public class SavedStoriesItemsList extends ItemsList {
 		}
 	}
 
-	@Override
-	public void triggerRefresh(int page) {
-		if (!stopLoading) {
-			setProgressBarIndeterminateVisibility(true);
-            FeedUtils.updateSavedStories(this, this, page);
-		}
-	}
-
+    @Override
+    protected FeedSet getFeedSet() {
+        return new FeedSet(null, null, true);
+    }
 
 	@Override
 	public void markItemListAsRead() {

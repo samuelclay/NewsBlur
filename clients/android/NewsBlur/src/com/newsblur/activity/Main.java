@@ -108,7 +108,7 @@ public class Main extends NbActivity implements StateChangedListener {
     @Override
 	public void handleUpdate() {
 		folderFeedList.hasUpdated();
-        if (NBSyncService.isSyncRunning()) {
+        if (NBSyncService.isFeedFolderSyncRunning()) {
 		    setProgressBarIndeterminateVisibility(true);
             setRefreshEnabled(false);
         } else {

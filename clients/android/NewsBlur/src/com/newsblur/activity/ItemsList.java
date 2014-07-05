@@ -16,6 +16,7 @@ import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FeedUtils.ActionCompletionListener;
 import com.newsblur.util.ReadFilter;
@@ -39,11 +40,15 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
 	protected int currentState;
+
+    private FeedSet fs;
 	
 	protected boolean stopLoading = false;
 
 	@Override
-	protected void onCreate(Bundle bundle) {
+    protected void onCreate(Bundle bundle) {
+        this.fs = getFeedSet();
+
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(bundle);
@@ -56,6 +61,8 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
+    protected abstract FeedSet getFeedSet();
+
     protected void onResume() {
         super.onResume();
         // this view shows stories, it is not safe to perform cleanup
@@ -65,7 +72,17 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
         itemListFragment.hasUpdated();
     }
 
-	public abstract void triggerRefresh(int page);
+	public void triggerRefresh(int desiredStoryCount) {
+		if (!stopLoading) {
+            boolean moreLeft = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            if (moreLeft) {
+                triggerSync();
+            } else {
+                stopLoading = true;
+            }
+		}
+    }
+
 	public abstract void markItemListAsRead();
 	
 	@Override

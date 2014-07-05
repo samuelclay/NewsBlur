@@ -19,8 +19,9 @@ import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedUtils;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -38,6 +39,7 @@ public class FeedItemsList extends ItemsList {
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+
 		apiManager = new APIManager(this);
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
         feedTitle = getIntent().getStringExtra(EXTRA_FEED_TITLE);
@@ -61,6 +63,11 @@ public class FeedItemsList extends ItemsList {
 			listTransaction.commit();
 		}
 	}
+
+    @Override
+    protected FeedSet getFeedSet() {
+        return FeedSet.singleFeed(getIntent().getStringExtra(EXTRA_FEED));
+    }
 	
 	public void deleteFeed() {
 		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(Long.parseLong(feedId), feedTitle, folderName);
@@ -109,14 +116,6 @@ public class FeedItemsList extends ItemsList {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.feed_itemslist, menu);
 		return true;
-	}
-
-	@Override
-	public void triggerRefresh(int page) {
-		if (!stopLoading) {
-			setProgressBarIndeterminateVisibility(true);
-            FeedUtils.updateFeed(this, this, feedId, page, getStoryOrder(), PrefsUtils.getReadFilterForFeed(this, feedId));
-		}
 	}
 
     @Override

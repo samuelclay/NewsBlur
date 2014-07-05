@@ -297,6 +297,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     public void actionCompleteCallback(boolean noMoreData) {
+        // TODO: remove me and gut the pagination code
 		enableMainProgress(false);
         this.requestedPage = false;
         if (this.stopLoading) { return; }

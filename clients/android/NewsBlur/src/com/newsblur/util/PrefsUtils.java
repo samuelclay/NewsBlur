@@ -289,6 +289,62 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    public static StoryOrder getStoryOrder(Context context, FeedSet fs) {
+        if (fs.getFeeds() != null) {
+            if (fs.getFeeds().size() == 0) {
+                return getStoryOrderForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+            } else if (fs.getFeeds().size() == 1) {
+                return getStoryOrderForFeed(context, fs.getFeeds().iterator().next());
+            } else {
+                return getStoryOrderForFolder(context, fs.getFolderName());
+            }
+        }
+
+        if (fs.getSocialFeeds() != null) {
+            if (fs.getSocialFeeds().size() == 0) {
+                return getStoryOrderForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+            } else if (fs.getSocialFeeds().size() == 1) {
+                return getStoryOrderForFeed(context, fs.getSocialFeeds().keySet().iterator().next());
+            } else {
+                throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
+            }
+        }
+
+        if (fs.isAllSaved()) {
+            return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        }
+
+        throw new IllegalArgumentException( "unknown type of feed set" );
+    }
+
+    public static ReadFilter getReadFilter(Context context, FeedSet fs) {
+        if (fs.getFeeds() != null) {
+            if (fs.getFeeds().size() == 0) {
+                return getReadFilterForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+            } else if (fs.getFeeds().size() == 1) {
+                return getReadFilterForFeed(context, fs.getFeeds().iterator().next());
+            } else {
+                return getReadFilterForFolder(context, fs.getFolderName());
+            }
+        }
+
+        if (fs.getSocialFeeds() != null) {
+            if (fs.getSocialFeeds().size() == 0) {
+                return getReadFilterForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+            } else if (fs.getSocialFeeds().size() == 1) {
+                return getReadFilterForFeed(context, fs.getSocialFeeds().keySet().iterator().next());
+            } else {
+                throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
+            }
+        }
+
+        if (fs.isAllSaved()) {
+            return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        }
+
+        throw new IllegalArgumentException( "unknown type of feed set" );
+    }
+
     private static DefaultFeedView getDefaultFeedView() {
         return DefaultFeedView.STORY;
     }

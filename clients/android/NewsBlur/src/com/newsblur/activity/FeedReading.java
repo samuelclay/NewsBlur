@@ -11,6 +11,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
@@ -59,7 +60,13 @@ public class FeedReading extends Reading {
 
     @Override
     protected void triggerRefresh(int page) {
-        FeedUtils.updateFeed(this, this, feedId, page, PrefsUtils.getStoryOrderForFeed(this, feedId), PrefsUtils.getReadFilterForFeed(this, feedId));
+        NBSyncService.requestMoreForFeed(feedId);
+        triggerSync();
+    }
+
+    @Override
+    public void handleUpdate() {
+        ;
     }
 
 }

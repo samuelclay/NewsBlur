@@ -227,28 +227,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
 		APIResponse response = get(feedUri.toString(), values);
-        StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
-
-		if (!response.isError()) {
-            Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
-
-			contentResolver.delete(classifierUri, null, null);
-
-			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
-				contentResolver.insert(classifierUri, classifierValues);
-			}
-
-			for (Story story : storiesResponse.stories) {
-				contentResolver.insert(storyUri, story.getValues());
-				insertComments(story);
-			}
-
-			for (UserProfile user : storiesResponse.users) {
-				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
-			}
-		} 
-        return storiesResponse;
+        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 	}
 
     public StoriesResponse getStoriesByHash(List<String> storyHashes) {

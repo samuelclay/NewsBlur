@@ -36,20 +36,6 @@ import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
-    public static void updateFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
-        new AsyncTask<Void, Void, StoriesResponse>() {
-            @Override
-            protected StoriesResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.getStoriesForFeed(feedId, pageNumber, order, filter);
-            }
-            @Override
-            protected void onPostExecute(StoriesResponse result) {
-                handleStoryResponse(context, result, result.stories, receiver);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
     public static void updateFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
         new AsyncTask<Void, Void, StoriesResponse>() {
             @Override

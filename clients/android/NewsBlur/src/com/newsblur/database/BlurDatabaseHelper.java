@@ -129,6 +129,10 @@ public class BlurDatabaseHelper {
     }
 
     public void insertStories(StoriesResponse apiResponse) {
+        // to insert classifiers, we need to determine the feed ID of the stories in this
+        // response, so sniff one out.
+        String impliedFeedId = null;
+
         // handle users
         List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
         for (UserProfile user : apiResponse.users) {
@@ -136,16 +140,25 @@ public class BlurDatabaseHelper {
         }
         bulkInsertValues(DatabaseConstants.USER_TABLE, userValues);
 
-        // TODO: StoriesResponse can only handle classifiers from /reader/feed, not /reader/river_stories,
-        //  so we can't yet make a generic digester
-
         // handle story content
         List<ContentValues> storyValues = new ArrayList<ContentValues>(apiResponse.stories.length);
         for (Story story : apiResponse.stories) {
             storyValues.add(story.getValues());
+            impliedFeedId = story.feedId;
         }
         bulkInsertValues(DatabaseConstants.STORY_TABLE, storyValues);
-    
+
+        // handle classifiers
+        // NOTE: only handles top-level classifiers, which only show up for single-feed requests
+        if (apiResponse.classifiers != null) {
+            List<ContentValues> classifierValues = apiResponse.classifiers.getContentValues();
+            for (ContentValues values : classifierValues) {
+                values.put(DatabaseConstants.CLASSIFIER_ID, impliedFeedId);
+            }
+            dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { impliedFeedId });
+            bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifierValues);
+        }
+
         // handle comments
         List<ContentValues> commentValues = new ArrayList<ContentValues>();
         List<ContentValues> replyValues = new ArrayList<ContentValues>();
