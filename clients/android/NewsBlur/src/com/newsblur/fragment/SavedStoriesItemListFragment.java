@@ -64,11 +64,6 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
 		return v;
 	}
 
-	@Override
-	public void changeState(int state) {
-        ; // This fragment ignores state
-	}
-
 	public static ItemListFragment newInstance(DefaultFeedView defaultFeedView) {
 		ItemListFragment fragment = new SavedStoriesItemListFragment();
         Bundle args = new Bundle();
@@ -91,8 +86,4 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
 		return new CursorLoader(getActivity(), FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.STARRED_STORY_ORDER);
 	}
 
-	@Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        ; // This fragment ignores story order
-    }
 }

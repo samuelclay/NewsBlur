@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -39,11 +40,10 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
+	protected int currentState;
+    protected StoryOrder storyOrder;
     private boolean firstSyncDone = false;
 	
-	public abstract void changeState(final int state);
-	public abstract void setStoryOrder(StoryOrder storyOrder);
-
     /**
      * Indicate that the DB was cleared.
      */
@@ -82,6 +82,15 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
+	public void changeState(int state) {
+		currentState = state;
+		hasUpdated();
+	}
+
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
+
 	private void triggerRefresh(int desiredStories) {
         ((ItemsList) getActivity()).triggerRefresh(desiredStories);
     }
@@ -92,6 +101,10 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         }
 	}
 
+    @Override
+    public abstract Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle);
+
+    @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
             if (cursor.getCount() == 0) {

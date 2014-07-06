@@ -33,12 +33,9 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 
 	private ContentResolver contentResolver;
 	private String[] feedIds;
-	private int currentState;
 	private String folderName;
 	private Folder folder;
 	
-    private StoryOrder storyOrder;
-
 	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
@@ -111,15 +108,5 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
-
-	public void changeState(int state) {
-		currentState = state;
-		hasUpdated();
-	}
-	
-	@Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 }

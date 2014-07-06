@@ -31,11 +31,8 @@ import com.newsblur.view.SocialItemViewBinder;
 public class AllStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
 
     private String[] feedIds;
-	private int currentState;
 	private ContentResolver contentResolver;
 	
-    private StoryOrder storyOrder;
-
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,12 +71,6 @@ public class AllStoriesItemListFragment extends ItemListFragment implements OnIt
 		return v;
 	}
 
-	@Override
-	public void changeState(int state) {
-		currentState = state;
-		hasUpdated();
-	}
-	
 	public static ItemListFragment newInstance(ArrayList<String> feedIds, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllStoriesItemListFragment();
 		Bundle arguments = new Bundle();
@@ -107,10 +98,5 @@ public class AllStoriesItemListFragment extends ItemListFragment implements OnIt
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		return new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 	}
-
-	@Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 }

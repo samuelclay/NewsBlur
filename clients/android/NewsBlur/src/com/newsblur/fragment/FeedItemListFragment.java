@@ -31,9 +31,6 @@ import com.newsblur.view.FeedItemViewBinder;
 public class FeedItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private String feedId;
-	private int currentState;
-
-    private StoryOrder storyOrder;
 
     public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
@@ -121,15 +118,5 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
-
-	public void changeState(int state) {
-		currentState = state;
-		hasUpdated();
-	}
-
-    @Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 }

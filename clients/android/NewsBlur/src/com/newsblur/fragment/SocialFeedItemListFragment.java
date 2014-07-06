@@ -34,13 +34,11 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 	private String userId, username;
 	private Uri storiesUri;
 	private SocialFeed socialFeed;
-    private int currentState;
 	
 	private Uri socialFeedUri;
 	private String[] groupFroms;
 	private int[] groupTos;
 	private ListView itemList;
-    private StoryOrder storyOrder;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -114,13 +112,4 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 		startActivity(i);
 	}
 
-	public void changeState(int state) {
-		currentState = state;
-        hasUpdated();
-	}
-
-	@Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 }
