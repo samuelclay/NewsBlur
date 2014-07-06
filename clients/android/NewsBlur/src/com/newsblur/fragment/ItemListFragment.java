@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.Loader;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -32,22 +33,21 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryOrder;
 
-public abstract class ItemListFragment extends Fragment implements OnScrollListener, OnCreateContextMenuListener {
+public abstract class ItemListFragment extends Fragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    protected int currentPage = 0;
-    protected boolean requestedPage;
+	public static int ITEMLIST_LOADER = 0x01;
+
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
     private boolean firstSyncDone = false;
 	
-	public abstract void hasUpdated();
 	public abstract void changeState(final int state);
 	public abstract void setStoryOrder(StoryOrder storyOrder);
 
-
-    public void resetPagination() {
-        this.currentPage = 0;
-        // also re-enable the loading indicator, since this means the story list was reset
+    /**
+     * Indicate that the DB was cleared.
+     */
+    public void resetEmptyState() {
         firstSyncDone = false;
         setEmptyListView(R.string.empty_list_view_loading);
     }
@@ -73,27 +73,29 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         // load an extra page worth of stories past the viewport
-		if (totalCount != 0 && (firstVisible + (visibleCount*2)  >= totalCount) && !requestedPage) {
-			currentPage += 1;
-			requestedPage = true;
-			triggerRefresh(currentPage);
+        int desiredStories = firstVisible + (visibleCount*2);
+		if (totalCount != 0 && (desiredStories >= totalCount) ) {
+			triggerRefresh(desiredStories);
 		}
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-	protected void triggerRefresh(int page) {
-        ((ItemsList) getActivity()).triggerRefresh(page);
+	private void triggerRefresh(int desiredStories) {
+        ((ItemsList) getActivity()).triggerRefresh(desiredStories);
     }
 
-    // all child classes need this callback, so implement it here
+	public void hasUpdated() {
+        if (isAdded()) {
+		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+        }
+	}
+
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
             if (cursor.getCount() == 0) {
-                currentPage += 1;
-                requestedPage = true;
-                triggerRefresh(currentPage);
+                triggerRefresh(1);
             }
 			adapter.swapCursor(cursor);
 
@@ -102,6 +104,11 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
                 setEmptyListView(R.string.empty_list_view_no_stories);
             }
 		}
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		adapter.notifyDataSetInvalidated();
 	}
 
     public void setDefaultFeedView(DefaultFeedView value) {

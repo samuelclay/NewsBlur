@@ -147,7 +147,7 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
         itemListFragment.setStoryOrder(newValue);
-        itemListFragment.resetPagination();
+        itemListFragment.resetEmptyState();
         stopLoading = false;
         itemListFragment.hasUpdated();
     }
@@ -157,7 +157,7 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        itemListFragment.resetPagination();
+        itemListFragment.resetEmptyState();
         stopLoading = false;
         itemListFragment.hasUpdated();
     }

@@ -2,7 +2,6 @@ package com.newsblur.fragment;
 
 import java.util.ArrayList;
 
-import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -31,13 +30,12 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class AllSharedStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class AllSharedStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	public int currentState;
 	private String[] feedIds;
 	private ContentResolver contentResolver;
 
-	public static int ITEMLIST_LOADER = 0x01;
     private StoryOrder storyOrder;
 
     @Override
@@ -74,18 +72,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		itemList.setOnItemClickListener(this);
 
 		return v;
-	}
-
-	public void hasUpdated() {
-        if (isAdded()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-		requestedPage = false;
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
 	}
 
 	@Override

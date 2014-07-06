@@ -1,6 +1,5 @@
 package com.newsblur.fragment;
 
-import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -27,12 +26,10 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class SavedStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class SavedStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private ContentResolver contentResolver;
 	
-	public static int ITEMLIST_LOADER = 0x01;
-
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -65,18 +62,6 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 		itemList.setOnItemClickListener(this);
 
 		return v;
-	}
-
-	public void hasUpdated() {
-        if (isAdded()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-		requestedPage = false;
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
 	}
 
 	@Override

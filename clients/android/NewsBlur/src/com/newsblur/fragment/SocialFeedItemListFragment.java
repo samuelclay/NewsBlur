@@ -1,6 +1,5 @@
 package com.newsblur.fragment;
 
-import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -29,7 +28,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class SocialFeedItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private ContentResolver contentResolver;
 	private String userId, username;
@@ -37,7 +36,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	private SocialFeed socialFeed;
     private int currentState;
 	
-	public static int ITEMLIST_LOADER = 0x01;
 	private Uri socialFeedUri;
 	private String[] groupFroms;
 	private int[] groupTos;
@@ -55,7 +53,8 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		
-		setupSocialFeed();
+		socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
 
 		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		Cursor cursor = getActivity().getContentResolver().query(uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
@@ -70,11 +69,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		
 	}
 
-	private void setupSocialFeed() {
-		socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
-		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
-	}
-	
 	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final StoryOrder storyOrder, final DefaultFeedView defaultFeedView) {
 	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
 		Bundle args = new Bundle();
@@ -108,19 +102,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	    return cursorLoader;
 	}
 
-	public void hasUpdated() {
-		setupSocialFeed();
-		requestedPage = false;
-        if (isAdded()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
-	}
-	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
