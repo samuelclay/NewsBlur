@@ -69,7 +69,9 @@ public class PrefsUtils {
 
     public static void logout(Context context) {
 
-        // TODO: stop or wait for any BG processes
+        NBSyncService.softInterrupt();
+        
+        // TODO: wait for any BG processes
 
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
