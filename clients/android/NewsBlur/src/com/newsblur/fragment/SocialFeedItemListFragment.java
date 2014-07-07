@@ -104,6 +104,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), SocialFeedReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(Reading.EXTRA_USERID, userId);
 		i.putExtra(Reading.EXTRA_USERNAME, username);
 		i.putExtra(Reading.EXTRA_POSITION, position);

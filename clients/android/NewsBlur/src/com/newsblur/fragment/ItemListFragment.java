@@ -31,6 +31,7 @@ import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryOrder;
 
@@ -93,6 +94,10 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 
 	private void triggerRefresh(int desiredStories) {
         ((ItemsList) getActivity()).triggerRefresh(desiredStories);
+    }
+
+    protected FeedSet getFeedSet() {
+        return ((ItemsList) getActivity()).getFeedSet();
     }
 
 	public void hasUpdated() {
@@ -181,11 +186,11 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
             return true;
 
         case R.id.menu_save_story:
-            FeedUtils.saveStory(story, activity, new APIManager(activity), null);
+            FeedUtils.saveStory(story, activity, new APIManager(activity));
             return true;
 
         case R.id.menu_unsave_story:
-            FeedUtils.unsaveStory(story, activity, new APIManager(activity), null);
+            FeedUtils.unsaveStory(story, activity, new APIManager(activity));
             return true;
 
         default:

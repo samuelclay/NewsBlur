@@ -21,6 +21,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
@@ -113,7 +114,7 @@ public class FeedUtils {
         receiver.actionCompleteCallback(true);
     }
 
-	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager, final ActionCompletionListener receiver) {
+	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
@@ -136,19 +137,17 @@ public class FeedUtils {
                     Toast.makeText(context, result.getErrorMessage(context.getString(saved ? R.string.toast_story_save_error : R.string.toast_story_unsave_error)), Toast.LENGTH_LONG).show();
                 }
 
-                if (receiver != null) {
-                    receiver.actionCompleteCallback(false);
-                }
+                NbActivity.updateAllActivities();
             }
         }.execute();
 	}
 
-	public static void saveStory(final Story story, final Context context, final APIManager apiManager, ActionCompletionListener receiver) {
-        setStorySaved(story, true, context, apiManager, receiver);
+	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
+        setStorySaved(story, true, context, apiManager);
     }
 
-	public static void unsaveStory(final Story story, final Context context, final APIManager apiManager, ActionCompletionListener receiver) {
-        setStorySaved(story, false, context, apiManager, receiver);
+	public static void unsaveStory(final Story story, final Context context, final APIManager apiManager) {
+        setStorySaved(story, false, context, apiManager);
     }
 
     public static void deleteFeed( final long feedId, final String folderName, final Context context, final APIManager apiManager) {

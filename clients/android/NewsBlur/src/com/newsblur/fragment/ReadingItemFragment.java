@@ -286,9 +286,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			@Override
 			public void onClick(View v) {
                 if (story.starred) {
-                    FeedUtils.unsaveStory(story, activity, apiManager, activity);
+                    FeedUtils.unsaveStory(story, activity, apiManager);
                 } else {
-				    FeedUtils.saveStory(story, activity, apiManager, activity);
+				    FeedUtils.saveStory(story, activity, apiManager);
                 }
 			}
 		});

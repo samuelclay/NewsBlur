@@ -38,14 +38,16 @@ import com.newsblur.network.APIManager;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final String EXTRA_FEEDSET = "feed_set";
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
 	public static final String EXTRA_USERID = "user_id";
@@ -84,10 +86,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
     private APIManager apiManager;
-    private boolean noMoreApiPages;
     private boolean stopLoading;
-    protected volatile boolean requestedPage; // set high iff a syncservice request for stories is already in flight
-    private int currentApiPage = 0;
+    protected FeedSet fs;
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     protected int startingUnreadCount = 0;
@@ -113,6 +113,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
 
 		fragmentManager = getFragmentManager();
+
+        fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
 
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_POSITION)) {
             passedPosition = savedInstanceBundle.getInt(BUNDLE_POSITION);
@@ -279,9 +281,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
-			    FeedUtils.unsaveStory(story, Reading.this, apiManager, this);
+			    FeedUtils.unsaveStory(story, Reading.this, apiManager);
             } else {
-                FeedUtils.saveStory(story, Reading.this, apiManager, this);
+                FeedUtils.saveStory(story, Reading.this, apiManager);
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
@@ -296,15 +298,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
-    public void actionCompleteCallback(boolean noMoreData) {
-        // TODO: remove me and gut the pagination code
-		enableMainProgress(false);
-        this.requestedPage = false;
-        if (this.stopLoading) { return; }
-
-        if (noMoreData) {
-		    this.noMoreApiPages = true;
-        }
+	public void handleUpdate() {
+        enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
         updateCursor();
     }
 
@@ -424,19 +419,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private void checkStoryCount(int position) {
         if (AppConstants.VERBOSE_LOG) {
-            Log.d(this.getClass().getName(), String.format("story %d of %d selected, noMore pages: %b, requestedPg: %b, stopLoad: %b", position, stories.getCount(), noMoreApiPages, requestedPage, stopLoading));
+            Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
         }
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
-			currentApiPage += 1;
-			requestedPage = true;
-            enableMainProgress(true);
-			triggerRefresh(currentApiPage);
+		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !stopLoading) {
+			triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
 		}
         
-        if (noMoreApiPages || stopLoading) {
-        // if we terminated because we are well and truly done, break any search loops and stop progress indication
-            enableMainProgress(false);
+        if (stopLoading) {
+            // if we terminated because we are well and truly done, break any search loops and stop progress indication
             if (this.unreadSearchLatch != null) {
                 this.unreadSearchLatch.countDown();
             }
@@ -465,7 +456,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         });
 	}
         
-	protected abstract void triggerRefresh(int page);
+	private void triggerRefresh(int desiredStoryCount) {
+		if (!stopLoading) {
+            boolean moreLeft = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            if (moreLeft) {
+                triggerSync();
+            } else {
+                stopLoading = true;
+            }
+		}
+    }
 
     @Override
     protected void onPause() {
@@ -549,13 +549,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     break unreadSearch;
                 } 
 
-                if (story == null) {
-                    if (this.noMoreApiPages) {
-                        // this is odd. if there were no unreads, how was the button even enabled?
-                        Log.w(this.getClass().getName(), "Ran out of stories while looking for unreads.");
-                        break unreadSearch;
-                    } 
-                } else {
+                if (story != null) {
                     if ((candidate == pager.getCurrentItem()) || (story.read) ) {
                         candidate++;
                         continue unreadSearch;

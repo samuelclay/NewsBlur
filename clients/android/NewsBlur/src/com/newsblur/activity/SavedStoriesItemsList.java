@@ -49,7 +49,7 @@ public class SavedStoriesItemsList extends ItemsList {
 	}
 
     @Override
-    protected FeedSet getFeedSet() {
+    protected FeedSet createFeedSet() {
         return new FeedSet(null, null, true);
     }
 

@@ -48,7 +48,7 @@ public class SocialFeedItemsList extends ItemsList {
 	}
 
 	@Override
-    protected FeedSet getFeedSet() {
+    protected FeedSet createFeedSet() {
         return FeedSet.singleSocialFeed(getIntent().getStringExtra(EXTRA_BLURBLOG_USERID), getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
     }
 

@@ -303,7 +303,7 @@ public class NBSyncService extends Service {
                 if (HaltNow) return;
 
                 pageNumber++;
-                StoriesResponse apiResponse /*= apiManager.getStoriesForFeed(feedId, pageNumber, order, filter)*/;
+                StoriesResponse apiResponse /*= apiManager.getStoriesForFeed(feedId, pageNumber, order, filter)*/ = null;
             
                 if (! isStoryResponseGood(apiResponse)) break feedloop;
 

@@ -3,6 +3,7 @@ package com.newsblur.util;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +15,10 @@ import java.util.Set;
  * complexity of the fact that social feeds are special and requesting a river of feeds is not
  * the same as requesting one or more individual feeds.
  */
-public class FeedSet {
+@SuppressWarnings("serial")
+public class FeedSet implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     private Set<String> feeds;
     /** Mapping of social feed IDs to usernames. */

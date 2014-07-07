@@ -112,6 +112,7 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FeedReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(Reading.EXTRA_FEED, feedId);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);

@@ -48,9 +48,4 @@ public class SocialFeedReading extends Reading {
         return new CursorLoader(this, storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(PrefsUtils.getStoryOrderForFeed(this, userId)));
     }
 
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateSocialFeed(this, this, userId, username, page, PrefsUtils.getStoryOrderForFeed(this, userId), PrefsUtils.getReadFilterForFeed(this, userId));
-    }
-
 }

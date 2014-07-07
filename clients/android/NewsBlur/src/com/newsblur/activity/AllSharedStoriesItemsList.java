@@ -63,7 +63,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
     }
 
     @Override
-    protected FeedSet getFeedSet() {
+    protected FeedSet createFeedSet() {
         return FeedSet.allSocialFeeds();
     }
 

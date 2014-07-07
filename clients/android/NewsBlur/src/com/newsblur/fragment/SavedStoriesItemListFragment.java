@@ -76,6 +76,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), SavedStoriesReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);

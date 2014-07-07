@@ -59,12 +59,6 @@ public class FeedReading extends Reading {
     }
 
     @Override
-    protected void triggerRefresh(int page) {
-        NBSyncService.requestMoreForFeed(feedId);
-        triggerSync();
-    }
-
-    @Override
     public void handleUpdate() {
         ;
     }

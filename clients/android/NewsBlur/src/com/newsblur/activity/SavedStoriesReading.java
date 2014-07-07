@@ -35,9 +35,4 @@ public class SavedStoriesReading extends Reading {
         return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.STARRED_STORY_ORDER);
     }
     
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateSavedStories(this, this, page);
-    }
-
 }

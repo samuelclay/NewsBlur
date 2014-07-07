@@ -21,6 +21,7 @@ import android.util.Log;
 import com.newsblur.activity.Login;
 import com.newsblur.database.BlurDatabase;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.service.NBSyncService;
 
 public class PrefsUtils {
 

@@ -74,7 +74,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	}
 
 	@Override
-    protected FeedSet getFeedSet() {
+    protected FeedSet createFeedSet() {
         return FeedSet.allFeeds();
     }
     

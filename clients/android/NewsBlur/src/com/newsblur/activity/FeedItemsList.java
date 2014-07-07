@@ -65,7 +65,7 @@ public class FeedItemsList extends ItemsList {
 	}
 
     @Override
-    protected FeedSet getFeedSet() {
+    protected FeedSet createFeedSet() {
         return FeedSet.singleFeed(getIntent().getStringExtra(EXTRA_FEED));
     }
 	

@@ -87,6 +87,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);

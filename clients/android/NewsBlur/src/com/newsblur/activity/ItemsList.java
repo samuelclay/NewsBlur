@@ -59,7 +59,11 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
-    protected abstract FeedSet getFeedSet();
+    protected abstract FeedSet createFeedSet();
+
+    public FeedSet getFeedSet() {
+        return this.fs;
+    }
 
     protected void onResume() {
         super.onResume();
