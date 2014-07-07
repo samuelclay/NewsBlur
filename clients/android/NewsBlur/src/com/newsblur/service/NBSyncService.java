@@ -345,6 +345,13 @@ public class NBSyncService extends Service {
     }
 
     /**
+     * Is there a sync for a given FeedSet running?
+     */
+    public static boolean isFeedSetSyncing(FeedSet fs) {
+        return PendingFeeds.containsKey(fs);
+    }
+
+    /**
      * Force a refresh of feed/folder data on the next sync, even if enough time
      * hasn't passed for an autosync.
      */
@@ -370,6 +377,10 @@ public class NBSyncService extends Service {
         if (ExhaustedFeeds.contains(fs)) return false;
         PendingFeeds.put(fs, desiredStoryCount);
         return true;
+    }
+
+    public static void softInterrupt() {
+        HaltNow = true;
     }
 
     @Override

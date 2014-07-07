@@ -17,15 +17,13 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
-import com.newsblur.util.FeedUtils.ActionCompletionListener;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
+public abstract class ItemsList extends NbActivity implements StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
@@ -120,19 +118,8 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
     protected abstract DefaultFeedView getDefaultFeedView();
 	
     @Override
-    public void actionCompleteCallback(boolean noMoreData) {
-		if (itemListFragment != null) {
-			itemListFragment.hasUpdated();
-			itemListFragment.syncDone();;
-		}
-        setProgressBarIndeterminateVisibility(false);
-        if (noMoreData) {
-            stopLoading = true;
-        }
-    }
-
-    @Override
 	public void handleUpdate() {
+        setProgressBarIndeterminateVisibility(NBSyncService.isFeedSetSyncing(this.fs));
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
         }
