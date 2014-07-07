@@ -2843,6 +2843,10 @@
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser(options);
         },
         
+        open_organizer_modal: function(options) {
+            NEWSBLUR.organizer = new NEWSBLUR.ReaderOrganizer(options);
+        },
+        
         open_feed_exception_modal: function(feed_id) {
             feed_id = feed_id || this.active_feed;
             
@@ -2960,6 +2964,11 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mute Sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Temporarily turn off feeds.')
                     ])),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-organizer' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Organize Sites'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Move, delete, and batch actions.')
+                    ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Upgrade to premium')
@@ -5667,6 +5676,14 @@
                         self.open_feedchooser_modal({
                             'chooser_only': NEWSBLUR.Globals.is_premium
                         });
+                    });
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-organizer' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_organizer_modal();
                     });
                 }
             });  

@@ -6741,6 +6741,10 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-feedchooser .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/color_swatch.png') no-repeat  1px 2px;
 }
+.NB-menu-manage .NB-menu-manage-organizer .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_book.png') no-repeat  0 0;
+    background-size: 18px;
+}
 .NB-menu-manage .NB-menu-manage-premium .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_greensun.png') no-repeat  0 0px;
     background-size: 18px;
@@ -10690,6 +10694,15 @@ form.opml_import_form input {
 }
 .NB-interaction-sharedstory-content {
     cursor: pointer;
+}
+
+/* ============= */
+/* = Organizer = */
+/* ============= */
+
+.NB-modal-organizer .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_book.png');
+    background-size: 28px;
 }
 
 /* ================= */
