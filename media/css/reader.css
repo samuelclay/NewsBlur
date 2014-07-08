@@ -3389,6 +3389,7 @@ body {
 
 .NB-sideoption-share-wrapper {
     height: 0;
+    width: 100%;
     overflow: hidden;
 }
 .NB-menu-manage .NB-sideoption-share-wrapper {
