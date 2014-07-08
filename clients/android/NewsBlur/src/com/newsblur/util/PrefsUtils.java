@@ -293,24 +293,24 @@ public class PrefsUtils {
     }
 
     public static StoryOrder getStoryOrder(Context context, FeedSet fs) {
-        if (fs.getFeeds() != null) {
-            if (fs.getFeeds().size() == 0) {
-                return getStoryOrderForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
-            } else if (fs.getFeeds().size() == 1) {
-                return getStoryOrderForFeed(context, fs.getFeeds().iterator().next());
-            } else {
-                return getStoryOrderForFolder(context, fs.getFolderName());
-            }
+        if (fs.isAllNormal()) {
+            return getStoryOrderForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleFeed() != null) {
+            return getStoryOrderForFeed(context, fs.getSingleFeed());
+        }
+        if (fs.getMultipleFeeds() != null) {
+            return getStoryOrderForFolder(context, fs.getFolderName());
         }
 
-        if (fs.getSocialFeeds() != null) {
-            if (fs.getSocialFeeds().size() == 0) {
-                return getStoryOrderForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-            } else if (fs.getSocialFeeds().size() == 1) {
-                return getStoryOrderForFeed(context, fs.getSocialFeeds().keySet().iterator().next());
-            } else {
-                throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
-            }
+        if (fs.isAllSocial()) {
+            return getStoryOrderForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleSocialFeed() != null) {
+            return getStoryOrderForFeed(context, fs.getSingleSocialFeed().getKey());
+        }
+        if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
         }
 
         if (fs.isAllSaved()) {
@@ -321,24 +321,24 @@ public class PrefsUtils {
     }
 
     public static ReadFilter getReadFilter(Context context, FeedSet fs) {
-        if (fs.getFeeds() != null) {
-            if (fs.getFeeds().size() == 0) {
-                return getReadFilterForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
-            } else if (fs.getFeeds().size() == 1) {
-                return getReadFilterForFeed(context, fs.getFeeds().iterator().next());
-            } else {
-                return getReadFilterForFolder(context, fs.getFolderName());
-            }
+        if (fs.isAllNormal()) {
+            return getReadFilterForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleFeed() != null) {
+            return getReadFilterForFeed(context, fs.getSingleFeed());
+        }
+        if (fs.getMultipleFeeds() != null) {
+            return getReadFilterForFolder(context, fs.getFolderName());
         }
 
-        if (fs.getSocialFeeds() != null) {
-            if (fs.getSocialFeeds().size() == 0) {
-                return getReadFilterForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-            } else if (fs.getSocialFeeds().size() == 1) {
-                return getReadFilterForFeed(context, fs.getSocialFeeds().keySet().iterator().next());
-            } else {
-                throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
-            }
+        if (fs.isAllSocial()) {
+            return getReadFilterForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleSocialFeed() != null) {
+            return getReadFilterForFeed(context, fs.getSingleSocialFeed().getKey());
+        }
+        if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
         }
 
         if (fs.isAllSaved()) {

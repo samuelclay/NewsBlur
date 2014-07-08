@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -108,12 +109,40 @@ public class FeedSet implements Serializable {
         return fs;
     }
 
-    public Set<String> getFeeds() {
-        return this.feeds;
+    /**
+     * Gets a single feed ID iff there is only one or null otherwise.
+     */
+    public String getSingleFeed() {
+        if (feeds != null && feeds.size() == 1) return feeds.iterator().next(); else return null;
     }
 
-    public Map<String,String> getSocialFeeds() {
-        return this.socialFeeds;
+    /**
+     * Gets a set of feed IDs iff there are multiples or null otherwise.
+     */
+    public Set<String> getMultipleFeeds() {
+        if (feeds != null && feeds.size() > 1) return feeds; else return null;
+    }
+
+    /**
+     * Gets a single social feed ID and username iff there is only one or null otherwise.
+     */
+    public Map.Entry<String,String> getSingleSocialFeed() {
+        if (socialFeeds != null && socialFeeds.size() == 1) return socialFeeds.entrySet().iterator().next(); else return null;
+    }
+
+    /**
+     * Gets a set of social feed IDs and usernames iff there are multiples or null otherwise.
+     */
+    public Map<String,String> getMultipleSocialFeeds() {
+        if (socialFeeds != null && socialFeeds.size() > 1) return socialFeeds; else return null;
+    }
+
+    public boolean isAllNormal() {
+        return this.isAllNormal;
+    }
+
+    public boolean isAllSocial() {
+        return this.isAllSocial;
     }
 
     public boolean isAllSaved() {

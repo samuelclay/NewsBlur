@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import android.content.ContentResolver;
@@ -49,6 +50,7 @@ import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.serialization.StoryTypeAdapter;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -218,18 +220,6 @@ public class APIManager {
         return (UnreadStoryHashesResponse) response.getResponse(gson, UnreadStoryHashesResponse.class);
     }
 
-	public StoriesResponse getStoriesForFeed(String feedId, int pageNumber, StoryOrder order, ReadFilter filter) {
-		final ContentValues values = new ContentValues();
-		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
-		values.put(APIConstants.PARAMETER_FEEDS, feedId);
-		values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
-		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
-
-		APIResponse response = get(feedUri.toString(), values);
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
-	}
-
     public StoriesResponse getStoriesByHash(List<String> storyHashes) {
 		ValueMultimap values = new ValueMultimap();
         for (String hash : storyHashes) {
@@ -239,126 +229,47 @@ public class APIManager {
         return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
     }
 
-	public StoriesResponse getStoriesForFeeds(String[] feedIds, int pageNumber, StoryOrder order, ReadFilter filter) {
-		final ValueMultimap values = new ValueMultimap();
-		for (String feedId : feedIds) {
-			values.put(APIConstants.PARAMETER_FEEDS, feedId);
-		}
+    /**
+     * Fetches stories for the given FeedSet, choosing the correct API and the right
+     * request parameters as needed.
+     */
+    public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter) {
+        Uri uri;
+        ValueMultimap values = new ValueMultimap();
+    
+        // create the URI and populate request params depending on what kind of stories we want
+        if (fs.getSingleFeed() != null) {
+            uri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(fs.getSingleFeed()).build();
+            values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed());
+        } else if (fs.getMultipleFeeds() != null) {
+            uri = Uri.parse(APIConstants.URL_RIVER_STORIES);
+            for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDS, feedId);
+        } else if (fs.getSingleSocialFeed() != null) {
+            String feedId = fs.getSingleSocialFeed().getKey();
+            String username = fs.getSingleSocialFeed().getValue();
+            uri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(feedId).appendPath(username).build();
+            values.put(APIConstants.PARAMETER_USER_ID, feedId);
+            values.put(APIConstants.PARAMETER_USERNAME, username);
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
+            for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
+                values.put(APIConstants.PARAMETER_FEEDS, entry.getKey());
+            }
+        } else if (fs.isAllSaved()) {
+            uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
+        } else {
+            Log.wtf(this.getClass().getName(), "Asked to get stories for FeedSet of unknown type.");
+            return null;
+        }
+
+		// request params common to all stories
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
-		final APIResponse response = get(APIConstants.URL_RIVER_STORIES, values);
 
-		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
-		if (!response.isError()) {
-			for (Story story : storiesResponse.stories) {
-				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
-				contentResolver.insert(storyUri, story.getValues());
-				insertComments(story);
-			}
-
-			for (UserProfile user : storiesResponse.users) {
-				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
-			}
-		}
-        return storiesResponse;
-	}
-
-	public StoriesResponse getStarredStories(int pageNumber) {
-		ValueMultimap values = new ValueMultimap();
-        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-		APIResponse response = get(APIConstants.URL_STARRED_STORIES, values);
-
-		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
-		if (!response.isError()) {
-			for (Story story : storiesResponse.stories) {
-				contentResolver.insert(FeedProvider.STARRED_STORIES_URI, story.getValues());
-				insertComments(story);
-			}
-			for (UserProfile user : storiesResponse.users) {
-				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
-			}
-        }
-        return storiesResponse;
-	}
-
-	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, int pageNumber, StoryOrder order, ReadFilter filter) {
-		final ValueMultimap values = new ValueMultimap();
-		for (String feedId : feedIds) {
-			values.put(APIConstants.PARAMETER_FEEDS, feedId);
-		}
-        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
-        values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
-
-		final APIResponse response = get(APIConstants.URL_SHARED_RIVER_STORIES, values);
-		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
-		if (!response.isError()) {
-
-			for (Story story : storiesResponse.stories) {
-				for (String userId : story.sharedUserIds) {
-					Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-					contentResolver.insert(storySocialUri, story.getValues());
-				}
-
-				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
-				contentResolver.insert(storyUri, story.getValues());
-
-				insertComments(story);
-			}
-
-			for (UserProfile user : storiesResponse.userProfiles) {
-				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
-			}
-
-			if (storiesResponse != null && storiesResponse.feeds!= null) {
-				for (Feed feed : storiesResponse.feeds) {
-					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
-				}
-			}
-		}
-
-        return storiesResponse;
-	}
-
-	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, int pageNumber, StoryOrder order, ReadFilter filter) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_USER_ID, userId);
-		values.put(APIConstants.PARAMETER_USERNAME, username);
-		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
-        values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
-        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
-		final APIResponse response = get(feedUri.toString(), values);
-		SocialFeedResponse socialFeedResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
-		if (!response.isError()) {
-
-			for (Story story : socialFeedResponse.stories) {
-				insertComments(story);
-
-				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
-                Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-				contentResolver.insert(storyUri, story.getValues());
-				contentResolver.insert(storySocialUri, story.getValues());
-			}
-
-			if (socialFeedResponse.userProfiles != null) {
-				for (UserProfile user : socialFeedResponse.userProfiles) {
-					contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
-				}
-			}
-
-            if (socialFeedResponse.feeds != null) {
-                for (Feed feed : socialFeedResponse.feeds) {
-                    contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
-                }
-            }
-
-			return socialFeedResponse;
-		} else {
-			return null;
-		}
-	}
+		APIResponse response = get(uri.toString(), values);
+        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+    }
 
 	private void insertComments(Story story) {
 		for (Comment comment : story.publicComments) {
