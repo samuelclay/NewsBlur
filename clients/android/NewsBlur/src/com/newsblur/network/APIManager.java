@@ -271,39 +271,6 @@ public class APIManager {
         return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
     }
 
-	private void insertComments(Story story) {
-		for (Comment comment : story.publicComments) {
-			StringBuilder builder = new StringBuilder();
-			builder.append(story.id);
-			builder.append(story.feedId);
-			builder.append(comment.userId);
-			comment.storyId = story.id;
-			comment.id = (builder.toString());
-			contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
-
-			for (Reply reply : comment.replies) {
-				reply.commentId = comment.id;
-				contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
-			}
-		}
-
-		for (Comment comment : story.friendsComments) {
-			StringBuilder builder = new StringBuilder();
-			builder.append(story.id);
-			builder.append(story.feedId);
-			builder.append(comment.userId);
-			comment.storyId = story.id;
-			comment.id = (builder.toString());
-			comment.byFriend = true;
-			contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
-
-			for (Reply reply : comment.replies) {
-				reply.commentId = comment.id;
-				contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
-			}
-		}
-	}
-
 	public boolean followUser(final String userId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);

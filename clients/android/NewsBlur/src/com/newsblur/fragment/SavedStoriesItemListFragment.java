@@ -84,6 +84,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        // TODO: we are no longer inserting starred stories into their own table. query the stories table for the starred column!
 		return new CursorLoader(getActivity(), FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.STARRED_STORY_ORDER);
 	}
 
