@@ -49,6 +49,7 @@ import java.util.Set;
  */
 public class NBSyncService extends Service {
 
+    private volatile static long LastStartMillis;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean DoCleanup = false;
@@ -89,6 +90,15 @@ public class NBSyncService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         HaltNow = false;
+
+        // sanity check how often we try to run
+        long timeSinceLastRun = System.currentTimeMillis() - LastStartMillis;
+        LastStartMillis = System.currentTimeMillis();
+        if (timeSinceLastRun < AppConstants.MINIMUM_SYNC_INTERVAL_MILLIS) {
+            Log.w(this.getClass().getName(), "Skipping sync: attempted too recently.");
+            return Service.START_NOT_STICKY;
+        }
+
         // only perform a sync if the app is actually running or background syncs are enabled
         if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
             // Services actually get invoked on the main system thread, and are not
@@ -280,6 +290,7 @@ public class NBSyncService extends Service {
     }
 
     private void syncPendingFeeds() {
+        Log.d(this.getClass().getName(), "FeedSets to sync: " + PendingFeeds.size());
         feedloop: for (FeedSet fs : PendingFeeds.keySet()) {
             if (HaltNow) return;
 
@@ -325,13 +336,11 @@ public class NBSyncService extends Service {
 
     private boolean isStoryResponseGood(StoriesResponse response) {
         if (response.isError()) {
-            Log.e(this.getClass().getName(), "Error response received loading stories.");
-            Toast.makeText(this, response.getErrorMessage(this.getString(R.string.toast_error_loading_stories)), Toast.LENGTH_LONG).show();
+            Log.e(this.getClass().getName(), "Error response received loading stories: " + response.getErrorMessage("none"));
             return false;
         }
         if (response.stories == null) {
             Log.e(this.getClass().getName(), "Null stories member received while loading stories with no error found.");
-            Toast.makeText(this, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
@@ -374,6 +383,10 @@ public class NBSyncService extends Service {
      * @param desiredStoryCount the minimum number of stories to fetch.
      */
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount) {
+        if (fs == null ) {
+            Log.e(NBSyncService.class.getName(), "rejecting request for null feedset");
+            return false;
+        }
         if (ExhaustedFeeds.contains(fs)) return false;
         PendingFeeds.put(fs, desiredStoryCount);
         return true;

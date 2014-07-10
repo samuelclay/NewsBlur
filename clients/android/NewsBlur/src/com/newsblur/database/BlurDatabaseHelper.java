@@ -141,11 +141,13 @@ public class BlurDatabaseHelper {
         bulkInsertValues(DatabaseConstants.USER_TABLE, userValues);
 
         // handle supplemental feed data that may have been included (usually in social requests)
-        List<ContentValues> feedValues = new ArrayList<ContentValues>(apiResponse.feeds.length);
-        for (Feed feed : apiResponse.feeds) {
-            feedValues.add(feed.getValues());
+        if (apiResponse.feeds != null) {
+            List<ContentValues> feedValues = new ArrayList<ContentValues>(apiResponse.feeds.length);
+            for (Feed feed : apiResponse.feeds) {
+                feedValues.add(feed.getValues());
+            }
+            bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
         }
-        bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
 
         // handle story content
         List<ContentValues> storyValues = new ArrayList<ContentValues>(apiResponse.stories.length);
@@ -156,13 +158,15 @@ public class BlurDatabaseHelper {
             storyValues.add(values);
             // if a story was shared by a user, also insert it into the social table under their userid, too
             for (String sharedUserId : story.sharedUserIds) {
-                values.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
-                values.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
+                ContentValues socialValues = new ContentValues();
+                socialValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
+                socialValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
+                socialStoryValues.add(socialValues);
             }
             impliedFeedId = story.feedId;
         }
         bulkInsertValues(DatabaseConstants.STORY_TABLE, storyValues);
-        bulkInsertValues(DatabaseConstants.SOCIALFEED_TABLE, socialStoryValues);
+        bulkInsertValues(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, socialStoryValues);
 
         // handle classifiers
         // NOTE: only handles top-level classifiers, which only show up for single-feed requests

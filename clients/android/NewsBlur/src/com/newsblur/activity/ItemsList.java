@@ -45,7 +45,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	@Override
     protected void onCreate(Bundle bundle) {
-        this.fs = getFeedSet();
+        this.fs = createFeedSet();
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
