@@ -49,7 +49,7 @@ import java.util.Set;
  */
 public class NBSyncService extends Service {
 
-    private volatile static long LastStartMillis;
+    private volatile static boolean FreshRequest;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean DoCleanup = false;
@@ -91,13 +91,11 @@ public class NBSyncService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         HaltNow = false;
 
-        // sanity check how often we try to run
-        long timeSinceLastRun = System.currentTimeMillis() - LastStartMillis;
-        LastStartMillis = System.currentTimeMillis();
-        if (timeSinceLastRun < AppConstants.MINIMUM_SYNC_INTERVAL_MILLIS) {
-            Log.w(this.getClass().getName(), "Skipping sync: attempted too recently.");
+        // callers might accidentally invoke us rapid-fire.  If we have thread invocations queued up, discard new ones
+        if (FreshRequest) {
             return Service.START_NOT_STICKY;
         }
+        FreshRequest = true;
 
         // only perform a sync if the app is actually running or background syncs are enabled
         if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
@@ -122,6 +120,7 @@ public class NBSyncService extends Service {
      */
     private synchronized void doSync() {
         Log.d(this.getClass().getName(), "starting sync . . .");
+        FreshRequest = false;
 
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
@@ -175,15 +174,15 @@ public class NBSyncService extends Service {
             return;
         }
 
+        // making the above API call resets pagination on the server
+        feedPagesSeen.clear();
+
         // if the response says we aren't logged in, clear the DB and prompt for login. We test this
         // here, since this the first sync call we make on launch if we believe we are cookied.
         if (! feedResponse.isAuthenticated) {
             PrefsUtils.logout(this);
             return;
         }
-
-        // making the above API call resets pagination on the server
-        feedPagesSeen.clear();
 
         // there is a rare issue with feeds that have no folder.  capture them for debug.
         List<String> debugFeedIds = new ArrayList<String>();
@@ -291,12 +290,13 @@ public class NBSyncService extends Service {
 
     private void syncPendingFeeds() {
         Log.d(this.getClass().getName(), "FeedSets to sync: " + PendingFeeds.size());
+        Set<FeedSet> handledFeeds = new HashSet<FeedSet>();
         feedloop: for (FeedSet fs : PendingFeeds.keySet()) {
             if (HaltNow) return;
 
             if (ExhaustedFeeds.contains(fs)) {
                 Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
-                PendingFeeds.remove(fs);
+                handledFeeds.add(fs);
                 continue feedloop;
             }
             
@@ -312,6 +312,7 @@ public class NBSyncService extends Service {
             
             pageloop: while (totalStoriesSeen < PendingFeeds.get(fs)) {
                 if (HaltNow) return;
+                Log.d(this.getClass().getName(), "stories previously fetched for this feed set: " + totalStoriesSeen);
 
                 pageNumber++;
                 StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
@@ -330,8 +331,10 @@ public class NBSyncService extends Service {
                 }
             }
 
-            PendingFeeds.remove(fs);
+            handledFeeds.add(fs);
         }
+
+        PendingFeeds.keySet().removeAll(handledFeeds);
     }
 
     private boolean isStoryResponseGood(StoriesResponse response) {

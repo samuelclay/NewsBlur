@@ -51,6 +51,4 @@ public class AppConstants {
     // how many unread stories to fetch via hash at a time
     public static final int UNREAD_FETCH_BATCH_SIZE = 20;
 
-    // throw out sync attempts more often than this period, for sanity's sake
-    public static final long MINIMUM_SYNC_INTERVAL_MILLIS = 1000L;
 }

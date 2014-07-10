@@ -44,6 +44,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 	protected int currentState;
     protected StoryOrder storyOrder;
     private boolean firstSyncDone = false;
+    private int lastRequestedStoryCount = 0;
 	
     /**
      * Indicate that the DB was cleared.
@@ -73,11 +74,13 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-        // load an extra page worth of stories past the viewport
+        // load an extra page or two worth of stories past the viewport
         int desiredStories = firstVisible + (visibleCount*2);
-		if (totalCount != 0 && (desiredStories >= totalCount) ) {
-			triggerRefresh(desiredStories);
-		}
+        // this method tends to get called repeatedly. don't constantly keep requesting the same count!
+        if (lastRequestedStoryCount != desiredStories) {
+            triggerRefresh(desiredStories);
+            lastRequestedStoryCount = desiredStories;
+        }
 	}
 
 	@Override
