@@ -17,6 +17,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -213,6 +214,35 @@ public class BlurDatabaseHelper {
             values.put(DatabaseConstants.STORY_READ, true);
             dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
         }
+    }
+
+    public int getFeedUnreadCount(String feedId, int readingState) {
+        // calculate the unread count both from the feeds table and the stories table. If
+        // they disagree, use the maximum value seen.
+        int countFromFeedsTable = 0;
+        int countFromStoriesTable = 0;
+
+        // note we have to select the whole story object so we can get all they flavours of unread count and do math on them
+        String q1 = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + 
+                    " FROM " + DatabaseConstants.FEED_TABLE +
+                    " WHERE " +  DatabaseConstants.FEED_ID + "= ?";
+        Cursor c1 = dbRO.rawQuery(q1, new String[]{feedId});
+        if (c1.getCount() > 0) {
+            Feed feed = Feed.fromCursor(c1);
+            countFromFeedsTable = FeedUtils.getFeedUnreadCount(feed, readingState);
+        }
+        c1.close();
+
+        // note we can't select count(*) because the actual story state columns are virtual
+        String q2 = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + " FROM " + DatabaseConstants.STORY_TABLE +
+                    " WHERE " +  DatabaseConstants.STORY_FEED_ID + "= ?" +
+                    " AND " + DatabaseConstants.getStorySelectionFromState(readingState) +
+                    " AND " + DatabaseConstants.STORY_READ + " = 0";
+        Cursor c2 = dbRO.rawQuery(q2, new String[]{feedId});
+        countFromStoriesTable = c2.getCount();
+        c2.close();
+
+        return Math.max(countFromFeedsTable, countFromStoriesTable);
     }
 
 }

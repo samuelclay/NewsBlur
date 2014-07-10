@@ -30,6 +30,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
@@ -85,6 +86,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
+    protected BlurDatabaseHelper dbHelper;
     private APIManager apiManager;
     private boolean stopLoading;
     protected FeedSet fs;
@@ -131,6 +133,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
+        dbHelper = new BlurDatabaseHelper(this);
 
         this.apiManager = new APIManager(this);
 
@@ -146,6 +149,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dbHelper != null) dbHelper.close();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (pager != null) {
             outState.putInt(BUNDLE_POSITION, pager.getCurrentItem());
@@ -159,11 +168,21 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected void onResume() {
         super.onResume();
         // this view shows stories, it is not safe to perform cleanup
-        NBSyncService.enableCleanup(false);
+        NBSyncService.holdStories(true);
         this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.
         getLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    protected void onPause() {
+        NBSyncService.holdStories(false);
+        this.stopLoading = true;
+        if (this.unreadSearchLatch != null) {
+            this.unreadSearchLatch.countDown();
+        }
+        super.onPause();
     }
 
 	@Override
@@ -185,9 +204,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
 
-                // don't blow away the value if the value was restored on create
-                if (this.startingUnreadCount == 0 ) {
-                    this.startingUnreadCount = getUnreadCount();
+                int currentUnreadCount = getUnreadCount();
+                if (currentUnreadCount > this.startingUnreadCount ) {
+                    this.startingUnreadCount = currentUnreadCount;
                 }
 
                 // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
@@ -465,15 +484,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 stopLoading = true;
             }
 		}
-    }
-
-    @Override
-    protected void onPause() {
-        this.stopLoading = true;
-        if (this.unreadSearchLatch != null) {
-            this.unreadSearchLatch.countDown();
-        }
-        super.onPause();
     }
 
     private void markStoryRead(Story story) {

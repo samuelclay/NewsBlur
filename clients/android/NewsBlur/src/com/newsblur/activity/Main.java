@@ -51,7 +51,7 @@ public class Main extends NbActivity implements StateChangedListener {
     protected void onResume() {
         super.onResume();
         // this view doesn't show stories, it is safe to perform cleanup
-        NBSyncService.enableCleanup(true);
+        NBSyncService.holdStories(false);
         triggerSync();
     }
 

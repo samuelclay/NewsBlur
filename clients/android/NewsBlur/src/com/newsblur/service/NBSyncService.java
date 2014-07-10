@@ -52,7 +52,7 @@ public class NBSyncService extends Service {
     private volatile static boolean FreshRequest;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
-    private volatile static boolean DoCleanup = false;
+    private volatile static boolean HoldStories = false;
     private volatile static boolean DoFeedsFolders = false;
     /** Feed sets that we need to sync and how many stories the UI wants for them. */
     private static Map<FeedSet,Integer> PendingFeeds;
@@ -79,8 +79,6 @@ public class NBSyncService extends Service {
         storyHashQueue = new HashSet<String>();
         feedPagesSeen = new HashMap<FeedSet,Integer>();
         feedStoriesSeen = new HashMap<FeedSet,Integer>();
-        PendingFeeds.clear();
-        ExhaustedFeeds.clear();
 	}
 
     /**
@@ -127,24 +125,28 @@ public class NBSyncService extends Service {
         try {
             wl.acquire();
 
-            CleanupRunning = true;
-            NbActivity.updateAllActivities();
-            if (DoCleanup) {
+            // any of these steps might modify the story list for a feed or folder in a way that
+            // would annoy a user who is on the story list or paging through stories. Don't do
+            // them unless they are not on a story view
+            if (! HoldStories) {
+
+                CleanupRunning = true;
                 Log.d(this.getClass().getName(), "cleaning up stories");
                 dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
-            }
-            CleanupRunning = false;
-            NbActivity.updateAllActivities();
+                CleanupRunning = false;
+                NbActivity.updateAllActivities();
 
-            FFSyncRunning = true;
-            NbActivity.updateAllActivities();
-            if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
-                syncMetadata();
-                PrefsUtils.updateLastSyncTime(this);
-                DoFeedsFolders = false;
+                FFSyncRunning = true;
+                NbActivity.updateAllActivities();
+                if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
+                    syncMetadata();
+                    PrefsUtils.updateLastSyncTime(this);
+                    DoFeedsFolders = false;
+                }
+                FFSyncRunning = false;
+                NbActivity.updateAllActivities();
+
             }
-            FFSyncRunning = false;
-            NbActivity.updateAllActivities();
 
             syncPendingFeeds();
             NbActivity.updateAllActivities();
@@ -162,10 +164,13 @@ public class NBSyncService extends Service {
 
     /**
      * The very first step of a sync - get the feed/folder list, unread counts, and
-     * unread hashes.
+     * unread hashes. Doing this resets pagination on the server!
      */
     private void syncMetadata() {
         if (HaltNow) return;
+
+        PendingFeeds.clear();
+        ExhaustedFeeds.clear();
 
         Log.d(this.getClass().getName(), "fetching feeds and folders");
         FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -265,7 +270,7 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * The second step of syncing: fetch new unread stories.
+     * Fetch any unread stories (by hash) that we learnt about during the FFSync.
      */
     private void syncUnreads() {
         unreadsyncloop: while (storyHashQueue.size() > 0) {
@@ -288,6 +293,9 @@ public class NBSyncService extends Service {
         }
     }
 
+    /**
+     * Fetch stories needed because the user is actively viewing a feed or folder.
+     */
     private void syncPendingFeeds() {
         Log.d(this.getClass().getName(), "FeedSets to sync: " + PendingFeeds.size());
         Set<FeedSet> handledFeeds = new HashSet<FeedSet>();
@@ -372,11 +380,12 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Indicates whether now is an appropriate time to perform story cleanup because the user is
-     * not actively seeing stories. (e.g. they are on the feed/folder activity)
+     * Indicates that now is *not* an appropriate time to modify the story list because the user is
+     * actively seeing stories. Only updates and appends should be performed, not cleanup or
+     * a pagination reset.
      */
-    public static void enableCleanup(boolean doCleanup) {
-        DoCleanup = doCleanup;
+    public static void holdStories(boolean holdStories) {
+        HoldStories = holdStories;
     }
 
     /**

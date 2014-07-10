@@ -65,13 +65,22 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         return this.fs;
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
+        stopLoading = false;
         // this view shows stories, it is not safe to perform cleanup
-        NBSyncService.enableCleanup(false);
+        NBSyncService.holdStories(true);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
+    }
+
+    @Override
+    protected void onPause() {
+        stopLoading = true;
+        NBSyncService.holdStories(false);
+        super.onPause();
     }
 
 	public void triggerRefresh(int desiredStoryCount) {
