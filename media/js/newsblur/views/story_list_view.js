@@ -403,6 +403,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 '.'
             ];
         }
+        if (NEWSBLUR.reader.active_feed == "read") {
+            message = [
+                'This read stories list is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
+            ];
+        }
+
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, message)
         ]);

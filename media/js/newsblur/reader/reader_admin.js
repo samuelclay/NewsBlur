@@ -81,6 +81,8 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             } else {
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "升级至高级帐户"));
             }
+
+            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-history", style: "float: left" }, "Update History"));
             
             $statistics.append($.make('dl', [
                 $.make('dt', 'Stripe Id:'),
@@ -140,6 +142,16 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 self.fetch_payment_history();
             }, function(data) {
                 $(".NB-admin-action-upgrade").replaceWith($.make('div', '错误：' + JSON.stringify(data)));
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-history' }, function($t, $p) {
+            e.preventDefault();
+            
+            NEWSBLUR.assets.update_payment_history(self.user.get('user_id'), function() {
+                $(".NB-admin-action-history").replaceWith($.make('div', 'Updated!'));
+                self.fetch_payment_history();
+            }, function(data) {
+                $(".NB-admin-action-history").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
             });
         });
 

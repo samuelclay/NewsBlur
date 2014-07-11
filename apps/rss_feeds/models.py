@@ -2103,7 +2103,7 @@ class MStarredStory(mongo.Document):
         return super(MStarredStory, self).save(*args, **kwargs)
         
     @classmethod
-    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25):
+    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25, order="newest"):
         stories_db = cls.objects(
             Q(user_id=user_id) &
             (Q(story_title__icontains=query) |
@@ -2113,7 +2113,8 @@ class MStarredStory(mongo.Document):
         if tag:
             stories_db = stories_db.filter(user_tags__contains=tag)
             
-        stories_db = stories_db.order_by('-starred_date')[offset:offset+limit]
+        stories_db = stories_db.order_by('%sstarred_date' % 
+                                         ('-' if order == "newest" else ""))[offset:offset+limit]
         stories = Feed.format_stories(stories_db)
         
         return stories

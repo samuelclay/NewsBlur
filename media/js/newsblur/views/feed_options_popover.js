@@ -11,7 +11,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             left: 0
         },
         'overlay_top': true,
-        'popover_class': 'NB-filter-popover-container'
+        'popover_class': 'NB-filter-popover-container',
+        'show_readfilter': true,
+        'show_order': true
     },
     
     events: {
@@ -22,6 +24,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     initialize: function(options) {
         this.options = _.extend({}, this.options, options);
+        if (NEWSBLUR.reader.active_feed == "read") {
+            this.options['show_readfilter'] = false;
+        }
+        if (NEWSBLUR.reader.flags['starred_view']) {
+            this.options.feed_id = "starred"; // Ignore tags
+            this.options['show_readfilter'] = false;
+        }
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
         this.model = NEWSBLUR.assets;
         this.render();
@@ -43,14 +52,14 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 (feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
                 $.make('div', { className: 'NB-popover-section-title' }, '过滤选项'),
-                $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                (this.options.show_readfilter && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, '全部'),
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread' }, '未读')
-                ]),
-                $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                ])),
+                (this.options.show_order && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active' }, '最新在前'),
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest' }, '最旧在前')
-                ])
+                ]))
             ]),
             (feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-stats-icon' }),

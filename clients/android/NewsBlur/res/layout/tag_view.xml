@@ -3,9 +3,8 @@
     android:id="@+id/tag_text"
     android:layout_width="60dp"
     android:layout_height="15dp"
-    android:background="@drawable/tag_background_neutral"
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
     android:paddingBottom="1dp"
-    android:textColor="@color/tag_gray_text"
+    style="?tag"
     android:textSize="11sp" />

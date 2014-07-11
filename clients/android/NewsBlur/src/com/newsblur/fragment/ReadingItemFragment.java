@@ -485,7 +485,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		builder.append("<style style=\"text/css\">");
 		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
 		builder.append("</style>");
-		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
+		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
+        if (PrefsUtils.isLightThemeSelected(getActivity())) {
+            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
+        } else {
+            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+        }
+        builder.append("</head><body><div class=\"NB-story\">");
 		builder.append(storyText);
 		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);

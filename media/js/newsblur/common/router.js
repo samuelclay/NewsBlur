@@ -6,6 +6,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:site_id/:slug": "site",
         "site/:site_id/": "site",
         "site/:site_id": "site",
+        "read": "read",
         "saved": "starred",
         "saved/:tag": "starred",
         "folder/saved": "starred",
@@ -44,8 +45,16 @@ NEWSBLUR.Router = Backbone.Router.extend({
         }
     },
     
+    read: function() {
+        var options = {
+            router: true
+        };
+        console.log(["read stories", options]);
+        NEWSBLUR.reader.open_read_stories(options);
+    },
+    
     starred: function(tag) {
-        options = {
+        var options = {
             router: true,
             tag: tag
         };

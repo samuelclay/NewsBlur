@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,6 +19,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.database.BlurDatabase;
 import com.newsblur.domain.UserDetails;
@@ -301,5 +303,21 @@ public class PrefsUtils {
     public static boolean isShowContentPreviews(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
+    }
+
+    public static void applyThemePreference(Activity activity) {
+        SharedPreferences prefs = activity.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String theme = prefs.getString(PrefConstants.THEME, "light");
+        if (theme.equals("light")) {
+            activity.setTheme(R.style.NewsBlurTheme);
+        } else {
+            activity.setTheme(R.style.NewsBlurDarkTheme);
+        }
+    }
+
+    public static boolean isLightThemeSelected(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String theme = prefs.getString(PrefConstants.THEME, "light");
+        return theme.equals("light");
     }
 }

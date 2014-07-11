@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/item_background"
+    style="?itemBackground"
     android:orientation="vertical" >
 
     <TextView
@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:text="@string/empty_list_view_loading"
-        android:textColor="@color/darkgray"
+        style="?defaultText"
         android:textSize="13dp"
         android:textStyle="italic" />
     
@@ -20,7 +20,7 @@
         android:id="@+id/itemlistfragment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@drawable/divider_light"
+        style="?divider"
         android:dividerHeight="2dp" />
     
 </RelativeLayout>

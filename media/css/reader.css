@@ -1401,6 +1401,15 @@ a img {
     left: 12px;
     top: 10px;
 }
+.NB-feedbar .NB-folder .NB-read-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
+    background-size: 8px;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 12px;
+    top: 10px;
+}
 
 .NB-feedbar .folder ul.folder,
 .NB-feedbar .folder .NB-feedlist-collapse-icon,
@@ -3379,6 +3388,7 @@ body {
 
 .NB-sideoption-share-wrapper {
     height: 0;
+    width: 100%;
     overflow: hidden;
 }
 .NB-menu-manage .NB-sideoption-share-wrapper {
@@ -3808,9 +3818,10 @@ body {
 .NB-feeds-header-river-container .NB-feeds-header {
     border-bottom: 1px solid #B7BBAA;
 }
-.NB-feeds-header-starred-container {
+.NB-feeds-header-read-container.NB-feeds-header-container {
     border-top: 1px solid #B7BBAA;
 }
+.NB-feeds-header-read.NB-feeds-header,
 .NB-feeds-header-starred.NB-feeds-header {
     border-bottom: 1px solid #B7BBAA;
 }
@@ -3846,6 +3857,25 @@ body {
     background-color: #E9EBEE;
 }
 .NB-feeds-header-starred.NB-empty .NB-feeds-header-count {
+  display: none;
+}
+
+/* ========================= */
+/* = Header - Read Stories = */
+/* ========================= */
+
+.NB-feeds-header-read-container.NB-block {
+    display: block;
+}
+.NB-feeds-header-read {
+    display: block;
+}
+.NB-feeds-header-read .NB-feeds-header-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
+    background-size: 8px;
+}
+
+.NB-feeds-header-read.NB-empty .NB-feeds-header-count {
   display: none;
 }
 

@@ -399,7 +399,17 @@ def upgrade_premium(request):
     user = User.objects.get(pk=user_id)
     upgraded = user.profile.activate_premium()
     
-    return {'code': 1 if upgraded else -1}
+    return {'code': 1 if upgraded else -1}    
+
+@staff_member_required
+@ajax_login_required
+@json.json_view
+def update_payment_history(request):
+    user_id = request.REQUEST.get('user_id')
+    user = User.objects.get(pk=user_id)
+    user.profile.setup_premium_history()
+    
+    return {'code': 1}
     
 @login_required
 @render_to('profile/delete_account.xhtml')

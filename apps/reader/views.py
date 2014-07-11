@@ -752,18 +752,21 @@ def load_starred_stories(request):
     limit        = int(request.REQUEST.get('limit', 10))
     page         = int(request.REQUEST.get('page', 0))
     query        = request.REQUEST.get('query')
+    order        = request.REQUEST.get('order', 'newest')
     tag          = request.REQUEST.get('tag')
     story_hashes = request.REQUEST.getlist('h')[:100]
     version      = int(request.REQUEST.get('v', 1))
     now          = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message      = None
+    order_by     = '-' if order == "newest" else ""
     if page: offset = limit * (page - 1)
     
     if query:
         # results = SearchStarredStory.query(user.pk, query)                                                            
         # story_ids = [result.db_id for result in results]                                                          
         if user.profile.is_premium:
-            stories = MStarredStory.find_stories(query, user.pk, tag=tag, offset=offset, limit=limit)
+            stories = MStarredStory.find_stories(query, user.pk, tag=tag, offset=offset, limit=limit,
+                                                 order=order)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -772,7 +775,7 @@ def load_starred_stories(request):
             mstories = MStarredStory.objects(
                 user_id=user.pk,
                 user_tags__contains=tag
-            ).order_by('-starred_date')[offset:offset+limit]
+            ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
             stories = Feed.format_stories(mstories)        
         else:
             stories = []
@@ -781,12 +784,12 @@ def load_starred_stories(request):
         mstories = MStarredStory.objects(
             user_id=user.pk,
             story_hash__in=story_hashes
-        ).order_by('-starred_date')[offset:offset+limit]
+        ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
         stories = Feed.format_stories(mstories)
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
-        ).order_by('-starred_date')[offset:offset+limit]
+        ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
         stories = Feed.format_stories(mstories)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
@@ -909,6 +912,86 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
         request.META.get('HTTP_USER_AGENT', "")[:24]
     ))
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
+
+@json.json_view
+def load_read_stories(request):
+    user   = get_user(request)
+    offset = int(request.REQUEST.get('offset', 0))
+    limit  = int(request.REQUEST.get('limit', 10))
+    page   = int(request.REQUEST.get('page', 0))
+    order  = request.REQUEST.get('order', 'newest')
+    query  = request.REQUEST.get('query')
+    now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    message = None
+    if page: offset = limit * (page - 1)
+    
+    if query:
+        stories = []
+        message = "Not implemented yet."
+        # if user.profile.is_premium:
+        #     stories = MStarredStory.find_stories(query, user.pk, offset=offset, limit=limit)
+        # else:
+        #     stories = []
+        #     message = "You must be a premium subscriber to search."
+    else:
+        story_hashes = RUserStory.get_read_stories(user.pk, offset=offset, limit=limit, order=order)
+        mstories = MStory.objects(story_hash__in=story_hashes)
+        stories = Feed.format_stories(mstories)
+        stories = sorted(stories, key=lambda story: story_hashes.index(story['story_hash']),
+                         reverse=bool(order=="oldest"))
+    
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
+    
+    story_hashes   = [story['story_hash'] for story in stories]
+    story_feed_ids = list(set(s['story_feed_id'] for s in stories))
+    usersub_ids    = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids).values('feed__pk')
+    usersub_ids    = [us['feed__pk'] for us in usersub_ids]
+    unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
+    unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
+    unsub_feeds    = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
+
+    shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                          story_hash__in=story_hashes)\
+                                 .only('story_hash', 'shared_date', 'comments')
+    shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
+                                                   comments=story.comments))
+                           for story in shared_stories])
+    starred_stories = MStarredStory.objects(user_id=user.pk, 
+                                            story_hash__in=story_hashes)\
+                                   .only('story_hash', 'starred_date')
+    starred_stories = dict([(story.story_hash, story.starred_date) 
+                            for story in starred_stories])
+    
+    nowtz = localtime_for_timezone(now, user.profile.timezone)
+    for story in stories:
+        story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
+        story['read_status']       = 1
+        story['intelligence']      = {
+            'feed':   1,
+            'author': 0,
+            'tags':   0,
+            'title':  0,
+        }
+        if story['story_hash'] in starred_stories:
+            story['starred'] = True
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
+                                                  user.profile.timezone)
+            story['starred_date'] = format_story_link_date__long(starred_date, now)
+        if story['story_hash'] in shared_stories:
+            story['shared'] = True
+            story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
+    
+    search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
+    logging.user(request, "~FCLoading read stories: ~SB%s stories %s" % (len(stories), search_log))
+    
+    return {
+        "stories": stories,
+        "user_profiles": user_profiles,
+        "feeds": unsub_feeds,
+        "message": message,
+    }
 
 @json.json_view
 def load_river_stories__redis(request):

@@ -43,6 +43,7 @@
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $starred_header: $('.NB-feeds-header-starred'),
+                $read_header: $('.NB-feeds-header-read'),
                 $tryfeed_header: $('.NB-feeds-header-tryfeed'),
                 $taskbar: $('.NB-taskbar-view'),
                 $feed_floater: $('.NB-feed-story-view-floater'),
@@ -1201,6 +1202,7 @@
             this.model.flags['no_more_stories'] = false;
             this.$s.$feed_scroll.scrollTop(0);
             this.$s.$starred_header.removeClass('NB-selected');
+            this.$s.$read_header.removeClass('NB-selected');
             this.$s.$river_sites_header.removeClass('NB-selected');
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
@@ -1250,6 +1252,8 @@
                 this.open_starred_stories(options);
             } else if (this.flags['starred_view']) {
                 this.open_starred_stories(options);
+            } else if (this.active_feed == 'read') {
+                this.open_read_stories(options);
             } else if (this.flags['social_view'] && 
                        this.active_feed == 'river:blurblogs') {
                 this.open_river_blurblogs_stories();
@@ -1485,7 +1489,7 @@
                 $list.removeClass('NB-active');
             }
 
-            if (this.flags['starred_view']) {
+            if (_.contains(['starred', 'read'], feed_id)) {
                 $page_tab.addClass('NB-disabled');
             }
 
@@ -1539,9 +1543,9 @@
             });
         },
         
-        // ===============
-        // = Feed Header =
-        // ===============
+        // ===================
+        // = Starred Stories =
+        // ===================
         
         update_starred_count: function() {
             var starred_count = this.model.starred_count;
@@ -1637,6 +1641,67 @@
             this.make_story_titles_pane_counter();
             // this.show_story_titles_above_intelligence_level({'animate': false});
             this.flags['story_titles_loaded'] = true;
+        },
+        
+        // =====================
+        // = Read Stories Feed =
+        // =====================
+        
+        open_read_stories: function(options) {
+            options = options || {};
+            var $story_titles = this.$s.$story_titles;
+            
+            this.reset_feed(options);
+            this.hide_splash_page();
+            this.active_feed = 'read';
+            if (options.story_id) {
+                this.flags['select_story_in_feed'] = options.story_id;
+            }
+
+            this.iframe_scroll = null;
+            this.$s.$read_header.addClass('NB-selected');
+            this.$s.$body.addClass('NB-view-river');
+            this.flags.river_view = true;
+            $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
+            var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
+            if (!explicit_view_setting || explicit_view_setting == 'page') {
+              explicit_view_setting = 'feed';
+            }
+            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
+            this.switch_taskbar_view(this.story_view);
+            this.setup_mousemove_on_views();
+            this.make_feed_title_in_stories();              
+            if (NEWSBLUR.assets.preference('story_layout') == 'full') {
+                NEWSBLUR.app.story_list.show_loading(options);
+            } else {
+                NEWSBLUR.app.story_titles.show_loading(options);
+            }
+            NEWSBLUR.app.taskbar_info.hide_stories_error();
+            
+            this.model.fetch_read_stories(1, _.bind(this.post_open_read_stories, this), 
+                                          NEWSBLUR.app.taskbar_info.show_stories_error, true);
+                                          
+            if (!options.silent) {
+                var url = "/read";
+                if (window.location.pathname != url) {
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
+        },
+        
+        post_open_read_stories: function(data, first_load) {
+            if (this.active_feed == 'read') {
+                // NEWSBLUR.log(['post_open_read_stories', data.stories.length, first_load]);
+                this.flags['opening_feed'] = false;
+                if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
+                    this.select_story_in_feed();
+                }
+                if (first_load) {
+                    this.find_story_with_action_preference_on_open_feed();
+                }
+                // this.show_story_titles_above_intelligence_level({'animate': false});
+                this.flags['story_titles_loaded'] = true;
+            }
         },
         
         // =================
@@ -2493,6 +2558,9 @@
             
             if (this.flags['starred_view']) {
                 this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this),
+                                                 NEWSBLUR.app.taskbar_info.show_stories_error, false);
+            } else if (this.active_feed == 'read') {
+                this.model.fetch_read_stories(this.counts['page'], _.bind(this.post_open_read_stories, this),
                                                  NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else if (this.flags['social_view'] && _.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
                 this.model.fetch_river_blurblogs_stories(this.active_feed,
@@ -4217,7 +4285,7 @@
             feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
             
-            if (this.flags['starred_view']) {
+            if (_.contains(['starred', 'read'], feed_id)) {
                 // Umm, no. Not yet.
             } else if (feed) {
                 return feed.unread_counts();

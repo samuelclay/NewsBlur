@@ -5,6 +5,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     events: {
         "click .NB-feeds-header-starred .NB-feedlist-collapse-icon": "collapse_starred_stories",
         "click .NB-feeds-header-starred": "open_starred_stories",
+        "click .NB-feeds-header-read": "open_read_stories",
         "click .NB-feeds-header-river-sites": "open_river_stories",
         "click .NB-feeds-header-river-blurblogs .NB-feedlist-collapse-icon": "collapse_river_blurblog",
         "click .NB-feeds-header-river-blurblogs": "open_river_blurblogs_stories",
@@ -132,6 +133,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     
     open_starred_stories: function() {
         return NEWSBLUR.reader.open_starred_stories();
+    },
+    
+    open_read_stories: function() {
+        return NEWSBLUR.reader.open_read_stories();
     },
     
     open_river_stories: function() {

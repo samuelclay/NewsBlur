@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.db.models.aggregates import Sum
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
@@ -1120,7 +1121,8 @@ class MSocialSubscription(mongo.Document):
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
             
-            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares)
+            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares,
+                                 aggregated=mark_all_read)
             
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
@@ -1510,7 +1512,16 @@ class MSharedStory(mongo.Document):
             users[user_id] = dict(feeds)
 
         pprint(users)
-        return users
+        
+        guaranteed_spammers = []
+        for user_id in ddusers.keys():
+            u = User.objects.get(pk=user_id)
+            feed_opens = UserSubscription.objects.filter(user=u).aggregate(sum=Sum('feed_opens'))['sum']
+            if not feed_opens: guaranteed_spammers.append(user_id)
+        
+        print " ---> Guaranteed spammers: %s" % guaranteed_spammers
+        
+        return users, guaranteed_spammers
         
     @classmethod
     def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):

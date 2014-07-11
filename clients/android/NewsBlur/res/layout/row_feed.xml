@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_feed_background"
+    style="?selectorFeedBackground"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -68,7 +68,7 @@
         android:layout_toRightOf="@id/row_feedfavicon"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/folder_text"
+        style="?selectorRowFeedName"
         android:textSize="14sp"
         android:textStyle="bold" />
 

@@ -145,9 +145,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 				unfollowButton.setVisibility(View.VISIBLE);
 			} else {
 				FragmentManager fm = ProfileDetailsFragment.this.getFragmentManager();
-		        AlertDialogFragment alertDialog = new AlertDialogFragment();
-		        final String message = getResources().getString(R.string.follow_error);
-		        alertDialog.message = message;
+		        AlertDialogFragment alertDialog = AlertDialogFragment.newAlertDialogFragment(getResources().getString(R.string.follow_error));
 		        alertDialog.show(fm, "fragment_edit_name");
 			}	
 		}		
@@ -173,10 +171,8 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 				followButton.setVisibility(View.VISIBLE);
 			} else {
 				FragmentManager fm = ProfileDetailsFragment.this.getFragmentManager();
-		        AlertDialogFragment alertDialog = new AlertDialogFragment();
-		        final String message = getResources().getString(R.string.unfollow_error);
-		        alertDialog.message = message;
-		        alertDialog.show(fm, "fragment_edit_name");
+                AlertDialogFragment alertDialog = AlertDialogFragment.newAlertDialogFragment(getResources().getString(R.string.unfollow_error));
+                alertDialog.show(fm, "fragment_edit_name");
 			}	
 		}		
 	}

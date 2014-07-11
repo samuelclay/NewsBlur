@@ -7,7 +7,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -16,6 +15,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ThemeUtils;
 
 public class FeedItemsAdapter extends StoryItemsAdapter {
 
@@ -28,14 +28,14 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 		this.feed = feed;
 		this.cursor = c;
 
-        storyTitleUnread = context.getResources().getColor(R.color.story_title_unread);
-        storyTitleRead = context.getResources().getColor(R.color.story_title_read);
-        storyContentUnread = context.getResources().getColor(R.color.story_content_unread);
-        storyContentRead = context.getResources().getColor(R.color.story_content_read);
-        storyAuthorUnread = context.getResources().getColor(R.color.story_author_unread);
-		storyAuthorRead = context.getResources().getColor(R.color.story_author_read);
-		storyDateUnread = context.getResources().getColor(R.color.story_date_unread);
-		storyDateRead = context.getResources().getColor(R.color.story_date_read);
+        storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
+        storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
+        storyContentUnread = ThemeUtils.getStoryContentUnreadColor(context);
+        storyContentRead = ThemeUtils.getStoryContentReadColor(context);
+        storyAuthorUnread = ThemeUtils.getStoryAuthorUnreadColor(context);
+		storyAuthorRead = ThemeUtils.getStoryAuthorReadColor(context);
+		storyDateUnread = ThemeUtils.getStoryDateUnreadColor(context);
+		storyDateRead = ThemeUtils.getStoryDateReadColor(context);
 	}
 
 	@Override
