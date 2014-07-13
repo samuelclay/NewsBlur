@@ -866,6 +866,8 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     
     try:
         tag_counts = MStarredStoryCounts.objects.get(user_id=user_id, slug=tag_slug)
+    except MStarredStoryCounts.MultipleObjectsReturned:
+        tag_counts = MStarredStoryCounts.objects(user_id=user_id, slug=tag_slug).first()
     except MStarredStoryCounts.DoesNotExist:
         raise Http404
     
