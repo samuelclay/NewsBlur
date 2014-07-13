@@ -2310,8 +2310,11 @@ class MStarredStoryCounts(mongo.Document):
             params['tag'] = tag
 
         cls.objects(**params).update_one(inc__count=amount, upsert=True)
-        story_count = cls.objects.get(**params)
-        if story_count.count <= 0:
+        try:
+            story_count = cls.objects.get(**params)
+        except cls.MultipleObjectsReturned:
+            story_count = cls.objects(**params).first()
+        if story_count and story_count.count <= 0:
             story_count.delete()
 
 
