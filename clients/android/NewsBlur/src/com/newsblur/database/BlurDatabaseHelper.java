@@ -135,11 +135,13 @@ public class BlurDatabaseHelper {
         String impliedFeedId = null;
 
         // handle users
-        List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
-        for (UserProfile user : apiResponse.users) {
-            userValues.add(user.getValues());
+        if (apiResponse.users != null) {
+            List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
+            for (UserProfile user : apiResponse.users) {
+                userValues.add(user.getValues());
+            }
+            bulkInsertValues(DatabaseConstants.USER_TABLE, userValues);
         }
-        bulkInsertValues(DatabaseConstants.USER_TABLE, userValues);
 
         // handle supplemental feed data that may have been included (usually in social requests)
         if (apiResponse.feeds != null) {
