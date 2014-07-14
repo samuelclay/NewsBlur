@@ -7,6 +7,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         "click .NB-sideoption-share-crosspost-twitter"  : "toggle_twitter",
         "click .NB-sideoption-share-crosspost-facebook" : "toggle_facebook",
         "click .NB-sideoption-share-crosspost-appdotnet" : "toggle_appdotnet",
+        "keypress .NB-sideoption-share-comments"   : "autosize",
         "keyup .NB-sideoption-share-comments"   : "update_share_button_label",
         "keydown .NB-sideoption-share-comments" : "maybe_close"
     },
@@ -22,7 +23,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
         }));
-        
+
         return this;
     },
     
@@ -83,6 +84,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $facebook_button.removeClass('NB-active');
             $appdotnet_button.removeClass('NB-active');
             this.update_share_button_label();
+            this.$('textarea').autosize();
 
             if (options.animate_scroll) {
                 var $scroll_container = NEWSBLUR.reader.$s.$story_titles;
@@ -145,7 +147,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         $share_wrapper.animate({
             'height': sideoption_content_height
         }, {
-            'duration': options.immediate ? 0 : 350,
+            'duration': options.immediate ? 0 : options.duration || 350,
             'easing': 'easeInOutQuint',
             'queue': false,
             'complete': _.bind(function() {
@@ -350,6 +352,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         }
         this.toggle_feed_story_share_dialog({'resize_open': true});
         NEWSBLUR.log(["post_share_error", data, shared, message, $share_button, $unshare_button, $share_button_menu, $error]);
+    },
+    
+    autosize: function() {
+        this.resize({duration: 100});
     },
     
     update_share_button_label: function() {
