@@ -290,6 +290,7 @@ public class NBSyncService extends Service {
                 break unreadsyncloop;
             }
             dbHelper.insertStories(response);
+            NbActivity.updateAllActivities();
         }
     }
 
@@ -329,6 +330,7 @@ public class NBSyncService extends Service {
 
                 feedPagesSeen.put(fs, pageNumber);
                 dbHelper.insertStories(apiResponse);
+                NbActivity.updateAllActivities();
             
                 if (apiResponse.stories.length == 0) {
                     ExhaustedFeeds.add(fs);

@@ -77,7 +77,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         // load an extra page or two worth of stories past the viewport
         int desiredStories = firstVisible + (visibleCount*2);
         // this method tends to get called repeatedly. don't constantly keep requesting the same count!
-        if (lastRequestedStoryCount != desiredStories) {
+        if (desiredStories > lastRequestedStoryCount) {
             triggerRefresh(desiredStories);
             lastRequestedStoryCount = desiredStories;
         }
