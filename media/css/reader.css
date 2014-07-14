@@ -10757,6 +10757,7 @@ form.opml_import_form input {
 .NB-static-oauth .NB-static-form {
     width: 500px;
     margin: 24px auto;
+    padding: 0 24px;
 }
 .NB-static-login .NB-static-form {
     width: 320px;
@@ -10800,6 +10801,29 @@ form.opml_import_form input {
     margin: 24px 0 0 120px; 
     padding-top: 12px;
     border-top: 1px solid rgba(0, 0, 0, .1); 
+}
+
+@media screen and (max-width: 580px) {
+    .NB-splash-info {
+        height: 36px;
+    }
+    .NB-splash-info.NB-splash-top .NB-splash-title {
+        width: auto;
+        height: 36px;
+    }
+    .NB-static .NB-static-title {
+        font-size: 24px;
+        line-height: 36px;
+    }
+    .NB-static-oauth .NB-static-form {
+        width: auto;
+    }
+    .NB-static-oauth input[type=submit].NB-static-form-submit {
+        float: none;
+        margin: 36px auto 12px;
+        clear: both;
+        display: block;
+    }
 }
 
 /* ======================== */
