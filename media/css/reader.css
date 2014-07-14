@@ -4520,6 +4520,7 @@ form.opml_import_form input {
 .NB-splash-info.NB-splash-bottom {
   border-top: 1px solid #C2C5BE;
   height: 30px;
+  overflow: hidden;
 }
 .NB-splash-info .NB-splash-title {
     position: absolute;
@@ -4586,11 +4587,11 @@ form.opml_import_form input {
 }
 @media screen and (max-width: 950px) {
     .NB-splash-info .NB-splash-links .NB-splash-link a {
-        padding-right: 6px;
-        padding-left: 6px;
+        padding-right: 1px;
+        padding-left: 16px;
     }
     .NB-splash-info .NB-splash-links .NB-splash-link a:hover {
-        background: none !important;
+/*        background: none !important;*/
     }
 }
 .NB-splash-info .NB-splash-link-logo {
@@ -9135,7 +9136,7 @@ form.opml_import_form input {
 
 .NB-static {
   overflow: auto;
-  padding: 78px 0 65px;
+  padding: 78px 0 64px;
   font-size: 13px;
   color: #303030;
   line-height: 18px;
@@ -10749,6 +10750,9 @@ form.opml_import_form input {
 /* = OAuth Forms = */
 /* =============== */
 
+.NB-static-oauth {
+    padding-bottom: 0;
+}
 .NB-static-oauth h3 {
     margin-top: 0;
     text-align: center;
@@ -10804,6 +10808,16 @@ form.opml_import_form input {
 }
 
 @media screen and (max-width: 580px) {
+    .NB-static-oauth {
+        padding: 12px 0 0;
+    }
+    .NB-static .NB-splash-info,
+    .NB-static .NB-static-title {
+        position: absolute;
+    }
+    .NB-splash-info.NB-splash-bottom {
+        position: relative;
+    }
     .NB-splash-info {
         height: 36px;
     }
