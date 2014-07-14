@@ -7382,6 +7382,8 @@ form.opml_import_form input {
   margin: 0 12px 0 0;
   vertical-align: middle;
   border: 1px solid transparent;
+  width: 64px;
+  height: 64px;
 }
 .NB-modal-tutorial .NB-page-5 h4.NB-tutorial-feedback-header {
   margin: 24px 0px 12px;
