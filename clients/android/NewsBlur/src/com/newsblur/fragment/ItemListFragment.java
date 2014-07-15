@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -45,7 +47,14 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
     protected StoryOrder storyOrder;
     private boolean firstSyncDone = false;
     private int lastRequestedStoryCount = 0;
-	
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
+        lastRequestedStoryCount = AppConstants.READING_STORY_PRELOAD;
+    }
+
     /**
      * Indicate that the DB was cleared.
      */
