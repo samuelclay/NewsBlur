@@ -46,14 +46,6 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 	protected int currentState;
     protected StoryOrder storyOrder;
     private boolean firstSyncDone = false;
-    private int lastRequestedStoryCount = 0;
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
-        lastRequestedStoryCount = AppConstants.READING_STORY_PRELOAD;
-    }
 
     /**
      * Indicate that the DB was cleared.
@@ -81,15 +73,24 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         emptyView.setText(rid);
     }
 
+    public void scrollToTop() {
+        View v = this.getView();
+        if (v == null) return; // we might have beat construction?
+
+        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        if (itemList == null) {
+            Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
+            return;
+        }
+
+        itemList.setSelection(0);
+    }
+
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         // load an extra page or two worth of stories past the viewport
         int desiredStories = firstVisible + (visibleCount*2);
-        // this method tends to get called repeatedly. don't constantly keep requesting the same count!
-        if (desiredStories > lastRequestedStoryCount) {
-            triggerRefresh(desiredStories);
-            lastRequestedStoryCount = desiredStories;
-        }
+        triggerRefresh(desiredStories);
 	}
 
 	@Override

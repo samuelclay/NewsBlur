@@ -61,6 +61,10 @@ public class NBSyncService extends Service {
     static { PendingFeeds = new HashMap<FeedSet,Integer>(); }
     private static Set<FeedSet> ExhaustedFeeds;
     static { ExhaustedFeeds = new HashSet<FeedSet>(); }
+    private static Map<FeedSet,Integer> FeedPagesSeen;
+    static { FeedPagesSeen = new HashMap<FeedSet,Integer>(); }
+    private static Map<FeedSet,Integer> FeedStoriesSeen;
+    static { FeedStoriesSeen = new HashMap<FeedSet,Integer>(); }
 
     private volatile static boolean HaltNow = false;
 
@@ -68,8 +72,6 @@ public class NBSyncService extends Service {
     private BlurDatabaseHelper dbHelper;
 
     private Set<String> storyHashQueue;
-    private Map<FeedSet,Integer> feedPagesSeen;
-    private Map<FeedSet,Integer> feedStoriesSeen;
 
 	@Override
 	public void onCreate() {
@@ -79,8 +81,6 @@ public class NBSyncService extends Service {
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
         storyHashQueue = new HashSet<String>();
-        feedPagesSeen = new HashMap<FeedSet,Integer>();
-        feedStoriesSeen = new HashMap<FeedSet,Integer>();
 	}
 
     /**
@@ -174,9 +174,14 @@ public class NBSyncService extends Service {
         CleanupRunning = false;
         NbActivity.updateAllActivities();
 
+        if (HaltNow) return;
+        if (HoldStories) return;
+
         // a metadata sync invalidates pagination and feed status
         PendingFeeds.clear();
         ExhaustedFeeds.clear();
+        FeedPagesSeen.clear();
+        FeedStoriesSeen.clear();
 
         Log.d(this.getClass().getName(), "fetching feeds and folders");
         FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -184,9 +189,6 @@ public class NBSyncService extends Service {
 		if (feedResponse == null) {
             return;
         }
-
-        // making the above API call resets pagination on the server
-        feedPagesSeen.clear();
 
         // if the response says we aren't logged in, clear the DB and prompt for login. We test this
         // here, since this the first sync call we make on launch if we believe we are cookied.
@@ -248,6 +250,7 @@ public class NBSyncService extends Service {
         dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
 
         if (HaltNow) return;
+        if (HoldStories) return;
 
         Log.d(this.getClass().getName(), "fetching unread hashes");
         UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
@@ -316,12 +319,12 @@ public class NBSyncService extends Service {
                 continue feedloop;
             }
             
-            if (!feedPagesSeen.containsKey(fs)) {
-                feedPagesSeen.put(fs, 0);
-                feedStoriesSeen.put(fs, 0);
+            if (!FeedPagesSeen.containsKey(fs)) {
+                FeedPagesSeen.put(fs, 0);
+                FeedStoriesSeen.put(fs, 0);
             }
-            int pageNumber = feedPagesSeen.get(fs);
-            int totalStoriesSeen = feedStoriesSeen.get(fs);
+            int pageNumber = FeedPagesSeen.get(fs);
+            int totalStoriesSeen = FeedStoriesSeen.get(fs);
 
             StoryOrder order = PrefsUtils.getStoryOrder(this, fs);
             ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
@@ -335,7 +338,7 @@ public class NBSyncService extends Service {
             
                 if (! isStoryResponseGood(apiResponse)) break feedloop;
 
-                feedPagesSeen.put(fs, pageNumber);
+                FeedPagesSeen.put(fs, pageNumber);
                 dbHelper.insertStories(apiResponse);
                 NbActivity.updateAllActivities();
             
@@ -344,7 +347,7 @@ public class NBSyncService extends Service {
                     break pageloop;
                 } else {
                     totalStoriesSeen += apiResponse.stories.length;
-                    feedStoriesSeen.put(fs, totalStoriesSeen);
+                    FeedStoriesSeen.put(fs, totalStoriesSeen);
                 }
             }
 
@@ -408,9 +411,23 @@ public class NBSyncService extends Service {
             Log.e(NBSyncService.class.getName(), "rejecting request for null feedset");
             return false;
         }
-        if (ExhaustedFeeds.contains(fs)) return false;
+        if (ExhaustedFeeds.contains(fs)) {
+            Log.e(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
+            return false;
+        }
+        Log.d(NBSyncService.class.getName(), "enqueued request for minimum pages: " + desiredStoryCount);
         PendingFeeds.put(fs, desiredStoryCount);
         return true;
+    }
+
+    /**
+     * Resets pagination and exhaustion flags for the given feedset, so that it can be requested fresh
+     * from the beginning with new parameters.
+     */
+    public static void resetFeed(FeedSet fs) {
+        ExhaustedFeeds.remove(fs);
+        FeedPagesSeen.put(fs, 0);
+        FeedStoriesSeen.put(fs, 0);
     }
 
     public static void softInterrupt() {

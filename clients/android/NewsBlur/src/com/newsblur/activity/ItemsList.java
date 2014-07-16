@@ -14,6 +14,7 @@ import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
@@ -42,6 +43,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     private FeedSet fs;
 	
 	protected boolean stopLoading = false;
+    private int lastRequestedStoryCount = 0;
 
 	@Override
     protected void onCreate(Bundle bundle) {
@@ -57,6 +59,8 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         // our intel state is entirely determined by the state of the Main view
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getFirstStories();
 	}
 
     protected abstract FeedSet createFeedSet();
@@ -76,6 +80,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         itemListFragment.hasUpdated();
     }
 
+    private void getFirstStories() {
+        stopLoading = false;
+        lastRequestedStoryCount = 0;
+        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
+    }
+
     @Override
     protected void onPause() {
         stopLoading = true;
@@ -85,6 +95,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	public void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
+            // this method tends to get called repeatedly. don't constantly keep requesting the same count!
+            if (desiredStoryCount <= lastRequestedStoryCount) {
+                return;
+            }
+            lastRequestedStoryCount = desiredStoryCount;
+
             boolean moreLeft = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
             if (moreLeft) {
                 triggerSync();
@@ -134,6 +150,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	public void handleUpdate() {
         setProgressBarIndeterminateVisibility(NBSyncService.isFeedSetSyncing(this.fs));
 		if (itemListFragment != null) {
+            itemListFragment.syncDone();
 			itemListFragment.hasUpdated();
         }
     }
@@ -146,10 +163,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
+        NBSyncService.resetFeed(fs); 
         itemListFragment.setStoryOrder(newValue);
         itemListFragment.resetEmptyState();
-        stopLoading = false;
         itemListFragment.hasUpdated();
+        itemListFragment.scrollToTop();
+        getFirstStories();
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
@@ -157,9 +176,11 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
+        NBSyncService.resetFeed(fs); 
         itemListFragment.resetEmptyState();
-        stopLoading = false;
         itemListFragment.hasUpdated();
+        itemListFragment.scrollToTop();
+        getFirstStories();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
