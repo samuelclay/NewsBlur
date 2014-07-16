@@ -52,6 +52,8 @@ public class NBSyncService extends Service {
     private volatile static boolean FreshRequest;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
+    /** Don't do any actions that might modify the story list for a feed or folder in a way that
+        would annoy a user who is on the story list or paging through stories. */
     private volatile static boolean HoldStories = false;
     private volatile static boolean DoFeedsFolders = false;
     /** Feed sets that we need to sync and how many stories the UI wants for them. */
@@ -101,6 +103,7 @@ public class NBSyncService extends Service {
             // allowed to do tangible work.  We spawn a thread to do so.
             new Thread(new Runnable() {
                 public void run() {
+                    FreshRequest = false;
                     doSync();
                 }
             }).start();
@@ -118,40 +121,25 @@ public class NBSyncService extends Service {
      */
     private synchronized void doSync() {
         Log.d(this.getClass().getName(), "starting sync . . .");
-        FreshRequest = false;
 
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
         try {
             wl.acquire();
 
-            // any of these steps might modify the story list for a feed or folder in a way that
-            // would annoy a user who is on the story list or paging through stories. Don't do
-            // them unless they are not on a story view
-            if (! HoldStories) {
+            NbActivity.updateAllActivities();
 
-                CleanupRunning = true;
-                Log.d(this.getClass().getName(), "cleaning up stories");
-                dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
-                CleanupRunning = false;
-                NbActivity.updateAllActivities();
-
-                FFSyncRunning = true;
-                NbActivity.updateAllActivities();
-                if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
-                    syncMetadata();
-                    PrefsUtils.updateLastSyncTime(this);
-                    DoFeedsFolders = false;
-                }
-                FFSyncRunning = false;
-                NbActivity.updateAllActivities();
-
-            }
-
+            // these requests are expressly enqueued by the UI/user, do them first
             syncPendingFeeds();
+
+            FFSyncRunning = true;
+            NbActivity.updateAllActivities();
+            syncMetadata();
+            FFSyncRunning = false;
             NbActivity.updateAllActivities();
 
             syncUnreads();
+
             NbActivity.updateAllActivities();
 
         } catch (Exception e) {
@@ -168,7 +156,25 @@ public class NBSyncService extends Service {
      */
     private void syncMetadata() {
         if (HaltNow) return;
+        if (HoldStories) return;
 
+        if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
+            PrefsUtils.updateLastSyncTime(this);
+            DoFeedsFolders = false;
+        } else {
+            return;
+        }
+
+        // cleanup is expensive, so do it as part of the metadata sync
+        CleanupRunning = true;
+        NbActivity.updateAllActivities();
+        Log.d(this.getClass().getName(), "cleaning up stories");
+        dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
+        Log.d(this.getClass().getName(), "done cleaning up stories");
+        CleanupRunning = false;
+        NbActivity.updateAllActivities();
+
+        // a metadata sync invalidates pagination and feed status
         PendingFeeds.clear();
         ExhaustedFeeds.clear();
 
@@ -275,6 +281,7 @@ public class NBSyncService extends Service {
     private void syncUnreads() {
         unreadsyncloop: while (storyHashQueue.size() > 0) {
             if (HaltNow) return;
+            if (HoldStories) return;
 
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : storyHashQueue) {
@@ -285,7 +292,7 @@ public class NBSyncService extends Service {
                 storyHashQueue.remove(hash);
             } 
             StoriesResponse response = apiManager.getStoriesByHash(hashBatch);
-            if (response.isError()) {
+            if (! isStoryResponseGood(response)) {
                 Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
                 break unreadsyncloop;
             }
@@ -348,12 +355,12 @@ public class NBSyncService extends Service {
     }
 
     private boolean isStoryResponseGood(StoriesResponse response) {
-        if (response.isError()) {
-            Log.e(this.getClass().getName(), "Error response received loading stories: " + response.getErrorMessage("none"));
+        if (response.code != 0) {
+            Log.e(this.getClass().getName(), "Nonzero response code received while loading stories. ");
             return false;
         }
         if (response.stories == null) {
-            Log.e(this.getClass().getName(), "Null stories member received while loading stories with no error found.");
+            Log.e(this.getClass().getName(), "Null stories member received while loading stories.");
             return false;
         }
         return true;
