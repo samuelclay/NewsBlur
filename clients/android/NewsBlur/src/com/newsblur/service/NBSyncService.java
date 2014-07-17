@@ -309,6 +309,7 @@ public class NBSyncService extends Service {
      */
     private void syncPendingFeeds() {
         Log.d(this.getClass().getName(), "FeedSets to sync: " + PendingFeeds.size());
+            
         Set<FeedSet> handledFeeds = new HashSet<FeedSet>();
         feedloop: for (FeedSet fs : PendingFeeds.keySet()) {
             if (HaltNow) return;
@@ -331,7 +332,6 @@ public class NBSyncService extends Service {
             
             pageloop: while (totalStoriesSeen < PendingFeeds.get(fs)) {
                 if (HaltNow) return;
-                Log.d(this.getClass().getName(), "stories previously fetched for this feed set: " + totalStoriesSeen);
 
                 pageNumber++;
                 StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
@@ -339,15 +339,15 @@ public class NBSyncService extends Service {
                 if (! isStoryResponseGood(apiResponse)) break feedloop;
 
                 FeedPagesSeen.put(fs, pageNumber);
+                totalStoriesSeen += apiResponse.stories.length;
+                FeedStoriesSeen.put(fs, totalStoriesSeen);
+
                 dbHelper.insertStories(apiResponse);
                 NbActivity.updateAllActivities();
             
                 if (apiResponse.stories.length == 0) {
                     ExhaustedFeeds.add(fs);
                     break pageloop;
-                } else {
-                    totalStoriesSeen += apiResponse.stories.length;
-                    FeedStoriesSeen.put(fs, totalStoriesSeen);
                 }
             }
 
@@ -358,6 +358,10 @@ public class NBSyncService extends Service {
     }
 
     private boolean isStoryResponseGood(StoriesResponse response) {
+        if (response == null) {
+            Log.e(this.getClass().getName(), "Null response received while loading stories.");
+            return false;
+        }
         if (response.code != 0) {
             Log.e(this.getClass().getName(), "Nonzero response code received while loading stories. ");
             return false;
@@ -415,7 +419,7 @@ public class NBSyncService extends Service {
             Log.e(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
             return false;
         }
-        Log.d(NBSyncService.class.getName(), "enqueued request for minimum pages: " + desiredStoryCount);
+        Log.d(NBSyncService.class.getName(), "enqueued request for minimum stories: " + desiredStoryCount);
         PendingFeeds.put(fs, desiredStoryCount);
         return true;
     }

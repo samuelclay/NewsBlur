@@ -165,13 +165,28 @@ public class FeedSet implements Serializable {
         return card;
     }
 
-    public boolean equals(FeedSet s) {
-        if ( (feeds != null) && (s.feeds != null) && TextUtils.equals(folderName, s.folderName) && s.feeds.equals(feeds) ) return true;
-        if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
-        if ( isAllNormal && s.isAllNormal ) return true;
-        if ( isAllSocial && s.isAllSocial ) return true;
-        if ( isAllSaved && s.isAllSaved ) return true;
+    public boolean equals(Object o) {
+        if ( o instanceof FeedSet) {
+            FeedSet s = (FeedSet) o;
+            if ( (feeds != null) && (s.feeds != null) && TextUtils.equals(folderName, s.folderName) && s.feeds.equals(feeds) ) return true;
+            if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
+            if ( isAllNormal && s.isAllNormal ) return true;
+            if ( isAllSocial && s.isAllSocial ) return true;
+            if ( isAllSaved && s.isAllSaved ) return true;
+        }
         return false;
+    }
+
+    public int hashCode() {
+        if (isAllNormal) return 11;
+        if (isAllSocial) return 12;
+        if (isAllSaved) return 13;
+
+        int result = 17;
+        if (feeds != null) result = 31 * result + feeds.hashCode();
+        if (socialFeeds != null) result = 31 * result + socialFeeds.hashCode();
+        if (folderName != null) result = 31 * result + folderName.hashCode();
+        return result;
     }
 
 }
