@@ -165,6 +165,7 @@ public class FeedSet implements Serializable {
         return card;
     }
 
+    @Override
     public boolean equals(Object o) {
         if ( o instanceof FeedSet) {
             FeedSet s = (FeedSet) o;
@@ -177,6 +178,7 @@ public class FeedSet implements Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         if (isAllNormal) return 11;
         if (isAllSocial) return 12;
