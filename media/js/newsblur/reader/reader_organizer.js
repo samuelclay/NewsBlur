@@ -1,6 +1,9 @@
 NEWSBLUR.ReaderOrganizer = function(user_id, options) {
     var defaults = {
-        width: 800
+        width: 800,
+        onOpen: _.bind(function() {
+            this.resize_modal();
+        }, this)
     };
         
     this.options = $.extend({}, defaults, options);
@@ -30,6 +33,18 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             ]),
             this.make_feeds()
         ]);
+    },
+    
+    resize_modal: function(previous_height) {
+        var $feedlist = $('.NB-feedchooser', this.$modal);
+        var content_height = $feedlist.height() + 82;
+        var container_height = this.$modal.parent().height();
+        if (content_height > container_height && previous_height != content_height) {
+            var chooser_height = $feedlist.height();
+            var diff = Math.max(4, content_height - container_height);
+            $feedlist.css({'max-height': chooser_height - diff});
+            _.defer(_.bind(function() { this.resize_modal(content_height); }, this), 1);
+        }
     },
     
     // =============

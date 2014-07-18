@@ -478,8 +478,8 @@ a img {
     list-style: none;
     margin: 0;
     padding: 0;
-    width: auto !important;
-    height: auto !important;
+    width: auto;
+    height: auto;
 }
 #feed_list {
     display: none;
@@ -10703,6 +10703,18 @@ form.opml_import_form input {
 .NB-modal-organizer .NB-modal-title .NB-icon {
     background: transparent url('/media/embed/icons/circular/g_modal_book.png');
     background-size: 28px;
+}
+.NB-modal-organizer .NB-feedlist {
+    width: 70%;
+    max-height: 500px;
+    border: 1px solid rgba(0, 0, 0, .2);
+    margin: 24px 24px 0 0;
+}
+.NB-modal-organizer .NB-feedlist .feed {
+    display: block;
+}
+.NB-modal-organizer .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
+    display: none;
 }
 
 /* ================= */
