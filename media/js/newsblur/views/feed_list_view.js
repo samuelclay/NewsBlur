@@ -207,7 +207,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     },
 
     load_url_next_param: function(route_found) {
-        var next = $.getQueryString('next');
+        var next = $.getQueryString('next') || $.getQueryString('test');
         if (next == 'optout') {
             NEWSBLUR.reader.open_account_modal({'animate_email': true});
         } else if (next == 'goodies') {
@@ -216,6 +216,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_friends_modal();
         } else if (next == 'account') {
             NEWSBLUR.reader.open_account_modal();
+        } else if (next == 'organizer') {
+            NEWSBLUR.reader.open_organizer_modal();
         } else if (next == 'chooser') {
             NEWSBLUR.reader.open_feedchooser_modal();
         } else if (next == 'renew') {
@@ -229,7 +231,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_add_feed_modal({url: url});
         }
 
-        if (!route_found && window.history.replaceState) {
+        if (!route_found && window.history.replaceState && !$.getQueryString('test')) {
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');
         }
