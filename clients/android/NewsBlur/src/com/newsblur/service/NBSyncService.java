@@ -139,6 +139,7 @@ public class NBSyncService extends Service {
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
+            if (HaltNow) stopSelf();
             wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
         }
@@ -314,6 +315,7 @@ public class NBSyncService extends Service {
             }
         } finally {
             UnreadSyncRunning = false;
+            NbActivity.updateAllActivities();
         }
     }
 
@@ -377,10 +379,6 @@ public class NBSyncService extends Service {
     private boolean isStoryResponseGood(StoriesResponse response) {
         if (response == null) {
             Log.e(this.getClass().getName(), "Null response received while loading stories.");
-            return false;
-        }
-        if (response.code != 0) {
-            Log.e(this.getClass().getName(), "Nonzero response code received while loading stories. ");
             return false;
         }
         if (response.stories == null) {
@@ -468,6 +466,7 @@ public class NBSyncService extends Service {
     }
 
     public static void softInterrupt() {
+        Log.d(NBSyncService.class.getName(), "soft stop");
         HaltNow = true;
     }
 
@@ -475,6 +474,7 @@ public class NBSyncService extends Service {
     public void onDestroy() {
         Log.d(this.getClass().getName(), "onDestroy");
         HaltNow = true;
+        super.onDestroy();
         dbHelper.close();
     }
 

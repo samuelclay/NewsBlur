@@ -485,7 +485,9 @@ public class APIManager {
 		}
 		try {
 			URL url = new URL(urlString);
-            Log.d(this.getClass().getName(), "API GET " + url );
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(this.getClass().getName(), "API GET " + url );
+            }
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
@@ -532,8 +534,8 @@ public class APIManager {
 		}
 		try {
 			URL url = new URL(urlString);
-            Log.d(this.getClass().getName(), "API POST " + url );
             if (AppConstants.VERBOSE_LOG) {
+                Log.d(this.getClass().getName(), "API POST " + url );
                 Log.d(this.getClass().getName(), "post body: " + postBodyString);
             }
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
