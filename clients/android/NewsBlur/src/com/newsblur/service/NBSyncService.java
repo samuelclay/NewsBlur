@@ -127,20 +127,12 @@ public class NBSyncService extends Service {
         try {
             wl.acquire();
 
-            NbActivity.updateAllActivities();
-
             // these requests are expressly enqueued by the UI/user, do them first
             syncPendingFeeds();
 
-            FFSyncRunning = true;
-            NbActivity.updateAllActivities();
             syncMetadata();
-            FFSyncRunning = false;
-            NbActivity.updateAllActivities();
 
             syncUnreads();
-
-            NbActivity.updateAllActivities();
 
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
@@ -177,105 +169,113 @@ public class NBSyncService extends Service {
         if (HaltNow) return;
         if (HoldStories) return;
 
-        // a metadata sync invalidates pagination and feed status
-        PendingFeeds.clear();
-        ExhaustedFeeds.clear();
-        FeedPagesSeen.clear();
-        FeedStoriesSeen.clear();
+        FFSyncRunning = true;
+        NbActivity.updateAllActivities();
 
-        Log.d(this.getClass().getName(), "fetching feeds and folders");
-        FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
+        try {
+            // a metadata sync invalidates pagination and feed status
+            PendingFeeds.clear();
+            ExhaustedFeeds.clear();
+            FeedPagesSeen.clear();
+            FeedStoriesSeen.clear();
 
-		if (feedResponse == null) {
-            return;
-        }
+            Log.d(this.getClass().getName(), "fetching feeds and folders");
+            FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
 
-        // if the response says we aren't logged in, clear the DB and prompt for login. We test this
-        // here, since this the first sync call we make on launch if we believe we are cookied.
-        if (! feedResponse.isAuthenticated) {
-            PrefsUtils.logout(this);
-            return;
-        }
-
-        // there is a rare issue with feeds that have no folder.  capture them for debug.
-        List<String> debugFeedIds = new ArrayList<String>();
-
-        // clean out the feed / folder tables
-        dbHelper.cleanupFeedsFolders();
-
-        // data for the folder and folder-feed-mapping tables
-        List<ContentValues> folderValues = new ArrayList<ContentValues>();
-        List<ContentValues> ffmValues = new ArrayList<ContentValues>();
-        for (Entry<String, List<Long>> entry : feedResponse.folders.entrySet()) {
-            if (!TextUtils.isEmpty(entry.getKey())) {
-                String folderName = entry.getKey().trim();
-                if (!TextUtils.isEmpty(folderName)) {
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseConstants.FOLDER_NAME, folderName);
-                    folderValues.add(values);
-                }
-
-                for (Long feedId : entry.getValue()) {
-                    ContentValues values = new ContentValues(); 
-                    values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-                    values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
-                    ffmValues.add(values);
-                    // note all feeds that belong to some folder
-                    debugFeedIds.add(Long.toString(feedId));
-                }
+            if (feedResponse == null) {
+                return;
             }
-        }
 
-        // data for the feeds table
-        List<ContentValues> feedValues = new ArrayList<ContentValues>();
-        for (String feedId : feedResponse.feeds.keySet()) {
-            // sanity-check that the returned feeds actually exist in a folder or at the root
-            // if they do not, they should neither display nor count towards unread numbers
-            if (debugFeedIds.contains(feedId)) {
-                feedValues.add(feedResponse.feeds.get(feedId).getValues());
-            } else {
-                Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feedId );
+            // if the response says we aren't logged in, clear the DB and prompt for login. We test this
+            // here, since this the first sync call we make on launch if we believe we are cookied.
+            if (! feedResponse.isAuthenticated) {
+                PrefsUtils.logout(this);
+                return;
             }
-        }
-        
-        // data for the the social feeds table
-        List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
-        for (SocialFeed feed : feedResponse.socialFeeds) {
-            socialFeedValues.add(feed.getValues());
-        }
-        
-        dbHelper.insertFeedsFolders(feedValues, folderValues, ffmValues, socialFeedValues);
 
-        // populate the starred stories count table
-        dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
+            // there is a rare issue with feeds that have no folder.  capture them for debug.
+            List<String> debugFeedIds = new ArrayList<String>();
 
-        if (HaltNow) return;
-        if (HoldStories) return;
+            // clean out the feed / folder tables
+            dbHelper.cleanupFeedsFolders();
 
-        Log.d(this.getClass().getName(), "fetching unread hashes");
-        UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
-        
-        // note all the stories we thought were unread before. if any fail to appear in
-        // the API request for unreads, we will mark them as read
-        List<String> oldUnreadHashes = dbHelper.getUnreadStoryHashes();
-
-        for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
-            String feedId = entry.getKey();
-            // ignore unreads from orphaned feeds
-            if( debugFeedIds.contains(feedId)) {
-                // only fetch the reported unreads if we don't already have them
-                List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
-                for (String newHash : entry.getValue()) {
-                    if (!existingHashes.contains(newHash)) {
-                        storyHashQueue.add(newHash);
+            // data for the folder and folder-feed-mapping tables
+            List<ContentValues> folderValues = new ArrayList<ContentValues>();
+            List<ContentValues> ffmValues = new ArrayList<ContentValues>();
+            for (Entry<String, List<Long>> entry : feedResponse.folders.entrySet()) {
+                if (!TextUtils.isEmpty(entry.getKey())) {
+                    String folderName = entry.getKey().trim();
+                    if (!TextUtils.isEmpty(folderName)) {
+                        ContentValues values = new ContentValues();
+                        values.put(DatabaseConstants.FOLDER_NAME, folderName);
+                        folderValues.add(values);
                     }
-                    oldUnreadHashes.remove(newHash);
+
+                    for (Long feedId : entry.getValue()) {
+                        ContentValues values = new ContentValues(); 
+                        values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
+                        values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
+                        ffmValues.add(values);
+                        // note all feeds that belong to some folder
+                        debugFeedIds.add(Long.toString(feedId));
+                    }
                 }
             }
-        }
 
-        // mark as read any old stories that were recently read
-        dbHelper.markStoryHashesRead(oldUnreadHashes);
+            // data for the feeds table
+            List<ContentValues> feedValues = new ArrayList<ContentValues>();
+            for (String feedId : feedResponse.feeds.keySet()) {
+                // sanity-check that the returned feeds actually exist in a folder or at the root
+                // if they do not, they should neither display nor count towards unread numbers
+                if (debugFeedIds.contains(feedId)) {
+                    feedValues.add(feedResponse.feeds.get(feedId).getValues());
+                } else {
+                    Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feedId );
+                }
+            }
+            
+            // data for the the social feeds table
+            List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
+            for (SocialFeed feed : feedResponse.socialFeeds) {
+                socialFeedValues.add(feed.getValues());
+            }
+            
+            dbHelper.insertFeedsFolders(feedValues, folderValues, ffmValues, socialFeedValues);
+
+            // populate the starred stories count table
+            dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
+
+            if (HaltNow) return;
+            if (HoldStories) return;
+
+            Log.d(this.getClass().getName(), "fetching unread hashes");
+            UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
+            
+            // note all the stories we thought were unread before. if any fail to appear in
+            // the API request for unreads, we will mark them as read
+            List<String> oldUnreadHashes = dbHelper.getUnreadStoryHashes();
+
+            for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
+                String feedId = entry.getKey();
+                // ignore unreads from orphaned feeds
+                if( debugFeedIds.contains(feedId)) {
+                    // only fetch the reported unreads if we don't already have them
+                    List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
+                    for (String newHash : entry.getValue()) {
+                        if (!existingHashes.contains(newHash)) {
+                            storyHashQueue.add(newHash);
+                        }
+                        oldUnreadHashes.remove(newHash);
+                    }
+                }
+            }
+
+            // mark as read any old stories that were recently read
+            dbHelper.markStoryHashesRead(oldUnreadHashes);
+        } finally {
+            FFSyncRunning = false;
+            NbActivity.updateAllActivities();
+        }
     }
 
     /**
@@ -377,7 +377,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return FFSyncRunning;
+        return (FFSyncRunning || CleanupRunning);
     }
 
     /**
@@ -393,6 +393,7 @@ public class NBSyncService extends Service {
      */
     public static void forceFeedsFolders() {
         DoFeedsFolders = true;
+        NbActivity.updateAllActivities();
     }
 
     /**
@@ -419,8 +420,18 @@ public class NBSyncService extends Service {
             Log.e(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
             return false;
         }
+        Integer alreadyRequested = PendingFeeds.get(fs);
+        if ((alreadyRequested != null) && (desiredStoryCount <= alreadyRequested)) {
+            return true;
+        }
+        Integer alreadySeen = FeedStoriesSeen.get(fs);
+        if ((alreadySeen != null) && (desiredStoryCount <= alreadySeen)) {
+            return true;
+        }
+            
         Log.d(NBSyncService.class.getName(), "enqueued request for minimum stories: " + desiredStoryCount);
         PendingFeeds.put(fs, desiredStoryCount);
+        NbActivity.updateAllActivities();
         return true;
     }
 

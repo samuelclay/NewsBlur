@@ -89,7 +89,9 @@ public class NbActivity extends Activity {
      * Called on each NB activity after the DB has been updated by the sync service. This method
      * should return as quickly as possible.
      */
-    protected void handleUpdate() {;}
+    protected void handleUpdate() {
+        Log.w(this.getClass().getName(), "activity doesn't implement handleUpdate");
+    }
 
     private void _handleUpdate() {
         runOnUiThread(new Runnable() {

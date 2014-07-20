@@ -52,10 +52,4 @@ public class FeedReading extends Reading {
         StoryOrder storyOrder = PrefsUtils.getStoryOrderForFeed(this, feedId);
         return new CursorLoader(this, storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
     }
-
-    @Override
-    public void handleUpdate() {
-        ;
-    }
-
 }

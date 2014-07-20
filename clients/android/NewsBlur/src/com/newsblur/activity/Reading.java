@@ -317,7 +317,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
-	public void handleUpdate() {
+	protected void handleUpdate() {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
         updateCursor();
     }
