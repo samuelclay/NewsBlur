@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.fragment.FolderListFragment;
@@ -26,6 +28,7 @@ public class Main extends NbActivity implements StateChangedListener {
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
 	private Menu menu;
+    private TextView overlayStatusText;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,8 @@ public class Main extends NbActivity implements StateChangedListener {
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
 
+        this.overlayStatusText = (TextView) findViewById(R.id.main_sync_status);
+
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
 	}
@@ -50,6 +55,7 @@ public class Main extends NbActivity implements StateChangedListener {
     @Override
     protected void onResume() {
         super.onResume();
+        updateStatusIndicators();
         // this view doesn't show stories, it is safe to perform cleanup
         NBSyncService.holdStories(false);
         triggerSync();
@@ -108,6 +114,10 @@ public class Main extends NbActivity implements StateChangedListener {
     @Override
 	public void handleUpdate() {
 		folderFeedList.hasUpdated();
+        updateStatusIndicators();
+	}
+
+    private void updateStatusIndicators() {
         if (NBSyncService.isFeedFolderSyncRunning()) {
 		    setProgressBarIndeterminateVisibility(true);
             setRefreshEnabled(false);
@@ -115,7 +125,17 @@ public class Main extends NbActivity implements StateChangedListener {
 		    setProgressBarIndeterminateVisibility(false);
             setRefreshEnabled(true);
         }
-	}
+
+        if (overlayStatusText != null) {
+            String syncStatus = NBSyncService.getSyncStatusMessage();
+            if (syncStatus != null)  {
+                overlayStatusText.setText(syncStatus);
+                overlayStatusText.setVisibility(View.VISIBLE);
+            } else {
+                overlayStatusText.setVisibility(View.GONE);
+            }
+        }
+    }
 
     private void setRefreshEnabled(boolean enabled) {
         if (menu != null) {
