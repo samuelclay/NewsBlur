@@ -273,7 +273,7 @@ class Document:
             self.TEXT_LENGTH_THRESHOLD)
         candidates = {}
         ordered = []
-        for elem in self.tags(self._html(), "p", "pre", "td", "section"):
+        for elem in self.tags(self._html(), "p", "pre", "td", "section", "article"):
             parent_node = elem.getparent()
             if parent_node is None:
                 continue
