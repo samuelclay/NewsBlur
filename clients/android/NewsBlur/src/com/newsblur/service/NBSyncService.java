@@ -111,6 +111,7 @@ public class NBSyncService extends Service {
             }).start();
         } else {
             Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
+            FreshRequest = false;
         } 
 
         // indicate to the system that the service should be alive when started, but
