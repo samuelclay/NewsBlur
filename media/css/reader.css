@@ -932,12 +932,14 @@ a img {
     border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 .NB-theme-feed-size-l .unread_count {
-    margin-top: 4px;
+    margin-top: 3px;
     padding-top: 3px;
+    padding-bottom: 3px;
 }
 .NB-theme-feed-size-xl .unread_count {
     margin-top: 4px;
     padding-top: 3px;
+    padding-bottom: 3px;
 }
 .unread_count_starred {
     background-color: #506B9A;
@@ -1921,7 +1923,6 @@ a img {
     left: 0;
     right: 0;
     display: block;
-    font-size: 10px;
     font-weight: normal;
     clear: both;
 }
@@ -3951,15 +3952,12 @@ body {
 
 .NB-feeds-header-starred .NB-feeds-header-count {
     background-color: #506B9A;
+    margin-top: 4px;
+    margin-right: 3px;
     display: block;
-    padding: 2px 3px 2px;
-    margin: 3px 3px 0 1px;
-    border-bottom: 1px solid rgba(0, 0, 0, .2);
-    
 }
 .NB-starred-feeds .unread_count_positive {
     background-color: #506B9A;    
-    border-bottom: 1px solid rgba(0, 0, 0, .2);
 }
 
 .NB-starred-feeds .feed {
