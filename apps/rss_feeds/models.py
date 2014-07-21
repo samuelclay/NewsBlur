@@ -2047,12 +2047,12 @@ class MStory(mongo.Document):
         self.image_urls = image_urls
         return self.image_urls
 
-    def fetch_original_text(self, force=False, request=None):
+    def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, feed=feed, request=request)
+            ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
