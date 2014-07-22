@@ -32,7 +32,8 @@ public class ShareDialogFragment extends DialogFragment {
 	private static final String STORY = "story";
 	private static final String CALLBACK= "callback";
 	private static final String PREVIOUSLY_SAVED_SHARE_TEXT = "previouslySavedComment";
-	private APIManager apiManager;
+    private static final String SOURCE_USER_ID = "sourceUserId";
+    private APIManager apiManager;
 	private SharedCallbackDialog callback;
 	private Story story;
 	private UserDetails user;
@@ -43,13 +44,15 @@ public class ShareDialogFragment extends DialogFragment {
 	private String previouslySavedShareText;
 	private boolean hasShared = false;
     private EditText commentEditText;
+    private String sourceUserId;
 
-	public static ShareDialogFragment newInstance(final SharedCallbackDialog sharedCallback, final Story story, final String previouslySavedShareText) {
+	public static ShareDialogFragment newInstance(final SharedCallbackDialog sharedCallback, final Story story, final String previouslySavedShareText, final String sourceUserId) {
 		ShareDialogFragment frag = new ShareDialogFragment();
 		Bundle args = new Bundle();
 		args.putSerializable(STORY, story);
 		args.putString(PREVIOUSLY_SAVED_SHARE_TEXT, previouslySavedShareText);
 		args.putSerializable(CALLBACK, sharedCallback);
+        args.putString(SOURCE_USER_ID, sourceUserId);
 		frag.setArguments(args);
 		return frag;
 	}
@@ -62,6 +65,7 @@ public class ShareDialogFragment extends DialogFragment {
         callback = (SharedCallbackDialog) getArguments().getSerializable(CALLBACK);
         user = PrefsUtils.getUserDetails(activity);
         previouslySavedShareText = getArguments().getString(PREVIOUSLY_SAVED_SHARE_TEXT);
+        sourceUserId = getArguments().getString(SOURCE_USER_ID);
 
         apiManager = new APIManager(getActivity());
         resolver = getActivity().getContentResolver();
@@ -105,7 +109,13 @@ public class ShareDialogFragment extends DialogFragment {
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... arg) {
-                        return apiManager.shareStory(story.id, story.feedId, shareComment, story.sourceUserId);
+                        // If story.sourceUsedId is set then we should use that as the sourceUserId for the share.
+                        // Otherwise, use the sourceUsedId passed to the fragment.
+                        if (story.sourceUserId == null) {
+                            return apiManager.shareStory(story.id, story.feedId, shareComment, sourceUserId);
+                        } else {
+                            return apiManager.shareStory(story.id, story.feedId, shareComment, story.sourceUserId);
+                        }
                     }
 
                     @Override

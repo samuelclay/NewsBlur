@@ -25,7 +25,8 @@ public class AllSharedStoriesReading extends Reading {
         feedIds = getIntent().getStringArrayExtra(Reading.EXTRA_FEED_IDS);
         setTitle(getResources().getString(R.string.all_shared_stories));
 
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        // No sourceUserId since this is all shared stories. The sourceUsedId for each story will be used.
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, null);
 
         getLoaderManager().initLoader(0, null, this);
     }
