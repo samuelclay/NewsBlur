@@ -16,6 +16,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.newsblur.activity.Login;
@@ -365,6 +367,31 @@ public class PrefsUtils {
     public static boolean isOfflineEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);
+    }
+
+    /**
+     * Compares the user's setting for when background data use is allowed against the
+     * current network status and sees if it is okay to sync.
+     */
+    public static boolean isBackgroundNetworkAllowed(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMO);
+
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+
+        // if we aren't even online, there is no way bg data will work
+        if ((activeInfo == null) || (!activeInfo.isConnected())) return false;
+
+        // if user restricted use of mobile nets, make sure we aren't on one
+        int type = activeInfo.getType();
+        if (mode.equals(PrefConstants.NETWORK_SELECT_NOMO)) {
+            if (! ((type == ConnectivityManager.TYPE_WIFI) || (type == ConnectivityManager.TYPE_ETHERNET))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static boolean isKeepOldStories(Context context) {

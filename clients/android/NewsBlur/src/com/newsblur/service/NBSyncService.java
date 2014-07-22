@@ -130,6 +130,12 @@ public class NBSyncService extends Service {
         try {
             wl.acquire();
 
+            // check to see if we are on an allowable network only after ensuring we have CPU
+            if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
+                Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
+                return;
+            }
+
             // these requests are expressly enqueued by the UI/user, do them first
             syncPendingFeeds();
 

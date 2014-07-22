@@ -168,24 +168,35 @@
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     
-    <string name="oldest">Oldest</string>
-    <string name="newest">Newest First</string>
-    <string name="menu_story_order">Story Order</string>
-    
-    <string name="all_stories">All Stories</string>
-    <string name="unread_only">Unread Only</string>
-    <string name="menu_read_filter">Read Filter</string>
     <string name="menu_default_view">Default View</string>
     
     <string name="settings">Preferences</string>
 
     <string name="settings_cat_offline">Offline</string>
-    <string name="settings_enable_offline">Download in Background</string>
-    <string name="settings_enable_offline_sum">Periodically fetch stories for offline reading</string>
+    <string name="settings_enable_offline">Download Stories</string>
+    <string name="settings_enable_offline_sum">Periodically fetch stories in background</string>
     <string name="settings_keep_old_stories">Keep Stories after Reading</string>
     <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
 
+    <string name="menu_network_select">Download Using</string>
+    <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
+    <string name="menu_network_select_opt_any">Any Network</string>
+    <string name="menu_network_select_opt_nomo">Wifi and Ethernet Only</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+    </string-array>
+    <string-array name="default_network_select_values">
+        <item>ANY</item>
+        <item>NOMO</item>
+    </string-array>
+    <string name="default_network_select_value">NOMO</string>
+
     <string name="settings_cat_story_list">Story List</string>
+
+    <string name="oldest">Oldest</string>
+    <string name="newest">Newest First</string>
+    <string name="menu_story_order">Story Order</string>
     <string-array name="default_story_order_entries">
         <item>@string/newest</item>
         <item>@string/oldest</item>
@@ -195,6 +206,10 @@
         <item>OLDEST</item>
     </string-array>
     <string name="default_story_order_value">NEWEST</string>
+
+    <string name="all_stories">All Stories</string>
+    <string name="unread_only">Unread Only</string>
+    <string name="menu_read_filter">Read Filter</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
         <item>@string/unread_only</item>
