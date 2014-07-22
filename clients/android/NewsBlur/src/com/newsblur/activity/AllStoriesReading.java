@@ -24,7 +24,7 @@ public class AllStoriesReading extends Reading {
 
         feedIds = getIntent().getStringArrayExtra(Reading.EXTRA_FEED_IDS);
         setTitle(getResources().getString(R.string.all_stories_row_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, null);
         getLoaderManager().initLoader(0, null, this);
     }
 
