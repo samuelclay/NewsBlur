@@ -10878,14 +10878,15 @@ form.opml_import_form input {
     width: 320px;
 }
 .NB-static-oauth .NB-static-form-label label {
-    width: 120px;
-    text-transform: uppercase;
+    width: 108px;
+    text-transform: none;
     font-size: 18px;
     padding: 8px 0 0 0;
     color: rgba(0, 0, 0, .6);
+    display: block;
 }
 .NB-static-oauth .NB-static-form-input input {
-    margin-left: 0;
+    margin-left: 12px;
     margin-right: 0;
     height: 34px;
     font-size: 22px;
@@ -10942,12 +10943,6 @@ form.opml_import_form input {
     }
     .NB-static-oauth .NB-static-form {
         width: auto;
-    }
-    .NB-static-oauth input[type=submit].NB-static-form-submit {
-        float: none;
-        margin: 36px auto 12px;
-        clear: both;
-        display: block;
     }
 }
 
