@@ -160,7 +160,6 @@ class Document:
                     self.remove_unlikely_candidates()
                 self.transform_misused_divs_into_paragraphs()
                 candidates = self.score_paragraphs()
-
                 best_candidate = self.select_best_candidate(candidates)
 
                 if best_candidate:
@@ -274,7 +273,7 @@ class Document:
             self.TEXT_LENGTH_THRESHOLD)
         candidates = {}
         ordered = []
-        for elem in self.tags(self._html(), "p", "pre", "td"):
+        for elem in self.tags(self._html(), "p", "pre", "td", "section", "article"):
             parent_node = elem.getparent()
             if parent_node is None:
                 continue

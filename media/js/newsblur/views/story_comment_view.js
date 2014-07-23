@@ -219,7 +219,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
             }
         }, this), _.bind(function(data) {
-            var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
+            var message = data && data.message || "Sorry, this reply could not be posted. Probably Adblock.";
             if (!NEWSBLUR.Globals.is_authenticated) {
                 message = "You need to be logged in to reply to a comment.";
             }

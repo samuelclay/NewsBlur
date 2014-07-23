@@ -71,17 +71,17 @@ class SignupForm(forms.Form):
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs={'class': 'NB-input'}),
-                                label=_(u'username'),
+                                label=_(u'Username'),
                                 error_messages={
                                     'required': 'Please enter a username.', 
                                     'invalid': "Your username may only contain letters and numbers."
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
-                             label=_(u'email'),
+                             label=_(u'Email'),
                              required=True,
                              error_messages={'required': 'Please enter an email.'})
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
-                               label=_(u'password'),
+                               label=_(u'Password'),
                                required=False)
                                # error_messages={'required': 'Please enter a password.'})
     

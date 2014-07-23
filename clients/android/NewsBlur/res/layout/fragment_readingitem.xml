@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="bottom"
-            android:background="@drawable/divider_item_header" />
+            style="?itemHeaderDivider" />
 
         <include layout="@layout/include_reading_share_bar" />
 

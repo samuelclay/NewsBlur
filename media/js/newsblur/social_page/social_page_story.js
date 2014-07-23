@@ -186,7 +186,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var $share_button = this.$('.NB-sideoption-share-save');
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $share_button_menu = $('.NB-menu-manage .NB-menu-manage-story-share-save');
-        var message = data && data.message || ("Sorry, this story could not be " + (shared ? "" : "un") + "shared. Probably a bug.");
+        var message = data && data.message || ("Sorry, this story could not be " + (shared ? "" : "un") + "shared. Probably Adblock.");
         
         if (!NEWSBLUR.Globals.is_authenticated) {
             message = "You need to be logged in to share a story.";
