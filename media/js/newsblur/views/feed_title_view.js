@@ -110,6 +110,20 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <div class="NB-feed-unfetched-icon"></div>\
           <div class="NB-feedlist-manage-icon"></div>\
           <div class="NB-feed-highlight"></div>\
+          <% if (organizer) { %>\
+              <div class="NB-feed-organizer-subscribers">\
+                <%= pluralize("subscriber", feed.get("num_subscribers"), true) %>\
+              </div>\
+              <div class="NB-feed-organizer-laststory">\
+                <%= feed.get("last_story_date") %>\
+              </div>\
+              <div class="NB-feed-organizer-monthlycount">\
+                <%= pluralize("story", feed.get("average_stories_per_month"), true) %> per month\
+              </div>\
+              <div class="NB-feed-organizer-opens">\
+                <%= pluralize("open", feed.get("feed_opens"), true) %>\
+              </div>\
+          <% } %>\
         </<%= list_type %>>\
         ', {
           feed                : feed,
@@ -118,9 +132,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           extra_classes       : extra_classes,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
-          selected            : this.model.get('selected')
+          selected            : this.model.get('selected'),
+          organizer           : this.options.organizer,
+          pluralize           : Inflector.pluralize
         }));
-        
+
         if (this.options.type == 'story') {
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
@@ -302,6 +318,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (dblclick_pref == "ignore") return;
         if (this.options.type == "story") return;
         if (this.options.starred_tag) return;
+        if (this.options.feed_chooser) return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
         this.flags.double_click = true;

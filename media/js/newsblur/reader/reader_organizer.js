@@ -56,7 +56,8 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
         
         var $feeds = new NEWSBLUR.Views.FeedList({
-            feed_chooser: true
+            feed_chooser: true,
+            organizer: true
         }).make_feeds().$el;
         
         if ($feeds.data('sortable')) $feeds.data('sortable').disable();
@@ -76,7 +77,26 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         $('.unread_count_positive', $feeds).text('On');
         $('.unread_count_negative', $feeds).text('Off');
         
+        $('.selected', $feeds).removeClass('selected');
+        
         return $feeds;
+    },
+    
+    // =============
+    // = Selecting =
+    // =============
+    
+    toggle_feed: function(feed_id) {
+        var feed = NEWSBLUR.assets.get_feed(feed_id);
+        if (feed.get('organizer_selected')) {
+            this.deselect_feed(feed);
+        } else {
+            this.select_feed(feed);
+        }
+    },
+    
+    select_feed: function(feed) {
+        feed.set('organizer_selected', true);
     },
 
     // ===========
@@ -90,11 +110,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             e.preventDefault();
             
             var feed_id = parseInt($t.attr('data-id'), 10);
-            if (_.contains(this.approve_list, feed_id)) {
-                this.add_feed_to_decline(feed_id, true);
-            } else {
-                this.add_feed_to_approve(feed_id, true);
-            }
+            this.toggle_feed(feed_id);
         }, this));
         
     }

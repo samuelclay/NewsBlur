@@ -15,7 +15,11 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         if (this.options.feed_chooser) {
             this.$el.addClass('NB-feedchooser');
             this.$el.addClass('unread_view_positive');
-            this.$el.attr('id', 'NB-feedchooser-feeds');
+            if (this.options.organizer) {                
+                this.$el.attr('id', 'NB-organizer-feeds');
+            } else {
+                this.$el.attr('id', 'NB-feedchooser-feeds');
+            }
             return;
         }
         
@@ -57,7 +61,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var $feeds = new NEWSBLUR.Views.Folder({
             collection: folders, 
             root: true,
-            feed_chooser: this.options.feed_chooser
+            feed_chooser: this.options.feed_chooser,
+            organizer: this.options.organizer
         }).render().el;
         this.$el.css({
             'display': 'block', 
