@@ -76,12 +76,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.REPLY_USERID + TEXT +
 		")";
 	
-	private final String OFFLINE_UPDATE_SQL = "CREATE TABLE " + DatabaseConstants.UPDATE_TABLE + " (" +
-		DatabaseConstants.UPDATE_ID + INTEGER + " PRIMARY KEY, " + 
-		DatabaseConstants.UPDATE_TYPE + INTEGER + ", " + 
-		DatabaseConstants.UPDATE_ARGUMENTS + TEXT +
-		")";
-
     private final String STORY_TABLES_COLS = 
 		DatabaseConstants.STORY_HASH + TEXT + ", " +
 		DatabaseConstants.STORY_AUTHORS + TEXT + ", " +
@@ -153,7 +147,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(SOCIALFEED_STORIES_SQL);
         db.execSQL(STARRED_STORIES_SQL);
         db.execSQL(STARRED_STORIES_COUNT_SQL);
-		db.execSQL(OFFLINE_UPDATE_SQL);
 	}
 	
 	public void dropAndRecreateTables() {
@@ -171,7 +164,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
 		db.execSQL(drop + DatabaseConstants.STARRED_STORIES_TABLE);
 		db.execSQL(drop + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
-		db.execSQL(drop + DatabaseConstants.UPDATE_TABLE);
 		
 		onCreate(db);
 		

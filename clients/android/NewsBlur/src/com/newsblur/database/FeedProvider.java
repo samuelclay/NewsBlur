@@ -28,7 +28,6 @@ public class FeedProvider extends ContentProvider {
 	public static final String VERSION = "v1";
 	
 	public static final Uri NEWSBLUR_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION);
-	public static final Uri OFFLINE_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/offline_updates/");
 	public static final Uri SOCIAL_FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/social_feeds/");
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri CLASSIFIER_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/classifiers/");
@@ -61,7 +60,6 @@ public class FeedProvider extends ContentProvider {
 	private static final int STORY_COMMENTS = 9;
 	private static final int INDIVIDUAL_STORY = 10;
 	private static final int FEED_COUNT = 11;
-	private static final int OFFLINE_UPDATES = 12;
 	private static final int SOCIALFEED_COUNT = 13;
 	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
 	private static final int REPLIES = 15;
@@ -102,7 +100,6 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/*/", SPECIFIC_FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/offline_updates/", OFFLINE_UPDATES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/users/", USERS);
         uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories/", STARRED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories_count/", STARRED_STORIES_COUNT);
@@ -112,9 +109,6 @@ public class FeedProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		switch (uriMatcher.match(uri)) {
-			case OFFLINE_UPDATES:
-				return db.delete(DatabaseConstants.UPDATE_TABLE, selection, selectionArgs);
-			
 			case ALL_SOCIAL_FEEDS:	
 				db.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
 				return 1;	
@@ -296,11 +290,6 @@ public class FeedProvider extends ContentProvider {
 			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			break;		
 			
-			// Inserting a story	
-		case OFFLINE_UPDATES:
-			db.insertWithOnConflict(DatabaseConstants.UPDATE_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			break;
-
         case STARRED_STORIES:
             db.insertWithOnConflict(DatabaseConstants.STARRED_STORIES_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             break;
@@ -554,8 +543,6 @@ public class FeedProvider extends ContentProvider {
             folderBuilder.append(" ORDER BY ");
             folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
             return db.rawQuery(folderBuilder.toString(), null);
-		case OFFLINE_UPDATES:
-			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
 			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
 		case INDIVIDUAL_SOCIAL_FEED:

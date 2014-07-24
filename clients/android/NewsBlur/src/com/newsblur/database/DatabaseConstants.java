@@ -59,11 +59,6 @@ public class DatabaseConstants {
 	public static final String CLASSIFIER_KEY = "key";
 	public static final String CLASSIFIER_VALUE = "value";
 
-	public static final String UPDATE_TABLE = "offline_updates";
-	public static final String UPDATE_ID = BaseColumns._ID;
-	public static final String UPDATE_TYPE = "update_type";
-	public static final String UPDATE_ARGUMENTS = "update_argument";
-
 	public static final String USER_TABLE = "user_table";
 	public static final String USER_USERID = BaseColumns._ID;
     public static final String USER_USERNAME = "username";
@@ -122,10 +117,6 @@ public class DatabaseConstants {
 	public static final String SUM_POS = "sum_postive";
 	public static final String SUM_NEUT = "sum_neutral";
 	public static final String SUM_NEG = "sum_negative";
-
-	public static final String[] UPDATE_COLUMNS = {
-		UPDATE_ID, UPDATE_TYPE, UPDATE_ARGUMENTS
-	};
 
 	public static final String[] FEED_COLUMNS = {
 		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOR, FEED_TABLE + "." + FEED_FAVICON_BORDER, FEED_TABLE + "." + FEED_FAVICON_TEXT,
