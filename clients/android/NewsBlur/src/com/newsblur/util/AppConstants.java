@@ -51,4 +51,7 @@ public class AppConstants {
     // how many unread stories to fetch via hash at a time
     public static final int UNREAD_FETCH_BATCH_SIZE = 50;
 
+    // how many images to prefetch before updating the countdown UI
+    public static final int IMAGE_PREFETCH_BATCH_SIZE = 10;
+
 }

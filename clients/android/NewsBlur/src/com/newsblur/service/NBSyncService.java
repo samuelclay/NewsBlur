@@ -14,12 +14,14 @@ import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.ImageCache;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -58,6 +60,7 @@ public class NBSyncService extends Service {
     private volatile static boolean UnreadSyncRunning = false;
     private volatile static boolean UnreadHashSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
+    private volatile static boolean ImagePrefetchRunning = false;
 
     /** Don't do any actions that might modify the story list for a feed or folder in a way that
         would annoy a user who is on the story list or paging through stories. */
@@ -75,11 +78,14 @@ public class NBSyncService extends Service {
     static { FeedStoriesSeen = new HashMap<FeedSet,Integer>(); }
     private static Set<String> StoryHashQueue;
     static { StoryHashQueue = new HashSet<String>(); }
+    private static Set<String> ImageQueue;
+    static { ImageQueue = new HashSet<String>(); }
 
     private volatile static boolean HaltNow = false;
 
 	private APIManager apiManager;
     private BlurDatabaseHelper dbHelper;
+    private ImageCache imageCache;
 
 	@Override
 	public void onCreate() {
@@ -88,6 +94,7 @@ public class NBSyncService extends Service {
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
+        imageCache = new ImageCache(this);
 	}
 
     /**
@@ -154,6 +161,8 @@ public class NBSyncService extends Service {
             syncMetadata();
 
             syncUnreads();
+            
+            prefetchImages();
 
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
@@ -183,6 +192,7 @@ public class NBSyncService extends Service {
         CleanupRunning = true;
         NbActivity.updateAllActivities();
         dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
+        imageCache.cleanup();
         CleanupRunning = false;
         NbActivity.updateAllActivities();
 
@@ -321,16 +331,24 @@ public class NBSyncService extends Service {
                     hashBatch.add(hash);
                     if (hashBatch.size() >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break batchloop;
                 }
-                for (String hash : hashBatch) {
-                    StoryHashQueue.remove(hash);
-                } 
                 StoriesResponse response = apiManager.getStoriesByHash(hashBatch);
                 if (! isStoryResponseGood(response)) {
                     Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
                     break unreadsyncloop;
                 }
                 dbHelper.insertStories(response);
+                for (String hash : hashBatch) {
+                    StoryHashQueue.remove(hash);
+                } 
                 NbActivity.updateAllActivities();
+
+                for (Story story : response.stories) {
+                    if (story.imageUrls != null) {
+                        for (String url : story.imageUrls) {
+                            ImageQueue.add(url);
+                        }
+                    }
+                }
             }
         } finally {
             UnreadSyncRunning = false;
@@ -395,6 +413,37 @@ public class NBSyncService extends Service {
         }
     }
 
+    private void prefetchImages() {
+        ImagePrefetchRunning = true;
+        try {
+            while (ImageQueue.size() > 0) {
+                Set<String> fetchedImages = new HashSet<String>();
+                Set<String> batch = new HashSet<String>(AppConstants.IMAGE_PREFETCH_BATCH_SIZE);
+                batchloop: for (String url : ImageQueue) {
+                    batch.add(url);
+                    if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
+                }
+                try {
+                    for (String url : batch) {
+                        if (HaltNow) return;
+                        if (HoldStories) return;
+                        
+                        imageCache.cacheImage(url);
+
+                        fetchedImages.add(url);
+                    }
+                } finally {
+                    ImageQueue.removeAll(fetchedImages);
+                    NbActivity.updateAllActivities();
+                }
+            }
+        } finally {
+            ImagePrefetchRunning = false;
+            NbActivity.updateAllActivities();
+
+        }
+    }
+
     private boolean isStoryResponseGood(StoriesResponse response) {
         if (response == null) {
             Log.e(this.getClass().getName(), "Null response received while loading stories.");
@@ -411,7 +460,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning);
+        return (FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || ImagePrefetchRunning);
     }
 
     /**
@@ -426,6 +475,7 @@ public class NBSyncService extends Service {
         if (CleanupRunning) return "Cleaning up storage . . .";
         if (UnreadHashSyncRunning) return "Syncing unread status . . .";
         if (UnreadSyncRunning) return "Syncing " + StoryHashQueue.size() + " stories . . .";
+        if (ImagePrefetchRunning) return "Caching " + ImageQueue.size() + " images . . .";
         if (StorySyncRunning) return "Syncing stories . . .";
         return null;
     }
