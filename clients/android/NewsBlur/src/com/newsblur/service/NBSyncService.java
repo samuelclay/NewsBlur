@@ -49,16 +49,21 @@ import java.util.Set;
  */
 public class NBSyncService extends Service {
 
-    private volatile static boolean FreshRequest;
+    private volatile static boolean FreshRequest = false;
+    private volatile static boolean ThreadActive = false;
+    private static final Object WORK_THREAD_MUTEX = new Object();
+
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean UnreadSyncRunning = false;
     private volatile static boolean UnreadHashSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
+
     /** Don't do any actions that might modify the story list for a feed or folder in a way that
         would annoy a user who is on the story list or paging through stories. */
     private volatile static boolean HoldStories = false;
     private volatile static boolean DoFeedsFolders = false;
+
     /** Feed sets that we need to sync and how many stories the UI wants for them. */
     private static Map<FeedSet,Integer> PendingFeeds;
     static { PendingFeeds = new HashMap<FeedSet,Integer>(); }
@@ -92,12 +97,11 @@ public class NBSyncService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         HaltNow = false;
+        FreshRequest = true;
 
-        // callers might accidentally invoke us rapid-fire.  If we have thread invocations queued up, discard new ones
-        if (FreshRequest) {
+        if (ThreadActive) {
             return Service.START_NOT_STICKY;
         }
-        FreshRequest = true;
 
         // only perform a sync if the app is actually running or background syncs are enabled
         if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
@@ -105,13 +109,21 @@ public class NBSyncService extends Service {
             // allowed to do tangible work.  We spawn a thread to do so.
             new Thread(new Runnable() {
                 public void run() {
-                    FreshRequest = false;
-                    doSync();
+                    synchronized (WORK_THREAD_MUTEX) {
+                        while( FreshRequest ) {
+                            try {
+                                ThreadActive = true;
+                                FreshRequest = false;
+                                doSync();
+                            } finally {
+                                ThreadActive = false;
+                            }
+                        }
+                    }
                 }
             }).start();
         } else {
             Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
-            FreshRequest = false;
         } 
 
         // indicate to the system that the service should be alive when started, but
