@@ -74,8 +74,8 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         // Make sure all folders are visible
         $('.NB-folder.NB-hidden', $feeds).removeClass('NB-hidden');
         
-        $('.unread_count_positive', $feeds).text('On');
-        $('.unread_count_negative', $feeds).text('Off');
+        $('.unread_count_positive', $feeds).text('');
+        $('.unread_count_negative', $feeds).text('');
         
         $('.selected', $feeds).removeClass('selected');
         

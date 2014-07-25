@@ -111,16 +111,16 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <div class="NB-feedlist-manage-icon"></div>\
           <div class="NB-feed-highlight"></div>\
           <% if (organizer) { %>\
-              <div class="NB-feed-organizer-subscribers">\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-subscribers">\
                 <%= pluralize("subscriber", feed.get("num_subscribers"), true) %>\
               </div>\
-              <div class="NB-feed-organizer-laststory">\
-                <%= feed.get("last_story_date") %>\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-laststory">\
+                <%= feed.relative_last_story_date() %>\
               </div>\
-              <div class="NB-feed-organizer-monthlycount">\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-monthlycount">\
                 <%= pluralize("story", feed.get("average_stories_per_month"), true) %> per month\
               </div>\
-              <div class="NB-feed-organizer-opens">\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-opens">\
                 <%= pluralize("open", feed.get("feed_opens"), true) %>\
               </div>\
           <% } %>\
@@ -210,7 +210,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
         this.counts_view = new NEWSBLUR.Views.UnreadCount({
             model: this.model,
-            include_starred: true
+            include_starred: true,
+            feed_chooser: this.options.feed_chooser
         }).render();
         this.$('.feed_counts').html(this.counts_view.el);
         if (this.options.type == 'story') {
@@ -339,6 +340,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     dblclick_mark_feed_as_read: function(e) {
+        if (this.options.feed_chooser) return;
         if (NEWSBLUR.assets.preference('doubleclick_unread') == "ignore") return;
         
         return this.mark_feed_as_read(e);

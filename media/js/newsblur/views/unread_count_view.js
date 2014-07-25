@@ -4,7 +4,7 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
     
     initialize: function() {
         _.bindAll(this, 'render');
-        if (!this.options.stale) {
+        if (!this.options.stale && !this.options.feed_chooser) {
             if (this.model) {
                 var starred_feed = NEWSBLUR.assets.starred_feeds.get_feed(this.model.id);
                 if (starred_feed) {

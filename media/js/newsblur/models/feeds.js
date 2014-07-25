@@ -196,6 +196,31 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         } else if (unread_view > 0) {
             return !!(this.get('ps'));
         }
+    },
+    
+    relative_last_story_date: function() {
+        var dateformat = NEWSBLUR.assets.preference('dateformat');
+        var date = new Date(this.get('last_story_date'));
+        var midnight_today = function() {
+            var midnight = new Date();
+            midnight.setHours(0);
+            midnight.setMinutes(0);
+            midnight.setSeconds(0);
+            return midnight;
+        };
+        var midnight_yesterday = function(midnight) {
+            return new Date(midnight - 60*60*24*1000);
+        };
+        var midnight = midnight_today();
+        var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
+
+        if (date > midnight) {
+            return time;
+        } else if (date > midnight_yesterday(midnight)) {
+            return "Yesterday, " + time;
+        } else {
+            return date.format("d M Y");
+        }
     }
     
 });

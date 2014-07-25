@@ -10823,11 +10823,32 @@ form.opml_import_form input {
     border: 1px solid rgba(0, 0, 0, .2);
     margin: 24px 24px 0 0;
 }
+.NB-modal-organizer .NB-feedlist .feed_title {
+    padding-right: 186px;
+}
 .NB-modal-organizer .NB-feedlist .feed {
     display: block;
 }
-.NB-modal-organizer .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
+.NB-modal-organizer .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
+.NB-modal-organizer .NB-feedlist .folder .folder_title .feed_counts_floater {
     display: none;
+}
+.NB-modal-organizer .unread_count.unread_count_positive.unread_count_full {
+    width: 24px;
+    height: 13px;
+    background-image: url('/media/embed/icons/circular/checkmark_white.png');
+    background-size: 16px;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+.NB-modal-organizer .NB-feed-organizer-sort {
+/*    display: none;*/
+    position: absolute;
+    right: 42px;
+    top: 4px;
+}
+.NB-modal-organizer .NB-feed-organizer-sort.NB-active {
+    display: block;
 }
 
 /* ================= */
