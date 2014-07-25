@@ -414,6 +414,7 @@ public class NBSyncService extends Service {
     }
 
     private void prefetchImages() {
+        if (!PrefsUtils.isImagePrefetchEnabled(this)) return;
         ImagePrefetchRunning = true;
         try {
             while (ImageQueue.size() > 0) {

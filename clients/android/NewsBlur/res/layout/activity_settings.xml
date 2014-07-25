@@ -8,6 +8,11 @@
             android:key="enable_offline"
             android:title="@string/settings_enable_offline" 
             android:summary="@string/settings_enable_offline_sum" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_image_prefetch"
+            android:title="@string/settings_enable_image_prefetch" 
+            android:summary="@string/settings_enable_image_prefetch_sum" />
         <ListPreference
             android:key="offline_network_select"
             android:title="@string/menu_network_select"
