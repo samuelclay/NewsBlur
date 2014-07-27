@@ -35,7 +35,6 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri USERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/users/");
-	public static final Uri STARRED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories/");
 	public static final Uri STARRED_STORIES_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories_count/");
 	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
@@ -69,7 +68,6 @@ public class FeedProvider extends ContentProvider {
 	private static final int FEED_STORIES_NO_UPDATE = 18;
 	private static final int CLASSIFIERS_FOR_FEED = 19;
 	private static final int USERS = 21;
-	private static final int STARRED_STORIES = 22;
 	private static final int STARRED_STORIES_COUNT = 23;
 	
 	private BlurDatabase databaseHelper;
@@ -101,7 +99,6 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/users/", USERS);
-        uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories/", STARRED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories_count/", STARRED_STORIES_COUNT);
 	}
 
@@ -121,7 +118,6 @@ public class FeedProvider extends ContentProvider {
 				
 			case ALL_STORIES:	
 				db.delete(DatabaseConstants.STORY_TABLE, null, null);	
-				db.delete(DatabaseConstants.STARRED_STORIES_TABLE, null, null);	
                 return 1;
 				
 			case SOCIALFEED_STORIES:
@@ -147,9 +143,6 @@ public class FeedProvider extends ContentProvider {
 			case CLASSIFIERS_FOR_FEED:
 				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });
 				
-            case STARRED_STORIES:
-                return db.delete(DatabaseConstants.STARRED_STORIES_TABLE, null, null);
-
 			default:
 				return 0;
 		}
@@ -290,10 +283,6 @@ public class FeedProvider extends ContentProvider {
 			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			break;		
 			
-        case STARRED_STORIES:
-            db.insertWithOnConflict(DatabaseConstants.STARRED_STORIES_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-            break;
-
         case STARRED_STORIES_COUNT:
             db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             break;
@@ -370,20 +359,6 @@ public class FeedProvider extends ContentProvider {
 		
 		case USERS:
 			return db.query(DatabaseConstants.USER_TABLE, projection, selection, selectionArgs, null, null, null);	
-
-        case STARRED_STORIES:
-			String savedStoriesQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STARRED_STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
-			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
-			DatabaseConstants.FEED_FAVICON_FADE + ", " + DatabaseConstants.FEED_FAVICON_TEXT +
-                    " FROM " + DatabaseConstants.STARRED_STORIES_TABLE +
-			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
-			" ON " + DatabaseConstants.STARRED_STORIES_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID; 
-            StringBuilder q = new StringBuilder();
-            q.append(savedStoriesQuery);
-			if (!TextUtils.isEmpty(sortOrder)) {
-				q.append(" ORDER BY " + sortOrder);
-			}
-			return db.rawQuery(q.toString(), null);
 
         case STARRED_STORIES_COUNT:
             return db.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, projection, selection, selectionArgs, null, null, null);
@@ -614,7 +589,6 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_STORY:
             int count = 0;
             count += db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
-            count += db.update(DatabaseConstants.STARRED_STORIES_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
             return count;            
         // In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
 		case FEED_COUNT: 

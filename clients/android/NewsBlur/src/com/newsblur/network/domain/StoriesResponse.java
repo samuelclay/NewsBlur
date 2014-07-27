@@ -1,6 +1,9 @@
 package com.newsblur.network.domain;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
+
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
@@ -18,6 +21,6 @@ public class StoriesResponse extends NewsBlurResponse {
 	
     // some stories responses (like those from social feeds) also include feed data for non-subscribed feeds
 	@SerializedName("feeds")
-	public Feed[] feeds;
+	public List<Feed> feeds;
 
 }

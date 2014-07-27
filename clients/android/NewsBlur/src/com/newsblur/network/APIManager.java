@@ -25,6 +25,7 @@ import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
@@ -47,6 +48,7 @@ import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
+import com.newsblur.serialization.FeedListTypeAdapter;
 import com.newsblur.serialization.StoryTypeAdapter;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
@@ -66,11 +68,13 @@ public class APIManager {
 	public APIManager(final Context context) {
 		this.context = context;
 		this.contentResolver = context.getContentResolver();
+
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateStringTypeAdapter())
                 .registerTypeAdapter(Boolean.class, new BooleanTypeAdapter())
                 .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
                 .registerTypeAdapter(Story.class, new StoryTypeAdapter())
+                .registerTypeAdapter(new TypeToken<List<Feed>>(){}.getType(), new FeedListTypeAdapter())
                 .create();
 
         String appVersion = context.getSharedPreferences(PrefConstants.PREFERENCES, 0).getString(AppConstants.LAST_APP_VERSION, "unknown_version");

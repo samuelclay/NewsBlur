@@ -126,8 +126,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		"PRIMARY KEY (" + DatabaseConstants.SOCIALFEED_STORY_STORYID  + ", " + DatabaseConstants.SOCIALFEED_STORY_USER_ID + ") " + 
 	    ")";
 
-	private final String STARRED_STORIES_SQL = "CREATE TABLE " + DatabaseConstants.STARRED_STORIES_TABLE + " (" + STORY_TABLES_COLS + ")";
-
     private final String STARRED_STORIES_COUNT_SQL = "CREATE TABLE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE + " (" +
         DatabaseConstants.STARRED_STORY_COUNT_COUNT + INTEGER + " NOT NULL" +
         ")";
@@ -145,7 +143,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(CLASSIFIER_SQL);
 		db.execSQL(FEED_FOLDER_SQL);
 		db.execSQL(SOCIALFEED_STORIES_SQL);
-        db.execSQL(STARRED_STORIES_SQL);
         db.execSQL(STARRED_STORIES_COUNT_SQL);
 	}
 	
@@ -162,7 +159,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.CLASSIFIER_TABLE);
 		db.execSQL(drop + DatabaseConstants.FEED_FOLDER_MAP_TABLE);
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
-		db.execSQL(drop + DatabaseConstants.STARRED_STORIES_TABLE);
 		db.execSQL(drop + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
 		
 		onCreate(db);

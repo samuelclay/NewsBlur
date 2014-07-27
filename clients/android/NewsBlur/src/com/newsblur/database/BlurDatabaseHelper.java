@@ -2,6 +2,7 @@ package com.newsblur.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -30,11 +31,13 @@ import java.util.List;
  */
 public class BlurDatabaseHelper {
 
+    private Context context;
     private BlurDatabase dbWrapper;
     private SQLiteDatabase dbRO;
     private SQLiteDatabase dbRW;
 
     public BlurDatabaseHelper(Context context) {
+        this.context = context;
         dbWrapper = new BlurDatabase(context);
         dbRO = dbWrapper.getRO();
         dbRW = dbWrapper.getRW();
@@ -145,7 +148,7 @@ public class BlurDatabaseHelper {
 
         // handle supplemental feed data that may have been included (usually in social requests)
         if (apiResponse.feeds != null) {
-            List<ContentValues> feedValues = new ArrayList<ContentValues>(apiResponse.feeds.length);
+            List<ContentValues> feedValues = new ArrayList<ContentValues>(apiResponse.feeds.size());
             for (Feed feed : apiResponse.feeds) {
                 feedValues.add(feed.getValues());
             }
@@ -245,6 +248,19 @@ public class BlurDatabaseHelper {
         c2.close();
 
         return Math.max(countFromFeedsTable, countFromStoriesTable);
+    }
+
+    public Loader<Cursor> getSavedStoriesLoader() {
+        return new QueryCursorLoader(context) {
+            protected Cursor createCursor() {return getSavedStoriesCursor();}
+        };
+    }
+
+    public Cursor getSavedStoriesCursor() {
+        String q = DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE + 
+                   " WHERE " + DatabaseConstants.STORY_STARRED + " = 1" +
+                   " ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER;
+        return dbRO.rawQuery(q, null);
     }
 
 }

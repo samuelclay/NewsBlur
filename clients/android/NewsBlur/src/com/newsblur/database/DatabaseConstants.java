@@ -1,5 +1,6 @@
 package com.newsblur.database;
 
+import android.text.TextUtils;
 import android.provider.BaseColumns;
 
 import com.newsblur.util.AppConstants;
@@ -45,8 +46,6 @@ public class DatabaseConstants {
 	public static final String SOCIALFEED_STORY_MAP_TABLE = "socialfeed_story_map";
 	public static final String SOCIALFEED_STORY_USER_ID = "socialfeed_story_user_id";
 	public static final String SOCIALFEED_STORY_STORYID = "socialfeed_story_storyid";
-
-	public static final String STARRED_STORIES_TABLE = "starred_stories";
 
     public static final String STARRED_STORY_COUNT_TABLE = "starred_story_count";
     public static final String STARRED_STORY_COUNT_COUNT = "count";
@@ -168,12 +167,12 @@ public class DatabaseConstants {
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS, STORY_SUM_TOTAL, STORY_HASH
 	};
-	public static final String[] STARRED_STORY_COLUMNS = {
-		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE,
-        STARRED_STORIES_TABLE + "." + STORY_FEED_ID, STARRED_STORIES_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS,
-        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE,
-        STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS, STORY_SUM_TOTAL, STORY_HASH
-	};
+
+    public static final String MULTIFEED_STORIES_QUERY_BASE = 
+        "SELECT " + TextUtils.join(",", STORY_COLUMNS) + ", " + 
+        FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT +
+        " FROM " + STORY_TABLE +
+        " INNER JOIN " + FEED_TABLE + " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID;
 
     public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " ASC";
 
