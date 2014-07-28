@@ -1,6 +1,7 @@
 package com.newsblur.network.domain;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -17,7 +18,7 @@ public class StoriesResponse extends NewsBlurResponse {
 	@SerializedName("user_profiles")
 	public UserProfile[] users;
 	
-	public Classifier classifiers;
+	public Map<String,Classifier> classifiers;
 	
     // some stories responses (like those from social feeds) also include feed data for non-subscribed feeds
 	@SerializedName("feeds")

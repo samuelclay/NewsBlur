@@ -9,7 +9,6 @@ import com.newsblur.domain.Feed;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class FeedListTypeAdapter implements JsonDeserializer<List<Feed>> {
             result.add(feed);
         } else if (jsonElement.isJsonArray()) {
             for (JsonElement arrayMember : jsonElement.getAsJsonArray()) {
-                Feed feed = (Feed) jsonDeserializationContext.deserialize(jsonElement, Feed.class);
+                Feed feed = (Feed) jsonDeserializationContext.deserialize(arrayMember, Feed.class);
                 result.add(feed);
             } 
         }

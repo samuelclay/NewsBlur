@@ -47,6 +47,7 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
+import com.newsblur.serialization.ClassifierMapTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.serialization.FeedListTypeAdapter;
 import com.newsblur.serialization.StoryTypeAdapter;
@@ -75,6 +76,7 @@ public class APIManager {
                 .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
                 .registerTypeAdapter(Story.class, new StoryTypeAdapter())
                 .registerTypeAdapter(new TypeToken<List<Feed>>(){}.getType(), new FeedListTypeAdapter())
+                .registerTypeAdapter(new TypeToken<Map<String,Classifier>>(){}.getType(), new ClassifierMapTypeAdapter())
                 .create();
 
         String appVersion = context.getSharedPreferences(PrefConstants.PREFERENCES, 0).getString(AppConstants.LAST_APP_VERSION, "unknown_version");
@@ -261,8 +263,7 @@ public class APIManager {
         } else if (fs.isAllSaved()) {
             uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
         } else {
-            Log.wtf(this.getClass().getName(), "Asked to get stories for FeedSet of unknown type.");
-            return null;
+            throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
         }
 
 		// request params common to all stories

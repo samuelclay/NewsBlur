@@ -22,6 +22,7 @@ import com.newsblur.util.FeedUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
@@ -175,14 +176,20 @@ public class BlurDatabaseHelper {
         bulkInsertValues(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, socialStoryValues);
 
         // handle classifiers
-        // NOTE: only handles top-level classifiers, which only show up for single-feed requests
         if (apiResponse.classifiers != null) {
-            List<ContentValues> classifierValues = apiResponse.classifiers.getContentValues();
-            for (ContentValues values : classifierValues) {
-                values.put(DatabaseConstants.CLASSIFIER_ID, impliedFeedId);
+            for (Map.Entry<String,Classifier> entry : apiResponse.classifiers.entrySet()) {
+                // the API might not have included a feed ID, in which case it deserialized as -1 and must be implied
+                String classifierFeedId = entry.getKey();
+                if (classifierFeedId.equals("-1")) {
+                    classifierFeedId = impliedFeedId;
+                }
+                List<ContentValues> classifierValues = entry.getValue().getContentValues();
+                for (ContentValues values : classifierValues) {
+                    values.put(DatabaseConstants.CLASSIFIER_ID, classifierFeedId);
+                }
+                dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { classifierFeedId });
+                bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifierValues);
             }
-            dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { impliedFeedId });
-            bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifierValues);
         }
 
         // handle comments
