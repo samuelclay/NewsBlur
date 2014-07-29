@@ -207,7 +207,6 @@ public class NBSyncService extends Service {
 
         try {
             // a metadata sync invalidates pagination and feed status
-            PendingFeeds.clear();
             ExhaustedFeeds.clear();
             FeedPagesSeen.clear();
             FeedStoriesSeen.clear();
