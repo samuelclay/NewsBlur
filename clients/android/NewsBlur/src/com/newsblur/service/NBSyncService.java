@@ -205,6 +205,9 @@ public class NBSyncService extends Service {
         // there is a rare issue with feeds that have no folder.  capture them for workarounds.
         List<String> debugFeedIds = new ArrayList<String>();
 
+        // remember if we are premium
+        boolean isPremium;
+
         try {
             // a metadata sync invalidates pagination and feed status
             ExhaustedFeeds.clear();
@@ -224,6 +227,8 @@ public class NBSyncService extends Service {
                 PrefsUtils.logout(this);
                 return;
             }
+
+            isPremium = feedResponse.isPremium;
 
             // clean out the feed / folder tables
             dbHelper.cleanupFeedsFolders();
@@ -307,8 +312,10 @@ public class NBSyncService extends Service {
                 }
             }
 
-            // mark as read any old stories that were recently read
-            dbHelper.markStoryHashesRead(oldUnreadHashes);
+            // only trust the unread status of this API if the user is premium
+            if (isPremium) {
+                dbHelper.markStoryHashesRead(oldUnreadHashes);
+            }
         } finally {
             UnreadHashSyncRunning = false;
             NbActivity.updateAllActivities();
