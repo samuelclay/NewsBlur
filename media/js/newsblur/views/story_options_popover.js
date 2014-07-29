@@ -16,7 +16,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     events: {
         "click .NB-font-family-option": "change_font_family",
-        "click .NB-font-size-option": "change_font_size",
+        "click .NB-story-font-size-option": "change_story_font_size",
+        "click .NB-feed-font-size-option": "change_feed_font_size",
         "click .NB-line-spacing-option": "change_line_spacing",
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
         "click .NB-single-story-option": "change_single_story",
@@ -99,13 +100,13 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ]))
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Font Size'),
-                $.make('ul', { className: 'segmented-control NB-options-font-size' }, [
-                    $.make('li', { className: 'NB-font-size-option NB-options-font-size-xs' }, 'XS'),
-                    $.make('li', { className: 'NB-font-size-option NB-options-font-size-s' }, 'S'),
-                    $.make('li', { className: 'NB-font-size-option NB-options-font-size-m NB-active' }, 'M'),
-                    $.make('li', { className: 'NB-font-size-option NB-options-font-size-l' }, 'L'),
-                    $.make('li', { className: 'NB-font-size-option NB-options-font-size-xl' }, 'XL')
+                $.make('div', { className: 'NB-popover-section-title' }, 'Font Size - Stories'),
+                $.make('ul', { className: 'segmented-control NB-options-story-font-size' }, [
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xs' }, 'XS'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-s' }, 'S'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-m NB-active' }, 'M'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-l' }, 'L'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xl' }, 'XL')
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-line-spacing' }, [
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xs' }, $.make('div', { className: 'NB-icon' })),
@@ -113,6 +114,14 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-m NB-active' }, $.make('div', { className: 'NB-icon' })),
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-l' }, $.make('div', { className: 'NB-icon' })),
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xl' }, $.make('div', { className: 'NB-icon' }))
+                ]),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Font Size - Feeds'),
+                $.make('ul', { className: 'segmented-control NB-options-feed-font-size' }, [
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xs' }, 'XS'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-s' }, 'S'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-m NB-active' }, 'M'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-l' }, 'L'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xl' }, 'XL')
                 ])
             ])
         ]));
@@ -122,7 +131,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     show_correct_options: function() {
         var font_family = NEWSBLUR.assets.preference('story_styling');
-        var font_size = NEWSBLUR.assets.preference('story_size');
+        var story_font_size = NEWSBLUR.assets.preference('story_size');
+        var feed_font_size = NEWSBLUR.assets.preference('feed_size');
         var line_spacing = NEWSBLUR.assets.preference('story_line_spacing');
         var titles_layout_pane = NEWSBLUR.assets.preference('story_pane_anchor');
         var single_story = NEWSBLUR.assets.preference('feed_view_single_story');
@@ -130,8 +140,10 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-font-family-option').removeClass('NB-active');
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
 
-        this.$('.NB-font-size-option').removeClass('NB-active');
-        this.$('.NB-options-font-size-'+font_size).addClass('NB-active');
+        this.$('.NB-feed-font-size-option').removeClass('NB-active');
+        this.$('.NB-story-font-size-option').removeClass('NB-active');
+        this.$('.NB-options-story-font-size .NB-options-font-size-'+story_font_size).addClass('NB-active');
+        this.$('.NB-options-feed-font-size .NB-options-font-size-'+feed_font_size).addClass('NB-active');
         this.$('.NB-line-spacing-option').removeClass('NB-active');
         this.$('.NB-options-line-spacing-'+line_spacing).addClass('NB-active');
 
@@ -179,26 +191,49 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.reader.apply_story_styling();
     },
     
-    change_font_size: function(e) {
+    change_story_font_size: function(e) {
         var $target = $(e.target);
         
         if ($target.hasClass("NB-options-font-size-xs")) {
-            this.update_font_size('xs');
+            this.update_story_font_size('xs');
         } else if ($target.hasClass("NB-options-font-size-s")) {
-            this.update_font_size('s');
+            this.update_story_font_size('s');
         } else if ($target.hasClass("NB-options-font-size-m")) {
-            this.update_font_size('m');
+            this.update_story_font_size('m');
         } else if ($target.hasClass("NB-options-font-size-l")) {
-            this.update_font_size('l');
+            this.update_story_font_size('l');
         } else if ($target.hasClass("NB-options-font-size-xl")) {
-            this.update_font_size('xl');
+            this.update_story_font_size('xl');
         }
         
         this.show_correct_options();
     },
     
-    update_font_size: function(setting) {
+    change_feed_font_size: function(e) {
+        var $target = $(e.target);
+        
+        if ($target.hasClass("NB-options-font-size-xs")) {
+            this.update_feed_font_size('xs');
+        } else if ($target.hasClass("NB-options-font-size-s")) {
+            this.update_feed_font_size('s');
+        } else if ($target.hasClass("NB-options-font-size-m")) {
+            this.update_feed_font_size('m');
+        } else if ($target.hasClass("NB-options-font-size-l")) {
+            this.update_feed_font_size('l');
+        } else if ($target.hasClass("NB-options-font-size-xl")) {
+            this.update_feed_font_size('xl');
+        }
+        
+        this.show_correct_options();
+    },
+    
+    update_story_font_size: function(setting) {
         NEWSBLUR.assets.preference('story_size', setting);
+        NEWSBLUR.reader.apply_story_styling();
+    },
+    
+    update_feed_font_size: function(setting) {
+        NEWSBLUR.assets.preference('feed_size', setting);
         NEWSBLUR.reader.apply_story_styling();
     },
     

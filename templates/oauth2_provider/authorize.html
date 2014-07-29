@@ -2,6 +2,10 @@
 
 {% block bodyclass %}NB-static NB-static-oauth{% endblock %}
 
+{% block extra_head_js %}
+  <meta name="viewport" content="width=320, initial-scale=.85">
+{% endblock %}
+
 {% load i18n %}
 {% block content %}
 
@@ -33,8 +37,8 @@
 
                 <div class="control-group">
                     <div class="controls">
-                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-grey" value="Deny" style="float: right"/>
-                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-green" name="allow" value="Authorize" style="float: left" />
+                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-green NB-left" name="allow" value="Authorize" />
+                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-grey NB-right" value="Deny"/>
                     </div>
                 </div>
             </form>

@@ -80,7 +80,7 @@ class UserSubscription(models.Model):
                     super(UserSubscription, self).save(*args, **kwargs)
                     break
             else:
-                self.delete()
+                if self: self.delete()
     
     @classmethod
     def subs_for_feeds(cls, user_id, feed_ids=None, read_filter="unread"):
@@ -417,7 +417,16 @@ class UserSubscription(models.Model):
         return feeds
     
     @classmethod
-    def recreate_destroyed_feed(cls, new_feed_id, old_feed_id=None, skip=0):
+    def identify_deleted_feed_users(cls, old_feed_id):
+        users = UserSubscriptionFolders.objects.filter(folders__contains="5636682").only('user')
+        user_ids = [usf.user_id for usf in users]
+        f = open('users.txt', 'w')
+        f.write('\n'.join([str(u) for u in user_ids]))
+
+        return user_ids
+
+    @classmethod
+    def recreate_deleted_feed(cls, new_feed_id, old_feed_id=None, skip=0):
         user_ids = sorted([int(u) for u in open('users.txt').read().split('\n') if u])
         
         count = len(user_ids)
