@@ -3313,7 +3313,6 @@ body {
     clear: both;
     overflow: hidden;
 }
-
 .NB-feed-story-sideoptions-container {
     
 }
@@ -3345,6 +3344,13 @@ body {
     border: 1px solid #C0C0C0;
     clear: right;
 }
+.NB-extra-narrow-content .NB-sideoption {
+    min-width: 80px;
+}
+.NB-extra-narrow-content .NB-sideoption-title span {
+    display: none;
+}
+
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
     padding: 9px 4px;
