@@ -375,6 +375,19 @@ public class PrefsUtils {
     }
 
     /**
+     * Sees if offline images should be used while reading via two conditions: is the device
+     * offline, and was image prefetch enabled.
+     */
+    public static boolean isLoadOfflineImages(Context context) {
+        if (!isImagePrefetchEnabled(context)) return false;
+
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+
+        return ((activeInfo == null) || (!activeInfo.isConnected()));
+    }
+
+    /**
      * Compares the user's setting for when background data use is allowed against the
      * current network status and sees if it is okay to sync.
      */

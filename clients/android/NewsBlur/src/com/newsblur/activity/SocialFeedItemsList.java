@@ -3,6 +3,7 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class SocialFeedItemsList extends ItemsList {
 
 	@Override
     protected FeedSet createFeedSet() {
+        //Log.d(this.getClass().getName(), "creating feedset social ID:" + getIntent().getStringExtra(EXTRA_BLURBLOG_USERID) + " name:" + getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
         return FeedSet.singleSocialFeed(getIntent().getStringExtra(EXTRA_BLURBLOG_USERID), getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
     }
 

@@ -68,6 +68,30 @@ public class ImageCache {
         }
     }
 
+    /**
+     * Gets the cached location of the specified network image, if it has 
+     * been cached.  Fails fast and returns null if for any reason the image
+     * is not available.
+     */
+    public String getCachedLocation(String url) {
+        try {
+            String fileName = getFileName(url);
+            if (fileName == null) {
+                return null;
+            }
+            File f = new File(cacheDir, fileName);
+            if (f.exists()) {
+                return f.getAbsolutePath();
+            } else { 
+                Log.d(this.getClass().getName(), "image cache miss");
+                return null;
+            }
+        } catch (Exception e) {
+            Log.e(this.getClass().getName(), "image cache error", e);
+            return null;
+        }
+    }
+
     private String getFileName(String url) {
         Matcher m = postfixPattern.matcher(url);
         if (! m.find()) {
