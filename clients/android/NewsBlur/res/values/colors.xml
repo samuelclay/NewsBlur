@@ -77,9 +77,8 @@
     <color name="progress_circle_complete">#8F918B</color>
     <color name="progress_circle_remaining">#D5D7CF</color>
 
-
-    <color name="status_overlay_text">#EE111111</color>
-    <color name="status_overlay_background">#AA444444</color>
+    <color name="status_overlay_text">#DD111111</color>
+    <color name="status_overlay_background">#AA777777</color>
 
     <!-- To use a selector on a bg color, the options must be drawables, not colors. -->
     <drawable name="toggle_bg_selected">#fdfdfd</drawable>
