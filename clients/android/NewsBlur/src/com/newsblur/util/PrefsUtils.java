@@ -414,6 +414,6 @@ public class PrefsUtils {
 
     public static boolean isKeepOldStories(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, true);
+        return prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false);
     }
 }

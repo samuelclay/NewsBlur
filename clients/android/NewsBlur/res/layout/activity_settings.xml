@@ -22,7 +22,7 @@
             android:entryValues="@array/default_network_select_values"
             android:defaultValue="@string/default_network_select_value" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="keep_old_stories"
             android:title="@string/settings_keep_old_stories" 
             android:summary="@string/settings_keep_old_stories_sum" />
