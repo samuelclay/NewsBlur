@@ -26,7 +26,6 @@ public class APIConstants {
 	public static final String URL_FEED_STORIES = NEWSBLUR_URL + "/reader/feed";
 	public static final String URL_SOCIALFEED_STORIES = NEWSBLUR_URL + "/social/stories";
 	public static final String URL_SIGNUP = NEWSBLUR_URL + "/api/signup";
-	public static final String URL_FEED_COUNTS = NEWSBLUR_URL + "/reader/refresh_feeds/";
 	public static final String URL_MARK_FEED_AS_READ = NEWSBLUR_URL + "/reader/mark_feed_as_read/";
 	public static final String URL_MARK_ALL_AS_READ = NEWSBLUR_URL + "/reader/mark_all_as_read/";
 	public static final String URL_MARK_STORIES_READ = NEWSBLUR_URL + "/reader/mark_story_hashes_as_read/";
@@ -43,8 +42,10 @@ public class APIConstants {
 	public static final String URL_DELETE_FEED = NEWSBLUR_URL + "/reader/delete_feed";
 	public static final String URL_CLASSIFIER_SAVE = NEWSBLUR_URL + "/classifier/save";
 	public static final String URL_STORY_TEXT = NEWSBLUR_URL + "/rss_feeds/original_text";
+	public static final String URL_UNREAD_HASHES = NEWSBLUR_URL + "/reader/unread_story_hashes";
 	
 	public static final String PARAMETER_FEEDS = "f";
+	public static final String PARAMETER_H = "h";
 	public static final String PARAMETER_PASSWORD = "password";
 	public static final String PARAMETER_USER_ID = "user_id";
 	public static final String PARAMETER_USERNAME = "username";

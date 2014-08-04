@@ -11,6 +11,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
@@ -42,12 +43,7 @@ public class FeedReading extends Reading {
 
     @Override
     protected int getUnreadCount() {
-        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-        Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
-        if (feedCursor.getCount() == 0) return 0;
-        Feed feed = Feed.fromCursor(feedCursor);
-        feedCursor.close();
-        return FeedUtils.getFeedUnreadCount(feed, this.currentState);
+        return dbHelper.getFeedUnreadCount(this.feedId, this.currentState);
     }
 
 	@Override
@@ -56,10 +52,4 @@ public class FeedReading extends Reading {
         StoryOrder storyOrder = PrefsUtils.getStoryOrderForFeed(this, feedId);
         return new CursorLoader(this, storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
     }
-
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateFeed(this, this, feedId, page, PrefsUtils.getStoryOrderForFeed(this, feedId), PrefsUtils.getReadFilterForFeed(this, feedId));
-    }
-
 }

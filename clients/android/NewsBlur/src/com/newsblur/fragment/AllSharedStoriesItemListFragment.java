@@ -2,7 +2,6 @@ package com.newsblur.fragment;
 
 import java.util.ArrayList;
 
-import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -31,14 +30,10 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class AllSharedStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class AllSharedStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
 
-	public int currentState;
 	private String[] feedIds;
 	private ContentResolver contentResolver;
-
-	public static int ITEMLIST_LOADER = 0x01;
-    private StoryOrder storyOrder;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,24 +71,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		return v;
 	}
 
-	public void hasUpdated() {
-        if (isAdded()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-		requestedPage = false;
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
-	}
-
-	@Override
-	public void changeState(int state) {
-		currentState = state;
-        hasUpdated();
-	}
-
 	public static ItemListFragment newInstance(ArrayList<String> feedIds, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllSharedStoriesItemListFragment();
 		Bundle arguments = new Bundle();
@@ -110,6 +87,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
@@ -121,10 +99,5 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		return new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 	}
-
-	@Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 }
