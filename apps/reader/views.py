@@ -891,7 +891,7 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
 
     starred_stories = MStarredStory.objects(
         user_id=user.pk,
-        user_tags__contains=tag_counts.tag
+        user_tags__contains=tag_counts.tag or []
     ).order_by('-starred_date').limit(25)
     for starred_story in starred_stories:
         story_data = {
