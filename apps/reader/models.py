@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
@@ -61,10 +62,6 @@ class UserSubscription(models.Model):
         feed['subscribed'] = True
         if classifiers:
             feed['classifiers'] = classifiers
-        if not self.active and self.user.profile.is_premium:
-            feed['active'] = True
-            self.active = True
-            self.save()
 
         return feed
             
@@ -72,8 +69,6 @@ class UserSubscription(models.Model):
         user_title_max = self._meta.get_field('user_title').max_length
         if self.user_title and len(self.user_title) > user_title_max:
             self.user_title = self.user_title[:user_title_max]
-        if not self.active and self.user.profile.is_premium:
-            self.active = True
         try:
             super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:
@@ -85,7 +80,7 @@ class UserSubscription(models.Model):
                     super(UserSubscription, self).save(*args, **kwargs)
                     break
             else:
-                self.delete()
+                if self: self.delete()
     
     @classmethod
     def subs_for_feeds(cls, user_id, feed_ids=None, read_filter="unread"):
@@ -421,6 +416,60 @@ class UserSubscription(models.Model):
 
         return feeds
     
+    @classmethod
+    def identify_deleted_feed_users(cls, old_feed_id):
+        users = UserSubscriptionFolders.objects.filter(folders__contains="5636682").only('user')
+        user_ids = [usf.user_id for usf in users]
+        f = open('users.txt', 'w')
+        f.write('\n'.join([str(u) for u in user_ids]))
+
+        return user_ids
+
+    @classmethod
+    def recreate_deleted_feed(cls, new_feed_id, old_feed_id=None, skip=0):
+        user_ids = sorted([int(u) for u in open('users.txt').read().split('\n') if u])
+        
+        count = len(user_ids)
+        
+        for i, user_id in enumerate(user_ids):
+            if i < skip: continue
+            if i % 1000 == 0:
+                print "\n\n ------------------------------------------------"
+                print "\n ---> %s/%s (%s%%)" % (i, count, round(float(i)/count))
+                print "\n ------------------------------------------------\n"
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                print " ***> %s has no account" % user_id
+                continue
+            us, created = UserSubscription.objects.get_or_create(user_id=user_id, feed_id=new_feed_id, defaults={
+                'needs_unread_recalc': True,
+                'active': True,
+                'is_trained': True
+            })
+            if not created:
+                print " ***> %s already subscribed" % user.username
+            try:
+                usf = UserSubscriptionFolders.objects.get(user_id=user_id)
+                usf.add_missing_feeds()
+            except UserSubscriptionFolders.DoesNotExist:
+                print " ***> %s has no USF" % user.username
+                
+            # Move classifiers
+            if old_feed_id:
+                classifier_count = 0
+                for classifier_type in (MClassifierAuthor, MClassifierFeed, MClassifierTag, MClassifierTitle):
+                    classifiers = classifier_type.objects.filter(user_id=user_id, feed_id=old_feed_id)
+                    classifier_count += classifiers.count()
+                    for classifier in classifiers:
+                        classifier.feed_id = new_feed_id
+                        try:
+                            classifier.save()
+                        except NotUniqueError:
+                            continue
+                    if classifier_count:
+                        print " Moved %s classifiers for %s" % (classifier_count, user.username)
+    
     def trim_read_stories(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -527,11 +576,11 @@ class UserSubscription(models.Model):
         cutoff_date = cutoff_date - datetime.timedelta(seconds=1)
         story_hashes = self.get_stories(limit=500, order="newest", cutoff_date=cutoff_date,
                                         read_filter="unread", hashes_only=True)
-        data = self.mark_story_ids_as_read(story_hashes)
+        data = self.mark_story_ids_as_read(story_hashes, aggregated=True)
         return data
         
         
-    def mark_story_ids_as_read(self, story_hashes, request=None):
+    def mark_story_ids_as_read(self, story_hashes, request=None, aggregated=False):
         data = dict(code=0, payload=story_hashes)
         
         if not request:
@@ -547,7 +596,7 @@ class UserSubscription(models.Model):
             logging.user(request, "~FYRead story in feed: %s" % (self.feed))
         
         for story_hash in set(story_hashes):
-            RUserStory.mark_read(self.user_id, self.feed_id, story_hash)
+            RUserStory.mark_read(self.user_id, self.feed_id, story_hash, aggregated=aggregated)
             
         return data
     
@@ -568,7 +617,7 @@ class UserSubscription(models.Model):
         
         # Mark stories as read only after the mark_read_date has been moved, otherwise
         # these would be ignored.
-        data = self.mark_story_ids_as_read(newer_stories, request=request)
+        data = self.mark_story_ids_as_read(newer_stories, request=request, aggregated=True)
         
         return data
         
@@ -837,7 +886,8 @@ class RUserStory:
         return feed_id, list(friend_ids)
         
     @classmethod
-    def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None):
+    def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, 
+                  aggregated=False, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         # if not r2:
@@ -863,6 +913,12 @@ class RUserStory:
             for social_user_id in social_user_ids:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
                 redis_commands(social_read_story_key)
+        
+        if not aggregated:
+            key = 'lRS:%s' % user_id
+            r.lpush(key, story_hash)
+            r.ltrim(key, 0, 1000)
+            r.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
     
     @staticmethod
     def story_can_be_marked_read_by_user(story, user):
@@ -901,16 +957,34 @@ class RUserStory:
         read_story_key = 'RS:%s:%s' % (user_id, story_feed_id)
         redis_commands(read_story_key)
         
+        read_stories_list_key = 'lRS:%s' % user_id
+        r.lrem(read_stories_list_key, story_hash)
+        
         if social_user_ids:
             for social_user_id in social_user_ids:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
                 redis_commands(social_read_story_key)
-    
+
     @staticmethod
     def get_stories(user_id, feed_id, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         story_hashes = r.smembers("RS:%s:%s" % (user_id, feed_id))
+        return story_hashes
+    
+    @staticmethod
+    def get_read_stories(user_id, offset=0, limit=12, order="newest"):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        key = "lRS:%s" % user_id
+        
+        if order == "oldest":
+            count = r.llen(key)
+            if offset >= count: return []
+            offset = max(0, count - (offset+limit))
+            story_hashes = r.lrange(key, offset, offset+limit)
+        elif order == "newest":
+            story_hashes = r.lrange(key, offset, offset+limit)
+        
         return story_hashes
         
     @classmethod
@@ -1266,6 +1340,25 @@ class UserSubscriptionFolders(models.Model):
                     user_sub_folders = add_object_to_folder(feed_id, "", user_sub_folders)
             self.folders = json.encode(user_sub_folders)
             self.save()
+    
+    def auto_activate(self):
+        if self.user.profile.is_premium: return
+            
+        active_count = UserSubscription.objects.filter(user=self.user, active=True).count()
+        if active_count: return
+        
+        all_feeds = self.flat()
+        if not all_feeds: return
+        
+        for feed in all_feeds[:64]:
+            try:
+                sub = UserSubscription.objects.get(user=self.user, feed=feed)
+            except UserSubscription.DoesNotExist:
+                continue
+            sub.active = True
+            sub.save()
+            if sub.feed.active_subscribers <= 0:
+                sub.feed.count_subscribers()
 
 
 class Feature(models.Model):

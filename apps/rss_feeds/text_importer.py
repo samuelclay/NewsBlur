@@ -7,14 +7,17 @@ from mongoengine.queryset import NotUniqueError
 from vendor.readability import readability
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
+from OpenSSL.SSL import Error as OpenSSLError
+from pyasn1.error import PyAsn1Error
 
 class TextImporter:
     
-    def __init__(self, story=None, feed=None, story_url=None, request=None):
+    def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
         self.story = story
         self.story_url = story_url
         self.feed = feed
         self.request = request
+        self.debug = debug
     
     @property
     def headers(self):
@@ -27,7 +30,6 @@ class TextImporter:
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
             ),
-            'Connection': 'close',
         }
     
     def fetch(self, skip_save=False, return_document=False):
@@ -54,7 +56,9 @@ class TextImporter:
                 text = text.encode(resp.encoding)
             except (LookupError, UnicodeEncodeError):
                 pass
-        original_text_doc = readability.Document(text, url=resp.url, debug=settings.DEBUG)
+        original_text_doc = readability.Document(text, url=resp.url, 
+                                                 debug=self.debug,
+                                                 positive_keywords=["postContent", "postField"])
         try:
             content = original_text_doc.summary(html_partial=True)
         except readability.Unparseable:
@@ -94,9 +98,10 @@ class TextImporter:
             url = self.story.story_permalink
         try:
             r = requests.get(url, headers=self.headers, verify=False)
+            r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError, 
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
-                LocationParseError), e:
+                LocationParseError, OpenSSLError, PyAsn1Error), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
         return r

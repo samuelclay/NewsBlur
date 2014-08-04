@@ -74,6 +74,7 @@
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(NSString *)key;
 - (void)refreshHeader;
+- (void)refreshSideoptions;
 
 - (void)fetchTextView;
 - (void)finishFetchTextView:(ASIHTTPRequest *)request;

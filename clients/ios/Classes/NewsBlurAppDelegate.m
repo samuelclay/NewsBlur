@@ -129,6 +129,7 @@
 @synthesize dictFeeds;
 @synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
+@synthesize dictSavedStoryTags;
 @synthesize dictSocialProfile;
 @synthesize dictUserProfile;
 @synthesize dictSocialServices;
@@ -447,6 +448,10 @@
     NSDictionary *feed = [self getFeed:feedId];
     NSString *feedTitle = [feed objectForKey:@"feed_title"];
     
+    if ([activeStory objectForKey:@"original_text"]) {
+        text = [activeStory objectForKey:@"original_text"];
+    }
+    
     return [self showSendTo:vc
                      sender:sender
                     withUrl:url
@@ -714,6 +719,7 @@
 - (void)showLogin {
     self.dictFeeds = nil;
     self.dictSocialFeeds = nil;
+    self.dictSavedStoryTags = nil;
     self.dictFolders = nil;
     self.dictFoldersArray = nil;
     self.userActivitiesArray = nil;
@@ -952,6 +958,10 @@
     return NO;
 }
 
+- (BOOL)isSavedFeed:(NSString *)feedIdStr {
+    return [feedIdStr startsWith:@"saved:"];
+}
+
 - (BOOL)isPortrait {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
@@ -1100,22 +1110,22 @@
             // add all the feeds from every NON blurblog folder
             [feedDetailView.storiesCollection setActiveFolder:@"everything"];
             for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
-                if (![folderName isEqualToString:@"river_blurblogs"]) {
-                    NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
-                    NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
-                    for (int l=0; l < [folderFeeds count]; l++) {
-                        [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
-                    }
+                if ([folderName isEqualToString:@"river_blurblogs"]) continue;
+                if ([folderName isEqualToString:@"saved_stories"]) continue;
+                NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                for (int l=0; l < [folderFeeds count]; l++) {
+                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
                 }
             }
             [self.folderCountCache removeAllObjects];
-        } else if ([folder isEqualToString:@"saved_stories"]) {
-            feedDetailView.storiesCollection.isRiverView = YES;
-            [feedDetailView.storiesCollection setActiveFolder:folder];
         } else {
             feedDetailView.storiesCollection.isRiverView = YES;
             NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
             
+            if ([folderName isEqualToString:@"saved_stories"]) {
+                feedDetailView.storiesCollection.isSavedView = YES;
+            }
             [feedDetailView.storiesCollection setActiveFolder:folderName];
             NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
             NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
@@ -1380,9 +1390,7 @@
 
 #pragma mark - Unread Counts
 
-- (void)populateDictUnreadCounts {
-    self.dictUnreadCounts = [NSMutableDictionary dictionary];
-    
+- (void)populateDictUnreadCounts {    
     [self.database inDatabase:^(FMDatabase *db) {
         FMResultSet *cursor = [db executeQuery:@"SELECT * FROM unread_counts"];
         
@@ -1526,6 +1534,10 @@
                (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
         for (NSArray *folder in [self.dictFolders allValues]) {
             for (id feedId in folder) {
+                if ([feedId isKindOfClass:[NSString class]] && [feedId startsWith:@"saved:"]) {
+                    // Skip saved feeds which have fake unread counts.
+                    continue;
+                }
                 [counts addCounts:[self splitUnreadCountForFeed:feedId]];
             }
         }
@@ -1963,7 +1975,8 @@
     UIView *gradientView;
     if (storiesCollection.isRiverView ||
         storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
+        storiesCollection.isSocialRiverView ||
+        storiesCollection.isSavedView) {
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_fade"] 
@@ -2024,8 +2037,13 @@
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
-    } else if (storiesCollection.isRiverView &&
-               [storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+    } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
+        } else {
+            titleLabel.text = [NSString stringWithFormat:@"     Saved Stories - %@", storiesCollection.activeSavedStoryTag];
+        }
+    } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
     } else if (storiesCollection.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
@@ -2056,8 +2074,9 @@
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-        } else if (storiesCollection.isRiverView &&
-                   [storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+        } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
+            titleImage = [UIImage imageNamed:@"tag.png"];
+        } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"clock.png"];
         } else if (storiesCollection.isRiverView) {
             titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
@@ -2085,6 +2104,10 @@
 }
 
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial {
+    return [self getFavicon:filename isSocial:isSocial isSaved:NO];
+}
+
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved {
     UIImage *image = [self.cachedFavicons objectForKey:filename];
     
     if (image) {
@@ -2093,6 +2116,8 @@
         if (isSocial) {
             //            return [UIImage imageNamed:@"user_light.png"];
             return nil;
+        } else if (isSaved) {
+            return [UIImage imageNamed:@"tag.png"];            
         } else {
             return [UIImage imageNamed:@"world.png"];
         }

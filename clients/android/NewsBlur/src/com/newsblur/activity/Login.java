@@ -12,6 +12,7 @@ import android.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.LoginRegisterFragment;
 import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 
 public class Login extends Activity {
 	
@@ -20,6 +21,8 @@ public class Login extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        PrefsUtils.applyThemePreference(this);
+
 		super.onCreate(savedInstanceState);
 		preferenceCheck();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -222,9 +222,7 @@
 		FF322237185BC1CE004078AA /* logo_80.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322236185BC1CE004078AA /* logo_80.png */; };
 		FF3963D5192A9AF3004BEE1A /* ADNLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39626D192A9AF2004BEE1A /* ADNLogin.m */; };
 		FF3963D6192A9AF3004BEE1A /* ADNPassportLaunchView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39626F192A9AF2004BEE1A /* ADNPassportLaunchView.m */; };
-		FF3963D7192A9AF3004BEE1A /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396271192A9AF2004BEE1A /* GoogleOpenSource.framework */; };
 		FF3963D8192A9AF3004BEE1A /* GooglePlus.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FF396272192A9AF2004BEE1A /* GooglePlus.bundle */; };
-		FF3963D9192A9AF3004BEE1A /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396273192A9AF2004BEE1A /* GooglePlus.framework */; };
 		FF3963DA192A9AF3004BEE1A /* PocketAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = FF396278192A9AF2004BEE1A /* PocketAPI.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF3963DB192A9AF3004BEE1A /* PocketAPILogin.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39627A192A9AF2004BEE1A /* PocketAPILogin.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF3963DC192A9AF3004BEE1A /* PocketAPIOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39627C192A9AF2004BEE1A /* PocketAPIOperation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -450,6 +448,7 @@
 		FF3964B8192A9AF3004BEE1A /* UIImage+OSKUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3963D0192A9AF3004BEE1A /* UIImage+OSKUtilities.m */; };
 		FF3964B9192A9AF3004BEE1A /* UIView+OSKUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3963D2192A9AF3004BEE1A /* UIView+OSKUtilities.m */; };
 		FF3964BA192A9AF3004BEE1A /* UIViewController+OSKUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3963D4192A9AF3004BEE1A /* UIViewController+OSKUtilities.m */; };
+		FF3964BC192BED0A004BEE1A /* tag.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3964BB192BED0A004BEE1A /* tag.png */; };
 		FF41309D162CEC7100DDB6A7 /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309C162CEC7100DDB6A7 /* time.png */; };
 		FF4130A0162CECAE00DDB6A7 /* email.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309F162CECAE00DDB6A7 /* email.png */; };
 		FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */; };
@@ -537,6 +536,8 @@
 		FFB9BE4B17F4B65B00FE0A36 /* logo_120~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4417F4B65B00FE0A36 /* logo_120~iphone.png */; };
 		FFB9BE4C17F4B65B00FE0A36 /* logo_76.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4517F4B65B00FE0A36 /* logo_76.png */; };
 		FFB9BE4D17F4B65B00FE0A36 /* logo_120@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4617F4B65B00FE0A36 /* logo_120@2x.png */; };
+		FFC2CB05192E7A3000868D33 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396271192A9AF2004BEE1A /* GoogleOpenSource.framework */; };
+		FFC2CB06192E7A3000868D33 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396273192A9AF2004BEE1A /* GooglePlus.framework */; };
 		FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC518B81768E59F00542719 /* g_icn_offline.png */; };
 		FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */; };
 		FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */; };
@@ -1297,6 +1298,7 @@
 		FF3963D2192A9AF3004BEE1A /* UIView+OSKUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OSKUtilities.m"; sourceTree = "<group>"; };
 		FF3963D3192A9AF3004BEE1A /* UIViewController+OSKUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+OSKUtilities.h"; sourceTree = "<group>"; };
 		FF3963D4192A9AF3004BEE1A /* UIViewController+OSKUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OSKUtilities.m"; sourceTree = "<group>"; };
+		FF3964BB192BED0A004BEE1A /* tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tag.png; sourceTree = "<group>"; };
 		FF41309C162CEC7100DDB6A7 /* time.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = time.png; sourceTree = "<group>"; };
 		FF41309F162CECAE00DDB6A7 /* email.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = email.png; sourceTree = "<group>"; };
 		FF4130A1162E10CF00DDB6A7 /* MenuTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTableViewCell.h; sourceTree = "<group>"; };
@@ -1539,12 +1541,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */,
-				FF3963D9192A9AF3004BEE1A /* GooglePlus.framework in Frameworks */,
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
 				FF308A7B18C01014009F986A /* AssetsLibrary.framework in Frameworks */,
 				FF26125418C00FEC0055FF4D /* AddressBook.framework in Frameworks */,
-				FF3963D7192A9AF3004BEE1A /* GoogleOpenSource.framework in Frameworks */,
 				FF468E3817FCFB970080325C /* AVFoundation.framework in Frameworks */,
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
 				FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */,
@@ -1562,6 +1562,8 @@
 				788EF356127E5BC80088EDC5 /* QuartzCore.framework in Frameworks */,
 				78095E3F128EF35400230C8E /* CFNetwork.framework in Frameworks */,
 				78095E43128EF37E00230C8E /* MobileCoreServices.framework in Frameworks */,
+				FFC2CB05192E7A3000868D33 /* GoogleOpenSource.framework in Frameworks */,
+				FFC2CB06192E7A3000868D33 /* GooglePlus.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1807,6 +1809,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF3964BB192BED0A004BEE1A /* tag.png */,
 				FFB705051925921F0052101C /* line_spacing_l.png */,
 				FFB705061925921F0052101C /* line_spacing_m.png */,
 				FFB705071925921F0052101C /* line_spacing_s.png */,
@@ -3100,6 +3103,7 @@
 				FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */,
 				FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */,
 				FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */,
+				FF3964BC192BED0A004BEE1A /* tag.png in Resources */,
 				FF29708B16DD7AA400E92F85 /* segment_active.png in Resources */,
 				FF29708C16DD7AA400E92F85 /* segment_inactive.png in Resources */,
 				FF29708E16DD7C8A00E92F85 /* segment_left_selected.png in Resources */,
@@ -3547,19 +3551,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					Other,
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK/",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
+					"\"Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
@@ -3579,7 +3577,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "636BF6E0-B9F1-40DF-B74D-ADA8CCD57966";
+				PROVISIONING_PROFILE = "4753388F-4504-40B3-AB43-61FB2E9FDEF8";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
@@ -3592,16 +3590,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					Other,
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK/",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
+					"\"Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -3621,7 +3614,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "636BF6E0-B9F1-40DF-B74D-ADA8CCD57966";
+				PROVISIONING_PROFILE = "4753388F-4504-40B3-AB43-61FB2E9FDEF8";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -3631,7 +3624,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -3653,7 +3646,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";

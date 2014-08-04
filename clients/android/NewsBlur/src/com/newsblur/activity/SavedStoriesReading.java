@@ -18,7 +18,7 @@ public class SavedStoriesReading extends Reading {
         super.onCreate(savedInstanceBundle);
 
         setTitle(getResources().getString(R.string.saved_stories_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, null);
 
         getLoaderManager().initLoader(0, null, this);
     }

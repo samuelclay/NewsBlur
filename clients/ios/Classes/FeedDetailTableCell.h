@@ -22,7 +22,7 @@
     UIImage *storyImage;
     NSInteger storyTimestamp;
     int storyScore;
-    BOOL isStarred;
+    BOOL isSaved;
     BOOL isShared;
     BOOL inDashboard;
     
@@ -43,7 +43,7 @@
 @property (nonatomic) UIImage *siteFavicon;
 
 @property (readwrite) int storyScore;
-@property (nonatomic, readwrite) BOOL isStarred;
+@property (nonatomic, readwrite) BOOL isSaved;
 @property (readwrite) BOOL isShared;
 
 @property (nonatomic) NSString *storyTitle;

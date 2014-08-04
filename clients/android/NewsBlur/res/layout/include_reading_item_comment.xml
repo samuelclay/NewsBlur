@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:textColor="@color/half_darkgray"
+            style="?storyButtons"
             android:textSize="12sp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:textColor="@color/half_darkgray"
+            style="?storyButtons"
             android:textSize="12sp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
@@ -68,13 +68,12 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="12dp"
                     android:paddingRight="12dp"
-                    android:textColor="@color/darkgray"
                     android:id="@+id/reading_friend_comment_total"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
                     android:textStyle="bold"
                     android:textSize="10sp"
-                    android:background="@drawable/gradient_background_default"
+                    style="?commentsHeader"
  />
 
             <View
@@ -115,14 +114,13 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/darkgray"
                     android:paddingLeft="12dp"
                     android:paddingRight="12dp"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
                     android:textStyle="bold"
                     android:textSize="10sp"
-                    android:background="@drawable/gradient_background_default"
+                    style="?commentsHeader"
                     android:id="@+id/reading_public_comment_total" />
 
             <View

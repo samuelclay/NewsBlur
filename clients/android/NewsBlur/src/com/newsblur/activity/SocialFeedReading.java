@@ -27,7 +27,7 @@ public class SocialFeedReading extends Reading {
 
         setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, userId);
 
         getLoaderManager().initLoader(0, null, this);
     }

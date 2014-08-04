@@ -13,6 +13,8 @@ from django.utils.text import compress_string
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit
+from OpenSSL.SSL import Error as OpenSSLError
+from pyasn1.error import PyAsn1Error
 # from utils.feed_functions import mail_feed_error_to_admin
 
 BROKEN_PAGES = [
@@ -50,7 +52,6 @@ class PageImporter(object):
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
             ),
-            'Connection': 'close',
         }
     
     @timelimit(15)
@@ -79,9 +80,10 @@ class PageImporter(object):
                 else:
                     try:
                         response = requests.get(feed_link, headers=self.headers)
+                        response.connection.close()
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
-                    except (AttributeError, SocketError), e:
+                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error), e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
                         self.save_no_page()
                         return

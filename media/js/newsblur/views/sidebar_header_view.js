@@ -60,6 +60,7 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     
     toggle_hide_read_preference: function() {
         var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
+        if (NEWSBLUR.reader.flags['feed_list_showing_starred']) hide_read_feeds = true;
         this.$('.NB-feeds-header-sites').toggleClass('NB-feedlist-hide-read-feeds', !!hide_read_feeds);
         $("body").toggleClass("NB-feedlist-hide-read-feeds", !!hide_read_feeds);
     },

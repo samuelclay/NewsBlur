@@ -288,7 +288,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
-            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
+            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText, readingAdapter.getSourceUserId());
             newFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {

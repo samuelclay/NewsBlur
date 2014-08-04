@@ -14,10 +14,12 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
 	protected Cursor stories;
     protected DefaultFeedView defaultFeedView;
+    protected String sourceUserId;
 	
-	public ReadingAdapter(FragmentManager fm, DefaultFeedView defaultFeedView) {
+	public ReadingAdapter(FragmentManager fm, DefaultFeedView defaultFeedView, String sourceUserId) {
 		super(fm);
         this.defaultFeedView = defaultFeedView;
+        this.sourceUserId = sourceUserId;
 	}
 	
 	@Override
@@ -74,4 +76,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		}
 	}
 
+    public String getSourceUserId() {
+        return sourceUserId;
+    }
 }

@@ -69,8 +69,13 @@ const int COUNT_HEIGHT = 15;
     rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
-    psCount = ps;
-    ntCount = nt;
+    if (listType == NBFeedListSaved) {
+        blueCount = ps;
+        psCount = ps;
+    } else {
+        psCount = ps;
+        ntCount = nt;
+    }
     [self calculateOffsets:ps nt:nt];
     
     int psOffset = ps == 0 ? 0 : psWidth - 20;

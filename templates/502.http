@@ -9,6 +9,7 @@ Content-Type: text/html
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta http-equiv="x-dns-prefetch-control" content="off"/>
         <meta name="robots" content="noindex"/>
+        <meta name="viewport" content="width=320, initial-scale=0.5">
 
         <style>
         html {

@@ -34,7 +34,7 @@
     NEWSBLUR.Preferences = {
       'unread_view'             : 0,
       'lock_mouse_indicator'    : 100,
-      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 242 %},
+      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 258 %},
       'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
       'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
@@ -67,7 +67,8 @@
       'story_layout'            : 'split',
       'collapsed_folders'       : [],
       'story_styling'           : 'sans-serif',
-      'story_size'              : 's',
+      'feed_size'               : 'm',
+      'story_size'              : 'm',
       'story_line_spacing'      : 'm',
       'hide_public_comments'    : false,
       'story_button_placement'  : "right",

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +19,8 @@ import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public class Main extends NbActivity implements StateChangedListener {
@@ -29,11 +30,14 @@ public class Main extends NbActivity implements StateChangedListener {
 	private FragmentManager fragmentManager;
 	private Menu menu;
     private TextView overlayStatusText;
+    private boolean isLightTheme;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
+
+        isLightTheme = PrefsUtils.isLightThemeSelected(this);
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -59,6 +63,10 @@ public class Main extends NbActivity implements StateChangedListener {
         // this view doesn't show stories, it is safe to perform cleanup
         NBSyncService.holdStories(false);
         triggerSync();
+
+        if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
+            UIUtils.restartActivity(this);
+        }
     }
 
 	private void setupActionBar() {

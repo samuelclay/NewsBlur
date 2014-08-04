@@ -334,7 +334,7 @@ def api_saved_tag_list(request):
     tags = []
     
     for tag in starred_counts:
-        if tag['tag'] == "": continue
+        if not tag['tag'] or tag['tag'] == "": continue
         tags.append(dict(label="%s (%s %s)" % (tag['tag'], tag['count'], 
                                                'story' if tag['count'] == 1 else 'stories'),
                          value=tag['tag']))
@@ -380,7 +380,10 @@ def api_unread_story(request, trigger_slug=None):
 
     if isinstance(feed_or_folder, int) or feed_or_folder.isdigit():
         feed_id = int(feed_or_folder)
-        usersub = UserSubscription.objects.get(user=user, feed_id=feed_id)
+        try:
+            usersub = UserSubscription.objects.get(user=user, feed_id=feed_id)
+        except UserSubscription.DoesNotExist:
+            return dict(data=[])
         found_feed_ids = [feed_id]
         found_trained_feed_ids = [feed_id] if usersub.is_trained else []
         stories = usersub.get_stories(order="newest", read_filter="unread", 
@@ -639,10 +642,11 @@ def api_share_new_story(request):
                 story_content = original_story['content']
             if not story_title:
                 story_title = original_story['title']
-
-    story_content = lxml.html.fromstring(story_content)
-    story_content.make_links_absolute(story_url)
-    story_content = lxml.html.tostring(story_content)
+    
+    if story_content:
+        story_content = lxml.html.fromstring(story_content)
+        story_content.make_links_absolute(story_url)
+        story_content = lxml.html.tostring(story_content)
     
     shared_story = MSharedStory.objects.filter(user_id=user.pk,
                                                story_feed_id=original_feed and original_feed.pk or 0,
@@ -732,7 +736,7 @@ def api_save_new_story(request):
         }
         story = MStarredStory.objects.create(**story_db)
         logging.user(request, "~FCStarring by ~SBIFTTT~SN: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
-        MStarredStoryCounts.count_tags_for_user(user.pk)
+        MStarredStoryCounts.count_for_user(user.pk)
     except OperationError:
         logging.user(request, "~FCAlready starred by ~SBIFTTT~SN: ~SB%s" % (story_db['story_title'][:50]))
         pass

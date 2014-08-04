@@ -74,7 +74,7 @@ class DBProfilerMiddleware:
 
 class SQLLogToConsoleMiddleware:
     def activated(self, request):
-        return (settings.DEBUG or 
+        return (settings.DEBUG_QUERIES or 
                 (hasattr(request, 'activated_segments') and
                  'db_profiler' in request.activated_segments))
 

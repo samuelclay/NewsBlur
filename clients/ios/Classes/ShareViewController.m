@@ -460,7 +460,8 @@
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStoryParsed;
-    
+    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
+
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
     for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
@@ -477,7 +478,6 @@
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
     [appDelegate.storyPageControl.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
 }

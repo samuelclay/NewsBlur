@@ -133,7 +133,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
                                       _.bind(function(data) {
             this.options.story_comments_view.replace_comment(this, data);
         }, this), _.bind(function(data) {
-            var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
+            var message = data && data.message || "Sorry, this reply could not be posted. Probably Adblock.";
             if (!NEWSBLUR.Globals.is_authenticated) {
                 message = "You need to be logged in to reply to a comment.";
             }

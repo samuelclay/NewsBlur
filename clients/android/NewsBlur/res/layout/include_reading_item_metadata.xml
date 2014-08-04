@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
-        android:background="@drawable/row_item_header_background">
+        style="?rowItemHeaderBackground">
 
         <RelativeLayout
                 android:id="@+id/row_item_feed_header"
@@ -18,7 +18,7 @@
                 android:minHeight="6dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:background="@drawable/row_item_feed_header">
+                style="?rowItemFeedHeader">
 
             <ImageView
                     android:id="@+id/reading_feed_icon"
@@ -58,7 +58,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="16dp"
             android:layout_below="@id/item_feed_border"
-            android:textColor="@color/story_title_unread"
+            style="?storyTitleUnread"
             android:textSize="17sp" />
 
         <TextView
@@ -69,7 +69,7 @@
             android:layout_alignLeft="@id/reading_item_title"
             android:layout_marginRight="12dp"
             android:layout_marginTop="8dp"
-            android:textColor="@color/half_darkgray"
+            style="?readingItemMetadata"
             android:textSize="12sp" />
 
         <TextView
@@ -80,7 +80,7 @@
             android:layout_toRightOf="@id/reading_item_date"
             android:maxLines="1"
             android:minWidth="80dp"
-            android:textColor="@color/half_darkgray"
+            style="?readingItemMetadata"
             android:textSize="12sp"
             android:textStyle="bold"/>
 

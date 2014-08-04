@@ -17,6 +17,7 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Story;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ThemeUtils;
 
 public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
@@ -30,16 +31,16 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;
 
-        storyTitleUnread = context.getResources().getColor(R.color.story_title_unread);
-        storyTitleRead = context.getResources().getColor(R.color.story_title_read);
-        storyContentUnread = context.getResources().getColor(R.color.story_content_unread);
-        storyContentRead = context.getResources().getColor(R.color.story_content_read);
-        storyAuthorUnread = context.getResources().getColor(R.color.story_author_unread);
-		storyAuthorRead = context.getResources().getColor(R.color.story_author_read);
-		storyDateUnread = context.getResources().getColor(R.color.story_date_unread);
-		storyDateRead = context.getResources().getColor(R.color.story_date_read);
-		storyFeedUnread = context.getResources().getColor(R.color.story_feed_unread);
-		storyFeedRead = context.getResources().getColor(R.color.story_feed_read);
+        storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
+        storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
+        storyContentUnread = ThemeUtils.getStoryContentUnreadColor(context);
+        storyContentRead = ThemeUtils.getStoryContentReadColor(context);
+        storyAuthorUnread = ThemeUtils.getStoryAuthorUnreadColor(context);
+        storyAuthorRead = ThemeUtils.getStoryAuthorReadColor(context);
+        storyDateUnread = ThemeUtils.getStoryDateUnreadColor(context);
+        storyDateRead = ThemeUtils.getStoryDateReadColor(context);
+		storyFeedUnread = ThemeUtils.getStoryFeedUnreadColor(context);
+		storyFeedRead = ThemeUtils.getStoryFeedReadColor(context);
 
         this.ignoreReadStatus = ignoreReadStatus;
 	}

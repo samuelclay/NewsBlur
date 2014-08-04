@@ -77,6 +77,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var collection = this.collection;
             var added = this.collection.models.slice(-1 * options.added);
             var stories = _.compact(_.map(added, function(story) {
+                if (story.story_view) return;
                 return new NEWSBLUR.Views.StoryDetailView({
                     model: story,
                     collection: collection
@@ -402,6 +403,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 '.'
             ];
         }
+        if (NEWSBLUR.reader.active_feed == "read") {
+            message = [
+                'This read stories list is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
+            ];
+        }
+
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, message)
         ]);

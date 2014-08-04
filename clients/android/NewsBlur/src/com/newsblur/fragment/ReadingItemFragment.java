@@ -86,10 +86,11 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
     private String originalText;
     private HashMap<String,String> imageAltTexts;
     private HashMap<String,String> imageUrlRemaps;
+    private String sourceUserId;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, DefaultFeedView defaultFeedView) {
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, DefaultFeedView defaultFeedView, String sourceUserId) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -103,6 +104,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
         args.putSerializable("defaultFeedView", defaultFeedView);
+        args.putString("sourceUserId", sourceUserId);
 		readingFragment.setArguments(args);
 
 		return readingFragment;
@@ -140,6 +142,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		classifier = (Classifier) getArguments().getSerializable("classifier");
 
         selectedFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
+
+        sourceUserId = getArguments().getString("sourceUserId");
 
 		receiver = new TextSizeReceiver();
 		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
@@ -327,7 +331,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		shareButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story, previouslySavedShareText);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story, previouslySavedShareText, sourceUserId);
 				newFragment.show(getFragmentManager(), "dialog");
 			}
 		});
@@ -496,7 +500,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		builder.append("<style style=\"text/css\">");
 		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
 		builder.append("</style>");
-		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
+		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
+        if (PrefsUtils.isLightThemeSelected(getActivity())) {
+            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
+        } else {
+            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+        }
+        builder.append("</head><body><div class=\"NB-story\">");
 		builder.append(storyText);
 		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);

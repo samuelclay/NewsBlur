@@ -140,6 +140,7 @@
     }
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"appDelegate.remainingUnfetchedStoryCount %d (%f)", appDelegate.remainingUnfetchedStoryCount, progress);
+        if (self.isCancelled) return;
         [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
     });
 }
