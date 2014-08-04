@@ -42,9 +42,4 @@ public class AllStoriesReading extends Reading {
         return new CursorLoader(this, FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
     }
     
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateFeeds(this, this, feedIds, page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
-    }
-
 }

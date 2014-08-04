@@ -3,6 +3,7 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import com.newsblur.fragment.SocialFeedItemListFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -45,7 +47,12 @@ public class SocialFeedItemsList extends ItemsList {
 			listTransaction.commit();
 		}
 	}
-	
+
+	@Override
+    protected FeedSet createFeedSet() {
+        //Log.d(this.getClass().getName(), "creating feedset social ID:" + getIntent().getStringExtra(EXTRA_BLURBLOG_USERID) + " name:" + getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
+        return FeedSet.singleSocialFeed(getIntent().getStringExtra(EXTRA_BLURBLOG_USERID), getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,14 +62,6 @@ public class SocialFeedItemsList extends ItemsList {
 		return true;
 	}
 	
-	@Override
-	public void triggerRefresh(int page) {
-		if (!stopLoading) {
-			setProgressBarIndeterminateVisibility(true);
-            FeedUtils.updateSocialFeed(this, this, userId, username, page, getStoryOrder(), PrefsUtils.getReadFilterForFeed(this, userId));
-		}
-	}
-
 	@Override
 	public void markItemListAsRead() {
 		new MarkSocialFeedAsReadTask(apiManager, getContentResolver()){

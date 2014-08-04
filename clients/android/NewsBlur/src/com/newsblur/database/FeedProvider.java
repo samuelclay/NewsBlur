@@ -16,13 +16,11 @@ import com.newsblur.util.AppConstants;
 
 /**
  * A magic subclass of ContentProvider that enhances calls to the DB for presumably more simple caller syntax.
- * 
- * TODO: the fact that most of the app uses this subclass of ContentProvider cast as such may
- *  deepy confuse future maintainers as to why the methods within magically do far, far more
- *  than suggested by the normal contract and provided args.  When time and resources permit,
- *  this paradigm could be replaced with a much more straightforward if slightly more verbose
- *  use of Plain Old Raw Queries.  Alternatively, the DB could be renormalized so that it is not
- *  necessary to use queries of such intense complexity.
+ *
+ * TODO: GET RID OF THIS CLASS.  Per the docs for ContentProfider, one is not required
+ *  or recommended for DB access unless sharing data outside of the app, which we do
+ *  not.  All DB ops should be done via BlurDatabaseHelper using straightforward, 
+ *  standard SQL.  
  */
 public class FeedProvider extends ContentProvider {
 
@@ -30,7 +28,6 @@ public class FeedProvider extends ContentProvider {
 	public static final String VERSION = "v1";
 	
 	public static final Uri NEWSBLUR_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION);
-	public static final Uri OFFLINE_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/offline_updates/");
 	public static final Uri SOCIAL_FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/social_feeds/");
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri CLASSIFIER_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/classifiers/");
@@ -38,7 +35,6 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri USERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/users/");
-	public static final Uri STARRED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories/");
 	public static final Uri STARRED_STORIES_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories_count/");
 	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
@@ -63,7 +59,6 @@ public class FeedProvider extends ContentProvider {
 	private static final int STORY_COMMENTS = 9;
 	private static final int INDIVIDUAL_STORY = 10;
 	private static final int FEED_COUNT = 11;
-	private static final int OFFLINE_UPDATES = 12;
 	private static final int SOCIALFEED_COUNT = 13;
 	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
 	private static final int REPLIES = 15;
@@ -73,7 +68,6 @@ public class FeedProvider extends ContentProvider {
 	private static final int FEED_STORIES_NO_UPDATE = 18;
 	private static final int CLASSIFIERS_FOR_FEED = 19;
 	private static final int USERS = 21;
-	private static final int STARRED_STORIES = 22;
 	private static final int STARRED_STORIES_COUNT = 23;
 	
 	private BlurDatabase databaseHelper;
@@ -104,9 +98,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/*/", SPECIFIC_FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/offline_updates/", OFFLINE_UPDATES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/users/", USERS);
-        uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories/", STARRED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories_count/", STARRED_STORIES_COUNT);
 	}
 
@@ -114,9 +106,6 @@ public class FeedProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		switch (uriMatcher.match(uri)) {
-			case OFFLINE_UPDATES:
-				return db.delete(DatabaseConstants.UPDATE_TABLE, selection, selectionArgs);
-			
 			case ALL_SOCIAL_FEEDS:	
 				db.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
 				return 1;	
@@ -125,12 +114,10 @@ public class FeedProvider extends ContentProvider {
 				db.delete(DatabaseConstants.FEED_TABLE, null, null);
 				db.delete(DatabaseConstants.FOLDER_TABLE, null, null);
 				db.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);
-				db.delete(DatabaseConstants.STORY_TABLE, null, null);
 				return 1;
 				
 			case ALL_STORIES:	
 				db.delete(DatabaseConstants.STORY_TABLE, null, null);	
-				db.delete(DatabaseConstants.STARRED_STORIES_TABLE, null, null);	
                 return 1;
 				
 			case SOCIALFEED_STORIES:
@@ -156,9 +143,6 @@ public class FeedProvider extends ContentProvider {
 			case CLASSIFIERS_FOR_FEED:
 				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });
 				
-            case STARRED_STORIES:
-                return db.delete(DatabaseConstants.STARRED_STORIES_TABLE, null, null);
-
 			default:
 				return 0;
 		}
@@ -299,15 +283,6 @@ public class FeedProvider extends ContentProvider {
 			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			break;		
 			
-			// Inserting a story	
-		case OFFLINE_UPDATES:
-			db.insertWithOnConflict(DatabaseConstants.UPDATE_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			break;
-
-        case STARRED_STORIES:
-            db.insertWithOnConflict(DatabaseConstants.STARRED_STORIES_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-            break;
-
         case STARRED_STORIES_COUNT:
             db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             break;
@@ -384,20 +359,6 @@ public class FeedProvider extends ContentProvider {
 		
 		case USERS:
 			return db.query(DatabaseConstants.USER_TABLE, projection, selection, selectionArgs, null, null, null);	
-
-        case STARRED_STORIES:
-			String savedStoriesQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STARRED_STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
-			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
-			DatabaseConstants.FEED_FAVICON_FADE + ", " + DatabaseConstants.FEED_FAVICON_TEXT +
-                    " FROM " + DatabaseConstants.STARRED_STORIES_TABLE +
-			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
-			" ON " + DatabaseConstants.STARRED_STORIES_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID; 
-            StringBuilder q = new StringBuilder();
-            q.append(savedStoriesQuery);
-			if (!TextUtils.isEmpty(sortOrder)) {
-				q.append(" ORDER BY " + sortOrder);
-			}
-			return db.rawQuery(q.toString(), null);
 
         case STARRED_STORIES_COUNT:
             return db.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, projection, selection, selectionArgs, null, null, null);
@@ -557,8 +518,6 @@ public class FeedProvider extends ContentProvider {
             folderBuilder.append(" ORDER BY ");
             folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
             return db.rawQuery(folderBuilder.toString(), null);
-		case OFFLINE_UPDATES:
-			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
 			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
 		case INDIVIDUAL_SOCIAL_FEED:
@@ -630,7 +589,6 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_STORY:
             int count = 0;
             count += db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
-            count += db.update(DatabaseConstants.STARRED_STORIES_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
             return count;            
         // In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
 		case FEED_COUNT: 

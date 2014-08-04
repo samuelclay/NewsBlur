@@ -27,4 +27,16 @@
         android:background="@color/midgray"
         android:layout_below="@id/fragment_folderfeedlist" />
 
+    <TextView
+        android:id="@+id/main_sync_status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_feedintelligenceselector"
+        android:padding="3dp"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:textColor="@color/status_overlay_text"
+        android:background="@color/status_overlay_background"
+        android:text="SYNC STATUS" />
+
 </RelativeLayout>

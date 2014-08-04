@@ -749,7 +749,7 @@ a img {
 .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header .NB-feedlist-collapse-icon {
     position: absolute;
-    top: 5px;
+    top: 7px;
     right: 3px;
     width: 16px;
     height: 16px;
@@ -865,10 +865,9 @@ a img {
     padding-top: 4px;
 }
 .NB-feeds-header .unread_count {
-    margin-top: 2px;
+    margin-top: 4px;
     line-height: 11px;
 }
-
 .NB-feedlist-hide-read-feeds .NB-feedlist .feed {
   display: none;
 }
@@ -3314,7 +3313,6 @@ body {
     clear: both;
     overflow: hidden;
 }
-
 .NB-feed-story-sideoptions-container {
     
 }
@@ -3346,6 +3344,13 @@ body {
     border: 1px solid #C0C0C0;
     clear: right;
 }
+.NB-extra-narrow-content .NB-sideoption {
+    min-width: 80px;
+}
+.NB-extra-narrow-content .NB-sideoption-title span {
+    display: none;
+}
+
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
     padding: 9px 4px;

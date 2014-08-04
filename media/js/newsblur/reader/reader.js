@@ -226,6 +226,8 @@
                     narrow = true;
                 }
                 $windows.toggleClass('NB-narrow-content', narrow);
+                var extranarrow = center.width() < 580;
+                $windows.toggleClass('NB-extra-narrow-content', extranarrow);
                 this.flags.narrow_content = !!narrow;
                 content_width = center.width() + (west ? west.width() : 0);
             }

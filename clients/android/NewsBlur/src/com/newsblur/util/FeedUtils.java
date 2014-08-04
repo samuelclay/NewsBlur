@@ -21,6 +21,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
@@ -30,115 +31,11 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
-import com.newsblur.network.domain.SocialFeedResponse;
-import com.newsblur.network.domain.StoriesResponse;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
-    public static void updateFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
-        new AsyncTask<Void, Void, StoriesResponse>() {
-            @Override
-            protected StoriesResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.getStoriesForFeed(feedId, pageNumber, order, filter);
-            }
-            @Override
-            protected void onPostExecute(StoriesResponse result) {
-                handleStoryResponse(context, result, result.stories, receiver);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public static void updateFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
-        new AsyncTask<Void, Void, StoriesResponse>() {
-            @Override
-            protected StoriesResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.getStoriesForFeeds(feedIds, pageNumber, order, filter);
-            }
-            @Override
-            protected void onPostExecute(StoriesResponse result) {
-                handleStoryResponse(context, result, result.stories, receiver);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public static void updateSocialFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final String socialUsername, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
-        new AsyncTask<Void, Void, SocialFeedResponse>() {
-            @Override
-            protected SocialFeedResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.getStoriesForSocialFeed(feedId, socialUsername, pageNumber, order, filter);
-            }
-            @Override
-            protected void onPostExecute(SocialFeedResponse result) {
-                handleStoryResponse(context, result, result.stories, receiver);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public static void updateSocialFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
-        new AsyncTask<Void, Void, SocialFeedResponse>() {
-            @Override
-            protected SocialFeedResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.getSharedStoriesForFeeds(feedIds, pageNumber, order, filter);
-            }
-            @Override
-            protected void onPostExecute(SocialFeedResponse result) {
-                handleStoryResponse(context, result, result.stories, receiver);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public static void updateSavedStories(final Context context, final ActionCompletionListener receiver, final int pageNumber) {
-        new AsyncTask<Void, Void, StoriesResponse>() {
-            @Override
-            protected StoriesResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.getStarredStories(pageNumber);
-            }
-            @Override
-            protected void onPostExecute(StoriesResponse result) {
-                handleStoryResponse(context, result, result.stories, receiver);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public static void clearStories(final Context context) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                context.getContentResolver().delete(FeedProvider.ALL_STORIES_URI, null, null);
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
-        // the API may return both a valid stories block *and* an error, so check for stories first
-        if (stories != null) {
-            if (receiver != null) {
-                receiver.actionCompleteCallback(stories.length == 0); // only keep loading if there are more stories left
-            }
-            return;
-        }
-
-        if (response.isError()) {
-            Log.e(FeedUtils.class.getName(), "Error response received loading stories.");
-            Toast.makeText(context, response.getErrorMessage(context.getString(R.string.toast_error_loading_stories)), Toast.LENGTH_LONG).show();
-        } else {
-            Log.e(FeedUtils.class.getName(), "Null stories member received while loading stories with no error found.");
-            Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
-        }
-
-        // NB: we do not keep loading on error, since the calling class would need to know to adjust pagination
-        receiver.actionCompleteCallback(true);
-    }
-
-	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager, final ActionCompletionListener receiver) {
+	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
@@ -161,19 +58,17 @@ public class FeedUtils {
                     Toast.makeText(context, result.getErrorMessage(context.getString(saved ? R.string.toast_story_save_error : R.string.toast_story_unsave_error)), Toast.LENGTH_LONG).show();
                 }
 
-                if (receiver != null) {
-                    receiver.actionCompleteCallback(false);
-                }
+                NbActivity.updateAllActivities();
             }
         }.execute();
 	}
 
-	public static void saveStory(final Story story, final Context context, final APIManager apiManager, ActionCompletionListener receiver) {
-        setStorySaved(story, true, context, apiManager, receiver);
+	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
+        setStorySaved(story, true, context, apiManager);
     }
 
-	public static void unsaveStory(final Story story, final Context context, final APIManager apiManager, ActionCompletionListener receiver) {
-        setStorySaved(story, false, context, apiManager, receiver);
+	public static void unsaveStory(final Story story, final Context context, final APIManager apiManager) {
+        setStorySaved(story, false, context, apiManager);
     }
 
     public static void deleteFeed( final long feedId, final String folderName, final Context context, final APIManager apiManager) {

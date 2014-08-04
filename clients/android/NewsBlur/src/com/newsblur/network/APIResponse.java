@@ -99,6 +99,10 @@ public class APIResponse {
         return this.isError;
     }
 
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
     /**
      * Get the response object from this call.  A specific subclass of NewsBlurResponse
      * may be used for calls that return data, or the parent class may be used if no

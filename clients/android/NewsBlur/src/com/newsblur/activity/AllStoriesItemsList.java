@@ -24,6 +24,7 @@ import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener
 import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -73,16 +74,10 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	}
 
 	@Override
-	public void triggerRefresh(int page) {
-		if (!stopLoading) {
-			setProgressBarIndeterminateVisibility(true);
-
-            String[] feedIdArray = new String[feedIds.size()];
-            feedIds.toArray(feedIdArray);
-            FeedUtils.updateFeeds(this, this, feedIdArray, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
-		}
-	}
-
+    protected FeedSet createFeedSet() {
+        return FeedSet.allFeeds();
+    }
+    
 	@Override
 	public void markItemListAsRead() {
 	    MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(getResources().getString(R.string.all_stories));

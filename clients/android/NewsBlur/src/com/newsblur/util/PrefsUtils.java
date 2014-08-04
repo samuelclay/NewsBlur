@@ -17,12 +17,15 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.database.BlurDatabase;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.service.NBSyncService;
 
 public class PrefsUtils {
 
@@ -71,7 +74,9 @@ public class PrefsUtils {
 
     public static void logout(Context context) {
 
-        // TODO: stop or wait for any BG processes
+        NBSyncService.softInterrupt();
+        
+        // TODO: wait for any BG processes
 
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
@@ -291,6 +296,62 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    public static StoryOrder getStoryOrder(Context context, FeedSet fs) {
+        if (fs.isAllNormal()) {
+            return getStoryOrderForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleFeed() != null) {
+            return getStoryOrderForFeed(context, fs.getSingleFeed());
+        }
+        if (fs.getMultipleFeeds() != null) {
+            return getStoryOrderForFolder(context, fs.getFolderName());
+        }
+
+        if (fs.isAllSocial()) {
+            return getStoryOrderForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleSocialFeed() != null) {
+            return getStoryOrderForFeed(context, fs.getSingleSocialFeed().getKey());
+        }
+        if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
+        }
+
+        if (fs.isAllSaved()) {
+            return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        }
+
+        throw new IllegalArgumentException( "unknown type of feed set" );
+    }
+
+    public static ReadFilter getReadFilter(Context context, FeedSet fs) {
+        if (fs.isAllNormal()) {
+            return getReadFilterForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleFeed() != null) {
+            return getReadFilterForFeed(context, fs.getSingleFeed());
+        }
+        if (fs.getMultipleFeeds() != null) {
+            return getReadFilterForFolder(context, fs.getFolderName());
+        }
+
+        if (fs.isAllSocial()) {
+            return getReadFilterForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        }
+        if (fs.getSingleSocialFeed() != null) {
+            return getReadFilterForFeed(context, fs.getSingleSocialFeed().getKey());
+        }
+        if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
+        }
+
+        if (fs.isAllSaved()) {
+            return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        }
+
+        throw new IllegalArgumentException( "unknown type of feed set" );
+    }
+
     private static DefaultFeedView getDefaultFeedView() {
         return DefaultFeedView.STORY;
     }
@@ -303,6 +364,59 @@ public class PrefsUtils {
     public static boolean isShowContentPreviews(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
+    }
+
+    public static boolean isOfflineEnabled(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);
+    }
+
+    public static boolean isImagePrefetchEnabled(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false);
+    }
+
+    /**
+     * Sees if offline images should be used while reading via two conditions: is the device
+     * offline, and was image prefetch enabled.
+     */
+    public static boolean isLoadOfflineImages(Context context) {
+        if (!isImagePrefetchEnabled(context)) return false;
+
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+
+        return ((activeInfo == null) || (!activeInfo.isConnected()));
+    }
+
+    /**
+     * Compares the user's setting for when background data use is allowed against the
+     * current network status and sees if it is okay to sync.
+     */
+    public static boolean isBackgroundNetworkAllowed(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMO);
+
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+
+        // if we aren't even online, there is no way bg data will work
+        if ((activeInfo == null) || (!activeInfo.isConnected())) return false;
+
+        // if user restricted use of mobile nets, make sure we aren't on one
+        int type = activeInfo.getType();
+        if (mode.equals(PrefConstants.NETWORK_SELECT_NOMO)) {
+            if (! ((type == ConnectivityManager.TYPE_WIFI) || (type == ConnectivityManager.TYPE_ETHERNET))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean isKeepOldStories(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false);
     }
 
     public static void applyThemePreference(Activity activity) {
@@ -320,4 +434,5 @@ public class PrefsUtils {
         String theme = prefs.getString(PrefConstants.THEME, "light");
         return theme.equals("light");
     }
+
 }

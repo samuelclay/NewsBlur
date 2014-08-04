@@ -20,7 +20,6 @@ import com.newsblur.R;
 import com.newsblur.activity.LoginProgress;
 import com.newsblur.activity.RegisterProgress;
 import com.newsblur.network.APIManager;
-import com.newsblur.service.DetachableResultReceiver;
 
 public class LoginRegisterFragment extends Fragment implements OnClickListener {
 
@@ -28,9 +27,7 @@ public class LoginRegisterFragment extends Fragment implements OnClickListener {
 	private EditText username, password;
 	private ViewSwitcher viewSwitcher;
 
-	DetachableResultReceiver receiver;
 	private EditText register_username, register_password, register_email;
-
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -42,9 +42,4 @@ public class FolderReading extends Reading {
         return new CursorLoader(this, FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(PrefsUtils.getStoryOrderForFolder(this, folderName)));
     }
 
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateFeeds(this, this, feedIds, page, PrefsUtils.getStoryOrderForFolder(this, folderName), PrefsUtils.getReadFilterForFolder(this, folderName));
-    }
-
 }

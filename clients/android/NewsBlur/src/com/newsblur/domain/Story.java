@@ -94,6 +94,9 @@ public class Story implements Serializable {
     @SerializedName("story_hash")
     public String storyHash;
 
+    @SerializedName("image_urls")
+    public String[] imageUrls;
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
