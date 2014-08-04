@@ -1455,6 +1455,9 @@ def mark_story_hash_as_unread(request):
     story_hash = request.REQUEST.get('story_hash')
     feed_id, _ = MStory.split_story_hash(story_hash)
     story, _ = MStory.find_story(feed_id, story_hash)
+    if not story:
+        data = dict(code=-1, message="That story has been removed from the feed, no need to mark it unread.")
+        return data        
     message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
     if message:
         data = dict(code=-1, message=message)
