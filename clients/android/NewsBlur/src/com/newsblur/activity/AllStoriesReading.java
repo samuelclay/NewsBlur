@@ -24,7 +24,7 @@ public class AllStoriesReading extends Reading {
 
         feedIds = getIntent().getStringArrayExtra(Reading.EXTRA_FEED_IDS);
         setTitle(getResources().getString(R.string.all_stories_row_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, null);
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -42,9 +42,4 @@ public class AllStoriesReading extends Reading {
         return new CursorLoader(this, FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
     }
     
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateFeeds(this, this, feedIds, page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
-    }
-
 }

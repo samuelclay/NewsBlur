@@ -866,6 +866,8 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     
     try:
         tag_counts = MStarredStoryCounts.objects.get(user_id=user_id, slug=tag_slug)
+    except MStarredStoryCounts.MultipleObjectsReturned:
+        tag_counts = MStarredStoryCounts.objects(user_id=user_id, slug=tag_slug).first()
     except MStarredStoryCounts.DoesNotExist:
         raise Http404
     
@@ -887,10 +889,15 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     )
     rss = feedgenerator.Atom1Feed(**data)
 
-    starred_stories = MStarredStory.objects(
-        user_id=user.pk,
-        user_tags__contains=tag_counts.tag
-    ).order_by('-starred_date')[:25]
+    if not tag_counts.tag:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk
+        ).order_by('-starred_date').limit(25)
+    else:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk,
+            user_tags__contains=tag_counts.tag
+        ).order_by('-starred_date').limit(25)
     for starred_story in starred_stories:
         story_data = {
             'title': starred_story.story_title,
@@ -1453,6 +1460,9 @@ def mark_story_hash_as_unread(request):
     story_hash = request.REQUEST.get('story_hash')
     feed_id, _ = MStory.split_story_hash(story_hash)
     story, _ = MStory.find_story(feed_id, story_hash)
+    if not story:
+        data = dict(code=-1, message="That story has been removed from the feed, no need to mark it unread.")
+        return data        
     message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
     if message:
         data = dict(code=-1, message=message)

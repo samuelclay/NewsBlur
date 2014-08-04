@@ -1,6 +1,8 @@
 package com.newsblur.activity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,6 +24,7 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -36,10 +39,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 	@Override
 	protected void onCreate(Bundle bundle) {
-		super.onCreate(bundle);
 		folderName = getIntent().getStringExtra(EXTRA_FOLDER_NAME);
-
-		setTitle(folderName);
 
         if (bundle != null) {
             feedIds = bundle.getStringArrayList(BUNDLE_FEED_IDS);
@@ -57,6 +57,9 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 		apiManager = new APIManager(this);
 
+		super.onCreate(bundle);
+		setTitle(folderName);
+
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState, getStoryOrder(), getDefaultFeedView());
@@ -67,22 +70,16 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 		}
 	}
 
+    @Override
+    protected FeedSet createFeedSet() {
+        return FeedSet.folder(this.folderName, new HashSet<String>(this.feedIds));
+    }
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.itemslist, menu);
 		return true;
-	}
-
-	@Override
-	public void triggerRefresh(int page) {
-		if (!stopLoading) {
-			setProgressBarIndeterminateVisibility(true);
-
-			String[] feeds = new String[feedIds.size()];
-			feedIds.toArray(feeds);
-            FeedUtils.updateFeeds(this, this, feeds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, folderName));
-		}
 	}
 
 	@Override

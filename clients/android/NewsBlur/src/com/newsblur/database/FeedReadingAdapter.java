@@ -16,7 +16,8 @@ public class FeedReadingAdapter extends ReadingAdapter {
 	private Classifier classifier;
 
 	public FeedReadingAdapter(FragmentManager fm, Feed feed, Classifier classifier, DefaultFeedView defaultFeedView) {
-		super(fm, defaultFeedView);
+        // sourceUserId not required for feed reading
+		super(fm, defaultFeedView, null);
 		this.feed = feed;
 		this.classifier = classifier;
     }
@@ -24,7 +25,7 @@ public class FeedReadingAdapter extends ReadingAdapter {
 	@Override
 	protected synchronized Fragment getReadingItemFragment(int position) {
         stories.moveToPosition(position);
-        return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColor, feed.faviconFade, feed.faviconBorder, feed.faviconText, feed.faviconUrl, classifier, false, defaultFeedView);
+        return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColor, feed.faviconFade, feed.faviconBorder, feed.faviconText, feed.faviconUrl, classifier, false, defaultFeedView, sourceUserId);
 	}
 
 }

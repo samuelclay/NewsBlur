@@ -20,6 +20,8 @@ public class UserProfile {
     public String location;
 
 	public static UserProfile fromCursor(final Cursor c) {
+        if (c.getCount() < 1) return null;
+
 		if (c.isBeforeFirst()) {
 			c.moveToFirst();
 		}

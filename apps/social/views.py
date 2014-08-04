@@ -565,7 +565,16 @@ def mark_story_as_shared(request):
             "comments": comments,
             "has_comments": bool(comments),
         }
-        shared_story = MSharedStory.objects.create(**story_db)
+        try:
+            shared_story = MSharedStory.objects.create(**story_db)
+        except MSharedStory.NotUniqueError:
+            shared_story = MSharedStory.objects.get(story_guid=story_db['story_guid'],
+                                                    user_id=story_db['user_id'])
+        except MSharedStory.DoesNotExist:
+            return json.json_response(request, {
+                'code': -1, 
+                'message': 'Story already shared but then not shared. I don\'t really know. Did you submit this twice very quickly?'
+            })
         if source_user_id:
             shared_story.set_source_user_id(int(source_user_id))
         UpdateRecalcForSubscription.delay(subscription_user_id=request.user.pk,

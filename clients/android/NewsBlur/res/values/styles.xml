@@ -233,4 +233,12 @@
         <item name="android:background">@color/dark_item_background</item>
         <item name="android:divider">@drawable/divider_dark</item>
     </style>
+
+    <style name="itemHeaderDivider">
+        <item name="android:background">@drawable/divider_item_header</item>
+    </style>
+
+    <style name="itemHeaderDivider.dark">
+        <item name="android:background">@drawable/dark_divider_item_header</item>
+    </style>
 </resources>

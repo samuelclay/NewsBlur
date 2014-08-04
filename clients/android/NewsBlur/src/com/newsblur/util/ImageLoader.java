@@ -46,13 +46,7 @@ public class ImageLoader {
 		Bitmap bitmap = memoryCache.get(url);
 		if ((bitmap == null) && (url != null)) {
 			File f = fileCache.getFile(url);
-            try {
-			    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-            } catch (Exception e) {
-                Log.e(this.getClass().getName(), "error decoding image, using default.", e);
-                // this can rarely happen if the device is low on memory and is not recoverable.
-                // just leave bitmap null and the default placeholder image will be used
-            }
+			bitmap = decodeBitmap(f);
 		}
 		if (bitmap != null) {
 			if (doRound) { 
@@ -71,7 +65,7 @@ public class ImageLoader {
 		Bitmap bitmap = memoryCache.get(url);
 		if ((bitmap == null) && (url != null)) {
 			File f = fileCache.getFile(url);
-			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+		    bitmap = decodeBitmap(f);
 		}
 		if (bitmap != null) {
             if (roundRadius > 0) {
@@ -93,7 +87,7 @@ public class ImageLoader {
 		} else {
             if (uid != null ) {
 			    File f = fileCache.getFile(uid);
-			    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+			    bitmap = decodeBitmap(f);
             }
 			if (bitmap != null) {
 				memoryCache.put(uid, bitmap);
@@ -121,7 +115,7 @@ public class ImageLoader {
 	private Bitmap getBitmap(String url) {
         if (url == null) return null;
         File f = fileCache.getFile(url);
-        Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+        Bitmap bitmap = decodeBitmap(f);
 		
 		if (bitmap != null) {
 			memoryCache.put(url, bitmap);			
@@ -145,14 +139,15 @@ public class ImageLoader {
 			while ((read = inputStream.read(b)) != -1) {  
 				outputStream.write(b, 0, read);  
 			}
+			outputStream.close();
+
 			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
 			memoryCache.put(url, bitmap);
-			outputStream.close();
+            if (bitmap == null) return null;
 			bitmap = UIUtils.roundCorners(bitmap, 5);
 			return bitmap;
-		} catch (IOException ex) {
-			Log.e(TAG, "Error loading image from network: " + url, ex.fillInStackTrace());
-			ex.printStackTrace();
+		} catch (Exception e) {
+			Log.e(this.getClass().getName(), "Error loading image from network: " + url, e);
 			return null;
 		}
 	}
@@ -219,5 +214,17 @@ public class ImageLoader {
 		memoryCache.clear();
 		fileCache.clear();
 	}
+
+    private Bitmap decodeBitmap(File f) {
+        // is is perfectly normal for files not to exist on cache misses or low
+        // device memory. this class will handle nulls with a queued action or
+        // placeholder image.
+        if (!f.exists()) return null;
+        try {
+            return BitmapFactory.decodeFile(f.getAbsolutePath());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }

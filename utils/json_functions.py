@@ -125,6 +125,8 @@ def json_response(request, response=None):
                 response['result'] = 'ok'
             authenticated = request.user.is_authenticated()
             response['authenticated'] = authenticated
+            if authenticated:
+                response['user_id'] = request.user.pk
     except KeyboardInterrupt:
         # Allow keyboard interrupts through for debugging.
         raise

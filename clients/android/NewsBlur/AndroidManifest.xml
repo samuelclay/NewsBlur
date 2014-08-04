@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="68"
-    android:versionName="3.7.1" >
+    android:versionCode="70"
+    android:versionName="4.0.0b1" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:icon="@drawable/logo"
@@ -40,14 +42,6 @@
             android:label="@string/get_started" />
 		
 		<activity
-            android:name=".activity.AddSites"
-            android:label="@string/add_sites" />
-		
-		<activity
-            android:name=".activity.AddFollow"
-            android:label="@string/add_follow" />
-		
-		<activity
             android:name=".activity.AddTwitter"
             android:label="@string/add_twitter" />
 		
@@ -58,10 +52,6 @@
 		<activity
             android:name=".activity.AddSocial"
             android:label="@string/add_friends" />
-		
-		<activity
-            android:name=".activity.ImportFeeds"
-            android:label="@string/newsblur" />
         
         <activity
             android:name=".activity.Main"
@@ -120,13 +110,22 @@
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <service android:name=".service.SyncService" />
+        <service android:name=".service.NBSyncService" />
+
+        <receiver android:name=".service.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".service.ServiceScheduleReceiver" />
 
         <provider
             android:name=".database.FeedProvider"
             android:authorities="com.newsblur"
             android:exported="true"
             android:multiprocess="true" />
+
     </application>
 
 </manifest>

@@ -35,8 +35,9 @@ public class AddSocial extends NbActivity {
 		nextStep.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Intent i = new Intent(AddSocial.this, AddFollow.class);
-				startActivity(i);
+                Intent i = new Intent(AddSocial.this, Main.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
 			}
 		});
 		

@@ -12,11 +12,12 @@ from pyasn1.error import PyAsn1Error
 
 class TextImporter:
     
-    def __init__(self, story=None, feed=None, story_url=None, request=None):
+    def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
         self.story = story
         self.story_url = story_url
         self.feed = feed
         self.request = request
+        self.debug = debug
     
     @property
     def headers(self):
@@ -55,7 +56,9 @@ class TextImporter:
                 text = text.encode(resp.encoding)
             except (LookupError, UnicodeEncodeError):
                 pass
-        original_text_doc = readability.Document(text, url=resp.url, debug=settings.DEBUG)
+        original_text_doc = readability.Document(text, url=resp.url, 
+                                                 debug=self.debug,
+                                                 positive_keywords=["postContent", "postField"])
         try:
             content = original_text_doc.summary(html_partial=True)
         except readability.Unparseable:

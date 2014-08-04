@@ -442,6 +442,7 @@ def original_text(request):
     story_id = request.REQUEST.get('story_id')
     feed_id = request.REQUEST.get('feed_id')
     force = request.REQUEST.get('force', False)
+    debug = request.REQUEST.get('debug', False)
 
     story, _ = MStory.find_story(story_id=story_id, story_feed_id=feed_id)
 
@@ -449,7 +450,7 @@ def original_text(request):
         logging.user(request, "~FYFetching ~FGoriginal~FY story text: ~FRstory not found")
         return {'code': -1, 'message': 'Story not found.', 'original_text': None, 'failed': True}
     
-    original_text = story.fetch_original_text(force=force, request=request)
+    original_text = story.fetch_original_text(force=force, request=request, debug=debug)
 
     return {
         'feed_id': feed_id,

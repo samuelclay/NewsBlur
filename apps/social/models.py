@@ -16,6 +16,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.db.models.aggregates import Sum
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
@@ -1510,7 +1511,16 @@ class MSharedStory(mongo.Document):
             users[user_id] = dict(feeds)
 
         pprint(users)
-        return users
+        
+        guaranteed_spammers = []
+        for user_id in ddusers.keys():
+            u = User.objects.get(pk=user_id)
+            feed_opens = UserSubscription.objects.filter(user=u).aggregate(sum=Sum('feed_opens'))['sum']
+            if not feed_opens: guaranteed_spammers.append(user_id)
+        
+        print " ---> Guaranteed spammers: %s" % guaranteed_spammers
+        
+        return users, guaranteed_spammers
         
     @classmethod
     def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
@@ -2191,12 +2201,12 @@ class MSharedStory(mongo.Document):
         
         return image_sizes
     
-    def fetch_original_text(self, force=False, request=None):
+    def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, feed, request=request)
+            ti = TextImporter(self, feed=feed, request=request, debug=False)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")

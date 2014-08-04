@@ -6,7 +6,7 @@
 
 Your premium account was set to expire today, but you've been given a free month grace period, so you can continue using your premium account to try out NewsBlur.
 
-{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then. We just launched a full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the old Google Reader features, you'll love the new NewsBlur.{% else %}You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe you just need to renew your premium account? Let's help you do that.{% endif %}
+{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then. We just launched a full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the old Google Reader features, you'll love the new NewsBlur.{% else %}You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe you just need to renew your premium account. Let's help you do that.{% endif %}
 
 Renew now: http://{% current_domain %}{{ user.profile.autologin_url }}?next=renew
 

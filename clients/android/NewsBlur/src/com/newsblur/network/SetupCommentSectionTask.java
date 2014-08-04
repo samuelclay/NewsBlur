@@ -13,6 +13,7 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,6 +82,15 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			if (!comment.byFriend && !PrefsUtils.showPublicComments(context)) {
 			    continue;
 			}
+
+			Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
+			UserProfile commentUser = UserProfile.fromCursor(userCursor);
+            userCursor.close();
+            // rarely, we get a comment but never got the user's profile, so we can't display it
+            if (commentUser == null) {
+                Log.w(this.getClass().getName(), "cannot display comment from missing user ID: " + comment.userId);
+                continue;
+            }
 			
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			commentView.setTag(COMMENT_VIEW_BY + comment.userId);
@@ -108,9 +118,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				for (String id : comment.likingUsers) {
 					ImageView favouriteImage = new ImageView(context);
 
-					Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { id }, null);
-					UserProfile user = UserProfile.fromCursor(userCursor);
-                    userCursor.close();
+					Cursor likingUserCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { id }, null);
+					UserProfile user = UserProfile.fromCursor(likingUserCursor);
+                    likingUserCursor.close();
 
 					imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
 					favouriteImage.setTag(id);
@@ -181,10 +191,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}
             replies.close();
-
-			Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
-			UserProfile commentUser = UserProfile.fromCursor(userCursor);
-            userCursor.close();
 
 			TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
 			commentUsername.setText(commentUser.username);

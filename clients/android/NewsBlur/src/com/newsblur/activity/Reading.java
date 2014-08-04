@@ -30,21 +30,25 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.network.APIManager;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final String EXTRA_FEEDSET = "feed_set";
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
 	public static final String EXTRA_USERID = "user_id";
@@ -82,11 +86,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
+    protected BlurDatabaseHelper dbHelper;
     private APIManager apiManager;
-    private boolean noMoreApiPages;
     private boolean stopLoading;
-    protected volatile boolean requestedPage; // set high iff a syncservice request for stories is already in flight
-    private int currentApiPage = 0;
+    protected FeedSet fs;
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     protected int startingUnreadCount = 0;
@@ -113,6 +116,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 		fragmentManager = getFragmentManager();
 
+        fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_POSITION)) {
             passedPosition = savedInstanceBundle.getInt(BUNDLE_POSITION);
         } else {
@@ -128,6 +133,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
+        dbHelper = new BlurDatabaseHelper(this);
 
         this.apiManager = new APIManager(this);
 
@@ -143,6 +149,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dbHelper != null) dbHelper.close();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (pager != null) {
             outState.putInt(BUNDLE_POSITION, pager.getCurrentItem());
@@ -155,10 +167,22 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     protected void onResume() {
         super.onResume();
+        // this view shows stories, it is not safe to perform cleanup
+        NBSyncService.holdStories(true);
         this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.
         getLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    protected void onPause() {
+        NBSyncService.holdStories(false);
+        this.stopLoading = true;
+        if (this.unreadSearchLatch != null) {
+            this.unreadSearchLatch.countDown();
+        }
+        super.onPause();
     }
 
 	@Override
@@ -180,9 +204,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
 
-                // don't blow away the value if the value was restored on create
-                if (this.startingUnreadCount == 0 ) {
-                    this.startingUnreadCount = getUnreadCount();
+                int currentUnreadCount = getUnreadCount();
+                if (currentUnreadCount > this.startingUnreadCount ) {
+                    this.startingUnreadCount = currentUnreadCount;
                 }
 
                 // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
@@ -264,7 +288,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
-            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
+            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText, readingAdapter.getSourceUserId());
             newFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {
@@ -276,9 +300,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
-			    FeedUtils.unsaveStory(story, Reading.this, apiManager, this);
+			    FeedUtils.unsaveStory(story, Reading.this, apiManager);
             } else {
-                FeedUtils.saveStory(story, Reading.this, apiManager, this);
+                FeedUtils.saveStory(story, Reading.this, apiManager);
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
@@ -293,14 +317,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
-    public void actionCompleteCallback(boolean noMoreData) {
-		enableMainProgress(false);
-        this.requestedPage = false;
-        if (this.stopLoading) { return; }
-
-        if (noMoreData) {
-		    this.noMoreApiPages = true;
-        }
+	protected void handleUpdate() {
+        enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
         updateCursor();
     }
 
@@ -420,19 +438,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private void checkStoryCount(int position) {
         if (AppConstants.VERBOSE_LOG) {
-            Log.d(this.getClass().getName(), String.format("story %d of %d selected, noMore pages: %b, requestedPg: %b, stopLoad: %b", position, stories.getCount(), noMoreApiPages, requestedPage, stopLoading));
+            Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
         }
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
-			currentApiPage += 1;
-			requestedPage = true;
-            enableMainProgress(true);
-			triggerRefresh(currentApiPage);
+		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !stopLoading) {
+			triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
 		}
         
-        if (noMoreApiPages || stopLoading) {
-        // if we terminated because we are well and truly done, break any search loops and stop progress indication
-            enableMainProgress(false);
+        if (stopLoading) {
+            // if we terminated because we are well and truly done, break any search loops and stop progress indication
             if (this.unreadSearchLatch != null) {
                 this.unreadSearchLatch.countDown();
             }
@@ -461,15 +475,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         });
 	}
         
-	protected abstract void triggerRefresh(int page);
-
-    @Override
-    protected void onPause() {
-        this.stopLoading = true;
-        if (this.unreadSearchLatch != null) {
-            this.unreadSearchLatch.countDown();
-        }
-        super.onPause();
+	private void triggerRefresh(int desiredStoryCount) {
+		if (!stopLoading) {
+            boolean moreLeft = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            if (moreLeft) {
+                triggerSync();
+            } else {
+                stopLoading = true;
+            }
+		}
     }
 
     private void markStoryRead(Story story) {
@@ -545,13 +559,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     break unreadSearch;
                 } 
 
-                if (story == null) {
-                    if (this.noMoreApiPages) {
-                        // this is odd. if there were no unreads, how was the button even enabled?
-                        Log.w(this.getClass().getName(), "Ran out of stories while looking for unreads.");
-                        break unreadSearch;
-                    } 
-                } else {
+                if (story != null) {
                     if ((candidate == pager.getCurrentItem()) || (story.read) ) {
                         candidate++;
                         continue unreadSearch;

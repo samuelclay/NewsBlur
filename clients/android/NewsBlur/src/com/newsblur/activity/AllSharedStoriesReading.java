@@ -25,7 +25,8 @@ public class AllSharedStoriesReading extends Reading {
         feedIds = getIntent().getStringArrayExtra(Reading.EXTRA_FEED_IDS);
         setTitle(getResources().getString(R.string.all_shared_stories));
 
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        // No sourceUserId since this is all shared stories. The sourceUsedId for each story will be used.
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, null);
 
         getLoaderManager().initLoader(0, null, this);
     }
@@ -42,11 +43,6 @@ public class AllSharedStoriesReading extends Reading {
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
         StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
         return new CursorLoader(this, FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-    }
-
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateSocialFeeds(this, this, feedIds, page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
     }
 
 }

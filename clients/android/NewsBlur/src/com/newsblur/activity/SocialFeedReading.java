@@ -27,7 +27,7 @@ public class SocialFeedReading extends Reading {
 
         setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, userId);
 
         getLoaderManager().initLoader(0, null, this);
     }
@@ -46,11 +46,6 @@ public class SocialFeedReading extends Reading {
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
         Uri storiesURI = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
         return new CursorLoader(this, storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(PrefsUtils.getStoryOrderForFeed(this, userId)));
-    }
-
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateSocialFeed(this, this, userId, username, page, PrefsUtils.getStoryOrderForFeed(this, userId), PrefsUtils.getReadFilterForFeed(this, userId));
     }
 
 }

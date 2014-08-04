@@ -226,6 +226,8 @@
                     narrow = true;
                 }
                 $windows.toggleClass('NB-narrow-content', narrow);
+                var extranarrow = center.width() < 580;
+                $windows.toggleClass('NB-extra-narrow-content', extranarrow);
                 this.flags.narrow_content = !!narrow;
                 content_width = center.width() + (west ? west.width() : 0);
             }
@@ -2602,6 +2604,12 @@
                  .removeClass('NB-theme-size-l')
                  .removeClass('NB-theme-size-xl');
             $body.addClass('NB-theme-size-' + NEWSBLUR.Preferences['story_size']);
+            $body.removeClass('NB-theme-feed-size-xs')
+                 .removeClass('NB-theme-feed-size-s')
+                 .removeClass('NB-theme-feed-size-m')
+                 .removeClass('NB-theme-feed-size-l')
+                 .removeClass('NB-theme-feed-size-xl');
+            $body.addClass('NB-theme-feed-size-' + NEWSBLUR.Preferences['feed_size']);
             
             $body.removeClass('NB-line-spacing-xs')
                  .removeClass('NB-line-spacing-s')

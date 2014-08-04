@@ -296,11 +296,11 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               $.make('h4', 'Stay connected to NewsBlur on Twitter'),
               $.make('div', { className: 'NB-tutorial-twitter' }, [
                 $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/samuelclay', target: '_blank' }, [
-                  $.make('img', { src: 'http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg', style: 'border-color: #505050;' }),
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/static/Samuel%20Clay%20sq.jpg', style: 'border-color: #505050;' }),
                   $.make('span', '@samuelclay')
                 ]),
                 $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/newsblur', target: '_blank' }, [
-                  $.make('img', { src: 'http://a0.twimg.com/profile_images/1268996309/logo_128_normal.png' }),
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/logo_128.png' }),
                   $.make('span', '@newsblur')
                 ])
               ]),
@@ -309,7 +309,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('li', [
                   $.make('a', { href: 'http://getsatisfaction.com/newsblur', className: 'NB-splash-link' }, [
                     'NewsBlur on ',
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/getsatisfaction.png', style: 'vertical-align: middle;margin: -2px 0 0' }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/getsatisfaction.png', style: 'vertical-align: middle;margin: -2px 0 0; width: 16px;height: 16px;' }),
                     ' Get Satisfaction'
                   ])
                 ])

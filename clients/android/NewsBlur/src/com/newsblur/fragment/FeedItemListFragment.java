@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.widget.CursorAdapter;
@@ -29,14 +28,9 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class FeedItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private String feedId;
-	private int currentState;
-
-	public static int ITEMLIST_LOADER = 0x01;
-	
-    private StoryOrder storyOrder;
 
     public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
@@ -114,37 +108,16 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		return cursorLoader;
 	}
 
-	public void hasUpdated() {
-        if (isAdded()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-		requestedPage = false;
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
-	}
-
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FeedReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(Reading.EXTRA_FEED, feedId);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
-
-	public void changeState(int state) {
-		currentState = state;
-		hasUpdated();
-	}
-
-    @Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 }

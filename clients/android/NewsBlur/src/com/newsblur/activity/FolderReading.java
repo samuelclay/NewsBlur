@@ -24,7 +24,7 @@ public class FolderReading extends Reading {
         folderName = getIntent().getStringExtra(Reading.EXTRA_FOLDERNAME);
         setTitle(folderName);       
 
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, null);
 
         getLoaderManager().initLoader(0, null, this);
     }
@@ -40,11 +40,6 @@ public class FolderReading extends Reading {
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
         return new CursorLoader(this, FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(PrefsUtils.getStoryOrderForFolder(this, folderName)));
-    }
-
-    @Override
-    protected void triggerRefresh(int page) {
-        FeedUtils.updateFeeds(this, this, feedIds, page, PrefsUtils.getStoryOrderForFolder(this, folderName), PrefsUtils.getReadFilterForFolder(this, folderName));
     }
 
 }

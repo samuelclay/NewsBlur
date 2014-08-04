@@ -18,6 +18,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ import com.newsblur.network.SetupCommentSectionTask;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageCache;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
@@ -55,7 +57,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import java.util.HashSet;
+import java.util.Set;
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
@@ -82,10 +85,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
     private DefaultFeedView selectedFeedView;
     private String originalText;
     private HashMap<String,String> imageAltTexts;
+    private HashMap<String,String> imageUrlRemaps;
+    private String sourceUserId;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, DefaultFeedView defaultFeedView) {
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, DefaultFeedView defaultFeedView, String sourceUserId) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -99,6 +104,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
         args.putSerializable("defaultFeedView", defaultFeedView);
+        args.putString("sourceUserId", sourceUserId);
 		readingFragment.setArguments(args);
 
 		return readingFragment;
@@ -136,6 +142,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		classifier = (Classifier) getArguments().getSerializable("classifier");
 
         selectedFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
+
+        sourceUserId = getArguments().getString("sourceUserId");
 
 		receiver = new TextSizeReceiver();
 		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
@@ -286,9 +294,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			@Override
 			public void onClick(View v) {
                 if (story.starred) {
-                    FeedUtils.unsaveStory(story, activity, apiManager, activity);
+                    FeedUtils.unsaveStory(story, activity, apiManager);
                 } else {
-				    FeedUtils.saveStory(story, activity, apiManager, activity);
+				    FeedUtils.saveStory(story, activity, apiManager);
                 }
 			}
 		});
@@ -323,7 +331,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		shareButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story, previouslySavedShareText);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story, previouslySavedShareText, sourceUserId);
 				newFragment.show(getFragmentManager(), "dialog");
 			}
 		});
@@ -478,6 +486,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             // activity.  If this happens, just abort the call.
             return;
         }
+
+        sniffAltTexts(storyText);
+
+        if (PrefsUtils.isLoadOfflineImages(getActivity())) {
+            storyText = swapInOfflineImages(storyText);
+        } 
+
 		float currentSize = PrefsUtils.getTextSize(getActivity());
 
 		StringBuilder builder = new StringBuilder();
@@ -496,20 +511,37 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
 
+	}
+
+    private void sniffAltTexts(String html) {
         // Find images with alt tags and cache the text for use on long-press
         //   NOTE: if doing this via regex has a smell, you have a good nose!  This method is far from perfect
         //   and may miss valid cases or trucate tags, but it works for popular feeds (read: XKCD) and doesn't
         //   require us to import a proper parser lib of hundreds of kilobytes just for this one feature.
         imageAltTexts = new HashMap<String,String>();
-        Matcher imgTagMatcher1 = Pattern.compile("<img[^>]*src=\"([^\"]*)\"[^>]*alt=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(storyText);
+        Matcher imgTagMatcher1 = Pattern.compile("<img[^>]*src=\"([^\"]*)\"[^>]*alt=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
         while (imgTagMatcher1.find()) {
             imageAltTexts.put(imgTagMatcher1.group(1), imgTagMatcher1.group(2));
         }
-        Matcher imgTagMatcher2 = Pattern.compile("<img[^>]*alt=\"([^\"]*)\"[^>]*src=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(storyText);
+        Matcher imgTagMatcher2 = Pattern.compile("<img[^>]*alt=\"([^\"]*)\"[^>]*src=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
         while (imgTagMatcher2.find()) {
             imageAltTexts.put(imgTagMatcher2.group(2), imgTagMatcher2.group(1));
         }
-	}
+    }
+
+    private String swapInOfflineImages(String html) {
+        ImageCache cache = new ImageCache(getActivity());
+
+        Matcher imageTagMatcher = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
+        while (imageTagMatcher.find()) {
+            String url = imageTagMatcher.group(2);
+            String localPath = cache.getCachedLocation(url);
+            if (localPath == null) continue;
+            html = html.replace(imageTagMatcher.group(1)+"\""+url+"\"", "src=\""+localPath+"\"");
+        }
+
+        return html;
+    }
 
 	private class TextSizeReceiver extends BroadcastReceiver {
 		@Override

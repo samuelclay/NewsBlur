@@ -2048,12 +2048,12 @@ class MStory(mongo.Document):
         self.image_urls = image_urls
         return self.image_urls
 
-    def fetch_original_text(self, force=False, request=None):
+    def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, feed=feed, request=request)
+            ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
@@ -2176,12 +2176,12 @@ class MStarredStory(mongo.Document):
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id or "0", self.guid_hash)
     
-    def fetch_original_text(self, force=False, request=None):
+    def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, feed, request=request)
+            ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
@@ -2311,8 +2311,11 @@ class MStarredStoryCounts(mongo.Document):
             params['tag'] = tag
 
         cls.objects(**params).update_one(inc__count=amount, upsert=True)
-        story_count = cls.objects.get(**params)
-        if story_count.count <= 0:
+        try:
+            story_count = cls.objects.get(**params)
+        except cls.MultipleObjectsReturned:
+            story_count = cls.objects(**params).first()
+        if story_count and story_count.count <= 0:
             story_count.delete()
 
 

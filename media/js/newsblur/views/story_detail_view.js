@@ -216,16 +216,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             <div class="NB-feed-story-sideoptions-container">\
                 <div class="NB-sideoption NB-feed-story-train">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title">Train this story</div>\
+                    <div class="NB-sideoption-title">Train <span>this story</span></div>\
                 </div>\
                 <div class="NB-sideoption NB-feed-story-save">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
+                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save <span>this story</span>" %></div>\
                 </div>\
                 <%= story_save_view %>\
                 <div class="NB-sideoption NB-feed-story-share">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
+                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share <span>this story</span>" %></div>\
                 </div>\
                 <%= story_share_view %>\
             </div>\

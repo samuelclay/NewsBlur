@@ -47,5 +47,14 @@ public class PrefConstants {
 
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
 
+    public static final String ENABLE_OFFLINE = "enable_offline";
+    public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
+    public static final String NETWORK_SELECT = "offline_network_select";
+    public static final String KEEP_OLD_STORIES = "keep_old_stories";
+
+    public static final String NETWORK_SELECT_ANY = "ANY";
+    public static final String NETWORK_SELECT_NOMO = "NOMO";
+
     public static final String THEME = "theme";
+
 }
