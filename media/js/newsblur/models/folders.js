@@ -322,8 +322,13 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
 }, {
 
     comparator: function(modelA, modelB) {
-        var sort_order = NEWSBLUR.assets.preference('feed_order');
-
+        // toUpperCase for historical reasons
+        var sort_order = NEWSBLUR.assets.preference('feed_order').toUpperCase();
+        
+        if (NEWSBLUR.Collections.Folders.organizer_sortorder) {
+            sort_order = NEWSBLUR.Collections.Folders.organizer_sortorder.toUpperCase();
+        }
+        
         if (modelA.is_feed() != modelB.is_feed()) {
             // Feeds above folders
             return modelA.is_feed() ? -1 : 1;
@@ -346,6 +351,18 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
             return feedA.get('feed_opens') < feedB.get('feed_opens') ? 1 : 
                 (feedA.get('feed_opens') > feedB.get('feed_opens') ? -1 : 
                 (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1));
+        } else if (sort_order == 'RECENCY') {
+            return feedA.get('last_story_date') < feedB.get('last_story_date') ? 1 : 
+                (feedA.get('last_story_date') > feedB.get('last_story_date') ? -1 : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1));            
+        } else if (sort_order == 'FREQUENCY') {
+            return feedA.get('average_stories_per_month') < feedB.get('average_stories_per_month') ? 1 : 
+                (feedA.get('average_stories_per_month') > feedB.get('average_stories_per_month') ? -1 : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1)); 
+        } else if (sort_order == 'SUBSCRIBERS') {
+            return feedA.get('num_subscribers') < feedB.get('num_subscribers') ? 1 : 
+                (feedA.get('num_subscribers') > feedB.get('num_subscribers') ? -1 : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1)); 
         }
     }
 

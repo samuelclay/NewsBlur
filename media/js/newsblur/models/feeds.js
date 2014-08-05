@@ -199,27 +199,18 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     },
     
     relative_last_story_date: function() {
-        var dateformat = NEWSBLUR.assets.preference('dateformat');
-        var date = new Date(this.get('last_story_date'));
-        var midnight_today = function() {
-            var midnight = new Date();
-            midnight.setHours(0);
-            midnight.setMinutes(0);
-            midnight.setSeconds(0);
-            return midnight;
-        };
-        var midnight_yesterday = function(midnight) {
-            return new Date(midnight - 60*60*24*1000);
-        };
-        var midnight = midnight_today();
-        var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
+        var diff = this.get('last_story_seconds_ago');
+        var lasthour = 60*60;
+        var lastday = 24*60*60;
 
-        if (date > midnight) {
-            return time;
-        } else if (date > midnight_yesterday(midnight)) {
-            return "Yesterday, " + time;
+        if (diff > 1000*60*60*24*365*10 || diff <= 0) {
+            return "Never";
+        } else if (diff < lasthour) {
+            return Inflector.pluralize("minute", Math.floor(diff/60), true) + " ago";
+        } else if (diff < lastday) {
+            return Inflector.pluralize("hour", Math.floor(diff/60/60), true) + " ago";
         } else {
-            return date.format("d M Y");
+            return Inflector.pluralize("day", Math.floor(diff/60/60/24), true) + " ago";
         }
     }
     

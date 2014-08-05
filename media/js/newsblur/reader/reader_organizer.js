@@ -1,6 +1,7 @@
 NEWSBLUR.ReaderOrganizer = function(user_id, options) {
     var defaults = {
         width: 800,
+        sorting: 'alphabetical',
         onOpen: _.bind(function() {
             this.resize_modal();
         }, this)
@@ -31,19 +32,40 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                 $.make('div', { className: 'NB-icon' }),
                 'Organize sites'
             ]),
+            $.make('div', { className: 'NB-organizer-actionbar' }, [
+                $.make('div', { className: 'NB-organizer-sorts' }, [
+                    $.make('div', { className: 'NB-organizer-action-title' }, 'Sort '),
+                    $.make('div', { className: 'NB-organizer-action NB-action-alphabetical NB-active' }, 'Name'),
+                    $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, 'Subs'),
+                    $.make('div', { className: 'NB-organizer-action NB-action-frequency' }, 'Frequency'),
+                    $.make('div', { className: 'NB-organizer-action NB-action-recency' }, 'Recency'),
+                    $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, 'Use')
+                ]),
+                $.make('div', { className: 'NB-organizer-selects' }, [
+                    $.make('div', { className: 'NB-organizer-action-title' }, 'Select'),
+                    $.make('div', { className: 'NB-organizer-action' }, 'All'),
+                    $.make('div', { className: 'NB-organizer-action' }, 'None'),
+                    $.make('div', { className: 'NB-organizer-action' }, 'Invert')
+                ])
+            ]),
             this.make_feeds()
         ]);
     },
     
     resize_modal: function(previous_height) {
+        var resize_height = 0;
         var $feedlist = $('.NB-feedchooser', this.$modal);
-        var content_height = $feedlist.height() + 82;
+        var content_height = $feedlist.height() + 90;
         var container_height = this.$modal.parent().height();
         if (content_height > container_height && previous_height != content_height) {
             var chooser_height = $feedlist.height();
             var diff = Math.max(4, content_height - container_height);
-            $feedlist.css({'max-height': chooser_height - diff});
+            resize_height = chooser_height - diff;
+            $feedlist.css({'max-height': resize_height});
             _.defer(_.bind(function() { this.resize_modal(content_height); }, this), 1);
+        }
+        if (resize_height) {
+            this.options.resize = resize_height;
         }
     },
     
@@ -51,15 +73,21 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     // = Feed list =
     // =============
     
-    make_feeds: function() {
+    make_feeds: function(options) {
         var feeds = this.model.feeds;
         this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
-        
-        var $feeds = new NEWSBLUR.Views.FeedList({
+        NEWSBLUR.Collections.Folders.organizer_sortorder = this.options.sorting;
+        NEWSBLUR.assets.folders.sort();
+
+        this.feedlist = new NEWSBLUR.Views.FeedList({
             feed_chooser: true,
-            organizer: true
-        }).make_feeds().$el;
-        
+            organizer: true,
+            sorting: this.options.sorting
+        }).make_feeds();
+        var $feeds = this.feedlist.$el;
+        if (this.options.resize) {
+            $feeds.css({'max-height': this.options.resize});
+        }
         if ($feeds.data('sortable')) $feeds.data('sortable').disable();
         
         // Expand collapsed folders
@@ -78,7 +106,10 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         $('.unread_count_negative', $feeds).text('');
         
         $('.selected', $feeds).removeClass('selected');
-        
+
+        NEWSBLUR.Collections.Folders.organizer_sortorder = null;
+        NEWSBLUR.assets.folders.sort();
+
         return $feeds;
     },
     
@@ -98,7 +129,19 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     select_feed: function(feed) {
         feed.set('organizer_selected', true);
     },
+    
+    // ===========
+    // = Sorting =
+    // ===========
+    
+    change_sort: function(sorting) {
+        this.options.sorting = sorting;
+        
+        $(".NB-action-"+sorting, this.$modal).addClass('NB-active').siblings().removeClass('NB-active');
 
+        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -111,6 +154,13 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             
             var feed_id = parseInt($t.attr('data-id'), 10);
             this.toggle_feed(feed_id);
+        }, this));
+        $.targetIs(e, { tagSelector: '.NB-organizer-action', childOf: '.NB-organizer-sorts' },
+                   _.bind(function($t, $p) {
+            e.preventDefault();
+            
+            var sort = $t.attr('class').match(/\bNB-action-(\w+)\b/)[1];
+            this.change_sort(sort);
         }, this));
         
     }

@@ -118,7 +118,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                 <%= feed.relative_last_story_date() %>\
               </div>\
               <div class="NB-feed-organizer-sort NB-feed-organizer-monthlycount">\
-                <%= pluralize("story", feed.get("average_stories_per_month"), true) %> per month\
+                <%= pluralize("story", feed.get("average_stories_per_month"), true) %>/month\
               </div>\
               <div class="NB-feed-organizer-sort NB-feed-organizer-opens">\
                 <%= pluralize("open", feed.get("feed_opens"), true) %>\

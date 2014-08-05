@@ -10826,7 +10826,8 @@ form.opml_import_form input {
     width: 70%;
     max-height: 500px;
     border: 1px solid rgba(0, 0, 0, .2);
-    margin: 24px 24px 0 0;
+    margin: 4px 24px 0 0;
+    clear: both;
 }
 .NB-modal-organizer .NB-feedlist .feed_title {
     padding-right: 186px;
@@ -10847,13 +10848,72 @@ form.opml_import_form input {
     background-repeat: no-repeat;
 }
 .NB-modal-organizer .NB-feed-organizer-sort {
-/*    display: none;*/
+    display: none;
     position: absolute;
     right: 42px;
+    width: 124px;
     top: 4px;
+}
+.NB-modal-organizer .NB-sort-alphabetical .NB-feed-organizer-opens {
+    display: block;
+}
+.NB-modal-organizer .NB-sort-subscribers .NB-feed-organizer-subscribers {
+    display: block;
+}
+.NB-modal-organizer .NB-sort-recency .NB-feed-organizer-laststory {
+    display: block;
+}
+.NB-modal-organizer .NB-sort-frequency .NB-feed-organizer-monthlycount {
+    display: block;
+}
+.NB-modal-organizer .NB-sort-mostused .NB-feed-organizer-opens {
+    display: block;
 }
 .NB-modal-organizer .NB-feed-organizer-sort.NB-active {
     display: block;
+}
+.NB-modal-organizer .NB-organizer-actionbar {
+    font-size: 12px;
+    line-height: 18px;
+    margin: 12px 0 0 0;
+    width: 70%;
+    overflow: hidden;
+}
+.NB-modal-organizer .NB-organizer-sorts {
+    float: right;
+}
+.NB-modal-organizer .NB-organizer-selects {
+    float: left;
+}
+.NB-modal-organizer .NB-organizer-action-title {
+    float: left;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: bold;
+}
+.NB-modal-organizer .NB-organizer-action {
+    float: left;
+    margin-left: 6px;
+    cursor: pointer;
+    color: #405BA8;
+    text-transform: uppercase;
+}
+.NB-modal-organizer .NB-organizer-action:hover {
+    color: #A85B40;
+}
+.NB-modal-organizer .NB-organizer-action.NB-active,
+.NB-modal-organizer .NB-organizer-action.NB-active:hover {
+    color: #000;
+    cursor: default;
+}
+.NB-modal-organizer .NB-organizer-selects .NB-organizer-action {
+    float: left;
+    margin-left: 0;
+    margin-right: 6px;
+}
+.NB-modal-organizer .NB-organizer-selects .NB-organizer-action-title {
+    margin-left: 0;
+    margin-right: 6px;
 }
 
 /* ================= */

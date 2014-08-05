@@ -41,6 +41,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             if (!this.options.feedbar) {
                 this.model.folder_view = this;
             }
+        } else if (this.options.feed_chooser) {
+            this.collection.sort();
         }
     },
     
@@ -69,6 +71,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var folder_title = this.options.folder_title;
         var feed_chooser = this.options.feed_chooser;
         var organizer = this.options.organizer;
+        var sorting = this.options.sorting;
         var folder_collection = this.collection;
         this.options.collapsed =  folder_title && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title);
         var $folder = this.render_folder();
@@ -84,7 +87,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         folder_title: folder_title,
                         folder: folder_collection,
                         feed_chooser: feed_chooser,
-                        organizer: organizer
+                        organizer: organizer,
+                        sorting: sorting
                     }).render();
                     item.feed.views.push(feed_title_view);
                     item.feed.folders.push(folder_collection);
@@ -95,7 +99,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         collection: item.folders,
                         depth: depth + 1,
                         feed_chooser: feed_chooser,
-                        organizer: organizer
+                        organizer: organizer,
+                        sorting: sorting
                     }).render();
                     item.folder_views.push(folder_view);
                     return folder_view.el;

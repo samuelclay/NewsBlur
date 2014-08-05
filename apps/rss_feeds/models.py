@@ -153,6 +153,7 @@ class Feed(models.Model):
             'updated': relative_timesince(self.last_update),
             'updated_seconds_ago': seconds_timesince(self.last_update),
             'last_story_date': self.last_story_date,
+            'last_story_seconds_ago': seconds_timesince(self.last_story_date),
             'stories_last_month': self.stories_last_month,
             'average_stories_per_month': self.average_stories_per_month,
             'min_to_decay': self.min_to_decay,
