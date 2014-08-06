@@ -53,6 +53,7 @@
     <color name="dark_story_date_unread">#DFDDCF</color>
     <color name="story_date_read">#BABDD1</color>
     <color name="story_comment_divider">#F0F0F0</color>
+    <color name="dark_story_comment_divider">#42453E</color>
     
     <color name="twitter_blue">#4099FF</color>
     <color name="facebook_blue">#3B5998</color>
