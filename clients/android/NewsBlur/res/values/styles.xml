@@ -241,4 +241,12 @@
     <style name="itemHeaderDivider.dark">
         <item name="android:background">@drawable/dark_divider_item_header</item>
     </style>
+
+    <style name="storyCommentDivider">
+        <item name="android:background">@color/story_comment_divider</item>
+    </style>
+
+    <style name="storyCommentDivider.dark">
+        <item name="android:background">@color/dark_story_comment_divider</item>
+    </style>
 </resources>
