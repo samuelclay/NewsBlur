@@ -19,6 +19,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-options"                 : "open_options_popover",
         "click .NB-story-title-indicator"           : "show_hidden_story_titles",
         "click"                                     : "open",
+        "mousedown"                                 : "highlight_event",
         "mouseenter"                                : "add_hover_inverse",
         "mouseleave"                                : "remove_hover_inverse"
     },
@@ -49,7 +50,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         var only_selected_changed = !_.any(changes, function(key) { 
             return key != 'selected';
         });
-        
+
         if (only_counts_changed) {
             this.add_extra_classes();
             if (!options.instant) this.flash_changes();
@@ -76,7 +77,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     render: function() {
         var feed = this.model;
         var extra_classes = this.extra_classes();
-        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %> <% if (disable_hover) { %>NB-no-hover<% } %>" data-id="<%= feed.id %>">\
+        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (highlighted) { %>NB-highlighted<% } %> <% if (toplevel) { %>NB-toplevel<% } %> <% if (disable_hover) { %>NB-no-hover<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
           <% if (type == "story") { %>\
@@ -133,17 +134,19 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
           selected            : this.model.get('selected'),
+          highlighted         : this.options.feed_chooser &&
+                                this.model.highlighted_in_folder(this.options.folder_title),
           organizer           : this.options.organizer,
           pluralize           : Inflector.pluralize
         }));
-
+        
         if (this.options.type == 'story') {
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
             $(".NB-search-container", $feed).html(this.search_view.$el);
         }
-        
+
         this.$el.replaceWith($feed);
         this.setElement($feed);
         this.render_counts();
@@ -280,8 +283,18 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     // = Events =
     // ==========
     
+    click: function(e) {
+        this.highlight();
+        this.open(e);
+    },
+    
     open: function(e, options) {
         options = options || {};
+        if (this.options.feed_chooser) return;
+        if (this.options.type != 'feed') return;
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
+
         if (!options.ignore_double_click && $(e.target).closest('.feed_counts').length) {
             _.delay(_.bind(function() {
                 if (!this.flags.double_click) {
@@ -290,12 +303,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             }, this), 250);
             return;
         }
+
         e.preventDefault();
         e.stopPropagation();
-        if (this.options.feed_chooser) return;
-        if (this.options.type != 'feed') return;
-        if (e.which >= 2) return;
-        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
         
         if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
@@ -310,6 +320,19 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         } else {
             NEWSBLUR.reader.open_feed(this.model.id, {$feed: this.$el});
         }
+    },
+    
+    highlight_event: function(e) {
+        return this.highlight();
+    },
+    
+    highlight: function(on, off) {
+        if (!this.options.feed_chooser) return;
+        
+        this.model.highlight_in_folder(this.options.folder_title, on, off);
+        
+        // Feed chooser disables binding to changes, so need to manually render.
+        this.render();
     },
     
     open_feed_link: function(e) {

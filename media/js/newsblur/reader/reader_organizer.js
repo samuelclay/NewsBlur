@@ -117,18 +117,6 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     // = Selecting =
     // =============
     
-    toggle_feed: function(feed_id) {
-        var feed = NEWSBLUR.assets.get_feed(feed_id);
-        if (feed.get('organizer_selected')) {
-            this.deselect_feed(feed);
-        } else {
-            this.select_feed(feed);
-        }
-    },
-    
-    select_feed: function(feed) {
-        feed.set('organizer_selected', true);
-    },
     
     // ===========
     // = Sorting =
@@ -149,12 +137,6 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     handle_click: function(elem, e) {
         var self = this;
 
-        $.targetIs(e, { tagSelector: '.feed' }, _.bind(function($t, $p) {
-            e.preventDefault();
-            
-            var feed_id = parseInt($t.attr('data-id'), 10);
-            this.toggle_feed(feed_id);
-        }, this));
         $.targetIs(e, { tagSelector: '.NB-organizer-action', childOf: '.NB-organizer-sorts' },
                    _.bind(function($t, $p) {
             e.preventDefault();

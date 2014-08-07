@@ -599,7 +599,8 @@ a img {
   top: 2px;
   display: none;
 }
-#feed_list .feed.NB-feed-exception .NB-feed-exception-icon {
+#feed_list .feed.NB-feed-exception .NB-feed-exception-icon,
+.NB-modal-organizer .feed.NB-feed-exception .NB-feed-exception-icon {
     display: block;
 }
 .NB-feedlist .feed .NB-feed-highlight {
@@ -10839,9 +10840,26 @@ form.opml_import_form input {
 .NB-modal-organizer .NB-feedlist .folder .folder_title .feed_counts_floater {
     display: none;
 }
+.NB-modal-organizer .NB-feedlist .feed.NB-feed-exception .feed_counts {
+    display: block;
+}
+.NB-modal-organizer .feed.NB-highlighted .NB-feed-exception-icon {
+    display: none;
+}
+.NB-modal-organizer .feed {
+    font-weight: normal;
+}
+.NB-modal-organizer .NB-highlighted {
+    font-weight: bold;
+}
 .NB-modal-organizer .unread_count.unread_count_positive.unread_count_full {
+    display: none;
+}
+.NB-modal-organizer .NB-highlighted .unread_count.unread_count_positive {
+    display: block;
     width: 24px;
     height: 13px;
+    text-indent: -9999px;
     background-image: url('/media/embed/icons/circular/checkmark_white.png');
     background-size: 16px;
     background-position: center center;

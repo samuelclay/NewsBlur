@@ -212,6 +212,28 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         } else {
             return Inflector.pluralize("day", Math.floor(diff/60/60/24), true) + " ago";
         }
+    },
+    
+    highlighted_in_folder: function(folder_title) {
+        return !!(this.get('highlighted') && 
+                  this.get('highlighted_in_folders') &&
+                  _.contains(this.get('highlighted_in_folders'), folder_title));
+    },
+    
+    highlight_in_folder: function(folder_title, on, off) {
+        if (!this.get('highlighted_in_folders')) {
+            this.set('highlighted_in_folders', [], {silent: true});
+        }
+        
+        if (!off && (on || !_.contains(this.get('highlighted_in_folders'), folder_title))) {
+            this.set('highlighted_in_folders', 
+                      this.get('highlighted_in_folders').concat(folder_title), {silent: true});
+        } else {
+            this.set('highlighted_in_folders', 
+                     _.without(this.get('highlighted_in_folders'), folder_title), {silent: true});
+        }
+        
+        this.set('highlighted', !!this.get('highlighted_in_folders').length, {silent: true});
     }
     
 });
