@@ -20,6 +20,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days",
         "click .NB-feedbar-options"                 : "open_options_popover",
         "click .NB-story-title-indicator"           : "show_hidden_story_titles",
+        "mousedown .folder_title"                   : "highlight_feeds",
         "mouseenter"                                : "add_hover_inverse",
         "mouseleave"                                : "remove_hover_inverse"
     },
@@ -80,18 +81,25 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             var $feeds = _.compact(this.collection.map(function(item) {
                 if (item.is_feed()) {
                     if (!feed_chooser && !item.feed.get('active')) return;
-                    var feed_title_view = new NEWSBLUR.Views.FeedTitleView({
-                        model: item.feed, 
-                        type: 'feed',
-                        depth: depth,
-                        folder_title: folder_title,
-                        folder: folder_collection,
-                        feed_chooser: feed_chooser,
-                        organizer: organizer,
-                        sorting: sorting
-                    }).render();
-                    item.feed.views.push(feed_title_view);
-                    item.feed.folders.push(folder_collection);
+                    var feed_title_view = _.detect(item.feed.views, function(view) {
+                        if (view.options.feed_chooser == feed_chooser) {
+                            return view;
+                        }
+                    });
+                    if (!feed_title_view) {
+                        feed_title_view = new NEWSBLUR.Views.FeedTitleView({
+                            model: item.feed, 
+                            type: 'feed',
+                            depth: depth,
+                            folder_title: folder_title,
+                            folder: folder_collection,
+                            feed_chooser: feed_chooser,
+                            organizer: organizer,
+                            sorting: sorting
+                        }).render();
+                        item.feed.views.push(feed_title_view);
+                        item.feed.folders.push(folder_collection);
+                    }
                     return feed_title_view.el;
                 } else if (item.is_folder()) {
                     var folder_view = new NEWSBLUR.Views.Folder({
@@ -380,6 +388,43 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 }
             });
         }
+    },
+    
+    all_children_highlighted: function() {
+        var folder_title = this.options.folder_title;
+        var all_children_highlighted = this.collection.all(function(item) {
+            if (item.is_feed()) {
+                return item.feed.highlighted_in_folder(folder_title);
+            }
+            return true;
+        });
+        
+        return all_children_highlighted;
+    },
+    
+    highlight_feeds: function() {
+        if (!this.options.feed_chooser) return;
+        var all_children_highlighted = this.all_children_highlighted();
+        var folder_title = this.options.folder_title;
+
+        this.collection.each(function(item) {
+            if (item.is_feed()) {
+                var view = _.detect(item.feed.views, function(view) {
+                    if (view.options.feed_chooser &&
+                        view.options.folder_title == folder_title) {
+                        return view;
+                    }
+                });
+                
+                if (!view) return;
+                
+                if (all_children_highlighted) {
+                    view.highlight(false, true);
+                } else {
+                    view.highlight(true, false);
+                }
+            }
+        });
     },
     
     mark_folder_as_read: function(e, days_back) {

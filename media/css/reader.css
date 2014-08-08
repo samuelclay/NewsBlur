@@ -10846,6 +10846,11 @@ form.opml_import_form input {
 .NB-modal-organizer .feed.NB-highlighted .NB-feed-exception-icon {
     display: none;
 }
+.NB-modal-organizer .feed.selected {
+    background: none;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+}
 .NB-modal-organizer .feed {
     font-weight: normal;
 }
