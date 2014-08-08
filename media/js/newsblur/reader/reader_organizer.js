@@ -101,11 +101,6 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
         // Make sure all folders are visible
         $('.NB-folder.NB-hidden', $feeds).removeClass('NB-hidden');
-        
-        $('.unread_count_positive', $feeds).text('');
-        $('.unread_count_negative', $feeds).text('');
-        
-        $('.selected', $feeds).removeClass('selected');
 
         NEWSBLUR.Collections.Folders.organizer_sortorder = null;
         NEWSBLUR.assets.folders.sort();
