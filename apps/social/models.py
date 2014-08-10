@@ -339,7 +339,7 @@ class MSocialProfile(mongo.Document):
                 self.photo_url = 'http:' + self.photo_url
             return self.photo_url
         domain = Site.objects.get_current().domain
-        return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
+        return 'https://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
     def canonical(self, compact=False, include_follows=False, common_follows_with_user=None,
                   include_settings=False, include_following_user=None):
@@ -2423,7 +2423,7 @@ class MSocialServices(mongo.Document):
         facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
         self.facebook_friend_ids = facebook_friend_ids
         self.facebook_refresh_date = datetime.datetime.utcnow()
-        self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
+        self.facebook_picture_url = "https://graph.facebook.com/%s/picture" % self.facebook_uid
         self.syncing_facebook = False
         self.save()
         
