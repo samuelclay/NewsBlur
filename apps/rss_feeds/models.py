@@ -116,7 +116,7 @@ class Feed(models.Model):
     @property
     def favicon_url(self):
         if settings.BACKED_BY_AWS['icons_on_s3'] and self.s3_icon:
-            return "http://%s/%s.png" % (settings.S3_ICONS_BUCKET_NAME, self.pk)
+            return "https://s3.amazonaws.com/%s/%s.png" % (settings.S3_ICONS_BUCKET_NAME, self.pk)
         return reverse('feed-favicon', kwargs={'feed_id': self.pk})
     
     @property
