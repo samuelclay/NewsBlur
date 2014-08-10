@@ -36,6 +36,6 @@ app.get /^\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
                 res.send new Buffer(docs.data, 'base64'), 
                     "Content-Type": "image/png"
         else
-            res.redirect '/media/img/icons/circular/world.png' 
+            res.redirect 'https://www.newsblur.com/media/img/icons/circular/world.png' 
 
 app.listen 3030

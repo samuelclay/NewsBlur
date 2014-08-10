@@ -59,7 +59,7 @@
           "Content-Type": "image/png"
         });
       } else {
-        return res.redirect('/media/img/icons/circular/world.png');
+        return res.redirect('https://www.newsblur.com/media/img/icons/circular/world.png');
       }
     });
   });
