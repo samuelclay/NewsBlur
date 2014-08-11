@@ -43,9 +43,8 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                 ]),
                 $.make('div', { className: 'NB-organizer-selects' }, [
                     $.make('div', { className: 'NB-organizer-action-title' }, 'Select'),
-                    $.make('div', { className: 'NB-organizer-action' }, 'All'),
-                    $.make('div', { className: 'NB-organizer-action' }, 'None'),
-                    $.make('div', { className: 'NB-organizer-action' }, 'Invert')
+                    $.make('div', { className: 'NB-organizer-action NB-action-select-all' }, 'All'),
+                    $.make('div', { className: 'NB-organizer-action NB-action-select-none' }, 'None')
                 ])
             ]),
             this.make_feeds()
@@ -104,7 +103,10 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
         NEWSBLUR.Collections.Folders.organizer_sortorder = null;
         NEWSBLUR.assets.folders.sort();
-
+        
+        NEWSBLUR.assets.feeds.off('change:highlighted')
+                             .on('change:highlighted', _.bind(this.change_selection, this));
+        
         return $feeds;
     },
     
@@ -112,6 +114,24 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     // = Selecting =
     // =============
     
+    change_select: function(select) {
+        if (select == "all") {
+            this.feedlist.folder_view.highlight_feeds({force_highlight: true});
+        } else if (select == "none") {
+            this.feedlist.folder_view.highlight_feeds({force_deselect: true});
+        }
+    },
+    
+    change_selection: function() {
+        var $title = $(".NB-organizer-selects .NB-organizer-action-title", this.$modal);
+        
+        var count = this.feedlist.folder_view.highlighted_count();
+        if (!count) {
+            $title.text("Select");
+        } else {
+            $title.text(count + " selected");
+        }
+    },
     
     // ===========
     // = Sorting =
@@ -138,6 +158,14 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             
             var sort = $t.attr('class').match(/\bNB-action-(\w+)\b/)[1];
             this.change_sort(sort);
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-organizer-action', childOf: '.NB-organizer-selects' },
+                   _.bind(function($t, $p) {
+            e.preventDefault();
+            
+            var select = $t.attr('class').match(/\bNB-action-select-(\w+)\b/)[1];
+            this.change_select(select);
         }, this));
         
     }

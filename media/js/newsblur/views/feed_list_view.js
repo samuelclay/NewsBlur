@@ -58,18 +58,18 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         
         this.$el.empty();
         this.$s.$story_taskbar.css({'display': 'block'});
-        var $feeds = new NEWSBLUR.Views.Folder({
+        this.folder_view = new NEWSBLUR.Views.Folder({
             collection: folders, 
             root: true,
             feed_chooser: this.options.feed_chooser,
             organizer: this.options.organizer
-        }).render().el;
+        }).render();
         this.$el.css({
             'display': 'block', 
             'opacity': 0
         });
         this.$el.addClass("NB-sort-" + this.options.sorting);
-        this.$el.html($feeds);
+        this.$el.html(this.folder_view.el);
         this.$el.animate({'opacity': 1}, {'duration': 700});
         // this.count_collapsed_unread_stories();
         this.$s.$feed_link_loader.fadeOut(250, _.bind(function() {

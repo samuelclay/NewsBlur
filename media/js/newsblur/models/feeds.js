@@ -233,7 +233,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
                      _.without(this.get('highlighted_in_folders'), folder_title), {silent: true});
         }
         
-        this.set('highlighted', !!this.get('highlighted_in_folders').length, {silent: true});
+        this.set('highlighted', !!this.get('highlighted_in_folders').length);
     }
     
 });
