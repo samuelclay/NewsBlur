@@ -78,6 +78,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, savedCountCursor);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 
+
 	}
 
 	@Override
@@ -116,6 +117,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
         list.setAdapter(folderAdapter);
         list.setOnGroupClickListener(this);
         list.setOnChildClickListener(this);
+
+        // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
+        list.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
 
         return v;
     }

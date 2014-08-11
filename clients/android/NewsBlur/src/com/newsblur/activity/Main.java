@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -18,12 +20,11 @@ import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbActivity implements StateChangedListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
 
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
@@ -31,8 +32,9 @@ public class Main extends NbActivity implements StateChangedListener {
 	private Menu menu;
     private TextView overlayStatusText;
     private boolean isLightTheme;
+    private SwipeRefreshLayout swipeLayout;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
@@ -45,6 +47,14 @@ public class Main extends NbActivity implements StateChangedListener {
 
 		setContentView(R.layout.activity_main);
 		setupActionBar();
+
+        swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
+        // TODO Newsblur colours
+        swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        swipeLayout.setOnRefreshListener(this);
 
 		fragmentManager = getFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
@@ -127,10 +137,10 @@ public class Main extends NbActivity implements StateChangedListener {
 
     private void updateStatusIndicators() {
         if (NBSyncService.isFeedFolderSyncRunning()) {
-		    setProgressBarIndeterminateVisibility(true);
+            swipeLayout.setRefreshing(true);
             setRefreshEnabled(false);
         } else {
-		    setProgressBarIndeterminateVisibility(false);
+            swipeLayout.setRefreshing(false);
             setRefreshEnabled(true);
         }
 
@@ -153,6 +163,33 @@ public class Main extends NbActivity implements StateChangedListener {
             }
         }
     }
-            
 
+    @Override
+    public void onRefresh() {
+        NBSyncService.forceFeedsFolders();
+        triggerSync();
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        // not required
+    }
+
+    @Override
+    public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+        boolean enable = false;
+
+        if( absListView.getChildCount() > 0){
+            // check if the first item of the list is visible
+            boolean firstItemVisible = absListView.getFirstVisiblePosition() == 0;
+            // check if the top of the first item is visible
+            boolean topOfFirstItemVisible = absListView.getChildAt(0).getTop() == 0;
+            // enabling or disabling the refresh layout
+            enable = firstItemVisible && topOfFirstItemVisible;
+        }
+
+        if (swipeLayout != null) {
+            swipeLayout.setEnabled(enable);
+        }
+    }
 }
