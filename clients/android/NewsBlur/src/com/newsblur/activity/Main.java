@@ -49,11 +49,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		setupActionBar();
 
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
-        // TODO Newsblur colours
-        swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
         swipeLayout.setOnRefreshListener(this);
 
 		fragmentManager = getFragmentManager();

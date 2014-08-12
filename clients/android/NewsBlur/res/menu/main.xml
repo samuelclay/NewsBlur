@@ -4,7 +4,7 @@
     <item android:id="@+id/menu_refresh"
           android:icon="@drawable/barbutton_refresh"
           android:title="@string/menu_refresh"
-          android:showAsAction="always" />
+          android:showAsAction="never" />
     
     <item android:id="@+id/menu_profile"
           android:title="@string/menu_profile"
