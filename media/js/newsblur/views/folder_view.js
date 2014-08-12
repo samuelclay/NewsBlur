@@ -99,9 +99,13 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         }).render();
                         item.feed.views.push(feed_title_view);
                         item.feed.folders.push(folder_collection);
+                    } else {
+                        // Reusing feed titles in chooser needs re-rendering to attach events
+                        feed_title_view.render();
                     }
-                    return feed_title_view.el;
+                    return feed_title_view.el; 
                 } else if (item.is_folder()) {
+                    // Reuse old feed views from previous choosers
                     var folder_view = _.detect(item.folder_views, function(view) {
                         if (view.options.feed_chooser == feed_chooser) {
                             return view;
@@ -117,6 +121,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             sorting: sorting
                         }).render();
                         item.folder_views.push(folder_view);
+                    } else {
+                        // Reusing folders need to be re-sorted
+                        folder_view.collection.sort();
+                        folder_view.render();
                     }
                     return folder_view.el;
                 } else {
