@@ -102,15 +102,22 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     }
                     return feed_title_view.el;
                 } else if (item.is_folder()) {
-                    var folder_view = new NEWSBLUR.Views.Folder({
-                        model: item,
-                        collection: item.folders,
-                        depth: depth + 1,
-                        feed_chooser: feed_chooser,
-                        organizer: organizer,
-                        sorting: sorting
-                    }).render();
-                    item.folder_views.push(folder_view);
+                    var folder_view = _.detect(item.folder_views, function(view) {
+                        if (view.options.feed_chooser == feed_chooser) {
+                            return view;
+                        }
+                    });
+                    if (!folder_view) {
+                        folder_view = new NEWSBLUR.Views.Folder({
+                            model: item,
+                            collection: item.folders,
+                            depth: depth + 1,
+                            feed_chooser: feed_chooser,
+                            organizer: organizer,
+                            sorting: sorting
+                        }).render();
+                        item.folder_views.push(folder_view);
+                    }
                     return folder_view.el;
                 } else {
                     // console.log(["Not a feed or folder", item]);
@@ -471,6 +478,19 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         view.highlight_feeds({force_deselect: options.force_deselect});
                     }
                 });
+            }
+        });
+    },
+    
+    remove_chooser_folders: function() {
+        var views = [];
+        this.collection.each(function(view) {
+            console.log(["folder view", view, view.options && view.options.feed_chooser]);
+            if (view.is_feed() && !(view.options && view.options.feed_chooser)) {
+                views.push(view);
+            } else if (view.is_folder() && !(view.options && view.options.feed_chooser)) {
+                views.push(view);
+                view.remove_chooser_folders();
             }
         });
     },

@@ -77,7 +77,13 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
         NEWSBLUR.Collections.Folders.organizer_sortorder = this.options.sorting;
         NEWSBLUR.assets.folders.sort();
-
+        
+        if (this.feedlist) {
+            // Drop old feed chooser folders.
+            var views = [];
+            console.log(["drop old folders", this.feedlist]);
+            this.feedlist.folder_view.remove_chooser_folders();
+        }
         this.feedlist = new NEWSBLUR.Views.FeedList({
             feed_chooser: true,
             organizer: true,
