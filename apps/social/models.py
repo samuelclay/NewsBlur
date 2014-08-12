@@ -2591,7 +2591,10 @@ class MSocialServices(mongo.Document):
         print " ---> %s sharing user_ids" % len(sorted(sharers))
 
         for user_id in sharers:
-            profile = MSocialProfile.objects.get(user_id=user_id)
+            try:
+                profile = MSocialProfile.objects.get(user_id=user_id)
+            except MSocialProfile.DoesNotExist:
+                continue
             if not profile.photo_service == 'twitter': continue
             ss = MSocialServices.objects.get(user_id=user_id)
             try:
