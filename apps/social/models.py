@@ -2581,10 +2581,13 @@ class MSocialServices(mongo.Document):
         return profile
     
     @classmethod
-    def sync_all_twitter_photos(cls, days=14):
-        week_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-        shares = MSharedStory.objects.filter(shared_date__gte=week_ago)
-        sharers = sorted(set([s.user_id for s in shares]))
+    def sync_all_twitter_photos(cls, days=14, everybody=False):
+        if everybody:
+            sharers = [ss.user_id for ss in MSocialServices.objects.all().only('user_id')]
+        elif days:
+            week_ago = datetime.datetime.now() - datetime.timedelta(days=days)
+            shares = MSharedStory.objects.filter(shared_date__gte=week_ago)
+            sharers = sorted(set([s.user_id for s in shares]))
         print " ---> %s sharing user_ids" % len(sorted(sharers))
 
         for user_id in sharers:
