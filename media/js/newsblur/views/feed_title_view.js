@@ -328,7 +328,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     highlight: function(on, off) {
         if (!this.options.feed_chooser) return;
-        
         this.model.highlight_in_folder(this.options.folder_title, on, off);
         
         // Feed chooser disables binding to changes, so need to manually render.

@@ -82,7 +82,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 if (item.is_feed()) {
                     if (!feed_chooser && !item.feed.get('active')) return;
                     var feed_title_view = _.detect(item.feed.views, function(view) {
-                        if (view.options.feed_chooser == feed_chooser) {
+                        if (view.options.feed_chooser == feed_chooser &&
+                            view.options.folder_title == folder_title) {
                             return view;
                         }
                     });
