@@ -39,13 +39,12 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                     $.make('div', { className: 'NB-organizer-sidebar-container' }, [
                         NEWSBLUR.utils.make_folders(),
                         $.make('div', { className: 'NB-icon-add', title: "Add folder" }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, 'Move'),
-                        $.make('div', { className: 'NB-loading' }),
                         $.make('div', { className: "NB-add-folder NB-hidden" }, [
-                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-folder-submit' }, 'Add folder'),
-                            $.make('div', { className: 'NB-loading' }),
+                            $.make('div', { className: 'NB-icon-subfolder' }),
                             $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: "New folder name..." })
-                        ])
+                        ]),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, 'Move'),
+                        $.make('div', { className: 'NB-loading' })
                     ])
                 ]),
                 $.make('div', { className: 'NB-organizer-sidebar-delete' }, [
@@ -148,12 +147,18 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     
     change_selection: function() {
         var $title = $(".NB-organizer-selects .NB-organizer-action-title", this.$modal);
-        
+        var $move = $(".NB-action-move", this.$modal);
+        var $delete = $(".NB-action-delete", this.$modal);
         var count = this.feedlist.folder_view.highlighted_count();
+
+        $title.text(count ? count + " selected" : "Select");
+                
         if (!count) {
-            $title.text("Select");
+            $delete.text('Delete').addClass('NB-disabled');
+            $move.text('Move').addClass('NB-disabled');
         } else {
-            $title.text(count + " selected");
+            $delete.text('Delete ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
+            $move.text('Move ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
         }
     },
     
@@ -192,6 +197,27 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             this.change_select(select);
         }, this));
         
+        $.targetIs(e, { tagSelector: '.NB-icon-add' },
+                   _.bind(function($t, $p) {
+            e.preventDefault();
+            
+            this.toggle_folder_add();
+        }, this));
+    },
+
+    toggle_folder_add: function() {
+        var $folder = $(".NB-add-folder", this.$modal);
+        var $icon = $(".NB-icon-add", this.$modal);
+
+        if (this._open_folder) {
+            $folder.slideUp(300);
+            $icon.removeClass('NB-active');
+            this._open_folder = false;
+        } else {
+            this._open_folder = true;
+            $icon.addClass('NB-active');
+            $folder.slideDown(300);
+        }
     }
     
 });

@@ -10969,6 +10969,9 @@ form.opml_import_form input {
     text-align: center;
     margin: 6px 0 0;
 }
+.NB-modal-organizer .NB-action-delete {
+    margin-top: 0;
+}
 .NB-modal-organizer .NB-folders {
     width: 164px;
 }
@@ -10984,6 +10987,19 @@ form.opml_import_form input {
 .NB-modal-organizer .NB-icon-add:hover {
     background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;
     background-size: 16px;
+}
+.NB-modal-organizer .NB-icon-subfolder {
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 0 0;
+    float: left;
+    width: 8px;
+    height: 8px;
+    margin: 12px 6px 0 4px;
+    background-size: 8px;    
+}
+.NB-modal-organizer .NB-add-folder-input {
+    font-size: 11px;
+    width: 140px;
+    margin: 6px 0 2px;
 }
 
 /* ================= */
