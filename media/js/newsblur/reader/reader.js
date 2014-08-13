@@ -2955,27 +2955,27 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything as read'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-trainer' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters')
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want')
                     ])),
                     (NEWSBLUR.Globals.is_premium && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mute Sites'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Temporarily turn off feeds.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Temporarily turn off feeds')
                     ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-organizer' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Organize Sites'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Move, delete, and batch actions.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Cleanup and rearrange feeds')
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

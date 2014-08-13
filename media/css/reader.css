@@ -10828,7 +10828,6 @@ form.opml_import_form input {
     max-height: 500px;
     border: 1px solid rgba(0, 0, 0, .2);
     margin: 4px 24px 0 0;
-    clear: both;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -10943,6 +10942,48 @@ form.opml_import_form input {
 .NB-modal-organizer .NB-organizer-selects .NB-organizer-action-title {
     margin-left: 0;
     margin-right: 6px;
+}
+
+.NB-modal-organizer .NB-organizer-sidebar {
+    float: right;
+    width: 27%;
+    margin: 12px 0 0;
+}
+.NB-modal-organizer .NB-organizer-sidebar-title {
+    text-transform: uppercase;
+    font-size: 11px;
+    line-height: 18px;
+    font-weight: bold;
+    margin-top: 12px;
+}
+.NB-modal-organizer .NB-organizer-sidebar-move .NB-organizer-sidebar-title {
+    margin-top: 0;
+} 
+.NB-modal-organizer .NB-organizer-sidebar-container {
+    margin: 4px 0 0;
+    border: 1px solid rgba(0, 0, 0, .2);
+    background-color: #F7F8F5;
+    padding: 6px;
+}
+.NB-modal-organizer .NB-modal-submit-button {
+    text-align: center;
+    margin: 6px 0 0;
+}
+.NB-modal-organizer .NB-folders {
+    width: 164px;
+}
+.NB-modal-organizer .NB-icon-add {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add.png') no-repeat 0 0;
+    float: right;
+    width: 16px;
+    height: 16px;
+    margin: 4px 4px 0;
+    cursor: pointer;
+    background-size: 16px;
+}
+.NB-modal-organizer .NB-icon-add:hover {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 /* ================= */

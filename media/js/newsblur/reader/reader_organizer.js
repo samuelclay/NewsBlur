@@ -30,13 +30,37 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-icon' }),
-                'Organize sites'
+                'Organize sites',
+                $.make('div', { className: 'NB-icon-dropdown' })
+            ]),
+            $.make('div', { className: 'NB-organizer-sidebar'}, [
+                $.make('div', { className: 'NB-organizer-sidebar-move' }, [
+                    $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Move to folder'),
+                    $.make('div', { className: 'NB-organizer-sidebar-container' }, [
+                        NEWSBLUR.utils.make_folders(),
+                        $.make('div', { className: 'NB-icon-add', title: "Add folder" }),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, 'Move'),
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('div', { className: "NB-add-folder NB-hidden" }, [
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-folder-submit' }, 'Add folder'),
+                            $.make('div', { className: 'NB-loading' }),
+                            $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: "New folder name..." })
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-organizer-sidebar-delete' }, [
+                    $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Delete sites'),
+                    $.make('div', { className: 'NB-organizer-sidebar-container' }, [
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-disabled NB-action-delete' }, 'Delete'),
+                        $.make('div', { className: 'NB-loading' })
+                    ])
+                ])
             ]),
             $.make('div', { className: 'NB-organizer-actionbar' }, [
                 $.make('div', { className: 'NB-organizer-sorts' }, [
                     $.make('div', { className: 'NB-organizer-action-title' }, 'Sort '),
                     $.make('div', { className: 'NB-organizer-action NB-action-alphabetical NB-active' }, 'Name'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, 'Subs'),
+                    $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, 'Subscribers'),
                     $.make('div', { className: 'NB-organizer-action NB-action-frequency' }, 'Frequency'),
                     $.make('div', { className: 'NB-organizer-action NB-action-recency' }, 'Recency'),
                     $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, 'Use')
