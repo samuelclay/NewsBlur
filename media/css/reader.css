@@ -8589,6 +8589,9 @@ form.opml_import_form input {
 .NB-modal-feedchooser #NB-feedchooser-feeds .feed {
     display: block;
 }
+.NB-modal-feedchooser .NB-feed-organizer-sort {
+    display: none;
+}
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_title {
     font-weight: bold;
 }
