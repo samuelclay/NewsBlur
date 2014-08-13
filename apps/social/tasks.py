@@ -66,6 +66,12 @@ class SharePopularStories(Task):
     name = 'share-popular-stories'
 
     def run(self, **kwargs):
+        logging.debug(" ---> Finding spammers...")
+        _, spammer_user_ids =  MSharedStory.count_potential_spammers()
+        logging.debug(" ---> Found %s spammers, deleting...")
+        for user_id in spammer_user_ids:
+            user = User.objects.get(pk=user_id)
+            user.profile.delete_user(confirm=True, fast=True)
         logging.debug(" ---> Sharing popular stories...")
         MSharedStory.share_popular_stories(interactive=False)
             
