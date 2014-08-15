@@ -239,7 +239,7 @@ public class APIManager {
      * request parameters as needed.
      */
     public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter) {
-        Uri uri;
+        Uri uri = null;
         ValueMultimap values = new ValueMultimap();
     
         // create the URI and populate request params depending on what kind of stories we want
@@ -260,6 +260,10 @@ public class APIManager {
             for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
                 values.put(APIConstants.PARAMETER_FEEDS, entry.getKey());
             }
+        } else if (fs.isAllNormal()) {
+            ; // TODO
+        } else if (fs.isAllSocial()) {
+            ; // TODO
         } else if (fs.isAllSaved()) {
             uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
         } else {

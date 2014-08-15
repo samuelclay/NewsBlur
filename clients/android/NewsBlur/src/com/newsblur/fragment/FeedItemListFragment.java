@@ -26,19 +26,19 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private String feedId;
 
-    public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
+    public static FeedItemListFragment newInstance(String feedId, int currentState, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putString("feedId", feedId);
-		args.putSerializable("storyOrder", storyOrder);
         args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
@@ -50,7 +50,6 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
-		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 	}
 
@@ -64,8 +63,7 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
 
         ContentResolver contentResolver = getActivity().getContentResolver();
         // TODO: defer creation of the adapter until the loader's first callback so we don't leak this first stories cursor
-        Uri storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-        Cursor storiesCursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
+        Cursor storiesCursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
         Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
 
@@ -100,13 +98,6 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
         
         return v;
     }
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		Uri uri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-		return cursorLoader;
-	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

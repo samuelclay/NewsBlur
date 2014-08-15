@@ -30,7 +30,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
@@ -42,6 +41,8 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
@@ -75,6 +76,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 	protected int passedPosition;
 	protected int currentState;
+    protected StoryOrder storyOrder;
+    protected ReadFilter readFilter;
 
     protected final Object STORIES_MUTEX = new Object();
 	protected Cursor stories;
@@ -86,7 +89,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
-    protected BlurDatabaseHelper dbHelper;
     private APIManager apiManager;
     private boolean stopLoading;
     protected FeedSet fs;
@@ -129,11 +131,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
+        storyOrder = PrefsUtils.getStoryOrder(this, fs);
+        readFilter = PrefsUtils.getReadFilter(this, fs);
         defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
-        dbHelper = new BlurDatabaseHelper(this);
 
         this.apiManager = new APIManager(this);
 
@@ -147,12 +150,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
 	}
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (dbHelper != null) dbHelper.close();
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -185,8 +182,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         super.onPause();
     }
 
+    // TODO: get all subclasses using this rather than an override
 	@Override
-	public abstract Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle);
+	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        return dbHelper.getStoriesLoader(fs, currentState);
+    }
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {

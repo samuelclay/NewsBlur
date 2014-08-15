@@ -36,14 +36,13 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 	private String folderName;
 	private Folder folder;
 	
-	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
+	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putStringArrayList("feedIds", feedIds);
 		args.putString("folderName", folderName);
-		args.putSerializable("storyOrder", storyOrder);
         args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
@@ -55,7 +54,6 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		folderName = getArguments().getString("folderName");
-		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
@@ -72,7 +70,7 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 
 		contentResolver = getActivity().getContentResolver();
 
-		Cursor cursor = contentResolver.query(FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
+		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
 		getActivity().startManagingCursor(cursor);
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
@@ -90,11 +88,6 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 		itemList.setOnCreateContextMenuListener(this);
 
 		return v;
-	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		return new CursorLoader(getActivity(), FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 	}
 
 	@Override

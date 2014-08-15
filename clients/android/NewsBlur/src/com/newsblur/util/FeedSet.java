@@ -34,7 +34,7 @@ public class FeedSet implements Serializable {
      * Construct a new set of feeds. Only one of the arguments may be non-null or true. Specify an empty
      * set to request all of a given type.
      */
-    public FeedSet(Set<String> feeds, Map<String,String> socialFeeds, boolean allSaved) {
+    private FeedSet(Set<String> feeds, Map<String,String> socialFeeds, boolean allSaved) {
 
         if ( booleanCardinality( (feeds != null), (socialFeeds != null), allSaved ) > 1 ) {
             throw new IllegalArgumentException("at most one type of feed may be specified");
@@ -93,6 +93,13 @@ public class FeedSet implements Serializable {
         return new FeedSet(Collections.EMPTY_SET, null, false);
     }
 
+    /**
+     * Convenience constructor for saved stories feed.
+     */
+    public static FeedSet allSaved() {
+        return new FeedSet(null, null, true);
+    }
+
     /** 
      * Convenience constructor for all shared/social feeds.
      */
@@ -113,14 +120,14 @@ public class FeedSet implements Serializable {
      * Gets a single feed ID iff there is only one or null otherwise.
      */
     public String getSingleFeed() {
-        if (feeds != null && feeds.size() == 1) return feeds.iterator().next(); else return null;
+        if (feeds != null && folderName == null && feeds.size() == 1) return feeds.iterator().next(); else return null;
     }
 
     /**
      * Gets a set of feed IDs iff there are multiples or null otherwise.
      */
     public Set<String> getMultipleFeeds() {
-        if (feeds != null && feeds.size() > 1) return feeds; else return null;
+        if (feeds != null && (folderName != null || feeds.size() > 1)) return feeds; else return null;
     }
 
     /**

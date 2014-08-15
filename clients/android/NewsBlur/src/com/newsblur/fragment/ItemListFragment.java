@@ -35,17 +35,22 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
-public abstract class ItemListFragment extends Fragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	public static int ITEMLIST_LOADER = 0x01;
 
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected int currentState;
-    protected StoryOrder storyOrder;
     private boolean firstSyncDone = false;
+
+    @Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+    }
 
     /**
      * Indicate that the DB was cleared.
@@ -101,10 +106,6 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 		hasUpdated();
 	}
 
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
-
 	private void triggerRefresh(int desiredStories) {
         ((ItemsList) getActivity()).triggerRefresh(desiredStories);
     }
@@ -119,8 +120,11 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         }
 	}
 
-    @Override
-    public abstract Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle);
+    // TODO: fix all subclasses to stop overriding this
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		return dbHelper.getStoriesLoader(getFeedSet(), currentState);
+	}
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {

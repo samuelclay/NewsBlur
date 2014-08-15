@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
@@ -33,6 +34,7 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.util.AppConstants;
 
+// TODO: make DB ops async once they are off the contentprovider
 public class FeedUtils {
 
 	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager) {
@@ -117,7 +119,7 @@ public class FeedUtils {
         if (freshStory.read == read) { return; }
 
         // update the local object to show as read even before requeried
-        story.read = true;
+        story.read = read;
 
         // first, update unread counts in the local DB
         ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
@@ -127,6 +129,10 @@ public class FeedUtils {
         } catch (Exception e) {
             Log.w(FeedUtils.class.getName(), "Could not update unread counts in local storage.", e);
         }
+
+        // mark the story read in the local DB using the new method that tracks reading sessions
+        // TODO: replace all contentresolver DB ops with this call!
+        (new BlurDatabaseHelper(context)).setStoryReadState(story.storyHash, read);
 
         // next, update the server
         new AsyncTask<Void, Void, NewsBlurResponse>() {

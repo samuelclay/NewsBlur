@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.provider.BaseColumns;
 
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 public class DatabaseConstants {
@@ -80,6 +81,7 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
 	public static final String STORY_PERMALINK = "permalink";
 	public static final String STORY_READ = "read";
+	public static final String STORY_READ_THIS_SESSION = "read_this_session";
 	public static final String STORY_STARRED = "starred";
 	public static final String STORY_STARRED_DATE = "starred_date";
 	public static final String STORY_SHARE_COUNT = "share_count";
@@ -170,11 +172,32 @@ public class DatabaseConstants {
 
     public static final String MULTIFEED_STORIES_QUERY_BASE = 
         "SELECT " + TextUtils.join(",", STORY_COLUMNS) + ", " + 
-        FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT +
-        " FROM " + STORY_TABLE +
+        FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
+
+    public static final String JOIN_FEEDS_ON_STORIES =
         " INNER JOIN " + FEED_TABLE + " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID;
 
+    public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
+        " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
+
     public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " ASC";
+
+    /**
+     * Appends to the given story query any and all selection statements that are required to satisfy the specified
+     * filtration parameters, dedup column, and ordering requirements.
+     */ 
+    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, int stateFilter, String dedupCol) {
+        if (readFilter == ReadFilter.UNREAD) {
+            // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
+            // or else the selection set will constantly change as they see things!
+            q.append(" AND (" + DatabaseConstants.STORY_READ + " = 0) OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1)");
+        }
+        q.append(" AND " + DatabaseConstants.getStorySelectionFromState(stateFilter));
+        if (dedupCol != null) {
+            q.append( " GROUP BY " + dedupCol);
+        }
+        q.append(" ORDER BY " + DatabaseConstants.getStorySortOrder(order));
+    }
 
     /**
      * Selection args to filter stories.

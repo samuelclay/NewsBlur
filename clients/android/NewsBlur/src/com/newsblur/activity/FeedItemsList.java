@@ -56,7 +56,7 @@ public class FeedItemsList extends ItemsList {
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder(), getDefaultFeedView());
+			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());

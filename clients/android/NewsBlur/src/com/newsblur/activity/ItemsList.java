@@ -164,7 +164,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
         NBSyncService.resetFeed(fs); 
-        itemListFragment.setStoryOrder(newValue);
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();

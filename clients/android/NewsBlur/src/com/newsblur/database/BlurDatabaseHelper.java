@@ -18,7 +18,11 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,10 +226,15 @@ public class BlurDatabaseHelper {
     public void markStoryHashesRead(List<String> hashes) {
         // NOTE: attempting to wrap these updates in a transaction for speed makes them silently fail
         for (String hash : hashes) {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseConstants.STORY_READ, true);
-            dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+            setStoryReadState(hash, true);
         }
+    }
+
+    public void setStoryReadState(String hash, boolean read) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_READ, read);
+        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
+        dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
     }
 
     public int getFeedUnreadCount(String feedId, int readingState) {
@@ -257,17 +266,84 @@ public class BlurDatabaseHelper {
         return Math.max(countFromFeedsTable, countFromStoriesTable);
     }
 
-    public Loader<Cursor> getSavedStoriesLoader() {
+    /**
+     * Clears the read_this_session flag for all stories so they will be counted as not-unread.
+     */
+    public void clearReadingSession() {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, false);
+        dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);
+    }
+
+    public Loader<Cursor> getStoriesLoader(final FeedSet fs, final int stateFilter) {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getSavedStoriesCursor();}
+            protected Cursor createCursor() {return getStoriesCursor(fs, stateFilter);}
         };
     }
 
-    public Cursor getSavedStoriesCursor() {
-        String q = DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE + 
-                   " WHERE " + DatabaseConstants.STORY_STARRED + " = 1" +
-                   " ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER;
-        return dbRO.rawQuery(q, null);
+    public Cursor getStoriesCursor(FeedSet fs, int stateFilter) {
+        StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
+        ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
+
+        if (fs.getSingleFeed() != null) {
+
+            StringBuilder q = new StringBuilder("SELECT ");
+            q.append(TextUtils.join(",", DatabaseConstants.STORY_COLUMNS));
+            q.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            q.append(" WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?");
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleFeed()});
+
+        } else if (fs.getMultipleFeeds() != null) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
+            q.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            return dbRO.rawQuery(q.toString(), null);
+
+        } else if (fs.getSingleSocialFeed() != null) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
+            q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()});
+
+        } else if (fs.isAllNormal()) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(" WHERE 1");
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            return dbRO.rawQuery(q.toString(), null);
+
+        } else if (fs.isAllSocial()) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
+            q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+            return dbRO.rawQuery(q.toString(), null);
+
+        } else if (fs.isAllSaved()) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(" WHERE " + DatabaseConstants.STORY_STARRED + " = 1");
+            q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
+            return dbRO.rawQuery(q.toString(), null);
+
+        } else {
+            throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
+        }
     }
 
 }
