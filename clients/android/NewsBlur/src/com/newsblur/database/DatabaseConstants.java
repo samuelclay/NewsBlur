@@ -51,8 +51,6 @@ public class DatabaseConstants {
     public static final String STARRED_STORY_COUNT_TABLE = "starred_story_count";
     public static final String STARRED_STORY_COUNT_COUNT = "count";
 
-	public static final String COMMENT_TABLE = "comments";
-
 	public static final String CLASSIFIER_TABLE = "classifiers";
 	public static final String CLASSIFIER_ID = BaseColumns._ID;
 	public static final String CLASSIFIER_TYPE = "type";
@@ -95,6 +93,7 @@ public class DatabaseConstants {
 	public static final String STORY_TAGS = "tags";
     public static final String STORY_HASH = "story_hash";
 
+	public static final String COMMENT_TABLE = "comments";
 	public static final String COMMENT_ID = BaseColumns._ID;
 	public static final String COMMENT_STORYID = "comment_storyid";
 	public static final String COMMENT_TEXT = "comment_text";
@@ -106,7 +105,6 @@ public class DatabaseConstants {
 	public static final String COMMENT_USERID = "comment_userid";
 
 	public static final String REPLY_TABLE = "comment_replies";
-
 	public static final String REPLY_ID = BaseColumns._ID;
 	public static final String REPLY_COMMENTID = "comment_id"; 
 	public static final String REPLY_TEXT = "reply_text";
