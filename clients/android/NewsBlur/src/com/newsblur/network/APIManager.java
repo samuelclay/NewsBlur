@@ -261,9 +261,9 @@ public class APIManager {
                 values.put(APIConstants.PARAMETER_FEEDS, entry.getKey());
             }
         } else if (fs.isAllNormal()) {
-            ; // TODO
+            uri = Uri.parse(APIConstants.URL_RIVER_STORIES);
         } else if (fs.isAllSocial()) {
-            ; // TODO
+            uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
         } else if (fs.isAllSaved()) {
             uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
         } else {

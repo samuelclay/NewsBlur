@@ -120,7 +120,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
 	}
 
-    // TODO: fix all subclasses to stop overriding this
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		return dbHelper.getStoriesLoader(getFeedSet(), currentState);
