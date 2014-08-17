@@ -6,7 +6,9 @@ import android.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
@@ -38,6 +40,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
+    private TextView overlayStatusText;
 	protected int currentState;
 
     private FeedSet fs;
@@ -60,6 +63,8 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
+
         getFirstStories();
 	}
 
@@ -72,6 +77,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     protected void onResume() {
         super.onResume();
+        updateStatusIndicators();
         stopLoading = false;
         // this view shows stories, it is not safe to perform cleanup
         NBSyncService.holdStories(true);
@@ -148,10 +154,24 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	
     @Override
 	public void handleUpdate() {
-        setProgressBarIndeterminateVisibility(NBSyncService.isFeedSetSyncing(this.fs));
+        updateStatusIndicators();
 		if (itemListFragment != null) {
             itemListFragment.syncDone();
 			itemListFragment.hasUpdated();
+        }
+    }
+
+    private void updateStatusIndicators() {
+        setProgressBarIndeterminateVisibility(NBSyncService.isFeedSetSyncing(this.fs));
+
+        if (overlayStatusText != null) {
+            String syncStatus = NBSyncService.getSyncStatusMessage();
+            if (syncStatus != null)  {
+                overlayStatusText.setText(syncStatus);
+                overlayStatusText.setVisibility(View.VISIBLE);
+            } else {
+                overlayStatusText.setVisibility(View.GONE);
+            }
         }
     }
 
