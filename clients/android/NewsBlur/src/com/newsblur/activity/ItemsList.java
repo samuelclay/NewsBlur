@@ -46,7 +46,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     private FeedSet fs;
 	
 	protected boolean stopLoading = false;
-    private int lastRequestedStoryCount = 0;
 
 	@Override
     protected void onCreate(Bundle bundle) {
@@ -64,8 +63,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
-
-        getFirstStories();
 	}
 
     protected abstract FeedSet createFeedSet();
@@ -84,11 +81,11 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
+        getFirstStories();
     }
 
     private void getFirstStories() {
         stopLoading = false;
-        lastRequestedStoryCount = 0;
         triggerRefresh(AppConstants.READING_STORY_PRELOAD);
     }
 
@@ -101,18 +98,9 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	public void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
-            // this method tends to get called repeatedly. don't constantly keep requesting the same count!
-            if (desiredStoryCount <= lastRequestedStoryCount) {
-                return;
-            }
-            lastRequestedStoryCount = desiredStoryCount;
-
-            boolean moreLeft = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
-            if (moreLeft) {
-                triggerSync();
-            } else {
-                stopLoading = true;
-            }
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            if (gotSome) triggerSync();
+            updateStatusIndicators();
 		}
     }
 

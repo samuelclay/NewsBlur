@@ -511,7 +511,7 @@ public class NBSyncService extends Service {
 
     /**
      * Requests that the service fetch additional stories for the specified feed/folder. Returns
-     * true if more will be fetched or false if there are none remaining for that feed.
+     * true if more will be fetched as a result of this request.
      *
      * @param desiredStoryCount the minimum number of stories to fetch.
      */
@@ -522,11 +522,11 @@ public class NBSyncService extends Service {
         }
         Integer alreadyRequested = PendingFeeds.get(fs);
         if ((alreadyRequested != null) && (desiredStoryCount <= alreadyRequested)) {
-            return true;
+            return false;
         }
         Integer alreadySeen = FeedStoriesSeen.get(fs);
         if ((alreadySeen != null) && (desiredStoryCount <= alreadySeen)) {
-            return true;
+            return false;
         }
             
         Log.d(NBSyncService.class.getName(), "enqueued request for minimum stories: " + desiredStoryCount);

@@ -46,6 +46,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     protected DefaultFeedView defaultFeedView;
 	protected int currentState;
     private boolean firstSyncDone = false;
+    private int lastRequestedStoryCount = 0;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     public void resetEmptyState() {
         firstSyncDone = false;
         setEmptyListView(R.string.empty_list_view_loading);
+        lastRequestedStoryCount = 0;
     }
 
     public void syncDone() {
@@ -94,8 +96,15 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         // load an extra page or two worth of stories past the viewport
-        int desiredStories = firstVisible + (visibleCount*2);
-        triggerRefresh(desiredStories);
+        int desiredStoryCount = firstVisible + (visibleCount*2);
+
+        // this method tends to get called repeatedly. don't request repeats
+        if (desiredStoryCount <= lastRequestedStoryCount) {
+            return;
+        }
+        lastRequestedStoryCount = desiredStoryCount;
+
+        triggerRefresh(desiredStoryCount);
 	}
 
 	@Override

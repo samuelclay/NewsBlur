@@ -441,7 +441,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
         }
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !stopLoading) {
+		if ((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) {
 			triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
 		}
         
@@ -477,12 +477,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         
 	private void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
-            boolean moreLeft = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
-            if (moreLeft) {
-                triggerSync();
-            } else {
-                stopLoading = true;
-            }
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            if (gotSome) triggerSync();
 		}
     }
 
