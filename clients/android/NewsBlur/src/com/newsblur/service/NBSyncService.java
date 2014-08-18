@@ -362,6 +362,7 @@ public class NBSyncService extends Service {
         try {
             Set<FeedSet> handledFeeds = new HashSet<FeedSet>();
             feedloop: for (FeedSet fs : PendingFeeds.keySet()) {
+                NbActivity.updateAllActivities();
                 if (HaltNow) return;
 
                 if (ExhaustedFeeds.contains(fs)) {
