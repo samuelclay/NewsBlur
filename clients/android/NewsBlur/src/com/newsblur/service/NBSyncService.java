@@ -1,6 +1,7 @@
 package com.newsblur.service;
 
 import android.app.Service;
+import android.content.ComponentCallbacks2;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.IBinder;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A background service to handle synchronisation with the NB servers.
@@ -50,10 +53,6 @@ import java.util.Set;
  * query this class to see if progress indicators should be active.
  */
 public class NBSyncService extends Service {
-
-    private volatile static boolean FreshRequest = false;
-    private volatile static boolean ThreadActive = false;
-    private static final Object WORK_THREAD_MUTEX = new Object();
 
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
@@ -81,16 +80,24 @@ public class NBSyncService extends Service {
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
 
-    private volatile static boolean HaltNow = false;
+    private volatile static boolean HaltNow;
 
+    private PowerManager.WakeLock wl = null;
+    private ExecutorService executor;
 	private APIManager apiManager;
     private BlurDatabaseHelper dbHelper;
     private ImageCache imageCache;
+    private int lastStartIdCompleted = -1;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
         Log.d(this.getClass().getName(), "onCreate");
+        HaltNow = false;
+        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
+        wl.setReferenceCounted(false);
+        executor = Executors.newFixedThreadPool(1);
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
@@ -102,33 +109,17 @@ public class NBSyncService extends Service {
      * that the service should check for outstanding work.
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        HaltNow = false;
-        FreshRequest = true;
-
-        if (ThreadActive) {
-            return Service.START_NOT_STICKY;
-        }
-
+    public int onStartCommand(Intent intent, int flags, final int startId) {
         // only perform a sync if the app is actually running or background syncs are enabled
         if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
-            new Thread(new Runnable() {
+            Runnable r = new Runnable() {
                 public void run() {
-                    synchronized (WORK_THREAD_MUTEX) {
-                        while( FreshRequest ) {
-                            try {
-                                ThreadActive = true;
-                                FreshRequest = false;
-                                doSync();
-                            } finally {
-                                ThreadActive = false;
-                            }
-                        }
-                    }
+                    doSync(startId);
                 }
-            }).start();
+            };
+            executor.execute(r);
         } else {
             Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
         } 
@@ -141,12 +132,12 @@ public class NBSyncService extends Service {
     /**
      * Do the actual work of syncing.
      */
-    private synchronized void doSync() {
-        Log.d(this.getClass().getName(), "starting sync . . .");
-
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
+    private synchronized void doSync(int startId) {
         try {
+            if (HaltNow) return;
+
+            Log.d(this.getClass().getName(), "starting sync . . .");
+
             wl.acquire();
 
             // check to see if we are on an allowable network only after ensuring we have CPU
@@ -167,8 +158,8 @@ public class NBSyncService extends Service {
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
-            if (HaltNow) stopSelf();
-            wl.release();
+            lastStartIdCompleted = startId;
+            if (wl != null) wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
         }
     }
@@ -463,6 +454,19 @@ public class NBSyncService extends Service {
         return true;
     }
 
+    public void onTrimMemory (int level) {
+        // if the UI is still active, definitely don't stop
+        if (NbActivity.getActiveActivityCount() > 0) return;
+        
+        // be nice and stop if memory is even a tiny bit pressured and we aren't visible;
+        // the OS penalises long-running processes, and it is reasonably cheap to re-create ourself.
+        if (level > ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            if (lastStartIdCompleted != -1) {
+                stopSelf(lastStartIdCompleted);
+            }
+        }
+    }
+
     /**
      * Is the main feed/folder list sync running?
      */
@@ -550,6 +554,7 @@ public class NBSyncService extends Service {
     public void onDestroy() {
         Log.d(this.getClass().getName(), "onDestroy");
         HaltNow = true;
+        executor.shutdown();
         super.onDestroy();
         dbHelper.close();
     }
