@@ -30,7 +30,11 @@ public class AppConstants {
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
 
     // how long to wait before auto-syncing the feed/folder list
-    public static final long AUTO_SYNC_TIME_MILLIS = 10L * 60L * 1000L;
+    public static final long AUTO_SYNC_TIME_MILLIS = 15L * 60L * 1000L;
+
+    // how often to trigger the BG service. slightly longer than how often we will find new stories,
+    // to account for the fact that it is approximate, and missing a cycle is bad.
+    public static final long BG_SERVICE_CYCLE_MILLIS = AUTO_SYNC_TIME_MILLIS + 30L * 1000L;
 
     // how many total attemtps to make at a single API call
     public static final int MAX_API_TRIES = 3;

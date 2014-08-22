@@ -27,7 +27,7 @@ public class BootReceiver extends BroadcastReceiver {
         Log.d(BootReceiver.class.getName(), "scheduling sync service");
 
         // wake up to check if a sync is needed less often than necessary to compensate for execution time
-        long interval = (AppConstants.AUTO_SYNC_TIME_MILLIS * 2L);
+        long interval = AppConstants.BG_SERVICE_CYCLE_MILLIS;
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, ServiceScheduleReceiver.class);
