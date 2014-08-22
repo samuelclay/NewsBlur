@@ -280,6 +280,7 @@ def setup_task(queue=None, skip_common=False):
     done()
 
 def setup_task_image():
+    setup_installs()
     copy_task_settings()
     setup_hosts()
     config_pgbouncer()
@@ -332,6 +333,7 @@ def setup_installs():
         'libfreetype6-dev',
         'python-imaging',
     ]
+    sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     sudo('apt-get -y update')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes upgrade')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install %s' % ' '.join(packages))
