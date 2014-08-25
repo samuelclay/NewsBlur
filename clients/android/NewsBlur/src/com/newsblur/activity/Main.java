@@ -67,8 +67,6 @@ public class Main extends NbActivity implements StateChangedListener {
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
             UIUtils.restartActivity(this);
         }
-
-        dbHelper.clearReadingSession();
     }
 
 	private void setupActionBar() {

@@ -266,6 +266,7 @@ public class NBSyncService extends Service {
         // cleanup is expensive, so do it as part of the metadata sync
         CleanupRunning = true;
         NbActivity.updateAllActivities();
+        dbHelper.clearReadingSession();
         dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
         imageCache.cleanup();
         CleanupRunning = false;
