@@ -180,6 +180,13 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class); 
     }
 
+    public NewsBlurResponse markStoryHashUnread(String hash) {
+		final ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_STORY_HASH, hash);
+        APIResponse response = post(APIConstants.URL_MARK_STORY_HASH_UNREAD, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
 	public CategoriesResponse getCategories() {
 		final APIResponse response = get(APIConstants.URL_CATEGORIES);
 		if (!response.isError()) {

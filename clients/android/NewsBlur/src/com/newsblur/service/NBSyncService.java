@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.ComponentCallbacks2;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.text.TextUtils;
@@ -13,11 +14,13 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
+import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.FeedFolderResponse;
+import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
@@ -54,6 +57,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class NBSyncService extends Service {
 
+    private volatile static boolean ActionsRunning = false;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean UnreadSyncRunning = false;
@@ -146,12 +150,17 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            // these requests are expressly enqueued by the UI/user, do them first
+            // first: catch up
+            syncActions();
+            
+            // these requests are expressly enqueued by the UI/user, do them next
             syncPendingFeeds();
 
             syncMetadata();
 
             syncUnreads();
+
+            finishActions();
             
             prefetchImages();
 
@@ -161,6 +170,81 @@ public class NBSyncService extends Service {
             lastStartIdCompleted = startId;
             if (wl != null) wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
+        }
+    }
+
+    /**
+     * Perform any reading actions the user has done before we do anything else.
+     */
+    private void syncActions() {
+        // TODO: replace all halting checks with full check for connectivity or interrupts
+        if (HaltNow) return;
+
+        Cursor c = null;
+        try {
+            ActionsRunning = true;
+
+            dbHelper.cleanupActions();
+
+            c = dbHelper.getActions(false);
+            Log.d(this.getClass().getName(), "found new actions: " + c.getCount());
+            actionsloop : while (c.moveToNext()) {
+                String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
+                NewsBlurResponse response = null;
+                if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    response = apiManager.markStoryAsRead(hash);
+                } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    response = apiManager.markStoryHashUnread(hash);
+                } else {
+                    Log.w(this.getClass().getName(), "discarding action of unknown type: " + id);
+                }
+
+                // if we attempted a call and it failed, do not mark the action as done
+                if (response != null) {
+                    if (response.isError()) {
+                        continue actionsloop;
+                    }
+                }
+
+                dbHelper.setActionDone(id);
+            }
+        } finally {
+            closeQuietly(c);
+            ActionsRunning = false;
+        }
+    }
+
+    /**
+     * Some actions have a final, local step after being done remotely to ensure in-flight
+     * API actions didn't race-overwrite them.  Do these, and then clean up the DB.
+     */
+    private void finishActions() {
+        if (HaltNow) return;
+
+        Cursor c = null;
+        try {
+            ActionsRunning = true;
+
+            c = dbHelper.getActions(true);
+            Log.d(this.getClass().getName(), "found done actions: " + c.getCount());
+            while (c.moveToNext()) {
+                String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
+                if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    dbHelper.setStoryReadState(hash, true);
+                } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    dbHelper.setStoryReadState(hash, false);
+                } else {
+                    Log.w(this.getClass().getName(), "discarding action of unknown type: " + id);
+                }
+                dbHelper.clearAction(id);
+            }
+        } finally {
+            closeQuietly(c);
+            ActionsRunning = false;
         }
     }
 
@@ -483,6 +567,7 @@ public class NBSyncService extends Service {
     }
 
     public static String getSyncStatusMessage() {
+        if (ActionsRunning) return "Catching up reading actions . . .";
         if (FFSyncRunning) return "Syncing feeds . . .";
         if (CleanupRunning) return "Cleaning up storage . . .";
         if (UnreadHashSyncRunning) return "Syncing unread status . . .";

@@ -252,7 +252,6 @@ public class DatabaseConstants {
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
         ACTION_DONE_REMOTE + INTEGER + " DEFAULT 0, " +
-        ACTION_DONE_LOCAL + INTEGER + " DEFAULT 0, " +
         ACTION_MARK_READ + INTEGER + " DEFAULT 0, " +
         ACTION_MARK_UNREAD + INTEGER + " DEFAULT 0, " +
         ACTION_SAVE + INTEGER + " DEFAULT 0, " +
@@ -440,6 +439,32 @@ public class DatabaseConstants {
             return STORY_SHARED_DATE + " DESC";
         } else {
             return STORY_SHARED_DATE + " ASC";
+        }
+    }
+
+    /**
+     * Get the name of the feed count column that is impacted by a story of the given intel total.
+     */
+    public static String getFeedCountColumnForStoryIntelValue(int storyIntelTotal) {
+        if (storyIntelTotal > 0) {
+            return FEED_POSITIVE_COUNT;
+        } else if (storyIntelTotal == 0) {
+            return FEED_NEUTRAL_COUNT;
+        } else {
+            return FEED_NEGATIVE_COUNT;
+        }
+    }
+
+    /**
+     * Get the name of the social feed count column that is impacted by a story of the given intel total.
+     */
+    public static String getSocialFeedCountColumnForStoryIntelValue(int storyIntelTotal) {
+        if (storyIntelTotal > 0) {
+            return SOCIAL_FEED_POSITIVE_COUNT;
+        } else if (storyIntelTotal == 0) {
+            return SOCIAL_FEED_NEUTRAL_COUNT;
+        } else {
+            return SOCIAL_FEED_NEGATIVE_COUNT;
         }
     }
 

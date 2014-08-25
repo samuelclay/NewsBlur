@@ -32,10 +32,15 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 
-// TODO: make DB ops async once they are off the contentprovider
 public class FeedUtils {
+
+    private static void triggerSync(Context c) {
+        Intent i = new Intent(c, NBSyncService.class);
+        c.startService(i);
+    }
 
 	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
@@ -96,20 +101,34 @@ public class FeedUtils {
     }
 
     public static void markStoryUnread(final Story story, final Context context) {
-        setStoryReadState(story, context, false);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                setStoryReadState(story, context, false);
+                return null;
+            }
+        }.execute();
     }
 
     public static void markStoryAsRead(final Story story, final Context context) {
-        setStoryReadState(story, context, true);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                setStoryReadState(story, context, true);
+                return null;
+            }
+        }.execute();
     }
 
-    private static void setStoryReadState(final Story story, final Context context, final boolean read) {
+    private static void setStoryReadState(Story story, Context context, boolean read) {
         if (story.read == read) { return; }
+
+        // TODO: find a way to re-use DB conns
+        BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
 
         // it is imperative that we are idempotent.  query the DB for a fresh copy of the story
         // to ensure it isn't already in the requested state.  if so, do not update feed counts
-        Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
-        Cursor cursor = context.getContentResolver().query(storyUri, null, null, null, null);
+        Cursor cursor = dbHelper.getStory(story.storyHash);
         if (cursor.getCount() < 1) {
             Log.w(FeedUtils.class.getName(), "can't mark story as read, not found in DB: " + story.id);
             return;
@@ -118,52 +137,19 @@ public class FeedUtils {
         cursor.close();
         if (freshStory.read == read) { return; }
 
-        // update the local object to show as read even before requeried
+        // update the local object to show as read before DB is touched
         story.read = read;
 
-        // first, update unread counts in the local DB
-        ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
-        appendStoryReadOperations(story, updateOps, read);
-        try {
-            context.getContentResolver().applyBatch(FeedProvider.AUTHORITY, updateOps);
-        } catch (Exception e) {
-            Log.w(FeedUtils.class.getName(), "Could not update unread counts in local storage.", e);
-        }
+        // update unread state and unread counts in the local DB
+        dbHelper.setStoryReadState(story, read);
 
-        // mark the story read in the local DB using the new method that tracks reading sessions
-        // TODO: replace all contentresolver DB ops with this call!
-        (new BlurDatabaseHelper(context)).setStoryReadState(story.storyHash, read);
-
-        // next, update the server
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
-            @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                if (read) {
-                    return apiManager.markStoryAsRead(story.storyHash);
-                } else {
-                    return apiManager.markStoryAsUnread(story.feedId, story.storyHash);
-                }
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                if (result.isError()) {
-                    Log.e(FeedUtils.class.getName(), "Could not update unread counts via API: " + result.getErrorMessage());
-                    Toast.makeText(context, result.getErrorMessage(context.getString(read ? R.string.toast_story_read_error : R.string.toast_story_unread_error)), Toast.LENGTH_LONG).show();
-                } else {
-                    if (read) {
-                        ; // no toast on successful mark-read
-                    } else {
-                        Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }.execute();
+        // tell the sync service we need to mark read
+        dbHelper.enqueueActionStoryRead(story.storyHash, read);
+        triggerSync(context);
     }
 
     /**
-     * This utility method is a fast-returning way to mark as read a batch of stories in both
-     * the local DB and on the server.
+     * TODO: make this use before/after abstraction
      */
     public static void markStoriesAsRead( Collection<Story> stories, final Context context ) {
         // the list of story hashes to mark read

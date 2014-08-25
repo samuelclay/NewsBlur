@@ -25,8 +25,10 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
@@ -72,6 +74,10 @@ public class BlurDatabaseHelper {
                        ")";
             dbRW.execSQL(q);
         }
+    }
+
+    public void cleanupActions() {
+        // TODO: write me, use me
     }
 
     public void cleanupFeedsFolders() {
@@ -237,6 +243,61 @@ public class BlurDatabaseHelper {
         dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
     }
 
+    /**
+     * Marks a story (un)read and also adjusts unread counts for it.
+     */
+    public void setStoryReadState(Story story, boolean read) {
+        setStoryReadState(story.storyHash, read);
+        String incDec = read ? " - 1" : " + 1";
+        String column = DatabaseConstants.getFeedCountColumnForStoryIntelValue(story.getIntelligenceTotal());
+        // non-social feed count
+        StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.FEED_TABLE);
+        q.append(" SET ").append(column).append(" = ").append(column).append(incDec);
+        q.append(" WHERE " + DatabaseConstants.FEED_ID + " = ").append(story.feedId);
+        dbRW.execSQL(q.toString());
+        // social feed counts
+        Set<String> socialIds = new HashSet<String>();
+        if (!TextUtils.isEmpty(story.socialUserId)) {
+            socialIds.add(story.socialUserId);
+        }
+        if (story.friendUserIds != null) {
+            for (String id : story.friendUserIds) {
+                socialIds.add(id);
+            }
+        }
+        for (String id : socialIds) {
+            column = DatabaseConstants.getFeedCountColumnForStoryIntelValue(story.getIntelligenceTotal());
+            q = new StringBuilder("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE);
+            q.append(" SET ").append(column).append(" = ").append(column).append(incDec);
+            q.append(" WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = ").append(id);
+            dbRW.execSQL(q.toString());
+        }
+    }
+
+    public void enqueueActionStoryRead(String hash, boolean read) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.ACTION_TIME, System.currentTimeMillis());
+        values.put(DatabaseConstants.ACTION_STORY_HASH, hash);
+        values.put(read ? DatabaseConstants.ACTION_MARK_READ : DatabaseConstants.ACTION_MARK_UNREAD, 1);
+        dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, values);
+    }
+
+    public Cursor getActions(boolean includeDone) {
+        String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE +
+                   " WHERE " + DatabaseConstants.ACTION_DONE_REMOTE + " = " + (includeDone ? 1 : 0);
+        return dbRO.rawQuery(q, null);
+    }
+
+    public void setActionDone(String actionId) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.ACTION_DONE_REMOTE, 1);
+        dbRW.update(DatabaseConstants.ACTION_TABLE, values, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});
+    }
+
+    public void clearAction(String actionId) {
+        dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});
+    }
+
     public int getFeedUnreadCount(String feedId, int readingState) {
         // calculate the unread count both from the feeds table and the stories table. If
         // they disagree, use the maximum value seen.
@@ -264,6 +325,12 @@ public class BlurDatabaseHelper {
         c2.close();
 
         return Math.max(countFromFeedsTable, countFromStoriesTable);
+    }
+
+    public Cursor getStory(String hash) {
+        String q = "SELECT * FROM " + DatabaseConstants.STORY_TABLE +
+                   " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
+        return dbRO.rawQuery(q, new String[]{hash});
     }
 
     /**
@@ -344,6 +411,11 @@ public class BlurDatabaseHelper {
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
         }
+    }
+
+    public static void closeQuietly(Cursor c) {
+        if (c == null) return;
+        try {c.close();} catch (Exception e) {;}
     }
 
 }

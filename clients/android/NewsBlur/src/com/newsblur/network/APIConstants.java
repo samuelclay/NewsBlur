@@ -33,6 +33,7 @@ public class APIConstants {
     public static final String URL_MARK_STORY_AS_STARRED = NEWSBLUR_URL + "/reader/mark_story_as_starred/";
     public static final String URL_MARK_STORY_AS_UNSTARRED = NEWSBLUR_URL + "/reader/mark_story_as_unstarred/";
     public static final String URL_MARK_STORY_AS_UNREAD = NEWSBLUR_URL + "/reader/mark_story_as_unread/";
+    public static final String URL_MARK_STORY_HASH_UNREAD = NEWSBLUR_URL + "/reader/mark_story_hash_as_unread/";
     public static final String URL_STARRED_STORIES = NEWSBLUR_URL + "/reader/starred_stories";
 	public static final String URL_FEED_AUTOCOMPLETE = NEWSBLUR_URL + "/rss_feeds/feed_autocomplete";
 	public static final String URL_LIKE_COMMENT = NEWSBLUR_URL + "/social/like_comment";
