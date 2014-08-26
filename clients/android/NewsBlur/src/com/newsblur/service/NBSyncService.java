@@ -182,12 +182,13 @@ public class NBSyncService extends Service {
 
         Cursor c = null;
         try {
-            ActionsRunning = true;
-
-            dbHelper.cleanupActions();
-
             c = dbHelper.getActions(false);
+            if (c.getCount() < 1) return;
+
             Log.d(this.getClass().getName(), "found new actions: " + c.getCount());
+            ActionsRunning = true;
+            NbActivity.updateAllActivities();
+
             actionsloop : while (c.moveToNext()) {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
                 NewsBlurResponse response = null;
@@ -213,6 +214,7 @@ public class NBSyncService extends Service {
         } finally {
             closeQuietly(c);
             ActionsRunning = false;
+            NbActivity.updateAllActivities();
         }
     }
 
@@ -225,10 +227,13 @@ public class NBSyncService extends Service {
 
         Cursor c = null;
         try {
-            ActionsRunning = true;
-
             c = dbHelper.getActions(true);
+            if (c.getCount() < 1) return;
+
             Log.d(this.getClass().getName(), "found done actions: " + c.getCount());
+            ActionsRunning = true;
+            NbActivity.updateAllActivities();
+
             while (c.moveToNext()) {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
                 if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
@@ -245,6 +250,7 @@ public class NBSyncService extends Service {
         } finally {
             closeQuietly(c);
             ActionsRunning = false;
+            NbActivity.updateAllActivities();
         }
     }
 
