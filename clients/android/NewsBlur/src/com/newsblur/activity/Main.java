@@ -173,6 +173,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+        // TODO: this method is too expensive to be called each time the list moves by a pixel.
         boolean enable = false;
 
         if( absListView.getChildCount() > 0){
