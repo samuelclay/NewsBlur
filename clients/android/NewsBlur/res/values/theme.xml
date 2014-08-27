@@ -27,6 +27,7 @@
         <item name="profileCount">@style/profileCount</item>
         <item name="profileActivityList">@style/profileActivityList</item>
         <item name="itemHeaderDivider">@style/itemHeaderDivider</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -56,5 +57,6 @@
         <item name="profileCount">@style/profileCount.dark</item>
         <item name="profileActivityList">@style/profileActivityList.dark</item>
         <item name="itemHeaderDivider">@style/itemHeaderDivider.dark</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider.dark</item>
     </style>
 </resources>

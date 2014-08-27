@@ -730,6 +730,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             NEWSBLUR.reader.feed_unread_count(feed_id);
         });
         
+        this.model.trigger('change:intelligence');
         this.preserve_classifier_color(classifier_type, value, score);
     },
     
