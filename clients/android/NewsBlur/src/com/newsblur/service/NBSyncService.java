@@ -563,7 +563,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || ImagePrefetchRunning);
+        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || ImagePrefetchRunning);
     }
 
     /**

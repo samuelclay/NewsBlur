@@ -224,6 +224,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
                     fragment.updateSaveButton();
 
+                    enableOverlays();
                     updateOverlayText();
                 }
             } catch (IllegalStateException ise) {
@@ -400,6 +401,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * an event happens that might change our list position.
      */
     private void enableOverlays() {
+        // TODO: this queries the DB, so should probably be made async
         this.setOverlayAlpha(1.0f);
 
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
