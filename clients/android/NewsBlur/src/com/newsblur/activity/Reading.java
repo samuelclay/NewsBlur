@@ -324,7 +324,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     private void updateCursor() {
-        getLoaderManager().restartLoader(0, null, this);
+        try {
+            getLoaderManager().restartLoader(0, null, this);
+        } catch (IllegalStateException ise) {
+            ; // our heavy use of async can race loader calls, which it will gripe about, but this
+             //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
+        }
     }
 
     // interface OnPageChangeListener
