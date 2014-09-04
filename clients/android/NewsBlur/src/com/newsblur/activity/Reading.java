@@ -182,7 +182,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         super.onPause();
     }
 
-    // TODO: get all subclasses using this rather than an override
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
         return dbHelper.getStoriesLoader(fs, currentState);
@@ -322,7 +321,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected void handleUpdate() {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
         updateCursor();
-        // TODO: also refresh unread count and state of next unread button
     }
 
     private void updateCursor() {
