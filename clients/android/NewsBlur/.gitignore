@@ -1,7 +1,10 @@
 build.xml
 local.properties
+*.java.swo
 *.java.swp
+*.xml.swo
 *.xml.swp
+*.css.swo
 *.css.swp
 *.iml
 out/
