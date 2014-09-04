@@ -384,7 +384,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         this.setOverlayAlpha(newAlpha);
     }
 
-    private void setOverlayAlpha(float a) {
+    private void setOverlayAlpha(final float a) {
         // check to see if the device even has room for all the overlays, moving some to overflow if not
         int widthPX = findViewById(android.R.id.content).getMeasuredWidth();
         boolean overflowExtras = false;
@@ -395,11 +395,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             } 
         }
 
-        UIUtils.setViewAlpha(this.overlayLeft, a, true);
-        UIUtils.setViewAlpha(this.overlayRight, a, true);
-        UIUtils.setViewAlpha(this.overlayProgress, a, true);
-        UIUtils.setViewAlpha(this.overlayText, a, true);
-        UIUtils.setViewAlpha(this.overlaySend, a, !overflowExtras);
+        final boolean _overflowExtras = overflowExtras;
+        runOnUiThread(new Runnable() {
+            public void run() {
+                UIUtils.setViewAlpha(overlayLeft, a, true);
+                UIUtils.setViewAlpha(overlayRight, a, true);
+                UIUtils.setViewAlpha(overlayProgress, a, true);
+                UIUtils.setViewAlpha(overlayText, a, true);
+                UIUtils.setViewAlpha(overlaySend, a, !_overflowExtras);
+            }
+        });
     }
 
     /**
