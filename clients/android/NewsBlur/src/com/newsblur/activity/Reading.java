@@ -224,7 +224,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
                     fragment.updateSaveButton();
 
-                    enableOverlays();
+                    updateOverlayNav();
                     updateOverlayText();
                 }
             } catch (IllegalStateException ise) {
@@ -246,7 +246,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // for the first one.
         this.onPageSelected(passedPosition); 
 
-        this.enableOverlays();
+        updateOverlayNav();
+        enableOverlays();
 	}
 
     /**
@@ -339,20 +340,27 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
 	@Override
-	public void onPageSelected(int position) {
-		Story story = readingAdapter.getStory(position);
-        if (story != null) {
-            synchronized (this.pageHistory) {
-                // if the history is just starting out or the last entry in it isn't this page, add this page
-                if ((this.pageHistory.size() < 1) || (!story.equals(this.pageHistory.get(this.pageHistory.size()-1)))) {
-                    this.pageHistory.add(story);
+	public void onPageSelected(final int position) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (readingAdapter == null) return null;
+                Story story = readingAdapter.getStory(position);
+                if (story != null) {
+                    synchronized (pageHistory) {
+                        // if the history is just starting out or the last entry in it isn't this page, add this page
+                        if ((pageHistory.size() < 1) || (!story.equals(pageHistory.get(pageHistory.size()-1)))) {
+                            pageHistory.add(story);
+                        }
+                    }
+                    markStoryRead(story);
                 }
-            }
-            markStoryRead(story);
-		}
-        checkStoryCount(position);
 
-        updateOverlayText();
+                checkStoryCount(position);
+                updateOverlayText();
+                return null;
+            }
+        }.execute();
 	}
 
     // interface ScrollChangeListener
@@ -397,13 +405,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     /**
-     * Check and correct the display status of the overlays.  Call this any time
-     * an event happens that might change our list position.
+     * Make visible and update the overlay UI.
      */
     private void enableOverlays() {
-        // TODO: this queries the DB, so should probably be made async
         this.setOverlayAlpha(1.0f);
+    }
 
+    /**
+     * Update the left/right overlay UI after the read-state of a story changes or we navigate in any way.
+     */
+    private void updateOverlayNav() {
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((getUnreadCount() > 0) ? R.string.overlay_next : R.string.overlay_done);
         this.overlayRight.setBackgroundResource((getUnreadCount() > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
@@ -420,6 +431,23 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         this.overlayProgress.invalidate();
 
         invalidateOptionsMenu();
+    }
+
+    private void updateOverlayText() {
+        if (overlayText == null) return;
+        runOnUiThread(new Runnable() {
+            public void run() {
+                ReadingItemFragment item = getReadingFragment();
+                if (item == null) return;
+                if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
+                    overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
+                    overlayText.setText(R.string.overlay_text);
+                } else {
+                    overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
+                    overlayText.setText(R.string.overlay_story);
+                }
+            }
+        });
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -660,18 +688,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if (item == null) return;
         item.switchSelectedFeedView();
         updateOverlayText();
-    }
-
-    private void updateOverlayText() {
-        ReadingItemFragment item = getReadingFragment();
-        if ((item == null) || (this.overlayText == null)) return;
-        if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
-            this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
-            this.overlayText.setText(R.string.overlay_text);
-        } else {
-            this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
-            this.overlayText.setText(R.string.overlay_story);
-        }
     }
 
     private ReadingItemFragment getReadingFragment() {
