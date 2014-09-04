@@ -100,6 +100,18 @@ public class FeedUtils {
 
     }
 
+    public static void clearReadingSession(final Context context) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                // TODO: find a way to re-use DB conns
+                BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
+                dbHelper.clearReadingSession();
+                return null;
+            }
+        }.execute();
+    }
+
     public static void markStoryUnread(final Story story, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override

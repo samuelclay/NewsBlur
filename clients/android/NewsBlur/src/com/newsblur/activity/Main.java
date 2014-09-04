@@ -20,6 +20,7 @@ import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -65,6 +66,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     protected void onResume() {
         super.onResume();
+
+        // clear the read-this-session flag from stories so they don't show up in the wrong place
+        FeedUtils.clearReadingSession(this);
+
         updateStatusIndicators();
         // this view doesn't show stories, it is safe to perform cleanup
         NBSyncService.holdStories(false);
