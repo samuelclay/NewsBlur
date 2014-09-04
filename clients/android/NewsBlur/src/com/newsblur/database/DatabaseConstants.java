@@ -341,7 +341,7 @@ public class DatabaseConstants {
         if (readFilter == ReadFilter.UNREAD) {
             // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
             // or else the selection set will constantly change as they see things!
-            q.append(" AND (" + STORY_READ + " = 0) OR (" + STORY_READ_THIS_SESSION + " = 1)");
+            q.append(" AND ((" + STORY_READ + " = 0) OR (" + STORY_READ_THIS_SESSION + " = 1))");
         }
         q.append(" AND " + getStorySelectionFromState(stateFilter));
         if (dedupCol != null) {
