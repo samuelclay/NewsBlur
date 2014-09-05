@@ -34,6 +34,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private TextView overlayStatusText;
     private boolean isLightTheme;
     private SwipeRefreshLayout swipeLayout;
+    private boolean wasSwipeEnabled = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -168,7 +169,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (swipeLayout != null) {
-            swipeLayout.setEnabled(firstVisibleItem == 0);
+            boolean enable = (firstVisibleItem == 0);
+            if (wasSwipeEnabled != enable) {
+                swipeLayout.setEnabled(enable);
+                wasSwipeEnabled = enable;
+            }
         }
     }
 }
