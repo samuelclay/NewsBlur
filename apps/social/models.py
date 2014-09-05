@@ -1516,7 +1516,13 @@ class MSharedStory(mongo.Document):
         for user_id in ddusers.keys():
             u = User.objects.get(pk=user_id)
             feed_opens = UserSubscription.objects.filter(user=u).aggregate(sum=Sum('feed_opens'))['sum']
+            read_story_count = RUserStory.read_story_count(user_id)
+            feed_count = UserSubscription.objects.filter(user=u).count()
+            share_count = MSharedStory.objects.filter(user_id=user_id).count()
             if not feed_opens: guaranteed_spammers.append(user_id)
+            if (feed_count <= 5 and 
+                feed_opens <= 5 and
+                read_story_count < share_count*2): guaranteed_spammers.append(user_id)
         
         print " ---> Guaranteed spammers: %s" % guaranteed_spammers
         
