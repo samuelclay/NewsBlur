@@ -48,7 +48,6 @@ public class NbActivity extends Activity {
 		finishIfNotLoggedIn();
 
         dbHelper = new BlurDatabaseHelper(this);
-        FeedUtils.offerDB(dbHelper);
 	}
 
     @Override
@@ -67,6 +66,8 @@ public class NbActivity extends Activity {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onResume");
 		super.onResume();
 		finishIfNotLoggedIn();
+
+        FeedUtils.offerDB(dbHelper);
 
         synchronized (AllActivities) {
             AllActivities.add(this);
