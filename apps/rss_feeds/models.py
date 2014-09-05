@@ -954,6 +954,11 @@ class Feed(models.Model):
             return existing_story, story_has_changed
         
         for story in stories:
+            if verbose:
+                logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN / ~SB%s" % (
+                              self.title[:30],
+                              story.get('title'),
+                              story.get('guid')))
             if not story.get('title'):
                 continue
                 
@@ -1035,7 +1040,7 @@ class Feed(models.Model):
                 if existing_story.story_hash != story.get('story_hash'):
                     self.update_story_with_new_guid(existing_story, story.get('guid'))
 
-                if settings.DEBUG and False:
+                if verbose:
                     logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(story_content_diff), len(story_content)))
                 
                 existing_story.story_feed = self.pk
@@ -1067,7 +1072,8 @@ class Feed(models.Model):
                     existing_story.index_story_for_search()
             else:
                 ret_values['same'] += 1
-                # logging.debug("Unchanged story: %s " % story.get('title'))
+                if verbose:
+                    logging.debug("Unchanged story: %s / %s " % (story.get('guid'), story.get('title')))
         
         return ret_values
     

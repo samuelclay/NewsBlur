@@ -141,7 +141,9 @@ def pre_process_story(entry):
         if len(story_title) > 80:
             story_title = story_title[:80] + '...'
         entry['title'] = story_title
-    
+    if not entry.get('title') and entry.get('link'):
+        entry['title'] = entry['link']
+        
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))
     
