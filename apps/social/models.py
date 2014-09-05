@@ -1493,7 +1493,9 @@ class MSharedStory(mongo.Document):
     @classmethod
     def feed_quota(cls, user_id, feed_id, days=1, quota=1):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
-        shared_count = cls.objects.filter(shared_date__gte=day_ago, story_feed_id=feed_id).count()
+        shared_count = cls.objects.filter(user_id=user_id,
+                                          shared_date__gte=day_ago, 
+                                          story_feed_id=feed_id).count()
 
         return shared_count >= quota
     
