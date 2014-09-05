@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
@@ -20,6 +21,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StoryOrder;
@@ -104,7 +106,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		}
     }
 
-	public abstract void markItemListAsRead();
+	public void markItemListAsRead() {
+        FeedUtils.markFeedsRead(fs, null, null, this);
+        Toast.makeText(this, R.string.toast_marked_stories_as_read, Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
+        finish();
+    }
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -21,7 +21,6 @@ import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
@@ -33,7 +32,6 @@ import com.newsblur.util.StoryOrder;
 
 public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogListener {
 
-	private APIManager apiManager;
 	private ContentResolver resolver;
 	private ArrayList<String> feedIds;
 
@@ -43,7 +41,6 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 
 		setTitle(getResources().getString(R.string.all_stories));
 
-		apiManager = new APIManager(this);
 		resolver = getContentResolver();
 
         if (bundle != null) {
@@ -84,6 +81,11 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
         dialog.show(fragmentManager, "dialog");
 	}
 
+    @Override
+    public void onMarkAllRead() {
+        super.markItemListAsRead();
+    }
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -123,33 +125,6 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
         if (itemListFragment != null) {
             itemListFragment.setDefaultFeedView(value);
         }
-    }
-
-    @Override
-    public void onMarkAllRead() {
-        new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... arg) {
-                return apiManager.markAllAsRead();
-            }
-            
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if (result) {
-                    // mark all feed IDs as read
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
-                    values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
-                    values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
-                    resolver.update(FeedProvider.FEEDS_URI, values, null, null);
-                    setResult(RESULT_OK); 
-                    Toast.makeText(AllStoriesItemsList.this, R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(AllStoriesItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
-                }
-            };
-        }.execute();
     }
 
     @Override

@@ -108,9 +108,7 @@
 
     <string name="toast_error_loading_stories">Error loading stories</string>
     
-    <string name="toast_marked_folder_as_read">Folder marked as read</string>
-    <string name="toast_marked_feed_as_read">Feed marked as read</string>
-    <string name="toast_marked_socialfeed_as_read">Blurblog marked as read</string>
+    <string name="toast_marked_stories_as_read">Stories marked as read</string>
     
     <string name="toast_error_marking_feed_as_read">Error marking feed as read. Check your internet connection.</string>
 
@@ -162,7 +160,6 @@
     <string name="error_liking_comment">Error favoriting comment</string>
     <string name="public_comment_count">%d PUBLIC COMMENTS</string>
     <string name="friends_comments_count">%d COMMENTS</string>
-    <string name="toast_marked_all_stories_as_read">All stories marked as read</string>
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     

@@ -107,6 +107,7 @@ public class FeedUtils {
                 // TODO: find a way to re-use DB conns
                 BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
                 dbHelper.clearReadingSession();
+                dbHelper.close();
                 return null;
             }
         }.execute();
@@ -158,96 +159,24 @@ public class FeedUtils {
         // tell the sync service we need to mark read
         dbHelper.enqueueActionStoryRead(story.storyHash, read);
         triggerSync(context);
+
+        dbHelper.close();
     }
 
-    /**
-     * TODO: make this use before/after abstraction
-     */
-    public static void markStoriesAsRead( Collection<Story> stories, final Context context ) {
-        // the list of story hashes to mark read
-        final ArrayList<String> storyHashes = new ArrayList<String>();
-        // a list of local DB ops to perform
-        ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
-
-        for (Story story : stories) {
-            appendStoryReadOperations(story, updateOps, true);
-            storyHashes.add(story.storyHash);
-        }
-
-        // first, update unread counts in the local DB
-        try {
-            context.getContentResolver().applyBatch(FeedProvider.AUTHORITY, updateOps);
-        } catch (Exception e) {
-            Log.w(FeedUtils.class.getName(), "Could not update unread counts in local storage.", e);
-        }
-
-        // next, update the server
-        if (storyHashes.size() > 0) {
-            new AsyncTask<Void, Void, NewsBlurResponse>() {
-                @Override
-                protected NewsBlurResponse doInBackground(Void... arg) {
-                    APIManager apiManager = new APIManager(context);
-                    return apiManager.markStoriesAsRead(storyHashes);
-                }
-                @Override
-                protected void onPostExecute(NewsBlurResponse result) {
-                    if (result.isError()) {
-                        Log.e(FeedUtils.class.getName(), "Could not update unread counts via API: " + result.getErrorMessage());
-                    }
-                }
-            }.execute();
-        }
-
-        // update the local object to show as read even before requeried
-        for (Story story : stories) {
-            story.read = true;
-        }
+    public static void markFeedsRead(final FeedSet fs, final Long olderThan, final Long newerThan, final Context context) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                // TODO: find a way to re-use DB conns
+                BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
+                dbHelper.enqueueActionFeedRead(fs, olderThan, newerThan);
+                dbHelper.markFeedsRead(fs, olderThan, newerThan);
+                dbHelper.close();
+                triggerSync(context);
+                return null;
+            }
+        }.execute();
     }
-
-	private static void appendStoryReadOperations(Story story, List<ContentProviderOperation> operations, boolean read) {
-		String[] selectionArgs; 
-		ContentValues emptyValues = new ContentValues();
-		emptyValues.put(DatabaseConstants.FEED_ID, story.feedId);
-
-        // our magic ContentProvider uses a select arg to get the increment/decrement operator for these URIs
-        String incDec = read ? "- 1" : "+ 1";
-
-		if (story.getIntelligenceTotal() > 0) {
-			selectionArgs = new String[] { DatabaseConstants.FEED_POSITIVE_COUNT, story.feedId, incDec } ; 
-		} else if (story.getIntelligenceTotal() == 0) {
-			selectionArgs = new String[] { DatabaseConstants.FEED_NEUTRAL_COUNT, story.feedId, incDec } ;
-		} else {
-			selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId, incDec } ;
-		}
-		operations.add(ContentProviderOperation.newUpdate(FeedProvider.FEED_COUNT_URI).withValues(emptyValues).withSelection("", selectionArgs).build());
-
-        HashSet<String> socialIds = new HashSet<String>();
-        if (!TextUtils.isEmpty(story.socialUserId)) {
-            socialIds.add(story.socialUserId);
-        }
-        if (story.friendUserIds != null) {
-            for (String id : story.friendUserIds) {
-                socialIds.add(id);
-            }
-        }
-        for (String id : socialIds) {
-            String[] socialSelectionArgs; 
-            if (story.getIntelligenceTotal() > 0) {
-                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, id, incDec } ; 
-            } else if (story.getIntelligenceTotal() == 0) {
-                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, id, incDec } ;
-            } else {
-                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, id, incDec } ;
-            }
-            operations.add(ContentProviderOperation.newUpdate(FeedProvider.SOCIALCOUNT_URI).withValues(emptyValues).withSelection("", socialSelectionArgs).build());
-        }
-
-		Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
-		ContentValues values = new ContentValues();
-		values.put(DatabaseConstants.STORY_READ, read);
-
-		operations.add(ContentProviderOperation.newUpdate(storyUri).withValues(values).build());
-	}
 
     public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
 
@@ -335,6 +264,14 @@ public class FeedUtils {
         intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { Html.fromHtml(story.title),
                                                                                        story.permalink }));
         context.startActivity(Intent.createChooser(intent, "Share using"));
+    }
+
+    public static FeedSet feedSetFromFolderName(String folderName, Context context) {
+        // TODO: find a way to re-use DB conns
+        BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
+        Set<String> feedIds = dbHelper.getFeedsForFolder(folderName);
+        dbHelper.close();
+        return FeedSet.folder(folderName, feedIds);
     }
 
     /**

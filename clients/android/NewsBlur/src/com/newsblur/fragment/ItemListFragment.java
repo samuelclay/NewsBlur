@@ -195,14 +195,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_mark_previous_stories_as_read:
-            List<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
-            List<Story> storiesToMarkAsRead = new ArrayList<Story>();
-            for(Story s : previousStories) {
-                if(! s.read) {
-                    storiesToMarkAsRead.add(s);
-                }
-            }
-            FeedUtils.markStoriesAsRead(storiesToMarkAsRead, activity);
+            FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
             hasUpdated();
             return true;
 

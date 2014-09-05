@@ -229,6 +229,19 @@ public class BlurDatabaseHelper {
         bulkInsertValues(DatabaseConstants.REPLY_TABLE, replyValues);
     }
 
+    public Set<String> getFeedsForFolder(String folderName) {
+        Set<String> feedIds = new HashSet<String>();
+        String q = "SELECT " + DatabaseConstants.FEED_FOLDER_FEED_ID + 
+                   " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE +
+                   " WHERE " + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ?" ;
+        Cursor c = dbRO.rawQuery(q, new String[]{folderName});
+        while (c.moveToNext()) {
+           feedIds.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_FOLDER_FEED_ID)));
+        }
+        c.close();
+        return feedIds;
+    }
+
     public void markStoryHashesRead(List<String> hashes) {
         // NOTE: attempting to wrap these updates in a transaction for speed makes them silently fail
         for (String hash : hashes) {
@@ -274,11 +287,61 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void markFeedsRead(FeedSet fs, Long olderThan, Long newerThan) {
+        // TODO: impl at least the older/newer than cases
+
+        // TODO: stories
+
+        // feed counts
+        if (fs.isAllNormal()) {
+            setFeedUnreadCount(0, null, null);
+        } else if (fs.isAllSocial()) {
+            // TODO: oddly, the client never supported this before, so there is no button to invoke it. The API call
+            //       works, though, so adding an impl. here should let us enable the button.
+        } else if (fs.getMultipleFeeds() != null) { 
+            for (String feedId : fs.getMultipleFeeds()) {
+                setFeedUnreadCount(0, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
+            }
+        } else if (fs.getSingleFeed() != null) {
+            setFeedUnreadCount(0, DatabaseConstants.FEED_ID + " = ?", new String[]{fs.getSingleFeed()});
+        } else if (fs.getSingleSocialFeed() != null) {
+            setSocialFeedUnreadCount(0,  DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{fs.getSingleSocialFeed().getKey()});
+        } else {
+            throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
+        }
+    }
+
+    private void setFeedUnreadCount(int count, String whereClause, String[] whereArgs) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, count);
+        values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, count);
+        values.put(DatabaseConstants.FEED_POSITIVE_COUNT, count);
+        dbRW.update(DatabaseConstants.FEED_TABLE, values, whereClause, whereArgs);
+    }
+
+    private void setSocialFeedUnreadCount(int count, String whereClause, String[] whereArgs) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, count);
+        values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, count);
+        values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, count);
+        dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, whereClause, whereArgs);
+    }
+
     public void enqueueActionStoryRead(String hash, boolean read) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, System.currentTimeMillis());
         values.put(DatabaseConstants.ACTION_STORY_HASH, hash);
         values.put(read ? DatabaseConstants.ACTION_MARK_READ : DatabaseConstants.ACTION_MARK_UNREAD, 1);
+        dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, values);
+    }
+
+    public void enqueueActionFeedRead(FeedSet fs, Long olderThan, Long newerThan) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.ACTION_TIME, System.currentTimeMillis());
+        values.put(DatabaseConstants.ACTION_MARK_READ, 1);
+        values.put(DatabaseConstants.ACTION_FEED_ID, TextUtils.join(",", fs.getFeedIds()));
+        if (olderThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_OLDER, olderThan);
+        if (newerThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_NEWER, newerThan);
         dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, values);
     }
 

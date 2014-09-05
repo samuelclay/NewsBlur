@@ -194,7 +194,22 @@ public class NBSyncService extends Service {
                 NewsBlurResponse response = null;
                 if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    response = apiManager.markStoryAsRead(hash);
+                    String feedIds = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+                    Long includeOlder = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    Long includeNewer = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    if (hash != null) {
+                        response = apiManager.markStoryAsRead(hash);
+                    } else if (feedIds != null) {
+                        Set<String> feeds = new HashSet<String>();
+                        for (String feedId : TextUtils.split(feedIds, ",")) feeds.add(feedId);
+                        if (feeds.size() == 0) {
+                            response = apiManager.markAllAsRead();
+                        } else {
+                            response = apiManager.markFeedsAsRead(feeds, includeOlder, includeNewer);
+                        }
+                    } else {
+                        Log.w(this.getClass().getName(), "discarding mark-read action of unknown type: " + id);
+                    }
                 } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
                     response = apiManager.markStoryHashUnread(hash);

@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.newsblur.network.APIConstants;
+
 /**
  * A subset of one, several, or all NewsBlur feeds or social feeds.  Used to encapsulate the
  * complexity of the fact that social feeds are special and requesting a river of feeds is not
@@ -162,6 +164,25 @@ public class FeedSet implements Serializable {
 
     public String getFolderName() {
         return this.folderName;
+    }
+
+    /**
+     * Get a list of feed IDs suitable for passing to mark-read APIs.
+     */
+    public Set<String> getFeedIds() {
+        Set s = new HashSet<String>();
+        if (isAllNormal) {
+            ; // an empty set represents "all stories"
+        } else if (isAllSocial) {
+            s.add(APIConstants.VALUE_ALLSOCIAL);
+        } else if (feeds != null) {
+            s.addAll(feeds);
+        } else if ((socialFeeds != null) && (socialFeeds.size() == 1)) {
+            s.addAll(socialFeeds.keySet());
+        } else {
+            throw new UnsupportedOperationException("feed set does not support mark-read ops");
+        }
+        return s;
     }
 
     private int booleanCardinality(boolean... args) {

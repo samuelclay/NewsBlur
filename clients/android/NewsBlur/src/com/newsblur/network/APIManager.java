@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -116,28 +117,30 @@ public class APIManager {
 		return (!response.isError());
 	}
 
-	public boolean markFeedAsRead(final String[] feedIds) {
-		final ValueMultimap values = new ValueMultimap();
+	public NewsBlurResponse markFeedsAsRead(Set<String> feedIds, Long includeOlder, Long includeNewer) {
+		ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		}
-		final APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
+        // TODO: handle older/newer
+
+		APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
+        // TODO: these calls use a different return format than others: the errors field is an array, not an object
+        //return response.getResponse(gson, NewsBlurResponse.class);
+        NewsBlurResponse nbr = new NewsBlurResponse();
+        if (response.isError()) nbr.message = "err";
+        return nbr;
 	}
 	
-	public boolean markAllAsRead() {
-		final ValueMultimap values = new ValueMultimap();
+	public NewsBlurResponse markAllAsRead() {
+		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
-		final APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
+		APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
+        // TODO: these calls use a different return format than others: the errors field is an array, not an object
+        //return response.getResponse(gson, NewsBlurResponse.class);
+        NewsBlurResponse nbr = new NewsBlurResponse();
+        if (response.isError()) nbr.message = "err";
+        return nbr;
 	}
 
     public NewsBlurResponse markStoriesAsRead(List<String> storyHashes) {

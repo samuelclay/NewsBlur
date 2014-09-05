@@ -67,10 +67,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
         return FeedSet.allSocialFeeds();
     }
 
-	// We don't allow All Shared Stories to be marked as read
-	@Override
-	public void markItemListAsRead() { }
-
     @Override
     protected StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
