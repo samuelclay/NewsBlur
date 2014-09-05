@@ -1498,7 +1498,7 @@ class MSharedStory(mongo.Document):
         return shared_count >= quota
     
     @classmethod
-    def count_potential_spammers(cls, days=1):
+    def count_potential_spammers(cls, days=1, destroy=False):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
         stories = cls.objects.filter(shared_date__gte=day_ago)
         shared = [{'u': s.user_id, 'f': s.story_feed_id} for s in stories]
@@ -1519,6 +1519,11 @@ class MSharedStory(mongo.Document):
             if not feed_opens: guaranteed_spammers.append(user_id)
         
         print " ---> Guaranteed spammers: %s" % guaranteed_spammers
+        
+        if destroy and guaranteed_spammers:
+            for spammer_id in guaranteed_spammers:
+                user = User.objects.get(pk=spammer_id)
+                user.profile.delete_user(confirm=True, fast=True)
         
         return users, guaranteed_spammers
         
