@@ -749,7 +749,7 @@ a img {
 .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header .NB-feedlist-collapse-icon {
     position: absolute;
-    top: 7px;
+    top: 5px;
     right: 3px;
     width: 16px;
     height: 16px;
@@ -758,7 +758,9 @@ a img {
     opacity: .6;
     display: none;
 }
-
+.NB-feeds-header .NB-feedlist-collapse-icon {
+    top: 7px;
+}
 .NB-feedlist .folder.NB-folder-collapsed .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header.NB-folder-collapsed .NB-feedlist-collapse-icon {
     background-image: url('/media/embed/icons/circular/folder_expand.png');
