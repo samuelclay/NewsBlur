@@ -8,6 +8,7 @@ import android.util.Log;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
@@ -47,16 +48,15 @@ public class NbActivity extends Activity {
 		finishIfNotLoggedIn();
 
         dbHelper = new BlurDatabaseHelper(this);
+        FeedUtils.offerDB(dbHelper);
 	}
 
     @Override
     public void onDestroy() {
-        if (dbHelper != null) {
-            try {
-                dbHelper.close();
-            } catch (Exception e) {
-                ; // Fragment is already dead
-            }
+        try {
+            dbHelper.close();
+        } catch (Exception e) {
+            ; // Activity is already dead
         }
 
         super.onDestroy();

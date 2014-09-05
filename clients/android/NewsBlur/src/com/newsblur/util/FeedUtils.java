@@ -37,6 +37,14 @@ import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
+    private static BlurDatabaseHelper dbHelper;
+
+    public static void offerDB(BlurDatabaseHelper _dbHelper) {
+        if (_dbHelper.isOpen()) {
+            dbHelper = _dbHelper;
+        }
+    }
+
     private static void triggerSync(Context c) {
         Intent i = new Intent(c, NBSyncService.class);
         c.startService(i);
@@ -104,10 +112,7 @@ public class FeedUtils {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                // TODO: find a way to re-use DB conns
-                BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
                 dbHelper.clearReadingSession();
-                dbHelper.close();
                 return null;
             }
         }.execute();
@@ -136,9 +141,6 @@ public class FeedUtils {
     private static void setStoryReadState(Story story, Context context, boolean read) {
         if (story.read == read) { return; }
 
-        // TODO: find a way to re-use DB conns
-        BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
-
         // it is imperative that we are idempotent.  query the DB for a fresh copy of the story
         // to ensure it isn't already in the requested state.  if so, do not update feed counts
         Cursor cursor = dbHelper.getStory(story.storyHash);
@@ -159,19 +161,14 @@ public class FeedUtils {
         // tell the sync service we need to mark read
         dbHelper.enqueueActionStoryRead(story.storyHash, read);
         triggerSync(context);
-
-        dbHelper.close();
     }
 
     public static void markFeedsRead(final FeedSet fs, final Long olderThan, final Long newerThan, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                // TODO: find a way to re-use DB conns
-                BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
                 dbHelper.enqueueActionFeedRead(fs, olderThan, newerThan);
                 dbHelper.markFeedsRead(fs, olderThan, newerThan);
-                dbHelper.close();
                 triggerSync(context);
                 return null;
             }
@@ -267,10 +264,7 @@ public class FeedUtils {
     }
 
     public static FeedSet feedSetFromFolderName(String folderName, Context context) {
-        // TODO: find a way to re-use DB conns
-        BlurDatabaseHelper dbHelper = new BlurDatabaseHelper(context);
         Set<String> feedIds = dbHelper.getFeedsForFolder(folderName);
-        dbHelper.close();
         return FeedSet.folder(folderName, feedIds);
     }
 

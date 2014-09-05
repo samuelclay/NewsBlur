@@ -54,6 +54,10 @@ public class BlurDatabaseHelper {
         dbWrapper.close();
     }
 
+    public boolean isOpen() {
+        return dbRW.isOpen();
+    }
+
     public void cleanupStories(boolean keepOldStories) {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
