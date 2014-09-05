@@ -139,10 +139,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void updateStatusIndicators() {
         if (NBSyncService.isFeedFolderSyncRunning()) {
             swipeLayout.setRefreshing(true);
-            setRefreshEnabled(false);
         } else {
             swipeLayout.setRefreshing(false);
-            setRefreshEnabled(true);
         }
 
         if (overlayStatusText != null) {
@@ -152,15 +150,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 overlayStatusText.setVisibility(View.VISIBLE);
             } else {
                 overlayStatusText.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private void setRefreshEnabled(boolean enabled) {
-        if (menu != null) {
-            MenuItem item = menu.findItem(R.id.menu_refresh);
-            if (item != null) {
-                item.setEnabled(enabled);
             }
         }
     }
@@ -177,21 +166,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     @Override
-    public void onScroll(AbsListView absListView, int i, int i2, int i3) {
-        // TODO: this method is too expensive to be called each time the list moves by a pixel.
-        boolean enable = false;
-
-        if( absListView.getChildCount() > 0){
-            // check if the first item of the list is visible
-            boolean firstItemVisible = absListView.getFirstVisiblePosition() == 0;
-            // check if the top of the first item is visible
-            boolean topOfFirstItemVisible = absListView.getChildAt(0).getTop() == 0;
-            // enabling or disabling the refresh layout
-            enable = firstItemVisible && topOfFirstItemVisible;
-        }
-
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (swipeLayout != null) {
-            swipeLayout.setEnabled(enable);
+            swipeLayout.setEnabled(firstVisibleItem == 0);
         }
     }
 }
