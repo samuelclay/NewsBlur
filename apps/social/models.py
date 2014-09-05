@@ -1515,6 +1515,7 @@ class MSharedStory(mongo.Document):
         guaranteed_spammers = []
         for user_id in ddusers.keys():
             u = User.objects.get(pk=user_id)
+            if u.profile.is_premium: continue
             feed_opens = UserSubscription.objects.filter(user=u).aggregate(sum=Sum('feed_opens'))['sum']
             read_story_count = RUserStory.read_story_count(user_id)
             feed_count = UserSubscription.objects.filter(user=u).count()
