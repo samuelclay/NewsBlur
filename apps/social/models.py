@@ -339,7 +339,7 @@ class MSocialProfile(mongo.Document):
                 self.photo_url = 'http:' + self.photo_url
             return self.photo_url
         domain = Site.objects.get_current().domain
-        return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
+        return 'https://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
     def canonical(self, compact=False, include_follows=False, common_follows_with_user=None,
                   include_settings=False, include_following_user=None):
@@ -1498,7 +1498,7 @@ class MSharedStory(mongo.Document):
         return shared_count >= quota
     
     @classmethod
-    def count_potential_spammers(cls, days=1):
+    def count_potential_spammers(cls, days=1, destroy=False):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
         stories = cls.objects.filter(shared_date__gte=day_ago)
         shared = [{'u': s.user_id, 'f': s.story_feed_id} for s in stories]
@@ -1515,10 +1515,22 @@ class MSharedStory(mongo.Document):
         guaranteed_spammers = []
         for user_id in ddusers.keys():
             u = User.objects.get(pk=user_id)
+            if u.profile.is_premium: continue
             feed_opens = UserSubscription.objects.filter(user=u).aggregate(sum=Sum('feed_opens'))['sum']
+            read_story_count = RUserStory.read_story_count(user_id)
+            feed_count = UserSubscription.objects.filter(user=u).count()
+            share_count = MSharedStory.objects.filter(user_id=user_id).count()
             if not feed_opens: guaranteed_spammers.append(user_id)
+            if (feed_count <= 5 and 
+                feed_opens <= 5 and
+                read_story_count < share_count*2): guaranteed_spammers.append(user_id)
         
         print " ---> Guaranteed spammers: %s" % guaranteed_spammers
+        
+        if destroy and guaranteed_spammers:
+            for spammer_id in guaranteed_spammers:
+                user = User.objects.get(pk=spammer_id)
+                user.profile.delete_user(confirm=True, fast=True)
         
         return users, guaranteed_spammers
         
@@ -2423,7 +2435,7 @@ class MSocialServices(mongo.Document):
         facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
         self.facebook_friend_ids = facebook_friend_ids
         self.facebook_refresh_date = datetime.datetime.utcnow()
-        self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
+        self.facebook_picture_url = "https://graph.facebook.com/%s/picture" % self.facebook_uid
         self.syncing_facebook = False
         self.save()
         
@@ -2581,14 +2593,20 @@ class MSocialServices(mongo.Document):
         return profile
     
     @classmethod
-    def sync_all_twitter_photos(cls, days=14):
-        week_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-        shares = MSharedStory.objects.filter(shared_date__gte=week_ago)
-        sharers = sorted(set([s.user_id for s in shares]))
+    def sync_all_twitter_photos(cls, days=14, everybody=False):
+        if everybody:
+            sharers = [ss.user_id for ss in MSocialServices.objects.all().only('user_id')]
+        elif days:
+            week_ago = datetime.datetime.now() - datetime.timedelta(days=days)
+            shares = MSharedStory.objects.filter(shared_date__gte=week_ago)
+            sharers = sorted(set([s.user_id for s in shares]))
         print " ---> %s sharing user_ids" % len(sorted(sharers))
 
         for user_id in sharers:
-            profile = MSocialProfile.objects.get(user_id=user_id)
+            try:
+                profile = MSocialProfile.objects.get(user_id=user_id)
+            except MSocialProfile.DoesNotExist:
+                continue
             if not profile.photo_service == 'twitter': continue
             ss = MSocialServices.objects.get(user_id=user_id)
             try:

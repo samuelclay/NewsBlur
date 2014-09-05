@@ -256,7 +256,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     unread_counts: function(sum_total, seen_feeds) {
         if (!seen_feeds) seen_feeds = [];
         var counts = this.reduce(function(counts, item) {
-            if (item.is_feed() && !_.contains(seen_feeds, item.feed.id)) {
+            if (item.is_feed() && !_.contains(seen_feeds, item.feed.id) && item.feed.get('active')) {
                 var feed_counts = item.feed.unread_counts();
                 counts['ps'] += feed_counts['ps'];
                 counts['nt'] += feed_counts['nt'];
