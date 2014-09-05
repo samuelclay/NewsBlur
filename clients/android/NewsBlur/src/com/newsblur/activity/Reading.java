@@ -82,6 +82,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected final Object STORIES_MUTEX = new Object();
 	protected Cursor stories;
 
+    private View contentView; // we use this a ton, so cache it
 	protected ViewPager pager;
     protected Button overlayLeft, overlayRight;
     protected ProgressBar overlayProgress, overlayProgressRight, overlayProgressLeft;
@@ -108,6 +109,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
+        this.contentView = findViewById(android.R.id.content);
         this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
         this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
         this.overlayProgress = (ProgressBar) findViewById(R.id.reading_overlay_progress);
@@ -370,7 +372,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     public void scrollChanged(int hPos, int vPos, int currentWidth, int currentHeight) {
-        int scrollMax = currentHeight - findViewById(android.R.id.content).getMeasuredHeight();
+        int scrollMax = currentHeight - contentView.getMeasuredHeight();
         int posFromBot = (scrollMax - vPos);
 
         float newAlpha = 0.0f;
@@ -391,7 +393,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private void setOverlayAlpha(final float a) {
         // check to see if the device even has room for all the overlays, moving some to overflow if not
-        int widthPX = findViewById(android.R.id.content).getMeasuredWidth();
+        int widthPX = contentView.getMeasuredWidth();
         boolean overflowExtras = false;
         if (widthPX != 0) {
             float widthDP = UIUtils.px2dp(this, widthPX);
@@ -461,6 +463,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     public void onWindowFocusChanged(boolean hasFocus) {
         // this callback is a good API-level-independent way to tell when the root view size/layout changes
         super.onWindowFocusChanged(hasFocus);
+        this.contentView = findViewById(android.R.id.content);
         enableOverlays();
 
         // Ensure that we come out of immersive view if the activity no longer has focus
