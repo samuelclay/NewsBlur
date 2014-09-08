@@ -1493,12 +1493,14 @@ class MSharedStory(mongo.Document):
     @classmethod
     def feed_quota(cls, user_id, feed_id, days=1, quota=1):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
-        shared_count = cls.objects.filter(shared_date__gte=day_ago, story_feed_id=feed_id).count()
+        shared_count = cls.objects.filter(user_id=user_id,
+                                          shared_date__gte=day_ago, 
+                                          story_feed_id=feed_id).count()
 
         return shared_count >= quota
     
     @classmethod
-    def count_potential_spammers(cls, days=1):
+    def count_potential_spammers(cls, days=1, destroy=False):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
         stories = cls.objects.filter(shared_date__gte=day_ago)
         shared = [{'u': s.user_id, 'f': s.story_feed_id} for s in stories]
@@ -1515,10 +1517,22 @@ class MSharedStory(mongo.Document):
         guaranteed_spammers = []
         for user_id in ddusers.keys():
             u = User.objects.get(pk=user_id)
+            if u.profile.is_premium: continue
             feed_opens = UserSubscription.objects.filter(user=u).aggregate(sum=Sum('feed_opens'))['sum']
+            read_story_count = RUserStory.read_story_count(user_id)
+            feed_count = UserSubscription.objects.filter(user=u).count()
+            share_count = MSharedStory.objects.filter(user_id=user_id).count()
             if not feed_opens: guaranteed_spammers.append(user_id)
+            if (feed_count <= 5 and 
+                feed_opens <= 5 and
+                read_story_count < share_count*2): guaranteed_spammers.append(user_id)
         
         print " ---> Guaranteed spammers: %s" % guaranteed_spammers
+        
+        if destroy and guaranteed_spammers:
+            for spammer_id in guaranteed_spammers:
+                user = User.objects.get(pk=spammer_id)
+                user.profile.delete_user(confirm=True, fast=True)
         
         return users, guaranteed_spammers
         

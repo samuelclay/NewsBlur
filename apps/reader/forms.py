@@ -28,7 +28,7 @@ class LoginForm(forms.Form):
         username = self.cleaned_data.get('username', '').lower()
         password = self.cleaned_data.get('password', '')
         
-        user = User.objects.filter(Q(username__iexact=username) | Q(email=username))
+        user = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username))
         if user:
             user = user[0]
         if username and user:
@@ -40,7 +40,7 @@ class LoginForm(forms.Form):
                     user.save()
                 self.user_cache = authenticate(username=user.username, password=user.username)
             if self.user_cache is None:
-                email_user = User.objects.filter(email=username)
+                email_user = User.objects.filter(email__iexact=username)
                 if email_user:
                     email_user = email_user[0]
                     self.user_cache = authenticate(username=email_user.username, password=password)

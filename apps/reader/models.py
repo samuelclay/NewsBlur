@@ -427,7 +427,7 @@ class UserSubscription(models.Model):
 
     @classmethod
     def recreate_deleted_feed(cls, new_feed_id, old_feed_id=None, skip=0):
-        user_ids = sorted([int(u) for u in open('users.txt').read().split('\n') if u])
+        user_ids = sorted([int(u) for u in open('utils/backups/users.txt').read().split('\n') if u])
         
         count = len(user_ids)
         
