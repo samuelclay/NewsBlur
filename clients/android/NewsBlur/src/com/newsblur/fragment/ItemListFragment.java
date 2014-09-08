@@ -35,17 +35,23 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
-public abstract class ItemListFragment extends Fragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	public static int ITEMLIST_LOADER = 0x01;
 
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected int currentState;
-    protected StoryOrder storyOrder;
     private boolean firstSyncDone = false;
+    private int lastRequestedStoryCount = 0;
+
+    @Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+    }
 
     /**
      * Indicate that the DB was cleared.
@@ -53,6 +59,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
     public void resetEmptyState() {
         firstSyncDone = false;
         setEmptyListView(R.string.empty_list_view_loading);
+        lastRequestedStoryCount = 0;
     }
 
     public void syncDone() {
@@ -89,8 +96,15 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         // load an extra page or two worth of stories past the viewport
-        int desiredStories = firstVisible + (visibleCount*2);
-        triggerRefresh(desiredStories);
+        int desiredStoryCount = firstVisible + (visibleCount*2);
+
+        // this method tends to get called repeatedly. don't request repeats
+        if (desiredStoryCount <= lastRequestedStoryCount) {
+            return;
+        }
+        lastRequestedStoryCount = desiredStoryCount;
+
+        triggerRefresh(desiredStoryCount);
 	}
 
 	@Override
@@ -100,10 +114,6 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 		currentState = state;
 		hasUpdated();
 	}
-
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 	private void triggerRefresh(int desiredStories) {
         ((ItemsList) getActivity()).triggerRefresh(desiredStories);
@@ -119,8 +129,10 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         }
 	}
 
-    @Override
-    public abstract Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle);
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		return dbHelper.getStoriesLoader(getFeedSet(), currentState);
+	}
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -183,14 +195,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
             return true;
 
         case R.id.menu_mark_previous_stories_as_read:
-            List<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
-            List<Story> storiesToMarkAsRead = new ArrayList<Story>();
-            for(Story s : previousStories) {
-                if(! s.read) {
-                    storiesToMarkAsRead.add(s);
-                }
-            }
-            FeedUtils.markStoriesAsRead(storiesToMarkAsRead, activity);
+            FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
             hasUpdated();
             return true;
 

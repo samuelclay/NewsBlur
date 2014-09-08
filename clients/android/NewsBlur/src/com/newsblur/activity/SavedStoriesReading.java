@@ -29,9 +29,4 @@ public class SavedStoriesReading extends Reading {
         return 0;
     }
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		return dbHelper.getSavedStoriesLoader();
-    }
-    
 }

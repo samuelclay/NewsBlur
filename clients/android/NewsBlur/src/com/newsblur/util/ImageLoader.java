@@ -123,17 +123,18 @@ public class ImageLoader {
 			return bitmap;
 		}
 
+        HttpURLConnection conn = null;
 		try {
 			if (url.startsWith("/")) {
 				url = APIConstants.NEWSBLUR_URL + url;
 			}
-			final URL imageUrl = new URL(url);
-			final HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
+			URL imageUrl = new URL(url);
+			conn = (HttpURLConnection)imageUrl.openConnection();
 			conn.setConnectTimeout(10000);
 			conn.setReadTimeout(30000);
 			conn.setInstanceFollowRedirects(true);
-			final InputStream inputStream = conn.getInputStream();
-			final OutputStream outputStream = new FileOutputStream(f);
+			InputStream inputStream = conn.getInputStream();
+			OutputStream outputStream = new FileOutputStream(f);
 			byte[] b = new byte[1024];  
 			int read;  
 			while ((read = inputStream.read(b)) != -1) {  
@@ -149,7 +150,9 @@ public class ImageLoader {
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), "Error loading image from network: " + url, e);
 			return null;
-		}
+		} finally {
+            NetworkUtils.closeQuietly(conn);
+        }
 	}
 
 	private class PhotoToLoad {

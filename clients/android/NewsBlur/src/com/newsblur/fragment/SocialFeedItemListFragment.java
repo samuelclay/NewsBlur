@@ -46,7 +46,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 		currentState = getArguments().getInt("currentState");
         userId = getArguments().getString("userId");
         username = getArguments().getString("username");
-        storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
@@ -55,7 +54,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
 
 		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		Cursor cursor = getActivity().getContentResolver().query(uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
+		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
 		
 		groupFroms = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
 		groupTos = new int[] { R.id.row_item_title, R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_content, R.id.row_item_date, R.id.row_item_author, R.id.row_item_sidebar};
@@ -67,13 +66,12 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 		
 	}
 
-	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final StoryOrder storyOrder, final DefaultFeedView defaultFeedView) {
+	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final DefaultFeedView defaultFeedView) {
 	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
 		Bundle args = new Bundle();
         args.putInt("currentState", currentState);
         args.putString("userId", userId);
         args.putString("username", username);
-        args.putSerializable("storyOrder", storyOrder);
         args.putSerializable("defaultFeedView", defaultFeedView);
         fragment.setArguments(args);
         return fragment;
@@ -91,13 +89,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 		itemList.setOnItemClickListener(this);
 		
 		return v;
-	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
-	    return cursorLoader;
 	}
 
 	@Override

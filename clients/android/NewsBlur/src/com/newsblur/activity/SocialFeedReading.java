@@ -42,10 +42,4 @@ public class SocialFeedReading extends Reading {
         return FeedUtils.getFeedUnreadCount(socialFeed, this.currentState);
     }
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        Uri storiesURI = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-        return new CursorLoader(this, storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(PrefsUtils.getStoryOrderForFeed(this, userId)));
-    }
-
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.net.HttpURLConnection;
+
 public class NetworkUtils {
 	
 	public static boolean isOnline(Context context) {
@@ -14,5 +16,13 @@ public class NetworkUtils {
 		}
 		return false;
 	}
+
+    public static void closeQuietly(HttpURLConnection conn) {
+        if (conn == null) return;
+        try {
+            conn.disconnect();
+        } catch (Throwable t) {
+        }
+    }
 
 }

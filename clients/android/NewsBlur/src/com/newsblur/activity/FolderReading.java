@@ -37,9 +37,4 @@ public class FolderReading extends Reading {
         return c;
     }
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        return new CursorLoader(this, FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(PrefsUtils.getStoryOrderForFolder(this, folderName)));
-    }
-
 }

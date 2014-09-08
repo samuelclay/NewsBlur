@@ -36,6 +36,7 @@ public class ImageCache {
     }
 
     public void cacheImage(String url) {
+        HttpURLConnection conn = null;
         try {
             // don't be evil and download images if the user is low on storage
             if (cacheDir.getFreeSpace() < MIN_FREE_SPACE_BYTES) {
@@ -52,7 +53,7 @@ public class ImageCache {
             File f = new File(cacheDir, fileName);
 
             URL u = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+            conn = (HttpURLConnection) u.openConnection();
             conn.setInstanceFollowRedirects(true);
             InputStream inputStream = conn.getInputStream();
 			OutputStream outputStream = new FileOutputStream(f);
@@ -65,6 +66,8 @@ public class ImageCache {
             conn.disconnect();
         } catch (Throwable t) {
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
+        } finally {
+            NetworkUtils.closeQuietly(conn);
         }
     }
 

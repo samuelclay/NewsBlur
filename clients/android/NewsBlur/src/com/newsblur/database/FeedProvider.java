@@ -320,6 +320,9 @@ public class FeedProvider extends ContentProvider {
             return cursor;
         }
         public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(LoggingDatabase.class.getName(), "selection: " + selection);
+            }
             return mdb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
         }
         public void execSQL(String sql) {

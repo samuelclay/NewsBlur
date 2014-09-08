@@ -1,8 +1,10 @@
 package com.newsblur.service;
 
 import android.app.Service;
+import android.content.ComponentCallbacks2;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.text.TextUtils;
@@ -12,11 +14,13 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
+import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.FeedFolderResponse;
+import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
@@ -33,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A background service to handle synchronisation with the NB servers.
@@ -51,10 +57,7 @@ import java.util.Set;
  */
 public class NBSyncService extends Service {
 
-    private volatile static boolean FreshRequest = false;
-    private volatile static boolean ThreadActive = false;
-    private static final Object WORK_THREAD_MUTEX = new Object();
-
+    private volatile static boolean ActionsRunning = false;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean UnreadSyncRunning = false;
@@ -81,16 +84,24 @@ public class NBSyncService extends Service {
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
 
-    private volatile static boolean HaltNow = false;
+    private volatile static boolean HaltNow;
 
+    private PowerManager.WakeLock wl = null;
+    private ExecutorService executor;
 	private APIManager apiManager;
     private BlurDatabaseHelper dbHelper;
     private ImageCache imageCache;
+    private int lastStartIdCompleted = -1;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
         Log.d(this.getClass().getName(), "onCreate");
+        HaltNow = false;
+        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
+        wl.setReferenceCounted(false);
+        executor = Executors.newFixedThreadPool(1);
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
@@ -102,33 +113,17 @@ public class NBSyncService extends Service {
      * that the service should check for outstanding work.
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        HaltNow = false;
-        FreshRequest = true;
-
-        if (ThreadActive) {
-            return Service.START_NOT_STICKY;
-        }
-
+    public int onStartCommand(Intent intent, int flags, final int startId) {
         // only perform a sync if the app is actually running or background syncs are enabled
         if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
-            new Thread(new Runnable() {
+            Runnable r = new Runnable() {
                 public void run() {
-                    synchronized (WORK_THREAD_MUTEX) {
-                        while( FreshRequest ) {
-                            try {
-                                ThreadActive = true;
-                                FreshRequest = false;
-                                doSync();
-                            } finally {
-                                ThreadActive = false;
-                            }
-                        }
-                    }
+                    doSync(startId);
                 }
-            }).start();
+            };
+            executor.execute(r);
         } else {
             Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
         } 
@@ -141,12 +136,12 @@ public class NBSyncService extends Service {
     /**
      * Do the actual work of syncing.
      */
-    private synchronized void doSync() {
-        Log.d(this.getClass().getName(), "starting sync . . .");
-
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
+    private synchronized void doSync(int startId) {
         try {
+            if (HaltNow) return;
+
+            Log.d(this.getClass().getName(), "starting sync . . .");
+
             wl.acquire();
 
             // check to see if we are on an allowable network only after ensuring we have CPU
@@ -155,21 +150,122 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            // these requests are expressly enqueued by the UI/user, do them first
+            // first: catch up
+            syncActions();
+            
+            // these requests are expressly enqueued by the UI/user, do them next
             syncPendingFeeds();
 
             syncMetadata();
 
             syncUnreads();
+
+            finishActions();
             
             prefetchImages();
 
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
-            if (HaltNow) stopSelf();
-            wl.release();
+            lastStartIdCompleted = startId;
+            if (wl != null) wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
+        }
+    }
+
+    /**
+     * Perform any reading actions the user has done before we do anything else.
+     */
+    private void syncActions() {
+        // TODO: replace all halting checks with full check for connectivity or interrupts
+        if (HaltNow) return;
+
+        Cursor c = null;
+        try {
+            c = dbHelper.getActions(false);
+            if (c.getCount() < 1) return;
+
+            Log.d(this.getClass().getName(), "found new actions: " + c.getCount());
+            ActionsRunning = true;
+            NbActivity.updateAllActivities();
+
+            actionsloop : while (c.moveToNext()) {
+                String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
+                NewsBlurResponse response = null;
+                if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    String feedIds = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+                    Long includeOlder = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    Long includeNewer = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    if (hash != null) {
+                        response = apiManager.markStoryAsRead(hash);
+                    } else if (feedIds != null) {
+                        Set<String> feeds = new HashSet<String>();
+                        for (String feedId : TextUtils.split(feedIds, ",")) feeds.add(feedId);
+                        if (feeds.size() == 0) {
+                            response = apiManager.markAllAsRead();
+                        } else {
+                            response = apiManager.markFeedsAsRead(feeds, includeOlder, includeNewer);
+                        }
+                    } else {
+                        Log.w(this.getClass().getName(), "discarding mark-read action of unknown type: " + id);
+                    }
+                } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    response = apiManager.markStoryHashUnread(hash);
+                } else {
+                    Log.w(this.getClass().getName(), "discarding action of unknown type: " + id);
+                }
+
+                // if we attempted a call and it failed, do not mark the action as done
+                if (response != null) {
+                    if (response.isError()) {
+                        continue actionsloop;
+                    }
+                }
+
+                dbHelper.setActionDone(id);
+            }
+        } finally {
+            closeQuietly(c);
+            ActionsRunning = false;
+            NbActivity.updateAllActivities();
+        }
+    }
+
+    /**
+     * Some actions have a final, local step after being done remotely to ensure in-flight
+     * API actions didn't race-overwrite them.  Do these, and then clean up the DB.
+     */
+    private void finishActions() {
+        if (HaltNow) return;
+
+        Cursor c = null;
+        try {
+            c = dbHelper.getActions(true);
+            if (c.getCount() < 1) return;
+
+            Log.d(this.getClass().getName(), "found done actions: " + c.getCount());
+            ActionsRunning = true;
+            NbActivity.updateAllActivities();
+
+            while (c.moveToNext()) {
+                String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
+                if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    dbHelper.setStoryReadState(hash, true);
+                } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
+                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    dbHelper.setStoryReadState(hash, false);
+                } else {
+                    Log.w(this.getClass().getName(), "discarding action of unknown type: " + id);
+                }
+                dbHelper.clearAction(id);
+            }
+        } finally {
+            closeQuietly(c);
+            ActionsRunning = false;
+            NbActivity.updateAllActivities();
         }
     }
 
@@ -371,6 +467,7 @@ public class NBSyncService extends Service {
         try {
             Set<FeedSet> handledFeeds = new HashSet<FeedSet>();
             feedloop: for (FeedSet fs : PendingFeeds.keySet()) {
+                NbActivity.updateAllActivities();
                 if (HaltNow) return;
 
                 if (ExhaustedFeeds.contains(fs)) {
@@ -463,11 +560,24 @@ public class NBSyncService extends Service {
         return true;
     }
 
+    public void onTrimMemory (int level) {
+        // if the UI is still active, definitely don't stop
+        if (NbActivity.getActiveActivityCount() > 0) return;
+        
+        // be nice and stop if memory is even a tiny bit pressured and we aren't visible;
+        // the OS penalises long-running processes, and it is reasonably cheap to re-create ourself.
+        if (level > ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            if (lastStartIdCompleted != -1) {
+                stopSelf(lastStartIdCompleted);
+            }
+        }
+    }
+
     /**
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || ImagePrefetchRunning);
+        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || ImagePrefetchRunning);
     }
 
     /**
@@ -478,6 +588,7 @@ public class NBSyncService extends Service {
     }
 
     public static String getSyncStatusMessage() {
+        if (ActionsRunning) return "Catching up reading actions . . .";
         if (FFSyncRunning) return "Syncing feeds . . .";
         if (CleanupRunning) return "Cleaning up storage . . .";
         if (UnreadHashSyncRunning) return "Syncing unread status . . .";
@@ -507,7 +618,7 @@ public class NBSyncService extends Service {
 
     /**
      * Requests that the service fetch additional stories for the specified feed/folder. Returns
-     * true if more will be fetched or false if there are none remaining for that feed.
+     * true if more will be fetched as a result of this request.
      *
      * @param desiredStoryCount the minimum number of stories to fetch.
      */
@@ -518,11 +629,11 @@ public class NBSyncService extends Service {
         }
         Integer alreadyRequested = PendingFeeds.get(fs);
         if ((alreadyRequested != null) && (desiredStoryCount <= alreadyRequested)) {
-            return true;
+            return false;
         }
         Integer alreadySeen = FeedStoriesSeen.get(fs);
         if ((alreadySeen != null) && (desiredStoryCount <= alreadySeen)) {
-            return true;
+            return false;
         }
             
         Log.d(NBSyncService.class.getName(), "enqueued request for minimum stories: " + desiredStoryCount);
@@ -550,6 +661,7 @@ public class NBSyncService extends Service {
     public void onDestroy() {
         Log.d(this.getClass().getName(), "onDestroy");
         HaltNow = true;
+        executor.shutdown();
         super.onDestroy();
         dbHelper.close();
     }

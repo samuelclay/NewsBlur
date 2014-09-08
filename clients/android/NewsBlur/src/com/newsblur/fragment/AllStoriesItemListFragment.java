@@ -37,7 +37,6 @@ public class AllStoriesItemListFragment extends ItemListFragment implements OnIt
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
-		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
@@ -52,7 +51,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements OnIt
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
-		Cursor cursor = getActivity().getContentResolver().query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
+		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
 		getActivity().startManagingCursor(cursor);
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
@@ -71,12 +70,11 @@ public class AllStoriesItemListFragment extends ItemListFragment implements OnIt
 		return v;
 	}
 
-	public static ItemListFragment newInstance(ArrayList<String> feedIds, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance(ArrayList<String> feedIds, int currentState, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putInt("currentState", currentState);
         arguments.putStringArrayList("feedIds", feedIds);
-		arguments.putSerializable("storyOrder", storyOrder);
         arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);
 
@@ -93,11 +91,6 @@ public class AllStoriesItemListFragment extends ItemListFragment implements OnIt
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
-	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		return new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 	}
 
 }
