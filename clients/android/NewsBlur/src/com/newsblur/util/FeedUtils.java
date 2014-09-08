@@ -112,7 +112,11 @@ public class FeedUtils {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                dbHelper.clearReadingSession();
+                try {
+                    dbHelper.clearReadingSession();
+                } catch (Exception e) {
+                    ; // this one call can evade the on-upgrade DB wipe and throw exceptions
+                }
                 return null;
             }
         }.execute();
