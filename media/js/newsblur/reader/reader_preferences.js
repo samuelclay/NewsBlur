@@ -504,6 +504,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Mark a story as read',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Clicking on a story marks it as read immediately.')
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-markreadnextfeed' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadnextfeed-1', type: 'radio', name: 'markread_nextfeed', value: 'nextfeed' }),
+                                $.make('label', { 'for': 'NB-preference-markreadnextfeed-1' }, [
+                                    'Open the next site/folder'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadnextfeed-0', type: 'radio', name: 'markread_nextfeed', value: "nothing" }),
+                                $.make('label', { 'for': 'NB-preference-markreadnextfeed-0' }, [
+                                    'Stay on the same feed/folder'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'After marking feed/folder read'
+                        ])
                     ])
 
                 ]),
@@ -868,6 +887,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=doubleclick_unread]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.doubleclick_unread) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=markread_nextfeed]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.markread_nextfeed) {
                 $(this).attr('checked', true);
                 return false;
             }

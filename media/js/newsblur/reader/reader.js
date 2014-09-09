@@ -2117,6 +2117,9 @@
 
             this.model.mark_feed_as_read([feed_id], cutoff_timestamp, direction, 
                                          feed_id == this.active_feed,  _.bind(function() {
+                if (NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed') {
+                    this.show_next_feed(1);
+                }
                 this.feeds_unread_count(feed_id);
             }, this));
         },
@@ -2135,6 +2138,9 @@
                                          folder == this.active_folder, _.bind(function() {
                 if (!this.socket || !this.socket.socket || !this.socket.socket.connected) {
                     this.force_feeds_refresh(null, false, feeds);
+                }
+                if (NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed') {
+                    this.show_next_feed(1);
                 }
             }, this));
         },
