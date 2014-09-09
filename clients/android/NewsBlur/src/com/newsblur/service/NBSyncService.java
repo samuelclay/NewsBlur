@@ -195,8 +195,8 @@ public class NBSyncService extends Service {
                 if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
                     String feedIds = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
-                    Long includeOlder = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    Long includeNewer = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    Long includeOlder = DatabaseConstants.nullIfZero(c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_INCLUDE_OLDER)));
+                    Long includeNewer = DatabaseConstants.nullIfZero(c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_INCLUDE_NEWER)));
                     if (hash != null) {
                         response = apiManager.markStoryAsRead(hash);
                     } else if (feedIds != null) {
@@ -253,7 +253,10 @@ public class NBSyncService extends Service {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
                 if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    dbHelper.setStoryReadState(hash, true);
+                    if (hash != null ) {
+                        dbHelper.setStoryReadState(hash, true);
+                    }
+                    // TODO: double-check stories from feed-marks
                 } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
                     dbHelper.setStoryReadState(hash, false);

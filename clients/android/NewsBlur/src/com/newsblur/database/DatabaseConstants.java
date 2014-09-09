@@ -468,4 +468,10 @@ public class DatabaseConstants {
         }
     }
 
+    public static Long nullIfZero(Long l) {
+        if (l == null) return null;
+        if (l.longValue() == 0L) return null;
+        return l;
+    }
+
 }
