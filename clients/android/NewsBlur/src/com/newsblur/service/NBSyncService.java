@@ -655,6 +655,12 @@ public class NBSyncService extends Service {
         FeedStoriesSeen.put(fs, 0);
     }
 
+    public static void resetAllFeeds() {
+        ExhaustedFeeds.clear();
+        FeedPagesSeen.clear();
+        FeedStoriesSeen.clear();
+    }
+
     public static void softInterrupt() {
         Log.d(NBSyncService.class.getName(), "soft stop");
         HaltNow = true;
