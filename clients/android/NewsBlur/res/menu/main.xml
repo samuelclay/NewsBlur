@@ -18,6 +18,10 @@
     <item android:id="@+id/menu_settings"
           android:title="@string/settings"
           android:showAsAction="never" />
+
+    <item android:id="@+id/menu_feedback"
+          android:title="@string/menu_feedback"
+          android:showAsAction="never" />
     
     <item android:id="@+id/menu_logout"
           android:title="@string/menu_logout"

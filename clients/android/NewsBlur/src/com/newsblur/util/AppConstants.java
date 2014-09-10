@@ -58,4 +58,10 @@ public class AppConstants {
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 10;
 
+    // should the feedback link be enabled (read: is this a beta?)
+    public static final boolean ENABLE_FEEDBACK = true;
+
+    // link to app feedback page
+    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new?topic[style]=question&from=company&product=NewsBlur+Android+App&topic[additional_detail]=";
+
 }

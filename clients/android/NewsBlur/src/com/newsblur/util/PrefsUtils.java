@@ -19,6 +19,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 
 import com.newsblur.R;
@@ -45,10 +46,8 @@ public class PrefsUtils {
 
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 
-        String version;
-        try {
-            version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-        } catch (NameNotFoundException nnfe) {
+        String version = getVersion(context);
+        if (version == null) {
             Log.w(PrefsUtils.class.getName(), "could not determine app version");
             return;
         }
@@ -70,6 +69,24 @@ public class PrefsUtils {
             prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
         }
 
+    }
+
+    public static String getVersion(Context context) {
+        try {
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (NameNotFoundException nnfe) {
+            Log.w(PrefsUtils.class.getName(), "could not determine app version");
+            return null;
+        }
+    }
+
+    public static String createFeedbackLink(Context context) {
+        StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
+        s.append("<give us some feedback!>%0A%0A");
+        s.append("%0Aapp version: ").append(getVersion(context));
+        s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE);
+        s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
+        return s.toString();
     }
 
     public static void logout(Context context) {

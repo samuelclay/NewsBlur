@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.net.Uri;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +22,7 @@ import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
@@ -30,7 +33,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
-	private Menu menu;
     private TextView overlayStatusText;
     private boolean isLightTheme;
     private SwipeRefreshLayout swipeLayout;
@@ -91,7 +93,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
-		this.menu = menu;
+
+        MenuItem feedbackItem = menu.findItem(R.id.menu_feedback);
+        if (AppConstants.ENABLE_FEEDBACK) {
+            feedbackItem.setTitle(feedbackItem.getTitle() + " (v" + PrefsUtils.getVersion(this) + ")");
+        } else {
+            feedbackItem.setVisible(false);
+        }
+
 		return true;
 	}
 
@@ -115,6 +124,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		} else if (item.getItemId() == R.id.menu_settings) {
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
+            return true;
+        } else if (item.getItemId() == R.id.menu_feedback) {
+            try {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
+                startActivity(i);
+            } catch (Exception e) {
+                Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
+            }
             return true;
         }
 		return super.onOptionsItemSelected(item);
