@@ -123,13 +123,13 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		}
         if (includeOlder != null) {
-            // the API vends microsecond timestamps but for this call it requires milliseconds
+            // the app uses  milliseconds but the API wants seconds
             long cut = includeOlder.longValue();
             values.put(APIConstants.PARAMETER_CUTOFF_TIME, Long.toString(cut/1000L));
             values.put(APIConstants.PARAMETER_DIRECTION, APIConstants.VALUE_OLDER);
         }
         if (includeNewer != null) {
-            // the API vends microsecond timestamps but for this call it requires milliseconds
+            // the app uses  milliseconds but the API wants seconds
             long cut = includeNewer.longValue();
             values.put(APIConstants.PARAMETER_CUTOFF_TIME, Long.toString(cut/1000L));
             values.put(APIConstants.PARAMETER_DIRECTION, APIConstants.VALUE_NEWER);
