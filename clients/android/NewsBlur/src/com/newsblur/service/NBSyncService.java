@@ -69,6 +69,8 @@ public class NBSyncService extends Service {
         would annoy a user who is on the story list or paging through stories. */
     private volatile static boolean HoldStories = false;
     private volatile static boolean DoFeedsFolders = false;
+    private volatile static boolean isMemoryLow = false;
+    private volatile static boolean HaltNow = false;
 
     /** Feed sets that we need to sync and how many stories the UI wants for them. */
     private static Map<FeedSet,Integer> PendingFeeds;
@@ -83,8 +85,6 @@ public class NBSyncService extends Service {
     static { StoryHashQueue = new HashSet<String>(); }
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
-
-    private volatile static boolean HaltNow;
 
     private PowerManager.WakeLock wl = null;
     private ExecutorService executor;
@@ -170,6 +170,10 @@ public class NBSyncService extends Service {
             lastStartIdCompleted = startId;
             if (wl != null) wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
+        }
+
+        if (isMemoryLow && (NbActivity.getActiveActivityCount() < 1)) {
+            stopSelf(startId);
         }
     }
 
@@ -564,12 +568,14 @@ public class NBSyncService extends Service {
     }
 
     public void onTrimMemory (int level) {
-        // if the UI is still active, definitely don't stop
-        if (NbActivity.getActiveActivityCount() > 0) return;
-        
         // be nice and stop if memory is even a tiny bit pressured and we aren't visible;
         // the OS penalises long-running processes, and it is reasonably cheap to re-create ourself.
         if (level > ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            isMemoryLow = true;
+
+            // if the UI is still active, definitely don't stop
+            if (NbActivity.getActiveActivityCount() > 0) return;
+        
             if (lastStartIdCompleted != -1) {
                 stopSelf(lastStartIdCompleted);
             }
@@ -668,6 +674,10 @@ public class NBSyncService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public static boolean isMemoryLow() {
+        return isMemoryLow;
     }
 
 }
