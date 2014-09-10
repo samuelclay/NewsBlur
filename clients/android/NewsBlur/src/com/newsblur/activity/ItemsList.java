@@ -179,7 +179,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        NBSyncService.resetFeed(fs); 
+        FeedUtils.clearReadingSession(this); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
@@ -191,7 +191,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        NBSyncService.resetFeed(fs); 
+        FeedUtils.clearReadingSession(this); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();

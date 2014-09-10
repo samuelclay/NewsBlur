@@ -645,17 +645,7 @@ public class NBSyncService extends Service {
         return true;
     }
 
-    /**
-     * Resets pagination and exhaustion flags for the given feedset, so that it can be requested fresh
-     * from the beginning with new parameters.
-     */
-    public static void resetFeed(FeedSet fs) {
-        ExhaustedFeeds.remove(fs);
-        FeedPagesSeen.put(fs, 0);
-        FeedStoriesSeen.put(fs, 0);
-    }
-
-    public static void resetAllFeeds() {
+    public static void resetFeeds() {
         ExhaustedFeeds.clear();
         FeedPagesSeen.clear();
         FeedStoriesSeen.clear();
