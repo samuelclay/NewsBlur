@@ -31,6 +31,7 @@ import com.newsblur.service.NBSyncService;
 public class PrefsUtils {
 
 	public static void saveLogin(final Context context, final String userName, final String cookie) {
+        NBSyncService.resumeFromInterrupt();
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		final Editor edit = preferences.edit();
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);

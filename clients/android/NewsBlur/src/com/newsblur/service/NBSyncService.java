@@ -662,6 +662,10 @@ public class NBSyncService extends Service {
         HaltNow = true;
     }
 
+    public static void resumeFromInterrupt() {
+        HaltNow = false;
+    }
+
     @Override
     public void onDestroy() {
         Log.d(this.getClass().getName(), "onDestroy");
