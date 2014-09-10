@@ -88,6 +88,7 @@ public class PrefsUtils {
         s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE);
         s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
         s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
+        s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());
         return s.toString();
     }
 

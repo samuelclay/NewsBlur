@@ -72,6 +72,9 @@ public class NBSyncService extends Service {
     private volatile static boolean isMemoryLow = false;
     private volatile static boolean HaltNow = false;
 
+    private static long lastFeedCount = 0L;
+    private static long lastFFWriteMillis = 0L;
+
     /** Feed sets that we need to sync and how many stories the UI wants for them. */
     private static Map<FeedSet,Integer> PendingFeeds;
     static { PendingFeeds = new HashMap<FeedSet,Integer>(); }
@@ -331,6 +334,8 @@ public class NBSyncService extends Service {
                 return;
             }
 
+            long startTime = System.currentTimeMillis();
+
             isPremium = feedResponse.isPremium;
 
             // clean out the feed / folder tables
@@ -381,6 +386,9 @@ public class NBSyncService extends Service {
 
             // populate the starred stories count table
             dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
+
+            lastFFWriteMillis = System.currentTimeMillis() - startTime;
+            lastFeedCount = feedValues.size();
 
         } finally {
             FFSyncRunning = false;
@@ -682,6 +690,12 @@ public class NBSyncService extends Service {
 
     public static boolean isMemoryLow() {
         return isMemoryLow;
+    }
+
+    public static String getSpeedInfo() {
+        StringBuilder s = new StringBuilder();
+        s.append(lastFeedCount).append(" in ").append(lastFFWriteMillis);
+        return s.toString();
     }
 
 }
