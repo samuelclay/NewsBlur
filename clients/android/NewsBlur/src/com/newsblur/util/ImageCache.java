@@ -5,9 +5,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
+import java.io.IOException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +34,6 @@ public class ImageCache {
     }
 
     public void cacheImage(String url) {
-        HttpURLConnection conn = null;
         try {
             // don't be evil and download images if the user is low on storage
             if (cacheDir.getFreeSpace() < MIN_FREE_SPACE_BYTES) {
@@ -51,23 +48,10 @@ public class ImageCache {
             }
 
             File f = new File(cacheDir, fileName);
-
             URL u = new URL(url);
-            conn = (HttpURLConnection) u.openConnection();
-            conn.setInstanceFollowRedirects(true);
-            InputStream inputStream = conn.getInputStream();
-			OutputStream outputStream = new FileOutputStream(f);
-			byte[] b = new byte[1024];  
-			int read;  
-			while ((read = inputStream.read(b)) != -1) {  
-				outputStream.write(b, 0, read);  
-			}
-			outputStream.close();
-            conn.disconnect();
-        } catch (Throwable t) {
+            NetworkUtils.loadURL(u, new FileOutputStream(f));
+        } catch (IOException e) {
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
-        } finally {
-            NetworkUtils.closeQuietly(conn);
         }
     }
 
