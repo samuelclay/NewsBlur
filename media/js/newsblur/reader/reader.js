@@ -722,7 +722,10 @@
                 include_selected: true,
                 feed_id: this.active_feed
             });
-
+            
+            if (!$next_feed || $current_feed == $next_feed) return;
+            if ($current_feed && $current_feed.data('id') == $next_feed.data('id')) return;
+            
             var next_feed_id = $next_feed.data('id');
             if (next_feed_id && next_feed_id == this.active_feed) {
                 this.show_next_feed(direction, $next_feed);
@@ -736,6 +739,9 @@
         
         show_next_folder: function(direction, $current_folder) {
             var $next_folder = this.get_next_folder(direction, $current_folder);
+            
+            if (!$next_folder) return;
+            
             var folder = NEWSBLUR.assets.folders.get_view($next_folder);
 
             this.open_river_stories($next_folder, folder && folder.model);
