@@ -242,7 +242,7 @@
             var pane = this.layout.outerLayout.panes.west;
             var width = this.layout.outerLayout.state.west.size;
             pane.toggleClass("NB-narrow-pane-blue", width < 290);
-            pane.toggleClass("NB-narrow-pane-green", width < 254);
+            pane.toggleClass("NB-narrow-pane-green", width < 259);
             pane.toggleClass("NB-narrow-pane-yellow", width < 236);
             
             this.apply_tipsy_titles();
