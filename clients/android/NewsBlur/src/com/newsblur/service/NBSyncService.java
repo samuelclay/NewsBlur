@@ -141,7 +141,12 @@ public class NBSyncService extends Service {
      */
     private synchronized void doSync(int startId) {
         try {
-            if (HaltNow) return;
+            if (HaltNow) {
+                if (AppConstants.VERBOSE_LOG) {
+                    Log.d(this.getClass().getName(), "skipping sync, soft interrupt set.");
+                }
+                return;
+            }
 
             Log.d(this.getClass().getName(), "starting sync . . .");
 
