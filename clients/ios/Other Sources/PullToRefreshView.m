@@ -65,8 +65,9 @@
         scrollView = scroll;
         [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
 
+        UIColor *bgColor = UIColorFromRGB(0xF2F2F2);
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		self.backgroundColor = [UIColor colorWithRed:226.0/255.0 green:231.0/255.0 blue:237.0/255.0 alpha:1.0];
+		self.backgroundColor = bgColor;
 
 		lastUpdatedLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, frame.size.height - 30.0f, self.frame.size.width, 20.0f)];
 		lastUpdatedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
