@@ -94,7 +94,7 @@
 }
 
 - (BOOL)isReadyToPerform {
-    return NO;
+    return ([self readLaterItem].url != nil);
 }
 
 - (void)performActivity:(OSKActivityCompletionHandler)completion {

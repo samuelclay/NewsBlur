@@ -178,7 +178,7 @@
 
 - (void)textViewDidChangeSelection:(UITextView *)textView {
     NSRange selectedRange = textView.selectedRange;
-    if (self.ignoreNextTextSelectionAnimation == YES) {
+    if (self.ignoreNextTextSelectionAnimation) {
         [self setIgnoreNextTextSelectionAnimation:NO];
     } else if (selectedRange.length != textView.textStorage.length) {
         if (selectedRange.length == 0 || selectedRange.location < self.previousSelectedRange.location) {

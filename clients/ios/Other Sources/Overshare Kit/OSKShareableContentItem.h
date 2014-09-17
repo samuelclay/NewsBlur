@@ -2,7 +2,7 @@
 //  OSKShareableContentItem.h
 //  Overshare
 //
-//   
+//
 //  Copyright (c) 2013 Overshare Kit. All rights reserved.
 //
 
@@ -29,10 +29,10 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 
 /**
  An abstract base class for the many kinds of shareable content items.
- 
+
  @discussion Never instantiate `OSKShareableContentItem` directly. You must use it via
  a subclass (either built-in or one of your own).
- 
+
  @see OSKShareableContent
  */
 @interface OSKShareableContentItem : NSObject
@@ -40,12 +40,12 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 /**
  An alternate name to be used in place of the default name of any `<OSKActivity>` that
  is handling the content item. The default is `nil`.
- 
+
  @discussion Useful for when you need multiple instances of the same content item, e.g.
  in Riposte, we have "Email Post" and "Email Conversation" in the
  conversation share sheet. If you don't set an alternate activity name, then the
  `<OSKActivity>`'s default name and icon will be used instead.
- 
+
  If all you need to do is localize an activity name, it is better to do that
  via the `customizationsDelegate` of `OSKPresentationManager`.
  */
@@ -60,40 +60,40 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 /**
  Returns either one of the officially supported item types listed above,
  or a custom item type.
- 
+
  @warning Required. Subclasses must override without calling super.
  */
 - (NSString *)itemType;
 
 /**
  Additional activity-specific or contextual info.
- 
+
  @discussion Third-party apps & services vary widely in the extra features they
  offer. Facebook is *in general* a microblogging activity, like ADN and Twitter,
- but in practice it has a few advanced needs. Rather than add dozens of properties 
- that are each only used by a single activity type, it makes more sense use an 
+ but in practice it has a few advanced needs. Rather than add dozens of properties
+ that are each only used by a single activity type, it makes more sense use an
  NSMutableDictionary to store activity-specific or app-specific contextual info.
- 
+
  To avoid conflicts, keys in this dictionary should be namespaced as follows:
- 
+
  com.<application>.<activityName>.<key>
- 
+
  For example, the key to an NSDictionary of Facebook post attributes would use
  a protected namespace as follows:
- 
+
  com.oversharekit.facebook.userInfo
- 
+
  Let's say there's an app called Foo.app that has integrated OvershareKit.
  It has also written a bespoke OSKActivity subclass, "FOOSelfieActivity." This
  activity is a microblogging activity, but it needs additional data to submit a post.
- It could add an NSDictionary of custom attributes to the userInfo dictionary 
+ It could add an NSDictionary of custom attributes to the userInfo dictionary
  with the following key:
- 
+
  com.fooapp.selfie.userInfo
- 
+
  This would allow Foo.app to add the Selfie activity without having to make awkward
  modifications to their OSK integration.
- 
+
  As OvershareKit matures, we may occasionally promote frequently-used data types
  stored in userInfo dictionaries to class-level @properties.
  */
@@ -117,7 +117,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 
 /**
  An optional array of `<UIImage>` objects to be attached to the outgoing post.
- 
+
  @discussion Not all activities support multiple images. Those that do not will simply
  ignore all but the first image in the array when creating a new post.
  */
@@ -140,7 +140,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 ///---------------------------------------------------
 
 /**
- Text content. The user should be provided an opportunity to edit this text prior to 
+ Text content. The user should be provided an opportunity to edit this text prior to
  publishing, per Facebook's API terms.
  */
 @interface OSKFacebookContentItem : OSKShareableContentItem
@@ -178,7 +178,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 
 /**
  Content for sharing to blogging services like Tumblr or WordPress.
- 
+
  @warning As of October 31, 2013, no activities in Overshare Kit are using this item.
  */
 @interface OSKBlogPostContentItem : OSKShareableContentItem
@@ -200,7 +200,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 
 /**
  An optional flag for creating the post in the drafts queue instead of immediately publishing the post.
- 
+
  Defaults to NO (publishes immediately).
  */
 @property (assign, nonatomic) BOOL publishAsDraft;
@@ -237,8 +237,8 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 @property (copy, nonatomic) NSString *subject;
 
 /**
- The body text for the outgoing email. May be plain text or HTML markup. 
- 
+ The body text for the outgoing email. May be plain text or HTML markup.
+
  If HTML, the `isHTML` property must set to `YES`.
  */
 @property (copy, nonatomic) NSString *body;
@@ -249,7 +249,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 @property (assign, nonatomic) BOOL isHTML;
 
 /**
- An array of `UIImage` objects to attach to the outgoing message.
+ An array of `UIImage` or OSKMimeAttachment objects to attach to the outgoing message.
  */
 @property (copy, nonatomic) NSArray *attachments;
 
@@ -329,7 +329,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 
 /**
  Image content for copying & pasting. Setting this property will set all
- other properties to nil. 
+ other properties to nil.
  */
 @property (copy, nonatomic) NSArray *images;
 
@@ -357,7 +357,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 /**
  An optional description. Not all activities use this.
  */
-@property (copy, nonatomic) NSString *description;
+@property (copy, nonatomic) NSString *itemDescription;
 
 @end
 
@@ -377,7 +377,7 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 
 /**
  The title of the bookmark. Optional.
- 
+
  If left blank, `OSKPinboardActivity` will attempt to fetch
  the page title before sending the link to Pinboard.
  */
@@ -389,8 +389,8 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 @property (copy, nonatomic) NSString *notes;
 
 /**
- Option to flag a saved item as "to-read." 
- 
+ Option to flag a saved item as "to-read."
+
  Not all services may support this flag. At the very least, Pinboard does. It is
  recommended to set this to YES (it is YES by default).
  */

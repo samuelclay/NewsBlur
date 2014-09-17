@@ -29,6 +29,11 @@
 #import "OSKSession.h"
 #import "OSKURLSchemeActivity.h"
 
+
+static NSString * const OSKAccountAuthenticationFailure_NoAccounts       = @"OSKAccountAuthenticationFailure_NoAccounts";
+static NSString * const OSKAccountAuthenticationFailure_AccessNotGranted = @"OSKAccountAuthenticationFailure_AccessNotGranted";
+
+
 @interface OSKSessionController ()
 <
     OSKPurchasingViewControllerDelegate,
@@ -132,14 +137,12 @@
                         [theActivity setActiveSystemAccount:account];
                         [weakSelf handlePublishingStepForActivity:activity];
                     } else {
-                        [weakSelf showAlertForNoSystemAccounts];
-                        OSKLog(@"User has no existing system accounts with account type identifier: %@", systemAccountTypeIdentifier);
+                        [weakSelf handleSystemAccountAccessFailure:OSKAccountAuthenticationFailure_NoAccounts withActivity:activity];
                         [weakSelf cancel];
                     }
                 }
                 else {
-                    [weakSelf showAlertForSystemAccountAccessNotGranted];
-                    OSKLog(@"User denied access to system accounts with account type identifier: %@", systemAccountTypeIdentifier);
+                    [weakSelf handleSystemAccountAccessFailure:OSKAccountAuthenticationFailure_AccessNotGranted withActivity:activity];
                     [weakSelf cancel];
                 }
             }];
@@ -159,15 +162,13 @@
     NSString *systemAccountTypeIdentifier = [activity.class systemAccountTypeIdentifier];
     [accountStore requestAccessToAccountsWithAccountTypeIdentifier:systemAccountTypeIdentifier options:readOptions completion:^(BOOL successful, NSError *error) {
         if (successful == NO) {
-            [weakSelf showAlertForSystemAccountAccessNotGranted];
-            OSKLog(@"Access request failed for system accounts with account type identifier: %@", systemAccountTypeIdentifier);
+            [weakSelf handleSystemAccountAccessFailure:OSKAccountAuthenticationFailure_AccessNotGranted withActivity:activity];
             [weakSelf cancel];
         }
         else {
            [accountStore requestAccessToAccountsWithAccountTypeIdentifier:systemAccountTypeIdentifier options:writeOptions completion:^(BOOL successful, NSError *error) {
                if (successful == NO) {
-                   [weakSelf showAlertForSystemAccountAccessNotGranted];
-                   OSKLog(@"Access request failed for system accounts with account type identifier: %@", systemAccountTypeIdentifier);
+                   [weakSelf handleSystemAccountAccessFailure:OSKAccountAuthenticationFailure_AccessNotGranted withActivity:activity];
                    [weakSelf cancel];
                }
                else {
@@ -188,14 +189,34 @@
                        [weakSelf handlePublishingStepForActivity:activity];
                    }
                    else {
-                       [weakSelf showAlertForNoSystemAccounts];
-                       OSKLog(@"User has no existing system accounts with account type identifier: %@", systemAccountTypeIdentifier);
-                       
+                       [weakSelf handleSystemAccountAccessFailure:OSKAccountAuthenticationFailure_NoAccounts withActivity:activity];
                    }
                }
            }];
         }
     }];
+}
+
+- (void)handleSystemAccountAccessFailure:(NSString *)failureType withActivity:(OSKActivity *)activity
+{
+    void (^defaultHandler)() = nil;
+    if (failureType == OSKAccountAuthenticationFailure_NoAccounts) {
+        OSKLog(@"User has no existing system accounts with account type identifier: %@", [activity.class systemAccountTypeIdentifier]);
+        defaultHandler = ^void() {
+            [self showAlertForNoSystemAccounts];
+        };
+    } else if (failureType == OSKAccountAuthenticationFailure_AccessNotGranted) {
+        OSKLog(@"Access request failed for system accounts with account type identifier: %@", [activity.class systemAccountTypeIdentifier]);
+        defaultHandler = ^void() {
+            [self showAlertForSystemAccountAccessNotGranted];
+        };
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(sessionController:failedSystemAccountAccessForActivity:withDefaultHandler:)]) {
+        [self.delegate sessionController:self failedSystemAccountAccessForActivity:activity withDefaultHandler:defaultHandler];
+    } else if (defaultHandler) {
+        defaultHandler();
+    }
 }
 
 - (void)showAlertForNoSystemAccounts {

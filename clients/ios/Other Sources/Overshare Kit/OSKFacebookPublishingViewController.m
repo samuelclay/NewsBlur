@@ -37,6 +37,7 @@
 @property (strong, nonatomic) OSKFacebookActivity *activity;
 @property (strong, nonatomic) OSKFacebookContentItem *contentItem;
 @property (strong, nonatomic) UIView *keyboardToolbar;
+@property (strong, nonatomic) UIView *keyboardToolbarContainer; // Workaround for iOS 8 bug. Sigh...
 @property (strong, nonatomic) UIButton *accountButton; // Used on iPhone
 @property (strong, nonatomic) UIButton *audienceButton; // Used on iPhone
 @property (strong, nonatomic) UIWebView *snapshotWebView;
@@ -130,10 +131,16 @@
 - (void)setupKeyboardToolbar {
     OSKPresentationManager *presManager = [OSKPresentationManager sharedInstance];
     
+    // TOOLBAR
     self.keyboardToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0f)];
     self.keyboardToolbar.backgroundColor = presManager.color_toolbarBackground;
     self.keyboardToolbar.clipsToBounds = YES;
-    [self.textView setOSK_inputAccessoryView:self.keyboardToolbar];
+    self.keyboardToolbar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    
+    self.keyboardToolbarContainer = [[UIView alloc] initWithFrame:self.keyboardToolbar.bounds];
+    [self.keyboardToolbarContainer addSubview:self.keyboardToolbar];
+    [self.textView setOSK_inputAccessoryView:self.keyboardToolbarContainer];
+    
     CGRect borderedViewFrame = CGRectInset(self.keyboardToolbar.bounds,-1,0);
     borderedViewFrame.origin.y = 0;
     UIView *borderedView = [[UIView alloc] initWithFrame:borderedViewFrame];
@@ -263,15 +270,20 @@
 #pragma mark - Autorotation
 
 - (void)viewDidLayoutSubviews {
-    CGRect toolbarBounds = self.keyboardToolbar.bounds;
     CGFloat targetHeight;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        targetHeight = UIInterfaceOrientationIsLandscape(self.interfaceOrientation) ? 32.0f : 44.0f;
+        if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            targetHeight = 32.0f;
+        } else {
+            targetHeight = 44.0f;
+        }
     } else {
         targetHeight = 44.0f;
     }
-    toolbarBounds.size.height = targetHeight;
-    [self.keyboardToolbar setBounds:toolbarBounds];
+    CGRect toolbarFrame = self.keyboardToolbar.frame;
+    toolbarFrame.size.height = targetHeight;
+    toolbarFrame.origin.y = self.keyboardToolbarContainer.frame.size.height - targetHeight;
+    self.keyboardToolbar.frame = toolbarFrame;
     [self updateAccountButton];
     [self updateAudienceButton];
     [self adjustTextViewTopInset];
@@ -354,22 +366,26 @@
 #pragma mark - Audience Changes
 
 - (void)updateAudienceButton {
-    NSString *audienceName = nil;
-    NSString *audienceKey = [self.activity currentAudience];
-    if ([audienceKey isEqualToString:ACFacebookAudienceEveryone]) {
-        audienceName = @"Public";
-    }
+	NSString *audienceName = nil;
+	NSString *audienceKey = [self.activity currentAudience];
+    
+	OSKPresentationManager *presManager = [OSKPresentationManager sharedInstance];
+    
+	if ([audienceKey isEqualToString:ACFacebookAudienceEveryone]) {
+		audienceName = [presManager localizedText_FacebookAudience_Public];
+	}
     else if ([audienceKey isEqualToString:ACFacebookAudienceFriends]) {
-        audienceName = @"Friends";
-    }
+		audienceName = [presManager localizedText_FacebookAudience_Friends];
+	}
     else if ([audienceKey isEqualToString:ACFacebookAudienceOnlyMe]) {
-        audienceName = @"Only Me";
-    }
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self updateAudienceButton_Phone:audienceName];
-    } else {
-        [self updateAudienceButton_Pad:audienceName];
-    }
+		audienceName = [presManager localizedText_FacebookAudience_OnlyMe];
+	}
+    
+	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+		[self updateAudienceButton_Phone:audienceName];
+	} else {
+		[self updateAudienceButton_Pad:audienceName];
+	}
 }
 
 - (void)updateAudienceButton_Phone:(NSString *)audienceName {

@@ -29,6 +29,7 @@
 }
 
 - (void)commonInit {
+    self.exclusiveTouch = YES;
     self.backgroundColor = [UIColor clearColor];
     CGFloat lineThickness = ([[UIScreen mainScreen] scale] > 1) ? 0.5f : 1.0f;
     self.layer.borderWidth = lineThickness;

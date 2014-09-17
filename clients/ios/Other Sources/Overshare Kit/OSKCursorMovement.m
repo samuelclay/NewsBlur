@@ -53,30 +53,30 @@
 #pragma mark - Setup
 
 - (void)setupGestureRecognizersWithView:(UITextView *)textView {
-
+    
     // One Finger
     OSKCursorSwipeRecognizer *leftSwipeRecognizer = [[OSKCursorSwipeRecognizer alloc]
-                                                initWithTarget:self
-                                                action:@selector(swipedToTheLeft:)];
+                                                     initWithTarget:self
+                                                     action:@selector(swipedToTheLeft:)];
     OSKCursorSwipeRecognizer *rightSwipeRecognizer = [[OSKCursorSwipeRecognizer alloc]
-                                                 initWithTarget:self
-                                                 action:@selector(swipedToTheRight:)];
+                                                      initWithTarget:self
+                                                      action:@selector(swipedToTheRight:)];
     
     // Two Fingers
     OSKCursorSwipeRecognizer *leftSwipeRecognizer_twoFingers = [[OSKCursorSwipeRecognizer alloc]
-                                                           initWithTarget:self
-                                                           action:@selector(twoFingerSwipedToTheLeft:)];
+                                                                initWithTarget:self
+                                                                action:@selector(twoFingerSwipedToTheLeft:)];
     OSKCursorSwipeRecognizer *rightSwipeRecognizer_twoFingers = [[OSKCursorSwipeRecognizer alloc]
-                                                            initWithTarget:self
-                                                            action:@selector(twoFingerSwipedToTheRight:)];
+                                                                 initWithTarget:self
+                                                                 action:@selector(twoFingerSwipedToTheRight:)];
     
     // Three Fingers
     OSKCursorSwipeRecognizer *leftSwipeRecognizer_threeFingers = [[OSKCursorSwipeRecognizer alloc]
-                                                             initWithTarget:self
-                                                             action:@selector(threeFingerSwipedToTheLeft:)];
+                                                                  initWithTarget:self
+                                                                  action:@selector(threeFingerSwipedToTheLeft:)];
     OSKCursorSwipeRecognizer *rightSwipeRecognizer_threeFingers = [[OSKCursorSwipeRecognizer alloc]
-                                                              initWithTarget:self
-                                                              action:@selector(threeFingerSwipedToTheRight:)];
+                                                                   initWithTarget:self
+                                                                   action:@selector(threeFingerSwipedToTheRight:)];
     
     // Directions and Touch Counts
     leftSwipeRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
@@ -120,6 +120,72 @@
 #pragma mark - Swipe Actions
 
 - (void)swipedToTheRight:(id)sender {
+    if ([self currentWritingDirection:self.textView] == UITextWritingDirectionRightToLeft) {
+        [self goBackwardOneCharacter];
+    } else {
+        [self goForwardOneCharacter];
+    }
+}
+
+- (void)swipedToTheLeft:(id)sender {
+    if ([self currentWritingDirection:self.textView] == UITextWritingDirectionRightToLeft) {
+        [self goForwardOneCharacter];
+    } else {
+        [self goBackwardOneCharacter];
+    }
+}
+
+- (void)twoFingerSwipedToTheRight:(id)sender {
+    if ([self currentWritingDirection:self.textView] == UITextWritingDirectionRightToLeft) {
+        [self goBackwardOneWord];
+    } else {
+        [self goForwardOneWord];
+    }
+}
+
+- (void)twoFingerSwipedToTheLeft:(id)sender {
+    if ([self currentWritingDirection:self.textView] == UITextWritingDirectionRightToLeft) {
+        [self goForwardOneWord];
+    } else {
+        [self goBackwardOneWord];
+    }
+}
+
+- (void)threeFingerSwipedToTheRight:(id)sender {
+    if ([self currentWritingDirection:self.textView] == UITextWritingDirectionRightToLeft) {
+        [self goBackwardOneParagraph];
+    } else {
+        [self goForwardOneParagraph];
+    }
+}
+
+- (void)threeFingerSwipedToTheLeft:(id)sender {
+    if ([self currentWritingDirection:self.textView] == UITextWritingDirectionRightToLeft) {
+        [self goForwardOneParagraph];
+    } else {
+        [self goBackwardOneParagraph];
+    }
+}
+
+#pragma mark - Direction Logic
+
+- (UITextWritingDirection)currentWritingDirection:(id <UITextInput>)textInputObject {
+    UITextWritingDirection writingDirection;
+    @try {
+        writingDirection = [textInputObject
+                            baseWritingDirectionForPosition:textInputObject.selectedTextRange.start
+                            inDirection:UITextStorageDirectionBackward];
+    }
+    @catch (NSException *exception) {
+        writingDirection = UITextWritingDirectionLeftToRight;
+    }
+    @finally {
+        //
+    }
+    return writingDirection;
+}
+
+- (void)goForwardOneCharacter {
     NSRange selectedRange = self.textView.selectedRange;
     if (selectedRange.location < self.textView.textStorage.string.length) {
         NSInteger location = [self indexOfNextCharacter];
@@ -127,7 +193,17 @@
     }
 }
 
-- (void)swipedToTheLeft:(id)sender {
+- (void)goForwardOneWord {
+    NSInteger targetIndex = [self indexOfFirstSubsequentSpace];
+    self.textView.selectedRange = NSMakeRange(targetIndex, 0);
+}
+
+- (void)goForwardOneParagraph {
+    NSInteger targetIndex = [self indexOfFirstSubsequentLine];
+    self.textView.selectedRange = NSMakeRange(targetIndex, 0);
+}
+
+- (void)goBackwardOneCharacter {
     NSRange selectedRange = self.textView.selectedRange;
     if (selectedRange.location > 0) {
         NSInteger location = [self indexOfPreviousCharacter];
@@ -135,27 +211,17 @@
     }
 }
 
-- (void)twoFingerSwipedToTheRight:(id)sender {
-    NSInteger targetIndex = [self indexOfFirstSubsequentSpace];
-    self.textView.selectedRange = NSMakeRange(targetIndex, 0);
-}
-
-- (void)twoFingerSwipedToTheLeft:(id)sender {
+- (void)goBackwardOneWord {
     NSInteger targetIndex = [self indexOfFirstPreviousSpace];
     self.textView.selectedRange = NSMakeRange(targetIndex, 0);
 }
 
-- (void)threeFingerSwipedToTheRight:(id)sender {
-    NSInteger targetIndex = [self indexOfFirstSubsequentLine];
-    self.textView.selectedRange = NSMakeRange(targetIndex, 0);
-}
-
-- (void)threeFingerSwipedToTheLeft:(id)sender {
+- (void)goBackwardOneParagraph {
     NSInteger targetIndex = [self indexOfFirstPreviousLine];
     self.textView.selectedRange = NSMakeRange(targetIndex, 0);
 }
 
-#pragma mark - Cursor Logic
+#pragma mark - Index Logic
 
 - (NSInteger)indexOfPreviousCharacter {
     
@@ -187,7 +253,7 @@
      options:NSStringEnumerationByComposedCharacterSequences
      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
          
-         if (nextCharacterReached == YES) {
+         if (nextCharacterReached) {
              indexChanged = YES;
              indexOfSpace = substringRange.location;
              *stop = YES;
@@ -232,7 +298,7 @@
      options:NSStringEnumerationByWords
      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
          
-         if (firstWordFound == YES) {
+         if (firstWordFound) {
              indexChanged = YES;
              indexOfSpace = substringRange.location;
              *stop = YES;
@@ -279,7 +345,7 @@
      options:NSStringEnumerationByLines
      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
          
-         if (firstWordFound == YES) {
+         if (firstWordFound) {
              indexChanged = YES;
              indexOfSpace = substringRange.location;
              *stop = YES;

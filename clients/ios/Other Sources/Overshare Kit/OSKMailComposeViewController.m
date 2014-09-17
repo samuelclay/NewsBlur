@@ -10,6 +10,7 @@
 
 #import "OSKEmailActivity.h"
 #import "OSKShareableContentItem.h"
+#import "OSKMimeAttachment.h"
 
 @interface OSKMailComposeViewController () <MFMailComposeViewControllerDelegate, UINavigationControllerDelegate>
 
@@ -40,24 +41,27 @@
 - (void)preparePublishingViewForActivity:(OSKActivity *)activity delegate:(id <OSKPublishingViewControllerDelegate>)oskPublishingDelegate {
     [self setActivity:(OSKEmailActivity *)activity];
     [self setOskPublishingDelegate:oskPublishingDelegate];
-    
+
     [self setActivity:(OSKEmailActivity *)activity];
     [self setOskPublishingDelegate:oskPublishingDelegate];
-    
+
     OSKEmailContentItem *emailItem = (OSKEmailContentItem *)activity.contentItem;
-    
+
     [self setSubject:emailItem.subject];
     [self setMessageBody:emailItem.body isHTML:emailItem.isHTML];
     [self setToRecipients:emailItem.toRecipients];
     [self setCcRecipients:emailItem.ccRecipients];
     [self setBccRecipients:emailItem.bccRecipients];
-    
+
     for (id attachment in emailItem.attachments) {
         if ([attachment isKindOfClass:[UIImage class]]) {
             UIImage *photo = (UIImage *)attachment;
             NSData *imageData = UIImageJPEGRepresentation(photo, 0.25);
             NSString *fileName = [NSString stringWithFormat:@"Image-%lu.jpg", (unsigned long)[emailItem.attachments indexOfObject:photo]];
             [self addAttachmentData:imageData mimeType:@"image/jpeg" fileName:fileName];
+        } else if ([attachment isKindOfClass:[OSKMimeAttachment class]]) {
+            OSKMimeAttachment *mimeAttachment = (OSKMimeAttachment *) attachment;
+            [self addAttachmentData:mimeAttachment.data mimeType:mimeAttachment.mimeType fileName:mimeAttachment.fileName];
         }
     }
 }
