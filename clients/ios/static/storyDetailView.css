@@ -530,11 +530,13 @@ del {
 .nb-story-comments-label {
     float: left;
     margin-right: 2px;
+    white-space: nowrap;
 }
 
 .nb-story-share-label {
     float: right;
     margin-left: 2px;
+    white-space: nowrap;
 }
 
 /* Sharing */

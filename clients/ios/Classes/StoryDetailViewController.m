@@ -588,7 +588,7 @@
                                                                 "%@" // public avatars
                                                               "</div>",
                                                               [[self.activeStory objectForKey:@"comment_count"] intValue] == 1
-                                                              ? [NSString stringWithFormat:@"<b>1 comment</b>"] : 
+                                                              ? [NSString stringWithFormat:@"<b>1 comment</b>"] :
                                                               [NSString stringWithFormat:@"<b>%@ comments</b>", [self.activeStory objectForKey:@"comment_count"]],
                                                               
                                                               //replyStr,

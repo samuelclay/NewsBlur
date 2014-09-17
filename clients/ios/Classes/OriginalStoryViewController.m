@@ -14,11 +14,13 @@
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
 #import "NBBarButtonItem.h"
+#import "SloppySwiper.h"
 
 @implementation OriginalStoryViewController
 
 @synthesize appDelegate;
 @synthesize webView;
+@synthesize swiper;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
@@ -28,17 +30,22 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     self.navigationController.navigationBar.alpha = 1;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
     if ([self.webView isLoading]) {
         [self.webView stopLoading];
     }
@@ -106,6 +113,9 @@
     }
     
     [self.webView loadHTMLString:@"" baseURL:nil];
+    
+    self.swiper = [[SloppySwiper alloc] initWithNavigationController:self.navigationController];
+    self.navigationController.delegate = self.swiper;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
