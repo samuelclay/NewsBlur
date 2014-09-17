@@ -9,7 +9,6 @@ import random
 import requests
 import HTMLParser
 from collections import defaultdict
-from pprint import pprint
 from BeautifulSoup import BeautifulSoup
 from mongoengine.queryset import Q
 from django.conf import settings
@@ -1511,8 +1510,6 @@ class MSharedStory(mongo.Document):
         users = {}
         for user_id, feeds in ddusers.items():
             users[user_id] = dict(feeds)
-
-        pprint(users)
         
         guaranteed_spammers = []
         for user_id in ddusers.keys():
@@ -1522,9 +1519,16 @@ class MSharedStory(mongo.Document):
             read_story_count = RUserStory.read_story_count(user_id)
             feed_count = UserSubscription.objects.filter(user=u).count()
             share_count = MSharedStory.objects.filter(user_id=user_id).count()
+            print " ---> %s (%s): feed_opens:%s feeds:%s read:%s shared:%s" % (
+                u.username, u.pk,
+                feed_opens,
+                feed_count,
+                read_story_count,
+                share_count,
+            )
             if not feed_opens: guaranteed_spammers.append(user_id)
             if (feed_count <= 5 and 
-                feed_opens <= 5 and
+                feed_opens <= 10 and
                 read_story_count < share_count*2): guaranteed_spammers.append(user_id)
         
         print " ---> Guaranteed spammers: %s" % guaranteed_spammers
@@ -1534,7 +1538,7 @@ class MSharedStory(mongo.Document):
                 user = User.objects.get(pk=spammer_id)
                 user.profile.delete_user(confirm=True, fast=True)
         
-        return users, guaranteed_spammers
+        return guaranteed_spammers
         
     @classmethod
     def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
