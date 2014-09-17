@@ -117,6 +117,7 @@ public class FeedUtils {
                 } catch (Exception e) {
                     ; // this one call can evade the on-upgrade DB wipe and throw exceptions
                 }
+                NBSyncService.resetFeeds();
                 return null;
             }
         }.execute();

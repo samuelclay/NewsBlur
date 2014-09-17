@@ -69,6 +69,11 @@ public class NBSyncService extends Service {
         would annoy a user who is on the story list or paging through stories. */
     private volatile static boolean HoldStories = false;
     private volatile static boolean DoFeedsFolders = false;
+    private volatile static boolean isMemoryLow = false;
+    private volatile static boolean HaltNow = false;
+
+    private static long lastFeedCount = 0L;
+    private static long lastFFWriteMillis = 0L;
 
     /** Feed sets that we need to sync and how many stories the UI wants for them. */
     private static Map<FeedSet,Integer> PendingFeeds;
@@ -83,8 +88,6 @@ public class NBSyncService extends Service {
     static { StoryHashQueue = new HashSet<String>(); }
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
-
-    private volatile static boolean HaltNow;
 
     private PowerManager.WakeLock wl = null;
     private ExecutorService executor;
@@ -138,7 +141,12 @@ public class NBSyncService extends Service {
      */
     private synchronized void doSync(int startId) {
         try {
-            if (HaltNow) return;
+            if (HaltNow) {
+                if (AppConstants.VERBOSE_LOG) {
+                    Log.d(this.getClass().getName(), "skipping sync, soft interrupt set.");
+                }
+                return;
+            }
 
             Log.d(this.getClass().getName(), "starting sync . . .");
 
@@ -171,6 +179,10 @@ public class NBSyncService extends Service {
             if (wl != null) wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
         }
+
+        if (isMemoryLow && (NbActivity.getActiveActivityCount() < 1)) {
+            stopSelf(startId);
+        }
     }
 
     /**
@@ -195,8 +207,8 @@ public class NBSyncService extends Service {
                 if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
                     String feedIds = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
-                    Long includeOlder = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    Long includeNewer = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+                    Long includeOlder = DatabaseConstants.nullIfZero(c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_INCLUDE_OLDER)));
+                    Long includeNewer = DatabaseConstants.nullIfZero(c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_INCLUDE_NEWER)));
                     if (hash != null) {
                         response = apiManager.markStoryAsRead(hash);
                     } else if (feedIds != null) {
@@ -253,7 +265,10 @@ public class NBSyncService extends Service {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
                 if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    dbHelper.setStoryReadState(hash, true);
+                    if (hash != null ) {
+                        dbHelper.setStoryReadState(hash, true);
+                    }
+                    // TODO: double-check stories from feed-marks
                 } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
                     String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
                     dbHelper.setStoryReadState(hash, false);
@@ -324,6 +339,8 @@ public class NBSyncService extends Service {
                 return;
             }
 
+            long startTime = System.currentTimeMillis();
+
             isPremium = feedResponse.isPremium;
 
             // clean out the feed / folder tables
@@ -374,6 +391,9 @@ public class NBSyncService extends Service {
 
             // populate the starred stories count table
             dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
+
+            lastFFWriteMillis = System.currentTimeMillis() - startTime;
+            lastFeedCount = feedValues.size();
 
         } finally {
             FFSyncRunning = false;
@@ -561,12 +581,14 @@ public class NBSyncService extends Service {
     }
 
     public void onTrimMemory (int level) {
-        // if the UI is still active, definitely don't stop
-        if (NbActivity.getActiveActivityCount() > 0) return;
-        
         // be nice and stop if memory is even a tiny bit pressured and we aren't visible;
         // the OS penalises long-running processes, and it is reasonably cheap to re-create ourself.
         if (level > ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            isMemoryLow = true;
+
+            // if the UI is still active, definitely don't stop
+            if (NbActivity.getActiveActivityCount() > 0) return;
+        
             if (lastStartIdCompleted != -1) {
                 stopSelf(lastStartIdCompleted);
             }
@@ -642,19 +664,19 @@ public class NBSyncService extends Service {
         return true;
     }
 
-    /**
-     * Resets pagination and exhaustion flags for the given feedset, so that it can be requested fresh
-     * from the beginning with new parameters.
-     */
-    public static void resetFeed(FeedSet fs) {
-        ExhaustedFeeds.remove(fs);
-        FeedPagesSeen.put(fs, 0);
-        FeedStoriesSeen.put(fs, 0);
+    public static void resetFeeds() {
+        ExhaustedFeeds.clear();
+        FeedPagesSeen.clear();
+        FeedStoriesSeen.clear();
     }
 
     public static void softInterrupt() {
         Log.d(NBSyncService.class.getName(), "soft stop");
         HaltNow = true;
+    }
+
+    public static void resumeFromInterrupt() {
+        HaltNow = false;
     }
 
     @Override
@@ -669,6 +691,16 @@ public class NBSyncService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public static boolean isMemoryLow() {
+        return isMemoryLow;
+    }
+
+    public static String getSpeedInfo() {
+        StringBuilder s = new StringBuilder();
+        s.append(lastFeedCount).append(" in ").append(lastFFWriteMillis);
+        return s.toString();
     }
 
 }

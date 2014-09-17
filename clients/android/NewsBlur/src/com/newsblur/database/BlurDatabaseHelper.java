@@ -292,16 +292,16 @@ public class BlurDatabaseHelper {
     }
 
     public void markFeedsRead(FeedSet fs, Long olderThan, Long newerThan) {
-        // TODO: impl at least the older/newer than cases
+        // split this into two steps, since the double-check feature needs to
+        // redo the second step separately
+        markFeedsRead_feedCounts(fs, olderThan, newerThan);
+        markFeedsRead_storyCounts(fs, olderThan, newerThan);
+    }
 
-        // TODO: stories
-
-        // feed counts
+    public void markFeedsRead_feedCounts(FeedSet fs, Long olderThan, Long newerThan) {
         if (fs.isAllNormal()) {
             setFeedUnreadCount(0, null, null);
-        } else if (fs.isAllSocial()) {
-            // TODO: oddly, the client never supported this before, so there is no button to invoke it. The API call
-            //       works, though, so adding an impl. here should let us enable the button.
+            setSocialFeedUnreadCount(0, null, null);
         } else if (fs.getMultipleFeeds() != null) { 
             for (String feedId : fs.getMultipleFeeds()) {
                 setFeedUnreadCount(0, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
@@ -311,8 +311,36 @@ public class BlurDatabaseHelper {
         } else if (fs.getSingleSocialFeed() != null) {
             setSocialFeedUnreadCount(0,  DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{fs.getSingleSocialFeed().getKey()});
         } else {
-            throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
+            // TODO: fs.isAllSocial() was never supported by the UI, but the API has it, and it would be
+            //       easy enough to add here.  Should we?
+            throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
         }
+    }
+
+    public void markFeedsRead_storyCounts(FeedSet fs, Long olderThan, Long newerThan) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_READ, true);
+        String rangeSelection = null;
+        if (olderThan != null) rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " <= " + olderThan.toString();
+        if (newerThan != null) rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " >= " + newerThan.toString();
+        StringBuilder feedSelection = null;
+        if (fs.isAllNormal()) {
+            // a null selection is fine for all stories
+        } else if (fs.getMultipleFeeds() != null) {
+            feedSelection = new StringBuilder(DatabaseConstants.STORY_FEED_ID + " IN ( ");
+            feedSelection.append(TextUtils.join(",", fs.getMultipleFeeds()));
+            feedSelection.append(")");
+        } else if (fs.getSingleFeed() != null) {
+            feedSelection= new StringBuilder(DatabaseConstants.STORY_FEED_ID + " = ");
+            feedSelection.append(fs.getSingleFeed());
+        } else if (fs.getSingleSocialFeed() != null) {
+            feedSelection= new StringBuilder(DatabaseConstants.STORY_SOCIAL_USER_ID + " = ");
+            feedSelection.append(fs.getSingleSocialFeed().getKey());
+        } else {
+            throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
+        }
+        dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);
+
     }
 
     private void setFeedUnreadCount(int count, String whereClause, String[] whereArgs) {
@@ -483,6 +511,21 @@ public class BlurDatabaseHelper {
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {;}
+    }
+
+    private static String conjoinSelections(CharSequence... args) {
+        StringBuilder s = null;
+        for (CharSequence c : args) {
+            if (c == null) continue;
+            if (s == null) {
+                s = new StringBuilder(c);
+            } else {
+                s.append(" AND ");
+                s.append(c);
+            }
+        }
+        if (s == null) return null;
+        return s.toString();
     }
 
 }

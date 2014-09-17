@@ -122,7 +122,18 @@ public class APIManager {
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		}
-        // TODO: handle older/newer
+        if (includeOlder != null) {
+            // the app uses  milliseconds but the API wants seconds
+            long cut = includeOlder.longValue();
+            values.put(APIConstants.PARAMETER_CUTOFF_TIME, Long.toString(cut/1000L));
+            values.put(APIConstants.PARAMETER_DIRECTION, APIConstants.VALUE_OLDER);
+        }
+        if (includeNewer != null) {
+            // the app uses  milliseconds but the API wants seconds
+            long cut = includeNewer.longValue();
+            values.put(APIConstants.PARAMETER_CUTOFF_TIME, Long.toString(cut/1000L));
+            values.put(APIConstants.PARAMETER_DIRECTION, APIConstants.VALUE_NEWER);
+        }
 
 		APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
         // TODO: these calls use a different return format than others: the errors field is an array, not an object

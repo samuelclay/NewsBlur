@@ -19,6 +19,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 
 import com.newsblur.R;
@@ -30,6 +31,7 @@ import com.newsblur.service.NBSyncService;
 public class PrefsUtils {
 
 	public static void saveLogin(final Context context, final String userName, final String cookie) {
+        NBSyncService.resumeFromInterrupt();
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		final Editor edit = preferences.edit();
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);
@@ -45,10 +47,8 @@ public class PrefsUtils {
 
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 
-        String version;
-        try {
-            version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-        } catch (NameNotFoundException nnfe) {
+        String version = getVersion(context);
+        if (version == null) {
             Log.w(PrefsUtils.class.getName(), "could not determine app version");
             return;
         }
@@ -70,6 +70,26 @@ public class PrefsUtils {
             prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
         }
 
+    }
+
+    public static String getVersion(Context context) {
+        try {
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (NameNotFoundException nnfe) {
+            Log.w(PrefsUtils.class.getName(), "could not determine app version");
+            return null;
+        }
+    }
+
+    public static String createFeedbackLink(Context context) {
+        StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
+        s.append("<give us some feedback!>%0A%0A");
+        s.append("%0Aapp version: ").append(getVersion(context));
+        s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE);
+        s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
+        s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
+        s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());
+        return s.toString();
     }
 
     public static void logout(Context context) {

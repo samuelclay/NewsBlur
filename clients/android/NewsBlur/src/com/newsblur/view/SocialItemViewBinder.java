@@ -70,9 +70,12 @@ public class SocialItemViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {
 			String authors = cursor.getString(columnIndex);
-			if (!TextUtils.isEmpty(authors)) {
-				((TextView) view).setText(authors.toUpperCase());
-			}
+            if (TextUtils.isEmpty(authors)) {
+                view.setVisibility(View.GONE);
+            } else {
+                ((TextView) view).setText(authors.toUpperCase());
+                view.setVisibility(View.VISIBLE);
+            }
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
 			((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));

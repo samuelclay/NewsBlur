@@ -5,7 +5,8 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = false;
+    public static final boolean VERBOSE_LOG = true;
+    public static final boolean VERBOSE_LOG_DB = false;
 
 	public static final int STATE_ALL = 0;
 	public static final int STATE_SOME = 1;
@@ -57,5 +58,11 @@ public class AppConstants {
 
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 10;
+
+    // should the feedback link be enabled (read: is this a beta?)
+    public static final boolean ENABLE_FEEDBACK = true;
+
+    // link to app feedback page
+    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new?topic[style]=question&from=company&product=NewsBlur+Android+App&topic[additional_detail]=";
 
 }
