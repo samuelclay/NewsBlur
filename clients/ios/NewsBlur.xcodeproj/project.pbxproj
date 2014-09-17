@@ -538,6 +538,14 @@
 		FFB9BE4D17F4B65B00FE0A36 /* logo_120@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4617F4B65B00FE0A36 /* logo_120@2x.png */; };
 		FFC2CB05192E7A3000868D33 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396271192A9AF2004BEE1A /* GoogleOpenSource.framework */; };
 		FFC2CB06192E7A3000868D33 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396273192A9AF2004BEE1A /* GooglePlus.framework */; };
+		FFC486A719CA40B700F4758F /* logo_144.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486A619CA40B700F4758F /* logo_144.png */; };
+		FFC486A919CA40DA00F4758F /* logo_72.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486A819CA40DA00F4758F /* logo_72.png */; };
+		FFC486AC19CA410000F4758F /* logo_50.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486AA19CA410000F4758F /* logo_50.png */; };
+		FFC486AD19CA410000F4758F /* logo_100.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486AB19CA410000F4758F /* logo_100.png */; };
+		FFC486AF19CA413C00F4758F /* logo_180.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486AE19CA413C00F4758F /* logo_180.png */; };
+		FFC486B219CA416D00F4758F /* logo_57.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486B019CA416D00F4758F /* logo_57.png */; };
+		FFC486B319CA416D00F4758F /* logo_114.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486B119CA416D00F4758F /* logo_114.png */; };
+		FFC486B519CA41AE00F4758F /* logo_87.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486B419CA41AE00F4758F /* logo_87.png */; };
 		FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC518B81768E59F00542719 /* g_icn_offline.png */; };
 		FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */; };
 		FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */; };
@@ -1405,6 +1413,14 @@
 		FFB9BE4417F4B65B00FE0A36 /* logo_120~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_120~iphone.png"; sourceTree = "<group>"; };
 		FFB9BE4517F4B65B00FE0A36 /* logo_76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_76.png; sourceTree = "<group>"; };
 		FFB9BE4617F4B65B00FE0A36 /* logo_120@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_120@2x.png"; sourceTree = "<group>"; };
+		FFC486A619CA40B700F4758F /* logo_144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_144.png; sourceTree = "<group>"; };
+		FFC486A819CA40DA00F4758F /* logo_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_72.png; sourceTree = "<group>"; };
+		FFC486AA19CA410000F4758F /* logo_50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_50.png; sourceTree = "<group>"; };
+		FFC486AB19CA410000F4758F /* logo_100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_100.png; sourceTree = "<group>"; };
+		FFC486AE19CA413C00F4758F /* logo_180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_180.png; sourceTree = "<group>"; };
+		FFC486B019CA416D00F4758F /* logo_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_57.png; sourceTree = "<group>"; };
+		FFC486B119CA416D00F4758F /* logo_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_114.png; sourceTree = "<group>"; };
+		FFC486B419CA41AE00F4758F /* logo_87.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_87.png; sourceTree = "<group>"; };
 		FFC518B81768E59F00542719 /* g_icn_offline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_offline.png; sourceTree = "<group>"; };
 		FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_appnet_active.png; sourceTree = "<group>"; };
 		FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "story_share_appnet_active@2x.png"; sourceTree = "<group>"; };
@@ -2728,6 +2744,14 @@
 		FFB9BE3F17F4B65B00FE0A36 /* logos */ = {
 			isa = PBXGroup;
 			children = (
+				FFC486B419CA41AE00F4758F /* logo_87.png */,
+				FFC486B019CA416D00F4758F /* logo_57.png */,
+				FFC486B119CA416D00F4758F /* logo_114.png */,
+				FFC486AE19CA413C00F4758F /* logo_180.png */,
+				FFC486AA19CA410000F4758F /* logo_50.png */,
+				FFC486AB19CA410000F4758F /* logo_100.png */,
+				FFC486A819CA40DA00F4758F /* logo_72.png */,
+				FFC486A619CA40B700F4758F /* logo_144.png */,
 				FF322236185BC1CE004078AA /* logo_80.png */,
 				FF322234185BC1AA004078AA /* logo_58.png */,
 				FFCDD8ED17F4BCB4000C6483 /* Default-568h@2x.png */,
@@ -2738,8 +2762,8 @@
 				FFCDD8F217F4BCB4000C6483 /* Default.png */,
 				FFB9BE4017F4B65B00FE0A36 /* logo_120.png */,
 				FFB9BE4117F4B65B00FE0A36 /* logo_152.png */,
-				FFB9BE4217F4B65B00FE0A36 /* logo_29.png */,
 				FFB9BE4317F4B65B00FE0A36 /* logo_40.png */,
+				FFB9BE4217F4B65B00FE0A36 /* logo_29.png */,
 				FFB9BE4417F4B65B00FE0A36 /* logo_120~iphone.png */,
 				FFB9BE4517F4B65B00FE0A36 /* logo_76.png */,
 				FFB9BE4617F4B65B00FE0A36 /* logo_120@2x.png */,
@@ -3004,9 +3028,11 @@
 				43AF417715C30B1600758366 /* 37x-Checkmark.png in Resources */,
 				43AF417815C30B1600758366 /* 37x-Checkmark@2x.png in Resources */,
 				43A4BADB15C866FA00F3B8D4 /* popoverArrowDown.png in Resources */,
+				FFC486A919CA40DA00F4758F /* logo_72.png in Resources */,
 				43A4BADC15C866FA00F3B8D4 /* popoverArrowDown@2x.png in Resources */,
 				43A4BADD15C866FA00F3B8D4 /* popoverArrowDownSimple.png in Resources */,
 				43A4BADE15C866FA00F3B8D4 /* popoverArrowLeft.png in Resources */,
+				FFC486AC19CA410000F4758F /* logo_50.png in Resources */,
 				FF39644D192A9AF3004BEE1A /* ReadingList-Icon-60@2x.png in Resources */,
 				FF3963EE192A9AF3004BEE1A /* GooglePlus-Icon-60.png in Resources */,
 				FFB9BE4817F4B65B00FE0A36 /* logo_152.png in Resources */,
@@ -3016,6 +3042,7 @@
 				43A4BAE215C866FA00F3B8D4 /* popoverArrowRight@2x.png in Resources */,
 				FF39641F192A9AF3004BEE1A /* osk-iconMask-bw-76.png in Resources */,
 				43A4BAE315C866FA00F3B8D4 /* popoverArrowRightSimple.png in Resources */,
+				FFC486AF19CA413C00F4758F /* logo_180.png in Resources */,
 				43A4BAE415C866FA00F3B8D4 /* popoverArrowUp.png in Resources */,
 				43A4BAE515C866FA00F3B8D4 /* popoverArrowUp@2x.png in Resources */,
 				43A4BAE615C866FA00F3B8D4 /* popoverArrowUpSimple.png in Resources */,
@@ -3087,6 +3114,7 @@
 				FF396482192A9AF3004BEE1A /* OSKFacebookPublishingViewController.xib in Resources */,
 				FF3963E6192A9AF3004BEE1A /* Chrome-Icon-76@2x.png in Resources */,
 				FF67D3BB168A70630057A7DA /* trainer.css in Resources */,
+				FFC486B519CA41AE00F4758F /* logo_87.png in Resources */,
 				FF3963E3192A9AF3004BEE1A /* Chrome-Icon-29@2x.png in Resources */,
 				FF39640D192A9AF3004BEE1A /* osk-copyIcon-yellow-76.png in Resources */,
 				FFCDD8F617F4BCB4000C6483 /* Default-portrait.png in Resources */,
@@ -3099,6 +3127,7 @@
 				FF85BF6116D5A587002D334D /* nav_icn_settings.png in Resources */,
 				FF85BF6316D5A5A8002D334D /* nav_icn_add.png in Resources */,
 				FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */,
+				FFC486AD19CA410000F4758F /* logo_100.png in Resources */,
 				FF85BF7416D6A972002D334D /* ak-icon-allstories.png in Resources */,
 				FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */,
 				FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */,
@@ -3135,6 +3164,7 @@
 				FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */,
 				FFC5F30E16E2D2C2007AC72C /* story_share_appnet@2x.png in Resources */,
 				FFC5F30F16E2D2C2007AC72C /* story_share_facebook_active.png in Resources */,
+				FFC486B219CA416D00F4758F /* logo_57.png in Resources */,
 				FFC5F31016E2D2C2007AC72C /* story_share_facebook_active@2x.png in Resources */,
 				FFC5F31116E2D2C2007AC72C /* story_share_facebook.png in Resources */,
 				FFC5F31216E2D2C2007AC72C /* story_share_facebook@2x.png in Resources */,
@@ -3278,12 +3308,14 @@
 				FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */,
 				FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */,
 				FF322235185BC1AA004078AA /* logo_58.png in Resources */,
+				FFC486A719CA40B700F4758F /* logo_144.png in Resources */,
 				FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */,
 				FFF1E4CB17750D2C00BF59D3 /* menu_icn_preferences.png in Resources */,
 				FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */,
 				FF39646F192A9AF3004BEE1A /* OSKActivitySheetViewController.xib in Resources */,
 				FF855B561794A53A0098D48A /* checkmark.png in Resources */,
 				FF39643E192A9AF3004BEE1A /* osk-twitterIcon-60@2x.png in Resources */,
+				FFC486B319CA416D00F4758F /* logo_114.png in Resources */,
 				FF396424192A9AF3004BEE1A /* osk-messagesIcon-60@2x.png in Resources */,
 				FF855B571794A53A0098D48A /* checkmark@2x.png in Resources */,
 				FFCDD8F517F4BCB4000C6483 /* Default-landscape@2x.png in Resources */,
