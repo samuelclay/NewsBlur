@@ -16,6 +16,11 @@ var fitVideos = function() {
        });
 };
 
+var linkAt = function(x, y, attribute) {
+    var el = document.elementFromPoint(x, y);
+    return el[attribute];
+};
+
 $('a.NB-show-profile').live('click', function () {
     var offset = $('img', this).offset();
     console.log(offset);

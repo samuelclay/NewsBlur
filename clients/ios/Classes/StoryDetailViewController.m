@@ -25,6 +25,9 @@
 #import "JSON.h"
 #import "StringHelper.h"
 #import "StoriesCollection.h"
+#import "UIWebView+Offsets.h"
+#import "UIViewController+OSKUtilities.h"
+#import "UIView+ViewController.h"
 
 @implementation StoryDetailViewController
 
@@ -92,6 +95,11 @@
 
     self.pageIndex = -2;
     self.inTextView = NO;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(tapAndHold:)
+                                                 name:@"TapAndHoldNotification"
+                                               object:nil];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -297,8 +305,8 @@
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
-    [webView setMediaPlaybackRequiresUserAction:NO];
-    [webView loadHTMLString:htmlString baseURL:baseURL];
+    [self.webView setMediaPlaybackRequiresUserAction:NO];
+    [self.webView loadHTMLString:htmlString baseURL:baseURL];
 
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
@@ -1146,9 +1154,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        
+        for (UIView *view in [UIViewController osk_parentMostViewControllerForPresentingViewController:appDelegate.storyPageControl].view.subviews) {
+            if ([[view firstAvailableUIViewController] isKindOfClass:[OSKActivitySheetViewController class]]) {
+                return NO;
+            }
+        }
+        
         [appDelegate showOriginalStory:url];
         return NO;
     }
+    
     return YES;
 }
 
@@ -1216,7 +1232,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
     [self changeLineSpacing:[userPreferences stringForKey:@"story_line_spacing"]];
-    
+    [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.webkitTouchCallout='none';"];
+
     if ([appDelegate.storiesCollection.activeFeedStories count] &&
         self.activeStoryId &&
         ![self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
@@ -1427,6 +1444,55 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 //    NSLog(@"Open trainer: %@ (%d/%d/%d/%d)", NSStringFromCGRect(frame), x, y, width, height);
     [appDelegate openTrainStory:[NSValue valueWithCGRect:frame]];
+}
+
+- (void)tapAndHold:(NSNotification*)notification {
+    if (self != appDelegate.storyPageControl.currentPage) return;
+    
+    CGPoint pt;
+    NSDictionary *coord = [notification object];
+    pt.x = [[coord objectForKey:@"x"] floatValue];
+    pt.y = [[coord objectForKey:@"y"] floatValue];
+    
+    // convert point from window to view coordinate system
+    pt = [webView convertPoint:pt fromView:nil];
+    
+    // convert point from view to HTML coordinate system
+//    CGPoint offset  = [self.webView scrollOffset];
+    CGSize viewSize = [self.webView frame].size;
+    CGSize windowSize = [self.webView windowSize];
+    
+    CGFloat f = windowSize.width / viewSize.width;
+    pt.x = pt.x * f;// + offset.x;
+    pt.y = pt.y * f;// + offset.y;
+    
+    // get the Tags at the touch location
+    NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
+                          (long)pt.x,(long)pt.y]];
+    NSString *href = [webView stringByEvaluatingJavaScriptFromString:
+                      [NSString stringWithFormat:@"linkAt(%li, %li, 'href');",
+                       (long)pt.x,(long)pt.y]];
+    NSString *title = [webView stringByEvaluatingJavaScriptFromString:
+                       [NSString stringWithFormat:@"linkAt(%li, %li, 'innerText');",
+                        (long)pt.x,(long)pt.y]];
+    NSURL *url = [NSURL URLWithString:href];
+    
+    if ([tagName isEqualToString:@"IMG"]) {
+        return;
+    }
+    if ([tagName isEqualToString:@"A"]) {
+        if (!href || ![href length]) return;
+    
+        [appDelegate showSendTo:appDelegate.storyPageControl
+                         sender:nil
+                        withUrl:url
+                     authorName:nil
+                           text:nil
+                          title:title
+                      feedTitle:nil
+                         images:nil];
+    }
 }
 
 # pragma mark
