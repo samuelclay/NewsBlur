@@ -106,6 +106,7 @@ def feed_autocomplete(request):
     
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
     feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
+    feeds = [feed for feed in feeds if 'facebook.com/feeds/notifications.php' not in feed.feed_address]
     if format == 'autocomplete':
         feeds = [{
             'id': feed.pk,
