@@ -27,6 +27,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageCache;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
@@ -78,16 +79,26 @@ public class NBSyncService extends Service {
     /** Feed sets that we need to sync and how many stories the UI wants for them. */
     private static Map<FeedSet,Integer> PendingFeeds;
     static { PendingFeeds = new HashMap<FeedSet,Integer>(); }
+    /** Feed sets that the API has said to have no more pages left. */
     private static Set<FeedSet> ExhaustedFeeds;
     static { ExhaustedFeeds = new HashSet<FeedSet>(); }
+    /** The number of pages we have collected for the given feed set. */
     private static Map<FeedSet,Integer> FeedPagesSeen;
     static { FeedPagesSeen = new HashMap<FeedSet,Integer>(); }
+    /** The number of stories we have collected for the given feed set. */
     private static Map<FeedSet,Integer> FeedStoriesSeen;
     static { FeedStoriesSeen = new HashMap<FeedSet,Integer>(); }
+
+    /** Unread story hashes the API listed that we do not appear to have locally yet. */
     private static Set<String> StoryHashQueue;
     static { StoryHashQueue = new HashSet<String>(); }
+    /** URLs of images contained in recently fetched stories that are candidates for prefetch. */
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
+
+    /** Story hashes of recently marked-read stories that may need to be re-marked locally due to overlapping API calls. */
+    private static List<ReadingAction> FollowupActions;
+    static { FollowupActions = new ArrayList<ReadingAction>(); }
 
     private PowerManager.WakeLock wl = null;
     private ExecutorService executor;
@@ -203,31 +214,8 @@ public class NBSyncService extends Service {
 
             actionsloop : while (c.moveToNext()) {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
-                NewsBlurResponse response = null;
-                if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
-                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    String feedIds = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
-                    Long includeOlder = DatabaseConstants.nullIfZero(c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_INCLUDE_OLDER)));
-                    Long includeNewer = DatabaseConstants.nullIfZero(c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_INCLUDE_NEWER)));
-                    if (hash != null) {
-                        response = apiManager.markStoryAsRead(hash);
-                    } else if (feedIds != null) {
-                        Set<String> feeds = new HashSet<String>();
-                        for (String feedId : TextUtils.split(feedIds, ",")) feeds.add(feedId);
-                        if (feeds.size() == 0) {
-                            response = apiManager.markAllAsRead();
-                        } else {
-                            response = apiManager.markFeedsAsRead(feeds, includeOlder, includeNewer);
-                        }
-                    } else {
-                        Log.w(this.getClass().getName(), "discarding mark-read action of unknown type: " + id);
-                    }
-                } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
-                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    response = apiManager.markStoryHashUnread(hash);
-                } else {
-                    Log.w(this.getClass().getName(), "discarding action of unknown type: " + id);
-                }
+                ReadingAction ra = ReadingAction.fromCursor(c);
+                NewsBlurResponse response = ra.doRemote(apiManager);
 
                 // if we attempted a call and it failed, do not mark the action as done
                 if (response != null) {
@@ -236,7 +224,8 @@ public class NBSyncService extends Service {
                     }
                 }
 
-                dbHelper.setActionDone(id);
+                dbHelper.clearAction(id);
+                FollowupActions.add(ra);
             }
         } finally {
             closeQuietly(c);
@@ -252,33 +241,17 @@ public class NBSyncService extends Service {
     private void finishActions() {
         if (HaltNow) return;
 
-        Cursor c = null;
         try {
-            c = dbHelper.getActions(true);
-            if (c.getCount() < 1) return;
+            if (FollowupActions.size() < 1) return;
 
-            Log.d(this.getClass().getName(), "found done actions: " + c.getCount());
+            Log.d(this.getClass().getName(), "found old actions: " + FollowupActions.size());
             ActionsRunning = true;
             NbActivity.updateAllActivities();
-
-            while (c.moveToNext()) {
-                String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
-                if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
-                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    if (hash != null ) {
-                        dbHelper.setStoryReadState(hash, true);
-                    }
-                    // TODO: double-check stories from feed-marks
-                } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
-                    String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-                    dbHelper.setStoryReadState(hash, false);
-                } else {
-                    Log.w(this.getClass().getName(), "discarding action of unknown type: " + id);
-                }
-                dbHelper.clearAction(id);
+            for (ReadingAction ra : FollowupActions) {
+                ra.doLocalSecondary(dbHelper);
             }
+            FollowupActions.clear();
         } finally {
-            closeQuietly(c);
             ActionsRunning = false;
             NbActivity.updateAllActivities();
         }
