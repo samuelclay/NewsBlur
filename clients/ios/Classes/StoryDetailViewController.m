@@ -101,6 +101,10 @@
                                              selector:@selector(tapAndHold:)
                                                  name:@"TapAndHoldNotification"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(tapImage:)
+                                                 name:@"TapNotification"
+                                               object:nil];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -1448,8 +1452,84 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate openTrainStory:[NSValue valueWithCGRect:frame]];
 }
 
+- (void)tapImage:(NSNotification *)notification {
+    CGPoint pt = [self pointForEvent:notification];
+    if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
+    
+    NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
+                          (long)pt.x,(long)pt.y]];
+    
+    if ([tagName isEqualToString:@"IMG"]) {
+        [self showImageMenu:pt];
+    }
+}
+
 - (void)tapAndHold:(NSNotification*)notification {
-    if (self != appDelegate.storyPageControl.currentPage) return;
+    CGPoint pt = [self pointForEvent:notification];
+    if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
+    
+    NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
+                          (long)pt.x,(long)pt.y]];
+    
+    if ([tagName isEqualToString:@"IMG"]) {
+        [self showImageMenu:pt];
+    }
+    
+    if ([tagName isEqualToString:@"A"]) {
+        [self showLinkContextMenu:pt];
+    }
+}
+
+- (void)showImageMenu:(CGPoint)pt {
+    NSString *title = [webView stringByEvaluatingJavaScriptFromString:
+                       [NSString stringWithFormat:@"linkAt(%li, %li, 'title');",
+                        (long)pt.x,(long)pt.y]];
+    NSString *alt = [webView stringByEvaluatingJavaScriptFromString:
+                     [NSString stringWithFormat:@"linkAt(%li, %li, 'alt');",
+                      (long)pt.x,(long)pt.y]];
+    NSString *src = [webView stringByEvaluatingJavaScriptFromString:
+                     [NSString stringWithFormat:@"linkAt(%li, %li, 'src');",
+                      (long)pt.x,(long)pt.y]];
+    title = title.length ? title : alt;
+    activeLongPressUrl = [NSURL URLWithString:src];
+    
+    UIActionSheet *actions = [[UIActionSheet alloc] initWithTitle:title.length ? title : nil
+                                                         delegate:self
+                                                cancelButtonTitle:@"Done"
+                                           destructiveButtonTitle:nil
+                                                otherButtonTitles:nil];
+    actionSheetViewImageIndex = [actions addButtonWithTitle:@"View and zoom"];
+    actionSheetCopyImageIndex = [actions addButtonWithTitle:@"Copy image"];
+    actionSheetSaveImageIndex = [actions addButtonWithTitle:@"Save to camera roll"];
+    [actions showInView:appDelegate.storyPageControl.view];
+}
+
+- (void)showLinkContextMenu:(CGPoint)pt {
+    NSString *href = [webView stringByEvaluatingJavaScriptFromString:
+                      [NSString stringWithFormat:@"linkAt(%li, %li, 'href');",
+                       (long)pt.x,(long)pt.y]];
+    NSString *title = [webView stringByEvaluatingJavaScriptFromString:
+                       [NSString stringWithFormat:@"linkAt(%li, %li, 'innerText');",
+                        (long)pt.x,(long)pt.y]];
+    NSURL *url = [NSURL URLWithString:href];
+    
+    if (!href || ![href length]) return;
+    
+    [appDelegate showSendTo:appDelegate.storyPageControl
+                     sender:nil
+                    withUrl:url
+                 authorName:nil
+                       text:nil
+                      title:title
+                  feedTitle:nil
+                     images:nil];
+}
+
+- (CGPoint)pointForEvent:(NSNotification*)notification {
+    if (self != appDelegate.storyPageControl.currentPage) return CGPointZero;
+    if (!self.view.window) return CGPointZero;
     
     CGPoint pt;
     NSDictionary *coord = [notification object];
@@ -1468,55 +1548,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     pt.x = pt.x * f;// + offset.x;
     pt.y = pt.y * f;// + offset.y;
     
-    // get the Tags at the touch location
-    NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
-                         [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
-                          (long)pt.x,(long)pt.y]];
-    
-    if ([tagName isEqualToString:@"IMG"]) {
-        NSString *title = [webView stringByEvaluatingJavaScriptFromString:
-                           [NSString stringWithFormat:@"linkAt(%li, %li, 'title');",
-                            (long)pt.x,(long)pt.y]];
-        NSString *alt = [webView stringByEvaluatingJavaScriptFromString:
-                         [NSString stringWithFormat:@"linkAt(%li, %li, 'alt');",
-                          (long)pt.x,(long)pt.y]];
-        NSString *src = [webView stringByEvaluatingJavaScriptFromString:
-                         [NSString stringWithFormat:@"linkAt(%li, %li, 'src');",
-                          (long)pt.x,(long)pt.y]];
-        title = title.length ? title : alt;
-        activeLongPressUrl = [NSURL URLWithString:src];
-        
-        UIActionSheet *actions = [[UIActionSheet alloc] initWithTitle:title.length ? title : nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Done"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:nil];
-        actionSheetViewImageIndex = [actions addButtonWithTitle:@"View and zoom"];
-        actionSheetCopyImageIndex = [actions addButtonWithTitle:@"Copy image"];
-        actionSheetSaveImageIndex = [actions addButtonWithTitle:@"Save to camera roll"];
-        [actions showInView:appDelegate.storyPageControl.view];
-    }
-    
-    if ([tagName isEqualToString:@"A"]) {
-        NSString *href = [webView stringByEvaluatingJavaScriptFromString:
-                          [NSString stringWithFormat:@"linkAt(%li, %li, 'href');",
-                           (long)pt.x,(long)pt.y]];
-        NSString *title = [webView stringByEvaluatingJavaScriptFromString:
-                           [NSString stringWithFormat:@"linkAt(%li, %li, 'innerText');",
-                            (long)pt.x,(long)pt.y]];
-        NSURL *url = [NSURL URLWithString:href];
-        
-        if (!href || ![href length]) return;
-    
-        [appDelegate showSendTo:appDelegate.storyPageControl
-                         sender:nil
-                        withUrl:url
-                     authorName:nil
-                           text:nil
-                          title:title
-                      feedTitle:nil
-                         images:nil];
-    }
+    return pt;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

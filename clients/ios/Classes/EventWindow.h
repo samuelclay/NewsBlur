@@ -11,6 +11,10 @@
 @interface EventWindow : UIWindow {
     CGPoint    tapLocation;
     NSTimer    *contextualMenuTimer;
+    BOOL       unmoved;
+    UIView     *tapDetectingView;
 }
+
+@property (nonatomic) UIView *tapDetectingView;
 
 @end

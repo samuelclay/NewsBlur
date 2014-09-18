@@ -766,6 +766,8 @@
     }
     
     [self setNextPreviousButtons];
+    EventWindow *tapDetectingWindow = (EventWindow*)appDelegate.window;
+    tapDetectingWindow.tapDetectingView = currentPage.view;
     [appDelegate changeActiveFeedDetailRow];
     
     if (self.currentPage.pageIndex != location) {
