@@ -491,6 +491,11 @@ def config_monit_node():
     sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
+def config_monit_original():
+    put('config/monit_original.conf', '/etc/monit/conf.d/node_original.conf', use_sudo=True)
+    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('/etc/init.d/monit restart')
+
 def config_monit_app():
     put('config/monit_app.conf', '/etc/monit/conf.d/gunicorn.conf', use_sudo=True)
     sudo('echo "START=yes" > /etc/default/monit')
@@ -1005,6 +1010,7 @@ def setup_original_page_server():
     setup_node_app()
     sudo('mkdir -p /srv/originals')
     sudo('chown %s.%s -R /srv/originals' % (env.user, env.user))        # We assume that the group is the same name as the user. It's common on linux
+    config_monit_original()
     put('config/supervisor_node_original.conf',
         '/etc/supervisor/conf.d/node_original.conf', use_sudo=True)
     sudo('supervisorctl reread')
