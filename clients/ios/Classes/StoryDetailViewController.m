@@ -17,6 +17,7 @@
 #import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
+#import "AFImageRequestOperation.h"
 #import "Base64.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
@@ -1471,18 +1472,40 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
                          [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
                           (long)pt.x,(long)pt.y]];
-    NSString *href = [webView stringByEvaluatingJavaScriptFromString:
-                      [NSString stringWithFormat:@"linkAt(%li, %li, 'href');",
-                       (long)pt.x,(long)pt.y]];
-    NSString *title = [webView stringByEvaluatingJavaScriptFromString:
-                       [NSString stringWithFormat:@"linkAt(%li, %li, 'innerText');",
-                        (long)pt.x,(long)pt.y]];
-    NSURL *url = [NSURL URLWithString:href];
     
     if ([tagName isEqualToString:@"IMG"]) {
-        return;
+        NSString *title = [webView stringByEvaluatingJavaScriptFromString:
+                           [NSString stringWithFormat:@"linkAt(%li, %li, 'title');",
+                            (long)pt.x,(long)pt.y]];
+        NSString *alt = [webView stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"linkAt(%li, %li, 'alt');",
+                          (long)pt.x,(long)pt.y]];
+        NSString *src = [webView stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"linkAt(%li, %li, 'src');",
+                          (long)pt.x,(long)pt.y]];
+        title = title.length ? title : alt;
+        activeLongPressUrl = [NSURL URLWithString:src];
+        
+        UIActionSheet *actions = [[UIActionSheet alloc] initWithTitle:title.length ? title : nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Done"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:nil];
+        actionSheetViewImageIndex = [actions addButtonWithTitle:@"View and zoom"];
+        actionSheetCopyImageIndex = [actions addButtonWithTitle:@"Copy image"];
+        actionSheetSaveImageIndex = [actions addButtonWithTitle:@"Save to camera roll"];
+        [actions showInView:appDelegate.storyPageControl.view];
     }
+    
     if ([tagName isEqualToString:@"A"]) {
+        NSString *href = [webView stringByEvaluatingJavaScriptFromString:
+                          [NSString stringWithFormat:@"linkAt(%li, %li, 'href');",
+                           (long)pt.x,(long)pt.y]];
+        NSString *title = [webView stringByEvaluatingJavaScriptFromString:
+                           [NSString stringWithFormat:@"linkAt(%li, %li, 'innerText');",
+                            (long)pt.x,(long)pt.y]];
+        NSURL *url = [NSURL URLWithString:href];
+        
         if (!href || ![href length]) return;
     
         [appDelegate showSendTo:appDelegate.storyPageControl
@@ -1494,6 +1517,38 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                       feedTitle:nil
                          images:nil];
     }
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == actionSheetViewImageIndex) {
+        [appDelegate showOriginalStory:activeLongPressUrl];
+    } else if (buttonIndex == actionSheetCopyImageIndex ||
+               buttonIndex == actionSheetSaveImageIndex) {
+        [self fetchImage:activeLongPressUrl buttonIndex:buttonIndex];
+    }
+}
+
+- (void)fetchImage:(NSURL *)url buttonIndex:(NSInteger)buttonIndex {
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    [appDelegate.storyPageControl showShareHUD:buttonIndex == actionSheetCopyImageIndex ?
+                                               @"Copying..." : @"Saving..."];
+    
+    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
+    AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc] initWithRequest:urlRequest];
+    [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        UIImage *image = responseObject;
+        if (buttonIndex == actionSheetCopyImageIndex) {
+            [UIPasteboard generalPasteboard].image = image;
+            [self flashCheckmarkHud:@"copied"];
+        } else if (buttonIndex == actionSheetSaveImageIndex) {
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+            [self flashCheckmarkHud:@"saved"];
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        [MBProgressHUD hideHUDForView:self.webView animated:YES];
+        [self informError:@"Could not fetch image"];
+    }];
+    [requestOperation start];
 }
 
 # pragma mark
@@ -1519,7 +1574,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request {
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;  
@@ -1570,8 +1625,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [MBProgressHUD hideHUDForView:self.webView animated:NO];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;
@@ -1596,6 +1651,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         self.storyHUD.labelText = @"Unread";
     } else if ([messageType isEqualToString:@"added"]) {
         self.storyHUD.labelText = @"Added";
+    } else if ([messageType isEqualToString:@"copied"]) {
+        self.storyHUD.labelText = @"Copied";
+    } else if ([messageType isEqualToString:@"saved"]) {
+        self.storyHUD.labelText = @"Saved";
     }
     [self.storyHUD hide:YES afterDelay:1];
 }

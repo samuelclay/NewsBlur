@@ -14,7 +14,8 @@
 @class ASIHTTPRequest;
 
 @interface StoryDetailViewController : BaseViewController
-<UIScrollViewDelegate, UIGestureRecognizerDelegate> {
+<UIScrollViewDelegate, UIGestureRecognizerDelegate,
+UIActionSheetDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
@@ -25,6 +26,10 @@
     BOOL pullingScrollview;
     BOOL inTextView;
     BOOL inDoubleTap;
+    NSURL *activeLongPressUrl;
+    NSInteger actionSheetViewImageIndex;
+    NSInteger actionSheetCopyImageIndex;
+    NSInteger actionSheetSaveImageIndex;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;

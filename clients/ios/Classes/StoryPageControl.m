@@ -916,8 +916,8 @@
 }
 
 - (IBAction)tapProgressBar:(id)sender {
-    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [MBProgressHUD hideHUDForView:currentPage.webView animated:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:currentPage.webView animated:YES];
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     NSInteger unreadCount = appDelegate.unreadCount;
@@ -992,7 +992,7 @@
 
 - (void)showShareHUD:(NSString *)msg {
 //    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:currentPage.webView animated:YES];
     self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
     self.currentPage.noStoryMessage.hidden = YES;

@@ -453,6 +453,8 @@ div + p {
     width: auto;
     max-width: 100% !important;
     display: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; /* Disable selection/copy in UIWebView */
 }
 
 .NB-story img.NB-large-image,
