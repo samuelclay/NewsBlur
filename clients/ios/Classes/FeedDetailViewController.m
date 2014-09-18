@@ -212,6 +212,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -320,6 +322,8 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;

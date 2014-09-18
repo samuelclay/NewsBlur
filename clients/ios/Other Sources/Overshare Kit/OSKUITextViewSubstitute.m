@@ -232,6 +232,8 @@
 }
 
 - (BOOL)resignFirstResponder {
+    [super resignFirstResponder];
+    
     return [self.textView resignFirstResponder];
 }
 

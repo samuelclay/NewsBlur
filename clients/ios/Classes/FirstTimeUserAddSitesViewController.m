@@ -81,6 +81,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
     [self.categoriesTable reloadData];
     [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 100)];

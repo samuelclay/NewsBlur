@@ -65,6 +65,8 @@
 }
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
@@ -183,6 +185,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
     [self setTextButton];
@@ -258,6 +262,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
     // set the subscribeButton flag
     if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
@@ -272,10 +278,14 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
     self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }

@@ -42,6 +42,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];

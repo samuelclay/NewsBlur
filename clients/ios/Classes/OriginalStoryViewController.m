@@ -62,6 +62,7 @@
 
 - (void)viewDidLoad {    
 //    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
+    [super viewDidLoad];
     
     self.view.layer.masksToBounds = NO;
     self.view.layer.shadowRadius = 5;

@@ -79,6 +79,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
     
     UIImage *logoImg = [UIImage imageNamed:@"logo_512"];
@@ -95,10 +97,12 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    
+    [super viewDidAppear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
     self.logo = nil;
 }
 

@@ -317,12 +317,6 @@ static UIFont *userLabelFont;
     [self.feedTitlesTable reloadData];
 }
 
-- (void)viewDidUnload {
-    [self setToolbarLeftMargin:nil];
-    [self setNoFocusMessage:nil];
-    [self setInnerView:nil];
-}
-
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
