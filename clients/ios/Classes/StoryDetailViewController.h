@@ -81,6 +81,8 @@ UIActionSheetDelegate> {
 - (void)refreshHeader;
 - (void)refreshSideoptions;
 
+- (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer;
+
 - (void)fetchTextView;
 - (void)finishFetchTextView:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

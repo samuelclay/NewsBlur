@@ -367,7 +367,6 @@ body.NB-iphone {
 .NB-story h4,
 .NB-story h5,
 .NB-story h6,
-.NB-story div,
 .NB-story table,
 .NB-story span,
 .NB-story pre,
@@ -437,7 +436,7 @@ div + p {
 }
 
 .NB-story {
-    overflow: hidden;
+/*    overflow: hidden;*/
 }
 
 .NB-story a.NB-contains-image {
@@ -451,7 +450,7 @@ div + p {
     margin: 20px auto;
     height: auto !important;
     width: auto;
-    max-width: 100% !important;
+    max-width: 100%;
     display: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none; /* Disable selection/copy in UIWebView */
@@ -459,13 +458,21 @@ div + p {
 
 .NB-story img.NB-large-image,
 .NB-story img.NB-medium-image {
-    margin: 20px auto !important;
-    display: block !important;
+    margin: 20px auto;
+    display: block;
     width: auto;
     height: auto;
     display: block;
     float: none;
     clear: both;
+}
+
+.NB-story img.NB-large-image {
+    max-width: 320px;
+    margin-left: -12px !important;
+    margin-right: -12px !important;
+    width: 320px !important;
+    height: auto !important;
 }
 
 .NB-story img.NB-small-image {

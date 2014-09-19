@@ -86,12 +86,12 @@
     doubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleTapGesture];
     
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]
-                                          initWithTarget:self action:@selector(tap:)];
-    tapGesture.numberOfTapsRequired = 1;
-    tapGesture.delegate = self;
-    [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
-    [self.webView addGestureRecognizer:tapGesture];
+//    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]
+//                                          initWithTarget:self action:@selector(tap:)];
+//    tapGesture.numberOfTapsRequired = 1;
+//    tapGesture.delegate = self;
+//    [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
+//    [self.webView addGestureRecognizer:tapGesture];
     
     UITapGestureRecognizer *doubleDoubleTapGesture = [[UITapGestureRecognizer alloc]
                                                       initWithTarget:self
@@ -111,17 +111,31 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    NSLog(@"Gesture: %ld - %ld", touch.tapCount, gestureRecognizer.state);
+    NSLog(@"Gesture: %d - %d", (unsigned long)touch.tapCount, gestureRecognizer.state);
     inDoubleTap = (touch.tapCount == 2);
+    
+    CGPoint pt = [self pointForGesture:gestureRecognizer];
+    if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return YES;
+    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
+    NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
+                          (long)pt.x,(long)pt.y]];
+    
+    if ([tagName isEqualToString:@"IMG"]) {
+        return NO;
+    }
+
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    NSLog(@"Should conflict? \n\tgesture:%@ \n\t  other:%@",
+          gestureRecognizer, otherGestureRecognizer);
     return YES;
 }
 
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"Gesture tap: %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+    NSLog(@"Gesture tap: %d (%d) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
 
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1) {
         [self tapImage:gestureRecognizer];
@@ -129,7 +143,7 @@
 }
 
 - (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"Gesture double tap: %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+    NSLog(@"Gesture double tap: %d (%d) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
         NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         BOOL openOriginal = NO;
@@ -1476,6 +1490,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if ([tagName isEqualToString:@"IMG"]) {
         [self showImageMenu:pt];
+        [gestureRecognizer setEnabled:NO];
+        [gestureRecognizer setEnabled:YES];
     }
 }
 
@@ -1570,9 +1586,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (!self.view.window) return CGPointZero;
     
     CGPoint pt = [gestureRecognizer locationInView:appDelegate.storyPageControl.currentPage.webView];
-    
-    // convert point from window to view coordinate system
-//    pt = [webView convertPoint:pt fromView:nil];
     
     // convert point from view to HTML coordinate system
 //    CGPoint offset  = [self.webView scrollOffset];
