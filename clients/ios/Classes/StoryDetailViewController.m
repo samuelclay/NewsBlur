@@ -81,18 +81,25 @@
 //    [self.webView addGestureRecognizer:pinchGesture];
     
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
-                                                initWithTarget:self action:nil];
+                                                initWithTarget:self action:@selector(doubleTap:)];
     doubleTapGesture.numberOfTapsRequired = 2;
-    [self.webView addGestureRecognizer:doubleTapGesture];
     doubleTapGesture.delegate = self;
+    [self.webView addGestureRecognizer:doubleTapGesture];
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]
+                                          initWithTarget:self action:@selector(tap:)];
+    tapGesture.numberOfTapsRequired = 1;
+    tapGesture.delegate = self;
+    [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
+    [self.webView addGestureRecognizer:tapGesture];
     
     UITapGestureRecognizer *doubleDoubleTapGesture = [[UITapGestureRecognizer alloc]
                                                       initWithTarget:self
-                                                      action:nil];
+                                                      action:@selector(doubleTap:)];
     doubleDoubleTapGesture.numberOfTouchesRequired = 2;
     doubleDoubleTapGesture.numberOfTapsRequired = 2;
-    [self.webView addGestureRecognizer:doubleDoubleTapGesture];
     doubleDoubleTapGesture.delegate = self;
+    [self.webView addGestureRecognizer:doubleDoubleTapGesture];
 
     self.pageIndex = -2;
     self.inTextView = NO;
@@ -101,20 +108,28 @@
                                              selector:@selector(tapAndHold:)
                                                  name:@"TapAndHoldNotification"
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(tapImage:)
-                                                 name:@"TapNotification"
-                                               object:nil];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-//    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
+    NSLog(@"Gesture: %ld - %ld", touch.tapCount, gestureRecognizer.state);
     inDoubleTap = (touch.tapCount == 2);
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-//    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+    return YES;
+}
+
+- (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
+    NSLog(@"Gesture tap: %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1) {
+        [self tapImage:gestureRecognizer];
+    }
+}
+
+- (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer {
+    NSLog(@"Gesture double tap: %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
         NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         BOOL openOriginal = NO;
@@ -157,7 +172,6 @@
         }
         inDoubleTap = NO;
     }
-    return YES;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -1452,10 +1466,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate openTrainStory:[NSValue valueWithCGRect:frame]];
 }
 
-- (void)tapImage:(NSNotification *)notification {
-    CGPoint pt = [self pointForEvent:notification];
+- (void)tapImage:(UIGestureRecognizer *)gestureRecognizer {
+    CGPoint pt = [self pointForGesture:gestureRecognizer];
     if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
-    
+    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
     NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
                          [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
                           (long)pt.x,(long)pt.y]];
@@ -1538,6 +1552,27 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     // convert point from window to view coordinate system
     pt = [webView convertPoint:pt fromView:nil];
+    
+    // convert point from view to HTML coordinate system
+    //    CGPoint offset  = [self.webView scrollOffset];
+    CGSize viewSize = [self.webView frame].size;
+    CGSize windowSize = [self.webView windowSize];
+    
+    CGFloat f = windowSize.width / viewSize.width;
+    pt.x = pt.x * f;// + offset.x;
+    pt.y = pt.y * f;// + offset.y;
+    
+    return pt;
+}
+
+- (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer {
+    if (self != appDelegate.storyPageControl.currentPage) return CGPointZero;
+    if (!self.view.window) return CGPointZero;
+    
+    CGPoint pt = [gestureRecognizer locationInView:appDelegate.storyPageControl.currentPage.webView];
+    
+    // convert point from window to view coordinate system
+//    pt = [webView convertPoint:pt fromView:nil];
     
     // convert point from view to HTML coordinate system
 //    CGPoint offset  = [self.webView scrollOffset];
