@@ -85,7 +85,7 @@
 }
 
 .NB-ipad-wide .NB-story {
-    margin: 30px 90px;
+    padding: 30px 90px;
 }
 
 .NB-ipad-wide .NB-share-inner-wrapper {
@@ -129,11 +129,11 @@
 }
 
 .NB-ipad-narrow .NB-story {
-    margin: 25px 30px;
+    padding: 25px 30px;
 }
 
 .NB-ipad-narrow .NB-share-inner-wrapper {
-    margin: 0 30px;
+    padding: 0 30px;
 }
 
 .NB-ipad-narrow#story_pane .nb-story-comments-public-teaser, 
@@ -175,7 +175,7 @@
 }
 
 .NB-iphone .NB-story {
-    margin: 12px 12px;
+    padding: 12px 12px;
 }
 
 .NB-iphone .NB-share-inner-wrapper {
@@ -436,7 +436,7 @@ div + p {
 }
 
 .NB-story {
-/*    overflow: hidden;*/
+    overflow: hidden;
 }
 
 .NB-story a.NB-contains-image {
@@ -470,9 +470,22 @@ div + p {
 .NB-story img.NB-large-image {
     max-width: 320px;
     margin-left: -12px !important;
-    margin-right: -12px !important;
     width: 320px !important;
     height: auto !important;
+}
+
+.NB-ipad-narrow .NB-story img.NB-large-image {
+    max-width: 500px;
+    margin-left: -30px !important;
+    width: 500px !important;
+    height: auto !important;
+}
+
+.NB-iphone-wide .NB-story img.NB-large-image {
+    max-width: 100% !important;
+    width: auto !important;
+    margin-left: -12px !important;
+    margin-right: -12px !important;
 }
 
 .NB-story img.NB-small-image {

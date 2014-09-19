@@ -49,7 +49,7 @@ function setImage(img) {
     var $img = $(img);
     var width = $(img).width();
     var height = $(img).height();
-    console.log("img load", img.src, width, height);
+//    console.log("img load", img.src, width, height);
     if ($img.attr('src').indexOf('feedburner') != - 1) {
         $img.attr('class', 'NB-feedburner');
     } else if (width >= (320-24) && height >= 50) {

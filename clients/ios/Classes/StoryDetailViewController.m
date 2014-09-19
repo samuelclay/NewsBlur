@@ -111,7 +111,7 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    NSLog(@"Gesture: %d - %d", (unsigned long)touch.tapCount, gestureRecognizer.state);
+//    NSLog(@"Gesture: %d - %d", (unsigned long)touch.tapCount, gestureRecognizer.state);
     inDoubleTap = (touch.tapCount == 2);
     
     CGPoint pt = [self pointForGesture:gestureRecognizer];
@@ -121,7 +121,7 @@
                          [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
                           (long)pt.x,(long)pt.y]];
     
-    if ([tagName isEqualToString:@"IMG"]) {
+    if ([tagName isEqualToString:@"IMG"] && !inDoubleTap) {
         return NO;
     }
 
@@ -129,13 +129,13 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    NSLog(@"Should conflict? \n\tgesture:%@ \n\t  other:%@",
-          gestureRecognizer, otherGestureRecognizer);
+//    NSLog(@"Should conflict? \n\tgesture:%@ \n\t  other:%@",
+//          gestureRecognizer, otherGestureRecognizer);
     return YES;
 }
 
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"Gesture tap: %d (%d) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+//    NSLog(@"Gesture tap: %d (%d) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
 
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1) {
         [self tapImage:gestureRecognizer];
@@ -143,7 +143,7 @@
 }
 
 - (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"Gesture double tap: %d (%d) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+//    NSLog(@"Gesture double tap: %d (%d) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
         NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         BOOL openOriginal = NO;
@@ -1483,7 +1483,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)tapImage:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint pt = [self pointForGesture:gestureRecognizer];
     if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
-    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
+//    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
     NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
                          [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
                           (long)pt.x,(long)pt.y]];
