@@ -152,13 +152,16 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	public void handleUpdate() {
         updateStatusIndicators();
 		if (itemListFragment != null) {
-            itemListFragment.syncDone();
 			itemListFragment.hasUpdated();
         }
     }
 
     private void updateStatusIndicators() {
-        setProgressBarIndeterminateVisibility(NBSyncService.isFeedSetSyncing(this.fs));
+        boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs);
+        setProgressBarIndeterminateVisibility(isLoading);
+		if (itemListFragment != null) {
+			itemListFragment.setLoading(isLoading);
+        }
 
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage();
