@@ -151,22 +151,22 @@ public class ReadingAction {
 
     /**
      * Excecute this action on the local DB performing only idempotent sub-actions.
-     * Basically, re-do any local effects of this action that can be done safely.
+     * Basically, double-check any local effects of this action that can be done safely.
      */
     public void doLocalSecondary(BlurDatabaseHelper dbHelper) {
         switch (type) {
 
             case MARK_READ:
                 if (storyHash != null) {
-                    ;
+                    dbHelper.setStoryReadState(storyHash, true);
                 } else if (feedSet != null) {
-                    ; 
+                    dbHelper.markFeedsRead_storyCounts(feedSet, olderThan, newerThan);
                 }
                 break;
                 
             case MARK_UNREAD:
                 if (storyHash != null) {
-                    ;
+                    dbHelper.setStoryReadState(storyHash, false);
                 }
                 break;
 

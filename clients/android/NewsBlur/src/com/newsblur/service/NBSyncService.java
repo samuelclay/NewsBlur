@@ -96,7 +96,7 @@ public class NBSyncService extends Service {
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
 
-    /** Story hashes of recently marked-read stories that may need to be re-marked locally due to overlapping API calls. */
+    /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
 
