@@ -268,6 +268,9 @@
 		FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC8175858FC00344EC9 /* FMDatabasePool.m */; };
 		FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CCA175858FC00344EC9 /* FMDatabaseQueue.m */; };
 		FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CCD175858FC00344EC9 /* FMResultSet.m */; };
+		FF75BE1019CBB6C20004D545 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF75BE0D19CBB6C20004D545 /* GoogleOpenSource.framework */; };
+		FF75BE1119CBB6C20004D545 /* GooglePlus.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FF75BE0E19CBB6C20004D545 /* GooglePlus.bundle */; };
+		FF75BE1219CBB6C20004D545 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF75BE0F19CBB6C20004D545 /* GooglePlus.framework */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF8364BB1755759A008F5C58 /* traverse_text.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364B91755759A008F5C58 /* traverse_text.png */; };
@@ -296,9 +299,6 @@
 		FFA045B619CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045B319CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m */; };
 		FFA0473E19CA54A700618DC4 /* ADNLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045BC19CA54A400618DC4 /* ADNLogin.m */; };
 		FFA0473F19CA54A700618DC4 /* ADNPassportLaunchView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045BE19CA54A400618DC4 /* ADNPassportLaunchView.m */; };
-		FFA0474019CA54A700618DC4 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFA045C019CA54A400618DC4 /* GoogleOpenSource.framework */; };
-		FFA0474119CA54A700618DC4 /* GooglePlus.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFA045C119CA54A400618DC4 /* GooglePlus.bundle */; };
-		FFA0474219CA54A700618DC4 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFA045C219CA54A400618DC4 /* GooglePlus.framework */; };
 		FFA0474319CA54A800618DC4 /* PocketAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045C719CA54A400618DC4 /* PocketAPI.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FFA0474419CA54A800618DC4 /* PocketAPILogin.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045C919CA54A400618DC4 /* PocketAPILogin.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FFA0474519CA54A800618DC4 /* PocketAPIOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045CB19CA54A400618DC4 /* PocketAPIOperation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1039,6 +1039,9 @@
 		FF753CCB175858FC00344EC9 /* fmdb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fmdb.m; sourceTree = "<group>"; };
 		FF753CCC175858FC00344EC9 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
 		FF753CCD175858FC00344EC9 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		FF75BE0D19CBB6C20004D545 /* GoogleOpenSource.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleOpenSource.framework; sourceTree = "<group>"; };
+		FF75BE0E19CBB6C20004D545 /* GooglePlus.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GooglePlus.bundle; sourceTree = "<group>"; };
+		FF75BE0F19CBB6C20004D545 /* GooglePlus.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GooglePlus.framework; sourceTree = "<group>"; };
 		FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataCompressor.h; sourceTree = "<group>"; };
 		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
 		FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataDecompressor.h; sourceTree = "<group>"; };
@@ -1078,9 +1081,6 @@
 		FFA045BC19CA54A400618DC4 /* ADNLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNLogin.m; sourceTree = "<group>"; };
 		FFA045BD19CA54A400618DC4 /* ADNPassportLaunchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNPassportLaunchView.h; sourceTree = "<group>"; };
 		FFA045BE19CA54A400618DC4 /* ADNPassportLaunchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNPassportLaunchView.m; sourceTree = "<group>"; };
-		FFA045C019CA54A400618DC4 /* GoogleOpenSource.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleOpenSource.framework; sourceTree = "<group>"; };
-		FFA045C119CA54A400618DC4 /* GooglePlus.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GooglePlus.bundle; sourceTree = "<group>"; };
-		FFA045C219CA54A400618DC4 /* GooglePlus.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GooglePlus.framework; sourceTree = "<group>"; };
 		FFA045C519CA54A400618DC4 /* PocketAPI+NSOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PocketAPI+NSOperation.h"; sourceTree = "<group>"; };
 		FFA045C619CA54A400618DC4 /* PocketAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PocketAPI.h; sourceTree = "<group>"; };
 		FFA045C719CA54A400618DC4 /* PocketAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PocketAPI.m; sourceTree = "<group>"; };
@@ -1625,17 +1625,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */,
+				FF75BE1219CBB6C20004D545 /* GooglePlus.framework in Frameworks */,
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
 				FF308A7B18C01014009F986A /* AssetsLibrary.framework in Frameworks */,
 				FF26125418C00FEC0055FF4D /* AddressBook.framework in Frameworks */,
-				FFA0474219CA54A700618DC4 /* GooglePlus.framework in Frameworks */,
+				FF75BE1019CBB6C20004D545 /* GoogleOpenSource.framework in Frameworks */,
 				FF468E3817FCFB970080325C /* AVFoundation.framework in Frameworks */,
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
 				FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */,
 				FFDCA0C316E80952000D8E0C /* AdSupport.framework in Frameworks */,
 				FFDCA0C116E8094F000D8E0C /* Accounts.framework in Frameworks */,
-				FFA0474019CA54A700618DC4 /* GoogleOpenSource.framework in Frameworks */,
 				FFDCA0BF16E80944000D8E0C /* Social.framework in Frameworks */,
 				43F6A7A915B0E1ED0092EE91 /* CoreText.framework in Frameworks */,
 				FF2D8C6C1487F05100057B80 /* Twitter.framework in Frameworks */,
@@ -2675,9 +2675,9 @@
 		FFA045BF19CA54A400618DC4 /* GooglePlus-SDK */ = {
 			isa = PBXGroup;
 			children = (
-				FFA045C019CA54A400618DC4 /* GoogleOpenSource.framework */,
-				FFA045C119CA54A400618DC4 /* GooglePlus.bundle */,
-				FFA045C219CA54A400618DC4 /* GooglePlus.framework */,
+				FF75BE0D19CBB6C20004D545 /* GoogleOpenSource.framework */,
+				FF75BE0E19CBB6C20004D545 /* GooglePlus.bundle */,
+				FF75BE0F19CBB6C20004D545 /* GooglePlus.framework */,
 			);
 			path = "GooglePlus-SDK";
 			sourceTree = "<group>";
@@ -3238,6 +3238,7 @@
 				FF41309D162CEC7100DDB6A7 /* time.png in Resources */,
 				FF4130A0162CECAE00DDB6A7 /* email.png in Resources */,
 				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
+				FF75BE1119CBB6C20004D545 /* GooglePlus.bundle in Resources */,
 				FFA0474919CA54A800618DC4 /* 1Password-Icon-29@2x.png in Resources */,
 				FFA0478619CA54A800618DC4 /* osk-flickrIcon-76.png in Resources */,
 				FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */,
@@ -3394,7 +3395,6 @@
 				FFDD847B16E887D3000AA0A2 /* g_icn_folder_add@2x.png in Resources */,
 				FFDD847C16E887D3000AA0A2 /* g_icn_folder_rss.png in Resources */,
 				FFA0479A19CA54A800618DC4 /* osk-messagesIcon-29@2x.png in Resources */,
-				FFA0474119CA54A700618DC4 /* GooglePlus.bundle in Resources */,
 				FFDD847D16E887D3000AA0A2 /* g_icn_folder_rss@2x.png in Resources */,
 				FFDD847E16E887D3000AA0A2 /* g_icn_folder.png in Resources */,
 				FFA0477F19CA54A800618DC4 /* osk-copyIcon-yellow-76@2x.png in Resources */,
@@ -3738,6 +3738,9 @@
 					"$(PROJECT_DIR)/Other",
 					Sources/Overshare,
 					"Kit/Dependencies/GooglePlus-SDK",
+					"$(PROJECT_DIR)/Other",
+					Sources/Overshare,
+					"Kit/Dependencies/GooglePlus-SDK",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3779,6 +3782,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					Other,
+					Sources/Overshare,
+					"Kit/Dependencies/GooglePlus-SDK",
+					"$(PROJECT_DIR)/Other",
 					Sources/Overshare,
 					"Kit/Dependencies/GooglePlus-SDK",
 					"$(PROJECT_DIR)/Other",

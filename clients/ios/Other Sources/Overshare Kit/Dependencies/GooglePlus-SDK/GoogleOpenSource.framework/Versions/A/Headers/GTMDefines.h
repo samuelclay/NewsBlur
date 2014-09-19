@@ -193,9 +193,11 @@
   // For iPhone specific stuff
   #define GTM_IPHONE_SDK 1
   #if TARGET_IPHONE_SIMULATOR
+    #define GTM_IPHONE_DEVICE 0
     #define GTM_IPHONE_SIMULATOR 1
   #else
     #define GTM_IPHONE_DEVICE 1
+    #define GTM_IPHONE_SIMULATOR 0
   #endif  // TARGET_IPHONE_SIMULATOR
   // By default, GTM has provided it's own unittesting support, define this
   // to use the support provided by Xcode, especially for the Xcode4 support
@@ -203,9 +205,14 @@
   #ifndef GTM_IPHONE_USE_SENTEST
     #define GTM_IPHONE_USE_SENTEST 0
   #endif
+  #define GTM_MACOS_SDK 0
 #else
   // For MacOS specific stuff
   #define GTM_MACOS_SDK 1
+  #define GTM_IPHONE_SDK 0
+  #define GTM_IPHONE_SIMULATOR 0
+  #define GTM_IPHONE_DEVICE 0
+  #define GTM_IPHONE_USE_SENTEST 0
 #endif
 
 // Some of our own availability macros
@@ -228,7 +235,7 @@
 #if !(MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
  // NSInteger/NSUInteger and Max/Mins
   #ifndef NSINTEGER_DEFINED
-    #if __LP64__ || NS_BUILD_32_LIKE_64
+    #if (defined(__LP64__) && __LP64__) || NS_BUILD_32_LIKE_64
       typedef long NSInteger;
       typedef unsigned long NSUInteger;
     #else
@@ -368,6 +375,14 @@
         _GTMDevAssert(NO, @"Invalid initializer."); \
         return nil; \
       } while (0)
+  #endif
+#endif
+
+#ifndef GTMCFAutorelease
+  #if __has_feature(objc_arc)
+    #define GTMCFAutorelease(x) CFBridgingRelease(x)
+  #else
+    #define GTMCFAutorelease(x) ([(id)x autorelease])
   #endif
 #endif
 
