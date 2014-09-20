@@ -124,19 +124,26 @@
  * iPad Narrow Style
  */
 
+.NB-iphone-wide .NB-header,
 .NB-ipad-narrow .NB-header {
     padding: 1em 30px;
 }
 
+.NB-iphone-wide .NB-story,
 .NB-ipad-narrow .NB-story {
     padding: 25px 30px;
 }
 
+.NB-iphone-wide .NB-share-inner-wrapper,
 .NB-ipad-narrow .NB-share-inner-wrapper {
     padding: 0 30px;
 }
 
-.NB-ipad-narrow#story_pane .nb-story-comments-public-teaser, 
+.NB-iphone-wide#story_pane .nb-story-comments-public-teaser,
+.NB-iphone-wide#story_pane .nb-story-comments-public-header,
+.NB-iphone-wide#story_pane .nb-story-comments-friends-header,
+.NB-iphone-wide#story_pane .NB-story-comments-shares-teaser,
+.NB-ipad-narrow#story_pane .nb-story-comments-public-teaser,
 .NB-ipad-narrow#story_pane .nb-story-comments-public-header,
 .NB-ipad-narrow#story_pane .nb-story-comments-friends-header,
 .NB-ipad-narrow#story_pane .NB-story-comments-shares-teaser {
@@ -144,24 +151,30 @@
     padding-right: 30px;
 }
 
+.NB-iphone-wide#story_pane .nb-story-comment,
 .NB-ipad-narrow#story_pane .nb-story-comment {
     padding: 0 30px 2px 90px;
 }
+.NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar {
     left: 26px;
 }
+.NB-iphone-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar,
 .NB-ipad-narrow#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
     left: 45px;
 }
 
+.NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     left: 26px;
 }
 
+.NB-iphone-wide#story_pane .NB-story-comment .NB-button-wrapper,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-button-wrapper {
     margin-top: -5px;
 }
 
+.NB-iphone-wide .NB-button.NB-share-button a,
 .NB-ipad-narrow .NB-button.NB-share-button a {
     font-size: 14px;
 }
@@ -481,11 +494,18 @@ div + p {
     height: auto !important;
 }
 
+.NB-ipad-wide .NB-story img.NB-large-image {
+    max-width: 644px;
+    margin-left: -90px !important;
+    width: 644px !important;
+    height: auto !important;
+}
+
 .NB-iphone-wide .NB-story img.NB-large-image {
-    max-width: 100% !important;
-    width: auto !important;
-    margin-left: -12px !important;
-    margin-right: -12px !important;
+    max-width: 668px;
+    margin-left: -36px !important;
+    width: 668px !important;
+    height: auto !important;
 }
 
 .NB-story img.NB-small-image {

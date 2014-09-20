@@ -260,8 +260,10 @@
     
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (UIInterfaceOrientationIsLandscape(orientation) || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-narrow";
+    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        contentWidthClass = @"NB-iphone-wide";
     } else {
         contentWidthClass = @"NB-iphone";
     }
@@ -1754,15 +1756,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)changeWebViewWidth {
     NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     NSString *contentWidthClass;
-    
-    if (contentWidth > 740) {
+
+    if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (contentWidth > 480) {
+    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-narrow";
+    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        contentWidthClass = @"NB-iphone-wide";
     } else {
         contentWidthClass = @"NB-iphone";
     }
+    
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
                             appDelegate.storiesCollection.isSavedView) ?
