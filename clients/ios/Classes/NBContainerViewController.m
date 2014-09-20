@@ -248,10 +248,9 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.userProfileNavigationController];
     
-    popoverController.delegate = self;
-    
+    [popoverController setDelegate:self];
+    [appDelegate.userProfileNavigationController view];
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
-
     if ([sender class] == [InteractionCell class] ||
         [sender class] == [ActivityCell class]) {
         InteractionCell *cell = (InteractionCell *)sender;
@@ -307,6 +306,7 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
     [popoverController setDelegate:self];
+    [appDelegate.feedsMenuViewController view];
     NSInteger menuCount = [appDelegate.feedsMenuViewController.menuOptions count];
     [popoverController setPopoverContentSize:CGSizeMake(200, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
@@ -327,6 +327,7 @@
     [appDelegate.feedDetailMenuViewController buildMenuOptions];
     popoverController.delegate = self;
     
+    [appDelegate.feedDetailMenuViewController view];
     NSInteger menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
     [popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender

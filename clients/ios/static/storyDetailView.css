@@ -495,9 +495,9 @@ div + p {
 }
 
 .NB-ipad-wide .NB-story img.NB-large-image {
-    max-width: 644px;
+    max-width: 656px;
     margin-left: -90px !important;
-    width: 644px !important;
+    width: 656px !important;
     height: auto !important;
 }
 
