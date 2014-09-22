@@ -263,14 +263,16 @@ static UIFont *userLabelFont;
 }
 
 - (void)fadeSelectedCell {
-    [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
+    NSIndexPath *selectedIndexPath = [self.feedTitlesTable indexPathForSelectedRow];
+    [self.feedTitlesTable deselectRowAtIndexPath:selectedIndexPath
                                         animated:YES];
+    if (!selectedIndexPath) return;
+    
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSLog(@"Show feeds after being read: %d", [preferences boolForKey:@"show_feeds_after_being_read"]);
     if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
-        NSIndexPath *indexPath = [self.feedTitlesTable indexPathForSelectedRow];
-        if (!indexPath) return;
         [self.feedTitlesTable beginUpdates];
-        [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+        [self.feedTitlesTable reloadRowsAtIndexPaths:@[selectedIndexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];
         [self.feedTitlesTable endUpdates];
     }
