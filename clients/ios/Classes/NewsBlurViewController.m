@@ -263,16 +263,30 @@ static UIFont *userLabelFont;
 }
 
 - (void)fadeSelectedCell {
-    NSIndexPath *selectedIndexPath = [self.feedTitlesTable indexPathForSelectedRow];
-    [self.feedTitlesTable deselectRowAtIndexPath:selectedIndexPath
+    NSIndexPath *indexPath = [self.feedTitlesTable indexPathForSelectedRow];
+    if (!indexPath) return;
+    [self.feedTitlesTable deselectRowAtIndexPath:indexPath
                                         animated:YES];
-    if (!selectedIndexPath) return;
-    
+
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSLog(@"Show feeds after being read: %d", [preferences boolForKey:@"show_feeds_after_being_read"]);
-    if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
+//    NSLog(@"Show feeds after being read (%@): %d / %@ -> %@", feedIdStr, [preferences boolForKey:@"show_feeds_after_being_read"], [self.stillVisibleFeeds objectForKey:feedIdStr], self.stillVisibleFeeds);
+    NSIndexPath *visiblePath = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    if (visiblePath) {
         [self.feedTitlesTable beginUpdates];
-        [self.feedTitlesTable reloadRowsAtIndexPaths:@[selectedIndexPath]
+        NSMutableArray *paths = indexPath == visiblePath ? @[indexPath].mutableCopy : @[indexPath, visiblePath].mutableCopy;
+        if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
+            [self.stillVisibleFeeds removeObjectForKey:feedIdStr];
+            for (NSString *feedId in [self.stillVisibleFeeds allKeys]) {
+                NSLog(@"Found inadvertantly still visible feed: %@", feedId);
+                [paths addObject:[self.stillVisibleFeeds objectForKey:feedId]];
+            }
+            [self.stillVisibleFeeds removeAllObjects];
+        }
+        [self.feedTitlesTable reloadRowsAtIndexPaths:paths
                                     withRowAnimation:UITableViewRowAnimationFade];
         [self.feedTitlesTable endUpdates];
     }
@@ -914,9 +928,9 @@ static UIFont *userLabelFont;
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
         [self markFeedRead:feedId cutoffDays:0];
         
-        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
+//        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
             [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
-        }
+//        }
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];
@@ -931,6 +945,7 @@ static UIFont *userLabelFont;
 - (void)unhighlightCell:(FeedTableCell *)cell {
     [cell setHighlighted:NO];
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSLog(@"unhighlight cell");
     if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
         NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
         [self.feedTitlesTable beginUpdates];
@@ -1153,9 +1168,9 @@ static UIFont *userLabelFont;
     }
 
     // If all feeds are already showing, no need to remember this one.
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    if (!self.viewShowingAllFeeds &&
-        [preferences boolForKey:@"show_feeds_after_being_read"]) {
+//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (!self.viewShowingAllFeeds) {
+//        [preferences boolForKey:@"show_feeds_after_being_read"]) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
