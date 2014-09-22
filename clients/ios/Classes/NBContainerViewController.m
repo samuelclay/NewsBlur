@@ -478,7 +478,7 @@
         [self.dashboardViewController.view removeFromSuperview];
         self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
 //        leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
-        NSLog(@"Transitioning back to feed detail, original frame: %@", NSStringFromCGRect(self.originalNavigationController.view.frame));
+//        NSLog(@"Transitioning back to feed detail, original frame: %@", NSStringFromCGRect(self.originalNavigationController.view.frame));
     }
 }
 
@@ -760,7 +760,7 @@
 }
 
 - (void)transitionFromOriginalView {
-    NSLog(@"Transition from Original View");
+//    NSLog(@"Transition from Original View");
     
     [self.originalViewController viewWillDisappear:YES];
     self.originalViewIsVisible = NO;

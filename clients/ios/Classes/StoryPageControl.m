@@ -274,7 +274,6 @@
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
-    NSLog(@"Story Page Control did appear");
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -317,7 +316,7 @@
 //        appDelegate.masterContainerViewController.originalViewIsVisible) {
 //        return;
 //    }
-    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
+//    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
         [self refreshPages];

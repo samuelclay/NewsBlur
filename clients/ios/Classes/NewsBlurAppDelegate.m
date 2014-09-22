@@ -414,8 +414,9 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
     self.modalNavigationController.navigationBar.translucent = NO;
-    
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
@@ -432,6 +433,7 @@
     self.modalNavigationController.navigationBar.translucent = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
@@ -687,10 +689,9 @@
 - (void)showSendToManagement {
     OSKAccountManagementViewController *manager = [[OSKAccountManagementViewController alloc] initWithIgnoredActivityClasses:nil optionalBespokeActivityClasses:nil];
     OSKNavigationController *navController = [[OSKNavigationController alloc] initWithRootViewController:manager];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [navController setModalPresentationStyle:UIModalPresentationFormSheet];
-    }
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
+        [navController setModalPresentationStyle:UIModalPresentationFormSheet];
         [self.masterContainerViewController presentViewController:navController animated:YES completion:nil];
     } else {
         [self.navigationController presentViewController:navController animated:YES completion:nil];
@@ -755,6 +756,7 @@
     self.ftuxNavigationController.navigationBar.translucent = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self.masterContainerViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
         
@@ -775,6 +777,7 @@
     UINavigationController *navController = self.navigationController;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     } else {
@@ -992,6 +995,7 @@
         UINavigationController *connectNav = [[UINavigationController alloc]
                                               initWithRootViewController:serviceVC];
         self.modalNavigationController = connectNav;
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         self.modalNavigationController.navigationBar.translucent = NO;
         [self.masterContainerViewController presentViewController:modalNavigationController

@@ -116,7 +116,7 @@
     
     CGPoint pt = [self pointForGesture:gestureRecognizer];
     if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return YES;
-    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
+//    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
     NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
                          [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
                           (long)pt.x,(long)pt.y]];
@@ -1754,7 +1754,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
-    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
+//    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     NSString *contentWidthClass;

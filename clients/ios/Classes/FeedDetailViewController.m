@@ -317,7 +317,7 @@
         self.isDashboardModule) {
         [self.storyTitlesTable reloadData];
     }
-    NSLog(@"Detail did appear");
+
     [self.notifier setNeedsLayout];
 }
 
@@ -983,7 +983,7 @@
         !appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) return;
 
-    NSLog(@"Test for try feed");
+//    NSLog(@"Test for try feed");
 
     for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
         NSString *storyIdStr = [[storiesCollection.activeFeedStories

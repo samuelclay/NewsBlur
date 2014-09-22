@@ -734,7 +734,7 @@ static UIFont *userLabelFont;
 - (void)loadOfflineFeeds:(BOOL)failed {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
-    NSLog(@"loadOfflineFeeds: %d", failed);
+//    NSLog(@"loadOfflineFeeds: %d", failed);
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if (!appDelegate.activeUsername) {
         appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
