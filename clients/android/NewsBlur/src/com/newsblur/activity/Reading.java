@@ -535,6 +535,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void markStoryUnread(Story story) {
         synchronized (STORIES_MUTEX) {
             FeedUtils.markStoryUnread(story, this);
+            Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
             updateCursor();
         }
         enableOverlays();
