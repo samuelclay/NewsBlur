@@ -249,8 +249,8 @@
                          initWithContentViewController:appDelegate.userProfileNavigationController];
     
     [popoverController setDelegate:self];
-    [appDelegate.userProfileNavigationController view];
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
+    [appDelegate.userProfileNavigationController view];
     if ([sender class] == [InteractionCell class] ||
         [sender class] == [ActivityCell class]) {
         InteractionCell *cell = (InteractionCell *)sender;
