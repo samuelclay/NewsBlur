@@ -608,6 +608,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     }
                 }
 
+                // we didn't find a story, so now we need to get more stories. First, though,
+                // double check that there are even any left
+                if (getUnreadCount() <= 0) {
+                    break unreadSearch;
+                }
+
                 // if we didn't find a story trigger a check to see if there are any more to search before proceeding
                 this.unreadSearchLatch = new CountDownLatch(1);
                 this.checkStoryCount(candidate+1);
