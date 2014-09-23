@@ -141,6 +141,7 @@
 //        NSLog(@"%@ %@", dateString, timeString);
 //    }];
     
+    [timeFormatter release];
     [formatter release];
 }
 

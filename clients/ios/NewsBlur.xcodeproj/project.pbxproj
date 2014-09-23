@@ -3732,15 +3732,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					Other,
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
+					"\"$(SRCROOT)/Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3763,7 +3755,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "45143eee-33c3-4c7b-82e2-4b3ac0eb2170";
+				PROVISIONING_PROFILE = "0a21ce12-0604-4e59-b0b1-1aa2b90afaa5";
 				STRIP_INSTALLED_PRODUCT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -3781,15 +3773,7 @@
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					Other,
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
+					"\"$(SRCROOT)/Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK\"",
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3810,7 +3794,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "45143eee-33c3-4c7b-82e2-4b3ac0eb2170";
+				PROVISIONING_PROFILE = "0a21ce12-0604-4e59-b0b1-1aa2b90afaa5";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
