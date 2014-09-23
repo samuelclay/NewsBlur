@@ -121,11 +121,26 @@
 	if ([delegate respondsToSelector:@selector(pullToRefreshViewLastUpdated:)])
 		date = [delegate pullToRefreshViewLastUpdated:self];
 
+    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
+    [timeFormatter setAMSymbol:@"AM"];
+    [timeFormatter setPMSymbol:@"PM"];
+    [timeFormatter setTimeStyle:NSDateFormatterShortStyle];
+
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setAMSymbol:@"AM"];
-    [formatter setPMSymbol:@"PM"];
-    [formatter setDateFormat:@"MM/dd/yy h:mm a"];
-    lastUpdatedLabel.text = [NSString stringWithFormat:@"Updated %@", [formatter stringFromDate:date]];
+    [formatter setDateFormat:@"EEEE, MMM d, yyyy"];
+    lastUpdatedLabel.text = [NSString stringWithFormat:@"Updated %@ %@",
+                             [formatter stringFromDate:date],
+                             [timeFormatter stringFromDate:date]];
+
+    //    [@[[NSLocale localeWithLocaleIdentifier:@"de_DE"], [NSLocale localeWithLocaleIdentifier:@"es_ES"],[NSLocale localeWithLocaleIdentifier:@"en_US"]] enumerateObjectsUsingBlock:^(NSLocale *locale, NSUInteger idx, BOOL *stop) {
+//        [formatter setLocale:locale];
+//        [timeFormatter setLocale:locale];
+//        [formatter setTimeZone:[NSTimeZone systemTimeZone]];
+//        NSString *dateString=[formatter stringFromDate:date];
+//        NSString *timeString = [timeFormatter stringFromDate:date];
+//        NSLog(@"%@ %@", dateString, timeString);
+//    }];
+    
     [formatter release];
 }
 
