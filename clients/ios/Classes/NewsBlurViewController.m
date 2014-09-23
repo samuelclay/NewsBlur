@@ -277,7 +277,10 @@ static UIFont *userLabelFont;
     NSIndexPath *visiblePath = [self.stillVisibleFeeds objectForKey:feedIdStr];
     if (visiblePath) {
         [self.feedTitlesTable beginUpdates];
-        NSMutableArray *paths = indexPath == visiblePath ? @[indexPath].mutableCopy : @[indexPath, visiblePath].mutableCopy;
+        NSMutableArray *paths = (indexPath.section == visiblePath.section &&
+                                 indexPath.row == visiblePath.row)
+        ? @[indexPath].mutableCopy
+        : @[indexPath, visiblePath].mutableCopy;
         if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
             [self.stillVisibleFeeds removeObjectForKey:feedIdStr];
             for (NSString *feedId in [self.stillVisibleFeeds allKeys]) {
