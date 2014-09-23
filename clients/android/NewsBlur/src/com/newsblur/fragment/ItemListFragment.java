@@ -45,8 +45,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected int currentState;
-    private boolean firstSyncDone = false;
     private int lastRequestedStoryCount = 0;
+    private boolean isLoading = true;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,16 +57,15 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
-        firstSyncDone = false;
-        setEmptyListView(R.string.empty_list_view_loading);
+        setLoading(true);
         lastRequestedStoryCount = 0;
     }
 
-    public void syncDone() {
-        this.firstSyncDone = true;
+    public void setLoading(boolean loading) {
+        isLoading = loading;
     }
 
-    private void setEmptyListView(int rid) {
+    private void updateLoadingIndicator() {
         View v = this.getView();
         if (v == null) return; // we might have beat construction?
 
@@ -75,9 +74,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
             return;
         }
-
         TextView emptyView = (TextView) itemList.getEmptyView();
-        emptyView.setText(rid);
+
+        if (isLoading) {
+            emptyView.setText(R.string.empty_list_view_loading);
+        } else {
+            emptyView.setText(R.string.empty_list_view_no_stories);
+        }
     }
 
     public void scrollToTop() {
@@ -141,12 +144,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                 triggerRefresh(1);
             }
 			adapter.swapCursor(cursor);
-
-            // iff a sync has finished and a cursor load has finished, it is safe to remove the loading message
-            if (this.firstSyncDone) {
-                setEmptyListView(R.string.empty_list_view_no_stories);
-            }
 		}
+        updateLoadingIndicator();
 	}
 
 	@Override

@@ -535,6 +535,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void markStoryUnread(Story story) {
         synchronized (STORIES_MUTEX) {
             FeedUtils.markStoryUnread(story, this);
+            Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
             updateCursor();
         }
         enableOverlays();
@@ -605,6 +606,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                         unreadFound = true;
                         break unreadSearch;
                     }
+                }
+
+                // we didn't find a story, so now we need to get more stories. First, though,
+                // double check that there are even any left
+                if (getUnreadCount() <= 0) {
+                    break unreadSearch;
                 }
 
                 // if we didn't find a story trigger a check to see if there are any more to search before proceeding

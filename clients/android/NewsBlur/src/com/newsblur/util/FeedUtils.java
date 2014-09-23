@@ -159,12 +159,13 @@ public class FeedUtils {
 
         // update the local object to show as read before DB is touched
         story.read = read;
-
+        
         // update unread state and unread counts in the local DB
         dbHelper.setStoryReadState(story, read);
 
         // tell the sync service we need to mark read
-        dbHelper.enqueueActionStoryRead(story.storyHash, read);
+        ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
+        dbHelper.enqueueAction(ra);
         triggerSync(context);
     }
 
@@ -172,7 +173,8 @@ public class FeedUtils {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                dbHelper.enqueueActionFeedRead(fs, olderThan, newerThan);
+                ReadingAction ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                dbHelper.enqueueAction(ra);
                 dbHelper.markFeedsRead(fs, olderThan, newerThan);
                 triggerSync(context);
                 return null;

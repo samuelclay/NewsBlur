@@ -118,8 +118,6 @@ public class DatabaseConstants {
     public static final String ACTION_TABLE = "story_actions";
 	public static final String ACTION_ID = BaseColumns._ID;
     public static final String ACTION_TIME = "time";
-    public static final String ACTION_DONE_REMOTE = "done_remote";
-    public static final String ACTION_DONE_LOCAL = "done_local";
     public static final String ACTION_MARK_READ = "mark_read";
     public static final String ACTION_MARK_UNREAD = "mark_unread";
     public static final String ACTION_SAVE = "save";
@@ -251,7 +249,6 @@ public class DatabaseConstants {
     static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
-        ACTION_DONE_REMOTE + INTEGER + " DEFAULT 0, " +
         ACTION_MARK_READ + INTEGER + " DEFAULT 0, " +
         ACTION_MARK_UNREAD + INTEGER + " DEFAULT 0, " +
         ACTION_SAVE + INTEGER + " DEFAULT 0, " +

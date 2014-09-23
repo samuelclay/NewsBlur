@@ -21,6 +21,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
@@ -359,34 +360,13 @@ public class BlurDatabaseHelper {
         dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, whereClause, whereArgs);
     }
 
-    public void enqueueActionStoryRead(String hash, boolean read) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.ACTION_TIME, System.currentTimeMillis());
-        values.put(DatabaseConstants.ACTION_STORY_HASH, hash);
-        values.put(read ? DatabaseConstants.ACTION_MARK_READ : DatabaseConstants.ACTION_MARK_UNREAD, 1);
-        dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, values);
-    }
-
-    public void enqueueActionFeedRead(FeedSet fs, Long olderThan, Long newerThan) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.ACTION_TIME, System.currentTimeMillis());
-        values.put(DatabaseConstants.ACTION_MARK_READ, 1);
-        values.put(DatabaseConstants.ACTION_FEED_ID, TextUtils.join(",", fs.getFeedIds()));
-        if (olderThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_OLDER, olderThan);
-        if (newerThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_NEWER, newerThan);
-        dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, values);
+    public void enqueueAction(ReadingAction ra) {
+        dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());
     }
 
     public Cursor getActions(boolean includeDone) {
-        String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE +
-                   " WHERE " + DatabaseConstants.ACTION_DONE_REMOTE + " = " + (includeDone ? 1 : 0);
+        String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE;
         return dbRO.rawQuery(q, null);
-    }
-
-    public void setActionDone(String actionId) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.ACTION_DONE_REMOTE, 1);
-        dbRW.update(DatabaseConstants.ACTION_TABLE, values, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});
     }
 
     public void clearAction(String actionId) {
