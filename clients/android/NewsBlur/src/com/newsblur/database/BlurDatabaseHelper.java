@@ -340,6 +340,7 @@ public class BlurDatabaseHelper {
         } else {
             throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
         }
+        Log.d(this.getClass().getName(), "marking read with sel: " + conjoinSelections(feedSelection, rangeSelection));
         dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);
 
     }
@@ -409,7 +410,16 @@ public class BlurDatabaseHelper {
     }
 
     /**
-     * Clears the read_this_session flag for all stories so they will be counted as not-unread.
+     * Tags all saved stories with the reading session flag so they don't disappear if unsaved.
+     */
+    public void markSavedReadingSession() {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, true);
+        dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_STARRED + " = 1", null);
+    }
+
+    /**
+     * Clears the read_this_session flag for all stories so they won't be displayed.
      */
     public void clearReadingSession() {
         ContentValues values = new ContentValues();
@@ -479,7 +489,8 @@ public class BlurDatabaseHelper {
             StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
-            q.append(" WHERE " + DatabaseConstants.STORY_STARRED + " = 1");
+            q.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
+            q.append(" OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1))");
             q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
             return dbRO.rawQuery(q.toString(), null);
 
