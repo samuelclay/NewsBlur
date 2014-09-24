@@ -254,7 +254,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /**
      * Query the DB for the current unreadcount for this view.
      */
-    protected abstract int getUnreadCount();
+    private int getUnreadCount() {
+        if (fs.isAllSaved()) return 0; // saved stories doesn't have unreads
+        return dbHelper.getUnreadCount(fs, currentState);
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

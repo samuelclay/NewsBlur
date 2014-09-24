@@ -361,6 +361,13 @@ public class BlurDatabaseHelper {
         dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, whereClause, whereArgs);
     }
 
+    public int getUnreadCount(FeedSet fs, int stateFilter) {
+        Cursor c = getStoriesCursor(fs, stateFilter, ReadFilter.PURE_UNREAD, null);
+        int count = c.getCount();
+        c.close();
+        return count;
+    }
+
     public void enqueueAction(ReadingAction ra) {
         dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());
     }
@@ -372,35 +379,6 @@ public class BlurDatabaseHelper {
 
     public void clearAction(String actionId) {
         dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});
-    }
-
-    public int getFeedUnreadCount(String feedId, int readingState) {
-        // calculate the unread count both from the feeds table and the stories table. If
-        // they disagree, use the maximum value seen.
-        int countFromFeedsTable = 0;
-        int countFromStoriesTable = 0;
-
-        // note we have to select the whole story object so we can get all they flavours of unread count and do math on them
-        String q1 = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + 
-                    " FROM " + DatabaseConstants.FEED_TABLE +
-                    " WHERE " +  DatabaseConstants.FEED_ID + "= ?";
-        Cursor c1 = dbRO.rawQuery(q1, new String[]{feedId});
-        if (c1.getCount() > 0) {
-            Feed feed = Feed.fromCursor(c1);
-            countFromFeedsTable = FeedUtils.getFeedUnreadCount(feed, readingState);
-        }
-        c1.close();
-
-        // note we can't select count(*) because the actual story state columns are virtual
-        String q2 = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + " FROM " + DatabaseConstants.STORY_TABLE +
-                    " WHERE " +  DatabaseConstants.STORY_FEED_ID + "= ?" +
-                    " AND " + DatabaseConstants.getStorySelectionFromState(readingState) +
-                    " AND " + DatabaseConstants.STORY_READ + " = 0";
-        Cursor c2 = dbRO.rawQuery(q2, new String[]{feedId});
-        countFromStoriesTable = c2.getCount();
-        c2.close();
-
-        return Math.max(countFromFeedsTable, countFromStoriesTable);
     }
 
     public Cursor getStory(String hash) {
@@ -434,8 +412,12 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getStoriesCursor(FeedSet fs, int stateFilter) {
-        StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
+        StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
+        return getStoriesCursor(fs, stateFilter, readFilter, order);
+    }
+
+    public Cursor getStoriesCursor(FeedSet fs, int stateFilter, ReadFilter readFilter, StoryOrder order) {
 
         if (fs.getSingleFeed() != null) {
 

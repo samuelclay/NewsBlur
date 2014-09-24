@@ -30,10 +30,4 @@ public class SavedStoriesReading extends Reading {
         super.onLoadFinished(loader, cursor);
     }
 
-    @Override
-    protected int getUnreadCount() {
-        // effectively disable the notion of unreads for this feed
-        return 0;
-    }
-
 }
