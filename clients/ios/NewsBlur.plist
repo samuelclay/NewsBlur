@@ -35,7 +35,7 @@
 				<key>bundle-identifier</key>
 				<string>com.newsblur.NewsBlur</string>
 				<key>bundle-version</key>
-				<string>4.4.0</string>
+				<string>4.5.0b3</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>
