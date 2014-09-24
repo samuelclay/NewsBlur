@@ -99,8 +99,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         // load an extra page or two worth of stories past the viewport
-        int desiredStoryCount = firstVisible + (visibleCount*2);
-
+        int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
+        
         // this method tends to get called repeatedly. don't request repeats
         if (desiredStoryCount <= lastRequestedStoryCount) {
             return;

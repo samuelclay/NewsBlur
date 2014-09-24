@@ -622,16 +622,18 @@ public class NBSyncService extends Service {
             Log.e(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
             return false;
         }
-        Integer alreadyRequested = PendingFeeds.get(fs);
-        if ((alreadyRequested != null) && (desiredStoryCount <= alreadyRequested)) {
-            return false;
-        }
-        Integer alreadySeen = FeedStoriesSeen.get(fs);
-        if ((alreadySeen != null) && (desiredStoryCount <= alreadySeen)) {
-            return false;
+
+        synchronized (PendingFeeds) {
+            Integer alreadyRequested = PendingFeeds.get(fs);
+            if ((alreadyRequested != null) && (desiredStoryCount <= alreadyRequested)) {
+                return false;
+            }
+            Integer alreadySeen = FeedStoriesSeen.get(fs);
+            if ((alreadySeen != null) && (desiredStoryCount <= alreadySeen)) {
+                return false;
+            }
         }
             
-        Log.d(NBSyncService.class.getName(), "enqueued request for minimum stories: " + desiredStoryCount);
         PendingFeeds.put(fs, desiredStoryCount);
         NbActivity.updateAllActivities();
         return true;
