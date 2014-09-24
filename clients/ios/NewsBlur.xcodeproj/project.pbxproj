@@ -652,6 +652,9 @@
 		FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE5322E144C8AC300ACFDE0 /* Utilities.m */; };
 		FFE816AB17E280BD008AF4B0 /* ftux_tree.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AA17E280BD008AF4B0 /* ftux_tree.png */; };
 		FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AC17E29D71008AF4B0 /* big_world_white.png */; };
+		FFEA5AE819D33FB400ED87A0 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AE719D33FB400ED87A0 /* Launch Screen.xib */; };
+		FFEA5AEA19D3407400ED87A0 /* launch_gradient.png in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AE919D3407400ED87A0 /* launch_gradient.png */; };
+		FFEA5AEC19D340BC00ED87A0 /* logo_newsblur_512.png in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */; };
 		FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD017172B105800D45A62 /* UIActivitySafari.png */; };
 		FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */; };
 		FFF1E4B9177504CA00BF59D3 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF1E49B177504CA00BF59D3 /* IASKAppSettingsViewController.m */; };
@@ -1581,6 +1584,9 @@
 		FFE5322E144C8AC300ACFDE0 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
 		FFE816AA17E280BD008AF4B0 /* ftux_tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ftux_tree.png; sourceTree = "<group>"; };
 		FFE816AC17E29D71008AF4B0 /* big_world_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world_white.png; sourceTree = "<group>"; };
+		FFEA5AE719D33FB400ED87A0 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		FFEA5AE919D3407400ED87A0 /* launch_gradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_gradient.png; sourceTree = "<group>"; };
+		FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_newsblur_512.png; sourceTree = "<group>"; };
 		FFECD017172B105800D45A62 /* UIActivitySafari.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UIActivitySafari.png; sourceTree = "<group>"; };
 		FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UIActivitySafari@2x.png"; sourceTree = "<group>"; };
 		FFF1E49A177504CA00BF59D3 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
@@ -2070,6 +2076,7 @@
 				43B6A26F15B6952F00CEA2E6 /* group.png */,
 				43B6A27015B6952F00CEA2E6 /* group@2x.png */,
 				43A4C42315B00A26008787B5 /* logo_512.png */,
+				FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */,
 				43A4C42415B00A26008787B5 /* logo_background.png */,
 				43A4C42615B00A26008787B5 /* logo_newsblur_blur.png */,
 				43A4C43F15B00A26008787B5 /* warning.gif */,
@@ -2295,6 +2302,7 @@
 		FF22FE5216E52BAD0046165A /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
+				FFEA5AE719D33FB400ED87A0 /* Launch Screen.xib */,
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
@@ -2859,6 +2867,7 @@
 		FFB9BE3F17F4B65B00FE0A36 /* logos */ = {
 			isa = PBXGroup;
 			children = (
+				FFEA5AE919D3407400ED87A0 /* launch_gradient.png */,
 				FFC486B419CA41AE00F4758F /* logo_87.png */,
 				FFC486B019CA416D00F4758F /* logo_57.png */,
 				FFC486B119CA416D00F4758F /* logo_114.png */,
@@ -3093,6 +3102,7 @@
 				433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
 				FFA0479319CA54A800618DC4 /* osk-iconMask-bw-76@2x.png in Resources */,
+				FFEA5AE819D33FB400ED87A0 /* Launch Screen.xib in Resources */,
 				433323B8158901A40025064D /* fountain_pen.png in Resources */,
 				FFA047A719CA54A800618DC4 /* osk-photosIcon-76.png in Resources */,
 				433323B9158901A40025064D /* fountain_pen@2x.png in Resources */,
@@ -3122,6 +3132,7 @@
 				43A4C45315B00A26008787B5 /* Background@2X.png in Resources */,
 				FFA0474D19CA54A800618DC4 /* Chrome-Icon-29.png in Resources */,
 				43A4C46615B00A26008787B5 /* disclosure.png in Resources */,
+				FFEA5AEC19D340BC00ED87A0 /* logo_newsblur_512.png in Resources */,
 				43A4C46C15B00A26008787B5 /* fleuron.png in Resources */,
 				43A4C47E15B00A26008787B5 /* logo_512.png in Resources */,
 				43A4C47F15B00A26008787B5 /* logo_background.png in Resources */,
@@ -3431,6 +3442,7 @@
 				FFA0478419CA54A800618DC4 /* osk-facebookIcon-76@2x.png in Resources */,
 				FFA0477019CA54A800618DC4 /* osk-appDotNetIcon-29@2x.png in Resources */,
 				FF8364BF1756949E008F5C58 /* traverse_text_on.png in Resources */,
+				FFEA5AEA19D3407400ED87A0 /* launch_gradient.png in Resources */,
 				FFA0476A19CA54A800618DC4 /* osk-airDropIcon-29.png in Resources */,
 				FF8364C01756949E008F5C58 /* traverse_text_on@2x.png in Resources */,
 				FFA0479819CA54A800618DC4 /* osk-mailIcon-76@2x.png in Resources */,
