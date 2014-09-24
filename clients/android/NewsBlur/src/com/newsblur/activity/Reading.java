@@ -326,11 +326,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     private void updateCursor() {
-        try {
-            getLoaderManager().restartLoader(0, null, this);
-        } catch (IllegalStateException ise) {
-            ; // our heavy use of async can race loader calls, which it will gripe about, but this
-             //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
+        synchronized (STORIES_MUTEX) {
+            try {
+                getLoaderManager().restartLoader(0, null, this);
+            } catch (IllegalStateException ise) {
+                ; // our heavy use of async can race loader calls, which it will gripe about, but this
+                 //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
+            }
         }
     }
 
@@ -352,13 +354,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 if (readingAdapter == null) return null;
                 Story story = readingAdapter.getStory(position);
                 if (story != null) {
+                    Log.d(this.getClass().getName(), "star date: " + story.starredDate);
+                    markStoryRead(story);
                     synchronized (pageHistory) {
                         // if the history is just starting out or the last entry in it isn't this page, add this page
                         if ((pageHistory.size() < 1) || (!story.equals(pageHistory.get(pageHistory.size()-1)))) {
                             pageHistory.add(story);
                         }
                     }
-                    markStoryRead(story);
                 }
 
                 checkStoryCount(position);
@@ -525,19 +528,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     private void markStoryRead(Story story) {
-        synchronized (STORIES_MUTEX) {
-            FeedUtils.markStoryAsRead(story, this);
-            updateCursor();
-        }
+        FeedUtils.markStoryAsRead(story, this);
         enableOverlays();
     }
 
     private void markStoryUnread(Story story) {
-        synchronized (STORIES_MUTEX) {
-            FeedUtils.markStoryUnread(story, this);
-            Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
-            updateCursor();
-        }
+        FeedUtils.markStoryUnread(story, this);
+        Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
         enableOverlays();
     }
 

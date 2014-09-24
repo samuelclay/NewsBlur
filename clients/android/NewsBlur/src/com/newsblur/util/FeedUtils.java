@@ -155,6 +155,7 @@ public class FeedUtils {
         }
         Story freshStory = Story.fromCursor(cursor);
         cursor.close();
+
         if (freshStory.read == read) { return; }
 
         // update the local object to show as read before DB is touched
@@ -162,6 +163,7 @@ public class FeedUtils {
         
         // update unread state and unread counts in the local DB
         dbHelper.setStoryReadState(story, read);
+        NbActivity.updateAllActivities();
 
         // tell the sync service we need to mark read
         ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
