@@ -330,7 +330,7 @@ public class DatabaseConstants {
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
 
-    public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " ASC";
+    public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " DESC";
 
     /**
      * Appends to the given story query any and all selection statements that are required to satisfy the specified

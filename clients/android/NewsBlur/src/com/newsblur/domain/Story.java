@@ -43,8 +43,8 @@ public class Story implements Serializable {
     @SerializedName("starred")
     public boolean starred;
 
-    @SerializedName("starred_date")
-    public Date starredDate;
+    @SerializedName("starred_timestamp")
+    public long starredTimestamp;
 
 	@SerializedName("story_tags")
 	public String[] tags;
@@ -123,7 +123,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_TAGS, TextUtils.join(",", tags));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_STARRED, starred);
-		values.put(DatabaseConstants.STORY_STARRED_DATE, starredDate != null ? starredDate.getTime() : 0L);
+		values.put(DatabaseConstants.STORY_STARRED_DATE, starredTimestamp);
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
         values.put(DatabaseConstants.STORY_HASH, storyHash);
 		return values;
@@ -156,7 +156,7 @@ public class Story implements Serializable {
 		story.intelligence.intelligenceTitle = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
 		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ)) > 0;
 		story.starred = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED)) > 0;
-		story.starredDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE)));
+		story.starredTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE));
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));

@@ -358,7 +358,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 if (readingAdapter == null) return null;
                 Story story = readingAdapter.getStory(position);
                 if (story != null) {
-                    Log.d(this.getClass().getName(), "star date: " + story.starredDate);
                     markStoryRead(story);
                     synchronized (pageHistory) {
                         // if the history is just starting out or the last entry in it isn't this page, add this page
