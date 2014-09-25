@@ -287,11 +287,13 @@ static UIFont *userLabelFont;
                 NSLog(@"Found inadvertantly still visible feed: %@", feedId);
                 [paths addObject:[self.stillVisibleFeeds objectForKey:feedId]];
             }
-            [self.stillVisibleFeeds removeAllObjects];
         }
         [self.feedTitlesTable reloadRowsAtIndexPaths:paths
                                     withRowAnimation:UITableViewRowAnimationFade];
         [self.feedTitlesTable endUpdates];
+        if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
+            [self.stillVisibleFeeds removeAllObjects];
+        }
     }
 }
 

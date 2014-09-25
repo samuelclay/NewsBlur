@@ -297,6 +297,8 @@ class Profile(models.Model):
                 refunded = stripe_payments[0].amount/100
             logging.user(self.user, "~FRRefunding stripe payment: $%s" % refunded)
         else:
+            self.cancel_premium()
+
             paypal_opts = {
                 'API_ENVIRONMENT': 'PRODUCTION',
                 'API_USERNAME': settings.PAYPAL_API_USERNAME,
@@ -313,7 +315,6 @@ class Profile(models.Model):
             except KeyError:
                 refunded = int(transaction.payment_gross)
             logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
-            self.cancel_premium()
         
         return refunded
             

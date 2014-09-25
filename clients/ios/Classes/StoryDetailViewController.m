@@ -268,6 +268,9 @@
         contentWidthClass = @"NB-iphone";
     }
     
+    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
+                         contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
+    
     // Replace image urls that are locally cached, even when online
     NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
@@ -1768,6 +1771,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
         contentWidthClass = @"NB-iphone";
     }
+    
+    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
+                         contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
