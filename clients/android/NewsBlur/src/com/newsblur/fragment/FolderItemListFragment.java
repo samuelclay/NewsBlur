@@ -26,22 +26,21 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
 public class FolderItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private ContentResolver contentResolver;
-	private String[] feedIds;
 	private String folderName;
 	private Folder folder;
 	
-	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, DefaultFeedView defaultFeedView) {
+	public static FolderItemListFragment newInstance(String folderName, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
 		Bundle args = new Bundle();
-		args.putInt("currentState", currentState);
-		args.putStringArrayList("feedIds", feedIds);
+		args.putSerializable("currentState", currentState);
 		args.putString("folderName", folderName);
         args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
@@ -52,12 +51,7 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		currentState = getArguments().getInt("currentState");
 		folderName = getArguments().getString("folderName");
-        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
-		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
-		feedIds = new String[feedIdArrayList.size()];
-		feedIdArrayList.toArray(feedIds);
 	}
 
 	@Override
@@ -95,7 +89,6 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FolderReading.class);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(FeedReading.EXTRA_FOLDERNAME, folderName);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);

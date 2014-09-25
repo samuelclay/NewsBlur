@@ -177,7 +177,7 @@ public class FeedUtils {
             protected Void doInBackground(Void... arg) {
                 ReadingAction ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
                 dbHelper.enqueueAction(ra);
-                dbHelper.markFeedsRead(fs, olderThan, newerThan);
+                dbHelper.markStoriesRead(fs, olderThan, newerThan);
                 triggerSync(context);
                 return null;
             }
@@ -216,50 +216,6 @@ public class FeedUtils {
 
     }
 
-    /** 
-     * Gets the unread story count for a feed, filtered by view state.
-     */
-    public static int getFeedUnreadCount(Feed feed, int currentState) {
-        if (feed == null ) return 0;
-        int count = 0;
-        count += feed.positiveCount;
-        if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
-            count += feed.neutralCount;
-        }
-        if (currentState ==  AppConstants.STATE_ALL ) {
-            count += feed.negativeCount;
-        }
-        return count;
-    }
-
-    public static int getFeedUnreadCount(SocialFeed feed, int currentState) {
-        if (feed == null ) return 0;
-        int count = 0;
-        count += feed.positiveCount;
-        if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
-            count += feed.neutralCount;
-        }
-        if (currentState ==  AppConstants.STATE_ALL ) {
-            count += feed.negativeCount;
-        }
-        return count;
-    }
-
-    public static int getCursorUnreadCount(Cursor cursor, int currentState) {
-        int count = 0;
-        for (int i = 0; i < cursor.getCount(); i++) {
-            cursor.moveToPosition(i);
-            count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_POS));
-            if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
-                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEUT));
-            }
-            if (currentState ==  AppConstants.STATE_ALL ) {
-                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEG));
-            }
-        }
-        return count;
-    }
-    
     public static void shareStory(Story story, Context context) {
         if (story == null ) { return; } 
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);

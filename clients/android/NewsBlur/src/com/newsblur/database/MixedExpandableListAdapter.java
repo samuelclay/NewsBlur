@@ -29,6 +29,7 @@ import com.newsblur.activity.AllSharedStoriesItemsList;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.StateFilter;
 
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
@@ -48,7 +49,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private ViewBinder groupViewBinder;
 	private ViewBinder blogViewBinder;
 
-	public int currentState = AppConstants.STATE_SOME;
+	public StateFilter currentState = StateFilter.SOME;
 	private Cursor allStoriesCountCursor, sharedStoriesCountCursor, savedStoriesCountCursor;
 
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final Cursor savedStoriesCountCursor) {
@@ -308,7 +309,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			});
 			int neutCount = sharedStoriesCountCursor.getInt(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
             neutCount = checkNegativeUnreads(neutCount);
-			if (currentState == AppConstants.STATE_BEST || (neutCount == 0)) {
+			if (currentState == StateFilter.BEST || (neutCount == 0)) {
 				v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
 			} else {
 				v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
@@ -336,7 +337,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
             int neutCount = allStoriesCountCursor.getInt(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
             neutCount = checkNegativeUnreads(neutCount);
 			switch (currentState) {
-				case AppConstants.STATE_BEST:
+				case BEST:
 					v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
 					v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
 					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));

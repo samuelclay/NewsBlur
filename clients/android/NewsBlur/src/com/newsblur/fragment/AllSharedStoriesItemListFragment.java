@@ -27,6 +27,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
@@ -38,8 +39,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		currentState = getArguments().getInt("currentState");
-        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
 		feedIdArrayList.toArray(feedIds);
@@ -70,10 +69,10 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		return v;
 	}
 
-	public static ItemListFragment newInstance(ArrayList<String> feedIds, int currentState, DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance(ArrayList<String> feedIds, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllSharedStoriesItemListFragment();
 		Bundle arguments = new Bundle();
-		arguments.putInt("currentState", currentState);
+		arguments.putSerializable("currentState", currentState);
 		arguments.putStringArrayList("feedIds", feedIds);
         arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);

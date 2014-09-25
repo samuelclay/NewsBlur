@@ -10,10 +10,11 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.StateFilter;
 
 public class StateToggleButton extends LinearLayout implements OnClickListener {
 
-	private int CURRENT_STATE = AppConstants.STATE_SOME;
+	private StateFilter currentState = StateFilter.SOME;
 
 	private Context context;
 	private StateChangedListener stateChangedListener;
@@ -48,42 +49,46 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 		someButton.setOnClickListener(this);
 		focusButton.setOnClickListener(this);
 		
-		setState(CURRENT_STATE);
+		setState(currentState);
 	}
 
 	@Override
 	public void onClick(View v) {
-		changeState(v.getId());
+        if (v.getId() == R.id.toggle_all) {
+		    changeState(StateFilter.ALL);
+        } else if (v.getId() == R.id.toggle_some) {
+            changeState(StateFilter.SOME);
+        } else if (v.getId() == R.id.toggle_focus) {
+            changeState(StateFilter.BEST);
+        }
 	}
 
-	public void changeState(final int state) {
+	public void changeState(StateFilter state) {
 		setState(state);
 		if (stateChangedListener != null) {
-			stateChangedListener.changedState(CURRENT_STATE);
+			stateChangedListener.changedState(currentState);
 		}
 	}
 
-	public void setState(final int state) {
-		if (state == R.id.toggle_all) {
+	public void setState(StateFilter state) {
+        currentState = state;
+		if (state == StateFilter.ALL) {
 			allButton.setEnabled(false);
 			someButton.setEnabled(true);
 			focusButton.setEnabled(true);
-			CURRENT_STATE = AppConstants.STATE_ALL;
-		} else if (state == R.id.toggle_some) {
+		} else if (state == StateFilter.SOME) {
 			allButton.setEnabled(true);
 			someButton.setEnabled(false);
 			focusButton.setEnabled(true);
-			CURRENT_STATE = AppConstants.STATE_SOME;
-		} else if (state == R.id.toggle_focus) {
+		} else if (state == StateFilter.BEST) {
 			allButton.setEnabled(true);
 			someButton.setEnabled(true);
 			focusButton.setEnabled(false);
-			CURRENT_STATE = AppConstants.STATE_BEST;
 		}
 	}
 
 	public interface StateChangedListener {
-		public void changedState(int state);
+		public void changedState(StateFilter state);
 	}
 
 }

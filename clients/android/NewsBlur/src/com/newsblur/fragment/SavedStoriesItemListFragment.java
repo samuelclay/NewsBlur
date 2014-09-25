@@ -29,8 +29,6 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 	}
 
 	@Override

@@ -36,6 +36,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -44,13 +45,15 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
-	protected int currentState;
+	protected StateFilter currentState;
     private int lastRequestedStoryCount = 0;
     private boolean isLoading = true;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        currentState = (StateFilter) getArguments().getSerializable("currentState");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
     }
 
     /**
@@ -113,7 +116,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-	public void changeState(int state) {
+	public void changeState(StateFilter state) {
 		currentState = state;
 		hasUpdated();
 	}

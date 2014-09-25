@@ -29,6 +29,7 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StateFilter;
 
 public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogListener {
 
@@ -51,7 +52,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
             feedIds = new ArrayList<String>(); // default to a wildcard search
 
             // if we're in Focus mode, only query for feeds with a nonzero focus count
-            if (this.currentState == AppConstants.STATE_BEST) {
+            if (this.currentState == StateFilter.BEST) {
                 Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.FEED_FILTER_FOCUS, null, null);
                 while (cursor.moveToNext() && (feedIds.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
                     feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));

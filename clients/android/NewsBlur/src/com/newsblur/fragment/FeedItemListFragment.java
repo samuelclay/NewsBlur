@@ -25,6 +25,7 @@ import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.view.FeedItemViewBinder;
@@ -33,11 +34,11 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
 
 	private String feedId;
 
-    public static FeedItemListFragment newInstance(String feedId, int currentState, DefaultFeedView defaultFeedView) {
+    public static FeedItemListFragment newInstance(String feedId, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
 
 		Bundle args = new Bundle();
-		args.putInt("currentState", currentState);
+		args.putSerializable("currentState", currentState);
 		args.putString("feedId", feedId);
         args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
@@ -48,9 +49,7 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
-        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 	}
 
     @Override

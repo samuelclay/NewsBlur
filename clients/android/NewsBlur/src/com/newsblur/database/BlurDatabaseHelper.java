@@ -23,6 +23,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
@@ -292,33 +293,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void markFeedsRead(FeedSet fs, Long olderThan, Long newerThan) {
-        // split this into two steps, since the double-check feature needs to
-        // redo the second step separately
-        markFeedsRead_feedCounts(fs, olderThan, newerThan);
-        markFeedsRead_storyCounts(fs, olderThan, newerThan);
-    }
-
-    public void markFeedsRead_feedCounts(FeedSet fs, Long olderThan, Long newerThan) {
-        if (fs.isAllNormal()) {
-            setFeedUnreadCount(0, null, null);
-            setSocialFeedUnreadCount(0, null, null);
-        } else if (fs.getMultipleFeeds() != null) { 
-            for (String feedId : fs.getMultipleFeeds()) {
-                setFeedUnreadCount(0, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
-            }
-        } else if (fs.getSingleFeed() != null) {
-            setFeedUnreadCount(0, DatabaseConstants.FEED_ID + " = ?", new String[]{fs.getSingleFeed()});
-        } else if (fs.getSingleSocialFeed() != null) {
-            setSocialFeedUnreadCount(0,  DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{fs.getSingleSocialFeed().getKey()});
-        } else {
-            // TODO: fs.isAllSocial() was never supported by the UI, but the API has it, and it would be
-            //       easy enough to add here.  Should we?
-            throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
-        }
-    }
-
-    public void markFeedsRead_storyCounts(FeedSet fs, Long olderThan, Long newerThan) {
+    public void markStoriesRead(FeedSet fs, Long olderThan, Long newerThan) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, true);
         String rangeSelection = null;
@@ -345,23 +320,53 @@ public class BlurDatabaseHelper {
 
     }
 
-    private void setFeedUnreadCount(int count, String whereClause, String[] whereArgs) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, count);
-        values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, count);
-        values.put(DatabaseConstants.FEED_POSITIVE_COUNT, count);
-        dbRW.update(DatabaseConstants.FEED_TABLE, values, whereClause, whereArgs);
+    /**
+     * Refreshes the counts in the feeds/socialfeeds tables by counting stories in the story table.
+     */
+    public void refreshFeedCounts(FeedSet fs) {
+        // decompose the FeedSet into a list of single feeds that need to be recounted
+        List<String> feedIds = new ArrayList<String>();
+        List<String> socialFeedIds = new ArrayList<String>();
+
+        if (fs.isAllNormal()) {
+            // add all of both
+        } else if (fs.getMultipleFeeds() != null) { 
+            for (String feedId : fs.getMultipleFeeds()) {
+                feedIds.add(feedId);
+            }
+        } else if (fs.getSingleFeed() != null) {
+            feedIds.add(fs.getSingleFeed());
+        } else if (fs.getSingleSocialFeed() != null) {
+            socialFeedIds.add(fs.getSingleSocialFeed().getKey());
+        } else {
+            // TODO: fs.isAllSocial() was never supported by the UI, but the API has it, and it would be
+            //       easy enough to add here.  Should we?
+            throw new IllegalStateException("Asked to refresh story counts for FeedSet of unknown type.");
+        }
+
+        // now recount the number of unreads in each feed, one by one
+        for (String feedId : feedIds) {
+            FeedSet singleFs = FeedSet.singleFeed(feedId);
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
+            values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
+            values.put(DatabaseConstants.FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
+            Log.d(this.getClass().getName(), "new counts for " + feedId + " : " + values.toString());
+            dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
+        }
+
+        for (String socialId : socialFeedIds) {
+            FeedSet singleFs = FeedSet.singleSocialFeed(socialId, "");
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
+            values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
+            values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
+            Log.d(this.getClass().getName(), "new counts for " + socialId + " : " + values.toString());
+            dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{socialId});
+        }
     }
 
-    private void setSocialFeedUnreadCount(int count, String whereClause, String[] whereArgs) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, count);
-        values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, count);
-        values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, count);
-        dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, whereClause, whereArgs);
-    }
-
-    public int getUnreadCount(FeedSet fs, int stateFilter) {
+    public int getUnreadCount(FeedSet fs, StateFilter stateFilter) {
         Cursor c = getStoriesCursor(fs, stateFilter, ReadFilter.PURE_UNREAD, null);
         int count = c.getCount();
         c.close();
@@ -405,19 +410,19 @@ public class BlurDatabaseHelper {
         dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);
     }
 
-    public Loader<Cursor> getStoriesLoader(final FeedSet fs, final int stateFilter) {
+    public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getStoriesCursor(fs, stateFilter);}
         };
     }
 
-    public Cursor getStoriesCursor(FeedSet fs, int stateFilter) {
+    public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter) {
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return getStoriesCursor(fs, stateFilter, readFilter, order);
     }
 
-    public Cursor getStoriesCursor(FeedSet fs, int stateFilter, ReadFilter readFilter, StoryOrder order) {
+    public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, StoryOrder order) {
 
         if (fs.getSingleFeed() != null) {
 
@@ -429,6 +434,7 @@ public class BlurDatabaseHelper {
             return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleFeed()});
 
         } else if (fs.getMultipleFeeds() != null) {
+            Log.d(this.getClass().getName(), "feeds in folder: " + TextUtils.join(",", fs.getMultipleFeeds()));
 
             StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);

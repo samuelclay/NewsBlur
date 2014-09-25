@@ -160,7 +160,7 @@ public class ReadingAction {
                 if (storyHash != null) {
                     dbHelper.setStoryReadState(storyHash, true);
                 } else if (feedSet != null) {
-                    dbHelper.markFeedsRead_storyCounts(feedSet, olderThan, newerThan);
+                    dbHelper.markStoriesRead(feedSet, olderThan, newerThan);
                 }
                 break;
                 

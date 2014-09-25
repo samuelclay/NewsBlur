@@ -25,6 +25,7 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
@@ -139,7 +140,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 	
 	@Override
-	public void changedState(int state) {
+	public void changedState(StateFilter state) {
 		folderFeedList.changeState(state);
 	}
 	

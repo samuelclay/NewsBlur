@@ -24,6 +24,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -43,7 +44,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
     private TextView overlayStatusText;
-	protected int currentState;
+	protected StateFilter currentState;
 
     private FeedSet fs;
 	
@@ -51,17 +52,17 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	@Override
     protected void onCreate(Bundle bundle) {
+		super.onCreate(bundle);
         this.fs = createFeedSet();
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		super.onCreate(bundle);
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getFragmentManager();
 
         // our intel state is entirely determined by the state of the Main view
-		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
+		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
@@ -175,7 +176,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
 	@Override
-	public void changedState(int state) {
+	public void changedState(StateFilter state) {
 		itemListFragment.changeState(state);
 	}
 	

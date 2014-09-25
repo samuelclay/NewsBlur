@@ -43,6 +43,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
@@ -75,7 +76,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private CountDownLatch unreadSearchLatch;
 
 	protected int passedPosition;
-	protected int currentState;
+	protected StateFilter currentState;
     protected StoryOrder storyOrder;
     protected ReadFilter readFilter;
 
@@ -132,7 +133,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
 
-		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
+		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
         defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
