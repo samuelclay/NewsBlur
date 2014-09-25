@@ -60,7 +60,7 @@ public class BlurDatabaseHelper {
         return dbRW.isOpen();
     }
 
-    public void cleanupStories(boolean keepOldStories) {
+    private List<String> getAllFeeds() {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
         Cursor c = dbRO.rawQuery(q1, null);
@@ -69,7 +69,23 @@ public class BlurDatabaseHelper {
            feedIds.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_ID)));
         }
         c.close();
-        for (String feedId : feedIds) {
+        return feedIds;
+    }
+
+    private List<String> getAllSocialFeeds() {
+        String q1 = "SELECT " + DatabaseConstants.SOCIAL_FEED_ID +
+                    " FROM " + DatabaseConstants.SOCIALFEED_TABLE;
+        Cursor c = dbRO.rawQuery(q1, null);
+        List<String> feedIds = new ArrayList<String>(c.getCount());
+        while (c.moveToNext()) {
+           feedIds.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_ID)));
+        }
+        c.close();
+        return feedIds;
+    }
+
+    public void cleanupStories(boolean keepOldStories) {
+        for (String feedId : getAllFeeds()) {
             String q = "DELETE FROM " + DatabaseConstants.STORY_TABLE + 
                        " WHERE " + DatabaseConstants.STORY_ID + " IN " +
                        "( SELECT " + DatabaseConstants.STORY_ID + " FROM " + DatabaseConstants.STORY_TABLE +
@@ -270,10 +286,7 @@ public class BlurDatabaseHelper {
         String incDec = read ? " - 1" : " + 1";
         String column = DatabaseConstants.getFeedCountColumnForStoryIntelValue(story.getIntelligenceTotal());
         // non-social feed count
-        StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.FEED_TABLE);
-        q.append(" SET ").append(column).append(" = ").append(column).append(incDec);
-        q.append(" WHERE " + DatabaseConstants.FEED_ID + " = ").append(story.feedId);
-        dbRW.execSQL(q.toString());
+        refreshFeedCounts(FeedSet.singleFeed(story.feedId));
         // social feed counts
         Set<String> socialIds = new HashSet<String>();
         if (!TextUtils.isEmpty(story.socialUserId)) {
@@ -284,12 +297,8 @@ public class BlurDatabaseHelper {
                 socialIds.add(id);
             }
         }
-        for (String id : socialIds) {
-            column = DatabaseConstants.getFeedCountColumnForStoryIntelValue(story.getIntelligenceTotal());
-            q = new StringBuilder("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE);
-            q.append(" SET ").append(column).append(" = ").append(column).append(incDec);
-            q.append(" WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = ").append(id);
-            dbRW.execSQL(q.toString());
+        if (socialIds.size() > 0) {
+            refreshFeedCounts(FeedSet.multipleSocialFeeds(socialIds));
         }
     }
 
@@ -318,6 +327,7 @@ public class BlurDatabaseHelper {
         Log.d(this.getClass().getName(), "marking read with sel: " + conjoinSelections(feedSelection, rangeSelection));
         dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);
 
+        refreshFeedCounts(fs);
     }
 
     /**
@@ -329,18 +339,17 @@ public class BlurDatabaseHelper {
         List<String> socialFeedIds = new ArrayList<String>();
 
         if (fs.isAllNormal()) {
-            // add all of both
+            feedIds.addAll(getAllFeeds());
+            socialFeedIds.addAll(getAllSocialFeeds());
         } else if (fs.getMultipleFeeds() != null) { 
-            for (String feedId : fs.getMultipleFeeds()) {
-                feedIds.add(feedId);
-            }
+            feedIds.addAll(fs.getMultipleFeeds());
         } else if (fs.getSingleFeed() != null) {
             feedIds.add(fs.getSingleFeed());
         } else if (fs.getSingleSocialFeed() != null) {
             socialFeedIds.add(fs.getSingleSocialFeed().getKey());
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            socialFeedIds.addAll(fs.getMultipleSocialFeeds().keySet());
         } else {
-            // TODO: fs.isAllSocial() was never supported by the UI, but the API has it, and it would be
-            //       easy enough to add here.  Should we?
             throw new IllegalStateException("Asked to refresh story counts for FeedSet of unknown type.");
         }
 

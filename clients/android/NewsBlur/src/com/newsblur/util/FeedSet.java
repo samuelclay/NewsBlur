@@ -1,6 +1,7 @@
 package com.newsblur.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 
 import java.io.Serializable;
@@ -43,6 +44,7 @@ public class FeedSet implements Serializable {
         }
 
         if (feeds != null) {
+            Log.d(this.getClass().getName(), "---norm: " + feeds.size()); 
             if (feeds.size() < 1) {
                 isAllNormal = true;
                 return;
@@ -53,6 +55,7 @@ public class FeedSet implements Serializable {
         }
 
         if (socialFeeds != null) {
+            Log.d(this.getClass().getName(), "---soci: " + socialFeeds.size()); 
             if (socialFeeds.size() < 1) {
                 isAllSocial = true;
                 return;
@@ -85,6 +88,18 @@ public class FeedSet implements Serializable {
     public static FeedSet singleSocialFeed(String userId, String username) {
         Map<String,String> socialFeedIds = new HashMap<String,String>(1);
         socialFeedIds.put(userId, username);
+        return new FeedSet(null, socialFeedIds, false);
+    }
+
+    /**
+     * Convenience constructor for multiple social feeds with IDs but no usernames. Useful
+     * for local operations only.
+     */
+    public static FeedSet multipleSocialFeeds(Set<String> userIds) {
+        Map<String,String> socialFeedIds = new HashMap<String,String>(userIds.size());
+        for (String id : userIds) {
+            socialFeedIds.put(id, "");
+        }
         return new FeedSet(null, socialFeedIds, false);
     }
 
@@ -122,14 +137,14 @@ public class FeedSet implements Serializable {
      * Gets a single feed ID iff there is only one or null otherwise.
      */
     public String getSingleFeed() {
-        if (feeds != null && folderName == null && feeds.size() == 1) return feeds.iterator().next(); else return null;
+        if (feeds != null && feeds.size() == 1) return feeds.iterator().next(); else return null;
     }
 
     /**
      * Gets a set of feed IDs iff there are multiples or null otherwise.
      */
     public Set<String> getMultipleFeeds() {
-        if (feeds != null && (folderName != null || feeds.size() > 1)) return feeds; else return null;
+        if (feeds != null && feeds.size() > 1) return feeds; else return null;
     }
 
     /**
