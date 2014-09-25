@@ -261,16 +261,18 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             // if the long-pressed item was an image, see if we can pop up a little dialogue
             // that presents the alt text.  Note that images wrapped in links tend to get detected
             // as anchors, not images, and may not point to the corresponding image URL.
-            final String imageURL = result.getExtra();
+            String imageURL = result.getExtra();
+            String mappedURL = imageUrlRemaps.get(imageURL);
+            final String finalURL = mappedURL == null ? imageURL : mappedURL;
             final String altText = imageAltTexts.get(imageURL);
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(imageURL);
+                builder.setTitle(finalURL);
                 builder.setMessage(altText);
                 builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(imageURL));
+                        i.setData(Uri.parse(finalURL));
                         startActivity(i);
                     }
                 });
@@ -489,7 +491,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
         sniffAltTexts(storyText);
 
-        if (PrefsUtils.isLoadOfflineImages(getActivity())) {
+        if (PrefsUtils.isImagePrefetchEnabled(getActivity())) {
             storyText = swapInOfflineImages(storyText);
         } 
 
@@ -519,6 +521,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         //   and may miss valid cases or trucate tags, but it works for popular feeds (read: XKCD) and doesn't
         //   require us to import a proper parser lib of hundreds of kilobytes just for this one feature.
         imageAltTexts = new HashMap<String,String>();
+        imageUrlRemaps = new HashMap<String,String>();
         Matcher imgTagMatcher1 = Pattern.compile("<img[^>]*src=\"([^\"]*)\"[^>]*alt=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
         while (imgTagMatcher1.find()) {
             imageAltTexts.put(imgTagMatcher1.group(1), imgTagMatcher1.group(2));
@@ -538,6 +541,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             String localPath = cache.getCachedLocation(url);
             if (localPath == null) continue;
             html = html.replace(imageTagMatcher.group(1)+"\""+url+"\"", "src=\""+localPath+"\"");
+            imageUrlRemaps.put(localPath, url);
         }
 
         return html;
