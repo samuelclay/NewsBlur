@@ -167,14 +167,9 @@ NSString * const OSKTwitterImageSizeLimitKey = @"photo_size_limit";
             }
             else
             {
-//                NSString *responseString = nil;
-//                if (responseData) {
-//                    responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-//                }
-//                
-//                OSKLog(@"[OSKTwitterUtility] Error received when trying to create a new tweet. Server responded with status code %li and response: %@",
-//                       (long)statusCode,
-//                       responseString);
+                OSKLog(@"[OSKTwitterUtility] Error received when trying to create a new tweet. Server responded with status code %li and response: %@",
+                       (long)statusCode,
+                       [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding]);
                 
                 NSError *error = [NSError errorWithDomain:@"com.secondgear.PhotosPlus.Errors" code:statusCode userInfo:nil];
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -191,35 +186,34 @@ NSString * const OSKTwitterImageSizeLimitKey = @"photo_size_limit";
         }
     };
     
-    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{ @"status" : item.text }];
-    if ((item.latitude != 0.0) && (item.longitude != 0.0))
-    {
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    
+    if (item.text) {
+        [params setObject:item.text.copy forKey:@"status"];
+    }
+    
+    if ((item.latitude != 0.0) && (item.longitude != 0.0)) {
         params[@"lat"] = [@(item.latitude) stringValue];
         params[@"long"] = [@(item.longitude) stringValue];
     }
 
     NSURL *twitterApiURL = nil;
-    if ([item.images count] > 0)
-    {
+    if ([item.images count] > 0) {
         twitterApiURL = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/update_with_media.json"];;
-    }
-    else
-    {
+    } else {
         twitterApiURL = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/update.json"];
     }
     
     SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:twitterApiURL parameters:params];
     
-    for (UIImage *image in item.images)
-    {
+    for (UIImage *image in item.images) {
 		float quality = 1.0f;
         NSData *imageData = UIImageJPEGRepresentation(image, quality);
 		
 		//SLIGHT HACK WARNING:
 		//We have the photo size limit from Twitter, and to make sure we are under the size requirement, we will degrade the JPEG quality
 		//by 10% successively until we are under the limit. -@cheesemaker
-		while (photoSizeLimit && (imageData.length > photoSizeLimit) && (quality > 0.0f))
-		{
+		while (photoSizeLimit && (imageData.length > photoSizeLimit) && (quality > 0.0f)) {
 			quality -= 0.1f;
 			imageData = UIImageJPEGRepresentation(image, quality);
 		}
@@ -229,7 +223,6 @@ NSString * const OSKTwitterImageSizeLimitKey = @"photo_size_limit";
     
     request.account = account;
     
-    //    OSKLog(@"[OSKTwitterUtility] Beginning request to upload new tweet.");
     [request performRequestWithHandler:requestHandler];
 }
 

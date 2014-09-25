@@ -137,6 +137,14 @@
 // "https://www.googleapis.com/auth/plus.me" scope to the request if needed.
 @property(nonatomic, assign) BOOL shouldFetchGooglePlusUser;
 
+// Whether or not the SDK will use the reversed client ID instead of the app's
+// bundle ID as the URL scheme, |NO| by default.
+// If the flag is |YES|, in addition to register the bundle ID for the URL
+// schemes it handles, e.g. "com.MyDomain.MyApp://", the app also needs to
+// register the dot-reversed |clientID| for URL scheme,
+// e.g. "com.googleusercontent.apps.1234567890-asdfghjkl://".
+@property(nonatomic, assign) BOOL useClientIDForURLScheme;
+
 // Returns a shared |GPPSignIn| instance.
 + (GPPSignIn *)sharedInstance;
 

@@ -175,8 +175,8 @@ typedef void (^GTMOAuth2ViewControllerCompletionHandler)(GTMOAuth2ViewController
 
 // if set, cookies are deleted for this URL when the view is hidden
 //
-// For Google sign-ins, this is set by default to https://google.com/accounts
-// but it may be explicitly set to nil to disable clearing of browser cookies
+// This is now vestigial and ignored; all cookies are temporarily removed
+// from cookie storage when sign-in begins.
 @property (nonatomic, retain) NSURL *browserCookiesURL;
 
 // userData is retained for the convenience of the caller

@@ -1,14 +1,14 @@
-body {
-	background-color: #1A1A1A;
-	color: #FFF;
+body, span {
+	background-color: #1A1A1A !important;
+	color: #FFF !important;
 }
 
-a {
-	color: #319DC5;
+a, a span {
+	color: #319DC5 !important;
 }
 
-a:visited {
-	color: #319DC5;
+a:visited, a:visited span {
+	color: #319DC5 !important;
 }
 
 code {

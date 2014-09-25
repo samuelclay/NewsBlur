@@ -50,7 +50,7 @@ public class SavedStoriesItemsList extends ItemsList {
 
     @Override
     protected FeedSet createFeedSet() {
-        return new FeedSet(null, null, true);
+        return FeedSet.allSaved();
     }
 
 	@Override

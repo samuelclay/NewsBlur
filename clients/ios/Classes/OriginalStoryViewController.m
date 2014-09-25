@@ -14,11 +14,13 @@
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
 #import "NBBarButtonItem.h"
+#import "SloppySwiper.h"
 
 @implementation OriginalStoryViewController
 
 @synthesize appDelegate;
 @synthesize webView;
+@synthesize swiper;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
@@ -28,17 +30,24 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
+//    self.swiper = [[SloppySwiper alloc] initWithNavigationController:self.navigationController];
+//    self.navigationController.delegate = self.swiper;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     self.navigationController.navigationBar.alpha = 1;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
     if ([self.webView isLoading]) {
         [self.webView stopLoading];
     }
@@ -47,6 +56,8 @@
     if (![appDelegate.navigationController.viewControllers containsObject:self]) {
         [self.webView loadHTMLString:@"" baseURL:nil];
     }
+    
+    self.navigationController.delegate = appDelegate;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -55,6 +66,7 @@
 
 - (void)viewDidLoad {    
 //    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
+    [super viewDidLoad];
     
     self.view.layer.masksToBounds = NO;
     self.view.layer.shadowRadius = 5;

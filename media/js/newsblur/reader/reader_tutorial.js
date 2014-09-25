@@ -284,6 +284,8 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                       $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
                         $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Hide Sidebar'),
                         $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'shift',
+                            $.make('span', '+'),
                             'u'
                         ])
                       ])

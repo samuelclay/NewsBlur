@@ -9,14 +9,12 @@ import random
 import requests
 import HTMLParser
 from collections import defaultdict
-from pprint import pprint
 from BeautifulSoup import BeautifulSoup
 from mongoengine.queryset import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from django.db.models.aggregates import Sum
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
@@ -37,6 +35,12 @@ from utils.story_functions import truncate_chars, strip_tags, linkify, image_siz
 from utils.scrubber import SelectiveScriptScrubber
 from utils import s3_utils
 from StringIO import StringIO
+
+try:
+    from apps.social.spam import detect_spammers
+except ImportError:
+    logging.debug(" ---> ~SN~FRCouldn't find ~SBspam.py~SN.")
+    pass
 
 RECOMMENDATIONS_LIMIT = 5
 IGNORE_IMAGE_SOURCES = [
@@ -1493,46 +1497,21 @@ class MSharedStory(mongo.Document):
     @classmethod
     def feed_quota(cls, user_id, feed_id, days=1, quota=1):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
-        shared_count = cls.objects.filter(shared_date__gte=day_ago, story_feed_id=feed_id).count()
+        shared_count = cls.objects.filter(user_id=user_id,
+                                          shared_date__gte=day_ago, 
+                                          story_feed_id=feed_id).count()
 
         return shared_count >= quota
     
     @classmethod
     def count_potential_spammers(cls, days=1, destroy=False):
-        day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
-        stories = cls.objects.filter(shared_date__gte=day_ago)
-        shared = [{'u': s.user_id, 'f': s.story_feed_id} for s in stories]
-        ddusers = defaultdict(lambda: defaultdict(int))
-        for story in shared:
-            ddusers[story['u']][story['f']] += 1
-
-        users = {}
-        for user_id, feeds in ddusers.items():
-            users[user_id] = dict(feeds)
-
-        pprint(users)
+        try:
+            guaranteed_spammers = detect_spammers(days=days, destroy=destroy)
+        except NameError:
+            logging.debug(" ---> ~FR~SNMissing ~SBspam.py~SN")
+            guaranteed_spammers = []
         
-        guaranteed_spammers = []
-        for user_id in ddusers.keys():
-            u = User.objects.get(pk=user_id)
-            if u.profile.is_premium: continue
-            feed_opens = UserSubscription.objects.filter(user=u).aggregate(sum=Sum('feed_opens'))['sum']
-            read_story_count = RUserStory.read_story_count(user_id)
-            feed_count = UserSubscription.objects.filter(user=u).count()
-            share_count = MSharedStory.objects.filter(user_id=user_id).count()
-            if not feed_opens: guaranteed_spammers.append(user_id)
-            if (feed_count <= 5 and 
-                feed_opens <= 5 and
-                read_story_count < share_count*2): guaranteed_spammers.append(user_id)
-        
-        print " ---> Guaranteed spammers: %s" % guaranteed_spammers
-        
-        if destroy and guaranteed_spammers:
-            for spammer_id in guaranteed_spammers:
-                user = User.objects.get(pk=spammer_id)
-                user.profile.delete_user(confirm=True, fast=True)
-        
-        return users, guaranteed_spammers
+        return guaranteed_spammers
         
     @classmethod
     def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):

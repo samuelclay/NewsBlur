@@ -4,9 +4,13 @@ import android.text.TextUtils;
 import android.provider.BaseColumns;
 
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 public class DatabaseConstants {
+
+	private static final String TEXT = " TEXT";
+	private static final String INTEGER = " INTEGER";
 
 	public static final String FOLDER_TABLE = "folders";
 	public static final String FOLDER_ID = BaseColumns._ID;
@@ -50,8 +54,6 @@ public class DatabaseConstants {
     public static final String STARRED_STORY_COUNT_TABLE = "starred_story_count";
     public static final String STARRED_STORY_COUNT_COUNT = "count";
 
-	public static final String COMMENT_TABLE = "comments";
-
 	public static final String CLASSIFIER_TABLE = "classifiers";
 	public static final String CLASSIFIER_ID = BaseColumns._ID;
 	public static final String CLASSIFIER_TYPE = "type";
@@ -80,6 +82,7 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
 	public static final String STORY_PERMALINK = "permalink";
 	public static final String STORY_READ = "read";
+	public static final String STORY_READ_THIS_SESSION = "read_this_session";
 	public static final String STORY_STARRED = "starred";
 	public static final String STORY_STARRED_DATE = "starred_date";
 	public static final String STORY_SHARE_COUNT = "share_count";
@@ -93,6 +96,7 @@ public class DatabaseConstants {
 	public static final String STORY_TAGS = "tags";
     public static final String STORY_HASH = "story_hash";
 
+	public static final String COMMENT_TABLE = "comments";
 	public static final String COMMENT_ID = BaseColumns._ID;
 	public static final String COMMENT_STORYID = "comment_storyid";
 	public static final String COMMENT_TEXT = "comment_text";
@@ -104,13 +108,159 @@ public class DatabaseConstants {
 	public static final String COMMENT_USERID = "comment_userid";
 
 	public static final String REPLY_TABLE = "comment_replies";
-
 	public static final String REPLY_ID = BaseColumns._ID;
 	public static final String REPLY_COMMENTID = "comment_id"; 
 	public static final String REPLY_TEXT = "reply_text";
 	public static final String REPLY_USERID = "reply_userid";
 	public static final String REPLY_DATE = "reply_date";
 	public static final String REPLY_SHORTDATE = "reply_shortdate";
+
+    public static final String ACTION_TABLE = "story_actions";
+	public static final String ACTION_ID = BaseColumns._ID;
+    public static final String ACTION_TIME = "time";
+    public static final String ACTION_MARK_READ = "mark_read";
+    public static final String ACTION_MARK_UNREAD = "mark_unread";
+    public static final String ACTION_SAVE = "save";
+    public static final String ACTION_UNSAVE = "unsave";
+    public static final String ACTION_SHARE = "share";
+    public static final String ACTION_UNSHARE = "unshare";
+    public static final String ACTION_COMMENT = "comment";
+    public static final String ACTION_STORY_HASH = "story_hash";
+    public static final String ACTION_FEED_ID = "feed_id";
+    public static final String ACTION_INCLUDE_OLDER = "include_older";
+    public static final String ACTION_INCLUDE_NEWER = "include_newer";
+
+	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
+		FOLDER_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
+		FOLDER_NAME + TEXT + " UNIQUE " +  
+		")";
+
+	static final String FEED_SQL = "CREATE TABLE " + FEED_TABLE + " (" +
+		FEED_ID + INTEGER + " PRIMARY KEY, " +
+		FEED_ACTIVE + TEXT + ", " +
+		FEED_ADDRESS + TEXT + ", " + 
+		FEED_FAVICON_COLOR + TEXT + ", " +
+		FEED_FAVICON_URL + TEXT + ", " +
+		FEED_POSITIVE_COUNT + INTEGER + ", " +
+		FEED_NEGATIVE_COUNT + INTEGER + ", " +
+		FEED_NEUTRAL_COUNT + INTEGER + ", " +
+		FEED_FAVICON + TEXT + ", " +
+        FEED_FAVICON_FADE + TEXT + ", " +
+        FEED_FAVICON_TEXT + TEXT + ", " +
+		FEED_FAVICON_BORDER + TEXT + ", " +
+		FEED_LINK + TEXT + ", " + 
+		FEED_SUBSCRIBERS + TEXT + ", " +
+		FEED_TITLE + TEXT + ", " + 
+		FEED_UPDATED_SECONDS +
+		")";
+	
+	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 
+		USER_PHOTO_URL + TEXT + ", " + 
+		USER_USERID + INTEGER + " PRIMARY KEY, " +
+		USER_USERNAME + TEXT + ", " +
+        USER_LOCATION + TEXT + 
+        ")";
+	
+	static final String SOCIAL_FEED_SQL = "CREATE TABLE " + SOCIALFEED_TABLE + " (" +
+		SOCIAL_FEED_ID + INTEGER + " PRIMARY KEY, " +
+		SOCIAL_FEED_POSITIVE_COUNT + INTEGER + ", " +
+		SOCIAL_FEED_NEGATIVE_COUNT + INTEGER + ", " +
+		SOCIAL_FEED_NEUTRAL_COUNT + INTEGER + ", " +
+		SOCIAL_FEED_ICON + TEXT + ", " + 
+		SOCIAL_FEED_TITLE + TEXT + ", " + 
+		SOCIAL_FEED_USERNAME + TEXT +
+		")";
+
+	static final String COMMENT_SQL = "CREATE TABLE " + COMMENT_TABLE + " (" +
+		COMMENT_DATE + TEXT + ", " +
+		COMMENT_SHAREDDATE + TEXT + ", " +
+		COMMENT_SOURCE_USERID + TEXT + ", " +
+		COMMENT_ID + TEXT + " PRIMARY KEY, " +
+		COMMENT_LIKING_USERS + TEXT + ", " +
+		COMMENT_BYFRIEND + TEXT + ", " +
+		COMMENT_STORYID + TEXT + ", " + 
+		COMMENT_TEXT + TEXT + ", " +
+		COMMENT_USERID + TEXT +
+		")";
+	
+	static final String REPLY_SQL = "CREATE TABLE " + REPLY_TABLE + " (" +
+		REPLY_DATE + TEXT + ", " +
+		REPLY_SHORTDATE + TEXT + ", " +
+		REPLY_ID + TEXT + " PRIMARY KEY, " +
+		REPLY_COMMENTID + TEXT + ", " + 
+		REPLY_TEXT + TEXT + ", " +
+		REPLY_USERID + TEXT +
+		")";
+	
+	static final String STORY_SQL = "CREATE TABLE " + STORY_TABLE + " (" + 
+		STORY_HASH + TEXT + ", " +
+		STORY_AUTHORS + TEXT + ", " +
+		STORY_CONTENT + TEXT + ", " +
+		STORY_SHORT_CONTENT + TEXT + ", " +
+		STORY_TIMESTAMP + INTEGER + ", " +
+		STORY_SHARED_DATE + INTEGER + ", " +
+		STORY_SHORTDATE + TEXT + ", " +
+		STORY_LONGDATE + TEXT + ", " +
+		STORY_FEED_ID + INTEGER + ", " +
+		STORY_ID + TEXT + " PRIMARY KEY, " +
+		STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
+		STORY_INTELLIGENCE_FEED + INTEGER + ", " +
+		STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
+		STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
+		STORY_COMMENT_COUNT + INTEGER + ", " +
+		STORY_SHARE_COUNT + INTEGER + ", " +
+		STORY_SOCIAL_USER_ID + TEXT + ", " +
+		STORY_SOURCE_USER_ID + TEXT + ", " +
+		STORY_SHARED_USER_IDS + TEXT + ", " +
+		STORY_PUBLIC_USER_IDS + TEXT + ", " +
+		STORY_FRIEND_USER_IDS + TEXT + ", " +
+		STORY_TAGS + TEXT + ", " +
+		STORY_PERMALINK + TEXT + ", " + 
+		STORY_READ + INTEGER + ", " +
+		STORY_READ_THIS_SESSION + INTEGER + ", " +
+		STORY_STARRED + INTEGER + ", " +
+		STORY_STARRED_DATE + INTEGER + ", " +
+		STORY_TITLE + TEXT +
+        ")";
+
+	static final String CLASSIFIER_SQL = "CREATE TABLE " + CLASSIFIER_TABLE + " (" +
+		CLASSIFIER_ID + TEXT + ", " +
+		CLASSIFIER_KEY + TEXT + ", " + 
+		CLASSIFIER_TYPE + TEXT + ", " +
+		CLASSIFIER_VALUE + TEXT +
+		")";
+
+	static final String FEED_FOLDER_SQL = "CREATE TABLE " + FEED_FOLDER_MAP_TABLE + " (" +
+		FEED_FOLDER_FOLDER_NAME + TEXT + " NOT NULL, " +
+		FEED_FOLDER_FEED_ID + INTEGER + " NOT NULL, " +
+		"PRIMARY KEY (" + FEED_FOLDER_FOLDER_NAME + ", " + FEED_FOLDER_FEED_ID + ") " + 
+		")";
+	
+	static final String SOCIALFEED_STORIES_SQL = "CREATE TABLE " + SOCIALFEED_STORY_MAP_TABLE + " (" +
+		SOCIALFEED_STORY_STORYID  + TEXT + " NOT NULL, " +
+		SOCIALFEED_STORY_USER_ID  + INTEGER + " NOT NULL, " +
+		"PRIMARY KEY (" + SOCIALFEED_STORY_STORYID  + ", " + SOCIALFEED_STORY_USER_ID + ") " + 
+	    ")";
+
+    static final String STARRED_STORIES_COUNT_SQL = "CREATE TABLE " + STARRED_STORY_COUNT_TABLE + " (" +
+        STARRED_STORY_COUNT_COUNT + INTEGER + " NOT NULL" +
+        ")";
+
+    static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
+        ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
+        ACTION_TIME + INTEGER + " NOT NULL, " +
+        ACTION_MARK_READ + INTEGER + " DEFAULT 0, " +
+        ACTION_MARK_UNREAD + INTEGER + " DEFAULT 0, " +
+        ACTION_SAVE + INTEGER + " DEFAULT 0, " +
+        ACTION_UNSAVE + INTEGER + " DEFAULT 0, " +
+        ACTION_SHARE + INTEGER + " DEFAULT 0, " +
+        ACTION_UNSHARE + INTEGER + " DEFAULT 0, " +
+        ACTION_COMMENT + TEXT + ", " +
+        ACTION_STORY_HASH + TEXT + ", " +
+        ACTION_FEED_ID + TEXT + ", " +
+        ACTION_INCLUDE_OLDER + INTEGER + ", " +
+        ACTION_INCLUDE_NEWER + INTEGER +
+        ")";
 
 	// Aggregated columns
 	public static final String SUM_POS = "sum_postive";
@@ -138,28 +288,28 @@ public class DatabaseConstants {
 		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME, " SUM(" + FEED_POSITIVE_COUNT + ") AS " + SUM_POS, " SUM(" + FEED_NEUTRAL_COUNT + ") AS " + SUM_NEUT, " SUM(" + FEED_NEGATIVE_COUNT + ") AS " + SUM_NEG
 	};
 
-    private static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") >= 0";
-    private static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
-    private static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
+    private static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + FEED_NEGATIVE_COUNT + " + " + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") >= 0";
+    private static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0";
+    private static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + FEED_POSITIVE_COUNT + ") > 0";
 
     private static final String SOCIAL_INTELLIGENCE_ALL = "";
-    private static final String SOCIAL_INTELLIGENCE_SOME = " (" + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
-    private static final String SOCIAL_INTELLIGENCE_BEST = " (" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
+    private static final String SOCIAL_INTELLIGENCE_SOME = " (" + SOCIAL_FEED_NEUTRAL_COUNT + " + " + SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
+    private static final String SOCIAL_INTELLIGENCE_BEST = " (" + SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
     private static final String SUM_STORY_TOTAL = "storyTotal";
 
     public static final String FEED_FILTER_FOCUS = FEED_TABLE + "." + FEED_POSITIVE_COUNT + " > 0 ";
 
 	private static String STORY_SUM_TOTAL = " CASE " + 
-	"WHEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " + 
-	"THEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
-	"WHEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") < 0 " + 
-	"THEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
-	"ELSE " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " " +
-	"END AS " + DatabaseConstants.SUM_STORY_TOTAL;
+	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 
+	"THEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
+	"WHEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") < 0 " + 
+	"THEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
+	"ELSE " + STORY_INTELLIGENCE_FEED + " " +
+	"END AS " + SUM_STORY_TOTAL;
 
-	private static final String STORY_INTELLIGENCE_BEST = DatabaseConstants.SUM_STORY_TOTAL + " > 0 ";
-	private static final String STORY_INTELLIGENCE_SOME = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
-	private static final String STORY_INTELLIGENCE_ALL = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
+	private static final String STORY_INTELLIGENCE_BEST = SUM_STORY_TOTAL + " > 0 ";
+	private static final String STORY_INTELLIGENCE_SOME = SUM_STORY_TOTAL + " >= 0 ";
+	private static final String STORY_INTELLIGENCE_ALL = SUM_STORY_TOTAL + " >= 0 ";
 
 	public static final String[] STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE,
@@ -170,11 +320,32 @@ public class DatabaseConstants {
 
     public static final String MULTIFEED_STORIES_QUERY_BASE = 
         "SELECT " + TextUtils.join(",", STORY_COLUMNS) + ", " + 
-        FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT +
-        " FROM " + STORY_TABLE +
+        FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
+
+    public static final String JOIN_FEEDS_ON_STORIES =
         " INNER JOIN " + FEED_TABLE + " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID;
 
+    public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
+        " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
+
     public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " ASC";
+
+    /**
+     * Appends to the given story query any and all selection statements that are required to satisfy the specified
+     * filtration parameters, dedup column, and ordering requirements.
+     */ 
+    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, int stateFilter, String dedupCol) {
+        if (readFilter == ReadFilter.UNREAD) {
+            // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
+            // or else the selection set will constantly change as they see things!
+            q.append(" AND ((" + STORY_READ + " = 0) OR (" + STORY_READ_THIS_SESSION + " = 1))");
+        }
+        q.append(" AND " + getStorySelectionFromState(stateFilter));
+        if (dedupCol != null) {
+            q.append( " GROUP BY " + dedupCol);
+        }
+        q.append(" ORDER BY " + getStorySortOrder(order));
+    }
 
     /**
      * Selection args to filter stories.
@@ -266,6 +437,38 @@ public class DatabaseConstants {
         } else {
             return STORY_SHARED_DATE + " ASC";
         }
+    }
+
+    /**
+     * Get the name of the feed count column that is impacted by a story of the given intel total.
+     */
+    public static String getFeedCountColumnForStoryIntelValue(int storyIntelTotal) {
+        if (storyIntelTotal > 0) {
+            return FEED_POSITIVE_COUNT;
+        } else if (storyIntelTotal == 0) {
+            return FEED_NEUTRAL_COUNT;
+        } else {
+            return FEED_NEGATIVE_COUNT;
+        }
+    }
+
+    /**
+     * Get the name of the social feed count column that is impacted by a story of the given intel total.
+     */
+    public static String getSocialFeedCountColumnForStoryIntelValue(int storyIntelTotal) {
+        if (storyIntelTotal > 0) {
+            return SOCIAL_FEED_POSITIVE_COUNT;
+        } else if (storyIntelTotal == 0) {
+            return SOCIAL_FEED_NEUTRAL_COUNT;
+        } else {
+            return SOCIAL_FEED_NEGATIVE_COUNT;
+        }
+    }
+
+    public static Long nullIfZero(Long l) {
+        if (l == null) return null;
+        if (l.longValue() == 0L) return null;
+        return l;
     }
 
 }

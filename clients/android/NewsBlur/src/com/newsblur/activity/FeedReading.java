@@ -43,13 +43,7 @@ public class FeedReading extends Reading {
 
     @Override
     protected int getUnreadCount() {
-        return dbHelper.getFeedUnreadCount(this.feedId, this.currentState);
+        return dbHelper.getFeedUnreadCount(feedId, currentState);
     }
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-        StoryOrder storyOrder = PrefsUtils.getStoryOrderForFeed(this, feedId);
-        return new CursorLoader(this, storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-    }
 }

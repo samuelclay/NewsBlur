@@ -69,7 +69,7 @@ static NSInteger OSKTextViewFontSize_Pad = 20.0f;
 
 @end
 
-#define USE_UNDOCUMENTED_ANIMATION_CURVE 0
+#define USE_UNDOCUMENTED_ANIMATION_CURVE 1
 
 @implementation OSKPresentationManager
 
@@ -239,7 +239,7 @@ static NSInteger OSKTextViewFontSize_Pad = 20.0f;
 }
 
 - (void)dismissActivitySheet_Phone:(void(^)(void))completion {
-    if ([self isAnimating] == NO && [self isPresenting] == YES) {
+    if ([self isAnimating] == NO && [self isPresenting]) {
         [self setIsAnimating:YES];
         OSKActivitySheetViewController *sheet = self.activitySheetViewController;
         CGRect targetFrame = sheet.view.frame;

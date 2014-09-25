@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.net.Uri;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +22,8 @@ import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -29,10 +33,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
-	private Menu menu;
     private TextView overlayStatusText;
     private boolean isLightTheme;
     private SwipeRefreshLayout swipeLayout;
+    private boolean wasSwipeEnabled = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     protected void onResume() {
         super.onResume();
+
+        // clear the read-this-session flag from stories so they don't show up in the wrong place
+        FeedUtils.clearReadingSession(this);
+
         updateStatusIndicators();
         // this view doesn't show stories, it is safe to perform cleanup
         NBSyncService.holdStories(false);
@@ -85,7 +93,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
-		this.menu = menu;
+
+        MenuItem feedbackItem = menu.findItem(R.id.menu_feedback);
+        if (AppConstants.ENABLE_FEEDBACK) {
+            feedbackItem.setTitle(feedbackItem.getTitle() + " (v" + PrefsUtils.getVersion(this) + ")");
+        } else {
+            feedbackItem.setVisible(false);
+        }
+
 		return true;
 	}
 
@@ -109,6 +124,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		} else if (item.getItemId() == R.id.menu_settings) {
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
+            return true;
+        } else if (item.getItemId() == R.id.menu_feedback) {
+            try {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
+                startActivity(i);
+            } catch (Exception e) {
+                Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
+            }
             return true;
         }
 		return super.onOptionsItemSelected(item);
@@ -134,10 +158,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void updateStatusIndicators() {
         if (NBSyncService.isFeedFolderSyncRunning()) {
             swipeLayout.setRefreshing(true);
-            setRefreshEnabled(false);
         } else {
             swipeLayout.setRefreshing(false);
-            setRefreshEnabled(true);
         }
 
         if (overlayStatusText != null) {
@@ -147,15 +169,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 overlayStatusText.setVisibility(View.VISIBLE);
             } else {
                 overlayStatusText.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private void setRefreshEnabled(boolean enabled) {
-        if (menu != null) {
-            MenuItem item = menu.findItem(R.id.menu_refresh);
-            if (item != null) {
-                item.setEnabled(enabled);
             }
         }
     }
@@ -172,20 +185,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     @Override
-    public void onScroll(AbsListView absListView, int i, int i2, int i3) {
-        boolean enable = false;
-
-        if( absListView.getChildCount() > 0){
-            // check if the first item of the list is visible
-            boolean firstItemVisible = absListView.getFirstVisiblePosition() == 0;
-            // check if the top of the first item is visible
-            boolean topOfFirstItemVisible = absListView.getChildAt(0).getTop() == 0;
-            // enabling or disabling the refresh layout
-            enable = firstItemVisible && topOfFirstItemVisible;
-        }
-
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (swipeLayout != null) {
-            swipeLayout.setEnabled(enable);
+            boolean enable = (firstVisibleItem == 0);
+            if (wasSwipeEnabled != enable) {
+                swipeLayout.setEnabled(enable);
+                wasSwipeEnabled = enable;
+            }
         }
     }
 }

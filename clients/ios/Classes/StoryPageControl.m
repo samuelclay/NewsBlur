@@ -65,6 +65,8 @@
 }
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
@@ -183,6 +185,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
     [self setTextButton];
@@ -258,6 +262,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
     // set the subscribeButton flag
     if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
@@ -268,14 +274,17 @@
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
-    NSLog(@"Story Page Control did appear");
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
     self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
@@ -307,7 +316,7 @@
 //        appDelegate.masterContainerViewController.originalViewIsVisible) {
 //        return;
 //    }
-    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
+//    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
         [self refreshPages];
@@ -756,6 +765,8 @@
     }
     
     [self setNextPreviousButtons];
+    EventWindow *tapDetectingWindow = (EventWindow*)appDelegate.window;
+    tapDetectingWindow.tapDetectingView = currentPage.view;
     [appDelegate changeActiveFeedDetailRow];
     
     if (self.currentPage.pageIndex != location) {
@@ -906,8 +917,8 @@
 }
 
 - (IBAction)tapProgressBar:(id)sender {
-    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [MBProgressHUD hideHUDForView:currentPage.webView animated:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:currentPage.webView animated:YES];
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     NSInteger unreadCount = appDelegate.unreadCount;
@@ -982,7 +993,7 @@
 
 - (void)showShareHUD:(NSString *)msg {
 //    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:currentPage.webView animated:YES];
     self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
     self.currentPage.noStoryMessage.hidden = YES;

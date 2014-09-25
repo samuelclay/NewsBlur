@@ -179,7 +179,7 @@
         OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
         readLater.url = URLforCanonicalURL;
         readLater.title = [NSString stringWithFormat:@"Post by %@", authorName];
-        readLater.description = text;
+        readLater.itemDescription = text;
         content.readLaterItem = readLater;
         
         OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];

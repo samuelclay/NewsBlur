@@ -85,7 +85,7 @@
 }
 
 .NB-ipad-wide .NB-story {
-    margin: 30px 90px;
+    padding: 30px 90px;
 }
 
 .NB-ipad-wide .NB-share-inner-wrapper {
@@ -124,19 +124,26 @@
  * iPad Narrow Style
  */
 
+.NB-iphone-wide .NB-header,
 .NB-ipad-narrow .NB-header {
     padding: 1em 30px;
 }
 
+.NB-iphone-wide .NB-story,
 .NB-ipad-narrow .NB-story {
-    margin: 25px 30px;
+    padding: 25px 30px;
 }
 
+.NB-iphone-wide .NB-share-inner-wrapper,
 .NB-ipad-narrow .NB-share-inner-wrapper {
-    margin: 0 30px;
+    padding: 0 30px;
 }
 
-.NB-ipad-narrow#story_pane .nb-story-comments-public-teaser, 
+.NB-iphone-wide#story_pane .nb-story-comments-public-teaser,
+.NB-iphone-wide#story_pane .nb-story-comments-public-header,
+.NB-iphone-wide#story_pane .nb-story-comments-friends-header,
+.NB-iphone-wide#story_pane .NB-story-comments-shares-teaser,
+.NB-ipad-narrow#story_pane .nb-story-comments-public-teaser,
 .NB-ipad-narrow#story_pane .nb-story-comments-public-header,
 .NB-ipad-narrow#story_pane .nb-story-comments-friends-header,
 .NB-ipad-narrow#story_pane .NB-story-comments-shares-teaser {
@@ -144,24 +151,30 @@
     padding-right: 30px;
 }
 
+.NB-iphone-wide#story_pane .nb-story-comment,
 .NB-ipad-narrow#story_pane .nb-story-comment {
     padding: 0 30px 2px 90px;
 }
+.NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar {
     left: 26px;
 }
+.NB-iphone-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar,
 .NB-ipad-narrow#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
     left: 45px;
 }
 
+.NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     left: 26px;
 }
 
+.NB-iphone-wide#story_pane .NB-story-comment .NB-button-wrapper,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-button-wrapper {
     margin-top: -5px;
 }
 
+.NB-iphone-wide .NB-button.NB-share-button a,
 .NB-ipad-narrow .NB-button.NB-share-button a {
     font-size: 14px;
 }
@@ -175,7 +188,7 @@
 }
 
 .NB-iphone .NB-story {
-    margin: 12px 12px;
+    padding: 12px 12px;
 }
 
 .NB-iphone .NB-share-inner-wrapper {
@@ -367,7 +380,6 @@ body.NB-iphone {
 .NB-story h4,
 .NB-story h5,
 .NB-story h6,
-.NB-story div,
 .NB-story table,
 .NB-story span,
 .NB-story pre,
@@ -451,19 +463,67 @@ div + p {
     margin: 20px auto;
     height: auto !important;
     width: auto;
-    max-width: 100% !important;
+    max-width: 100%;
     display: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; /* Disable selection/copy in UIWebView */
 }
 
 .NB-story img.NB-large-image,
 .NB-story img.NB-medium-image {
-    margin: 20px auto !important;
-    display: block !important;
+    margin: 20px auto;
+    display: block;
     width: auto;
     height: auto;
     display: block;
     float: none;
     clear: both;
+}
+
+.NB-story img.NB-large-image {
+    max-width: 320px;
+    margin-left: -12px !important;
+    width: 320px !important;
+    height: auto !important;
+}
+
+.NB-width-375 .NB-story img.NB-large-image {
+    max-width: 375px;
+    margin-left: -12px !important;
+    width: 375px !important;
+}
+.NB-width-414 .NB-story img.NB-large-image {
+    max-width: 414px;
+    margin-left: -12px !important;
+    width: 414px !important;
+}
+
+.NB-ipad-narrow .NB-story img.NB-large-image {
+    max-width: 500px;
+    margin-left: -30px !important;
+    width: 500px !important;
+}
+
+.NB-ipad-wide .NB-story img.NB-large-image {
+    max-width: 656px;
+    margin-left: -90px !important;
+    width: 656px !important;
+}
+
+.NB-iphone-wide .NB-story img.NB-large-image {
+    max-width: 668px;
+    margin-left: -30px !important;
+    width: 668px !important;
+}
+.NB-width-667 .NB-story img.NB-large-image {
+    max-width: 667px;
+    margin-left: -30px !important;
+    width: 667px !important;
+}
+.NB-width-736 .NB-story img.NB-large-image {
+    max-width: 736px;
+    margin-left: -30px !important;
+    width: 736px !important;
 }
 
 .NB-story img.NB-small-image {
@@ -530,11 +590,13 @@ del {
 .nb-story-comments-label {
     float: left;
     margin-right: 2px;
+    white-space: nowrap;
 }
 
 .nb-story-share-label {
     float: right;
     margin-left: 2px;
+    white-space: nowrap;
 }
 
 /* Sharing */

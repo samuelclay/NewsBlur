@@ -219,8 +219,8 @@ static const NSUInteger kDomainSection = 1;
 	[[sharedDialog parentViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
 	[self retain];
 	[sharedDialog release];
 	sharedDialog = nil;

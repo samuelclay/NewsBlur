@@ -212,6 +212,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -315,11 +317,13 @@
         self.isDashboardModule) {
         [self.storyTitlesTable reloadData];
     }
-    NSLog(@"Detail did appear");
+
     [self.notifier setNeedsLayout];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -979,7 +983,7 @@
         !appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) return;
 
-    NSLog(@"Test for try feed");
+//    NSLog(@"Test for try feed");
 
     for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
         NSString *storyIdStr = [[storiesCollection.activeFeedStories

@@ -58,6 +58,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
 //    [self selectTwitterButton];
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
 }

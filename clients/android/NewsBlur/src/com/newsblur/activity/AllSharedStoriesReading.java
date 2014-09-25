@@ -39,10 +39,4 @@ public class AllSharedStoriesReading extends Reading {
         return c;
     }
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-        return new CursorLoader(this, FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-    }
-
 }

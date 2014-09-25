@@ -6,7 +6,10 @@ import android.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
@@ -18,6 +21,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StoryOrder;
@@ -38,12 +42,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
+    private TextView overlayStatusText;
 	protected int currentState;
 
     private FeedSet fs;
 	
 	protected boolean stopLoading = false;
-    private int lastRequestedStoryCount = 0;
 
 	@Override
     protected void onCreate(Bundle bundle) {
@@ -60,7 +64,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getFirstStories();
+        this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
 	}
 
     protected abstract FeedSet createFeedSet();
@@ -72,17 +76,18 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     protected void onResume() {
         super.onResume();
+        updateStatusIndicators();
         stopLoading = false;
         // this view shows stories, it is not safe to perform cleanup
         NBSyncService.holdStories(true);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
+        getFirstStories();
     }
 
     private void getFirstStories() {
         stopLoading = false;
-        lastRequestedStoryCount = 0;
         triggerRefresh(AppConstants.READING_STORY_PRELOAD);
     }
 
@@ -95,22 +100,18 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	public void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
-            // this method tends to get called repeatedly. don't constantly keep requesting the same count!
-            if (desiredStoryCount <= lastRequestedStoryCount) {
-                return;
-            }
-            lastRequestedStoryCount = desiredStoryCount;
-
-            boolean moreLeft = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
-            if (moreLeft) {
-                triggerSync();
-            } else {
-                stopLoading = true;
-            }
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            if (gotSome) triggerSync();
+            updateStatusIndicators();
 		}
     }
 
-	public abstract void markItemListAsRead();
+	public void markItemListAsRead() {
+        FeedUtils.markFeedsRead(fs, null, null, this);
+        Toast.makeText(this, R.string.toast_marked_stories_as_read, Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
+        finish();
+    }
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -140,6 +141,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		return false;
 	}
 	
+    // TODO: can all of these be replaced with PrefsUtils queries via FeedSet?
 	protected abstract StoryOrder getStoryOrder();
 	
 	protected abstract ReadFilter getReadFilter();
@@ -148,10 +150,27 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	
     @Override
 	public void handleUpdate() {
-        setProgressBarIndeterminateVisibility(NBSyncService.isFeedSetSyncing(this.fs));
+        updateStatusIndicators();
 		if (itemListFragment != null) {
-            itemListFragment.syncDone();
 			itemListFragment.hasUpdated();
+        }
+    }
+
+    private void updateStatusIndicators() {
+        boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs);
+        setProgressBarIndeterminateVisibility(isLoading);
+		if (itemListFragment != null) {
+			itemListFragment.setLoading(isLoading);
+        }
+
+        if (overlayStatusText != null) {
+            String syncStatus = NBSyncService.getSyncStatusMessage();
+            if (syncStatus != null)  {
+                overlayStatusText.setText(syncStatus);
+                overlayStatusText.setVisibility(View.VISIBLE);
+            } else {
+                overlayStatusText.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -163,8 +182,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        NBSyncService.resetFeed(fs); 
-        itemListFragment.setStoryOrder(newValue);
+        FeedUtils.clearReadingSession(this); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
@@ -176,7 +194,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        NBSyncService.resetFeed(fs); 
+        FeedUtils.clearReadingSession(this); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();

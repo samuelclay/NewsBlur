@@ -309,21 +309,24 @@ public class FeedProvider extends ContentProvider {
             mdb = db;
         }
         public Cursor rawQuery(String sql, String[] selectionArgs) {
-            if (AppConstants.VERBOSE_LOG) {
+            if (AppConstants.VERBOSE_LOG_DB) {
                 Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
                 Log.d(LoggingDatabase.class.getName(), "selArgs : " + Arrays.toString(selectionArgs));
             }
             Cursor cursor = mdb.rawQuery(sql, selectionArgs);
-            if (AppConstants.VERBOSE_LOG) {
+            if (AppConstants.VERBOSE_LOG_DB) {
                 Log.d(LoggingDatabase.class.getName(), "result rows: " + cursor.getCount());
             }
             return cursor;
         }
         public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+            if (AppConstants.VERBOSE_LOG_DB) {
+                Log.d(LoggingDatabase.class.getName(), "selection: " + selection);
+            }
             return mdb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
         }
         public void execSQL(String sql) {
-            if (AppConstants.VERBOSE_LOG) {
+            if (AppConstants.VERBOSE_LOG_DB) {
                 Log.d(LoggingDatabase.class.getName(), "execSQL: " + sql);
             }
             mdb.execSQL(sql);

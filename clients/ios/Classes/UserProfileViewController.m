@@ -46,9 +46,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
-    
-    self.view.frame = self.view.bounds;
-    self.preferredContentSize = self.view.frame.size;
 
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
     
@@ -58,7 +55,7 @@
     self.profileTable.delegate = self;
     self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     ProfileBadge *badge = [[ProfileBadge alloc] init];
     self.profileBadge = badge;
 }
@@ -96,8 +93,8 @@
 }
 
 - (void)getUserProfile {
-    self.view.frame = self.view.bounds;
-    self.preferredContentSize = self.view.frame.size;
+//    self.view.frame = self.view.bounds;
+    self.preferredContentSize = CGSizeMake(320, 454);
 
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];

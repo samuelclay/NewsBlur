@@ -23,19 +23,17 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-		self.textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+		self.textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
 
         // TextField
-        _textField = [[IASKTextField alloc] initWithFrame:CGRectMake(0, 0, 200, 21)];
-        _textField.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-        UIViewAutoresizingFlexibleBottomMargin |
-        UIViewAutoresizingFlexibleLeftMargin;
+        _textField = [[IASKTextField alloc] initWithFrame:CGRectMake(0, 0, 200, self.frame.size.height)];
+        _textField.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
         _textField.font = [UIFont systemFontOfSize:17.0f];
-		_textField.minimumFontSize = kIASKMinimumFontSize;
-        _textField.textColor = [UIColor colorWithRed:0.275f green:0.376f blue:0.522f alpha:1.000f];
+        _textField.minimumFontSize = kIASKMinimumFontSize;
+        IASK_IF_PRE_IOS7(_textField.textColor = [UIColor colorWithRed:0.275f green:0.376f blue:0.522f alpha:1.000f];);
         [self.contentView addSubview:_textField];
         
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.selectionStyle = UITableViewCellSelectionStyleNone; 
     }
     return self;
 }

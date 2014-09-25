@@ -33,6 +33,10 @@ willPresentSystemViewController:(UIViewController *)systemViewController;
 
 - (void)sessionControllerDidCancel:(OSKSessionController *)controller;
 
+@optional
+
+- (void)sessionController:(OSKSessionController *)controller failedSystemAccountAccessForActivity:(OSKActivity *)activity withDefaultHandler:(void (^)(void))defaultHandler;
+
 @end
 
 @interface OSKSessionController : NSObject

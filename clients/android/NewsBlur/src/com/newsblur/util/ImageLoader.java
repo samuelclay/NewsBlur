@@ -3,10 +3,6 @@ package com.newsblur.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -123,23 +119,11 @@ public class ImageLoader {
 			return bitmap;
 		}
 
-		try {
+        try {
 			if (url.startsWith("/")) {
 				url = APIConstants.NEWSBLUR_URL + url;
 			}
-			final URL imageUrl = new URL(url);
-			final HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
-			conn.setConnectTimeout(10000);
-			conn.setReadTimeout(30000);
-			conn.setInstanceFollowRedirects(true);
-			final InputStream inputStream = conn.getInputStream();
-			final OutputStream outputStream = new FileOutputStream(f);
-			byte[] b = new byte[1024];  
-			int read;  
-			while ((read = inputStream.read(b)) != -1) {  
-				outputStream.write(b, 0, read);  
-			}
-			outputStream.close();
+			NetworkUtils.loadURL(new URL(url), new FileOutputStream(f));
 
 			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
 			memoryCache.put(url, bitmap);

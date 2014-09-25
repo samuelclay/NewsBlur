@@ -47,7 +47,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(feedIds, currentState, getStoryOrder(), getDefaultFeedView());
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(feedIds, currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
@@ -66,10 +66,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
     protected FeedSet createFeedSet() {
         return FeedSet.allSocialFeeds();
     }
-
-	// We don't allow All Shared Stories to be marked as read
-	@Override
-	public void markItemListAsRead() { }
 
     @Override
     protected StoryOrder getStoryOrder() {

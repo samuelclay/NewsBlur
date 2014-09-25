@@ -333,10 +333,12 @@ def setup_installs():
         'libfreetype6-dev',
         'python-imaging',
     ]
-    sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
+    # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
+    put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
+    
     sudo('apt-get -y update')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes upgrade')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install %s' % ' '.join(packages))
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
     
     with settings(warn_only=True):
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
@@ -443,6 +445,7 @@ def pip():
     with cd(env.NEWSBLUR_PATH):
         sudo('easy_install -U pip')
         sudo('pip install --upgrade pip')
+        sudo('pip install --upgrade six') # Stupid cryptography bug requires upgraded six
         sudo('pip install -r requirements.txt')
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
@@ -487,6 +490,11 @@ def config_monit_task():
 
 def config_monit_node():
     put('config/monit_node.conf', '/etc/monit/conf.d/node.conf', use_sudo=True)
+    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('/etc/init.d/monit restart')
+
+def config_monit_original():
+    put('config/monit_original.conf', '/etc/monit/conf.d/node_original.conf', use_sudo=True)
     sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
@@ -1004,6 +1012,7 @@ def setup_original_page_server():
     setup_node_app()
     sudo('mkdir -p /srv/originals')
     sudo('chown %s.%s -R /srv/originals' % (env.user, env.user))        # We assume that the group is the same name as the user. It's common on linux
+    config_monit_original()
     put('config/supervisor_node_original.conf',
         '/etc/supervisor/conf.d/node_original.conf', use_sudo=True)
     sudo('supervisorctl reread')

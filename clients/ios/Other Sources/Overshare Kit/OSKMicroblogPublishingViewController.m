@@ -37,6 +37,7 @@
 @property (strong, nonatomic) OSKActivity <OSKMicrobloggingActivity> *activity;
 @property (strong, nonatomic) OSKMicroblogPostContentItem *contentItem;
 @property (strong, nonatomic) UIView *keyboardToolbar;
+@property (strong, nonatomic) UIView *keyboardToolbarContainer; // Workaround for iOS 8 bug. Sigh...
 @property (strong, nonatomic) UILabel *characterCountLabel;
 @property (strong, nonatomic) UIColor *characterCount_redColor;
 @property (strong, nonatomic) UIColor *characterCount_normalColor;
@@ -130,7 +131,11 @@
     self.keyboardToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0f)];
     self.keyboardToolbar.backgroundColor = presManager.color_toolbarBackground;
     self.keyboardToolbar.clipsToBounds = YES;
-    [self.textView setOSK_inputAccessoryView:self.keyboardToolbar];
+    self.keyboardToolbar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    
+    self.keyboardToolbarContainer = [[UIView alloc] initWithFrame:self.keyboardToolbar.bounds];
+    [self.keyboardToolbarContainer addSubview:self.keyboardToolbar];
+    [self.textView setOSK_inputAccessoryView:self.keyboardToolbarContainer];
     
     // BORDER VIEW
     CGRect borderedViewFrame = CGRectInset(self.keyboardToolbar.bounds,-1,0);
@@ -261,15 +266,20 @@
 #pragma mark - Autorotation
 
 - (void)viewDidLayoutSubviews {
-    CGRect toolbarBounds = self.keyboardToolbar.bounds;
     CGFloat targetHeight;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        targetHeight = UIInterfaceOrientationIsLandscape(self.interfaceOrientation) ? 32.0f : 44.0f;
+        if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            targetHeight = 32.0f;
+        } else {
+            targetHeight = 44.0f;
+        }
     } else {
         targetHeight = 44.0f;
     }
-    toolbarBounds.size.height = targetHeight;
-    [self.keyboardToolbar setBounds:toolbarBounds];
+    CGRect toolbarFrame = self.keyboardToolbar.frame;
+    toolbarFrame.size.height = targetHeight;
+    toolbarFrame.origin.y = self.keyboardToolbarContainer.frame.size.height - targetHeight;
+    self.keyboardToolbar.frame = toolbarFrame;
     [self updateAccountButton];
     [self adjustTextViewTopInset];
 }

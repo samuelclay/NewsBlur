@@ -6,8 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class BlurDatabase extends SQLiteOpenHelper {
 
-	private final String TEXT = " text";
-	private final String INTEGER = " integer";
 	public final static String DB_NAME = "blur.db";
 	private final static int VERSION = 2;
 
@@ -15,135 +13,20 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		super(context, DB_NAME, null, VERSION);
 	}
 
-	private final String FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FOLDER_TABLE + " (" +
-		DatabaseConstants.FOLDER_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
-		DatabaseConstants.FOLDER_NAME + TEXT + " UNIQUE " +  
-		")";
-
-	private final String FEED_SQL = "CREATE TABLE " + DatabaseConstants.FEED_TABLE + " (" +
-		DatabaseConstants.FEED_ID + INTEGER + " PRIMARY KEY, " +
-		DatabaseConstants.FEED_ACTIVE + TEXT + ", " +
-		DatabaseConstants.FEED_ADDRESS + TEXT + ", " + 
-		DatabaseConstants.FEED_FAVICON_COLOR + TEXT + ", " +
-		DatabaseConstants.FEED_FAVICON_URL + TEXT + ", " +
-		DatabaseConstants.FEED_POSITIVE_COUNT + INTEGER + ", " +
-		DatabaseConstants.FEED_NEGATIVE_COUNT + INTEGER + ", " +
-		DatabaseConstants.FEED_NEUTRAL_COUNT + INTEGER + ", " +
-		DatabaseConstants.FEED_FAVICON + TEXT + ", " +
-        DatabaseConstants.FEED_FAVICON_FADE + TEXT + ", " +
-        DatabaseConstants.FEED_FAVICON_TEXT + TEXT + ", " +
-		DatabaseConstants.FEED_FAVICON_BORDER + TEXT + ", " +
-		DatabaseConstants.FEED_LINK + TEXT + ", " + 
-		DatabaseConstants.FEED_SUBSCRIBERS + TEXT + ", " +
-		DatabaseConstants.FEED_TITLE + TEXT + ", " + 
-		DatabaseConstants.FEED_UPDATED_SECONDS +
-		")";
-	
-	private final String USER_SQL = "CREATE TABLE " + DatabaseConstants.USER_TABLE + " (" + 
-		DatabaseConstants.USER_PHOTO_URL + TEXT + ", " + 
-		DatabaseConstants.USER_USERID + INTEGER + " PRIMARY KEY, " +
-		DatabaseConstants.USER_USERNAME + TEXT + ", " +
-        DatabaseConstants.USER_LOCATION + TEXT + ")";
-	
-	private final String SOCIAL_FEED_SQL = "CREATE TABLE " + DatabaseConstants.SOCIALFEED_TABLE + " (" +
-		DatabaseConstants.SOCIAL_FEED_ID + INTEGER + " PRIMARY KEY, " +
-		DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + INTEGER + ", " +
-		DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT + INTEGER + ", " +
-		DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + INTEGER + ", " +
-		DatabaseConstants.SOCIAL_FEED_ICON + TEXT + ", " + 
-		DatabaseConstants.SOCIAL_FEED_TITLE + TEXT + ", " + 
-		DatabaseConstants.SOCIAL_FEED_USERNAME + TEXT +
-		")";
-
-	private final String COMMENT_SQL = "CREATE TABLE " + DatabaseConstants.COMMENT_TABLE + " (" +
-		DatabaseConstants.COMMENT_DATE + TEXT + ", " +
-		DatabaseConstants.COMMENT_SHAREDDATE + TEXT + ", " +
-		DatabaseConstants.COMMENT_SOURCE_USERID + TEXT + ", " +
-		DatabaseConstants.COMMENT_ID + TEXT + " PRIMARY KEY, " +
-		DatabaseConstants.COMMENT_LIKING_USERS + TEXT + ", " +
-		DatabaseConstants.COMMENT_BYFRIEND + TEXT + ", " +
-		DatabaseConstants.COMMENT_STORYID + TEXT + ", " + 
-		DatabaseConstants.COMMENT_TEXT + TEXT + ", " +
-		DatabaseConstants.COMMENT_USERID + TEXT +
-		")";
-	
-	private final String REPLY_SQL = "CREATE TABLE " + DatabaseConstants.REPLY_TABLE + " (" +
-		DatabaseConstants.REPLY_DATE + TEXT + ", " +
-		DatabaseConstants.REPLY_SHORTDATE + TEXT + ", " +
-		DatabaseConstants.REPLY_ID + TEXT + " PRIMARY KEY, " +
-		DatabaseConstants.REPLY_COMMENTID + TEXT + ", " + 
-		DatabaseConstants.REPLY_TEXT + TEXT + ", " +
-		DatabaseConstants.REPLY_USERID + TEXT +
-		")";
-	
-    private final String STORY_TABLES_COLS = 
-		DatabaseConstants.STORY_HASH + TEXT + ", " +
-		DatabaseConstants.STORY_AUTHORS + TEXT + ", " +
-		DatabaseConstants.STORY_CONTENT + TEXT + ", " +
-		DatabaseConstants.STORY_SHORT_CONTENT + TEXT + ", " +
-		DatabaseConstants.STORY_TIMESTAMP + INTEGER + ", " +
-		DatabaseConstants.STORY_SHARED_DATE + INTEGER + ", " +
-		DatabaseConstants.STORY_SHORTDATE + TEXT + ", " +
-		DatabaseConstants.STORY_LONGDATE + TEXT + ", " +
-		DatabaseConstants.STORY_FEED_ID + INTEGER + ", " +
-		DatabaseConstants.STORY_ID + TEXT + " PRIMARY KEY, " +
-		DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
-		DatabaseConstants.STORY_INTELLIGENCE_FEED + INTEGER + ", " +
-		DatabaseConstants.STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
-		DatabaseConstants.STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
-		DatabaseConstants.STORY_COMMENT_COUNT + INTEGER + ", " +
-		DatabaseConstants.STORY_SHARE_COUNT + INTEGER + ", " +
-		DatabaseConstants.STORY_SOCIAL_USER_ID + TEXT + ", " +
-		DatabaseConstants.STORY_SOURCE_USER_ID + TEXT + ", " +
-		DatabaseConstants.STORY_SHARED_USER_IDS + TEXT + ", " +
-		DatabaseConstants.STORY_PUBLIC_USER_IDS + TEXT + ", " +
-		DatabaseConstants.STORY_FRIEND_USER_IDS + TEXT + ", " +
-		DatabaseConstants.STORY_TAGS + TEXT + ", " +
-		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 
-		DatabaseConstants.STORY_READ + INTEGER + ", " +
-		DatabaseConstants.STORY_STARRED + INTEGER + ", " +
-		DatabaseConstants.STORY_STARRED_DATE + INTEGER + ", " +
-		DatabaseConstants.STORY_TITLE + TEXT;
-
-	private final String STORY_SQL = "CREATE TABLE " + DatabaseConstants.STORY_TABLE + " (" + STORY_TABLES_COLS + ")";
-
-	private final String CLASSIFIER_SQL = "CREATE TABLE " + DatabaseConstants.CLASSIFIER_TABLE + " (" +
-		DatabaseConstants.CLASSIFIER_ID + TEXT + ", " +
-		DatabaseConstants.CLASSIFIER_KEY + TEXT + ", " + 
-		DatabaseConstants.CLASSIFIER_TYPE + TEXT + ", " +
-		DatabaseConstants.CLASSIFIER_VALUE + TEXT +
-		")";
-
-	private final String FEED_FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + " (" +
-		DatabaseConstants.FEED_FOLDER_FOLDER_NAME + TEXT + " NOT NULL, " +
-		DatabaseConstants.FEED_FOLDER_FEED_ID + INTEGER + " NOT NULL, " +
-		"PRIMARY KEY (" + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + ", " + DatabaseConstants.FEED_FOLDER_FEED_ID + ") " + 
-		")";
-	
-	private final String SOCIALFEED_STORIES_SQL = "CREATE TABLE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + " (" +
-		DatabaseConstants.SOCIALFEED_STORY_STORYID  + TEXT + " NOT NULL, " +
-		DatabaseConstants.SOCIALFEED_STORY_USER_ID  + INTEGER + " NOT NULL, " +
-		"PRIMARY KEY (" + DatabaseConstants.SOCIALFEED_STORY_STORYID  + ", " + DatabaseConstants.SOCIALFEED_STORY_USER_ID + ") " + 
-	    ")";
-
-    private final String STARRED_STORIES_COUNT_SQL = "CREATE TABLE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE + " (" +
-        DatabaseConstants.STARRED_STORY_COUNT_COUNT + INTEGER + " NOT NULL" +
-        ")";
-
-
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(FEED_SQL);
-		db.execSQL(SOCIAL_FEED_SQL);
-		db.execSQL(FOLDER_SQL);
-		db.execSQL(USER_SQL);
-		db.execSQL(STORY_SQL);
-		db.execSQL(COMMENT_SQL);
-		db.execSQL(REPLY_SQL);
-		db.execSQL(CLASSIFIER_SQL);
-		db.execSQL(FEED_FOLDER_SQL);
-		db.execSQL(SOCIALFEED_STORIES_SQL);
-        db.execSQL(STARRED_STORIES_COUNT_SQL);
+		db.execSQL(DatabaseConstants.FEED_SQL);
+		db.execSQL(DatabaseConstants.SOCIAL_FEED_SQL);
+		db.execSQL(DatabaseConstants.FOLDER_SQL);
+		db.execSQL(DatabaseConstants.USER_SQL);
+		db.execSQL(DatabaseConstants.STORY_SQL);
+		db.execSQL(DatabaseConstants.COMMENT_SQL);
+		db.execSQL(DatabaseConstants.REPLY_SQL);
+		db.execSQL(DatabaseConstants.CLASSIFIER_SQL);
+		db.execSQL(DatabaseConstants.FEED_FOLDER_SQL);
+		db.execSQL(DatabaseConstants.SOCIALFEED_STORIES_SQL);
+        db.execSQL(DatabaseConstants.STARRED_STORIES_COUNT_SQL);
+        db.execSQL(DatabaseConstants.ACTION_SQL);
 	}
 	
 	public void dropAndRecreateTables() {
@@ -160,6 +43,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.FEED_FOLDER_MAP_TABLE);
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
 		db.execSQL(drop + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
+		db.execSQL(drop + DatabaseConstants.ACTION_TABLE);
 		
 		onCreate(db);
 		
@@ -168,7 +52,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int previousVersion, int nextVersion) {
-        // TODO: Handle DB version updates using switch
+        // note: we drop all tables and recreate any time the schema changes on app upgrade
     }
 
     public SQLiteDatabase getRO() {

@@ -39,13 +39,27 @@
 }
 
 - (void)preparePublishingViewForActivity:(OSKActivity *)activity delegate:(id<OSKPublishingViewControllerDelegate>)oskPublishingDelegate {
+    
     [self setOskPublishingDelegate:oskPublishingDelegate];
     __weak OSKAirDropViewController *weakSelf = self;
-    UIActivityViewControllerCompletionHandler handler = ^(NSString *activityType, BOOL completed){
+    
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+    UIActivityViewControllerCompletionWithItemsHandler handler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        // AirDrop always finishes as if it was cancelled, so just dismiss the sheet.
+        [weakSelf.oskPublishingDelegate publishingViewController:self didTapPublishActivity:activity];
+    };
+    [self setCompletionWithItemsHandler:handler];
+#else
+    UIActivityViewControllerCompletionHandler handler = ^(NSString *activityType, BOOL completed) {
         // AirDrop always finishes as if it was cancelled, so just dismiss the sheet.
         [weakSelf.oskPublishingDelegate publishingViewController:self didTapPublishActivity:activity];
     };
     [self setCompletionHandler:handler];
+#endif
 }
 
 @end
+
+
+
+

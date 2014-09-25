@@ -52,6 +52,9 @@
     
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    
+    
+    [self.menuTableView reloadData];
 }
 
 - (void)viewDidUnload
@@ -64,6 +67,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self.menuTableView reloadData];
 }
 

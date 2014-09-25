@@ -60,6 +60,8 @@
     }
 }
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [[UIMenuController sharedMenuController]
      setMenuItems:[NSArray arrayWithObjects:
                    [[UIMenuItem alloc] initWithTitle:@"👎 Hide" action:@selector(hideTitle:)],
@@ -139,9 +141,6 @@
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
     [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick({skipEvent: true});"];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
