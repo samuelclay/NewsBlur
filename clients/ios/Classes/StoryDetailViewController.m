@@ -1193,9 +1193,23 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        
-        for (UIView *view in [UIViewController osk_parentMostViewControllerForPresentingViewController:appDelegate.storyPageControl].view.subviews) {
-            if ([[view firstAvailableUIViewController] isKindOfClass:[OSKActivitySheetViewController class]]) {
+        NSLog(@"Link clicked, views: %@", [UIViewController
+                                           osk_parentMostViewControllerForPresentingViewController:
+                                           appDelegate.storyPageControl].view.subviews);
+        NSArray *subviews;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            subviews = [UIViewController
+                        osk_parentMostViewControllerForPresentingViewController:
+                        appDelegate.storyPageControl].view.subviews;
+        } else {
+            subviews = [UIViewController
+                        osk_parentMostViewControllerForPresentingViewController:
+                        appDelegate.storyPageControl].view.subviews;
+        }
+        for (UIView *view in subviews) {
+            NSLog(@" View? %@ - %@", view, [view firstAvailableUIViewController]);
+            if ([[view firstAvailableUIViewController]
+                 isKindOfClass:[OSKActivitySheetViewController class]]) {
                 return NO;
             }
         }
@@ -1538,7 +1552,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     actionSheetViewImageIndex = [actions addButtonWithTitle:@"View and zoom"];
     actionSheetCopyImageIndex = [actions addButtonWithTitle:@"Copy image"];
     actionSheetSaveImageIndex = [actions addButtonWithTitle:@"Save to camera roll"];
-    [actions showInView:appDelegate.storyPageControl.view];
+    [actions showFromRect:CGRectMake(pt.x, pt.y, 1, 1) inView:appDelegate.storyPageControl.view animated:YES];
+//    [actions showInView:appDelegate.storyPageControl.view];
 }
 
 - (void)showLinkContextMenu:(CGPoint)pt {
@@ -1552,8 +1567,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (!href || ![href length]) return;
     
+    NSValue *ptValue = [NSValue valueWithCGPoint:pt];
     [appDelegate showSendTo:appDelegate.storyPageControl
-                     sender:nil
+                     sender:ptValue
                     withUrl:url
                  authorName:nil
                        text:nil

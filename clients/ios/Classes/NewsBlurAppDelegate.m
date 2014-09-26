@@ -53,6 +53,8 @@
 #import "TMCache.h"
 #import "StoriesCollection.h"
 #import "NSString+HTML.h"
+#import "UIView+ViewController.h"
+#import "UIViewController+OSKUtilities.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
@@ -613,6 +615,15 @@
         [self.masterContainerViewController showSendToPopover:vc];
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+        } else if ([sender isKindOfClass:[NSValue class]]) {
+            // Uncomment below to show share popover from linked text. Problem is
+            // that on finger up the link will open.
+//            CGPoint pt = [(NSValue *)sender CGPointValue];
+//            CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
+//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                                                           presentingViewController:vc options:options];
         } else {
             [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
@@ -622,7 +633,6 @@
                                                        presentingViewController:vc options:options];
     }
 }
-
 
 - (OSKApplicationCredential *)applicationCredentialForActivityType:(NSString *)activityType {
     OSKApplicationCredential *appCredential = nil;
