@@ -67,8 +67,6 @@ public class NbActivity extends Activity {
 		super.onResume();
 		finishIfNotLoggedIn();
 
-        FeedUtils.offerDB(dbHelper);
-
         synchronized (AllActivities) {
             AllActivities.add(this);
         }

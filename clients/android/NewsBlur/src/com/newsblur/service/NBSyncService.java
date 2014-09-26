@@ -25,6 +25,7 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageCache;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
@@ -119,6 +120,7 @@ public class NBSyncService extends Service {
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
+        FeedUtils.offerDB(dbHelper);
         imageCache = new ImageCache(this);
 	}
 
