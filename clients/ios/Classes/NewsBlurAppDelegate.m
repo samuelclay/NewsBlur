@@ -127,6 +127,7 @@
 @synthesize readStories;
 @synthesize unreadStoryHashes;
 @synthesize folderCountCache;
+@synthesize collapsedFolders;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -1584,6 +1585,21 @@
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ng] forKey:[NSString stringWithFormat:@"%@-ng", folderName]];
         
     return counts;
+}
+
+- (BOOL)isFolderCollapsed:(NSString *)folderName {
+    if (!self.collapsedFolders) {
+        self.collapsedFolders = [[NSMutableDictionary alloc] init];
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+        for (NSString *folderName in self.dictFoldersArray) {
+            NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@",
+                                     folderName];
+            if ([userPreferences boolForKey:collapseKey]) {
+                [self.collapsedFolders setObject:folderName forKey:folderName];
+            }
+        }
+    }
+    return !![self.collapsedFolders objectForKey:folderName];
 }
 
 #pragma mark - Story Management

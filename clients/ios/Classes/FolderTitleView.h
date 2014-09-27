@@ -17,6 +17,7 @@
 <UIGestureRecognizerDelegate,
 UIActionSheetDelegate> {
     NewsBlurAppDelegate *appDelegate;
+    UIFontDescriptor *fontDescriptorSize;
 }
 
 @property (assign, nonatomic) int section;

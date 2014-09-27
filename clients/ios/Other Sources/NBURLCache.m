@@ -30,7 +30,7 @@
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:substitutionFileName];
     if (!substitutionFileName || !exists)
     {
-        NSLog(@"No cache found: %@ / %@", pathString, substitutionFileName);
+//        NSLog(@"No cache found: %@ / %@", pathString, substitutionFileName);
         // No substitution file, return the default cache response
         return [super cachedResponseForRequest:request];
     }
@@ -39,8 +39,8 @@
     NSCachedURLResponse *cachedResponse = [cachedResponses objectForKey:pathString];
     if (cachedResponse)
     {
-        NSLog(@"Memory cached: %@", pathString);
-//        return cachedResponse;
+//        NSLog(@"Memory cached: %@", pathString);
+        return cachedResponse;
     }
     
     // Get the path to the substitution file
@@ -58,7 +58,7 @@
     cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response
                                                               data:data];
     
-    NSLog(@"Got cached response: %@ / %@", pathString, substitutionFileName);
+//    NSLog(@"Got cached response: %@ / %@", pathString, substitutionFileName);
     // Add it to our cache dictionary for subsequent responses
     if (!cachedResponses)
     {
