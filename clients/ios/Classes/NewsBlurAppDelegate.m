@@ -60,7 +60,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 32
+#define CURRENT_DB_VERSION 33
 
 @synthesize window;
 
@@ -213,7 +213,8 @@
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
     [NSURLCache setSharedURLCache:urlCache];
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    // Uncomment below line to test image caching
+//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
 	return YES;
 }
@@ -2423,6 +2424,15 @@
         //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+        NSError *error = nil;
+        BOOL success = [fileManager removeItemAtPath:cacheDirectory error:&error];
+        if (!success || error) {
+            // something went wrong
+        }
     }
     NSString *createAccountsTable = [NSString stringWithFormat:@"create table if not exists accounts "
                                   "("
