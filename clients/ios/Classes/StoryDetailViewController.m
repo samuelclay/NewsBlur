@@ -272,20 +272,20 @@
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
     
     // Replace image urls that are locally cached, even when online
-    NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
-    NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
-    if (imageUrls) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *storyImagesDirectory = [[paths objectAtIndex:0]
-                                          stringByAppendingPathComponent:@"story_images"];
-        for (NSString *imageUrl in imageUrls) {
-            NSString *cachedImage = [storyImagesDirectory
-                                     stringByAppendingPathComponent:[Utilities md5:imageUrl]];
-            storyContent = [storyContent
-                            stringByReplacingOccurrencesOfString:imageUrl
-                            withString:cachedImage];
-        }
-    }
+//    NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+//    NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
+//    if (imageUrls) {
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//        NSString *storyImagesDirectory = [[paths objectAtIndex:0]
+//                                          stringByAppendingPathComponent:@"story_images"];
+//        for (NSString *imageUrl in imageUrls) {
+//            NSString *cachedImage = [storyImagesDirectory
+//                                     stringByAppendingPathComponent:[Utilities md5:imageUrl]];
+//            storyContent = [storyContent
+//                            stringByReplacingOccurrencesOfString:imageUrl
+//                            withString:cachedImage];
+//        }
+//    }
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
@@ -1552,7 +1552,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     actionSheetViewImageIndex = [actions addButtonWithTitle:@"View and zoom"];
     actionSheetCopyImageIndex = [actions addButtonWithTitle:@"Copy image"];
     actionSheetSaveImageIndex = [actions addButtonWithTitle:@"Save to camera roll"];
-    [actions showFromRect:CGRectMake(pt.x, pt.y, 1, 1) inView:appDelegate.storyPageControl.view animated:YES];
+    [actions showFromRect:CGRectMake(pt.x, pt.y, 1, 1)
+                   inView:appDelegate.storyPageControl.view animated:YES];
 //    [actions showInView:appDelegate.storyPageControl.view];
 }
 

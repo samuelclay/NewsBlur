@@ -55,11 +55,12 @@
 #import "NSString+HTML.h"
 #import "UIView+ViewController.h"
 #import "UIViewController+OSKUtilities.h"
+#import "NBURLCache.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 31
+#define CURRENT_DB_VERSION 32
 
 @synthesize window;
 
@@ -209,7 +210,11 @@
     
     cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons"];
     cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages"];
-
+    
+    NBURLCache *urlCache = [[NBURLCache alloc] init];
+    [NSURLCache setSharedURLCache:urlCache];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
 	return YES;
 }
 
