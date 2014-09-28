@@ -206,7 +206,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               (this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-info' }, [
                     $.make('h2', { className: 'NB-modal-title' }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Mute feeds',
+                        '屏蔽站点',
                         $.make('div', { className: 'NB-icon-dropdown' })
                     ]),
                     $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Turn every site on'),
@@ -374,13 +374,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var muted = this.feed_count - approved;
         
         $count.text(approved + '/' + Inflector.commas(this.feed_count));
-        
+
         if (NEWSBLUR.Globals.is_premium) {
             $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false);
             if (muted == 0) {
-                $submit.val('Enable all ' + Inflector.pluralize('site', this.feed_count, true));
+                $submit.val('打开全 部 ' + this.feed_count + ' 个站点');
             } else {
-                $submit.val('Mute ' + Inflector.pluralize('site', muted, true));
+                $submit.val('屏蔽 ' + muted + ' 站点');
             }
             $count.toggleClass('NB-full', muted == 0);
         } else {

@@ -289,7 +289,8 @@ class Feed(models.Model):
     @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchFeed.query(prefix)
-        feed_ids = [result.feed_id for result in results[:5]]
+#        feed_ids = [result.feed_id for result in results[:5]]
+        feed_ids = [result.get_id() for result in results[:5]]
 
         # results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
         # 

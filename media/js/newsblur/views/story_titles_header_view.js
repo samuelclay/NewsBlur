@@ -65,7 +65,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     </div>\
                     <div class="NB-read-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
-                    <div class="folder_title_text">Read Stories</div>\
+                    <div class="folder_title_text">阅读记录</div>\
                 </div>\
             ', {}));
         } else if (this.showing_fake_folder) {

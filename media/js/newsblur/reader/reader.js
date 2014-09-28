@@ -3069,8 +3069,8 @@
                     ])),
                     (NEWSBLUR.Globals.is_premium && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mute Sites'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Temporarily turn off feeds.')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '屏蔽站点'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, '临时关闭某些站点。')
                     ])),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

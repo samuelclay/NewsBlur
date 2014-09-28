@@ -149,13 +149,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-dateformat-1', type: 'radio', name: 'dateformat', value: '12' }),
                                 $.make('label', { 'for': 'NB-preference-dateformat-1' }, [
-                                    'Use 12-hour clock'
+                                    '使用  小时制'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-dateformat-2', type: 'radio', name: 'dateformat', value: '24' }),
                                 $.make('label', { 'for': 'NB-preference-dateformat-2' }, [
-                                    'Use 24-hour clock'
+                                    '使用 24 小时制'
                                 ])
                             ])
                         ]),
@@ -202,7 +202,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-autoopenfolder-1', type: 'radio', name: 'autoopen_folder', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-autoopenfolder-1' }, [
-                                    'Show the dashboard when loading NewsBlur'
+                                    '进入 NewsZeit 之后显示控制面板'
                                 ])
                             ]),
                             $.make('div', [
@@ -213,7 +213,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Default folder'
+                            '默认的文件夹'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-animations' }, [
@@ -341,7 +341,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-view-1' }, [
                                     $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'default_view', value: 'page' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_original_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, "Original")
+                                    $.make("div", { className: "NB-view-title" }, "原始站点")
                                 ])
                             ]),
                             $.make('div', [
@@ -355,14 +355,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-view-3' }, [
                                     $.make('input', { id: 'NB-preference-view-3', type: 'radio', name: 'default_view', value: 'text' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_text_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, "Text")
+                                    $.make("div", { className: "NB-view-title" }, "全文")
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-view-4' }, [
                                     $.make('input', { id: 'NB-preference-view-4', type: 'radio', name: 'default_view', value: 'story' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_story_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, "Story")
+                                    $.make("div", { className: "NB-view-title" }, "原文")
                                 ])
                             ])
                         ]),
@@ -430,24 +430,24 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickfeed-1', type: 'radio', name: 'doubleclick_feed', value: 'open' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickfeed-1' }, [
-                                    'Open the site in a new window'
+                                    '在新窗口中打开此站点'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickfeed-0', type: 'radio', name: 'doubleclick_feed', value: 'open_and_read' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickfeed-0' }, [
-                                    'Open the site in a new window and mark it as read'
+                                    '在新窗口中打开此站点并标记所有文章为已读'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickfeed-2', type: 'radio', name: 'doubleclick_feed', value: 'ignore' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickfeed-2' }, [
-                                    'Don\'t do anything on double-clicks'
+                                    '不做任何动作'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Double-clicking a site'
+                            '双击一个站点'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-doubleclickunread' }, [
@@ -455,18 +455,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickunread-1', type: 'radio', name: 'doubleclick_unread', value: 'markread' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickunread-1' }, [
-                                    'Mark the site as read'
+                                    '标记此站点所有文章为已读'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickunread-0', type: 'radio', name: 'doubleclick_unread', value: "ignore" }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickunread-0' }, [
-                                    'Don\'t do anything on double-clicks'
+                                    '不做任何动作'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Double-clicking an unread count'
+                            '双击未读数'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
@@ -673,11 +673,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-1', type: 'radio', name: 'hide_public_comments', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, 'Show from both friends and the public')
+                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, '显示所有的公开评论')
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-2', type: 'radio', name: 'hide_public_comments', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, 'Only show comments from friends')
+                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, '只显示来自好友的评论')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -805,7 +805,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var autoopen_folder = NEWSBLUR.Preferences.autoopen_folder;
         var $folders = NEWSBLUR.utils.make_folders(autoopen_folder, {
             name: 'default_folder',
-            toplevel: "All Site Stories"
+            toplevel: "所有站点的文章"
         });
         return $folders;
     },
@@ -1024,7 +1024,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     slide_read_story_delay_slider: function(e, ui) {
         var value = (ui && ui.value) ||
                     (NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1);
-        $(".NB-tangle-seconds", this.$modal).text(value == 1 ? value + ' second.' : value + ' seconds.');
+        $(".NB-tangle-seconds", this.$modal).text(value + ' 秒');
         if (NEWSBLUR.Preferences.read_story_delay > 0 || ui) {
             $("#NB-preference-readstorydelay-2", this.$modal).attr('checked', true).val(value);
             if (ui) {
