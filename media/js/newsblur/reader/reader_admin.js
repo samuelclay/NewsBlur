@@ -83,6 +83,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             }
 
             $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-history", style: "float: left" }, "Update History"));
+            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-opml", style: "float: left" }, "OPML"));
             
             $statistics.append($.make('dl', [
                 $.make('dt', 'Stripe Id:'),
@@ -153,6 +154,11 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             }, function(data) {
                 $(".NB-admin-action-history").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
             });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-opml' }, function($t, $p) {
+            e.preventDefault();
+            
+            window.location.href = NEWSBLUR.URLs['opml-export'] + "?user_id=" + self.user.get('user_id');
         });
 
     }

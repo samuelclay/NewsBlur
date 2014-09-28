@@ -6,24 +6,29 @@ import android.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
+import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.FeedUtils.ActionCompletionListener;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
+public abstract class ItemsList extends NbActivity implements StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
@@ -37,12 +42,17 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
+    private TextView overlayStatusText;
 	protected int currentState;
+
+    private FeedSet fs;
 	
 	protected boolean stopLoading = false;
 
 	@Override
-	protected void onCreate(Bundle bundle) {
+    protected void onCreate(Bundle bundle) {
+        this.fs = createFeedSet();
+
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(bundle);
@@ -53,17 +63,55 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
         // our intel state is entirely determined by the state of the Main view
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
 	}
 
+    protected abstract FeedSet createFeedSet();
+
+    public FeedSet getFeedSet() {
+        return this.fs;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        updateStatusIndicators();
+        stopLoading = false;
+        // this view shows stories, it is not safe to perform cleanup
+        NBSyncService.holdStories(true);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
+        getFirstStories();
     }
 
-	public abstract void triggerRefresh(int page);
-	public abstract void markItemListAsRead();
+    private void getFirstStories() {
+        stopLoading = false;
+        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
+    }
+
+    @Override
+    protected void onPause() {
+        stopLoading = true;
+        NBSyncService.holdStories(false);
+        super.onPause();
+    }
+
+	public void triggerRefresh(int desiredStoryCount) {
+		if (!stopLoading) {
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            if (gotSome) triggerSync();
+            updateStatusIndicators();
+		}
+    }
+
+	public void markItemListAsRead() {
+        FeedUtils.markFeedsRead(fs, null, null, this);
+        Toast.makeText(this, R.string.toast_marked_stories_as_read, Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
+        finish();
+    }
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -93,6 +141,7 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 		return false;
 	}
 	
+    // TODO: can all of these be replaced with PrefsUtils queries via FeedSet?
 	protected abstract StoryOrder getStoryOrder();
 	
 	protected abstract ReadFilter getReadFilter();
@@ -100,14 +149,28 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
     protected abstract DefaultFeedView getDefaultFeedView();
 	
     @Override
-    public void actionCompleteCallback(boolean noMoreData) {
+	public void handleUpdate() {
+        updateStatusIndicators();
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
-			itemListFragment.syncDone();;
-		}
-        setProgressBarIndeterminateVisibility(false);
-        if (noMoreData) {
-            stopLoading = true;
+        }
+    }
+
+    private void updateStatusIndicators() {
+        boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs);
+        setProgressBarIndeterminateVisibility(isLoading);
+		if (itemListFragment != null) {
+			itemListFragment.setLoading(isLoading);
+        }
+
+        if (overlayStatusText != null) {
+            String syncStatus = NBSyncService.getSyncStatusMessage();
+            if (syncStatus != null)  {
+                overlayStatusText.setText(syncStatus);
+                overlayStatusText.setVisibility(View.VISIBLE);
+            } else {
+                overlayStatusText.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -118,23 +181,24 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
-        FeedUtils.clearStories(this);
         updateStoryOrderPreference(newValue);
-        itemListFragment.setStoryOrder(newValue);
-        itemListFragment.resetPagination();
-        stopLoading = false;
+        FeedUtils.clearReadingSession(this); 
+        itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
+        itemListFragment.scrollToTop();
+        getFirstStories();
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
-        FeedUtils.clearStories(this);
         updateReadFilterPreference(newValue);
-        itemListFragment.resetPagination();
-        stopLoading = false;
+        FeedUtils.clearReadingSession(this); 
+        itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
+        itemListFragment.scrollToTop();
+        getFirstStories();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);

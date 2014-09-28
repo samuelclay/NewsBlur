@@ -15,12 +15,16 @@
 @implementation UIDevice (OSKHardware)
 
 - (NSString*)osk_hardwareString {
-    size_t size = 100;
-    char *hw_machine = malloc(size);
-    int name[] = {CTL_HW,HW_MACHINE};
-    sysctl(name, 2, hw_machine, &size, NULL, 0);
-    NSString *hardware = [NSString stringWithUTF8String:hw_machine];
-    free(hw_machine);
+    static dispatch_once_t once;
+    static NSString * hardware;
+    dispatch_once(&once, ^ {
+        size_t size = 100;
+        char *hw_machine = malloc(size);
+        int name[] = {CTL_HW,HW_MACHINE};
+        sysctl(name, 2, hw_machine, &size, NULL, 0);
+        hardware = [NSString stringWithUTF8String:hw_machine];
+        free(hw_machine);
+    });
     return hardware;
 }
 
@@ -74,22 +78,25 @@
 }
 
 - (BOOL)osk_airDropIsAvailable {
-    BOOL isAvailable = NO;
-    OSKHardwareType hardwareType = [self osk_hardwareType];
-    if (OSKHardwareType_NotAvailable) {
-        isAvailable = YES;
-    } else {
-        NSString *hardwareString = [self osk_hardwareString];
-        if ([hardwareString hasPrefix:@"iPhone"]) {
-            isAvailable = (hardwareType >= OSKHardwareType_iPhone_5);
+    static dispatch_once_t once;
+    static BOOL isAvailable;
+    dispatch_once(&once, ^ {
+        OSKHardwareType hardwareType = [self osk_hardwareType];
+        if (OSKHardwareType_NotAvailable) {
+            isAvailable = YES;
+        } else {
+            NSString *hardwareString = [self osk_hardwareString];
+            if ([hardwareString hasPrefix:@"iPhone"]) {
+                isAvailable = (hardwareType >= OSKHardwareType_iPhone_5);
+            }
+            else if ([hardwareString hasPrefix:@"iPad"]) {
+                isAvailable = (hardwareType >= OSKHardwareType_iPad_4_WIFI);
+            }
+            else if ([hardwareString hasPrefix:@"iPod"]) {
+                isAvailable = (hardwareType >= OSKHardwareType_iPodTouch_5G);
+            }
         }
-        else if ([hardwareString hasPrefix:@"iPad"]) {
-            isAvailable = (hardwareType >= OSKHardwareType_iPad_4_WIFI);
-        }
-        else if ([hardwareString hasPrefix:@"iPod"]) {
-            isAvailable = (hardwareType >= OSKHardwareType_iPodTouch_5G);
-        }
-    }
+    });
     return isAvailable;
 }
 

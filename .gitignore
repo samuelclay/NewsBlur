@@ -34,6 +34,7 @@ config/settings
 config/secrets
 templates/maintenance_on.html
 vendor/mms-agent/settings.py
+apps/social/spam.py
 
 # ----------------------
 # Android

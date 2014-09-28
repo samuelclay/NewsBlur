@@ -1,4 +1,5 @@
 BeautifulSoup==3.2.1
+six==1.6.1
 boto==2.8.0
 celery==3.0.17
 chardet==2.1.1
@@ -26,7 +27,6 @@ nltk==2.0.4
 oauth2==1.5.211
 psutil==2.1.0
 pyes==0.90.1
-six==1.6.1
 simplejson==3.4.0
 pyflakes==0.6.1
 pymongo==2.5.2

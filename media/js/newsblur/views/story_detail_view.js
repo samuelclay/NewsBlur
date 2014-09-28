@@ -220,12 +220,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 </div>\
                 <div class="NB-sideoption NB-feed-story-save">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("starred") ? "已收藏" : "收藏此文章" %></div>\
+                    <div class="NB-sideoption-title"><%= story.get("starred") ? "已收藏" : "收藏<span>此文章<span>" %></div>\
                 </div>\
                 <%= story_save_view %>\
                 <div class="NB-sideoption NB-feed-story-share">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("shared") ? "已分享" : "分享此文章" %></div>\
+                    <div class="NB-sideoption-title"><%= story.get("shared") ? "已分享" : "分享<span>此文章<span>" %></div>\
                 </div>\
                 <%= story_share_view %>\
             </div>\
@@ -730,6 +730,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             NEWSBLUR.reader.feed_unread_count(feed_id);
         });
         
+        this.model.trigger('change:intelligence');
         this.preserve_classifier_color(classifier_type, value, score);
     },
     

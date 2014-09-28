@@ -35,6 +35,7 @@ public class FeedFolderResponse {
 	public SocialFeed[] socialFeeds;
 
 	public boolean isAuthenticated;
+    public boolean isPremium;
 	
 	public FeedFolderResponse(String json, Gson gson) {
 
@@ -43,6 +44,12 @@ public class FeedFolderResponse {
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
 
         this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
+
+        JsonElement userProfile = asJsonObject.get("user_profile");
+        if (userProfile != null) {
+            JsonObject profile = (JsonObject) userProfile;
+            this.isPremium = profile.get("is_premium").getAsBoolean();
+        }
 
 		JsonArray jsonFoldersArray = (JsonArray) asJsonObject.get("folders");
 		ArrayList<String> nestedFolderList = new ArrayList<String>();

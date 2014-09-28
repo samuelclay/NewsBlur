@@ -10,6 +10,7 @@
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
 #import "OvershareKit.h"
+#import "EventWindow.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -48,7 +49,7 @@
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations, OSKPresentationStyle>  {
-    UIWindow *window;
+    EventWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
     UINavigationController *modalNavigationController;
@@ -114,6 +115,7 @@
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     NSMutableDictionary *folderCountCache;
+    NSMutableDictionary *collapsedFolders;
     
 	NSDictionary * dictFolders;
     NSMutableDictionary * dictFeeds;
@@ -140,7 +142,7 @@
     TMCache *cachedStoryImages;
 }
 
-@property (nonatomic) IBOutlet UIWindow *window;
+@property (nonatomic) IBOutlet EventWindow *window;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *navigationController;
 @property (nonatomic) UINavigationController *modalNavigationController;
@@ -208,6 +210,7 @@
 @property (readwrite) NSMutableArray * readStories;
 @property (readwrite) NSMutableDictionary *unreadStoryHashes;
 @property (nonatomic) NSMutableDictionary *folderCountCache;
+@property (nonatomic) NSMutableDictionary *collapsedFolders;
 
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
@@ -299,6 +302,7 @@
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (NSDictionary *)markVisibleStoriesRead;
+- (BOOL)isFolderCollapsed:(NSString *)folderName;
 
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;

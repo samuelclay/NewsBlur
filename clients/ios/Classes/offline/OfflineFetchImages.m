@@ -168,7 +168,7 @@
             NSFileManager *fileManager = [NSFileManager defaultManager];
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
             NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", md5Url]];
+            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", md5Url, [[[request originalURL] absoluteString] pathExtension]]];
             
             [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
         } else {

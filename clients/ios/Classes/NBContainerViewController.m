@@ -175,6 +175,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self layoutDashboardScreen];
 }
 
@@ -246,10 +248,9 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.userProfileNavigationController];
     
-    popoverController.delegate = self;
-    
+    [popoverController setDelegate:self];
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
-
+    [appDelegate.userProfileNavigationController view];
     if ([sender class] == [InteractionCell class] ||
         [sender class] == [ActivityCell class]) {
         InteractionCell *cell = (InteractionCell *)sender;
@@ -305,6 +306,7 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
     [popoverController setDelegate:self];
+    [appDelegate.feedsMenuViewController view];
     NSInteger menuCount = [appDelegate.feedsMenuViewController.menuOptions count];
     [popoverController setPopoverContentSize:CGSizeMake(200, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
@@ -325,6 +327,7 @@
     [appDelegate.feedDetailMenuViewController buildMenuOptions];
     popoverController.delegate = self;
     
+    [appDelegate.feedDetailMenuViewController view];
     NSInteger menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
     [popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
@@ -475,7 +478,7 @@
         [self.dashboardViewController.view removeFromSuperview];
         self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
 //        leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
-        NSLog(@"Transitioning back to feed detail, original frame: %@", NSStringFromCGRect(self.originalNavigationController.view.frame));
+//        NSLog(@"Transitioning back to feed detail, original frame: %@", NSStringFromCGRect(self.originalNavigationController.view.frame));
     }
 }
 
@@ -757,7 +760,7 @@
 }
 
 - (void)transitionFromOriginalView {
-    NSLog(@"Transition from Original View");
+//    NSLog(@"Transition from Original View");
     
     [self.originalViewController viewWillDisappear:YES];
     self.originalViewIsVisible = NO;

@@ -15,6 +15,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.AllSharedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -46,7 +47,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(feedIds, currentState, getStoryOrder(), getDefaultFeedView());
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(feedIds, currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
@@ -61,19 +62,10 @@ public class AllSharedStoriesItemsList extends ItemsList {
         return true;
     }
 
-	@Override
-	public void triggerRefresh(int page) {
-		if (!stopLoading) {
-			setProgressBarIndeterminateVisibility(true);
-			String[] feeds = new String[feedIds.size()];
-			feedIds.toArray(feeds);
-            FeedUtils.updateSocialFeeds(this, this, feeds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
-		}
-	}
-
-	// We don't allow All Shared Stories to be marked as read
-	@Override
-	public void markItemListAsRead() { }
+    @Override
+    protected FeedSet createFeedSet() {
+        return FeedSet.allSocialFeeds();
+    }
 
     @Override
     protected StoryOrder getStoryOrder() {

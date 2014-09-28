@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -28,35 +31,59 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
-public abstract class ItemListFragment extends Fragment implements OnScrollListener, OnCreateContextMenuListener {
+public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    protected int currentPage = 0;
-    protected boolean requestedPage;
+	public static int ITEMLIST_LOADER = 0x01;
+
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
-    private boolean firstSyncDone = false;
-	
-	public abstract void hasUpdated();
-	public abstract void changeState(final int state);
-	public abstract void setStoryOrder(StoryOrder storyOrder);
+	protected int currentState;
+    private int lastRequestedStoryCount = 0;
+    private boolean isLoading = true;
 
-
-    public void resetPagination() {
-        this.currentPage = 0;
-        // also re-enable the loading indicator, since this means the story list was reset
-        firstSyncDone = false;
-        setEmptyListView(R.string.empty_list_view_loading);
+    @Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
     }
 
-    public void syncDone() {
-        this.firstSyncDone = true;
+    /**
+     * Indicate that the DB was cleared.
+     */
+    public void resetEmptyState() {
+        setLoading(true);
+        lastRequestedStoryCount = 0;
     }
 
-    private void setEmptyListView(int rid) {
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
+
+    private void updateLoadingIndicator() {
+        View v = this.getView();
+        if (v == null) return; // we might have beat construction?
+
+        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        if (itemList == null) {
+            Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
+            return;
+        }
+        TextView emptyView = (TextView) itemList.getEmptyView();
+
+        if (isLoading) {
+            emptyView.setText(R.string.empty_list_view_loading);
+        } else {
+            emptyView.setText(R.string.empty_list_view_no_stories);
+        }
+    }
+
+    public void scrollToTop() {
         View v = this.getView();
         if (v == null) return; // we might have beat construction?
 
@@ -66,42 +93,64 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
             return;
         }
 
-        TextView emptyView = (TextView) itemList.getEmptyView();
-        emptyView.setText(rid);
+        itemList.setSelection(0);
     }
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-        // load an extra page worth of stories past the viewport
-		if (totalCount != 0 && (firstVisible + (visibleCount*2)  >= totalCount) && !requestedPage) {
-			currentPage += 1;
-			requestedPage = true;
-			triggerRefresh(currentPage);
-		}
+        // load an extra page or two worth of stories past the viewport
+        int desiredStoryCount = firstVisible + (visibleCount*2);
+
+        // this method tends to get called repeatedly. don't request repeats
+        if (desiredStoryCount <= lastRequestedStoryCount) {
+            return;
+        }
+        lastRequestedStoryCount = desiredStoryCount;
+
+        triggerRefresh(desiredStoryCount);
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-	protected void triggerRefresh(int page) {
-        ((ItemsList) getActivity()).triggerRefresh(page);
+	public void changeState(int state) {
+		currentState = state;
+		hasUpdated();
+	}
+
+	private void triggerRefresh(int desiredStories) {
+        ((ItemsList) getActivity()).triggerRefresh(desiredStories);
     }
 
-    // all child classes need this callback, so implement it here
+    protected FeedSet getFeedSet() {
+        return ((ItemsList) getActivity()).getFeedSet();
+    }
+
+	public void hasUpdated() {
+        if (isAdded()) {
+		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+        }
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		return dbHelper.getStoriesLoader(getFeedSet(), currentState);
+	}
+
+    @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
             if (cursor.getCount() == 0) {
-                currentPage += 1;
-                requestedPage = true;
-                triggerRefresh(currentPage);
+                triggerRefresh(1);
             }
 			adapter.swapCursor(cursor);
-
-            // iff a sync has finished and a cursor load has finished, it is safe to remove the loading message
-            if (this.firstSyncDone) {
-                setEmptyListView(R.string.empty_list_view_no_stories);
-            }
 		}
+        updateLoadingIndicator();
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		adapter.notifyDataSetInvalidated();
 	}
 
     public void setDefaultFeedView(DefaultFeedView value) {
@@ -145,14 +194,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
             return true;
 
         case R.id.menu_mark_previous_stories_as_read:
-            List<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
-            List<Story> storiesToMarkAsRead = new ArrayList<Story>();
-            for(Story s : previousStories) {
-                if(! s.read) {
-                    storiesToMarkAsRead.add(s);
-                }
-            }
-            FeedUtils.markStoriesAsRead(storiesToMarkAsRead, activity);
+            FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
             hasUpdated();
             return true;
 
@@ -161,11 +203,11 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
             return true;
 
         case R.id.menu_save_story:
-            FeedUtils.saveStory(story, activity, new APIManager(activity), null);
+            FeedUtils.saveStory(story, activity, new APIManager(activity));
             return true;
 
         case R.id.menu_unsave_story:
-            FeedUtils.unsaveStory(story, activity, new APIManager(activity), null);
+            FeedUtils.unsaveStory(story, activity, new APIManager(activity));
             return true;
 
         default:

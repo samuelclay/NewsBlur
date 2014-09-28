@@ -61,7 +61,7 @@
         _selectedManagedAccount = [[OSKManagedAccountStore sharedInstance] activeAccountForActivityType:[activityClass activityType]];
         NSString *addTitle = [OSKPresentationManager sharedInstance].localizedText_Add;
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:addTitle
-                                                                                  style:UIBarButtonItemStyleBordered
+                                                                                  style:UIBarButtonItemStylePlain
                                                                                  target:self
                                                                                  action:@selector(addAccountButtonPressed:)];
     }

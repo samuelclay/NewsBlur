@@ -226,6 +226,8 @@
                     narrow = true;
                 }
                 $windows.toggleClass('NB-narrow-content', narrow);
+                var extranarrow = center.width() < 580;
+                $windows.toggleClass('NB-extra-narrow-content', extranarrow);
                 this.flags.narrow_content = !!narrow;
                 content_width = center.width() + (west ? west.width() : 0);
             }
@@ -240,7 +242,7 @@
             var pane = this.layout.outerLayout.panes.west;
             var width = this.layout.outerLayout.state.west.size;
             pane.toggleClass("NB-narrow-pane-blue", width < 290);
-            pane.toggleClass("NB-narrow-pane-green", width < 254);
+            pane.toggleClass("NB-narrow-pane-green", width < 259);
             pane.toggleClass("NB-narrow-pane-yellow", width < 236);
             
             this.apply_tipsy_titles();
@@ -720,7 +722,10 @@
                 include_selected: true,
                 feed_id: this.active_feed
             });
-
+            
+            if (!$next_feed || $current_feed == $next_feed) return;
+            if ($current_feed && $current_feed.data('id') == $next_feed.data('id')) return;
+            
             var next_feed_id = $next_feed.data('id');
             if (next_feed_id && next_feed_id == this.active_feed) {
                 this.show_next_feed(direction, $next_feed);
@@ -734,6 +739,9 @@
         
         show_next_folder: function(direction, $current_folder) {
             var $next_folder = this.get_next_folder(direction, $current_folder);
+            
+            if (!$next_folder) return;
+            
             var folder = NEWSBLUR.assets.folders.get_view($next_folder);
 
             this.open_river_stories($next_folder, folder && folder.model);
@@ -2115,6 +2123,9 @@
 
             this.model.mark_feed_as_read([feed_id], cutoff_timestamp, direction, 
                                          feed_id == this.active_feed,  _.bind(function() {
+                if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed') {
+                    this.show_next_feed(1);
+                }
                 this.feeds_unread_count(feed_id);
             }, this));
         },
@@ -2133,6 +2144,9 @@
                                          folder == this.active_folder, _.bind(function() {
                 if (!this.socket || !this.socket.socket || !this.socket.socket.connected) {
                     this.force_feeds_refresh(null, false, feeds);
+                }
+                if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed') {
+                    this.show_next_feed(1);
                 }
             }, this));
         },

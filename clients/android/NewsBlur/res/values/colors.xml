@@ -53,6 +53,7 @@
     <color name="dark_story_date_unread">#DFDDCF</color>
     <color name="story_date_read">#BABDD1</color>
     <color name="story_comment_divider">#F0F0F0</color>
+    <color name="dark_story_comment_divider">#42453E</color>
     
     <color name="twitter_blue">#4099FF</color>
     <color name="facebook_blue">#3B5998</color>
@@ -103,7 +104,15 @@
     <color name="progress_circle_complete">#8F918B</color>
     <color name="progress_circle_remaining">#D5D7CF</color>
 
+    <color name="status_overlay_text">#DD111111</color>
+    <color name="status_overlay_background">#AA777777</color>
+
     <color name="story_buttons_dark">#90928b</color>
+
+    <color name="refresh_1">#c56125</color>
+    <color name="refresh_2">#db8d36</color>
+    <color name="refresh_3">#e9a941</color>
+    <color name="refresh_4">#fae576</color>
 
     <!-- To use a selector on a bg color, the options must be drawables, not colors. -->
     <drawable name="toggle_bg_selected">#fdfdfd</drawable>

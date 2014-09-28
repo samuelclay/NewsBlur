@@ -197,6 +197,10 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[NSObject cancelPreviousPerformRequestsWithTarget:self];
+
+	// hide the keyboard
+    [self.currentFirstResponder resignFirstResponder];
+	
 	[super viewWillDisappear:animated];
 }
 
@@ -207,9 +211,6 @@ CGRect IASKCGRectSwap(CGRect rect);
 	[dc removeObserver:self name:UIApplicationWillEnterForegroundNotification object:[UIApplication sharedApplication]];
 	[dc removeObserver:self name:UIApplicationWillTerminateNotification object:[UIApplication sharedApplication]];
 
-    // hide the keyboard
-    [self.currentFirstResponder resignFirstResponder];
-	
 	[super viewDidDisappear:animated];
 }
 
@@ -619,6 +620,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         [targetViewController setCurrentSpecifier:specifier];
         targetViewController.settingsReader = self.settingsReader;
         targetViewController.settingsStore = self.settingsStore;
+		targetViewController.view.tintColor = self.view.tintColor;
         _currentChildViewController = targetViewController;
         [[self navigationController] pushViewController:targetViewController animated:YES];
         
@@ -632,6 +634,7 @@ CGRect IASKCGRectSwap(CGRect rect);
             storyBoardFileFromSpecifier = storyBoardFileFromSpecifier && storyBoardFileFromSpecifier.length > 0 ? storyBoardFileFromSpecifier : @"MainStoryboard";
 			UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:storyBoardFileFromSpecifier bundle:nil];
 			UIViewController * vc = [storyBoard instantiateViewControllerWithIdentifier:[specifier viewControllerStoryBoardID]];
+			vc.view.tintColor = self.view.tintColor;
             [self.navigationController pushViewController:vc animated:YES];
 			return;
 		}
@@ -653,6 +656,7 @@ CGRect IASKCGRectSwap(CGRect rect);
             if ([vc respondsToSelector:@selector(setSettingsStore:)]) {
                 [vc performSelector:@selector(setSettingsStore:) withObject:self.settingsStore];
             }
+			vc.view.tintColor = self.view.tintColor;
             [self.navigationController pushViewController:vc animated:YES];
             return;
         }
@@ -672,6 +676,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         targetViewController.file = specifier.file;
         targetViewController.hiddenKeys = self.hiddenKeys;
         targetViewController.title = specifier.title;
+		targetViewController.view.tintColor = self.view.tintColor;
         _currentChildViewController = targetViewController;
         
         _reloadDisabled = NO;

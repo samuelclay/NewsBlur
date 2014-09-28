@@ -9,7 +9,6 @@ import android.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
@@ -17,10 +16,9 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.network.APIManager;
-import com.newsblur.network.MarkFeedAsReadTask;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedUtils;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -33,12 +31,11 @@ public class FeedItemsList extends ItemsList {
 	private String feedId;
 	private String feedTitle;
 	private String folderName;
-	private APIManager apiManager;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-		apiManager = new APIManager(this);
+
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
         feedTitle = getIntent().getStringExtra(EXTRA_FEED_TITLE);
         folderName = getIntent().getStringExtra(EXTRA_FOLDER_NAME);
@@ -54,13 +51,18 @@ public class FeedItemsList extends ItemsList {
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder(), getDefaultFeedView());
+			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 	}
+
+    @Override
+    protected FeedSet createFeedSet() {
+        return FeedSet.singleFeed(getIntent().getStringExtra(EXTRA_FEED));
+    }
 	
 	public void deleteFeed() {
 		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(Long.parseLong(feedId), feedTitle, folderName);
@@ -82,41 +84,11 @@ public class FeedItemsList extends ItemsList {
 	}
 	
 	@Override
-	public void markItemListAsRead() {
-		new MarkFeedAsReadTask(this, apiManager) {
-			@Override
-			protected void onPostExecute(Boolean result) {
-				if (result.booleanValue()) {
-					ContentValues values = new ContentValues();
-					values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
-					values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
-					values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
-					getContentResolver().update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
-					setResult(RESULT_OK);
-					Toast.makeText(FeedItemsList.this, R.string.toast_marked_feed_as_read, Toast.LENGTH_LONG).show();
-					finish();
-				} else {
-					Toast.makeText(FeedItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
-				}
-			}
-		}.execute(feedId);
-	}
-
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.feed_itemslist, menu);
 		return true;
-	}
-
-	@Override
-	public void triggerRefresh(int page) {
-		if (!stopLoading) {
-			setProgressBarIndeterminateVisibility(true);
-            FeedUtils.updateFeed(this, this, feedId, page, getStoryOrder(), PrefsUtils.getReadFilterForFeed(this, feedId));
-		}
 	}
 
     @Override

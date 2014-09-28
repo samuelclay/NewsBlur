@@ -11,6 +11,13 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class DeleteFeedFragment extends DialogFragment {
 	private static final String FEED_ID = "feed_url";
@@ -39,7 +46,7 @@ public class DeleteFeedFragment extends DialogFragment {
                 // called from the feed view so finish
                 Activity activity = DeleteFeedFragment.this.getActivity();
                 if (activity instanceof Main) {
-                    ((Main)activity).updateAfterSync();
+                    ((Main)activity).handleUpdate();
                 } else {
                     activity.finish();
                 }

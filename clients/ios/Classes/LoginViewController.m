@@ -358,16 +358,18 @@
 }
 
 - (void)animateLoop {
+    CGFloat width = CGRectGetWidth(self.view.frame);
+    CGFloat margin = 20;
     if ([self.loginControl selectedSegmentIndex] == 0) {
         [UIView animateWithDuration:0.5 animations:^{
             // Login
-            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
+            usernameInput.frame = CGRectMake(20, 67, width-margin*2, 31);
             usernameOrEmailLabel.alpha = 1.0;
             usernameLabel.alpha = 0.0;
             
-            passwordInput.frame = CGRectMake(20, 129, 280, 31);
+            passwordInput.frame = CGRectMake(20, 129, width-margin*2, 31);
             passwordLabel.frame = CGRectMake(21, 106, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);
+            passwordOptionalLabel.frame = CGRectMake(width-margin-101, 112, 101, 16);
             
             emailInput.alpha = 0.0;
             emailLabel.alpha = 0.0;
@@ -380,13 +382,13 @@
     } else {
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
-            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
+            usernameInput.frame = CGRectMake(20, 67, width/2-margin*2, 31);
             usernameOrEmailLabel.alpha = 0.0;
             usernameLabel.alpha = 1.0;
             
-            passwordInput.frame = CGRectMake(170, 67, 130, 31);
-            passwordLabel.frame = CGRectMake(171, 44, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 50, 101, 16);
+            passwordInput.frame = CGRectMake(width/2+margin, 67, width/2-margin*2, 31);
+            passwordLabel.frame = CGRectMake(width/2+margin, 44, 212, 22);
+            passwordOptionalLabel.frame = CGRectMake(width-margin-101, 50, 101, 16);
             
             emailInput.alpha = 1.0;
             emailLabel.alpha = 1.0;

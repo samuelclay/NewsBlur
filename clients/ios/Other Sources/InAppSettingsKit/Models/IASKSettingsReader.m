@@ -191,6 +191,7 @@
     switch (interfaceIdiom) {
         case UIUserInterfaceIdiomPad: return @"~ipad";
         case UIUserInterfaceIdiomPhone: return @"~iphone";
+		default: return @"~iphone";
     }
 }
 

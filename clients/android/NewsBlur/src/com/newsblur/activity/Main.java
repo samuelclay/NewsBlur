@@ -6,35 +6,41 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.net.Uri;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.AbsListView;
+import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.service.SyncService;
+import com.newsblur.service.BootReceiver;
+import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
 
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
-	private SyncUpdateFragment syncFragment;
-	private static final String TAG = "MainActivity";
-	private Menu menu;
+    private TextView overlayStatusText;
     private boolean isLightTheme;
+    private SwipeRefreshLayout swipeLayout;
+    private boolean wasSwipeEnabled = false;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 
-        PrefsUtils.checkForUpgrade(this);
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
 
         isLightTheme = PrefsUtils.isLightThemeSelected(this);
@@ -46,66 +52,36 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 		setContentView(R.layout.activity_main);
 		setupActionBar();
 
+        swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
+        swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
+        swipeLayout.setOnRefreshListener(this);
+
 		fragmentManager = getFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
-		
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 
-            // for our first sync, don't just trigger a heavyweight refresh, do it in two steps
-            // so the UI appears more quickly (per the docs at newsblur.com/api)
-            if (PrefsUtils.isTimeToAutoSync(this)) {
-                triggerFirstSync();
-            }
-		}
+        this.overlayStatusText = (TextView) findViewById(R.id.main_sync_status);
+
+        // make sure the interval sync is scheduled, since we are the root Activity
+        BootReceiver.scheduleSyncService(this);
 	}
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        // clear the read-this-session flag from stories so they don't show up in the wrong place
+        FeedUtils.clearReadingSession(this);
+
+        updateStatusIndicators();
+        // this view doesn't show stories, it is safe to perform cleanup
+        NBSyncService.holdStories(false);
+        triggerSync();
+
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
             UIUtils.restartActivity(this);
         }
-
-        if (PrefsUtils.isTimeToAutoSync(this)) {
-            triggerRefresh();
-        }
-        // clear all stories from the DB, the story activities will load them.
-        FeedUtils.clearStories(this);
     }
-
-    /**
-     * Triggers an initial two-phase sync, so the UI can display quickly using /reader/feeds and
-     * then call /reader/refresh_feeds to get updated counts.
-     */
-	private void triggerFirstSync() {
-        PrefsUtils.updateLastSyncTime(this);
-		setProgressBarIndeterminateVisibility(true);
-        setRefreshEnabled(false);
-		
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FOLDER_UPDATE_TWO_STEP);
-		startService(intent);
-	}
-	
-	/**
-     * Triggers a full, manually requested refresh of feed/folder data and counts.
-     */
-    private void triggerRefresh() {
-        PrefsUtils.updateLastSyncTime(this);
-		setProgressBarIndeterminateVisibility(true);
-        setRefreshEnabled(false);
-
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FOLDER_UPDATE_WITH_COUNT);
-		startService(intent);
-	}
 
 	private void setupActionBar() {
 		actionBar = getActionBar();
@@ -117,7 +93,14 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
-		this.menu = menu;
+
+        MenuItem feedbackItem = menu.findItem(R.id.menu_feedback);
+        if (AppConstants.ENABLE_FEEDBACK) {
+            feedbackItem.setTitle(feedbackItem.getTitle() + " (v" + PrefsUtils.getVersion(this) + ")");
+        } else {
+            feedbackItem.setVisible(false);
+        }
+
 		return true;
 	}
 
@@ -128,7 +111,8 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 			startActivity(profileIntent);
 			return true;
 		} else if (item.getItemId() == R.id.menu_refresh) {
-			triggerRefresh();
+            NBSyncService.forceFeedsFolders();
+			triggerSync();
 			return true;
 		} else if (item.getItemId() == R.id.menu_add_feed) {
 			Intent intent = new Intent(this, SearchForFeeds.class);
@@ -140,6 +124,15 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 		} else if (item.getItemId() == R.id.menu_settings) {
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
+            return true;
+        } else if (item.getItemId() == R.id.menu_feedback) {
+            try {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
+                startActivity(i);
+            } catch (Exception e) {
+                Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
+            }
             return true;
         }
 		return super.onOptionsItemSelected(item);
@@ -156,47 +149,49 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 		}
 	}
 
-	/**
-     * Called after the sync service completely finishes a task.
-     */
     @Override
-	public void updateAfterSync() {
+	public void handleUpdate() {
 		folderFeedList.hasUpdated();
-		setProgressBarIndeterminateVisibility(false);
-        setRefreshEnabled(true);
+        updateStatusIndicators();
 	}
 
-    /**
-     * Called when the sync service has made enough progress to update the UI but not
-     * enough to stop the progress indicator.
-     */
-    @Override
-    public void updatePartialSync() {
-        // TODO: move 2-step sync to new async lib and remove this method entirely
-        // folderFeedList.hasUpdated();
-    }
-	
-	@Override
-	public void updateSyncStatus(boolean syncRunning) {
-        // TODO: the progress bar is activated manually elsewhere in this activity. this
-        //       interface method may be redundant.
-		if (syncRunning) {
-			setProgressBarIndeterminateVisibility(true);
-            setRefreshEnabled(false);
-		}
-	}
+    private void updateStatusIndicators() {
+        if (NBSyncService.isFeedFolderSyncRunning()) {
+            swipeLayout.setRefreshing(true);
+        } else {
+            swipeLayout.setRefreshing(false);
+        }
 
-	@Override
-	public void setNothingMoreToUpdate() { }
-
-    private void setRefreshEnabled(boolean enabled) {
-        if (menu != null) {
-            MenuItem item = menu.findItem(R.id.menu_refresh);
-            if (item != null) {
-                item.setEnabled(enabled);
+        if (overlayStatusText != null) {
+            String syncStatus = NBSyncService.getSyncStatusMessage();
+            if (syncStatus != null)  {
+                overlayStatusText.setText(syncStatus);
+                overlayStatusText.setVisibility(View.VISIBLE);
+            } else {
+                overlayStatusText.setVisibility(View.GONE);
             }
         }
     }
-            
 
+    @Override
+    public void onRefresh() {
+        NBSyncService.forceFeedsFolders();
+        triggerSync();
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        // not required
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        if (swipeLayout != null) {
+            boolean enable = (firstVisibleItem == 0);
+            if (wasSwipeEnabled != enable) {
+                swipeLayout.setEnabled(enable);
+                wasSwipeEnabled = enable;
+            }
+        }
+    }
 }

@@ -27,6 +27,7 @@ from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
 from utils.user_functions import get_user
 from utils import log as logging
+from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
@@ -387,6 +388,8 @@ def refund_premium(request):
     try:
         refunded = user.profile.refund_premium(partial=partial)
     except stripe.InvalidRequestError, e:
+        refunded = e
+    except PayPalAPIResponseError, e:
         refunded = e
 
     return {'code': 1 if refunded else -1, 'refunded': refunded}

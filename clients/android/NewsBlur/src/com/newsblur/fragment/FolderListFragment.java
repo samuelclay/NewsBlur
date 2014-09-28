@@ -38,10 +38,9 @@ import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedExpandableListAdapter;
-import com.newsblur.network.APIManager;
-import com.newsblur.network.MarkFeedAsReadTask;
-import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.UIUtils;
@@ -53,7 +52,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private ContentResolver resolver;
 	private MixedExpandableListAdapter folderAdapter;
 	private FolderTreeViewBinder groupViewBinder;
-	private APIManager apiManager;
 	private int currentState = AppConstants.STATE_SOME;
 	private SocialFeedViewBinder blogViewBinder;
 	private SharedPreferences sharedPreferences;
@@ -78,13 +76,13 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, savedCountCursor);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 
+
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		sharedPreferences = activity.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		resolver = activity.getContentResolver();
-		apiManager = new APIManager(activity);
 
 		super.onAttach(activity);
 	}
@@ -116,6 +114,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
         list.setAdapter(folderAdapter);
         list.setOnGroupClickListener(this);
         list.setOnChildClickListener(this);
+
+        // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
+        list.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
 
         return v;
     }
@@ -159,26 +160,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		final ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
-		if (item.getItemId() == R.id.menu_mark_feed_as_read) {
-			new MarkFeedAsReadTask(getActivity(), apiManager) {
-				@Override
-				protected void onPostExecute(Boolean result) {
-					if (result.booleanValue()) {
-						ContentValues values = new ContentValues();
-						values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
-						values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
-						values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
-						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(info.id)).build(), values, null, null);
-						folderAdapter.notifyDataSetChanged();
-						UIUtils.safeToast(getActivity(), R.string.toast_marked_feed_as_read, Toast.LENGTH_SHORT);
-					} else {
-						UIUtils.safeToast(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG);
-					}	
-				}
-			}.execute(Long.toString(info.id));
-			return true;
-		} else if (item.getItemId() == R.id.menu_delete_feed) {
+		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
+
+		if (item.getItemId() == R.id.menu_delete_feed) {
 			int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 			Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
@@ -189,66 +173,24 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(info.id, feedTitle, folderName);
 			deleteFeedFragment.show(getFragmentManager(), "dialog");
 			return true;
+		} else if (item.getItemId() == R.id.menu_mark_feed_as_read) {
+            FeedUtils.markFeedsRead(FeedSet.singleFeed(Long.toString(info.id)), null, null, getActivity());
+            folderAdapter.notifyDataSetChanged();
+			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-			// all folder but the root All Stories one use the simple method
 			if (!folderAdapter.isFolderRoot(groupPosition)) {
-				// TODO: is there a better way to get the folder ID for a group position that asking the list view?
+				// TODO: is there a better way to get the folder name for a group position that asking the list view like this?
                 final Cursor folderCursor = ((MixedExpandableListAdapter) this.list.getExpandableListAdapter()).getGroup(groupPosition);
-				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
-				new MarkFolderAsReadTask(apiManager, resolver) {
-					@Override
-					protected void onPostExecute(Boolean result) {
-						if (result) {
-							folderAdapter.notifyDataSetChanged();
-							Toast.makeText(getActivity(), R.string.toast_marked_folder_as_read, Toast.LENGTH_SHORT).show();
-						} else {
-							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
-						}
-					}
-				}.execute(folderId);
+				String folderName = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
+                FeedUtils.markFeedsRead(FeedUtils.feedSetFromFolderName(folderName, getActivity()), null, null, getActivity());
 			} else {
-				// TODO is social feed actually all shared stories ? Should this be used for expandable and position == 0 ?
-				/*final Cursor socialFeedCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
-				String socialFeedId = socialFeedCursor.getString(socialFeedCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
-				new MarkSocialFeedAsReadTask(apiManager, resolver){
-					@Override
-					protected void onPostExecute(Boolean result) {
-						if (result.booleanValue()) {
-							folderAdapter.notifyDataSetChanged();
-							Toast.makeText(getActivity(), R.string.toast_marked_socialfeed_as_read, Toast.LENGTH_SHORT).show();
-						} else {
-							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
-						}
-					}
-				}.execute(socialFeedId);*/
-				
-				new AsyncTask<Void, Void, Boolean>() {
-					private List<String> feedIds = new ArrayList<String>();
-					
-					@Override
-					protected Boolean doInBackground(Void... arg) {
-						return apiManager.markAllAsRead();
-					}
-					
-					@Override
-					protected void onPostExecute(Boolean result) {
-						if (result) {
-                            ContentValues values = new ContentValues();
-                            values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
-                            values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
-                            values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
-                            resolver.update(FeedProvider.FEEDS_URI, values, null, null);
-							folderAdapter.notifyDataSetChanged();
-							UIUtils.safeToast(getActivity(), R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT);
-						} else {
-							UIUtils.safeToast(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT);
-						}
-					};
-				}.execute();
+                FeedUtils.markFeedsRead(FeedSet.allFeeds(), null, null, getActivity());
 			}
+            folderAdapter.notifyDataSetChanged();
 			return true;
 		}
+
 		return super.onContextItemSelected(item);
 	}
 

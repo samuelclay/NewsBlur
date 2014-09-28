@@ -36,8 +36,7 @@
     return self;
 }
 
-- (void)loadView
-{
+- (void)loadView {
     self.webView = [[UIWebView alloc] init];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.delegate = self;
@@ -45,7 +44,9 @@
     self.view = self.webView;
 }
 
-- (void)viewWillAppear:(BOOL)animated {  
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 40, 20)];
 	activityIndicatorView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
 	[activityIndicatorView startAnimating];

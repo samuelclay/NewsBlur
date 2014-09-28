@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.widget.CursorAdapter;
@@ -27,24 +26,19 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class FeedItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private String feedId;
-	private int currentState;
 
-	public static int ITEMLIST_LOADER = 0x01;
-	
-    private StoryOrder storyOrder;
-
-    public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
+    public static FeedItemListFragment newInstance(String feedId, int currentState, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putString("feedId", feedId);
-		args.putSerializable("storyOrder", storyOrder);
         args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
@@ -56,7 +50,6 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
-		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 	}
 
@@ -70,8 +63,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
         ContentResolver contentResolver = getActivity().getContentResolver();
         // TODO: defer creation of the adapter until the loader's first callback so we don't leak this first stories cursor
-        Uri storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-        Cursor storiesCursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
+        Cursor storiesCursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
         Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
 
@@ -108,43 +100,15 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
     }
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		Uri uri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-		return cursorLoader;
-	}
-
-	public void hasUpdated() {
-        if (isAdded()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-		requestedPage = false;
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
-	}
-
-	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FeedReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(Reading.EXTRA_FEED, feedId);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
-
-	public void changeState(int state) {
-		currentState = state;
-		hasUpdated();
-	}
-
-    @Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 }

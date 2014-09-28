@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
+#import "SloppySwiper.h"
 
 @class NewsBlurAppDelegate;
 
@@ -26,6 +27,7 @@ UIGestureRecognizerDelegate> {
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIWebView *webView;
+@property (strong, nonatomic) SloppySwiper *swiper;
 
 - (void)loadInitialStory;
 - (IBAction) doOpenActionSheet:(id)sender;

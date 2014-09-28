@@ -16,6 +16,11 @@ var fitVideos = function() {
        });
 };
 
+var linkAt = function(x, y, attribute) {
+    var el = document.elementFromPoint(x, y);
+    return el[attribute];
+};
+
 $('a.NB-show-profile').live('click', function () {
     var offset = $('img', this).offset();
     console.log(offset);
@@ -44,10 +49,10 @@ function setImage(img) {
     var $img = $(img);
     var width = $(img).width();
     var height = $(img).height();
-
+//    console.log("img load", img.src, width, height);
     if ($img.attr('src').indexOf('feedburner') != - 1) {
         $img.attr('class', 'NB-feedburner');
-    } else if (width > 300 && height > 50) {
+    } else if (width >= (320-24) && height >= 50) {
         $img.attr('class', 'NB-large-image');
         if ($img.parent().attr('href')) {
             $img.parent().addClass('NB-contains-image')

@@ -81,13 +81,17 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    CGFloat width = CGRectGetWidth(self.view.frame);
+    
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
     [self.categoriesTable reloadData];
-    [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 100)];
+    [self.scrollView setContentSize:CGSizeMake(width, self.tableViewHeight + 40)];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 300)/2, 30, self.categoriesTable.frame.size.width, self.tableViewHeight);
+        self.categoriesTable.frame = CGRectMake((width - 300)/2, 30, self.categoriesTable.frame.size.width, self.tableViewHeight);
     } else {
-        self.categoriesTable.frame = CGRectMake(10, 30, self.categoriesTable.frame.size.width, self.tableViewHeight);
+        self.categoriesTable.frame = CGRectMake(10, 30, width-10*2, self.tableViewHeight);
     }
     
     NSLog(@"%f height", self.tableViewHeight);
@@ -312,8 +316,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    CGFloat width = CGRectGetWidth(self.view.frame) - 20;
+
     if (section == 0) {
-        UIView* categoryTitleView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 20.0, 300.0, 34.0)];
+        UIView* categoryTitleView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 20.0, width, 34.0)];
         UILabel *categoryTitleLabel = [[UILabel alloc] initWithFrame:categoryTitleView.frame];
         categoryTitleLabel.text = @"You can always add your own individual sites.";
         categoryTitleLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
@@ -327,23 +333,25 @@
     }
     
     // create the parent view that will hold header Label
-    UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 34.0)];
+    UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, width, 34.0)];
     customView.tag = section;
     
-    UIImage *buttonImage =[[UIImage imageNamed:@"google.png"] stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
+    UIImage *buttonImage =[[UIImage imageNamed:@"google.png"]
+                           stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
     UIButton *headerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     headerBtn.tag = section + 1000;
     [headerBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
     headerBtn.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
     
-    headerBtn.frame = CGRectMake(0, 20.0, 300, 34.0);
+    headerBtn.frame = CGRectMake(0, 20.0, width, 34.0);
     headerBtn.titleLabel.shadowColor = UIColorFromRGB(0x1E5BDB);
     headerBtn.titleLabel.shadowOffset = CGSizeMake(0, 1);
     NSString *categoryTitle;
     NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
     categoryTitle = [category objectForKey:@"title"];
     
-    BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
+    BOOL inSelect = [self.selectedCategories_
+                     containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
     NSLog(@"inselected %i", inSelect);
     if (inSelect) {
         headerBtn.selected = YES;

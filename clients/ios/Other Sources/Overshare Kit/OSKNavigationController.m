@@ -73,28 +73,12 @@
         
         [[UIBarButtonItem appearanceWhenContainedIn:[OSKNavigationController class], nil] setBackgroundImage:barButtonImage_normal
                                                                                                     forState:UIControlStateNormal
-                                                                                                       style:UIBarButtonItemStyleBordered
                                                                                                   barMetrics:UIBarMetricsDefault];
         [[UIBarButtonItem appearanceWhenContainedIn:[OSKNavigationController class], nil] setBackgroundImage:barButtonImage_highlighted
                                                                                                     forState:UIControlStateHighlighted
-                                                                                                       style:UIBarButtonItemStyleBordered
                                                                                                   barMetrics:UIBarMetricsDefault];
         [[UIBarButtonItem appearanceWhenContainedIn:[OSKNavigationController class], nil] setBackgroundImage:barButtonImage_disabled
                                                                                                     forState:UIControlStateDisabled
-                                                                                                       style:UIBarButtonItemStyleBordered
-                                                                                                  barMetrics:UIBarMetricsDefault];
-        
-        [[UIBarButtonItem appearanceWhenContainedIn:[OSKNavigationController class], nil] setBackgroundImage:barButtonImage_normal
-                                                                                                    forState:UIControlStateNormal
-                                                                                                       style:UIBarButtonItemStyleDone
-                                                                                                  barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearanceWhenContainedIn:[OSKNavigationController class], nil] setBackgroundImage:barButtonImage_highlighted
-                                                                                                    forState:UIControlStateHighlighted
-                                                                                                       style:UIBarButtonItemStyleDone
-                                                                                                  barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearanceWhenContainedIn:[OSKNavigationController class], nil] setBackgroundImage:barButtonImage_disabled
-                                                                                                    forState:UIControlStateDisabled
-                                                                                                       style:UIBarButtonItemStyleDone
                                                                                                   barMetrics:UIBarMetricsDefault];
     }
 }

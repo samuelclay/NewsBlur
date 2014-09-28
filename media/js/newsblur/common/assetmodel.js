@@ -286,7 +286,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             cutoff_timestamp: cutoff_timestamp,
             direction: direction
         }, callback);
-
+        
+        _.each(feed_ids, function(feed_id) {
+            var feed = self.get_feed(feed_id);
+            if (!feed) return;
+            feed.set({'ps': 0, 'nt': 0, 'ng': 0});
+        });
         if (mark_active) {
             this.stories.each(function(story) {
                 if ((!direction || direction == "older") && 

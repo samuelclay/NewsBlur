@@ -80,7 +80,7 @@ static NSString * OSKFileManagerRootFilePath = @"OvershareKit";
         @try {
             NSString *path = [self dataPathWithFilename:key];
             BOOL exists = [self.fileManager fileExistsAtPath:path];
-            if (exists == YES) {
+            if (exists) {
                 [self.fileManager removeItemAtPath:path error:nil];
             }
         }

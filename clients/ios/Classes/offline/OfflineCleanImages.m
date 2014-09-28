@@ -23,7 +23,7 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
     NSDirectoryEnumerator* en = [fileManager enumeratorAtPath:cacheDirectory];
-    NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
+    NSDate *d = [[NSDate date] dateByAddingTimeInterval:-30*24*60*60];
     NSDateFormatter *df = [[NSDateFormatter alloc] init]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
     [df setDateFormat:@"EEEE d"];
     

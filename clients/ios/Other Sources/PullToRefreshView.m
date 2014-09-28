@@ -65,8 +65,9 @@
         scrollView = scroll;
         [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
 
+        UIColor *bgColor = UIColorFromRGB(0xF2F2F2);
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		self.backgroundColor = [UIColor colorWithRed:226.0/255.0 green:231.0/255.0 blue:237.0/255.0 alpha:1.0];
+		self.backgroundColor = bgColor;
 
 		lastUpdatedLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, frame.size.height - 30.0f, self.frame.size.width, 20.0f)];
 		lastUpdatedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -121,10 +122,21 @@
 		date = [delegate pullToRefreshViewLastUpdated:self];
 
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setAMSymbol:@"AM"];
-    [formatter setPMSymbol:@"PM"];
-    [formatter setDateFormat:@"MM/dd/yy h:mm a"];
-    lastUpdatedLabel.text = [NSString stringWithFormat:@"Updated %@", [formatter stringFromDate:date]];
+    formatter.doesRelativeDateFormatting = YES;
+    formatter.timeStyle = NSDateFormatterShortStyle;
+    formatter.dateStyle = NSDateFormatterMediumStyle;
+    lastUpdatedLabel.text = [NSString stringWithFormat:@"Updated %@",
+                             [formatter stringFromDate:date]];
+
+    //    [@[[NSLocale localeWithLocaleIdentifier:@"de_DE"], [NSLocale localeWithLocaleIdentifier:@"es_ES"],[NSLocale localeWithLocaleIdentifier:@"en_US"]] enumerateObjectsUsingBlock:^(NSLocale *locale, NSUInteger idx, BOOL *stop) {
+//        [formatter setLocale:locale];
+//        [timeFormatter setLocale:locale];
+//        [formatter setTimeZone:[NSTimeZone systemTimeZone]];
+//        NSString *dateString=[formatter stringFromDate:date];
+//        NSString *timeString = [timeFormatter stringFromDate:date];
+//        NSLog(@"%@ %@", dateString, timeString);
+//    }];
+    
     [formatter release];
 }
 

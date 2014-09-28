@@ -60,6 +60,7 @@ static UIFont *indicatorFont = nil;
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
+        fontDescriptorSize = nil;
         [self.contentView addSubview:cellContent];
     }
     
@@ -110,6 +111,29 @@ static UIFont *indicatorFont = nil;
     self.shouldAnimatesIcons = NO;
 }
 
+
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
+    if (fontDescriptorSize) return fontDescriptorSize;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    fontDescriptorSize = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    if (![userPreferences boolForKey:@"use_system_font_size"]) {
+        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:13.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:14.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:16.0f];
+        }
+    }
+    
+    return fontDescriptorSize;
+}
+
 @end
 
 @implementation FeedDetailTableCellView
@@ -119,7 +143,6 @@ static UIFont *indicatorFont = nil;
 @synthesize appDelegate;
 
 - (void)drawRect:(CGRect)r {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     int riverPadding = 0;
     if (cell.isRiverOrSocial) {
         riverPadding = 20;
@@ -161,20 +184,7 @@ static UIFont *indicatorFont = nil;
     
     UIColor *textColor;
     UIFont *font;
-    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: UIFontTextStyleCaption1];
-    if (![userPreferences boolForKey:@"use_system_font_size"]) {
-        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
-        }
-    }
+    UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     
     if (cell.isRead) {
         font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];

@@ -629,6 +629,7 @@ def load_single_feed(request, feed_id):
                 starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
                                                       user.profile.timezone)
                 story['starred_date'] = format_story_link_date__long(starred_date, now)
+                story['starred_timestamp'] = starred_date.strftime('%s')
                 story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
             if story['story_hash'] in shared_stories:
                 story['shared'] = True
@@ -818,6 +819,7 @@ def load_starred_stories(request):
         story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
         story['starred_date']      = format_story_link_date__long(starred_date, nowtz)
+        story['starred_timestamp'] = starred_date.strftime('%s')
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
@@ -890,10 +892,15 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     )
     rss = feedgenerator.Atom1Feed(**data)
 
-    starred_stories = MStarredStory.objects(
-        user_id=user.pk,
-        user_tags__contains=tag_counts.tag
-    ).order_by('-starred_date')[:25]
+    if not tag_counts.tag:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk
+        ).order_by('-starred_date').limit(25)
+    else:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk,
+            user_tags__contains=tag_counts.tag
+        ).order_by('-starred_date').limit(25)
     for starred_story in starred_stories:
         story_data = {
             'title': starred_story.story_title,
@@ -981,6 +988,7 @@ def load_read_stories(request):
             starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
+            story['starred_timestamp'] = starred_date.strftime('%s')
         if story['story_hash'] in shared_stories:
             story['shared'] = True
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
@@ -1136,6 +1144,7 @@ def load_river_stories__redis(request):
             starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
+            story['starred_timestamp'] = starred_date.strftime('%s')
             story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
@@ -1456,6 +1465,9 @@ def mark_story_hash_as_unread(request):
     story_hash = request.REQUEST.get('story_hash')
     feed_id, _ = MStory.split_story_hash(story_hash)
     story, _ = MStory.find_story(feed_id, story_hash)
+    if not story:
+        data = dict(code=-1, message="That story has been removed from the feed, no need to mark it unread.")
+        return data        
     message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
     if message:
         data = dict(code=-1, message=message)
@@ -1651,6 +1663,8 @@ def delete_folder(request):
     folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
     in_folder = request.POST.get('in_folder', None)
     feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
+
+    request.user.profile.send_opml_export_email()
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?

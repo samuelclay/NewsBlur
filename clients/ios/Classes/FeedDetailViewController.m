@@ -212,8 +212,11 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-
+    fontDescriptorSize = nil;
+    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
@@ -315,11 +318,13 @@
         self.isDashboardModule) {
         [self.storyTitlesTable reloadData];
     }
-    NSLog(@"Detail did appear");
+
     [self.notifier setNeedsLayout];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -979,7 +984,7 @@
         !appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) return;
 
-    NSLog(@"Test for try feed");
+//    NSLog(@"Test for try feed");
 
     for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
         NSString *storyIdStr = [[storiesCollection.activeFeedStories
@@ -1361,23 +1366,25 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
-    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    if (fontDescriptorSize) return fontDescriptorSize;
+    
+    fontDescriptorSize = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:10.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:11.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:12.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:14.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:16.0f];
         }
     }
-    return fontDescriptor;
+    return fontDescriptorSize;
 }
 
 - (BOOL)isShortTitles {

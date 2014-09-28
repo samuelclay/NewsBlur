@@ -7,6 +7,7 @@ from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
 from bson.errors import InvalidStringData
 import uuid
 from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 # from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
@@ -75,12 +76,15 @@ def opml_upload(request):
 
 def opml_export(request):
     user     = get_user(request)
+    now      = datetime.datetime.now()
+    if request.REQUEST.get('user_id') and user.is_staff:
+        user = User.objects.get(pk=request.REQUEST['user_id'])
     exporter = OPMLExporter(user)
     opml     = exporter.process()
-    now      = datetime.datetime.now()
     
     response = HttpResponse(opml, mimetype='text/xml')
-    response['Content-Disposition'] = 'attachment; filename=NewsBlur Subscriptions - %s' % (
+    response['Content-Disposition'] = 'attachment; filename=NewsBlur Subscriptions - %s - %s' % (
+        user.username,
         now.strftime('%Y-%m-%d')
     )
     

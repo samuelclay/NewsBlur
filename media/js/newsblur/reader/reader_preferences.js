@@ -505,6 +505,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             '标记一篇文章为已读',
                             $.make('div', { className: 'NB-preference-sublabel' }, '点击一篇文章后立即标记其为已读。')
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-markreadnextfeed' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadnextfeed-1', type: 'radio', name: 'markread_nextfeed', value: 'nextfeed' }),
+                                $.make('label', { 'for': 'NB-preference-markreadnextfeed-1' }, [
+                                    'Open the next site/folder'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadnextfeed-0', type: 'radio', name: 'markread_nextfeed', value: "nothing" }),
+                                $.make('label', { 'for': 'NB-preference-markreadnextfeed-0' }, [
+                                    'Stay on the same feed/folder'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'After marking feed/folder read'
+                        ])
                     ])
 
                 ]),
@@ -896,6 +915,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=doubleclick_unread]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.doubleclick_unread) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=markread_nextfeed]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.markread_nextfeed) {
                 $(this).attr('checked', true);
                 return false;
             }

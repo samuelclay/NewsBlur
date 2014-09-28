@@ -44,6 +44,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     if ([type isEqualToString:@"google"]) {
         self.navigationItem.title = @"Google Reader";
     } else if ([type isEqualToString:@"facebook"]) {

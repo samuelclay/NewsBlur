@@ -6,7 +6,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.widget.CursorAdapter;
@@ -30,26 +29,20 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FolderItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class FolderItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private ContentResolver contentResolver;
 	private String[] feedIds;
-	private int currentState;
 	private String folderName;
 	private Folder folder;
 	
-    private StoryOrder storyOrder;
-
-	public static int ITEMLIST_LOADER = 0x01;
-
-	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
+	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putStringArrayList("feedIds", feedIds);
 		args.putString("folderName", folderName);
-		args.putSerializable("storyOrder", storyOrder);
         args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
@@ -61,7 +54,6 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		folderName = getArguments().getString("folderName");
-		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
@@ -78,7 +70,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 
 		contentResolver = getActivity().getContentResolver();
 
-		Cursor cursor = contentResolver.query(FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
+		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
 		getActivity().startManagingCursor(cursor);
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
@@ -99,26 +91,10 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		return new CursorLoader(getActivity(), FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
-	}
-
-	public void hasUpdated() {
-        if (isAdded()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-		requestedPage = false;
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
-	}
-
-	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FolderReading.class);
+        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(FeedReading.EXTRA_FOLDERNAME, folderName);
@@ -126,15 +102,5 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
-
-	public void changeState(int state) {
-		currentState = state;
-		hasUpdated();
-	}
-	
-	@Override
-    public void setStoryOrder(StoryOrder storyOrder) {
-        this.storyOrder = storyOrder;
-    }
 
 }

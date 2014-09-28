@@ -53,11 +53,14 @@
 #import "TMCache.h"
 #import "StoriesCollection.h"
 #import "NSString+HTML.h"
+#import "UIView+ViewController.h"
+#import "UIViewController+OSKUtilities.h"
+#import "NBURLCache.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 31
+#define CURRENT_DB_VERSION 33
 
 @synthesize window;
 
@@ -124,6 +127,7 @@
 @synthesize readStories;
 @synthesize unreadStoryHashes;
 @synthesize folderCountCache;
+@synthesize collapsedFolders;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -207,11 +211,18 @@
     
     cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons"];
     cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages"];
-
+    
+    NBURLCache *urlCache = [[NBURLCache alloc] init];
+    [NSURLCache setSharedURLCache:urlCache];
+    // Uncomment below line to test image caching
+//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
 	return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     self.title = @"All";
 }
 
@@ -412,8 +423,9 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
     self.modalNavigationController.navigationBar.translucent = NO;
-    
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
@@ -430,6 +442,7 @@
     self.modalNavigationController.navigationBar.translucent = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
@@ -609,6 +622,15 @@
         [self.masterContainerViewController showSendToPopover:vc];
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+        } else if ([sender isKindOfClass:[NSValue class]]) {
+            // Uncomment below to show share popover from linked text. Problem is
+            // that on finger up the link will open.
+//            CGPoint pt = [(NSValue *)sender CGPointValue];
+//            CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
+//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                                                           presentingViewController:vc options:options];
         } else {
             [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
@@ -618,7 +640,6 @@
                                                        presentingViewController:vc options:options];
     }
 }
-
 
 - (OSKApplicationCredential *)applicationCredentialForActivityType:(NSString *)activityType {
     OSKApplicationCredential *appCredential = nil;
@@ -685,10 +706,9 @@
 - (void)showSendToManagement {
     OSKAccountManagementViewController *manager = [[OSKAccountManagementViewController alloc] initWithIgnoredActivityClasses:nil optionalBespokeActivityClasses:nil];
     OSKNavigationController *navController = [[OSKNavigationController alloc] initWithRootViewController:manager];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [navController setModalPresentationStyle:UIModalPresentationFormSheet];
-    }
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
+        [navController setModalPresentationStyle:UIModalPresentationFormSheet];
         [self.masterContainerViewController presentViewController:navController animated:YES completion:nil];
     } else {
         [self.navigationController presentViewController:navController animated:YES completion:nil];
@@ -753,6 +773,7 @@
     self.ftuxNavigationController.navigationBar.translucent = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self.masterContainerViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
         
@@ -773,6 +794,7 @@
     UINavigationController *navController = self.navigationController;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     } else {
@@ -990,6 +1012,7 @@
         UINavigationController *connectNav = [[UINavigationController alloc]
                                               initWithRootViewController:serviceVC];
         self.modalNavigationController = connectNav;
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         self.modalNavigationController.navigationBar.translucent = NO;
         [self.masterContainerViewController presentViewController:modalNavigationController
@@ -1562,6 +1585,21 @@
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ng] forKey:[NSString stringWithFormat:@"%@-ng", folderName]];
         
     return counts;
+}
+
+- (BOOL)isFolderCollapsed:(NSString *)folderName {
+    if (!self.collapsedFolders) {
+        self.collapsedFolders = [[NSMutableDictionary alloc] init];
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+        for (NSString *folderName in self.dictFoldersArray) {
+            NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@",
+                                     folderName];
+            if ([userPreferences boolForKey:collapseKey]) {
+                [self.collapsedFolders setObject:folderName forKey:folderName];
+            }
+        }
+    }
+    return !![self.collapsedFolders objectForKey:folderName];
 }
 
 #pragma mark - Story Management
@@ -2402,6 +2440,15 @@
         //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+        NSError *error = nil;
+        BOOL success = [fileManager removeItemAtPath:cacheDirectory error:&error];
+        if (!success || error) {
+            // something went wrong
+        }
     }
     NSString *createAccountsTable = [NSString stringWithFormat:@"create table if not exists accounts "
                                   "("

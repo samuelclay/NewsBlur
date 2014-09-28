@@ -78,15 +78,21 @@ static NSString * OSKThingsActivity_AddEntryWithNoteURL = @"add?title=%@&notes=%
 }
 
 - (void)performActivity:(OSKActivityCompletionHandler)completion {
-    NSString *baseURL = OSKThingsActivity_BaseURL;
+    
     NSString *title = [self toDoListItem].title;
     NSString *notes = [self toDoListItem].notes;
     title = (title.length) ? title : @"New entry";
     notes = (notes.length) ? notes : @" ";
     NSString *fullQuery = [NSString stringWithFormat:OSKThingsActivity_AddEntryWithNoteURL, title, notes];
     NSString *encodedQuery = [fullQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    NSString *fullURL = [NSString stringWithFormat:@"%@%@", baseURL, encodedQuery];
-    NSURL *URL = [NSURL URLWithString:fullURL];
+    
+    NSURL *URL = nil;
+
+    if (encodedQuery.length) {
+        NSString *fullURL = [NSString stringWithFormat:@"%@%@", OSKThingsActivity_BaseURL, encodedQuery];
+        URL = [NSURL URLWithString:fullURL];
+    }
+    
     if (URL) {
         [[UIApplication sharedApplication] openURL:URL];
         if (completion) {

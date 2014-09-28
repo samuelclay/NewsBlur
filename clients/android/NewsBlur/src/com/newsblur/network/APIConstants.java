@@ -26,7 +26,6 @@ public class APIConstants {
 	public static final String URL_FEED_STORIES = NEWSBLUR_URL + "/reader/feed";
 	public static final String URL_SOCIALFEED_STORIES = NEWSBLUR_URL + "/social/stories";
 	public static final String URL_SIGNUP = NEWSBLUR_URL + "/api/signup";
-	public static final String URL_FEED_COUNTS = NEWSBLUR_URL + "/reader/refresh_feeds/";
 	public static final String URL_MARK_FEED_AS_READ = NEWSBLUR_URL + "/reader/mark_feed_as_read/";
 	public static final String URL_MARK_ALL_AS_READ = NEWSBLUR_URL + "/reader/mark_all_as_read/";
 	public static final String URL_MARK_STORIES_READ = NEWSBLUR_URL + "/reader/mark_story_hashes_as_read/";
@@ -34,6 +33,7 @@ public class APIConstants {
     public static final String URL_MARK_STORY_AS_STARRED = NEWSBLUR_URL + "/reader/mark_story_as_starred/";
     public static final String URL_MARK_STORY_AS_UNSTARRED = NEWSBLUR_URL + "/reader/mark_story_as_unstarred/";
     public static final String URL_MARK_STORY_AS_UNREAD = NEWSBLUR_URL + "/reader/mark_story_as_unread/";
+    public static final String URL_MARK_STORY_HASH_UNREAD = NEWSBLUR_URL + "/reader/mark_story_hash_as_unread/";
     public static final String URL_STARRED_STORIES = NEWSBLUR_URL + "/reader/starred_stories";
 	public static final String URL_FEED_AUTOCOMPLETE = NEWSBLUR_URL + "/rss_feeds/feed_autocomplete";
 	public static final String URL_LIKE_COMMENT = NEWSBLUR_URL + "/social/like_comment";
@@ -43,8 +43,10 @@ public class APIConstants {
 	public static final String URL_DELETE_FEED = NEWSBLUR_URL + "/reader/delete_feed";
 	public static final String URL_CLASSIFIER_SAVE = NEWSBLUR_URL + "/classifier/save";
 	public static final String URL_STORY_TEXT = NEWSBLUR_URL + "/rss_feeds/original_text";
+	public static final String URL_UNREAD_HASHES = NEWSBLUR_URL + "/reader/unread_story_hashes";
 	
 	public static final String PARAMETER_FEEDS = "f";
+	public static final String PARAMETER_H = "h";
 	public static final String PARAMETER_PASSWORD = "password";
 	public static final String PARAMETER_USER_ID = "user_id";
 	public static final String PARAMETER_USERNAME = "username";
@@ -66,10 +68,15 @@ public class APIConstants {
 	public static final String PARAMETER_URL = "url";
 	public static final String PARAMETER_DAYS = "days";
 	public static final String PARAMETER_UPDATE_COUNTS = "update_counts";
-	
+    public static final String PARAMETER_CUTOFF_TIME = "cutoff_timestamp";
+	public static final String PARAMETER_DIRECTION = "direction";
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	public static final String PARAMETER_ORDER = "order";
 	public static final String PARAMETER_READ_FILTER = "read_filter";
+
+    public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
+    public static final String VALUE_OLDER = "older";
+    public static final String VALUE_NEWER = "newer";
 	
     public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
     public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";

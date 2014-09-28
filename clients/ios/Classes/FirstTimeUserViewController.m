@@ -79,14 +79,18 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
     
     UIImage *logoImg = [UIImage imageNamed:@"logo_512"];
     UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImg];
+    CGFloat width = CGRectGetWidth(self.view.frame);
+    CGFloat height = CGRectGetHeight(self.view.frame);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        logoView.frame = CGRectMake(50, 100, 220, 220);
+        logoView.frame = CGRectMake((width-220)/2, (height-220)/2-50, 220, 220);
     } else {
-        logoView.frame = CGRectMake(150, 99, 240, 240);
+        logoView.frame = CGRectMake((width-240)/2, (height-240)/2-50, 240, 240);
     }
     
     self.logo = logoView;
@@ -95,10 +99,12 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    
+    [super viewDidAppear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
     self.logo = nil;
 }
 

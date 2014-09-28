@@ -4,7 +4,7 @@
     <item android:id="@+id/menu_refresh"
           android:icon="@drawable/barbutton_refresh"
           android:title="@string/menu_refresh"
-          android:showAsAction="always" />
+          android:showAsAction="never" />
     
     <item android:id="@+id/menu_profile"
           android:title="@string/menu_profile"
@@ -17,6 +17,10 @@
     
     <item android:id="@+id/menu_settings"
           android:title="@string/settings"
+          android:showAsAction="never" />
+
+    <item android:id="@+id/menu_feedback"
+          android:title="@string/menu_feedback"
           android:showAsAction="never" />
     
     <item android:id="@+id/menu_logout"

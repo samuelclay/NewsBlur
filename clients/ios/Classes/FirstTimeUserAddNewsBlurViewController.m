@@ -46,10 +46,14 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
     [self addSite:@"http://blog.newsblur.com/rss"];
     [self addPopular];
 }

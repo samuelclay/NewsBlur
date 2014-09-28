@@ -79,19 +79,31 @@
 }
 
 - (void)performActivity:(OSKActivityCompletionHandler)completion {
-    OSKReadLaterContentItem *item = [self readLaterItem];
-    NSError *error = nil;
-    [[SSReadingList defaultReadingList] addReadingListItemWithURL:item.url
-                                                            title:item.title
-                                                      previewText:item.description
-                                                            error:&error];
-    __weak OSKReadingListActivity *weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (completion) {
-            BOOL successful = (error == nil);
-            completion(weakSelf, successful, error);
-        }
-    });
+    
+    if ([self readLaterItem].url) {
+        OSKReadLaterContentItem *item = [self readLaterItem];
+        NSError *error = nil;
+        [[SSReadingList defaultReadingList] addReadingListItemWithURL:item.url
+                                                                title:item.title
+                                                          previewText:item.description
+                                                                error:&error];
+        __weak OSKReadingListActivity *weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                BOOL successful = (error == nil);
+                completion(weakSelf, successful, error);
+            }
+        });
+    } else {
+        NSDictionary *userInfo = @{NSLocalizedFailureReasonErrorKey : @"Unable to add item to Reading List. A valid URL is required."};
+        NSError *error = [[NSError alloc] initWithDomain:@"com.oversharekit" code:400 userInfo:userInfo];
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(weakSelf, NO, error);
+            }
+        });
+    }
 }
 
 + (BOOL)canPerformViaOperation {

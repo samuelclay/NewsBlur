@@ -2,6 +2,33 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory 
+        android:title="@string/settings_cat_offline">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_offline"
+            android:title="@string/settings_enable_offline" 
+            android:summary="@string/settings_enable_offline_sum" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_image_prefetch"
+            android:title="@string/settings_enable_image_prefetch" 
+            android:summary="@string/settings_enable_image_prefetch_sum" />
+        <ListPreference
+            android:key="offline_network_select"
+            android:title="@string/menu_network_select"
+            android:dialogTitle="@string/menu_network_select"
+            android:summary="@string/menu_network_select_sum"
+            android:entries="@array/default_network_select_entries"
+            android:entryValues="@array/default_network_select_values"
+            android:defaultValue="@string/default_network_select_value" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="keep_old_stories"
+            android:title="@string/settings_keep_old_stories" 
+            android:summary="@string/settings_keep_old_stories_sum" />
+    </PreferenceCategory>
+
+    <PreferenceCategory 
         android:title="@string/settings_cat_story_list">
         <ListPreference
             android:key="default_story_order"
