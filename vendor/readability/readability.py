@@ -160,6 +160,7 @@ class Document:
                     self.remove_unlikely_candidates()
                 self.transform_misused_divs_into_paragraphs()
                 candidates = self.score_paragraphs()
+
                 best_candidate = self.select_best_candidate(candidates)
 
                 if best_candidate:
@@ -273,7 +274,7 @@ class Document:
             self.TEXT_LENGTH_THRESHOLD)
         candidates = {}
         ordered = []
-        for elem in self.tags(self._html(), "p", "pre", "td", "section", "article"):
+        for elem in self.tags(self._html(), "p", "pre", "td"):
             parent_node = elem.getparent()
             if parent_node is None:
                 continue
@@ -451,6 +452,7 @@ class Document:
                 for kind in ['p', 'img', 'li', 'a', 'embed', 'input']:
                     counts[kind] = len(el.findall('.//%s' % kind))
                 counts["li"] -= 100
+                counts["input"] -= len(el.findall('.//input[@type="hidden"]'))
 
                 # Count the text length excluding any surrounding whitespace
                 content_length = text_length(el)
