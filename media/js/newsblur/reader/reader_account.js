@@ -340,17 +340,24 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     
     delete_saved_stories: function() {
         var $link = $(".NB-account-delete-saved-stories", this.$modal);
+        var $loading = $('.NB-modal-loading', this.$modal);
         var year = parseInt($("select[name=year]", this.$modal).val(), 10);
         var month = parseInt($("select[name=month]", this.$modal).val(), 10);
         var day = parseInt($("select[name=day]", this.$modal).val(), 10);
         
         var timestamp = (new Date(year, month, day)).getTime() / 1000;
         if (window.confirm("Positive you want to delete your saved stories?")) {
+            $loading.addClass('NB-active');
+            $link.attr('disabled', 'disabled');
+            $link.text("Deleting...");
+
             NEWSBLUR.assets.delete_saved_stories(timestamp, _.bind(function(data) {
+                $loading.removeClass('NB-active');
                 NEWSBLUR.reader.update_starred_count();
                 $link.replaceWith($.make('div', Inflector.pluralize('story', data.stories_deleted, true) + ' ' + Inflector.pluralize('has', data.stories_deleted) + 
                                                 ' been deleted.'));
             }, this), _.bind(function() {
+                $loading.removeClass('NB-active');
                 NEWSBLUR.reader.update_starred_count();
                 $link.replaceWith($.make('div', { className: 'NB-error' }, 'There was a problem deleting your saved stories.')).show();
             }, this));
