@@ -262,9 +262,10 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             // that presents the alt text.  Note that images wrapped in links tend to get detected
             // as anchors, not images, and may not point to the corresponding image URL.
             String imageURL = result.getExtra();
+            imageURL = imageURL.replace("file://", "");
             String mappedURL = imageUrlRemaps.get(imageURL);
             final String finalURL = mappedURL == null ? imageURL : mappedURL;
-            final String altText = imageAltTexts.get(imageURL);
+            final String altText = imageAltTexts.get(finalURL);
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(finalURL);
