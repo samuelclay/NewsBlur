@@ -20,6 +20,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserS
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
 from apps.reader.forms import SignupForm, LoginForm
+from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -478,6 +479,29 @@ def forgot_password_return(request):
     return {
         'forgot_password_return_form': form,
     }
+
+@ajax_login_required
+@json.json_view
+def delete_starred_stories(request):
+    timestamp = request.POST.get('timestamp', None)
+    if timestamp:
+        delete_date = datetime.datetime.fromtimestamp(int(timestamp))
+    else:
+        delete_date = datetime.datetime.now()
+    starred_stories = MStarredStory.objects.filter(user_id=request.user.pk,
+                                                   starred_date__lte=delete_date)
+    stories_deleted = starred_stories.count()
+    starred_stories.delete()
+
+    MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
+    starred_counts, starred_count = MStarredStoryCounts.user_counts(request.user.pk, include_total=True)
+    
+    logging.user(request.user, "~BC~FRDeleting %s/%s starred stories (%s)" % (stories_deleted,
+                               stories_deleted+starred_count, delete_date))
+
+    return dict(code=1, stories_deleted=stories_deleted, starred_counts=starred_counts,
+                starred_count=starred_count)
+
 
 @ajax_login_required
 @json.json_view

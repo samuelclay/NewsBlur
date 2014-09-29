@@ -9247,6 +9247,9 @@ form.opml_import_form input {
 .NB-modal-account .NB-account-premium-cancel {
     margin-top: 0;
 }
+.NB-modal-account .NB-preference-saved-stories-date {
+    margin-bottom: 12px;
+}
 
 /* ================ */
 /* = Static Pages = */
