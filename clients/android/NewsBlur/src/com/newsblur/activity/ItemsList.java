@@ -155,6 +155,9 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
         }
+        // re-trigger at least one story when this is reached, just in case the first update beat
+        // the sync service pagination reset. it won't do anything after the first call
+        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
     }
 
     private void updateStatusIndicators() {
