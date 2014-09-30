@@ -45,9 +45,9 @@ public class FeedSet implements Serializable {
         }
 
         if (feeds != null) {
-            Log.d(this.getClass().getName(), "---norm: " + feeds.size()); 
             if (feeds.size() < 1) {
                 isAllNormal = true;
+                this.feeds = feeds;
                 return;
             } else {
                 this.feeds = Collections.unmodifiableSet(feeds);
@@ -56,9 +56,9 @@ public class FeedSet implements Serializable {
         }
 
         if (socialFeeds != null) {
-            Log.d(this.getClass().getName(), "---soci: " + socialFeeds.size()); 
             if (socialFeeds.size() < 1) {
                 isAllSocial = true;
+                this.socialFeeds = socialFeeds;
                 return;
             } else {
                 this.socialFeeds = Collections.unmodifiableMap(socialFeeds);
