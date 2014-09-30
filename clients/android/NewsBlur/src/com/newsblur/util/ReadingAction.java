@@ -45,6 +45,20 @@ public class ReadingAction {
         return ra;
     }
 
+    public static ReadingAction saveStory(String hash) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.SAVE;
+        ra.storyHash = hash;
+        return ra;
+    }
+
+    public static ReadingAction unsaveStory(String hash) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.UNSAVE;
+        ra.storyHash = hash;
+        return ra;
+    }
+
     public static ReadingAction markFeedRead(FeedSet fs, Long olderThan, Long newerThan) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.MARK_READ;
@@ -77,6 +91,16 @@ public class ReadingAction {
                 }
                 break;
 
+            case SAVE:
+                values.put(DatabaseConstants.ACTION_SAVE, 1);
+                values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
+                break;
+
+            case UNSAVE:
+                values.put(DatabaseConstants.ACTION_UNSAVE, 1);
+                values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
+                break;
+
             default:
                 throw new IllegalStateException("cannot serialise uknown type of action.");
 
@@ -104,8 +128,13 @@ public class ReadingAction {
             }
         } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
             ra.type = ActionType.MARK_UNREAD;
-            String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-            ra.storyHash = hash;
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_SAVE)) == 1) {
+            ra.type = ActionType.SAVE;
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_UNSAVE)) == 1) {
+            ra.type = ActionType.UNSAVE;
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -127,10 +156,13 @@ public class ReadingAction {
                 break;
                 
             case MARK_UNREAD:
-                if (storyHash != null) {
-                    return apiManager.markStoryHashUnread(storyHash);
-                }
-                break;
+                return apiManager.markStoryHashUnread(storyHash);
+
+            case SAVE:
+                return apiManager.markStoryAsStarred(storyHash);
+
+            case UNSAVE:
+                return apiManager.markStoryAsUnstarred(storyHash);
 
             default:
 
@@ -140,10 +172,9 @@ public class ReadingAction {
     }
 
     /**
-     * Excecute this action on the local DB performing only idempotent sub-actions.
-     * Basically, double-check any local effects of this action that can be done safely.
+     * Excecute this action on the local DB. These must be idempotent.
      */
-    public void doLocalSecondary(BlurDatabaseHelper dbHelper) {
+    public void doLocal(BlurDatabaseHelper dbHelper) {
         switch (type) {
 
             case MARK_READ:
@@ -155,9 +186,15 @@ public class ReadingAction {
                 break;
                 
             case MARK_UNREAD:
-                if (storyHash != null) {
-                    dbHelper.setStoryReadState(storyHash, false);
-                }
+                dbHelper.setStoryReadState(storyHash, false);
+                break;
+
+            case SAVE:
+                dbHelper.setStoryStarred(storyHash, true);
+                break;
+
+            case UNSAVE:
+                dbHelper.setStoryStarred(storyHash, false);
                 break;
 
             default:

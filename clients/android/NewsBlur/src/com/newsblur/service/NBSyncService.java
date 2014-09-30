@@ -258,7 +258,7 @@ public class NBSyncService extends Service {
             ActionsRunning = true;
             NbActivity.updateAllActivities();
             for (ReadingAction ra : FollowupActions) {
-                ra.doLocalSecondary(dbHelper);
+                ra.doLocal(dbHelper);
             }
             FollowupActions.clear();
         } finally {

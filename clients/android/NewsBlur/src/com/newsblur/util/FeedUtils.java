@@ -50,44 +50,21 @@ public class FeedUtils {
         c.startService(i);
     }
 
-	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager) {
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
+	public static void setStorySaved(final Story story, final boolean saved, final Context context) {
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                if (saved) {
-                    return apiManager.markStoryAsStarred(story.feedId, story.storyHash);
-                } else {
-                    return apiManager.markStoryAsUnstarred(story.feedId, story.storyHash);
-                }
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                if (!result.isError()) {
-                    Toast.makeText(context, (saved ? R.string.toast_story_saved : R.string.toast_story_unsaved), Toast.LENGTH_SHORT).show();
-                    story.starred = saved;
-                    Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseConstants.STORY_STARRED, saved);
-                    context.getContentResolver().update(storyUri, values, null, null);
-                } else {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(saved ? R.string.toast_story_save_error : R.string.toast_story_unsave_error)), Toast.LENGTH_LONG).show();
-                }
-
+            protected Void doInBackground(Void... arg) {
+                ReadingAction ra = (saved ? ReadingAction.saveStory(story.storyHash) : ReadingAction.unsaveStory(story.storyHash));
+                ra.doLocal(dbHelper);
                 NbActivity.updateAllActivities();
+                dbHelper.enqueueAction(ra);
+                triggerSync(context);
+                return null;
             }
         }.execute();
-	}
-
-	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
-        setStorySaved(story, true, context, apiManager);
     }
 
-	public static void unsaveStory(final Story story, final Context context, final APIManager apiManager) {
-        setStorySaved(story, false, context, apiManager);
-    }
-
-    public static void deleteFeed( final long feedId, final String folderName, final Context context, final APIManager apiManager) {
-
+    public static void deleteFeed(final long feedId, final String folderName, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
@@ -105,7 +82,6 @@ public class FeedUtils {
 
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedId)).build();
         context.getContentResolver().delete(feedUri, null, null);
-
     }
 
     public static void clearReadingSession() {

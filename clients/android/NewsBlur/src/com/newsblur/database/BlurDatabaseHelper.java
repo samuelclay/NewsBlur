@@ -396,6 +396,12 @@ public class BlurDatabaseHelper {
         return dbRO.rawQuery(q, new String[]{hash});
     }
 
+    public void setStoryStarred(String hash, boolean starred) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_STARRED, starred);
+        dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+    }
+
     /**
      * Tags all saved stories with the reading session flag so they don't disappear if unsaved.
      */

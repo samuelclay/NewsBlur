@@ -34,7 +34,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
-import com.newsblur.network.APIManager;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
@@ -91,7 +90,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
-    private APIManager apiManager;
     private boolean stopLoading;
     protected FeedSet fs;
 
@@ -140,8 +138,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
-
-        this.apiManager = new APIManager(this);
 
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
@@ -307,9 +303,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
-			    FeedUtils.unsaveStory(story, Reading.this, apiManager);
+			    FeedUtils.setStorySaved(story, false, Reading.this);
             } else {
-                FeedUtils.saveStory(story, Reading.this, apiManager);
+			    FeedUtils.setStorySaved(story, true, Reading.this);
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {

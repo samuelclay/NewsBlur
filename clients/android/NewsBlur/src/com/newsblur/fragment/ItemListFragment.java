@@ -30,7 +30,6 @@ import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
@@ -206,11 +205,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_save_story:
-            FeedUtils.saveStory(story, activity, new APIManager(activity));
+            FeedUtils.setStorySaved(story, true, activity);
             return true;
 
         case R.id.menu_unsave_story:
-            FeedUtils.unsaveStory(story, activity, new APIManager(activity));
+            FeedUtils.setStorySaved(story, false, activity);
+
             return true;
 
         default:
