@@ -143,6 +143,7 @@ public class NBSyncService extends Service {
             executor.execute(r);
         } else {
             Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
+            stopSelf(startId);
         } 
 
         // indicate to the system that the service should be alive when started, but
@@ -189,13 +190,12 @@ public class NBSyncService extends Service {
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
+            if (NbActivity.getActiveActivityCount() < 1) {
+                stopSelf(startId);
+            }
             lastStartIdCompleted = startId;
             if (wl != null) wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
-        }
-
-        if (isMemoryLow && (NbActivity.getActiveActivityCount() < 1)) {
-            stopSelf(startId);
         }
     }
 
@@ -571,17 +571,14 @@ public class NBSyncService extends Service {
     }
 
     public void onTrimMemory (int level) {
-        // be nice and stop if memory is even a tiny bit pressured and we aren't visible;
-        // the OS penalises long-running processes, and it is reasonably cheap to re-create ourself.
         if (level > ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
             isMemoryLow = true;
+        }
 
-            // if the UI is still active, definitely don't stop
-            if (NbActivity.getActiveActivityCount() > 0) return;
-        
-            if (lastStartIdCompleted != -1) {
-                stopSelf(lastStartIdCompleted);
-            }
+        // this is also called when the UI is hidden, so double check if we need to
+        // stop
+        if ( (lastStartIdCompleted != -1) && (NbActivity.getActiveActivityCount() < 1)) {
+            stopSelf(lastStartIdCompleted);
         }
     }
 
