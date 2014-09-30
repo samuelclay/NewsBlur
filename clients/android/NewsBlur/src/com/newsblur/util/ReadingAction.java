@@ -64,7 +64,7 @@ public class ReadingAction {
                 if (storyHash != null) {
                     values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
                 } else if (feedSet != null) {
-                    values.put(DatabaseConstants.ACTION_FEED_ID, TextUtils.join(",", feedSet.getFeedIds()));
+                    values.put(DatabaseConstants.ACTION_FEED_ID, feedSet.toCompactSerial());
                     if (olderThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_OLDER, olderThan);
                     if (newerThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_NEWER, newerThan);
                 }
@@ -96,13 +96,7 @@ public class ReadingAction {
             if (hash != null) {
                 ra.storyHash = hash;
             } else if (feedIds != null) {
-                Set<String> feeds = new HashSet<String>();
-                for (String feedId : TextUtils.split(feedIds, ",")) feeds.add(feedId);
-                if (feeds.size() == 0) {
-                    ra.feedSet = FeedSet.allFeeds();
-                } else {
-                    ra.feedSet = FeedSet.folder(null, feeds);
-                }
+                ra.feedSet = FeedSet.fromCompactSerial(feedIds);
                 ra.olderThan = includeOlder;
                 ra.newerThan = includeNewer;
             } else {
@@ -128,11 +122,7 @@ public class ReadingAction {
                 if (storyHash != null) {
                     return apiManager.markStoryAsRead(storyHash);
                 } else if (feedSet != null) {
-                    if (feedSet.isAllNormal()) {
-                        return apiManager.markAllAsRead();
-                    } else if (feedSet.getFeedIds() != null) {
-                        return apiManager.markFeedsAsRead(feedSet.getFeedIds(), olderThan, newerThan);
-                    } 
+                    return apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
                 }
                 break;
                 

@@ -216,7 +216,15 @@ public class NBSyncService extends Service {
 
             actionsloop : while (c.moveToNext()) {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
-                ReadingAction ra = ReadingAction.fromCursor(c);
+                ReadingAction ra;
+                try {
+                    ra = ReadingAction.fromCursor(c);
+                } catch (IllegalArgumentException e) {
+                    Log.e(this.getClass().getName(), "error unfreezing ReadingAction", e);
+                    dbHelper.clearAction(id);
+                    continue actionsloop;
+                }
+                    
                 NewsBlurResponse response = ra.doRemote(apiManager);
 
                 // if we attempted a call and it failed, do not mark the action as done

@@ -117,11 +117,28 @@ public class APIManager {
 		return (!response.isError());
 	}
 
-	public NewsBlurResponse markFeedsAsRead(Set<String> feedIds, Long includeOlder, Long includeNewer) {
+	public NewsBlurResponse markFeedsAsRead(FeedSet fs, Long includeOlder, Long includeNewer) {
 		ValueMultimap values = new ValueMultimap();
-		for (String feedId : feedIds) {
-			values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		}
+
+        if (fs.getSingleFeed() != null) {
+            values.put(APIConstants.PARAMETER_FEEDID, fs.getSingleFeed());
+        } else if (fs.getMultipleFeeds() != null) {
+            for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        } else if (fs.getSingleSocialFeed() != null) {
+            values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + fs.getSingleSocialFeed().getKey());
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
+                values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + entry.getKey());
+            }
+        } else if (fs.isAllNormal()) {
+            // all stories uses a special API call
+            return markAllAsRead();
+        } else if (fs.isAllSocial()) {
+            values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_ALLSOCIAL);
+        } else {
+            throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
+        }
+
         if (includeOlder != null) {
             // the app uses  milliseconds but the API wants seconds
             long cut = includeOlder.longValue();
@@ -143,7 +160,7 @@ public class APIManager {
         return nbr;
 	}
 	
-	public NewsBlurResponse markAllAsRead() {
+	private NewsBlurResponse markAllAsRead() {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
 		APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values, false);

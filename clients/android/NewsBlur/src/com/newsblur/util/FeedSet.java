@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -181,23 +182,51 @@ public class FeedSet implements Serializable {
         return this.folderName;
     }
 
-    /**
-     * Get a list of feed IDs suitable for passing to mark-read APIs.
-     */
-    public Set<String> getFeedIds() {
-        Set s = new HashSet<String>();
-        if (isAllNormal) {
-            ; // an empty set represents "all stories"
-        } else if (isAllSocial) {
-            s.add(APIConstants.VALUE_ALLSOCIAL);
-        } else if (feeds != null) {
-            s.addAll(feeds);
-        } else if ((socialFeeds != null) && (socialFeeds.size() == 1)) {
-            s.addAll(socialFeeds.keySet());
+    private static final String COM_SER_NUL = "NUL";
+
+    public String toCompactSerial() {
+        StringBuilder s = new StringBuilder("FS|");
+        if (feeds == null) {
+            s.append(COM_SER_NUL).append("|");
         } else {
-            throw new UnsupportedOperationException("feed set does not support mark-read ops");
+            s.append(TextUtils.join(",", feeds)).append("|");
         }
-        return s;
+        if (socialFeeds == null) {
+            s.append(COM_SER_NUL).append("|");
+        } else {
+            Iterator<Map.Entry<String,String>> i = socialFeeds.entrySet().iterator();
+            while (i.hasNext()) {
+                Map.Entry<String,String> e = i.next();
+                s.append(e.getKey()).append(":").append(e.getValue());
+                if (i.hasNext()) s.append(",");
+            }
+            s.append("|");
+        }
+        s.append(isAllSaved);
+        return s.toString();
+    }
+
+    public static FeedSet fromCompactSerial(String s) {
+        String[] fields = TextUtils.split(s, "\\|");
+        if ((fields.length != 4) || (!fields[0].equals("FS"))) throw new IllegalArgumentException("invalid compact form");
+        if (! fields[1].equals(COM_SER_NUL)) {
+            HashSet<String> feeds = new HashSet<String>();
+            for (String id : TextUtils.split(fields[1], ",")) feeds.add(id);
+            return new FeedSet(feeds, null, false);
+        }
+        if (! fields[2].equals(COM_SER_NUL)) {
+            HashMap<String,String> socialFeeds = new HashMap<String,String>();
+            for (String pair : TextUtils.split(fields[2], ",")) {
+                String[] kv = TextUtils.split(pair, ":");
+                if (kv.length != 2) throw new IllegalArgumentException("invalid compact form");
+                socialFeeds.put(kv[0], kv[1]);
+            }
+            return new FeedSet(null, socialFeeds, false);
+        }
+        if (fields[3].equals(Boolean.TRUE.toString())) {
+            return new FeedSet(null, null, true);
+        }
+        throw new IllegalArgumentException("invalid compact form");
     }
 
     private int booleanCardinality(boolean... args) {

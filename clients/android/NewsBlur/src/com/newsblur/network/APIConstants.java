@@ -74,6 +74,7 @@ public class APIConstants {
 	public static final String PARAMETER_ORDER = "order";
 	public static final String PARAMETER_READ_FILTER = "read_filter";
 
+    public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
     public static final String VALUE_OLDER = "older";
     public static final String VALUE_NEWER = "newer";
