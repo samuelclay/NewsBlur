@@ -283,8 +283,6 @@ public class BlurDatabaseHelper {
      */
     public void setStoryReadState(Story story, boolean read) {
         setStoryReadState(story.storyHash, read);
-        String incDec = read ? " - 1" : " + 1";
-        String column = DatabaseConstants.getFeedCountColumnForStoryIntelValue(story.getIntelligenceTotal());
         // non-social feed count
         refreshFeedCounts(FeedSet.singleFeed(story.feedId));
         // social feed counts
