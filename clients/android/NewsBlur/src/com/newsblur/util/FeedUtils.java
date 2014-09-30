@@ -133,18 +133,6 @@ public class FeedUtils {
     private static void setStoryReadState(Story story, Context context, boolean read) {
         if (story.read == read) { return; }
 
-        // it is imperative that we are idempotent.  query the DB for a fresh copy of the story
-        // to ensure it isn't already in the requested state.  if so, do not update feed counts
-        Cursor cursor = dbHelper.getStory(story.storyHash);
-        if (cursor.getCount() < 1) {
-            Log.w(FeedUtils.class.getName(), "can't mark story as read, not found in DB: " + story.id);
-            return;
-        }
-        Story freshStory = Story.fromCursor(cursor);
-        cursor.close();
-
-        if (freshStory.read == read) { return; }
-
         // update the local object to show as read before DB is touched
         story.read = read;
         
