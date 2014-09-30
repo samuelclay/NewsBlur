@@ -7,6 +7,7 @@ public class AppConstants {
     // it will log sensitive info such as passwords!
     public static final boolean VERBOSE_LOG = true;
     public static final boolean VERBOSE_LOG_DB = false;
+    public static final boolean VERBOSE_LOG_NET = false;
 	
 	public static final int REGISTRATION_DEFAULT = 0;
 	public static final int REGISTRATION_STARTED = 1;
