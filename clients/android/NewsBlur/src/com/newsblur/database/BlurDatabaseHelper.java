@@ -324,7 +324,6 @@ public class BlurDatabaseHelper {
         } else {
             throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
         }
-        Log.d(this.getClass().getName(), "marking read with sel: " + conjoinSelections(feedSelection, rangeSelection));
         dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);
 
         refreshFeedCounts(fs);
@@ -360,7 +359,6 @@ public class BlurDatabaseHelper {
             values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
             values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
             values.put(DatabaseConstants.FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
-            Log.d(this.getClass().getName(), "new counts for " + feedId + " : " + values.toString());
             dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
         }
 
@@ -370,7 +368,6 @@ public class BlurDatabaseHelper {
             values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
             values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
             values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
-            Log.d(this.getClass().getName(), "new counts for " + socialId + " : " + values.toString());
             dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{socialId});
         }
     }
@@ -443,7 +440,6 @@ public class BlurDatabaseHelper {
             return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleFeed()});
 
         } else if (fs.getMultipleFeeds() != null) {
-            Log.d(this.getClass().getName(), "feeds in folder: " + TextUtils.join(",", fs.getMultipleFeeds()));
 
             StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
