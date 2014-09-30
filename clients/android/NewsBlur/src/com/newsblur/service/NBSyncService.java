@@ -27,6 +27,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageCache;
+import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
@@ -202,8 +203,7 @@ public class NBSyncService extends Service {
      * Perform any reading actions the user has done before we do anything else.
      */
     private void syncActions() {
-        // TODO: replace all halting checks with full check for connectivity or interrupts
-        if (HaltNow) return;
+        if (stopSync()) return;
 
         Cursor c = null;
         try {
@@ -272,7 +272,7 @@ public class NBSyncService extends Service {
      * unread hashes. Doing this resets pagination on the server!
      */
     private void syncMetadata() {
-        if (HaltNow) return;
+        if (stopSync()) return;
         if (HoldStories) return;
 
         if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
@@ -290,7 +290,8 @@ public class NBSyncService extends Service {
         CleanupRunning = false;
         NbActivity.updateAllActivities();
 
-        if (HaltNow) return;
+        // cleanup may have taken a while, so re-check our running status
+        if (stopSync()) return;
         if (HoldStories) return;
 
         FFSyncRunning = true;
@@ -428,7 +429,7 @@ public class NBSyncService extends Service {
         UnreadSyncRunning = true;
         try {
             unreadsyncloop: while (StoryHashQueue.size() > 0) {
-                if (HaltNow) return;
+                if (stopSync()) return;
                 if (HoldStories) return;
 
                 List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
@@ -471,7 +472,7 @@ public class NBSyncService extends Service {
             Set<FeedSet> handledFeeds = new HashSet<FeedSet>();
             feedloop: for (FeedSet fs : PendingFeeds.keySet()) {
                 NbActivity.updateAllActivities();
-                if (HaltNow) return;
+                if (stopSync()) return;
 
                 if (ExhaustedFeeds.contains(fs)) {
                     Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
@@ -532,7 +533,7 @@ public class NBSyncService extends Service {
                 }
                 try {
                     for (String url : batch) {
-                        if (HaltNow) return;
+                        if (stopSync()) return;
                         if (HoldStories) return;
                         
                         imageCache.cacheImage(url);
@@ -561,6 +562,12 @@ public class NBSyncService extends Service {
             return false;
         }
         return true;
+    }
+
+    private boolean stopSync() {
+        if (HaltNow) return true;
+        if (!NetworkUtils.isOnline(this)) return true;
+        return false;
     }
 
     public void onTrimMemory (int level) {
