@@ -25,6 +25,8 @@
     // Get the path for the request
     NSString *pathString = [[request URL] absoluteString];
     
+    if (!pathString) return [super cachedResponseForRequest:request];
+    
     // See if we have a substitution file for this path
     NSString *substitutionFileName = [self substitutePath:pathString];
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:substitutionFileName];
