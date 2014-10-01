@@ -41,7 +41,6 @@
     WEPopoverController *popoverController;
     Class popoverClass;
     NBNotifier *notifier;
-    UIFontDescriptor *fontDescriptorSize;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
