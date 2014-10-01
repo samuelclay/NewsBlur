@@ -98,10 +98,6 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void cleanupActions() {
-        // TODO: write me, use me
-    }
-
     public void cleanupFeedsFolders() {
         dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
         dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
