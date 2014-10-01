@@ -67,6 +67,7 @@
 @synthesize storiesCollection;
 @synthesize showContentPreview;
 @synthesize showImagePreview;
+@synthesize invalidateFontCache;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -183,6 +184,8 @@
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
+    appDelegate.fontDescriptorTitleSize = nil;
+
     [self.storyTitlesTable reloadData];
 }
 
@@ -190,7 +193,9 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
     self.showImagePreview = [userPreferences boolForKey:@"story_list_preview_images"];
-
+    
+    appDelegate.fontDescriptorTitleSize = nil;
+    
     [self.storyTitlesTable reloadData];
 }
 
@@ -311,6 +316,11 @@
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyPageControl resetPages];
         [self checkScroll];
+    }
+    
+    if (invalidateFontCache) {
+        invalidateFontCache = NO;
+        [self reloadData];
     }
     
     self.finishedAnimatingIn = YES;
@@ -1206,7 +1216,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !self.isDashboardModule) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
         if (rowIndex == indexPath.row) {
-            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+            [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         } 
     }
     

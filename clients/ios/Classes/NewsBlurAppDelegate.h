@@ -116,6 +116,7 @@
     NSMutableArray * readStories;
     NSMutableDictionary *folderCountCache;
     NSMutableDictionary *collapsedFolders;
+    UIFontDescriptor *fontDescriptorTitleSize;
     
 	NSDictionary * dictFolders;
     NSMutableDictionary * dictFeeds;
@@ -211,6 +212,8 @@
 @property (readwrite) NSMutableDictionary *unreadStoryHashes;
 @property (nonatomic) NSMutableDictionary *folderCountCache;
 @property (nonatomic) NSMutableDictionary *collapsedFolders;
+@property (nonatomic) UIFontDescriptor *fontDescriptorTitleSize;
+
 
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;

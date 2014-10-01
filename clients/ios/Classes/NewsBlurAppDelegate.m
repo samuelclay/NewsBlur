@@ -128,6 +128,7 @@
 @synthesize unreadStoryHashes;
 @synthesize folderCountCache;
 @synthesize collapsedFolders;
+@synthesize fontDescriptorTitleSize;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;

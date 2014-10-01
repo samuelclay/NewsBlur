@@ -999,9 +999,18 @@ static UIFont *userLabelFont;
     } else {
         [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
+    
+    [self resizeFontSize];
+}
+
+- (void)resizeFontSize {
+    appDelegate.fontDescriptorTitleSize = nil;
     [self.feedTitlesTable reloadData];
+    
+    appDelegate.feedDetailViewController.invalidateFontCache = YES;
+    [appDelegate.feedDetailViewController reloadData];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController.storiesModule.storyTitlesTable reloadData];
+        [appDelegate.dashboardViewController.storiesModule reloadData];
     }
 }
 
@@ -1019,10 +1028,7 @@ static UIFont *userLabelFont;
          [NSSet setWithObjects:@"feed_list_font_size",
           nil] animated:YES];
     } else if ([notification.object isEqual:@"feed_list_font_size"]) {
-        [self.feedTitlesTable reloadData];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [appDelegate.dashboardViewController.storiesModule.storyTitlesTable reloadData];
-        }
+        [self resizeFontSize];
     } else if ([notification.object isEqual:@"story_list_preview_images"]) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [appDelegate.dashboardViewController.storiesModule reloadData];

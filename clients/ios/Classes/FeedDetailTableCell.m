@@ -60,7 +60,7 @@ static UIFont *indicatorFont = nil;
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
-        fontDescriptorSize = nil;
+
         [self.contentView addSubview:cellContent];
     }
     
@@ -113,25 +113,27 @@ static UIFont *indicatorFont = nil;
 
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
-    if (fontDescriptorSize) return fontDescriptorSize;
+    UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
+
+    if (fontDescriptor) return fontDescriptor;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    fontDescriptorSize = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:11.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:12.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:13.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:14.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:16.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
         }
     }
     
-    return fontDescriptorSize;
+    return fontDescriptor;
 }
 
 @end
