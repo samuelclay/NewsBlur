@@ -1973,7 +1973,7 @@ class MSharedStory(mongo.Document):
                 message += " " + self.blurblog_permalink()
         elif include_url:
             if truncate:
-                message = truncate_chars(message, truncate - 14)
+                message = truncate_chars(message, truncate - 24)
             message += " " + self.blurblog_permalink()
         
         return message

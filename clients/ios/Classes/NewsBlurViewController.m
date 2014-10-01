@@ -170,13 +170,14 @@ static UIFont *userLabelFont;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+//    NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         !self.interactiveFeedDetailTransition) {
         
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
     }
-//    NSDate *start = [NSDate date];
-//    NSLog(@"Feed List timing 0: %f", (double)[start timeIntervalSinceNow] * -1000.0);
+//    NSLog(@"Feed List timing 0: %f", [NSDate timeIntervalSinceReferenceDate] - start);
     [super viewWillAppear:animated];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -211,7 +212,7 @@ static UIFont *userLabelFont;
         [self.notifier setNeedsLayout];
     }
     
-//    NSLog(@"Feed List timing 2: %f", (double)[start timeIntervalSinceNow] * -1000.0);
+//    NSLog(@"Feed List timing 2: %f", [NSDate timeIntervalSinceReferenceDate] - start);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -1084,9 +1085,7 @@ static UIFont *userLabelFont;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
-    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    BOOL isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
     
     NSString *CellIdentifier;
     if (isFolderCollapsed || ![self isFeedVisible:feedIdStr]) {
@@ -1206,10 +1205,8 @@ static UIFont *userLabelFont;
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     }
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
-    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
-    
+
+    bool isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
     if (isFolderCollapsed) {
         return 0;
     }
@@ -1430,6 +1427,7 @@ heightForHeaderInSection:(NSInteger)section {
         [userPreferences setBool:YES forKey:collapseKey];
     }
     [userPreferences synchronize];
+    appDelegate.collapsedFolders = nil;
     
     [self.feedTitlesTable beginUpdates];
     [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:button.tag]

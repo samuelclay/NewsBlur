@@ -675,6 +675,7 @@
 		FFF1E4CB17750D2C00BF59D3 /* menu_icn_preferences.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */; };
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
 		FFFC608517165A1D00DC22E2 /* THCircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFC60831716578E00DC22E2 /* THCircularProgressView.m */; };
+		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1623,6 +1624,8 @@
 		FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_preferences@2x.png"; sourceTree = "<group>"; };
 		FFFC60821716578E00DC22E2 /* THCircularProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = THCircularProgressView.h; sourceTree = "<group>"; };
 		FFFC60831716578E00DC22E2 /* THCircularProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = THCircularProgressView.m; sourceTree = "<group>"; };
+		FFFF683B19D628000081904A /* NBURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBURLCache.h; path = "Other Sources/NBURLCache.h"; sourceTree = "<group>"; };
+		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1742,6 +1745,8 @@
 				FF1F13D718AAC97900FDA816 /* UIImage+Resize.m */,
 				FFA0483F19CA5F5B00618DC4 /* UIWebView+Offsets.h */,
 				FFA0484019CA5F5B00618DC4 /* UIWebView+Offsets.m */,
+				FFFF683B19D628000081904A /* NBURLCache.h */,
+				FFFF683C19D628000081904A /* NBURLCache.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -3498,6 +3503,7 @@
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
 				FFA047DA19CA54A800618DC4 /* NSMutableURLRequest+OSKUtilities.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */,
+				FFFF683D19D628000081904A /* NBURLCache.m in Sources */,
 				FFA0481619CA54A800618DC4 /* OSKPagedHorizontalLayout.m in Sources */,
 				78FC34F711CA94900055C312 /* NSObject+SBJSON.m in Sources */,
 				FFA0482119CA54A800618DC4 /* OSKSaveToCameraRollActivity.m in Sources */,

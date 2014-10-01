@@ -31,6 +31,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.select_preferences();
         
         this.fetch_payment_history();
+        this.render_dates();
     },
     
     make_modal: function() {
@@ -101,11 +102,20 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-preference-saved-stories-date' }),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-saved-stories' }, 'Delete my saved stories')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Erase your saved stories'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-delete' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-all-sites' }, 'Delete all of my sites')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Erase yourself',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Notice: You will be emailed a backup of your sites')
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Friendly note: You will be emailed a backup of your sites')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
@@ -207,6 +217,41 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         ]);
     },
     
+    render_dates: function() {
+        var now = new Date();
+        var this_year = now.getFullYear();
+        var this_month = now.getMonth();
+        var this_day = now.getDate();
+        
+        var $dates = $(".NB-preference-saved-stories-date", this.$modal);
+        
+        var $months = $.make('select', { name: 'month' });
+        _.each(NEWSBLUR.utils.monthNames, function(name, i) {
+            var $option = $.make('option', { value: i+"" }, name);
+            if (this_month == i) $option.attr('selected', 'selected');
+            $months.append($option);
+        });
+
+        var $days = $.make('select', { name: 'day' });
+        _.each(_.range(0, 31), function(name, i) {
+            var $option = $.make('option', { value: i+1+"" }, i+1);
+            if (this_day == i+1) $option.attr('selected', 'selected');
+            $days.append($option);
+        });
+
+        var $years = $.make('select', { name: 'year' });
+        _.each(_.range(2009, this_year+1), function(name, i) {
+            var $option = $.make('option', { value: name+"" }, name);
+            if (this_year == name) $option.attr('selected', 'selected');
+            $years.append($option);
+        });
+        
+        $dates.append($.make('span', 'Older than: '));
+        $dates.append($months);
+        $dates.append($days);
+        $dates.append($years);
+    },
+    
     animate_fields: function() {
         if (this.options.animate_email) {
             this.switch_tab('emails');
@@ -289,6 +334,32 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 $link.replaceWith($.make('div', 'Everything has been deleted.'));
             }, this), _.bind(function() {
                 $link.replaceWith($.make('div', { className: 'NB-error' }, 'There was a problem deleting your sites.'));
+            }, this));
+        }
+    },
+    
+    delete_saved_stories: function() {
+        var $link = $(".NB-account-delete-saved-stories", this.$modal);
+        var $loading = $('.NB-modal-loading', this.$modal);
+        var year = parseInt($("select[name=year]", this.$modal).val(), 10);
+        var month = parseInt($("select[name=month]", this.$modal).val(), 10);
+        var day = parseInt($("select[name=day]", this.$modal).val(), 10);
+        
+        var timestamp = (new Date(year, month, day)).getTime() / 1000;
+        if (window.confirm("Positive you want to delete your saved stories?")) {
+            $loading.addClass('NB-active');
+            $link.attr('disabled', 'disabled');
+            $link.text("Deleting...");
+
+            NEWSBLUR.assets.delete_saved_stories(timestamp, _.bind(function(data) {
+                $loading.removeClass('NB-active');
+                NEWSBLUR.reader.update_starred_count();
+                $link.replaceWith($.make('div', Inflector.pluralize('story', data.stories_deleted, true) + ' ' + Inflector.pluralize('has', data.stories_deleted) + 
+                                                ' been deleted.'));
+            }, this), _.bind(function() {
+                $loading.removeClass('NB-active');
+                NEWSBLUR.reader.update_starred_count();
+                $link.replaceWith($.make('div', { className: 'NB-error' }, 'There was a problem deleting your saved stories.')).show();
             }, this));
         }
     },
@@ -414,6 +485,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             e.preventDefault();
             
             self.delete_all_sites();
+        });        
+        $.targetIs(e, { tagSelector: '.NB-account-delete-saved-stories' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.delete_saved_stories();
         });        
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
             e.preventDefault();

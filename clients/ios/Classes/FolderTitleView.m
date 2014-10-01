@@ -22,6 +22,8 @@
 - (void)setNeedsDisplay {
     [unreadCount setNeedsDisplay];
     
+    fontDescriptorSize = nil;
+    
     [super setNeedsDisplay];
 }
 
@@ -99,21 +101,7 @@
     
     // Folder title
     UIColor *textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: UIFontTextStyleCaption1];
-    UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-    if (![userPreferences boolForKey:@"use_system_font_size"]) {
-        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            boldFontDescriptor = [boldFontDescriptor fontDescriptorWithSize:10.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
-            boldFontDescriptor = [boldFontDescriptor fontDescriptorWithSize:11.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            boldFontDescriptor = [boldFontDescriptor fontDescriptorWithSize:12.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            boldFontDescriptor = [boldFontDescriptor fontDescriptorWithSize:14.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            boldFontDescriptor = [boldFontDescriptor fontDescriptorWithSize:16.0f];
-        }
-    }
+    UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
@@ -251,6 +239,30 @@
         longpress.delegate = self;
         [self addGestureRecognizer:longpress];
     }
+}
+
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
+    if (fontDescriptorSize) return fontDescriptorSize;
+
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: textStyle];
+    fontDescriptorSize = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
+
+    if (![userPreferences boolForKey:@"use_system_font_size"]) {
+        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:10.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:14.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:16.0f];
+        }
+    }
+    
+    return fontDescriptorSize;
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {

@@ -37,6 +37,7 @@
     UIColor *feedColorBar;
     UIColor *feedColorBarTopBorder;
     UIView *cellContent;
+    UIFontDescriptor *fontDescriptorSize;
 }
 
 @property (nonatomic) NSString *siteTitle;

@@ -279,6 +279,8 @@
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
+//    if (error.code == 102 && [error.domain isEqual:@"WebKitErrorDomain"]) {    }
+
     // User clicking on another link before the page loads is OK.
     if ([error code] != NSURLErrorCancelled) {
         [self informError:error];   
@@ -293,18 +295,25 @@
 }
 
 - (IBAction)loadAddress:(id)sender {
-    if (!activeUrl) {
-        activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
-    }
+    activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
     NSString* urlString = activeUrl;
     NSURL* url = [NSURL URLWithString:urlString];
+//    if ([urlString containsString:@"story_images"]) {
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//        NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+//
+//        urlString = [urlString substringFromIndex:NSMaxRange([urlString
+//                                                              rangeOfString:@"story_images/"])];
+//        NSString *path = [storyImagesDirectory stringByAppendingPathComponent:urlString];
+//        url = [NSURL fileURLWithPath:path];
+//    }
     if (!url.scheme) {
         NSString* modifiedURLString = [NSString stringWithFormat:@"%@", urlString];
         url = [NSURL URLWithString:modifiedURLString];
     }
-    if ([self.webView isLoading]) {
-        [self.webView stopLoading];
-    }
+//    if ([self.webView isLoading]) {
+//        [self.webView stopLoading];
+//    }
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:request];
     titleView.text = @"Loading...";
