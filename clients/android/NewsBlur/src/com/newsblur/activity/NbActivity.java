@@ -64,6 +64,7 @@ public class NbActivity extends Activity {
 	@Override
 	protected void onResume() {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onResume");
+        FeedUtils.offerDB(dbHelper);
 		super.onResume();
 		finishIfNotLoggedIn();
 
