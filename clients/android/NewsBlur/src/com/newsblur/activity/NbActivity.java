@@ -64,13 +64,16 @@ public class NbActivity extends Activity {
 	@Override
 	protected void onResume() {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onResume");
-        FeedUtils.offerDB(dbHelper);
 		super.onResume();
 		finishIfNotLoggedIn();
 
         synchronized (AllActivities) {
             AllActivities.add(this);
         }
+
+        // ensure that the sync service is up and running at the beginning of every activity, since
+        // FeedUtils needs the DB conn it provides
+        triggerSync();
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -41,7 +42,7 @@ import java.util.Set;
 public class BlurDatabaseHelper {
 
     private Context context;
-    private BlurDatabase dbWrapper;
+    private final BlurDatabase dbWrapper;
     private SQLiteDatabase dbRO;
     private SQLiteDatabase dbRW;
 
@@ -53,7 +54,15 @@ public class BlurDatabaseHelper {
     }
 
     public void close() {
-        dbWrapper.close();
+        // when asked to close, do so via an AsyncTask. This is so that (since becoming serial in android 4.0) 
+        // the closure will happen after other async tasks are done using the conn
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                dbWrapper.close();
+                return null;
+            }
+        }.execute();
     }
 
     public boolean isOpen() {
