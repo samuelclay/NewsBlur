@@ -164,13 +164,11 @@ public class NBSyncService extends Service {
     private synchronized void doSync(int startId) {
         try {
             if (HaltNow) {
-                if (AppConstants.VERBOSE_LOG) {
-                    Log.d(this.getClass().getName(), "skipping sync, soft interrupt set.");
-                }
+                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "skipping sync, soft interrupt set.");
                 return;
             }
 
-            Log.d(this.getClass().getName(), "starting sync . . .");
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting sync . . .");
 
             wl.acquire();
 
@@ -204,7 +202,7 @@ public class NBSyncService extends Service {
             }
             lastStartIdCompleted = startId;
             if (wl != null) wl.release();
-            Log.d(this.getClass().getName(), " . . . sync done");
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), " . . . sync done");
         }
     }
 
