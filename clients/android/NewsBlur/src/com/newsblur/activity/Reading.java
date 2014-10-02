@@ -323,10 +323,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected void handleUpdate() {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
         updateCursor();
-        ReadingItemFragment fragment = getReadingFragment();
-        if (fragment != null ) {
-            fragment.handleUpdate();
-        }
+        readingAdapter.updateAllFragments();
     }
 
     private void updateCursor() {
@@ -462,6 +459,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
                     overlayText.setText(R.string.overlay_story);
                 }
+                item.handleUpdate();
             }
         });
     }
@@ -710,11 +708,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private ReadingItemFragment getReadingFragment() {
         if (readingAdapter == null || pager == null) { return null; }
-        Object o = readingAdapter.instantiateItem(pager, pager.getCurrentItem());
-        if (o instanceof ReadingItemFragment) {
-            return (ReadingItemFragment) o;
-        } else {
-            return null;
-        }
+        return readingAdapter.getExistingItem(pager.getCurrentItem());
     }
+
 }

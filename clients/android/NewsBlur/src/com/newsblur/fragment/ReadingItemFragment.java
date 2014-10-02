@@ -87,6 +87,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     private HashMap<String,String> imageAltTexts;
     private HashMap<String,String> imageUrlRemaps;
     private String sourceUserId;
+    private int contentHash;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
@@ -431,16 +432,22 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     private void reloadStoryContent() {
         if (selectedFeedView == DefaultFeedView.STORY) {
             setupWebview(story.content);
+            enableProgress(false);
         } else {
             if (originalText == null) {
-                setupWebview("loading original text");
-                // enable loading circle
+                enableProgress(true);
                 loadOriginalText();
             } else {
                 setupWebview(originalText);
-                // disable loading circle
+                enableProgress(false);
             }
         }
+    }
+
+    private void enableProgress(boolean loading) {
+        Activity parent = getActivity();
+        if (parent == null) return;
+        ((Reading) parent).enableLeftProgressCircle(loading);
     }
 
     public void handleUpdate() {
@@ -460,6 +467,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                         ReadingItemFragment.this.originalText = result;
                         reloadStoryContent();
                     } else {
+                        if (getActivity() != null) setupWebview(getActivity().getResources().getString(R.string.orig_text_loading));
                         NBSyncService.getOriginalText(story.storyHash);
                         triggerSync();
                     }
@@ -476,6 +484,11 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }
 
         synchronized (WEBVIEW_CONTENT_MUTEX) {
+            // this method might get called repeatedly despite no content change, which is expensive
+            int contentHash = storyText.hashCode();
+            if (this.contentHash == contentHash) return;
+            this.contentHash = contentHash;
+            
             sniffAltTexts(storyText);
 
             if (PrefsUtils.isImagePrefetchEnabled(getActivity())) {
