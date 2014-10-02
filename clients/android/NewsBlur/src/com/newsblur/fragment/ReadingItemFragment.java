@@ -40,7 +40,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
-import com.newsblur.network.domain.StoryTextResponse;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageCache;
@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
+public class ReadingItemFragment extends NbFragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
@@ -149,31 +149,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
 	}
 
-    private void loadOriginalText() {
-        if (story != null) {
-            new AsyncTask<Void, Void, StoryTextResponse>() {
-                @Override
-                protected void onPreExecute() {
-                    ((Reading)getActivity()).enableLeftProgressCircle(true);
-                }
-                @Override
-                protected StoryTextResponse doInBackground(Void... arg) {
-                    return apiManager.getStoryText(story.feedId, story.id);
-                }
-                @Override
-                protected void onPostExecute(StoryTextResponse result) {
-                    if ((result != null) && (result.originalText != null)) {
-                        ReadingItemFragment.this.originalText = result.originalText;
-                        showTextContentInWebview();
-                    }
-                    if (getActivity() != null) {
-                        ((Reading)getActivity()).enableLeftProgressCircle(false);
-                    }
-                }
-            }.execute();
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("story", story);
@@ -209,12 +184,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
         registerForContextMenu(web);
 
-        if (selectedFeedView == DefaultFeedView.TEXT) {
-            loadOriginalText();
-        } else {
-            showStoryContentInWebview();
-        }
-
 		setupItemMetadata();
 		setupShareButton();
 		setupSaveButton();
@@ -232,6 +201,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 		return view;
 	}
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        reloadStoryContent();
+    }
 
     private void setupImmersiveViewGestureDetector() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -351,7 +326,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	}
 
 	private void setupItemMetadata() {
-
         View feedHeader = view.findViewById(R.id.row_item_feed_header);
         View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
         TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
@@ -441,19 +415,17 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			View v = ViewUtils.createTagView(inflater, getFragmentManager(), tag, classifier, this, story.feedId);
 			tagContainer.addView(v);
 		}
-		
 	}
 
     public void switchSelectedFeedView() {
         synchronized (selectedFeedView) {
             // if we were already in text mode, switch back to story mode
             if (selectedFeedView == DefaultFeedView.TEXT) {
-                showStoryContentInWebview();
                 selectedFeedView = DefaultFeedView.STORY;
             } else {
-                showTextContentInWebview();
                 selectedFeedView = DefaultFeedView.TEXT;
             }
+            reloadStoryContent();
         }
     }
 
@@ -461,25 +433,43 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         return selectedFeedView;
     }
 
-    /**
-     * Set the webview to show the default story content.
-     */
-    public void showStoryContentInWebview() {
-        synchronized (WEBVIEW_CONTENT_MUTEX) {
+    private void reloadStoryContent() {
+        if (selectedFeedView == DefaultFeedView.STORY) {
             setupWebview(story.content);
+        } else {
+            if (originalText == null) {
+                setupWebview("loading original text");
+                // enable loading circle
+                loadOriginalText();
+            } else {
+                setupWebview(originalText);
+                // disable loading circle
+            }
         }
     }
 
-    /**
-     * Set the webview to show non-default content, tracking the change.
-     */
-    public void showTextContentInWebview() {
-        if (originalText == null) {
-            loadOriginalText();
-        } else {
-            synchronized (WEBVIEW_CONTENT_MUTEX) {
-                setupWebview(originalText);
-            }
+    public void handleUpdate() {
+        reloadStoryContent();
+    }
+
+    private void loadOriginalText() {
+        if (story != null) {
+            new AsyncTask<Void, Void, String>() {
+                @Override
+                protected String doInBackground(Void... arg) {
+                    return FeedUtils.getStoryText(story.storyHash);
+                }
+                @Override
+                protected void onPostExecute(String result) {
+                    if (result != null) {
+                        ReadingItemFragment.this.originalText = result;
+                        reloadStoryContent();
+                    } else {
+                        NBSyncService.getOriginalText(story.storyHash);
+                        triggerSync();
+                    }
+                }
+            }.execute();
         }
     }
 
@@ -490,30 +480,31 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             return;
         }
 
-        sniffAltTexts(storyText);
+        synchronized (WEBVIEW_CONTENT_MUTEX) {
+            sniffAltTexts(storyText);
 
-        if (PrefsUtils.isImagePrefetchEnabled(getActivity())) {
-            storyText = swapInOfflineImages(storyText);
-        } 
+            if (PrefsUtils.isImagePrefetchEnabled(getActivity())) {
+                storyText = swapInOfflineImages(storyText);
+            } 
 
-		float currentSize = PrefsUtils.getTextSize(getActivity());
+            float currentSize = PrefsUtils.getTextSize(getActivity());
 
-		StringBuilder builder = new StringBuilder();
-		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
-		builder.append("<style style=\"text/css\">");
-		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
-		builder.append("</style>");
-		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
-        if (PrefsUtils.isLightThemeSelected(getActivity())) {
-            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
-        } else {
-            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+            StringBuilder builder = new StringBuilder();
+            builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
+            builder.append("<style style=\"text/css\">");
+            builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
+            builder.append("</style>");
+            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
+            if (PrefsUtils.isLightThemeSelected(getActivity())) {
+                builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
+            } else {
+                builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+            }
+            builder.append("</head><body><div class=\"NB-story\">");
+            builder.append(storyText);
+            builder.append("</div></body></html>");
+            web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
         }
-        builder.append("</head><body><div class=\"NB-story\">");
-		builder.append(storyText);
-		builder.append("</div></body></html>");
-		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
-
 	}
 
     private void sniffAltTexts(String html) {

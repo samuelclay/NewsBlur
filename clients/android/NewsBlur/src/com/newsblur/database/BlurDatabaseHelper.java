@@ -407,6 +407,29 @@ public class BlurDatabaseHelper {
         dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
     }
 
+    public String getStoryText(String hash) {
+        String q = "SELECT " + DatabaseConstants.STORY_TEXT_STORY_TEXT +
+                   " FROM " + DatabaseConstants.STORY_TEXT_TABLE +
+                   " WHERE " + DatabaseConstants.STORY_TEXT_STORY_HASH + " = ?";
+        Cursor c = dbRO.rawQuery(q, new String[]{hash});
+        if (c.getCount() < 1) {
+            c.close();
+            return null;
+        } else {
+            c.moveToFirst();
+            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_TEXT_STORY_TEXT));
+            c.close();
+            return result;
+        }
+    }
+
+    public void putStoryText(String hash, String text) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_TEXT_STORY_HASH, hash);
+        values.put(DatabaseConstants.STORY_TEXT_STORY_TEXT, text);
+        dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);
+    }
+
     /**
      * Tags all saved stories with the reading session flag so they don't disappear if unsaved.
      */

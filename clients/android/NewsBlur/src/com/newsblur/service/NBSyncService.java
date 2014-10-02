@@ -22,6 +22,7 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
@@ -66,6 +67,7 @@ public class NBSyncService extends Service {
     private volatile static boolean UnreadSyncRunning = false;
     private volatile static boolean UnreadHashSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
+    private volatile static boolean OriginalTextSyncRunning = false;
     private volatile static boolean ImagePrefetchRunning = false;
 
     /** Don't do any actions that might modify the story list for a feed or folder in a way that
@@ -94,9 +96,14 @@ public class NBSyncService extends Service {
     /** Unread story hashes the API listed that we do not appear to have locally yet. */
     private static Set<String> StoryHashQueue;
     static { StoryHashQueue = new HashSet<String>(); }
+
     /** URLs of images contained in recently fetched stories that are candidates for prefetch. */
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
+
+    /** Stories for which we want to fetch original text data. */
+    private static Set<String> OriginalTextQueue;
+    static { OriginalTextQueue = new HashSet<String>(); }
 
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
@@ -184,6 +191,8 @@ public class NBSyncService extends Service {
             syncUnreads();
 
             finishActions();
+
+            syncOriginalTexts();
             
             prefetchImages();
 
@@ -462,6 +471,40 @@ public class NBSyncService extends Service {
         }
     }
 
+    private void syncOriginalTexts() {
+        OriginalTextSyncRunning = true;
+        try {
+            while (OriginalTextQueue.size() > 0) {
+                Set<String> fetchedHashes = new HashSet<String>();
+                Set<String> batch = new HashSet<String>(AppConstants.IMAGE_PREFETCH_BATCH_SIZE);
+                batchloop: for (String hash : OriginalTextQueue) {
+                    batch.add(hash);
+                    if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
+                }
+                try {
+                    fetchloop: for (String hash : batch) {
+                        if (stopSync()) return;
+                        
+                        String result = "";
+                        StoryTextResponse response = apiManager.getStoryText(FeedUtils.inferFeedId(hash), hash);
+                        if ((response != null) && (response.originalText != null)) {
+                            result = response.originalText;
+                        }
+                        dbHelper.putStoryText(hash, result);
+
+                        fetchedHashes.add(hash);
+                    }
+                } finally {
+                    OriginalTextQueue.removeAll(fetchedHashes);
+                    NbActivity.updateAllActivities();
+                }
+            }
+        } finally {
+            OriginalTextSyncRunning = false;
+            NbActivity.updateAllActivities();
+        }
+    }
+
     /**
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
@@ -586,7 +629,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || ImagePrefetchRunning);
+        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || OriginalTextSyncRunning || ImagePrefetchRunning);
     }
 
     /**
@@ -604,6 +647,7 @@ public class NBSyncService extends Service {
         if (UnreadSyncRunning) return "Syncing " + StoryHashQueue.size() + " stories . . .";
         if (ImagePrefetchRunning) return "Caching " + ImageQueue.size() + " images . . .";
         if (StorySyncRunning) return "Syncing stories . . .";
+        if (OriginalTextSyncRunning) return "Syncing story text . . .";
         return null;
     }
 
@@ -657,6 +701,10 @@ public class NBSyncService extends Service {
         ExhaustedFeeds.clear();
         FeedPagesSeen.clear();
         FeedStoriesSeen.clear();
+    }
+
+    public static void getOriginalText(String hash) {
+        OriginalTextQueue.add(hash);
     }
 
     public static void softInterrupt() {

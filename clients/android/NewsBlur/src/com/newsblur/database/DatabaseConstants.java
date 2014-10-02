@@ -97,6 +97,10 @@ public class DatabaseConstants {
 	public static final String STORY_TAGS = "tags";
     public static final String STORY_HASH = "story_hash";
 
+    public static final String STORY_TEXT_TABLE = "storytext";
+    public static final String STORY_TEXT_STORY_HASH = "story_hash";
+    public static final String STORY_TEXT_STORY_TEXT = "story_text";
+
 	public static final String COMMENT_TABLE = "comments";
 	public static final String COMMENT_ID = BaseColumns._ID;
 	public static final String COMMENT_STORYID = "comment_storyid";
@@ -222,6 +226,11 @@ public class DatabaseConstants {
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
 		STORY_TITLE + TEXT +
+        ")";
+
+    static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
+        STORY_TEXT_STORY_HASH + TEXT + ", " +
+        STORY_TEXT_STORY_TEXT + TEXT +
         ")";
 
 	static final String CLASSIFIER_SQL = "CREATE TABLE " + CLASSIFIER_TABLE + " (" +

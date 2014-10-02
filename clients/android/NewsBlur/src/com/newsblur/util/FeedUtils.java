@@ -208,6 +208,22 @@ public class FeedUtils {
         return FeedSet.folder(folderName, feedIds);
     }
 
+    public static String getStoryText(String hash) {
+        return dbHelper.getStoryText(hash);
+    }
+
+    /**
+     * Infer the feed ID for a story from the story's hash.  Useful for APIs
+     * that takes a feed ID and story ID and only the story hash is known.
+     *
+     * TODO: this has a smell to it. can't all APIs just accept story hashes?
+     */
+    public static String inferFeedId(String storyHash) {
+        String[] parts = TextUtils.split(storyHash, ":");
+        if (parts.length != 2) return null;
+        return parts[0];
+    }
+
     /**
      * An interface usable by callers of this utility class that allows them to receive
      * notification that the async methods here have finihed and may have updated the DB
