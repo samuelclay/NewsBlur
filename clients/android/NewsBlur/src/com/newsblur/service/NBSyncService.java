@@ -129,7 +129,6 @@ public class NBSyncService extends Service {
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
-        FeedUtils.offerDB(dbHelper);
         imageCache = new ImageCache(this);
 	}
 

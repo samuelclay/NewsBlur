@@ -8,7 +8,6 @@ import android.util.Log;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
