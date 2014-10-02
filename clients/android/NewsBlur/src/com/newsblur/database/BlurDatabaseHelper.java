@@ -107,6 +107,14 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void cleanupStoryText() {
+        String q = "DELETE FROM " + DatabaseConstants.STORY_TEXT_TABLE +
+                   " WHERE " + DatabaseConstants.STORY_TEXT_STORY_HASH + " NOT IN " +
+                   "( SELECT " + DatabaseConstants.STORY_HASH + " FROM " + DatabaseConstants.STORY_TABLE +
+                   ")";
+        dbRW.execSQL(q);
+    }
+
     public void cleanupFeedsFolders() {
         dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
         dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
