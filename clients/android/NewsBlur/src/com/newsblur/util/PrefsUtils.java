@@ -93,7 +93,6 @@ public class PrefsUtils {
     }
 
     public static void logout(Context context) {
-
         NBSyncService.softInterrupt();
         
         // wipe the prefs store
@@ -107,7 +106,6 @@ public class PrefsUtils {
         Intent i = new Intent(context, Login.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(i);
-
     }
 
 	/**

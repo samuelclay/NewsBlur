@@ -173,8 +173,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
     @Override
     public void onResume() {
-        if (this.web != null ) { this.web.onResume(); }
         super.onResume();
+        reloadStoryContent();
+        if (this.web != null ) { this.web.onResume(); }
     }
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -201,12 +202,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 		return view;
 	}
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        reloadStoryContent();
-    }
 
     private void setupImmersiveViewGestureDetector() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

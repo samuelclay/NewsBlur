@@ -25,6 +25,7 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageCache;
@@ -463,6 +464,10 @@ public class NBSyncService extends Service {
                             ImageQueue.add(url);
                         }
                     }
+                    DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(this, story.feedId);
+                    if (mode == DefaultFeedView.TEXT) {
+                        OriginalTextQueue.add(story.storyHash);
+                    }
                 }
             }
         } finally {
@@ -647,7 +652,7 @@ public class NBSyncService extends Service {
         if (UnreadSyncRunning) return "Syncing " + StoryHashQueue.size() + " stories . . .";
         if (ImagePrefetchRunning) return "Caching " + ImageQueue.size() + " images . . .";
         if (StorySyncRunning) return "Syncing stories . . .";
-        if (OriginalTextSyncRunning) return "Syncing story text . . .";
+        if (OriginalTextSyncRunning) return "Syncing text for " + OriginalTextQueue.size() + " stories. . .";
         return null;
     }
 
