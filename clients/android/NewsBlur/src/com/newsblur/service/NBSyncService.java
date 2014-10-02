@@ -653,7 +653,7 @@ public class NBSyncService extends Service {
      * Is there a sync for a given FeedSet running?
      */
     public static boolean isFeedSetSyncing(FeedSet fs) {
-        return (StorySyncRunning && PendingFeeds.containsKey(fs));
+        return (PendingFeeds.containsKey(fs));
     }
 
     public static String getSyncStatusMessage() {
@@ -691,27 +691,44 @@ public class NBSyncService extends Service {
      * true if more will be fetched as a result of this request.
      *
      * @param desiredStoryCount the minimum number of stories to fetch.
+     * @param totalSeen the number of stories the caller thinks they have seen for the FeedSet
+     *        or a negative number if the caller trusts us to track for them
      */
-    public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount) {
+    public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, int callerSeen) {
         if (ExhaustedFeeds.contains(fs)) {
             Log.e(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
             return false;
         }
 
         synchronized (PendingFeeds) {
+            Integer alreadySeen = FeedStoriesSeen.get(fs);
             Integer alreadyRequested = PendingFeeds.get(fs);
+            if (alreadySeen != null) {
+                if ((callerSeen >= 0) && (alreadySeen > callerSeen)) {
+                    // the caller is probably filtering and thinks they have fewer than we do, so
+                    // update our count to agree with them, and force-allow another requet
+                    alreadySeen = callerSeen;
+                    FeedStoriesSeen.put(fs, callerSeen);
+                    alreadyRequested = 0;
+                }
+
+                if (desiredStoryCount <= alreadySeen) {
+                    return false;
+                }
+            }
             if ((alreadyRequested != null) && (desiredStoryCount <= alreadyRequested)) {
                 return false;
             }
-            Integer alreadySeen = FeedStoriesSeen.get(fs);
-            if ((alreadySeen != null) && (desiredStoryCount <= alreadySeen)) {
-                return false;
-            }
+            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount);
         }
             
         PendingFeeds.put(fs, desiredStoryCount);
-        NbActivity.updateAllActivities();
+        //NbActivity.updateAllActivities();
         return true;
+    }
+
+    public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount) {
+        return requestMoreForFeed(fs, desiredStoryCount, -1);
     }
 
     public static void resetFeeds() {

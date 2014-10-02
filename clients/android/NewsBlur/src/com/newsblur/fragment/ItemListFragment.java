@@ -45,7 +45,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter currentState;
-    private int lastRequestedStoryCount = 0;
     private boolean isLoading = true;
 
     @Override
@@ -60,7 +59,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      */
     public void resetEmptyState() {
         setLoading(true);
-        lastRequestedStoryCount = 0;
     }
 
     public void setLoading(boolean loading) {
@@ -103,13 +101,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         // load an extra page or two worth of stories past the viewport
         int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
         
-        // this method tends to get called repeatedly. don't request repeats
-        if (desiredStoryCount <= lastRequestedStoryCount) {
-            return;
-        }
-        lastRequestedStoryCount = desiredStoryCount;
-
-        triggerRefresh(desiredStoryCount);
+        ((ItemsList) getActivity()).triggerRefresh(desiredStoryCount, totalCount);
 	}
 
 	@Override
@@ -119,10 +111,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		currentState = state;
 		hasUpdated();
 	}
-
-	private void triggerRefresh(int desiredStories) {
-        ((ItemsList) getActivity()).triggerRefresh(desiredStories);
-    }
 
     protected FeedSet getFeedSet() {
         return ((ItemsList) getActivity()).getFeedSet();
@@ -143,7 +131,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
             if (cursor.getCount() == 0) {
-                triggerRefresh(1);
+                ((ItemsList) getActivity()).triggerRefresh(1);
             }
 			adapter.swapCursor(cursor);
 		}

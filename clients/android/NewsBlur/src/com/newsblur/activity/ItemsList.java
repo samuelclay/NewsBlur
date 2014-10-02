@@ -100,11 +100,19 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
 	public void triggerRefresh(int desiredStoryCount) {
-		if (!stopLoading) {
+        if (!stopLoading) {
             boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
             if (gotSome) triggerSync();
             updateStatusIndicators();
-		}
+        }
+    }
+
+    public void triggerRefresh(int desiredStoryCount, int totalSeen) {
+        if (!stopLoading) {
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+            if (gotSome) triggerSync();
+            updateStatusIndicators();
+        }
     }
 
 	public void markItemListAsRead() {
