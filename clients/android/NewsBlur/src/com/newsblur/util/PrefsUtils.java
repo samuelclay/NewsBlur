@@ -93,7 +93,6 @@ public class PrefsUtils {
     }
 
     public static void logout(Context context) {
-
         NBSyncService.softInterrupt();
         
         // wipe the prefs store
@@ -107,7 +106,6 @@ public class PrefsUtils {
         Intent i = new Intent(context, Login.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(i);
-
     }
 
 	/**
@@ -392,19 +390,6 @@ public class PrefsUtils {
     public static boolean isImagePrefetchEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false);
-    }
-
-    /**
-     * Sees if offline images should be used while reading via two conditions: is the device
-     * offline, and was image prefetch enabled.
-     */
-    public static boolean isLoadOfflineImages(Context context) {
-        if (!isImagePrefetchEnabled(context)) return false;
-
-        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
-
-        return ((activeInfo == null) || (!activeInfo.isConnected()));
     }
 
     /**

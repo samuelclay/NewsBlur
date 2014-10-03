@@ -34,7 +34,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
-import com.newsblur.network.APIManager;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
@@ -43,6 +42,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
@@ -75,7 +75,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private CountDownLatch unreadSearchLatch;
 
 	protected int passedPosition;
-	protected int currentState;
+	protected StateFilter currentState;
     protected StoryOrder storyOrder;
     protected ReadFilter readFilter;
 
@@ -90,7 +90,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
-    private APIManager apiManager;
     private boolean stopLoading;
     protected FeedSet fs;
 
@@ -132,15 +131,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
 
-		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
+		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
         defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
-
-        this.apiManager = new APIManager(this);
 
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
@@ -254,7 +251,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /**
      * Query the DB for the current unreadcount for this view.
      */
-    protected abstract int getUnreadCount();
+    private int getUnreadCount() {
+        if (fs.isAllSaved()) return 0; // saved stories doesn't have unreads
+        return dbHelper.getUnreadCount(fs, currentState);
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -303,9 +303,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
-			    FeedUtils.unsaveStory(story, Reading.this, apiManager);
+			    FeedUtils.setStorySaved(story, false, Reading.this);
             } else {
-                FeedUtils.saveStory(story, Reading.this, apiManager);
+			    FeedUtils.setStorySaved(story, true, Reading.this);
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
@@ -323,14 +323,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected void handleUpdate() {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
         updateCursor();
+        readingAdapter.updateAllFragments();
     }
 
     private void updateCursor() {
-        try {
-            getLoaderManager().restartLoader(0, null, this);
-        } catch (IllegalStateException ise) {
-            ; // our heavy use of async can race loader calls, which it will gripe about, but this
-             //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
+        synchronized (STORIES_MUTEX) {
+            try {
+                getLoaderManager().restartLoader(0, null, this);
+            } catch (IllegalStateException ise) {
+                ; // our heavy use of async can race loader calls, which it will gripe about, but this
+                 //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
+            }
         }
     }
 
@@ -352,13 +355,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 if (readingAdapter == null) return null;
                 Story story = readingAdapter.getStory(position);
                 if (story != null) {
+                    markStoryRead(story);
                     synchronized (pageHistory) {
                         // if the history is just starting out or the last entry in it isn't this page, add this page
                         if ((pageHistory.size() < 1) || (!story.equals(pageHistory.get(pageHistory.size()-1)))) {
                             pageHistory.add(story);
                         }
                     }
-                    markStoryRead(story);
                 }
 
                 checkStoryCount(position);
@@ -456,6 +459,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
                     overlayText.setText(R.string.overlay_story);
                 }
+                item.handleUpdate();
             }
         });
     }
@@ -519,25 +523,20 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         
 	private void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
-            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            int currentCount = (stories == null) ? 0 : stories.getCount();
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, currentCount);
             if (gotSome) triggerSync();
 		}
     }
 
     private void markStoryRead(Story story) {
-        synchronized (STORIES_MUTEX) {
-            FeedUtils.markStoryAsRead(story, this);
-            updateCursor();
-        }
+        FeedUtils.markStoryAsRead(story, this);
         enableOverlays();
     }
 
     private void markStoryUnread(Story story) {
-        synchronized (STORIES_MUTEX) {
-            FeedUtils.markStoryUnread(story, this);
-            Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
-            updateCursor();
-        }
+        FeedUtils.markStoryUnread(story, this);
+        Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
         enableOverlays();
     }
 
@@ -710,11 +709,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private ReadingItemFragment getReadingFragment() {
         if (readingAdapter == null || pager == null) { return null; }
-        Object o = readingAdapter.instantiateItem(pager, pager.getCurrentItem());
-        if (o instanceof ReadingItemFragment) {
-            return (ReadingItemFragment) o;
-        } else {
-            return null;
-        }
+        return readingAdapter.getExistingItem(pager.getCurrentItem());
     }
+
 }

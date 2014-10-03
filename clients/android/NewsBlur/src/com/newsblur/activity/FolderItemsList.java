@@ -26,39 +26,26 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 public class FolderItemsList extends ItemsList implements MarkAllReadDialogListener {
 
 	public static final String EXTRA_FOLDER_NAME = "folderName";
 	private String folderName;
-	private ArrayList<String> feedIds;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
 		folderName = getIntent().getStringExtra(EXTRA_FOLDER_NAME);
 
-        if (bundle != null) {
-            feedIds = bundle.getStringArrayList(BUNDLE_FEED_IDS);
-        }
-
-        if (feedIds == null) {
-            feedIds = new ArrayList<String>();
-            final Uri feedsUri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(folderName).build();
-            Cursor cursor = getContentResolver().query(feedsUri, new String[] { DatabaseConstants.FEED_ID }, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
-            while (cursor.moveToNext() && (feedIds.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
-                feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-            }
-            cursor.close();
-        }
-
-
+        // note: onCreate triggers createFeedSet() so it has to wait until we have the folder name
 		super.onCreate(bundle);
+
 		setTitle(folderName);
 
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState, getDefaultFeedView());
+			itemListFragment = FolderItemListFragment.newInstance(folderName, currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FolderItemListFragment.class.getName());
@@ -68,7 +55,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
     @Override
     protected FeedSet createFeedSet() {
-        return FeedSet.folder(this.folderName, new HashSet<String>(this.feedIds));
+        return FeedSet.folder(this.folderName, dbHelper.getFeedsForFolder(folderName));
     }
 
 	@Override
@@ -127,11 +114,4 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
         // do nothing
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle bundle) {
-        if (this.feedIds != null) {
-            bundle.putStringArrayList(BUNDLE_FEED_IDS, this.feedIds);
-        }
-        super.onSaveInstanceState(bundle);
-    }
 }

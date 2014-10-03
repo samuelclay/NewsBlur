@@ -24,6 +24,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -43,7 +44,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
     private TextView overlayStatusText;
-	protected int currentState;
+	protected StateFilter currentState;
 
     private FeedSet fs;
 	
@@ -51,17 +52,17 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	@Override
     protected void onCreate(Bundle bundle) {
+		super.onCreate(bundle);
         this.fs = createFeedSet();
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		super.onCreate(bundle);
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getFragmentManager();
 
         // our intel state is entirely determined by the state of the Main view
-		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
+		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
@@ -99,11 +100,19 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
 	public void triggerRefresh(int desiredStoryCount) {
-		if (!stopLoading) {
+        if (!stopLoading) {
             boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
             if (gotSome) triggerSync();
             updateStatusIndicators();
-		}
+        }
+    }
+
+    public void triggerRefresh(int desiredStoryCount, int totalSeen) {
+        if (!stopLoading) {
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+            if (gotSome) triggerSync();
+            updateStatusIndicators();
+        }
     }
 
 	public void markItemListAsRead() {
@@ -154,6 +163,9 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
         }
+        // re-trigger at least one story when this is reached, just in case the first update beat
+        // the sync service pagination reset. it won't do anything after the first call
+        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
     }
 
     private void updateStatusIndicators() {
@@ -175,14 +187,14 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
 	@Override
-	public void changedState(int state) {
+	public void changedState(StateFilter state) {
 		itemListFragment.changeState(state);
 	}
 	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        FeedUtils.clearReadingSession(this); 
+        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
@@ -194,7 +206,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        FeedUtils.clearReadingSession(this); 
+        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();

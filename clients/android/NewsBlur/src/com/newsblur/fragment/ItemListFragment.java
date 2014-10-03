@@ -30,12 +30,12 @@ import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -44,13 +44,14 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
-	protected int currentState;
-    private int lastRequestedStoryCount = 0;
+	protected StateFilter currentState;
     private boolean isLoading = true;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        currentState = (StateFilter) getArguments().getSerializable("currentState");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
     }
 
     /**
@@ -58,7 +59,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      */
     public void resetEmptyState() {
         setLoading(true);
-        lastRequestedStoryCount = 0;
     }
 
     public void setLoading(boolean loading) {
@@ -99,28 +99,18 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         // load an extra page or two worth of stories past the viewport
-        int desiredStoryCount = firstVisible + (visibleCount*2);
-
-        // this method tends to get called repeatedly. don't request repeats
-        if (desiredStoryCount <= lastRequestedStoryCount) {
-            return;
-        }
-        lastRequestedStoryCount = desiredStoryCount;
-
-        triggerRefresh(desiredStoryCount);
+        int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
+        
+        ((ItemsList) getActivity()).triggerRefresh(desiredStoryCount, totalCount);
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-	public void changeState(int state) {
+	public void changeState(StateFilter state) {
 		currentState = state;
 		hasUpdated();
 	}
-
-	private void triggerRefresh(int desiredStories) {
-        ((ItemsList) getActivity()).triggerRefresh(desiredStories);
-    }
 
     protected FeedSet getFeedSet() {
         return ((ItemsList) getActivity()).getFeedSet();
@@ -141,7 +131,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
             if (cursor.getCount() == 0) {
-                triggerRefresh(1);
+                ((ItemsList) getActivity()).triggerRefresh(1);
             }
 			adapter.swapCursor(cursor);
 		}
@@ -203,11 +193,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_save_story:
-            FeedUtils.saveStory(story, activity, new APIManager(activity));
+            FeedUtils.setStorySaved(story, true, activity);
             return true;
 
         case R.id.menu_unsave_story:
-            FeedUtils.unsaveStory(story, activity, new APIManager(activity));
+            FeedUtils.setStorySaved(story, false, activity);
+
             return true;
 
         default:

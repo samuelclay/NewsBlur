@@ -70,7 +70,6 @@ public class ImageCache {
             if (f.exists()) {
                 return f.getAbsolutePath();
             } else { 
-                Log.d(this.getClass().getName(), "image cache miss");
                 return null;
             }
         } catch (Exception e) {

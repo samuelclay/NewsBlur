@@ -45,7 +45,6 @@ public class SocialFeedItemsList extends ItemsList {
 
 	@Override
     protected FeedSet createFeedSet() {
-        //Log.d(this.getClass().getName(), "creating feedset social ID:" + getIntent().getStringExtra(EXTRA_BLURBLOG_USERID) + " name:" + getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
         return FeedSet.singleSocialFeed(getIntent().getStringExtra(EXTRA_BLURBLOG_USERID), getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
     }
 

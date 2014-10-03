@@ -10,12 +10,12 @@ import android.widget.TextView;
 
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.StateFilter;
 
 public class SocialFeedViewBinder implements ViewBinder {
 
-	private int currentState = AppConstants.STATE_SOME;
+	private StateFilter currentState = StateFilter.SOME;
 	private ImageLoader imageLoader;
 	private Context context;
 	
@@ -37,7 +37,7 @@ public class SocialFeedViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT)) {
 			int feedNeutral = cursor.getInt(columnIndex);
-			if (feedNeutral > 0 && currentState != AppConstants.STATE_BEST) {
+			if (feedNeutral > 0 && currentState != StateFilter.BEST) {
 				view.setVisibility(View.VISIBLE);
 				((TextView) view).setText("" + feedNeutral);
 			} else {
@@ -50,7 +50,7 @@ public class SocialFeedViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT)) {
 			int feedNegative = cursor.getInt(columnIndex);
-			if (feedNegative > 0 && currentState == AppConstants.STATE_ALL) {
+			if (feedNegative > 0 && currentState == StateFilter.ALL) {
 				view.setVisibility(View.VISIBLE);
 				((TextView) view).setText("" + feedNegative);
 			} else {
@@ -62,7 +62,7 @@ public class SocialFeedViewBinder implements ViewBinder {
 		return false;
 	}
 
-	public void setState(int selection) {
+	public void setState(StateFilter selection) {
 		currentState = selection;
 	}
 

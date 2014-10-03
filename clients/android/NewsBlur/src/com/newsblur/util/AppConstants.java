@@ -5,12 +5,9 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = true;
+    public static final boolean VERBOSE_LOG = false;
     public static final boolean VERBOSE_LOG_DB = false;
-
-	public static final int STATE_ALL = 0;
-	public static final int STATE_SOME = 1;
-	public static final int STATE_BEST = 2;
+    public static final boolean VERBOSE_LOG_NET = false;
 	
 	public static final int REGISTRATION_DEFAULT = 0;
 	public static final int REGISTRATION_STARTED = 1;

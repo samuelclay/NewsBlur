@@ -5,6 +5,7 @@ import android.provider.BaseColumns;
 
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 public class DatabaseConstants {
@@ -95,6 +96,10 @@ public class DatabaseConstants {
 	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
     public static final String STORY_HASH = "story_hash";
+
+    public static final String STORY_TEXT_TABLE = "storytext";
+    public static final String STORY_TEXT_STORY_HASH = "story_hash";
+    public static final String STORY_TEXT_STORY_TEXT = "story_text";
 
 	public static final String COMMENT_TABLE = "comments";
 	public static final String COMMENT_ID = BaseColumns._ID;
@@ -223,6 +228,11 @@ public class DatabaseConstants {
 		STORY_TITLE + TEXT +
         ")";
 
+    static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
+        STORY_TEXT_STORY_HASH + TEXT + ", " +
+        STORY_TEXT_STORY_TEXT + TEXT +
+        ")";
+
 	static final String CLASSIFIER_SQL = "CREATE TABLE " + CLASSIFIER_TABLE + " (" +
 		CLASSIFIER_ID + TEXT + ", " +
 		CLASSIFIER_KEY + TEXT + ", " + 
@@ -309,7 +319,8 @@ public class DatabaseConstants {
 
 	private static final String STORY_INTELLIGENCE_BEST = SUM_STORY_TOTAL + " > 0 ";
 	private static final String STORY_INTELLIGENCE_SOME = SUM_STORY_TOTAL + " >= 0 ";
-	private static final String STORY_INTELLIGENCE_ALL = SUM_STORY_TOTAL + " >= 0 ";
+	private static final String STORY_INTELLIGENCE_NEUT = SUM_STORY_TOTAL + " = 0 ";
+	private static final String STORY_INTELLIGENCE_NEG = SUM_STORY_TOTAL + " < 0 ";
 
 	public static final String[] STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE,
@@ -328,99 +339,86 @@ public class DatabaseConstants {
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
 
-    public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " ASC";
+    public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " DESC";
 
     /**
      * Appends to the given story query any and all selection statements that are required to satisfy the specified
      * filtration parameters, dedup column, and ordering requirements.
      */ 
-    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, int stateFilter, String dedupCol) {
+    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, StateFilter stateFilter, String dedupCol) {
         if (readFilter == ReadFilter.UNREAD) {
             // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
             // or else the selection set will constantly change as they see things!
             q.append(" AND ((" + STORY_READ + " = 0) OR (" + STORY_READ_THIS_SESSION + " = 1))");
+        } else if (readFilter == ReadFilter.PURE_UNREAD) {
+            // This means really just unreads, useful for getting counts
+            q.append(" AND (" + STORY_READ + " = 0)");
         }
-        q.append(" AND " + getStorySelectionFromState(stateFilter));
+
+        String stateSelection =  getStorySelectionFromState(stateFilter);
+        if (stateSelection != null) {
+            q.append(" AND " + stateSelection);
+        }
+
         if (dedupCol != null) {
             q.append( " GROUP BY " + dedupCol);
         }
-        q.append(" ORDER BY " + getStorySortOrder(order));
+
+        if (order != null) {
+            q.append(" ORDER BY " + getStorySortOrder(order));
+        }
     }
 
     /**
      * Selection args to filter stories.
      */
-    public static String getStorySelectionFromState(int state) {
-        String selection = null;
+    public static String getStorySelectionFromState(StateFilter state) {
         switch (state) {
-        case (AppConstants.STATE_ALL):
-            selection = STORY_INTELLIGENCE_ALL;
-        break;
-        case (AppConstants.STATE_SOME):
-            selection = STORY_INTELLIGENCE_SOME;
-        break;
-        case (AppConstants.STATE_BEST):
-            selection = STORY_INTELLIGENCE_BEST;
-        break;
+        case ALL:
+            return null;
+        case SOME:
+            return STORY_INTELLIGENCE_SOME;
+        case NEUT:
+            return STORY_INTELLIGENCE_NEUT;
+        case BEST:
+            return STORY_INTELLIGENCE_BEST;
+        case NEG:
+            return STORY_INTELLIGENCE_NEG;
+        default:
+            return null;
         }
-        return selection;
     }
     
     /**
-     * Selection args to filter folders.
+     * Selection args to filter feeds and folders.
      */
-    public static String getFolderSelectionFromState(int state) {
-        String selection = null;
+    public static String getFeedSelectionFromState(StateFilter state) {
         switch (state) {
-        case (AppConstants.STATE_ALL):
-            selection = FOLDER_INTELLIGENCE_ALL;
-        break;
-        case (AppConstants.STATE_SOME):
-            selection = FOLDER_INTELLIGENCE_SOME;
-        break;
-        case (AppConstants.STATE_BEST):
-            selection = FOLDER_INTELLIGENCE_BEST;
-        break;
+        case ALL:
+            return FOLDER_INTELLIGENCE_ALL;
+        case SOME:
+            return FOLDER_INTELLIGENCE_SOME;
+        case BEST:
+            return FOLDER_INTELLIGENCE_BEST;
+        default:
+            return null;
         }
-        return selection;
-    }
-
-    /**
-     * Selection args to filter feeds. Watch out: cheats and uses the same args as from folder selection.
-     */
-    public static String getFeedSelectionFromState(int state) {
-        String selection = null;
-        switch (state) {
-        case (AppConstants.STATE_ALL):
-            selection = FOLDER_INTELLIGENCE_ALL;
-        break;
-        case (AppConstants.STATE_SOME):
-            selection = FOLDER_INTELLIGENCE_SOME;
-        break;
-        case (AppConstants.STATE_BEST):
-            selection = FOLDER_INTELLIGENCE_BEST;
-        break;
-        }
-        return selection;
     }
 
     /**
      * Selection args to filter social feeds.
      */
-    public static String getBlogSelectionFromState(int state) {
-        String selection = null;
+    public static String getBlogSelectionFromState(StateFilter state) {
         switch (state) {
-        case (AppConstants.STATE_ALL):
-            selection = SOCIAL_INTELLIGENCE_ALL;
-        break;
-        case (AppConstants.STATE_SOME):
-            selection = SOCIAL_INTELLIGENCE_SOME;
-        break;
-        case (AppConstants.STATE_BEST):
-            selection = SOCIAL_INTELLIGENCE_BEST;
-        break;
+        case ALL:
+            return SOCIAL_INTELLIGENCE_ALL;
+        case SOME:
+            return SOCIAL_INTELLIGENCE_SOME;
+        case BEST:
+            return SOCIAL_INTELLIGENCE_BEST;
+        default:
+            return null;
         }
-        return selection;
     }
 
     public static String getStorySortOrder(StoryOrder storyOrder) {
