@@ -41,6 +41,9 @@ import java.util.Set;
  */
 public class BlurDatabaseHelper {
 
+    // manual synchro isn't needed if you only use one DBHelper, but at present the app uses several
+    private final static Object RW_MUTEX = new Object();
+
     private Context context;
     private final BlurDatabase dbWrapper;
     private SQLiteDatabase dbRO;
@@ -103,7 +106,7 @@ public class BlurDatabaseHelper {
                        " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
                        " LIMIT -1 OFFSET " + (keepOldStories ? AppConstants.MAX_READ_STORIES_STORED : 0) +
                        ")";
-            dbRW.execSQL(q);
+            synchronized (RW_MUTEX) {dbRW.execSQL(q);}
         }
     }
 
@@ -112,25 +115,27 @@ public class BlurDatabaseHelper {
                    " WHERE " + DatabaseConstants.STORY_TEXT_STORY_HASH + " NOT IN " +
                    "( SELECT " + DatabaseConstants.STORY_HASH + " FROM " + DatabaseConstants.STORY_TABLE +
                    ")";
-        dbRW.execSQL(q);
+        synchronized (RW_MUTEX) {dbRW.execSQL(q);}
     }
 
     public void cleanupFeedsFolders() {
-        dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
-        dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
-        dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);}
     }
 
     private void bulkInsertValues(String table, List<ContentValues> valuesList) {
         if (valuesList.size() < 1) return;
-        dbRW.beginTransaction();
-        try {
-            for(ContentValues values: valuesList) {
-                dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                for(ContentValues values: valuesList) {
+                    dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
             }
-            dbRW.setTransactionSuccessful();
-        } finally {
-            dbRW.endTransaction();
         }
     }
 
@@ -148,8 +153,8 @@ public class BlurDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STARRED_STORY_COUNT_COUNT, count);
         // this DB just has one row and one column.  blow it away and replace it.
-        dbRW.delete(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null);
-        dbRW.insert(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values);
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null);}
+        synchronized (RW_MUTEX) {dbRW.insert(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values);}
     }
 
     public List<String> getStoryHashesForFeed(String feedId) {
@@ -232,7 +237,7 @@ public class BlurDatabaseHelper {
                 for (ContentValues values : classifierValues) {
                     values.put(DatabaseConstants.CLASSIFIER_ID, classifierFeedId);
                 }
-                dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { classifierFeedId });
+                synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { classifierFeedId });}
                 bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifierValues);
             }
         }
@@ -288,7 +293,7 @@ public class BlurDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, read);
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
-        dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
     /**
@@ -335,7 +340,7 @@ public class BlurDatabaseHelper {
         } else {
             throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
         }
-        dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);}
 
         refreshFeedCounts(fs);
     }
@@ -370,7 +375,7 @@ public class BlurDatabaseHelper {
             values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
             values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
             values.put(DatabaseConstants.FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
-            dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
+            synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
         }
 
         for (String socialId : socialFeedIds) {
@@ -379,7 +384,7 @@ public class BlurDatabaseHelper {
             values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
             values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
             values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
-            dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{socialId});
+            synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{socialId});}
         }
     }
 
@@ -391,7 +396,7 @@ public class BlurDatabaseHelper {
     }
 
     public void enqueueAction(ReadingAction ra) {
-        dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());
+        synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }
 
     public Cursor getActions(boolean includeDone) {
@@ -400,7 +405,7 @@ public class BlurDatabaseHelper {
     }
 
     public void clearAction(String actionId) {
-        dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});}
     }
 
     public Cursor getStory(String hash) {
@@ -412,7 +417,7 @@ public class BlurDatabaseHelper {
     public void setStoryStarred(String hash, boolean starred) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_STARRED, starred);
-        dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
     public String getStoryText(String hash) {
@@ -435,7 +440,7 @@ public class BlurDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_TEXT_STORY_HASH, hash);
         values.put(DatabaseConstants.STORY_TEXT_STORY_TEXT, text);
-        dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);
+        synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);}
     }
 
     /**
@@ -444,7 +449,7 @@ public class BlurDatabaseHelper {
     public void markSavedReadingSession() {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, true);
-        dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_STARRED + " = 1", null);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_STARRED + " = 1", null);}
     }
 
     /**
@@ -453,7 +458,7 @@ public class BlurDatabaseHelper {
     public void clearReadingSession() {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, false);
-        dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
     }
 
     public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter) {
