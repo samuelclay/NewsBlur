@@ -1390,9 +1390,13 @@ class Feed(models.Model):
             
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
             
+            similiar_length_min = 1000
+            if existing_story.story_permalink == story_link:
+                similiar_length_min = 20
+            
             if (seq
                 and story_content
-                and len(story_content) > 1000
+                and len(story_content) > similiar_length_min
                 and existing_story_content
                 and seq.real_quick_ratio() > .9 
                 and seq.quick_ratio() > .95):
