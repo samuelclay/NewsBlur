@@ -44,6 +44,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A background service to handle synchronisation with the NB servers.
@@ -752,9 +753,21 @@ public class NBSyncService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d(this.getClass().getName(), "onDestroy");
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
         HaltNow = true;
         executor.shutdown();
+        boolean cleanShutdown = false;
+        try {
+            cleanShutdown = executor.awaitTermination(60, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // this value is somewhat arbitrary. ideally we would wait the max network timeout, but
+            // the system like to force-kill terminating services that take too long, so it is often
+            // moot to tune.
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
+
         super.onDestroy();
         dbHelper.close();
     }
