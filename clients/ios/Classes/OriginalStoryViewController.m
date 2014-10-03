@@ -295,7 +295,9 @@
 }
 
 - (IBAction)loadAddress:(id)sender {
-    activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
+    if (!activeUrl) {
+        activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
+    }
     NSString* urlString = activeUrl;
     NSURL* url = [NSURL URLWithString:urlString];
 //    if ([urlString containsString:@"story_images"]) {
