@@ -72,6 +72,10 @@ public class BlurDatabaseHelper {
         return dbRW.isOpen();
     }
 
+    public void dropAndRecreateTables() {
+        synchronized (RW_MUTEX) {dbWrapper.dropAndRecreateTables();}
+    }
+
     private List<String> getAllFeeds() {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
