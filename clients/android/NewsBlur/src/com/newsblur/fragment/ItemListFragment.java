@@ -46,6 +46,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter currentState;
     private boolean isLoading = true;
+    private boolean cursorSeenYet = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
+        cursorSeenYet = false;
         setLoading(true);
     }
 
@@ -76,7 +78,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         TextView emptyView = (TextView) itemList.getEmptyView();
 
-        if (isLoading) {
+        if (isLoading || (!cursorSeenYet)) {
             emptyView.setText(R.string.empty_list_view_loading);
         } else {
             emptyView.setText(R.string.empty_list_view_no_stories);
@@ -130,6 +132,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
+            cursorSeenYet = true;
             if (cursor.getCount() == 0) {
                 ((ItemsList) getActivity()).triggerRefresh(1);
             }

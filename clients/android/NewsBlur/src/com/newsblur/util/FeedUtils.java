@@ -50,6 +50,10 @@ public class FeedUtils {
         c.startService(i);
     }
 
+    public static void dropAndRecreateTables() {
+        dbHelper.dropAndRecreateTables();
+    }
+
 	public static void setStorySaved(final Story story, final boolean saved, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override
