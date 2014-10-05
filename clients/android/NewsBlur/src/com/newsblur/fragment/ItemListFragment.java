@@ -1,12 +1,7 @@
 package com.newsblur.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -30,13 +25,10 @@ import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
-import com.newsblur.util.StoryOrder;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -186,7 +178,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             hasUpdated();
             return true;
 
-        case R.id.menu_mark_previous_stories_as_read:
+        case R.id.menu_mark_older_stories_as_read:
             FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
             hasUpdated();
             return true;
