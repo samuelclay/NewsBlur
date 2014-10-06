@@ -2653,7 +2653,7 @@ class MSocialServices(mongo.Document):
                            )
         except facebook.GraphAPIError, e:
             logging.debug("---> ~SN~FMFacebook posting error, disconnecting: ~SB~FR%s" % e)
-            # self.disconnect_facebook()
+            self.disconnect_facebook()
             return
             
         return True
