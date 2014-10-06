@@ -2271,7 +2271,11 @@ class MSocialServices(mongo.Document):
     @classmethod
     def get_user(cls, user_id):
         try:
-            profile, created = cls.objects.get_or_create(user_id=user_id)
+            profile = cls.objects.get(user_id=user_id)
+            created = False
+        except cls.DoesNotExist:
+            profile = cls.objects.create(user_Id=user_id)
+            created = True
         except cls.MultipleObjectsReturned:
             dupes = cls.objects.filter(user_id=user_id)
             logging.debug(" ---> ~FRDeleting dupe social services. %s found." % dupes.count())
@@ -2539,14 +2543,17 @@ class MSocialServices(mongo.Document):
         return following
     
     def disconnect_twitter(self):
+        self.syncing_twitter = False
         self.twitter_uid = None
         self.save()
     
     def disconnect_facebook(self):
+        self.syncing_facebook = False
         self.facebook_uid = None
         self.save()
     
     def disconnect_appdotnet(self):
+        self.syncing_appdotnet = False
         self.appdotnet_uid = None
         self.save()
     
@@ -2645,7 +2652,8 @@ class MSocialServices(mongo.Document):
                            message=message,
                            )
         except facebook.GraphAPIError, e:
-            print e
+            logging.debug("---> ~SN~FMFacebook posting error, disconnecting: ~SB~FR%s" % e)
+            # self.disconnect_facebook()
             return
             
         return True
