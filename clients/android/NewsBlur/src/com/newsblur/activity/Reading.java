@@ -235,7 +235,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	private void setupPager() {
 		pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
-		pager.setPageMarginDrawable(R.drawable.divider_light);
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            pager.setPageMarginDrawable(R.drawable.divider_light);
+        } else {
+            pager.setPageMarginDrawable(R.drawable.divider_dark);
+        }
+
 		pager.setOnPageChangeListener(this);
 		pager.setAdapter(readingAdapter);
 
