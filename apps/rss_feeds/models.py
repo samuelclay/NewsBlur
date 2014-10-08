@@ -1073,7 +1073,7 @@ class Feed(models.Model):
             else:
                 ret_values['same'] += 1
                 if verbose:
-                    logging.debug("Unchanged story: %s / %s " % (story.get('guid'), story.get('title')))
+                    logging.debug("Unchanged story (%s): %s / %s " % (story.get('story_hash'), story.get('guid'), story.get('title')))
         
         return ret_values
     
@@ -1344,7 +1344,7 @@ class Feed(models.Model):
         # story_published_now = story.get('published_now', False)
         # start_date = story_pub_date - datetime.timedelta(hours=8)
         # end_date = story_pub_date + datetime.timedelta(hours=8)
-        
+
         for existing_story in existing_stories.values():
             content_ratio = 0
             # existing_story_pub_date = existing_story.story_date
@@ -1391,7 +1391,8 @@ class Feed(models.Model):
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
             
             similiar_length_min = 1000
-            if existing_story.story_permalink == story_link:
+            if (existing_story.story_permalink == story_link and 
+                existing_story.story_title == story.get('title')):
                 similiar_length_min = 20
             
             if (seq

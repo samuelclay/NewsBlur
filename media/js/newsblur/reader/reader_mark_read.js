@@ -5,6 +5,13 @@ NEWSBLUR.ReaderMarkRead = function(options) {
     };
     
     this.flags = {};
+    this.values = {
+        0: 0,
+        1: 1,
+        2: 3,
+        3: 7,
+        4: 14
+    };
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
     this.runner();
@@ -58,11 +65,11 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         $slider.slider({
             range: 'min',
             min: 0,
-            max: 7,
+            max: 4,
             step: 1,
-            value: this.options['days'],
+            value: _.indexOf(_.values(this.values), this.options['days']),
             slide: function(e, ui) {
-                var value = ui.value;
+                var value = self.values[ui.value];
                 self.update_dayofweek(value);
                 self.generate_explanation(value);
             },
@@ -95,7 +102,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         
         var $save = $('.NB-modal input[type=submit]');
         var $slider = $('.NB-markread-slider', this.$modal);
-        var days = $slider.slider('option', 'value');
+        var days = this.values[$slider.slider('option', 'value')];
         
         this.flags.saving = true;
         $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);

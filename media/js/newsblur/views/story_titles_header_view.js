@@ -7,8 +7,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
     
     events: {
-        "click .NB-feedbar-options"         : "open_options_popover",
-        "click .NB-story-title-indicator"   : "show_hidden_story_titles"
+        "click .NB-feedbar-options"                 : "open_options_popover",
+        "click .NB-story-title-indicator"           : "show_hidden_story_titles",
+        "click .NB-feedbar-mark-feed-read"          : "mark_folder_as_read",
+        "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
+        "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days"
     },
     
     initialize: function() {
@@ -70,7 +73,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {}));
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
-                <div class="NB-folder NB-no-hover">\
+                <div class="NB-folder NB-no-hover NB-folder-<%= all_stories ? "river" : "fake" %>">\
                     <div class="NB-search-container"></div>\
                     <% if (show_options) { %>\
                         <div class="NB-feedbar-options-container">\
@@ -82,6 +85,14 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             </span>\
                         </div>\
                     <% } %>\
+                    <div class="NB-feedbar-mark-feed-read-container">\
+                        <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
+                        <div class="NB-feedbar-mark-feed-read-expand"></div>\
+                    </div>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
@@ -93,6 +104,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {
                 folder_title: this.fake_folder_title(),
                 folder_id: NEWSBLUR.reader.active_feed,
+                all_stories: NEWSBLUR.reader.active_feed == "river:",
                 show_options: !NEWSBLUR.reader.active_folder.get('fake') ||
                               NEWSBLUR.reader.active_folder.get('show_options')
             }));
@@ -235,6 +247,23 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: NEWSBLUR.reader.active_feed
         });
+    },
+    
+    mark_folder_as_read: function(e, days_back) {
+        if (!this.showing_fake_folder) return;
+        NEWSBLUR.reader.open_mark_read_modal({days: days_back || 0});
+        this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
+    },
+    
+    mark_folder_as_read_days: function(e) {
+        if (!this.showing_fake_folder) return;
+        var days = parseInt($(e.target).data('days'), 10);
+        this.mark_folder_as_read(e, days);
+    },
+    
+    expand_mark_read: function() {
+        if (!this.showing_fake_folder) return;
+        NEWSBLUR.Views.FeedTitleView.prototype.expand_mark_read.call(this);
     }
 
     
