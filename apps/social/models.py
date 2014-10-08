@@ -207,7 +207,7 @@ class MSocialProfile(mongo.Document):
         profile_user_ids = []
         
         # Find potential twitter/fb friends
-        services = MSocialServices.objects.get(user_id=self.user_id)
+        services = MSocialServices.get_user(self.user_id)
         facebook_user_ids = [u.user_id for u in 
                             MSocialServices.objects.filter(facebook_uid__in=services.facebook_friend_ids).only('user_id')]
         twitter_user_ids = [u.user_id for u in 
@@ -2274,7 +2274,7 @@ class MSocialServices(mongo.Document):
             profile = cls.objects.get(user_id=user_id)
             created = False
         except cls.DoesNotExist:
-            profile = cls.objects.create(user_Id=user_id)
+            profile = cls.objects.create(user_id=user_id)
             created = True
         except cls.MultipleObjectsReturned:
             dupes = cls.objects.filter(user_id=user_id)
