@@ -10,6 +10,9 @@
     <item android:id="@+id/menu_mark_story_as_read"
           android:title="@string/menu_mark_story_as_read" />
     
+    <item android:id="@+id/menu_mark_newer_stories_as_read"
+          android:title="@string/menu_mark_newer_stories_as_read" />
+
     <item android:id="@+id/menu_mark_older_stories_as_read"
           android:title="@string/menu_mark_older_stories_as_read" />
 
