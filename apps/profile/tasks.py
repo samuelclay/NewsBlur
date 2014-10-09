@@ -52,7 +52,7 @@ class CleanupUser(Task):
     
     def run(self, user_id):
         UserSubscription.trim_user_read_stories(user_id)
-        UserSubscription.verify_verify_feeds_scheduled(user_id)
+        UserSubscription.verify_feeds_scheduled(user_id)
 
         if random.random() < 0.01:
             ss = MSocialServices.objects.get(user_id=user_id)
