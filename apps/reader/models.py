@@ -852,7 +852,7 @@ class UserSubscription(models.Model):
 
         if not safety_net: return
 
-        logging.user(user, "~FBFound ~SB~FR%s unscheduled feeds~FB, scheduling...")
+        logging.user(user, "~FBFound ~SB~FR%s unscheduled feeds~FB, scheduling..." % len(safety_net))
         for feed_id in safety_net:
             feed = Feed.get_by_id(feed_id)
             feed.set_next_scheduled_update()
