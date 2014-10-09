@@ -827,7 +827,37 @@ class UserSubscription(models.Model):
             folders.extend(list(orphan_ids))
             usf.folders = json.encode(folders)
             usf.save()
-            
+    
+    @classmethod
+    def verify_feeds_scheduled(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        user = User.objects.get(pk=user_id)
+        subs = cls.objects.filter(user=user)
+        feed_ids = [sub.feed.pk for sub in subs]
+
+        p = r.pipeline()
+        for feed_id in feed_ids:
+            p.zscore('scheduled_updates', feed_id)
+            p.zscore('queued_feeds', feed_id)
+            p.zscore('error_feeds', feed_id)
+
+        results = p.execute()
+
+        safety_net = []
+        for f, feed_id in enumerate(feed_ids):
+            scheduled_updates = results[f*3]
+            queued_feeds = results[f*3+1]
+            error_feeds = results[f*3+2]
+            if not scheduled_updates and not queued_feeds and not error_feeds:
+                safety_net.append(feed_id)
+
+        if not safety_net: return
+
+        logging.user(user, "~FBFound ~FR%s unscheduled feeds~FB, scheduling..." % len(safety_net))
+        for feed_id in safety_net:
+            feed = Feed.get_by_id(feed_id)
+            feed.set_next_scheduled_update()
+
 
 class RUserStory:
     

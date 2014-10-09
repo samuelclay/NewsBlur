@@ -405,30 +405,33 @@ public class NBSyncService extends Service {
 
         try {
 
-            UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
-            
-            // note all the stories we thought were unread before. if any fail to appear in
-            // the API request for unreads, we will mark them as read
-            List<String> oldUnreadHashes = dbHelper.getUnreadStoryHashes();
+            // only use the unread status API if the user is premium
+            if (isPremium) {
+                UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
+                
+                // note all the stories we thought were unread before. if any fail to appear in
+                // the API request for unreads, we will mark them as read
+                List<String> oldUnreadHashes = dbHelper.getUnreadStoryHashes();
 
-            for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
-                String feedId = entry.getKey();
-                // ignore unreads from orphaned feeds
-                if( debugFeedIds.contains(feedId)) {
-                    // only fetch the reported unreads if we don't already have them
-                    List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
-                    for (String newHash : entry.getValue()) {
-                        if (!existingHashes.contains(newHash)) {
-                            StoryHashQueue.add(newHash);
+                for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
+                    String feedId = entry.getKey();
+                    // ignore unreads from orphaned feeds
+                    if( debugFeedIds.contains(feedId)) {
+                        // only fetch the reported unreads if we don't already have them
+                        List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
+                        for (String newHash : entry.getValue()) {
+                            if (!existingHashes.contains(newHash)) {
+                                StoryHashQueue.add(newHash);
+                            }
+                            oldUnreadHashes.remove(newHash);
                         }
-                        oldUnreadHashes.remove(newHash);
                     }
                 }
-            }
 
-            // only trust the unread status of this API if the user is premium
-            if (isPremium) {
                 dbHelper.markStoryHashesRead(oldUnreadHashes);
+            } else {
+                // if the user isn't premium, go so far as to clean up everything, there is no offline support
+                dbHelper.cleanupAllStories();
             }
         } finally {
             UnreadHashSyncRunning = false;

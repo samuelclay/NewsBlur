@@ -343,7 +343,7 @@ class MSocialProfile(mongo.Document):
                 self.photo_url = 'http:' + self.photo_url
             return self.photo_url
         domain = Site.objects.get_current().domain
-        return 'https://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
+        return '//' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
     def canonical(self, compact=False, include_follows=False, common_follows_with_user=None,
                   include_settings=False, include_following_user=None):

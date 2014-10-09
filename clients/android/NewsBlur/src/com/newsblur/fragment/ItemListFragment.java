@@ -183,6 +183,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             hasUpdated();
             return true;
 
+        case R.id.menu_mark_newer_stories_as_read:
+            FeedUtils.markFeedsRead(getFeedSet(), null, story.timestamp, activity);
+            hasUpdated();
+            return true;
+
         case R.id.menu_shared:
             FeedUtils.shareStory(story, activity);
             return true;
