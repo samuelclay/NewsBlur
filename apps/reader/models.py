@@ -829,8 +829,9 @@ class UserSubscription(models.Model):
             usf.save()
     
     @classmethod
-    def verify_feeds_scheduled(cls, user):
+    def verify_feeds_scheduled(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        user = User.objects.get(pk=user_id)
         subs = cls.objects.filter(user=user)
         feed_ids = [sub.feed.pk for sub in subs]
 
