@@ -114,6 +114,10 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void cleanupAllStories() {
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, null, null);}
+    }
+
     public void cleanupStoryText() {
         String q = "DELETE FROM " + DatabaseConstants.STORY_TEXT_TABLE +
                    " WHERE " + DatabaseConstants.STORY_TEXT_STORY_HASH + " NOT IN " +
