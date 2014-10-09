@@ -2,11 +2,11 @@ package com.newsblur.util;
 
 /**
  * Enum to represent read_filter when fetching feeds
- * @author mark
  */
 public enum ReadFilter {
     ALL("all"),
-    UNREAD("unread");
+    UNREAD("unread"), // in the app, this often means "unread and read since switching activities"
+    PURE_UNREAD("unread");
     
     private String parameterValue;
 

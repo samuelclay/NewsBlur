@@ -25,6 +25,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
@@ -43,10 +44,8 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		currentState = getArguments().getInt("currentState");
         userId = getArguments().getString("userId");
         username = getArguments().getString("username");
-        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		
@@ -66,10 +65,10 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 		
 	}
 
-	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final DefaultFeedView defaultFeedView) {
+	public static SocialFeedItemListFragment newInstance(final String userId, final String username, StateFilter currentState, final DefaultFeedView defaultFeedView) {
 	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
 		Bundle args = new Bundle();
-        args.putInt("currentState", currentState);
+        args.putSerializable("currentState", currentState);
         args.putString("userId", userId);
         args.putString("username", username);
         args.putSerializable("defaultFeedView", defaultFeedView);

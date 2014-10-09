@@ -24,7 +24,6 @@ import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.activity.Login;
-import com.newsblur.database.BlurDatabase;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
 
@@ -58,8 +57,7 @@ public class PrefsUtils {
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
             Log.i(PrefsUtils.class.getName(), "detected new version of app, clearing local data");
             // wipe the local DB
-            BlurDatabase databaseHelper = new BlurDatabase(context.getApplicationContext());
-            databaseHelper.dropAndRecreateTables();
+            FeedUtils.dropAndRecreateTables();
             // in case this is the first time we have run since moving the cache to the new location,
             // blow away the old version entirely. This line can be removed some time well after
             // v61+ is widely deployed
@@ -93,21 +91,18 @@ public class PrefsUtils {
     }
 
     public static void logout(Context context) {
-
         NBSyncService.softInterrupt();
         
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
         
         // wipe the local DB
-        BlurDatabase databaseHelper = new BlurDatabase(context.getApplicationContext());
-        databaseHelper.dropAndRecreateTables();
+        FeedUtils.dropAndRecreateTables();
         
         // prompt for a new login
         Intent i = new Intent(context, Login.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(i);
-
     }
 
 	/**
@@ -392,19 +387,6 @@ public class PrefsUtils {
     public static boolean isImagePrefetchEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false);
-    }
-
-    /**
-     * Sees if offline images should be used while reading via two conditions: is the device
-     * offline, and was image prefetch enabled.
-     */
-    public static boolean isLoadOfflineImages(Context context) {
-        if (!isImagePrefetchEnabled(context)) return false;
-
-        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
-
-        return ((activeInfo == null) || (!activeInfo.isConnected()));
     }
 
     /**

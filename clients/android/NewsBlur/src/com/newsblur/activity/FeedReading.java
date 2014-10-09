@@ -41,9 +41,4 @@ public class FeedReading extends Reading {
         getLoaderManager().initLoader(0, null, this);
     }
 
-    @Override
-    protected int getUnreadCount() {
-        return dbHelper.getFeedUnreadCount(feedId, currentState);
-    }
-
 }

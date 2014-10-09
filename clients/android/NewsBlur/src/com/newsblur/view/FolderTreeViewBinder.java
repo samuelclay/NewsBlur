@@ -15,12 +15,12 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.StateFilter;
 
 public class FolderTreeViewBinder implements ViewBinder {
 
-	private int currentState = AppConstants.STATE_SOME;
+	private StateFilter currentState = StateFilter.SOME;
 	private final ImageLoader imageLoader;
 	
 	public FolderTreeViewBinder(ImageLoader imageLoader) {
@@ -51,7 +51,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEUTRAL_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_NEUT)) {
 			int feedNeutral = cursor.getInt(columnIndex);
             if (feedNeutral < 0) feedNeutral = 0;
-			if (feedNeutral > 0 && currentState != AppConstants.STATE_BEST) {
+			if (feedNeutral > 0 && currentState != StateFilter.BEST) {
 				view.setVisibility(View.VISIBLE);
 				((TextView) view).setText(Integer.toString(feedNeutral));
 			} else {
@@ -76,7 +76,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 		return false;
 	}
 
-	public void setState(int selection) {
+	public void setState(StateFilter selection) {
 		currentState = selection;
 	}
 

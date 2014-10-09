@@ -450,7 +450,7 @@
 			<key>Key</key>
 			<string>show_feeds_after_being_read</string>
 			<key>DefaultValue</key>
-			<true/>
+			<false/>
 		</dict>
 	</array>
 	<key>StringsTable</key>

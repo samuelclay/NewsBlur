@@ -293,6 +293,8 @@
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
 #pragma mark -

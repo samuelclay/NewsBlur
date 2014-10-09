@@ -23,7 +23,7 @@ public class FeedReadingAdapter extends ReadingAdapter {
     }
 
 	@Override
-	protected synchronized Fragment getReadingItemFragment(int position) {
+	protected synchronized ReadingItemFragment getReadingItemFragment(int position) {
         stories.moveToPosition(position);
         return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColor, feed.faviconFade, feed.faviconBorder, feed.faviconText, feed.faviconUrl, classifier, false, defaultFeedView, sourceUserId);
 	}

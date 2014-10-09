@@ -34,6 +34,7 @@
     BOOL isShowingFetching;
     BOOL isDashboardModule;
     BOOL inDoubleTap;
+    BOOL invalidateFontCache;
      
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
@@ -62,6 +63,7 @@
 @property (nonatomic, readwrite) BOOL isDashboardModule;
 @property (nonatomic, readwrite) BOOL showContentPreview;
 @property (nonatomic, readwrite) BOOL showImagePreview;
+@property (nonatomic, readwrite) BOOL invalidateFontCache;
 
 - (void)reloadData;
 - (void)resetFeedDetail;

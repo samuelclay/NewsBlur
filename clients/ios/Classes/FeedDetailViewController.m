@@ -35,9 +35,9 @@
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
 
-#define kTableViewRowHeight 38;
-#define kTableViewRiverRowHeight 60;
-#define kTableViewShortRowDifference 15;
+#define kTableViewRowHeight 46;
+#define kTableViewRiverRowHeight 68;
+#define kTableViewShortRowDifference 17;
 #define kMarkReadActionSheet 1;
 #define kSettingsActionSheet 2;
 
@@ -67,6 +67,7 @@
 @synthesize storiesCollection;
 @synthesize showContentPreview;
 @synthesize showImagePreview;
+@synthesize invalidateFontCache;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -183,6 +184,8 @@
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
+    appDelegate.fontDescriptorTitleSize = nil;
+
     [self.storyTitlesTable reloadData];
 }
 
@@ -190,7 +193,9 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
     self.showImagePreview = [userPreferences boolForKey:@"story_list_preview_images"];
-
+    
+    appDelegate.fontDescriptorTitleSize = nil;
+    
     [self.storyTitlesTable reloadData];
 }
 
@@ -215,7 +220,7 @@
     [super viewWillAppear:animated];
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-
+    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
@@ -310,6 +315,11 @@
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyPageControl resetPages];
         [self checkScroll];
+    }
+    
+    if (invalidateFontCache) {
+        invalidateFontCache = NO;
+        [self reloadData];
     }
     
     self.finishedAnimatingIn = YES;
@@ -1205,7 +1215,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !self.isDashboardModule) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
         if (rowIndex == indexPath.row) {
-            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+            [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         } 
     }
     
@@ -1365,7 +1375,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
-    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
+    if (fontDescriptor) return fontDescriptor;
+    
+    fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
     if (![userPreferences boolForKey:@"use_system_font_size"]) {

@@ -75,7 +75,7 @@ public class APIResponse {
             return;
         }
 
-        if (AppConstants.VERBOSE_LOG) {
+        if (AppConstants.VERBOSE_LOG_NET) {
             Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
         }
 

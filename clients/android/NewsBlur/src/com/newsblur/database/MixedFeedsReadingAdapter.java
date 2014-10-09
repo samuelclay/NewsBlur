@@ -22,7 +22,7 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
 	}
 
 	@Override
-	protected synchronized Fragment getReadingItemFragment(int position) {
+	protected synchronized ReadingItemFragment getReadingItemFragment(int position) {
         stories.moveToPosition(position);
         Story story = Story.fromCursor(stories);
         String feedTitle = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_TITLE));

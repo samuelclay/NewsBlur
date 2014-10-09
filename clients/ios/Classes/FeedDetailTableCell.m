@@ -60,6 +60,7 @@ static UIFont *indicatorFont = nil;
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
+
         [self.contentView addSubview:cellContent];
     }
     
@@ -110,6 +111,31 @@ static UIFont *indicatorFont = nil;
     self.shouldAnimatesIcons = NO;
 }
 
+
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
+    UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
+
+    if (fontDescriptor) return fontDescriptor;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    if (![userPreferences boolForKey:@"use_system_font_size"]) {
+        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
+        }
+    }
+    
+    return fontDescriptor;
+}
+
 @end
 
 @implementation FeedDetailTableCellView
@@ -119,7 +145,6 @@ static UIFont *indicatorFont = nil;
 @synthesize appDelegate;
 
 - (void)drawRect:(CGRect)r {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     int riverPadding = 0;
     if (cell.isRiverOrSocial) {
         riverPadding = 20;
@@ -161,20 +186,7 @@ static UIFont *indicatorFont = nil;
     
     UIColor *textColor;
     UIFont *font;
-    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: UIFontTextStyleCaption1];
-    if (![userPreferences boolForKey:@"use_system_font_size"]) {
-        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
-        }
-    }
+    UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     
     if (cell.isRead) {
         font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
@@ -192,6 +204,7 @@ static UIFont *indicatorFont = nil;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
+    paragraphStyle.lineHeightMultiple = 0.95f;
 
     if (cell.isRiverOrSocial) {
         NSInteger siteTitleY = (20 - font.pointSize/2)/2;
@@ -231,9 +244,9 @@ static UIFont *indicatorFont = nil;
                                    NSParagraphStyleAttributeName: paragraphStyle}
                       context:nil].size;
     
-    int storyTitleY = 12 + riverPadding + ((font.pointSize*2 - theSize.height)/2);
+    int storyTitleY = 14 + riverPadding + ((font.pointSize*2 - theSize.height)/2);
     if (cell.isShort) {
-        storyTitleY = 12 + riverPadding - (theSize.height/font.pointSize*2);
+        storyTitleY = 14 + riverPadding - (theSize.height/font.pointSize*2);
     }
     int storyTitleX = leftMargin;
     if (cell.isSaved) {
@@ -268,13 +281,13 @@ static UIFont *indicatorFont = nil;
                                            NSParagraphStyleAttributeName: paragraphStyle}
                               context:nil].size;
 
-        int storyContentY = r.size.height - 18 - 4 - ((font.pointSize*2 + font.lineHeight) + contentSize.height)/2;
+        int storyContentY = r.size.height - 16 - 4 - ((font.pointSize*2 + font.lineHeight) + contentSize.height)/2;
         if (cell.isShort) {
-            storyContentY = r.size.height - 12 - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
+            storyContentY = r.size.height - 10 - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
         }
         
         if (cell.isRead) {
-            textColor = UIColorFromRGB(0x848484);
+            textColor = UIColorFromRGB(0xB8B8B8);
             font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
         } else {
             textColor = UIColorFromRGB(0x404040);
@@ -282,7 +295,7 @@ static UIFont *indicatorFont = nil;
         }
         if (cell.highlighted || cell.selected) {
             if (cell.isRead) {
-                textColor = UIColorFromRGB(0x787878);
+                textColor = UIColorFromRGB(0xB8B8B8);
             } else {
                 textColor = UIColorFromRGB(0x686868);
             }
@@ -330,14 +343,18 @@ static UIFont *indicatorFont = nil;
     
     // Story author
     if (cell.isRead) {
-        textColor = UIColorFromRGB(0x959595);
-        font = [UIFont fontWithName:@"Helvetica" size:10];
+        textColor = UIColorFromRGB(0xB8B8B8);
+        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     } else {
         textColor = UIColorFromRGB(0xA6A8A2);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     if (cell.highlighted || cell.selected) {
-        textColor = UIColorFromRGB(0x959595);
+        if (cell.isRead) {
+            textColor = UIColorFromRGB(0xA8A8A8);
+        } else {
+            textColor = UIColorFromRGB(0x959595);
+        }
     }
     
     paragraphStyle.alignment = NSTextAlignmentLeft;

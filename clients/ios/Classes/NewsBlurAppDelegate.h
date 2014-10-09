@@ -115,6 +115,8 @@
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     NSMutableDictionary *folderCountCache;
+    NSMutableDictionary *collapsedFolders;
+    UIFontDescriptor *fontDescriptorTitleSize;
     
 	NSDictionary * dictFolders;
     NSMutableDictionary * dictFeeds;
@@ -209,6 +211,9 @@
 @property (readwrite) NSMutableArray * readStories;
 @property (readwrite) NSMutableDictionary *unreadStoryHashes;
 @property (nonatomic) NSMutableDictionary *folderCountCache;
+@property (nonatomic) NSMutableDictionary *collapsedFolders;
+@property (nonatomic) UIFontDescriptor *fontDescriptorTitleSize;
+
 
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
@@ -300,6 +305,7 @@
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (NSDictionary *)markVisibleStoriesRead;
+- (BOOL)isFolderCollapsed:(NSString *)folderName;
 
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;

@@ -61,9 +61,13 @@ def utf8encode(tstr):
 def append_query_string_to_url(url, **kwargs):
     url_parts = list(urlparse.urlparse(url))
     query = dict(urlparse.parse_qsl(url_parts[4]))
-    query.update(kwargs)
 
-    url_parts[4] = urllib.urlencode(query)
+    if not url_parts[4] or (url_parts[4] and len(query.keys())):
+        # Ensure query string is preserved.
+        # ?atom should be preserved, so ignore
+        # ?feed=atom is fine
+        query.update(kwargs)
+        url_parts[4] = urllib.urlencode(query)
 
     return urlparse.urlunparse(url_parts)
     

@@ -1,12 +1,7 @@
 package com.newsblur.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -30,13 +25,10 @@ import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
-import com.newsblur.network.APIManager;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StateFilter;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -44,21 +36,23 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
-	protected int currentState;
-    private int lastRequestedStoryCount = 0;
+	protected StateFilter currentState;
     private boolean isLoading = true;
+    private boolean cursorSeenYet = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        currentState = (StateFilter) getArguments().getSerializable("currentState");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
     }
 
     /**
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
+        cursorSeenYet = false;
         setLoading(true);
-        lastRequestedStoryCount = 0;
     }
 
     public void setLoading(boolean loading) {
@@ -76,7 +70,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         TextView emptyView = (TextView) itemList.getEmptyView();
 
-        if (isLoading) {
+        if (isLoading || (!cursorSeenYet)) {
             emptyView.setText(R.string.empty_list_view_loading);
         } else {
             emptyView.setText(R.string.empty_list_view_no_stories);
@@ -99,28 +93,18 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         // load an extra page or two worth of stories past the viewport
-        int desiredStoryCount = firstVisible + (visibleCount*2);
-
-        // this method tends to get called repeatedly. don't request repeats
-        if (desiredStoryCount <= lastRequestedStoryCount) {
-            return;
-        }
-        lastRequestedStoryCount = desiredStoryCount;
-
-        triggerRefresh(desiredStoryCount);
+        int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
+        
+        ((ItemsList) getActivity()).triggerRefresh(desiredStoryCount, totalCount);
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-	public void changeState(int state) {
+	public void changeState(StateFilter state) {
 		currentState = state;
 		hasUpdated();
 	}
-
-	private void triggerRefresh(int desiredStories) {
-        ((ItemsList) getActivity()).triggerRefresh(desiredStories);
-    }
 
     protected FeedSet getFeedSet() {
         return ((ItemsList) getActivity()).getFeedSet();
@@ -140,8 +124,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
+            cursorSeenYet = true;
             if (cursor.getCount() == 0) {
-                triggerRefresh(1);
+                ((ItemsList) getActivity()).triggerRefresh(1);
             }
 			adapter.swapCursor(cursor);
 		}
@@ -193,7 +178,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             hasUpdated();
             return true;
 
-        case R.id.menu_mark_previous_stories_as_read:
+        case R.id.menu_mark_older_stories_as_read:
             FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
             hasUpdated();
             return true;
@@ -203,11 +188,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_save_story:
-            FeedUtils.saveStory(story, activity, new APIManager(activity));
+            FeedUtils.setStorySaved(story, true, activity);
             return true;
 
         case R.id.menu_unsave_story:
-            FeedUtils.unsaveStory(story, activity, new APIManager(activity));
+            FeedUtils.setStorySaved(story, false, activity);
+
             return true;
 
         default:

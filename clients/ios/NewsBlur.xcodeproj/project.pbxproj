@@ -220,6 +220,8 @@
 		FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF308A8018C01043009F986A /* MediaPlayer.framework */; };
 		FF322235185BC1AA004078AA /* logo_58.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322234185BC1AA004078AA /* logo_58.png */; };
 		FF322237185BC1CE004078AA /* logo_80.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322236185BC1CE004078AA /* logo_80.png */; };
+		FF38835819DE3333000B6DB3 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF75BE0D19CBB6C20004D545 /* GoogleOpenSource.framework */; };
+		FF38835919DE3333000B6DB3 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF75BE0F19CBB6C20004D545 /* GooglePlus.framework */; };
 		FF3964BC192BED0A004BEE1A /* tag.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3964BB192BED0A004BEE1A /* tag.png */; };
 		FF41309D162CEC7100DDB6A7 /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309C162CEC7100DDB6A7 /* time.png */; };
 		FF4130A0162CECAE00DDB6A7 /* email.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309F162CECAE00DDB6A7 /* email.png */; };
@@ -268,9 +270,6 @@
 		FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC8175858FC00344EC9 /* FMDatabasePool.m */; };
 		FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CCA175858FC00344EC9 /* FMDatabaseQueue.m */; };
 		FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CCD175858FC00344EC9 /* FMResultSet.m */; };
-		FF75BE1019CBB6C20004D545 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF75BE0D19CBB6C20004D545 /* GoogleOpenSource.framework */; };
-		FF75BE1119CBB6C20004D545 /* GooglePlus.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FF75BE0E19CBB6C20004D545 /* GooglePlus.bundle */; };
-		FF75BE1219CBB6C20004D545 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF75BE0F19CBB6C20004D545 /* GooglePlus.framework */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF8364BB1755759A008F5C58 /* traverse_text.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364B91755759A008F5C58 /* traverse_text.png */; };
@@ -675,6 +674,7 @@
 		FFF1E4CB17750D2C00BF59D3 /* menu_icn_preferences.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */; };
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
 		FFFC608517165A1D00DC22E2 /* THCircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFC60831716578E00DC22E2 /* THCircularProgressView.m */; };
+		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1623,6 +1623,8 @@
 		FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_preferences@2x.png"; sourceTree = "<group>"; };
 		FFFC60821716578E00DC22E2 /* THCircularProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = THCircularProgressView.h; sourceTree = "<group>"; };
 		FFFC60831716578E00DC22E2 /* THCircularProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = THCircularProgressView.m; sourceTree = "<group>"; };
+		FFFF683B19D628000081904A /* NBURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBURLCache.h; path = "Other Sources/NBURLCache.h"; sourceTree = "<group>"; };
+		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1630,13 +1632,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF38835819DE3333000B6DB3 /* GoogleOpenSource.framework in Frameworks */,
+				FF38835919DE3333000B6DB3 /* GooglePlus.framework in Frameworks */,
 				FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */,
-				FF75BE1219CBB6C20004D545 /* GooglePlus.framework in Frameworks */,
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
 				FF308A7B18C01014009F986A /* AssetsLibrary.framework in Frameworks */,
 				FF26125418C00FEC0055FF4D /* AddressBook.framework in Frameworks */,
-				FF75BE1019CBB6C20004D545 /* GoogleOpenSource.framework in Frameworks */,
 				FF468E3817FCFB970080325C /* AVFoundation.framework in Frameworks */,
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
 				FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */,
@@ -1742,6 +1744,8 @@
 				FF1F13D718AAC97900FDA816 /* UIImage+Resize.m */,
 				FFA0483F19CA5F5B00618DC4 /* UIWebView+Offsets.h */,
 				FFA0484019CA5F5B00618DC4 /* UIWebView+Offsets.m */,
+				FFFF683B19D628000081904A /* NBURLCache.h */,
+				FFFF683C19D628000081904A /* NBURLCache.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -3249,7 +3253,6 @@
 				FF41309D162CEC7100DDB6A7 /* time.png in Resources */,
 				FF4130A0162CECAE00DDB6A7 /* email.png in Resources */,
 				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
-				FF75BE1119CBB6C20004D545 /* GooglePlus.bundle in Resources */,
 				FFA0474919CA54A800618DC4 /* 1Password-Icon-29@2x.png in Resources */,
 				FFA0478619CA54A800618DC4 /* osk-flickrIcon-76.png in Resources */,
 				FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */,
@@ -3498,6 +3501,7 @@
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
 				FFA047DA19CA54A800618DC4 /* NSMutableURLRequest+OSKUtilities.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */,
+				FFFF683D19D628000081904A /* NBURLCache.m in Sources */,
 				FFA0481619CA54A800618DC4 /* OSKPagedHorizontalLayout.m in Sources */,
 				78FC34F711CA94900055C312 /* NSObject+SBJSON.m in Sources */,
 				FFA0482119CA54A800618DC4 /* OSKSaveToCameraRollActivity.m in Sources */,
@@ -3766,7 +3770,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "0a21ce12-0604-4e59-b0b1-1aa2b90afaa5";
+				PROVISIONING_PROFILE = "2f00e3a4-b7f2-4976-bb45-661087b33dc9";
 				STRIP_INSTALLED_PRODUCT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -3804,7 +3808,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "0a21ce12-0604-4e59-b0b1-1aa2b90afaa5";
+				PROVISIONING_PROFILE = "2f00e3a4-b7f2-4976-bb45-661087b33dc9";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

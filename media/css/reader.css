@@ -1375,6 +1375,12 @@ a img {
   display: block;
 }
 
+.NB-feedbar .NB-folder-fake .NB-feedbar-mark-feed-read-container {
+    display: none;
+}
+.NB-feedbar .NB-folder-river .NB-feedbar-mark-feed-read-container {
+    display: block;
+}
 
 .NB-feedbar .feed .feed_counts {
     width: 200px;
@@ -5383,7 +5389,7 @@ form.opml_import_form input {
     background-size: 28px;
 }
 .NB-modal-markread .NB-markread-slider {
-    margin-top: 24px;
+    margin: 24px 12px;
 }
 
 .NB-modal-markread .NB-markread-explanation {
@@ -9330,6 +9336,9 @@ form.opml_import_form input {
 }
 .NB-modal-account .NB-account-premium-cancel {
     margin-top: 0;
+}
+.NB-modal-account .NB-preference-saved-stories-date {
+    margin-bottom: 12px;
 }
 
 /* ================ */

@@ -39,11 +39,13 @@ static UIFont *textFont = nil;
         unreadCount = [UnreadCountView alloc];
         unreadCount.appDelegate = self.appDelegate;
         self.unreadCount = unreadCount;
-
+        
         cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
         
         [self.contentView addSubview:cellContent];
+
+        [self setupGestures];
     }
 
     return self;
@@ -53,7 +55,6 @@ static UIFont *textFont = nil;
     ((FeedTableCellView *)cellContent).cell = self;
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
-    [self setupGestures];
 }
 
 - (void) setPositiveCount:(int)ps {
@@ -101,6 +102,31 @@ static UIFont *textFont = nil;
 - (void)redrawUnreadCounts {
     [((FeedTableCellView *)cellContent) redrawUnreadCounts];
 }
+
+
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
+    UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
+    if (fontDescriptor) return fontDescriptor;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+
+    fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    if (![userPreferences boolForKey:@"use_system_font_size"]) {
+        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
+        }
+    }
+    
+    return fontDescriptor;
+}
+
 
 @end
 
@@ -151,21 +177,7 @@ static UIFont *textFont = nil;
                          [UIColor blackColor]:
                          UIColorFromRGB(0x3a3a3a);
     UIFont *font;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote];
-    if (![userPreferences boolForKey:@"use_system_font_size"]) {
-        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
-        }
-    }
+    UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
         font = [UIFont fontWithDescriptor:boldFontDescriptor size:0.0];

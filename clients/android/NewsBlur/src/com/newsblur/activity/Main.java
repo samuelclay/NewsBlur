@@ -25,6 +25,7 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
@@ -71,7 +72,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         super.onResume();
 
         // clear the read-this-session flag from stories so they don't show up in the wrong place
-        FeedUtils.clearReadingSession(this);
+        FeedUtils.clearReadingSession();
 
         updateStatusIndicators();
         // this view doesn't show stories, it is safe to perform cleanup
@@ -139,7 +140,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 	
 	@Override
-	public void changedState(int state) {
+	public void changedState(StateFilter state) {
 		folderFeedList.changeState(state);
 	}
 	

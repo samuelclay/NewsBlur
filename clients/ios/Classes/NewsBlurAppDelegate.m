@@ -53,11 +53,14 @@
 #import "TMCache.h"
 #import "StoriesCollection.h"
 #import "NSString+HTML.h"
+#import "UIView+ViewController.h"
+#import "UIViewController+OSKUtilities.h"
+#import "NBURLCache.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 31
+#define CURRENT_DB_VERSION 33
 
 @synthesize window;
 
@@ -124,6 +127,8 @@
 @synthesize readStories;
 @synthesize unreadStoryHashes;
 @synthesize folderCountCache;
+@synthesize collapsedFolders;
+@synthesize fontDescriptorTitleSize;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -207,7 +212,12 @@
     
     cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons"];
     cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages"];
-
+    
+    NBURLCache *urlCache = [[NBURLCache alloc] init];
+    [NSURLCache setSharedURLCache:urlCache];
+    // Uncomment below line to test image caching
+//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
 	return YES;
 }
 
@@ -613,6 +623,15 @@
         [self.masterContainerViewController showSendToPopover:vc];
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+        } else if ([sender isKindOfClass:[NSValue class]]) {
+            // Uncomment below to show share popover from linked text. Problem is
+            // that on finger up the link will open.
+//            CGPoint pt = [(NSValue *)sender CGPointValue];
+//            CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
+//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                                                           presentingViewController:vc options:options];
         } else {
             [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
@@ -622,7 +641,6 @@
                                                        presentingViewController:vc options:options];
     }
 }
-
 
 - (OSKApplicationCredential *)applicationCredentialForActivityType:(NSString *)activityType {
     OSKApplicationCredential *appCredential = nil;
@@ -1570,6 +1588,21 @@
     return counts;
 }
 
+- (BOOL)isFolderCollapsed:(NSString *)folderName {
+    if (!self.collapsedFolders) {
+        self.collapsedFolders = [[NSMutableDictionary alloc] init];
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+        for (NSString *folderName in self.dictFoldersArray) {
+            NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@",
+                                     folderName];
+            if ([userPreferences boolForKey:collapseKey]) {
+                [self.collapsedFolders setObject:folderName forKey:folderName];
+            }
+        }
+    }
+    return !![self.collapsedFolders objectForKey:folderName];
+}
+
 #pragma mark - Story Management
 
 - (NSDictionary *)markVisibleStoriesRead {
@@ -2408,6 +2441,15 @@
         //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+        NSError *error = nil;
+        BOOL success = [fileManager removeItemAtPath:cacheDirectory error:&error];
+        if (!success || error) {
+            // something went wrong
+        }
     }
     NSString *createAccountsTable = [NSString stringWithFormat:@"create table if not exists accounts "
                                   "("

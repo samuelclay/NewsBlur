@@ -32,14 +32,4 @@ public class SocialFeedReading extends Reading {
         getLoaderManager().initLoader(0, null, this);
     }
 
-    @Override
-    protected int getUnreadCount() {
-        Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
-        Cursor cursor = contentResolver.query(socialFeedUri, null, null, null, null);
-        if (cursor.getCount() == 0) return 0;
-        SocialFeed socialFeed = SocialFeed.fromCursor(cursor);
-        cursor.close();
-        return FeedUtils.getFeedUnreadCount(socialFeed, this.currentState);
-    }
-
 }
