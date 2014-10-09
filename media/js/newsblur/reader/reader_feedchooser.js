@@ -202,7 +202,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     make_feeds: function() {
         var feeds = this.model.feeds;
-        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
+        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder(true)).length;
         
         var $feeds = new NEWSBLUR.Views.FeedList({
             feed_chooser: true
@@ -274,7 +274,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     add_feed_to_decline: function(feed_id, update) {
         this.approve_list = _.without(this.approve_list, feed_id);
         var $feed = this.$feeds[feed_id];
-        
+        console.log(["decline", feed_id, update, $feed]);
         if (!$feed) return;
         
         $feed.removeClass('NB-feedchooser-approve');
@@ -289,7 +289,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             this.approve_list.push(feed_id);
         }
         var $feed = this.$feeds[feed_id];
-        
+        console.log(["approve", feed_id, update, $feed]);
         if (!$feed) return;
         
         $feed.removeClass('NB-feedchooser-decline');
@@ -522,7 +522,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $.targetIs(e, { tagSelector: '.feed' }, _.bind(function($t, $p) {
             e.preventDefault();
             
-            var feed_id = parseInt($t.attr('data-id'), 10);
+            var feed_id = parseInt($t.data('id'), 10);
             if (_.contains(this.approve_list, feed_id)) {
                 this.add_feed_to_decline(feed_id, true);
             } else {

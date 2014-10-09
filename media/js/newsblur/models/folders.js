@@ -52,11 +52,11 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         return view;
     },
     
-    feed_ids_in_folder: function() {
-        if (this.is_feed() && this.feed.get('active')) {
+    feed_ids_in_folder: function(include_inactive) {
+        if (this.is_feed() && (include_inactive || (!include_inactive && this.feed.get('active')))) {
             return this.feed.id;
         } else if (this.is_folder()) {
-            return this.folders.feed_ids_in_folder();
+            return this.folders.feed_ids_in_folder(include_inactive);
         }
     },
     
@@ -215,9 +215,9 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return names;
     },
     
-    feed_ids_in_folder: function() {
+    feed_ids_in_folder: function(include_inactive) {
         return _.compact(_.flatten(this.map(function(item) {
-            return item.feed_ids_in_folder();
+            return item.feed_ids_in_folder(include_inactive);
         })));
     },
     
