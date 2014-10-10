@@ -194,41 +194,34 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         synchronized (STORIES_MUTEX) {
-            if (cursor != null) {
-                readingAdapter.swapCursor(cursor);
-                stories = cursor;
-            }
+            if (cursor == null) return;
+
+            readingAdapter.swapCursor(cursor);
+            stories = cursor;
 
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
-
                 int currentUnreadCount = getUnreadCount();
                 if (currentUnreadCount > this.startingUnreadCount ) {
                     this.startingUnreadCount = currentUnreadCount;
                 }
-
                 // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
                 setupPager();
             }
 
             try {
                 readingAdapter.notifyDataSetChanged();
-                checkStoryCount(pager.getCurrentItem());
-                if (this.unreadSearchLatch != null) {
-                    this.unreadSearchLatch.countDown();
-                }
-                ReadingItemFragment fragment = getReadingFragment();
-                if (fragment != null ) {
-                    fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
-                    fragment.updateSaveButton();
-
-                    updateOverlayNav();
-                    updateOverlayText();
-                }
             } catch (IllegalStateException ise) {
                 // sometimes the pager is already shutting down by the time the callback finishes
                 finish();
             }
+
+            checkStoryCount(pager.getCurrentItem());
+            if (this.unreadSearchLatch != null) {
+                this.unreadSearchLatch.countDown();
+            }
+            updateOverlayNav();
+            updateOverlayText();
         }
 	}
 
@@ -328,7 +321,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected void handleUpdate() {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
         updateCursor();
-        readingAdapter.updateAllFragments();
     }
 
     private void updateCursor() {
