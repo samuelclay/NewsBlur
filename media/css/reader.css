@@ -8589,7 +8589,7 @@ form.opml_import_form input {
     cursor: pointer;
 }
 
-.NB-modal-feedchooser .NB-feedchooser .feed_counts {
+.NB-modal-feedchooser .NB-feedchooser .feed .feed_counts {
     display: block;
     text-transform: uppercase;
 }
@@ -8600,29 +8600,32 @@ form.opml_import_form input {
 .NB-modal-feedchooser .NB-feed-organizer-sort {
     display: none;
 }
-.NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_title {
+.NB-modal-feedchooser .feed.NB-highlighted .feed_title {
     font-weight: bold;
 }
-.NB-modal-feedchooser .feed.NB-feedchooser-decline {
+.NB-modal-feedchooser .feed {
     font-weight: normal;
 }
-.NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_favicon {
+.NB-modal-feedchooser .feed .feed_favicon {
   opacity: .3;
 }
-.NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_title {
+.NB-modal-feedchooser .feed:not(.NB-highlighted) .feed_title {
   color: #808080;
 }
 .NB-modal-feedchooser .feed .feed_counts .unread_count_negative,
 .NB-modal-feedchooser .feed .feed_counts .unread_count_positive {
     display: none;
 }
-.NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts,
-.NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts .unread_count_positive {
+.NB-modal-feedchooser .feed.NB-highlighted .feed_counts,
+.NB-modal-feedchooser .feed.NB-highlighted .feed_counts .unread_count_positive {
     display: block;
 }
-.NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_counts,
-.NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_counts .unread_count_negative {
+.NB-modal-feedchooser .feed .feed_counts,
+.NB-modal-feedchooser .feed .feed_counts .unread_count_negative {
     display: block;
+}
+.NB-modal-feedchooser .feed.NB-highlighted .feed_counts .unread_count_negative {
+    display: none;
 }
 .NB-modal-feedchooser .NB-feedlist .folder_title {
   cursor: default;

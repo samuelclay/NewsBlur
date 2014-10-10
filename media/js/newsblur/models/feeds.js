@@ -220,7 +220,9 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
                   _.contains(this.get('highlighted_in_folders'), folder_title));
     },
     
-    highlight_in_folder: function(folder_title, on, off) {
+    highlight_in_folder: function(folder_title, on, off, options) {
+        options = options || {};
+        
         if (!this.get('highlighted_in_folders')) {
             this.set('highlighted_in_folders', [], {silent: true});
         }
@@ -233,7 +235,26 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
                      _.without(this.get('highlighted_in_folders'), folder_title), {silent: true});
         }
         this.set('highlighted', !!this.get('highlighted_in_folders').length, {silent: true});
-        this.trigger('change:highlighted');
+
+        if (!options.silent) this.trigger('change:highlighted');
+    },
+    
+    highlight_in_all_folders: function(on, off, options) {
+        options = options || {};
+        
+        if (!this.get('highlighted_in_folders')) {
+            this.set('highlighted_in_folders', [], {silent: true});
+        }
+        var folders = this.in_folders() || [];
+        
+        if (!off && (on || !this.get('highlighted_in_folders').length)) {
+            this.set('highlighted_in_folders', folders, {silent: true});
+        } else {
+            this.set('highlighted_in_folders', [], {silent: true});
+        }
+        this.set('highlighted', !!this.get('highlighted_in_folders').length, {silent: true});
+
+        if (!options.silent) this.trigger('change:highlighted');
     }
     
 });

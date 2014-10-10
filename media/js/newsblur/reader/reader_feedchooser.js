@@ -12,18 +12,24 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
 NEWSBLUR.ReaderFeedchooser.prototype = {
     
     runner: function() {
+        var self = this;
         this.start = new Date();
         this.MAX_FEEDS = 64;
-        this.approve_list = [];
+
+        NEWSBLUR.assets.feeds.each(function(feed) {
+            self.add_feed_to_decline(feed);
+        });
+        
         this.make_modal();
         this.make_paypal_button();
         _.defer(_.bind(function() { this.open_modal(); }, this));
+        this.choose_dollar_amount(2);
         if (!this.options.premium_only) {
-            this.find_feeds_in_feed_list();
             this.initial_load_feeds();
         }
-        this.choose_dollar_amount(2);
-        
+
+        _.defer(_.bind(function() { this.update_counts(true); }, this));
+
         this.flags = {
             'has_saved': false
         };
@@ -204,10 +210,14 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var feeds = this.model.feeds;
         this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder(true)).length;
         
-        var $feeds = new NEWSBLUR.Views.FeedList({
-            feed_chooser: true
-        }).make_feeds().$el;
-        
+        this.feedlist = new NEWSBLUR.Views.FeedList({
+            feed_chooser: true,
+            sorting: this.options.sorting
+        }).make_feeds();
+        var $feeds = this.feedlist.$el;
+        if (this.options.resize) {
+            $feeds.css({'max-height': this.options.resize});
+        }
         if ($feeds.data('sortable')) $feeds.data('sortable').disable();
         
         // Expand collapsed folders
@@ -221,9 +231,12 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
 
         // Make sure all folders are visible
         $('.NB-folder.NB-hidden', $feeds).removeClass('NB-hidden');
+
+        NEWSBLUR.assets.folders.sort();
         
-        $('.unread_count_positive', $feeds).text('On');
-        $('.unread_count_negative', $feeds).text('Off');
+        NEWSBLUR.assets.feeds.off('change:highlighted')
+                             .on('change:highlighted', _.bind(this.change_selection, this));
+        
         
         return $feeds;
     },
@@ -271,62 +284,31 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         });
     },
     
-    add_feed_to_decline: function(feed_id, update) {
-        this.approve_list = _.without(this.approve_list, feed_id);
-        var $feed = this.$feeds[feed_id];
-        console.log(["decline", feed_id, update, $feed]);
-        if (!$feed) return;
+    add_feed_to_decline: function(feed, update) {
+        feed.highlight_in_all_folders(false, true, {silent: !update});
         
-        $feed.removeClass('NB-feedchooser-approve');
-        $feed.addClass('NB-feedchooser-decline');
         if (update) {
             this.update_counts();
         }
     },
     
     add_feed_to_approve: function(feed_id, update) {
-        if (!_.contains(this.approve_list, feed_id)) {
-            this.approve_list.push(feed_id);
-        }
-        var $feed = this.$feeds[feed_id];
-        console.log(["approve", feed_id, update, $feed]);
-        if (!$feed) return;
-        
-        $feed.removeClass('NB-feedchooser-decline');
-        $feed.addClass('NB-feedchooser-approve');
+        var feed = NEWSBLUR.assets.get_feed(feed_id);
+        feed.highlight_in_all_folders(true, false, {silent: false});
+
         if (update) {
             this.update_counts();
         }
     },
-        
-    find_feeds_in_feed_list: function() {
-        var self = this;
-        var $feed_list = $('.NB-feedchooser', this.$modal);
-        var $feeds = {};
-        
-        $('.feed', $feed_list).each(function() {
-            var feed_id = parseInt($(this).data('id'), 10);
-            if (!(feed_id in $feeds)) {
-                $feeds[feed_id] = $([]);
-            }
-            $feeds[feed_id].push($(this).get(0));
-        });
 
-        // Remove invalid feeds that only show up in the assetmodel.
-        // This occurs when a feed is still subscribed, but not in the user's folders.
-        var found_feeds = _.uniq(_.keys($feeds)).sort();
-        var invalid_feeds = _.each(self.model.feeds, function(feed_id) { 
-            if (!_.contains(found_feeds, feed_id)) {
-                delete self.model.feeds[feed_id];
-            }
-        });
-        
-        this.$feeds = $feeds;
+    change_selection: function(update) {
+        console.log(["change_selection", update]);
+        this.update_counts();
     },
-    
+
     update_counts: function(initial_load) {
         var $count = $('.NB-feedchooser-info-counts');
-        var approved = this.approve_list.length;
+        var approved = this.feedlist.folder_view.highlighted_count();
         var $submit = $('.NB-modal-submit-save', this.$modal);
         var difference = approved - this.MAX_FEEDS;
         var muted = this.feed_count - approved;
@@ -363,9 +345,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     initial_load_feeds: function(reset) {
         var start = new Date();
         var self = this;
-        var $feeds = $('.feed', this.$modal);
         var feeds = this.model.get_feeds();
-        
+        var approved = 0; // this.feedlist.folder_view.highlighted_count();
+
         if (!feeds.size()) {
             _.defer(_.bind(function() {
                 var $info = $('.NB-feedchooser-info', this.$modal);
@@ -377,6 +359,12 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 $('.NB-modal-submit-add').show();
             }, this));
             return;
+        }
+        
+        if (reset) {
+            feeds.each(function(feed) {
+                self.add_feed_to_decline(parseInt(feed.id, 10), true);
+            });
         }
         
         var active_feeds = feeds.any(function(feed) { return feed.get('active'); });
@@ -394,7 +382,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             // Decline everything
             var approve_feeds = [];
             feeds.each(function(feed) {
-                self.add_feed_to_decline(parseInt(feed.id, 10));
+                // self.add_feed_to_decline(parseInt(feed.id, 10));
             
                 if (feed.get('subs') >= min_subscribers) {
                     approve_feeds.push(parseInt(feed.id, 10));
@@ -404,14 +392,16 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             // Approve feeds in subs
             _.each(approve_feeds, function(feed_id) {
                 if (feeds.get(feed_id).get('subs') > min_subscribers &&
-                    self.approve_list.length < self.MAX_FEEDS &&
+                    approved < self.MAX_FEEDS &&
                     !self.model.get_feed(feed_id)['has_exception']) {
+                    approved++;
                     self.add_feed_to_approve(feed_id);
                 }
             });
             _.each(approve_feeds, function(feed_id) {
                 if (self.model.get_feed(feed_id).get('subs') == min_subscribers &&
-                    self.approve_list.length < self.MAX_FEEDS) {
+                    approved < self.MAX_FEEDS) {
+                    approved++;
                     self.add_feed_to_approve(feed_id);
                 }
             });
@@ -422,18 +412,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             var active_feeds = _.pluck(feeds.select(function(feed) {
                 return feed.get('active');
             }), 'id');
-            this.approve_list = active_feeds;
             
             // Approve or decline
-            var feeds = [];
-            $feeds.each(function() {
-                var feed_id = parseInt($(this).data('id'), 10);
-                
-                if (_.contains(active_feeds, feed_id)) {
-                    self.add_feed_to_approve(feed_id);
-                } else {
-                    self.add_feed_to_decline(feed_id);
-                }
+            _.each(approve_feeds, function(feed_id) {
+                self.add_feed_to_approve(feed_id);
             });
             
             _.defer(_.bind(function() { this.hide_autoselected_label(); }, this));
@@ -456,10 +438,14 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     save: function() {
         var self = this;
-        var approve_list = this.approve_list;
         var $submit = $('.NB-modal-submit-save', this.$modal);
         $submit.addClass('NB-disabled').removeClass('NB-modal-submit-green').val('Saving...');
-        
+        var approve_list = _.pluck(NEWSBLUR.assets.feeds.filter(function(feed) {
+            return feed.get('highlighted');
+        }), 'id');
+
+        console.log(["Saving", approve_list]);
+
         NEWSBLUR.reader.flags['reloading_feeds'] = true;
         this.model.save_feed_chooser(approve_list, function() {
             self.flags['has_saved'] = true;
@@ -518,17 +504,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
 
     handle_mousedown: function(elem, e) {
         var self = this;
-        
-        $.targetIs(e, { tagSelector: '.feed' }, _.bind(function($t, $p) {
-            e.preventDefault();
-            
-            var feed_id = parseInt($t.data('id'), 10);
-            if (_.contains(this.approve_list, feed_id)) {
-                this.add_feed_to_decline(feed_id, true);
-            } else {
-                this.add_feed_to_approve(feed_id, true);
-            }
-        }, this));
         
         $.targetIs(e, { tagSelector: '.NB-modal-submit-save' }, _.bind(function($t, $p) {
             e.preventDefault();

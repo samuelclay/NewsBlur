@@ -70,7 +70,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     
     render: function() {
         var depth = this.options.depth;
-        var folder_title = this.options.folder_title;
+        var folder_title = this.options.folder_title || "";
         var feed_chooser = this.options.feed_chooser;
         var organizer = this.options.organizer;
         var sorting = this.options.sorting;
@@ -431,7 +431,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         return all_children_highlighted;
     },
     
-    highlighted_count: function() {
+    highlighted_count_unique_folders: function() {
         var folder_title = this.options.folder_title;
         var count = this.collection.reduce(function(memo, item) {
             if (item.is_feed()) {
@@ -446,9 +446,24 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             } else {
                 return memo + _.reduce(item.folder_views, function(m, view) {
                     if (!view.options.feed_chooser) return m;
-                    return m + view.highlighted_count();
+                    return m + view.highlighted_count_unique_folders();
                 }, 0);
             }
+        }, 0);
+        
+        return count;
+    },
+    
+    highlighted_count: function() {
+        var count = NEWSBLUR.assets.feeds.reduce(function(memo, item) {
+            var view = _.detect(item.views, function(view) {
+                return view.options.feed_chooser;
+            });
+            
+            if (!view) return memo;
+            
+            var folders = item.get('highlighted_in_folders');
+            return (folders && folders.length) ? memo + 1 : memo;
         }, 0);
         
         return count;

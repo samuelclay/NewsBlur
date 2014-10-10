@@ -29,6 +29,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (!this.options.feed_chooser) {
             this.listenTo(this.model, 'change', this.changed);
             this.listenTo(this.model, 'change:updated', this.render_updated_time);
+        } else {
+            this.listenTo(this.model, 'change:highlighted', this.render);
         }
         
         if (this.model.is_social() && !this.model.get('feed_title')) {
@@ -328,7 +330,14 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     highlight: function(on, off) {
         if (!this.options.feed_chooser) return;
-        this.model.highlight_in_folder(this.options.folder_title, on, off);
+        var model = this.model;
+        
+        if (this.options.organizer) {
+            model.highlight_in_folder(this.options.folder_title, on, off);
+        } else {
+            // Highlight all folders
+            model.highlight_in_all_folders(on, off);
+        }
         
         // Feed chooser disables binding to changes, so need to manually render.
         this.render();

@@ -17,6 +17,10 @@ NEWSBLUR.ReaderOrganizer.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     
     init: function() {
+        NEWSBLUR.assets.feeds.each(function(feed) {
+            feed.highlight_in_all_folders(false, true, {silent: true});
+        });
+
         this.make_modal();
         this.open_modal();
 
@@ -126,7 +130,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
         NEWSBLUR.Collections.Folders.organizer_sortorder = null;
         NEWSBLUR.assets.folders.sort();
-        
+
         NEWSBLUR.assets.feeds.off('change:highlighted')
                              .on('change:highlighted', _.bind(this.change_selection, this));
         
@@ -149,7 +153,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var $title = $(".NB-organizer-selects .NB-organizer-action-title", this.$modal);
         var $move = $(".NB-action-move", this.$modal);
         var $delete = $(".NB-action-delete", this.$modal);
-        var count = this.feedlist.folder_view.highlighted_count();
+        var count = this.feedlist.folder_view.highlighted_count_unique_folders();
 
         $title.text(count ? count + " selected" : "Select");
                 
