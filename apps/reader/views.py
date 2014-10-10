@@ -1676,7 +1676,27 @@ def delete_folder(request):
     r.publish(request.user.username, 'reload:feeds')
     
     return dict(code=1, folders=folders)
+
+
+@required_params('feeds_by_folder')
+@ajax_login_required
+@json.json_view
+def delete_feeds_by_folder(request):
+    feeds_by_folder = request.POST['feeds_by_folder']
+
+    request.user.profile.send_opml_export_email()
     
+    # Works piss poor with duplicate folder titles, if they are both in the same folder.
+    # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders.delete_feeds_by_folder(feeds_by_folder)
+    folders = json.decode(user_sub_folders.folders)
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
+    return dict(code=1, folders=folders)
+
 @ajax_login_required
 @json.json_view
 def rename_feed(request):
@@ -1752,6 +1772,21 @@ def move_folder_to_folder(request):
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_folder_to_folder(folder_name, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+
+@required_params('feeds_by_folder', 'to_folder')
+@ajax_login_required
+@json.json_view
+def move_feeds_by_folder_to_folder(request):
+    feeds_by_folder = request.POST['feeds_by_folder']
+    to_folder = request.POST['to_folder']
+    
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders = user_sub_folders.move_feeds_by_folder_to_folder(feeds_by_folder, to_folder)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')

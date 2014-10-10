@@ -1307,6 +1307,14 @@ class UserSubscriptionFolders(models.Model):
         
         return self
     
+    def move_feeds_by_folder_to_folder(self, feeds_by_folder, to_folder):
+        logging.user(self.user, "~FBMoving ~SB%s~SN feeds to folder: ~SB%s" % (
+                     len(feeds_by_folder), to_folder))
+        for feed_id, in_folder in feeds_by_folder:
+            self.move_feed_to_folder(feed_id, in_folder, to_folder)
+        
+        return self
+    
     def rewrite_feed(self, original_feed, duplicate_feed):
         def rewrite_folders(folders, original_feed, duplicate_feed):
             new_folders = []

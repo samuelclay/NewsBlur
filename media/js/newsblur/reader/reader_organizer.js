@@ -108,7 +108,8 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         this.feedlist = new NEWSBLUR.Views.FeedList({
             feed_chooser: true,
             organizer: true,
-            sorting: this.options.sorting
+            sorting: this.options.sorting,
+            inverse_sorting: this.options.inverse_sorting
         }).make_feeds();
         var $feeds = this.feedlist.$el;
         if (this.options.resize) {
@@ -171,6 +172,13 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     // ===========
     
     change_sort: function(sorting) {
+        var inverse = this.options.inverse_sorting;
+        this.options.inverse_sorting = this.options.sorting == sorting;
+        if (this.options.sorting == sorting) {
+            this.options.inverse_sorting = !inverse;
+        } else {
+            this.options.inverse_sorting = false;
+        }
         this.options.sorting = sorting;
         
         $(".NB-action-"+sorting, this.$modal).addClass('NB-active').siblings().removeClass('NB-active');
@@ -189,10 +197,18 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     
     move_feeds: function() {
         var highlighted_feeds = this.serialize();
+        var $move = $('.NB-action-move', this.$modal);
+        var $loading = $('.NB-modal-loading', this.$modal);
+        $loading.addClass('NB-active');
+        $move.addClass('NB-disabled').attr('disabled', 'disabled').text('Moving...');
     },
     
     delete_feeds: function() {
         var highlighted_feeds = this.serialize();
+        var $loading = $('.NB-modal-loading', this.$modal);
+        var $delete = $('.NB-action-delete', this.$modal);
+        $loading.addClass('NB-active');
+        $delete.addClass('NB-disabled').attr('disabled', 'disabled').text('Deleting...');
     },
     
     // ===========
@@ -229,6 +245,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                    _.bind(function($t, $p) {
             e.preventDefault();
             
+            if ($t.is('.NB-disabled')) return;
             this.move_feeds();
         }, this));
         
@@ -236,6 +253,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                    _.bind(function($t, $p) {
             e.preventDefault();
             
+            if ($t.is('.NB-disabled')) return;
             this.delete_feeds();
         }, this));
     },
