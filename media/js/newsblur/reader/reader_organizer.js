@@ -103,6 +103,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var feeds = this.model.feeds;
         this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
         NEWSBLUR.Collections.Folders.organizer_sortorder = this.options.sorting;
+        NEWSBLUR.Collections.Folders.organizer_inversesort = this.options.inverse_sorting;
         NEWSBLUR.assets.folders.sort();
         
         this.feedlist = new NEWSBLUR.Views.FeedList({

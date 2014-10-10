@@ -328,6 +328,12 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         if (NEWSBLUR.Collections.Folders.organizer_sortorder) {
             sort_order = NEWSBLUR.Collections.Folders.organizer_sortorder.toUpperCase();
         }
+        var high = 1;
+        var low = -1;
+        if (NEWSBLUR.Collections.Folders.organizer_inversesort) {
+            high = -1;
+            low = 1;
+        }
         
         if (modelA.is_feed() != modelB.is_feed()) {
             // Feeds above folders
@@ -346,23 +352,23 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         }
         
         if (sort_order == 'ALPHABETICAL' || !sort_order) {
-            return feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1;
+            return feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low;
         } else if (sort_order == 'MOSTUSED') {
-            return feedA.get('feed_opens') < feedB.get('feed_opens') ? 1 : 
-                (feedA.get('feed_opens') > feedB.get('feed_opens') ? -1 : 
-                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1));
+            return feedA.get('feed_opens') < feedB.get('feed_opens') ? high : 
+                (feedA.get('feed_opens') > feedB.get('feed_opens') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low));
         } else if (sort_order == 'RECENCY') {
-            return feedA.get('last_story_date') < feedB.get('last_story_date') ? 1 : 
-                (feedA.get('last_story_date') > feedB.get('last_story_date') ? -1 : 
-                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1));            
+            return feedA.get('last_story_date') < feedB.get('last_story_date') ? high : 
+                (feedA.get('last_story_date') > feedB.get('last_story_date') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low));            
         } else if (sort_order == 'FREQUENCY') {
-            return feedA.get('average_stories_per_month') < feedB.get('average_stories_per_month') ? 1 : 
-                (feedA.get('average_stories_per_month') > feedB.get('average_stories_per_month') ? -1 : 
-                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1)); 
+            return feedA.get('average_stories_per_month') < feedB.get('average_stories_per_month') ? high : 
+                (feedA.get('average_stories_per_month') > feedB.get('average_stories_per_month') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low)); 
         } else if (sort_order == 'SUBSCRIBERS') {
-            return feedA.get('num_subscribers') < feedB.get('num_subscribers') ? 1 : 
-                (feedA.get('num_subscribers') > feedB.get('num_subscribers') ? -1 : 
-                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1)); 
+            return feedA.get('num_subscribers') < feedB.get('num_subscribers') ? high : 
+                (feedA.get('num_subscribers') > feedB.get('num_subscribers') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low)); 
         }
     }
 
