@@ -276,22 +276,13 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		});
 	}
 
-    public void updateSaveButton() {
+    private void updateSaveButton() {
         if (view == null) { return; }
 		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
         if (saveButton == null) { return; }
         saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
     }
 
-    public void updateStory(Story story) {
-        if (story != null ) {
-            this.story = story;
-            if (selectedFeedView == DefaultFeedView.TEXT && originalText == null) {
-                loadOriginalText();
-            }
-        }
-    }
-    
 	private void setupShareButton() {
 		Button shareButton = (Button) view.findViewById(R.id.share_story_button);
 
@@ -450,7 +441,19 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         ((Reading) parent).enableLeftProgressCircle(loading);
     }
 
+    /** 
+     * Lets the pager offer us an updated version of our story when a new cursor is
+     * cycled in. This class takes the responsibility of ensureing that the cursor
+     * index has not shifted, though, by checking story IDs.
+     */
+    public void offerStoryUpdate(Story story) {
+        if (story == null) return;
+        if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
+        this.story = story;
+    }
+
     public void handleUpdate() {
+        updateSaveButton();
         reloadStoryContent();
     }
 
