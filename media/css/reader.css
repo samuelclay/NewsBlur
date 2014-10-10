@@ -613,7 +613,7 @@ a img {
     display: none;
     opacity: 0;
 }
-.NB-feedlist .feed.NB-feed-unfetched .feed_counts {
+.NB-feedlist .feed.NB-feed-unfetched:not(.NB-highlighted) .feed_counts {
   display: none;
 }
 .NB-feedlist .feed.NB-feed-unfetched .feed_favicon {
