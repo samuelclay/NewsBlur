@@ -507,6 +507,28 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         });
     },
     
+    highlighted_feeds: function(options, feeds) {
+        if (!this.options.feed_chooser) return feeds;
+        options = options || {};
+        feeds = feeds || [];
+        
+        var folder_title = this.options.folder_title;
+        
+        this.collection.each(function(item) {
+            if (item.is_feed() && item.feed.get('highlighted')) {
+                if (_.contains(item.feed.get('highlighted_in_folders'), folder_title)) {
+                    feeds.push([item.feed.id, folder_title]);
+                }
+            } else if (item.is_folder()) {
+                _.each(item.folder_views, function(view) {
+                    feeds = view.highlighted_feeds(options, feeds);
+                });
+            }
+        });
+
+        return feeds;
+    },
+    
     mark_folder_as_read: function(e, days_back) {
         NEWSBLUR.reader.mark_folder_as_read(this.model, days_back);
         this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);

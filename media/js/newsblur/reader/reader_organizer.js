@@ -178,6 +178,23 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());
     },
     
+    // ==========
+    // = Server =
+    // ==========
+    
+    serialize: function() {
+        var highlighted_feeds = this.feedlist.folder_view.highlighted_feeds();
+        console.log(["highlighted feeds", highlighted_feeds]);
+    },
+    
+    move_feeds: function() {
+        var highlighted_feeds = this.serialize();
+    },
+    
+    delete_feeds: function() {
+        var highlighted_feeds = this.serialize();
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -206,6 +223,20 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             e.preventDefault();
             
             this.toggle_folder_add();
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-action-move' },
+                   _.bind(function($t, $p) {
+            e.preventDefault();
+            
+            this.move_feeds();
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-action-delete' },
+                   _.bind(function($t, $p) {
+            e.preventDefault();
+            
+            this.delete_feeds();
         }, this));
     },
 
