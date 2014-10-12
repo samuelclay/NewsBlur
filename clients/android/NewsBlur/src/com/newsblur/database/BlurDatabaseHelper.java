@@ -298,17 +298,29 @@ public class BlurDatabaseHelper {
     }
 
     public void setStoryReadState(String hash, boolean read) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_READ, read);
-        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
+        Cursor c = getStory(hash);
+        if (c.getCount() < 1) {
+            Log.w(this.getClass().getName(), "story removed before finishing mark-read");
+            return;
+        }
+        Story story = Story.fromCursor(c);
+        if (story == null) {
+            Log.w(this.getClass().getName(), "story removed before finishing mark-read");
+            return;
+        }
+        setStoryReadState(story, read);
+        
     }
 
     /**
      * Marks a story (un)read and also adjusts unread counts for it.
      */
     public void setStoryReadState(Story story, boolean read) {
-        setStoryReadState(story.storyHash, read);
+        // read flag
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_READ, read);
+        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{story.storyHash});}
         // non-social feed count
         refreshFeedCounts(FeedSet.singleFeed(story.feedId));
         // social feed counts
