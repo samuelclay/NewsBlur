@@ -1689,7 +1689,7 @@ def delete_folder(request):
 @ajax_login_required
 @json.json_view
 def delete_feeds_by_folder(request):
-    feeds_by_folder = request.POST['feeds_by_folder']
+    feeds_by_folder = json.decode(request.POST['feeds_by_folder'])
 
     request.user.profile.send_opml_export_email()
     
@@ -1789,7 +1789,7 @@ def move_folder_to_folder(request):
 @ajax_login_required
 @json.json_view
 def move_feeds_by_folder_to_folder(request):
-    feeds_by_folder = request.POST['feeds_by_folder']
+    feeds_by_folder = json.decode(request.POST['feeds_by_folder'])
     to_folder = request.POST['to_folder']
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)

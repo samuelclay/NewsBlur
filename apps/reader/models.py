@@ -1246,7 +1246,15 @@ class UserSubscriptionFolders(models.Model):
             UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
           
         return deleted_folder
+
+    def delete_feeds_by_folder(self, feeds_by_folder):
+        logging.user(self.user, "~FBDeleting ~FR~SB%s~SN feeds~FB: ~SB%s" % (
+                     len(feeds_by_folder), feeds_by_folder))
+        for feed_id, in_folder in feeds_by_folder:
+            self.delete_feed(feed_id, in_folder)
         
+        return self
+
     def rename_folder(self, folder_to_rename, new_folder_name, in_folder):
         def _find_folder_in_folders(old_folders, folder_name):
             new_folders = []

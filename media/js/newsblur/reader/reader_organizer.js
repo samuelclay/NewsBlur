@@ -17,14 +17,17 @@ NEWSBLUR.ReaderOrganizer.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     
     init: function() {
-        NEWSBLUR.assets.feeds.each(function(feed) {
-            feed.highlight_in_all_folders(false, true, {silent: true});
-        });
-
+        this.reset_feeds();
         this.make_modal();
         this.open_modal();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+    },
+    
+    reset_feeds: function() {
+        NEWSBLUR.assets.feeds.each(function(feed) {
+            feed.highlight_in_all_folders(false, true, {silent: true});
+        });
     },
     
     make_modal: function() {
@@ -48,14 +51,16 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                             $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: "New folder name..." })
                         ]),
                         $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, 'Move'),
-                        $.make('div', { className: 'NB-loading' })
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('div', { className: 'NB-error-move NB-error' })
                     ])
                 ]),
                 $.make('div', { className: 'NB-organizer-sidebar-delete' }, [
                     $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Delete sites'),
                     $.make('div', { className: 'NB-organizer-sidebar-container' }, [
                         $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-disabled NB-action-delete' }, 'Delete'),
-                        $.make('div', { className: 'NB-loading' })
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('div', { className: 'NB-error-delete NB-error' })
                     ])
                 ])
             ]),
@@ -154,11 +159,13 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     change_selection: function() {
         var $title = $(".NB-organizer-selects .NB-organizer-action-title", this.$modal);
         var $move = $(".NB-action-move", this.$modal);
+        var $error = $(".NB-error-move", this.$modal);
         var $delete = $(".NB-action-delete", this.$modal);
         var count = this.feedlist.folder_view.highlighted_count_unique_folders();
 
         $title.text(count ? count + " selected" : "Select");
-                
+        $error.text('');
+        
         if (!count) {
             $delete.text('Delete').addClass('NB-disabled');
             $move.text('Move').addClass('NB-disabled');
@@ -194,22 +201,57 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     serialize: function() {
         var highlighted_feeds = this.feedlist.folder_view.highlighted_feeds();
         console.log(["highlighted feeds", highlighted_feeds]);
+        
+        return highlighted_feeds;
     },
     
     move_feeds: function() {
+        var self = this;
         var highlighted_feeds = this.serialize();
         var $move = $('.NB-action-move', this.$modal);
+        var $error = $(".NB-error-move", this.$modal);
         var $loading = $('.NB-modal-loading', this.$modal);
+        var $feedlist = $(".NB-feedlist", this.$modal);
+        var to_folder = $('.NB-folders').val();
         $loading.addClass('NB-active');
-        $move.addClass('NB-disabled').attr('disabled', 'disabled').text('Moving...');
+        $move.addClass('NB-disabled').text('Moving...');
+        
+        console.log(["Moving feeds by folder", highlighted_feeds, to_folder]);
+
+        NEWSBLUR.assets.move_feeds_by_folder(highlighted_feeds, to_folder, function(data) {
+            $loading.removeClass('NB-active');
+            self.change_selection();
+            $feedlist.replaceWith(self.make_feeds());
+            $move.text('Moved!');
+        }, function(error) {
+            $loading.removeClass('NB-active');
+            self.change_selection();
+            $error.text("Sorry, there was a problem moving feeds.");
+        });
     },
     
     delete_feeds: function() {
         var highlighted_feeds = this.serialize();
         var $loading = $('.NB-modal-loading', this.$modal);
+        var $error = $(".NB-error-delete", this.$modal);
         var $delete = $('.NB-action-delete', this.$modal);
+        var $feedlist = $(".NB-feedlist", this.$modal);
         $loading.addClass('NB-active');
-        $delete.addClass('NB-disabled').attr('disabled', 'disabled').text('Deleting...');
+        $delete.addClass('NB-disabled').text('Deleting...');
+        
+        console.log(["Deleting feeds by folder", highlighted_feeds]);
+        
+        NEWSBLUR.assets.delete_feeds_by_folder(highlighted_feeds, function(data) {
+            $loading.removeClass('NB-active');
+            self.reset_feeds();
+            $feedlist.replaceWith(self.make_feeds());
+            self.change_selection();
+            $delete.text('Deleted!');
+        }, function(error) {
+            $loading.removeClass('NB-active');
+            self.change_selection();
+            $error.text("Sorry, there was a problem deleting feeds.");
+        });
     },
     
     // ===========
