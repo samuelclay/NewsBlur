@@ -59,6 +59,10 @@ from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
 
 
+BANNED_URLS = [
+    "brentozar.com",
+]
+
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
@@ -1574,6 +1578,9 @@ def add_url(request):
     if not url:
         code = -1
         message = 'Enter in the website address or the feed URL.'
+    elif any([(banned_url in url) for banned_url in BANNED_URLS]):
+        code = -1
+        message = "The publisher of this website has banned NewsBlur."
     else:
         if new_folder:
             usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
