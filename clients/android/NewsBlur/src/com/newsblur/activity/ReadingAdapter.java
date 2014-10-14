@@ -108,12 +108,18 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
         return frag.get();
     }
 
-    public void updateAllFragments() {
-        for (int i=0; i<cachedFragments.size(); i++) {
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+
+        // go one step further than the default pageradapter and also refresh the
+        // story object inside each fragment we have active
+        for (int i=0; i<stories.getCount(); i++) {
             WeakReference<ReadingItemFragment> frag = cachedFragments.get(i);
             if (frag == null) continue;
             ReadingItemFragment rif = frag.get();
             if (rif == null) continue;
+            rif.offerStoryUpdate(getStory(i));
             rif.handleUpdate();
         }
     }
