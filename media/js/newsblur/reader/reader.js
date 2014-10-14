@@ -4477,6 +4477,7 @@
                         this.force_feeds_refresh(null, false, feeds);
                     } else if (_.string.startsWith(message, "reload:")) {
                         if (!NEWSBLUR.reader.flags['reloading_feeds']) {
+                            console.log(["Reloading feeds due to server reload", NEWSBLUR.reader.flags['reloading_feeds']]);
                             NEWSBLUR.assets.load_feeds();
                         }
                     }

@@ -411,18 +411,26 @@ class Profile(models.Model):
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
-    def send_opml_export_email(self):
+    def send_opml_export_email(self, reason=None, force=False):
         if not self.user.email:
             return
         
-        MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                         email_type='opml_export')
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
+                                                email_type='opml_export')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+        for email in emails_sent:
+            if email.date_sent > day_ago and not force:
+                logging.user(self.user, "~SN~FMNot sending opml export email, already sent today.")
+                return
+
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type='opml_export')
         
         exporter = OPMLExporter(self.user)
         opml     = exporter.process()
 
         params = {
             'feed_count': UserSubscription.objects.filter(user=self.user).count(),
+            'reason': reason,
         }
         user    = self.user
         text    = render_to_string('mail/email_opml_export.txt', params)
