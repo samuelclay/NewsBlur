@@ -1791,10 +1791,16 @@ def move_folder_to_folder(request):
 def move_feeds_by_folder_to_folder(request):
     feeds_by_folder = json.decode(request.POST['feeds_by_folder'])
     to_folder = request.POST['to_folder']
+    new_folder = request.POST.get('new_folder', None)
 
     request.user.profile.send_opml_export_email(reason="You have moved a number of feeds at once, so here's a backup just in case.")
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+
+    if new_folder:
+        user_sub_folders.add_folder(to_folder, new_folder)
+        to_folder = new_folder
+
     user_sub_folders = user_sub_folders.move_feeds_by_folder_to_folder(feeds_by_folder, to_folder)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)

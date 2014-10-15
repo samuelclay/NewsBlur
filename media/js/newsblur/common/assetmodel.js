@@ -1132,7 +1132,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback);
     },
     
-    move_feeds_by_folder: function(feeds_by_folder, to_folder, callback, error_callback) {
+    move_feeds_by_folder: function(feeds_by_folder, to_folder, new_folder, callback, error_callback) {
         var pre_callback = _.bind(function(data) {
             this.folders.reset(_.compact(data.folders), {parse: true});
             return callback();
@@ -1140,7 +1140,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         this.make_request('/reader/move_feeds_by_folder_to_folder', {
             'feeds_by_folder': $.toJSON(feeds_by_folder),
-            'to_folder': to_folder
+            'to_folder': to_folder,
+            'new_folder': new_folder
         }, pre_callback, error_callback);
     },
     

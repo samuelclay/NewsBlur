@@ -211,15 +211,18 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var $move = $('.NB-action-move', this.$modal);
         var $error = $(".NB-error-move", this.$modal).hide();
         var $loading = $('.NB-modal-loading', this.$modal);
+        var new_folder = $('.NB-add-folder-input', this.$modal).val();
         var $feedlist = $(".NB-feedlist", this.$modal);
         var to_folder = $('.NB-folders').val();
         $loading.addClass('NB-active');
         $move.addClass('NB-disabled').text('Moving...');
         NEWSBLUR.reader.flags['reloading_feeds'] = true;
+        
+        if (!this._open_folder) new_folder = null;
+        
+        console.log(["Moving feeds by folder", highlighted_feeds, to_folder, new_folder]);
 
-        console.log(["Moving feeds by folder", highlighted_feeds, to_folder]);
-
-        NEWSBLUR.assets.move_feeds_by_folder(highlighted_feeds, to_folder, function(data) {
+        NEWSBLUR.assets.move_feeds_by_folder(highlighted_feeds, to_folder, new_folder, function(data) {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.reset_feeds();
@@ -227,6 +230,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             self.change_selection();
             NEWSBLUR.assets.feeds.trigger('reset');
             $move.text('Moved!');
+            if (self._open_folder) self.toggle_folder_add();
         }, function(error) {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
@@ -256,6 +260,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             self.change_selection();
             NEWSBLUR.assets.feeds.trigger('reset');
             $delete.text('Deleted!');
+            if (self._open_folder) self.toggle_folder_add();
         }, function(error) {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
