@@ -924,7 +924,7 @@ a img {
     float: right;
     font-weight: bold;
     color: #FFF;
-    padding: 2px 1px 2px;
+    padding: 3px 1px 1px;
     margin: 3px 1px 0;
     background-color: #8eb6e8;
     display: none;
@@ -933,15 +933,23 @@ a img {
 /*    border-top: 1px solid rgba(255, 255, 255, .4);*/
     border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
+.NB-theme-feed-size-xs .unread_count {
+    margin-top: 2px;
+    padding: 2px 1px 2px;
+}
+.NB-theme-feed-size-s .unread_count {
+    margin-top: 2px;
+    padding: 3px 1px 1px;
+}
 .NB-theme-feed-size-l .unread_count {
     margin-top: 3px;
     padding-top: 3px;
     padding-bottom: 3px;
 }
 .NB-theme-feed-size-xl .unread_count {
-    margin-top: 4px;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    margin-top: 3px;
+    padding-top: 4px;
+    padding-bottom: 2px;
 }
 .unread_count_starred {
     background-color: #506B9A;
@@ -8606,7 +8614,7 @@ form.opml_import_form input {
 .NB-modal-feedchooser .feed {
     font-weight: normal;
 }
-.NB-modal-feedchooser .feed .feed_favicon {
+.NB-modal-feedchooser .feed:not(.NB-highlighted) .feed_favicon {
   opacity: .3;
 }
 .NB-modal-feedchooser .feed:not(.NB-highlighted) .feed_title {
