@@ -1077,6 +1077,10 @@ def copy_task_settings():
             '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
+@parallel
+def copy_spam():
+    put(os.path.join(env.SECRETS_PATH, 'spam/spam.py'), '%s/apps/social/spam.py' % env.NEWSBLUR_PATH)
+    
 # =========================
 # = Setup - Digital Ocean =
 # =========================
