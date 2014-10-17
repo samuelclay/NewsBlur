@@ -1,5 +1,4 @@
 import datetime
-import random
 from celery.task import Task
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
@@ -54,7 +53,6 @@ class CleanupUser(Task):
         UserSubscription.trim_user_read_stories(user_id)
         UserSubscription.verify_feeds_scheduled(user_id)
 
-        if random.random() < 0.01:
-            ss = MSocialServices.objects.get(user_id=user_id)
-            ss.sync_twitter_photo()
+        ss = MSocialServices.objects.get(user_id=user_id)
+        ss.sync_twitter_photo()
 
