@@ -34,6 +34,7 @@ public class ViewUtils {
 	}
 	
 	public static void setupCommentCount(Context context, View storyView, int sharedCommentCount) {
+        if (context == null || context.getResources() == null) return;
 		String commentsBy = context.getResources().getString(R.string.reading_comment_count);
 		TextView sharesText = (TextView) storyView.findViewById(R.id.comment_by);
 		if (sharedCommentCount > 0) {
