@@ -57,9 +57,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	public static final String EXTRA_FOLDERNAME = "foldername";
 	public static final String EXTRA_FEED_IDS = "feed_ids";
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
-	private static final String TEXT_SIZE = "textsize";
+    private static final String TEXT_SIZE = "textsize";
     private static final String BUNDLE_POSITION = "position";
     private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
+    private static final String BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView";
 
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
@@ -134,8 +135,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
-        defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_SELECTED_FEED_VIEW)) {
+            defaultFeedView = (DefaultFeedView)savedInstanceBundle.getSerializable(BUNDLE_SELECTED_FEED_VIEW);
+        } else {
+            defaultFeedView = (DefaultFeedView) getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
+        }
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
 
@@ -157,6 +164,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
         if (startingUnreadCount != 0) {
             outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
+        }
+
+        ReadingItemFragment item = getReadingFragment();
+        if (item != null) {
+            outState.putSerializable(BUNDLE_SELECTED_FEED_VIEW, item.getSelectedFeedView());
         }
     }
 
