@@ -29,6 +29,7 @@ import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,11 +77,11 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbWrapper.dropAndRecreateTables();}
     }
 
-    private List<String> getAllFeeds() {
+    public Set<String> getAllFeeds() {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
         Cursor c = dbRO.rawQuery(q1, null);
-        List<String> feedIds = new ArrayList<String>(c.getCount());
+        LinkedHashSet<String> feedIds = new LinkedHashSet<String>(c.getCount());
         while (c.moveToNext()) {
            feedIds.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_ID)));
         }
