@@ -71,7 +71,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                     $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, 'Subscribers'),
                     $.make('div', { className: 'NB-organizer-action NB-action-frequency' }, 'Frequency'),
                     $.make('div', { className: 'NB-organizer-action NB-action-recency' }, 'Recency'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, 'Use')
+                    $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, 'Opens')
                 ]),
                 $.make('div', { className: 'NB-organizer-selects' }, [
                     $.make('div', { className: 'NB-organizer-action-title' }, 'Select'),
