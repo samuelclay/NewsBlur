@@ -483,125 +483,124 @@
              title:(NSString *)title
          feedTitle:(NSString *)feedTitle
             images:(NSArray *)images {
-    OSKShareableContent *content = [[OSKShareableContent alloc] init];
+    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+    if (title) [activityItems addObject:title];
+    if (url) [activityItems addObject:url];
+    if (text) [activityItems addObject:text];
+//    if (images) [activityItems addObject:images];
+
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
+                                                        initWithActivityItems:activityItems
+                                                        applicationActivities:nil];
+    [activityViewController setTitle:title];
     
-    text = text ? text : @"";
-    content.title = [NSString stringWithFormat:@"%@", title];
-    
-    OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
-    microblogPost.text = [NSString stringWithFormat:@"%@ %@", title, [url absoluteString]];
-    microblogPost.images = [activeStory objectForKey:@"story_images"];;
-    content.microblogPostItem = microblogPost;
-    
-    OSKCopyToPasteboardContentItem *copyTextToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
-    copyTextToPasteboard.text = text;
-    copyTextToPasteboard.alternateActivityName = @"Copy Text";
-    content.pasteboardItem = copyTextToPasteboard;
-    
-    OSKCopyToPasteboardContentItem *copyURLToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
-    copyURLToPasteboard.text = [url absoluteString];
-    copyURLToPasteboard.alternateActivityName = @"Copy URL";
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
-    } else {
-        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
-    }
-    
-    OSKCopyToPasteboardContentItem *copyTitleToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
-    copyTitleToPasteboard.text = title;
-    copyTitleToPasteboard.alternateActivityName = @"Copy Title";
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
-    } else {
-        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
-    }
-    
-    content.additionalItems = @[copyURLToPasteboard, copyTitleToPasteboard];
-    
-    OSKEmailContentItem *emailItem = [[OSKEmailContentItem alloc] init];
-    NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
-    emailItem.body = [NSString stringWithFormat:@"<br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@", [url absoluteString], title, maybeFeedTitle, text];
-    emailItem.subject = title;
-    emailItem.isHTML = YES;
-    content.emailItem = emailItem;
-    
-    OSKSMSContentItem *smsItem = [[OSKSMSContentItem alloc] init];
-    smsItem.body = [NSString stringWithFormat:@"%@\n%@", title, [url absoluteString]];;
-    content.smsItem = smsItem;
-    
-    OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
-    readLater.url = url;
-    content.readLaterItem = readLater;
-    
-    OSKToDoListEntryContentItem *toDoList = [[OSKToDoListEntryContentItem alloc] init];
-    toDoList.title = [NSString stringWithFormat:@"Read \"%@\"", title];
-    toDoList.notes = [NSString stringWithFormat:@"%@\n\n%@", text, [url absoluteString]];
-    content.toDoListItem = toDoList;
-    
-    OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];
-    linkBookmarking.url = readLater.url;
-    linkBookmarking.title = title;
-    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    NSMutableArray *tags = [NSMutableArray arrayWithObject:appName];
-    [tags addObjectsFromArray:[activeStory objectForKey:@"story_tags"]];
-    linkBookmarking.tags = tags;
-    linkBookmarking.markToRead = YES;
-    content.linkBookmarkItem = linkBookmarking;
-    
-    OSKWebBrowserContentItem *browserItem = [[OSKWebBrowserContentItem alloc] init];
-    browserItem.url = readLater.url;
-    content.webBrowserItem = browserItem;
-    
-    OSKPasswordManagementAppSearchContentItem *passwordSearchItem = [[OSKPasswordManagementAppSearchContentItem alloc] init];
-    passwordSearchItem.query = [url host];
-    content.passwordSearchItem = passwordSearchItem;
-    
-    if (images.count) {
-        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
-        airDrop.items = images;
-        content.airDropItem = airDrop;
-    }
-    else if ([url absoluteString].length) {
-        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
-        airDrop.items = @[[url absoluteString]];
-        content.airDropItem = airDrop;
-    }
-    else if (text.length) {
-        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
-        airDrop.items = @[text];
-        content.airDropItem = airDrop;
-    }
-    
-    
-    OSKActivityCompletionHandler completionHandler = ^(OSKActivity *activity, BOOL successful, NSError *error){
-        if (!successful) return;
-        
-        NSString *activityType = [activity.class activityType];
+//    text = text ? text : @"";
+//    content.title = [NSString stringWithFormat:@"%@", title];
+//    
+//    OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
+//    microblogPost.text = [NSString stringWithFormat:@"%@ %@", title, [url absoluteString]];
+//    microblogPost.images = [activeStory objectForKey:@"story_images"];;
+//    content.microblogPostItem = microblogPost;
+//    
+//    OSKCopyToPasteboardContentItem *copyTextToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+//    copyTextToPasteboard.text = text;
+//    copyTextToPasteboard.alternateActivityName = @"Copy Text";
+//    content.pasteboardItem = copyTextToPasteboard;
+//    
+//    OSKCopyToPasteboardContentItem *copyURLToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+//    copyURLToPasteboard.text = [url absoluteString];
+//    copyURLToPasteboard.alternateActivityName = @"Copy URL";
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
+//    } else {
+//        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
+//    }
+//    
+//    OSKCopyToPasteboardContentItem *copyTitleToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+//    copyTitleToPasteboard.text = title;
+//    copyTitleToPasteboard.alternateActivityName = @"Copy Title";
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
+//    } else {
+//        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
+//    }
+//    
+//    content.additionalItems = @[copyURLToPasteboard, copyTitleToPasteboard];
+//    
+//    OSKEmailContentItem *emailItem = [[OSKEmailContentItem alloc] init];
+//    NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
+//    emailItem.body = [NSString stringWithFormat:@"<br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@", [url absoluteString], title, maybeFeedTitle, text];
+//    emailItem.subject = title;
+//    emailItem.isHTML = YES;
+//    content.emailItem = emailItem;
+//    
+//    OSKSMSContentItem *smsItem = [[OSKSMSContentItem alloc] init];
+//    smsItem.body = [NSString stringWithFormat:@"%@\n%@", title, [url absoluteString]];;
+//    content.smsItem = smsItem;
+//    
+//    OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
+//    readLater.url = url;
+//    content.readLaterItem = readLater;
+//    
+//    OSKToDoListEntryContentItem *toDoList = [[OSKToDoListEntryContentItem alloc] init];
+//    toDoList.title = [NSString stringWithFormat:@"Read \"%@\"", title];
+//    toDoList.notes = [NSString stringWithFormat:@"%@\n\n%@", text, [url absoluteString]];
+//    content.toDoListItem = toDoList;
+//    
+//    OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];
+//    linkBookmarking.url = readLater.url;
+//    linkBookmarking.title = title;
+//    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+//    NSMutableArray *tags = [NSMutableArray arrayWithObject:appName];
+//    [tags addObjectsFromArray:[activeStory objectForKey:@"story_tags"]];
+//    linkBookmarking.tags = tags;
+//    linkBookmarking.markToRead = YES;
+//    content.linkBookmarkItem = linkBookmarking;
+//    
+//    OSKWebBrowserContentItem *browserItem = [[OSKWebBrowserContentItem alloc] init];
+//    browserItem.url = readLater.url;
+//    content.webBrowserItem = browserItem;
+//    
+//    OSKPasswordManagementAppSearchContentItem *passwordSearchItem = [[OSKPasswordManagementAppSearchContentItem alloc] init];
+//    passwordSearchItem.query = [url host];
+//    content.passwordSearchItem = passwordSearchItem;
+//    
+//    if (images.count) {
+//        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+//        airDrop.items = images;
+//        content.airDropItem = airDrop;
+//    }
+//    else if ([url absoluteString].length) {
+//        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+//        airDrop.items = @[[url absoluteString]];
+//        content.airDropItem = airDrop;
+//    }
+//    else if (text.length) {
+//        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+//        airDrop.items = @[text];
+//        content.airDropItem = airDrop;
+//    }
+//    
+//    
+    void (^completion)(NSString *, BOOL) = ^void(NSString *activityType, BOOL completed){
+//        NSString *activityType = [activity.class activityType];
         NSString *_completedString;
         
-        if ([activityType isEqualToString:OSKActivityType_iOS_Twitter]) {
+        if (!activityType) return;
+        
+        if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {
             _completedString = @"Posted";
-        } else if ([activityType isEqualToString:OSKActivityType_iOS_Facebook]) {
+        } else if ([activityType isEqualToString:UIActivityTypePostToFacebook]) {
             _completedString = @"Posted";
-        } else if ([activityType isEqualToString:OSKActivityType_iOS_Email]) {
+        } else if ([activityType isEqualToString:UIActivityTypeMail]) {
             _completedString = @"Sent";
-        } else if ([activityType isEqualToString:OSKActivityType_iOS_SMS]) {
+        } else if ([activityType isEqualToString:UIActivityTypeMessage]) {
             _completedString = @"Sent";
-        } else if ([activityType isEqualToString:OSKActivityType_iOS_CopyToPasteboard]) {
+        } else if ([activityType isEqualToString:UIActivityTypeCopyToPasteboard]) {
             _completedString = @"Copied";
-        } else if ([activityType isEqualToString:OSKActivityType_API_Instapaper]) {
-            _completedString = @"Saved to Instapaper";
-        } else if ([activityType isEqualToString:OSKActivityType_API_Pocket]) {
-            _completedString = @"Saved to Pocket";
-        } else if ([activityType isEqualToString:OSKActivityType_API_Readability]) {
-            _completedString = @"Saved to Readability";
-        } else if ([activityType isEqualToString:OSKActivityType_API_Pinboard]) {
-            _completedString = @"Saved to Pinboard";
-        } else if ([activityType isEqualToString:OSKActivityType_iOS_AirDrop]) {
+        } else if ([activityType isEqualToString:UIActivityTypeAirDrop]) {
             _completedString = @"Airdropped";
-        } else if ([activityType isEqualToString:OSKActivityType_iOS_Safari]) {
-            return;
-        } else if ([activityType isEqualToString:OSKActivityType_URLScheme_Chrome]) {
+        } else if ([activityType isEqualToString:@"safari"]) {
             return;
         } else {
             _completedString = @"Saved";
@@ -614,31 +613,41 @@
         storyHUD.labelText = _completedString;
         [storyHUD hide:YES afterDelay:1];
     };
-    
-    [[OSKActivitiesManager sharedInstance] setCustomizationsDelegate:self];
-    
-    NSDictionary *options = @{OSKPresentationOption_ActivityCompletionHandler: completionHandler};
-    
+    [activityViewController setCompletionHandler:completion];
+//
+//    [[OSKActivitiesManager sharedInstance] setCustomizationsDelegate:self];
+//    
+//    NSDictionary *options = @{OSKPresentationOption_ActivityCompletionHandler: completionHandler};
+//    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showSendToPopover:vc];
+        [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
+        activityViewController.modalPresentationStyle = UIModalPresentationPopover;
+        UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
+        popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+        
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
-            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+            popPC.barButtonItem = sender;
         } else if ([sender isKindOfClass:[NSValue class]]) {
-            // Uncomment below to show share popover from linked text. Problem is
-            // that on finger up the link will open.
-//            CGPoint pt = [(NSValue *)sender CGPointValue];
-//            CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
-//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+//            // Uncomment below to show share popover from linked text. Problem is
+//            // that on finger up the link will open.
+            CGPoint pt = [(NSValue *)sender CGPointValue];
+            CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
+////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
 
-            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-                                                           presentingViewController:vc options:options];
+//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+//                                                           presentingViewController:vc options:options];
+            popPC.sourceRect = rect;
+            popPC.sourceView = self.storyPageControl.view;
         } else {
-            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+            popPC.sourceRect = [sender frame];
+            popPC.sourceView = [sender superview];
+
+//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
 
     } else {
-        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-                                                       presentingViewController:vc options:options];
+        [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
     }
 }
 
@@ -2082,6 +2091,8 @@
         } else {
             titleLabel.text = [NSString stringWithFormat:@"     Saved Stories - %@", storiesCollection.activeSavedStoryTag];
         }
+    } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Read Stories"];
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
     } else if (storiesCollection.isRiverView) {
