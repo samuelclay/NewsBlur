@@ -111,6 +111,8 @@
             folderTitle = [@"All Shared Stories" uppercaseString];
     } else if (section == 2) {
         folderTitle = [@"All Stories" uppercaseString];
+    } else if ([folderName isEqual:@"read_stories"]) {
+        folderTitle = [@"Read Stories" uppercaseString];
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = [@"Saved Stories" uppercaseString];
     } else {
@@ -205,6 +207,13 @@
         }
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"clock.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
+    } else if ([folderName isEqual:@"read_stories"]) {
+        folderImage = [UIImage imageNamed:@"g_icn_unread.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {

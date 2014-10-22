@@ -620,32 +620,55 @@
 //    NSDictionary *options = @{OSKPresentationOption_ActivityCompletionHandler: completionHandler};
 //    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController showSendToPopover:vc];
         [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
-        UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
-        popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        
-        if ([sender isKindOfClass:[UIBarButtonItem class]]) {
-            popPC.barButtonItem = sender;
-        } else if ([sender isKindOfClass:[NSValue class]]) {
-//            // Uncomment below to show share popover from linked text. Problem is
-//            // that on finger up the link will open.
-            CGPoint pt = [(NSValue *)sender CGPointValue];
-            CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
-////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+        if (!NSClassFromString(@"UIPopoverPresentationController")) {
+            // iOS 7
 
-//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-//                                                           presentingViewController:vc options:options];
-            popPC.sourceRect = rect;
-            popPC.sourceView = self.storyPageControl.view;
+            if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+                [self.masterContainerViewController showSendToPopover:vc withActivityVC:activityViewController];
+            } else if ([sender isKindOfClass:[NSValue class]]) {
+                //            // Uncomment below to show share popover from linked text. Problem is
+                //            // that on finger up the link will open.
+                CGPoint pt = [(NSValue *)sender CGPointValue];
+                CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
+                ////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+                
+                //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                //                                                           presentingViewController:vc options:options];
+                popPC.sourceRect = rect;
+                popPC.sourceView = self.storyPageControl.view;
+            } else {
+                popPC.sourceRect = [sender frame];
+                popPC.sourceView = [sender superview];
+                
+                //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+            }
         } else {
-            popPC.sourceRect = [sender frame];
-            popPC.sourceView = [sender superview];
-
-//            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+            // iOS 8+
+            UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
+            popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+            
+            if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+                popPC.barButtonItem = sender;
+            } else if ([sender isKindOfClass:[NSValue class]]) {
+                //            // Uncomment below to show share popover from linked text. Problem is
+                //            // that on finger up the link will open.
+                CGPoint pt = [(NSValue *)sender CGPointValue];
+                CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
+                ////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPageControl.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+                
+                //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                //                                                           presentingViewController:vc options:options];
+                popPC.sourceRect = rect;
+                popPC.sourceView = self.storyPageControl.view;
+            } else {
+                popPC.sourceRect = [sender frame];
+                popPC.sourceView = [sender superview];
+                
+                //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+            }
         }
-
     } else {
         [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
     }
@@ -1144,6 +1167,7 @@
             [feedDetailView.storiesCollection setActiveFolder:@"everything"];
             for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
                 if ([folderName isEqualToString:@"river_blurblogs"]) continue;
+                if ([folderName isEqualToString:@"read_stories"]) continue;
                 if ([folderName isEqualToString:@"saved_stories"]) continue;
                 NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
                 NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
@@ -2126,6 +2150,8 @@
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
+        } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
+            titleImage = [UIImage imageNamed:@"g_icn_unread.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"clock.png"];
         } else if (storiesCollection.isRiverView) {

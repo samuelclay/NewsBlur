@@ -391,9 +391,38 @@
     }
 }
 
-- (void)showSendToPopover:(id)sender {
+- (void)showSendToPopover:(id)sender withActivityVC:(UIActivityViewController *)activityViewController  {
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:NO];
+    }
+    
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:activityViewController];
+    popoverController.delegate = self;
+    
+    [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
+    if ([sender class] == [UIBarButtonItem class]) {
+        [popoverController presentPopoverFromBarButtonItem:sender
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                  animated:NO];
+    } else if ([sender class] == [FeedTableCell class]) {
+        FeedTableCell *cell = (FeedTableCell *)sender;
+        [popoverController presentPopoverFromRect:cell.bounds
+                                           inView:cell
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
+    } else if ([sender class] == [FeedDetailTableCell class]) {
+        FeedDetailTableCell *cell = (FeedDetailTableCell *)sender;
+        [popoverController presentPopoverFromRect:cell.bounds
+                                           inView:cell
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
+    } else {
+        CGRect frame = [sender CGRectValue];
+        [popoverController presentPopoverFromRect:frame
+                                           inView:self.storyPageControl.view
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
     }
 }
 

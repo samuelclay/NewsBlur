@@ -674,6 +674,10 @@ static UIFont *userLabelFont;
         [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
     }
     
+    // Add Read Stories folder
+    [appDelegate.dictFoldersArray removeObject:@"read_stories"];
+    [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
+
     // Add Saved Stories folder
     if (appDelegate.savedStoriesCount) {
         [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
@@ -1269,7 +1273,9 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != 2 && section != 0 && ![folderName isEqual:@"saved_stories"]) {
+    if (!visibleFeeds && section != 2 && section != 0 &&
+        ![folderName isEqualToString:@"saved_stories"] &&
+        ![folderName isEqualToString:@"read_stories"]) {
         return 0;
     }
     
