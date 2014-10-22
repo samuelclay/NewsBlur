@@ -363,6 +363,7 @@
 - (NSArray *)folders {
     return _.without([appDelegate dictFoldersArray],
                      @[@"saved_stories",
+                       @"read_stories",
                        @"river_blurblogs",
                        @"river_global",
                        @"everything"]);

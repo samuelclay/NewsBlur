@@ -1250,6 +1250,8 @@
                 feedTitle = @"All Stories";
             } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
                 feedTitle = storiesCollection.activeSavedStoryTag;
+            } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
+                feedTitle = @"Read Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 feedTitle = @"Saved Stories";
             } else {
