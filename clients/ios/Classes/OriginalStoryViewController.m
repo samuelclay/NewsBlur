@@ -14,13 +14,14 @@
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
 #import "NBBarButtonItem.h"
-#import "SloppySwiper.h"
+//#import "SloppySwiper.h"
 
 @implementation OriginalStoryViewController
 
 @synthesize appDelegate;
 @synthesize webView;
-@synthesize swiper;
+//@synthesize swiper;
+@synthesize progressView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
@@ -34,15 +35,19 @@
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
 //    self.swiper = [[SloppySwiper alloc] initWithNavigationController:self.navigationController];
 //    self.navigationController.delegate = self.swiper;
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+
+    [self.navigationController.navigationBar addSubview:progressView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.navigationController.navigationBar.alpha = 1;
+    [progressView removeFromSuperview];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -110,6 +115,17 @@
                                                 backBarButton
                                                 ];
     
+    progressProxy = [[NJKWebViewProgress alloc] init]; // instance variable
+    webView.delegate = progressProxy;
+    progressProxy.webViewProxyDelegate = self;
+    progressProxy.progressDelegate = self;
+    
+    CGFloat progressBarHeight = 2.f;
+    CGRect navigaitonBarBounds = self.navigationController.navigationBar.bounds;
+    CGRect barFrame = CGRectMake(0, navigaitonBarBounds.size.height - progressBarHeight, navigaitonBarBounds.size.width, progressBarHeight);
+    progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
+    progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(handlePanGesture:)];
@@ -347,6 +363,20 @@
 
 - (void)closeOriginalView {
     [appDelegate closeOriginalStory];
+}
+
+-(void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress {
+    NSLog(@"Progress: %f", progress);
+    [progressView setProgress:progress animated:NO];
+    
+    if (progress == NJKInteractiveProgressValue) {
+        // The web view has finished parsing the document,
+        // but is still loading sub-resources
+    }
+    
+    if (progress == NJKFinalProgressValue) {
+        
+    }
 }
 
 @end

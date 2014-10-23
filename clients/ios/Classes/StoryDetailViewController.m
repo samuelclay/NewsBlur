@@ -1195,9 +1195,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        NSLog(@"Link clicked, views: %@", [UIViewController
-                                           osk_parentMostViewControllerForPresentingViewController:
-                                           appDelegate.storyPageControl].view.subviews);
+//        NSLog(@"Link clicked, views: %@", [UIViewController
+//                                           osk_parentMostViewControllerForPresentingViewController:
+//                                           appDelegate.storyPageControl].view.subviews);
         NSArray *subviews;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             subviews = [UIViewController
@@ -1209,7 +1209,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                         appDelegate.storyPageControl].view.subviews;
         }
         for (UIView *view in subviews) {
-            NSLog(@" View? %@ - %@", view, [view firstAvailableUIViewController]);
+//            NSLog(@" View? %@ - %@", view, [view firstAvailableUIViewController]);
             if ([[view firstAvailableUIViewController]
                  isKindOfClass:[OSKActivitySheetViewController class]]) {
                 return NO;
