@@ -166,6 +166,8 @@
 		78FC34FA11CA94900055C312 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F211CA94900055C312 /* SBJsonBase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		78FC34FB11CA94900055C312 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F411CA94900055C312 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F611CA94900055C312 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE219F87A770063002A /* g_icn_folder_read.png */; };
+		FF03AFE519F87A770063002A /* g_icn_folder_read@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */; };
 		FF0FAEB117B084D2008651F9 /* OfflineCleanImages.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0FAEB017B0846C008651F9 /* OfflineCleanImages.m */; };
 		FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF11045E176950F900502C29 /* NBLoadingCell.m */; };
 		FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1104601769695A00502C29 /* g_icn_offline@2x.png */; };
@@ -913,6 +915,8 @@
 		78FC34F511CA94900055C312 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		78FC34F611CA94900055C312 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-iPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		FF03AFE219F87A770063002A /* g_icn_folder_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_read.png; sourceTree = "<group>"; };
+		FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_read@2x.png"; sourceTree = "<group>"; };
 		FF0FAEAF17B0846C008651F9 /* OfflineCleanImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineCleanImages.h; path = offline/OfflineCleanImages.h; sourceTree = "<group>"; };
 		FF0FAEB017B0846C008651F9 /* OfflineCleanImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineCleanImages.m; path = offline/OfflineCleanImages.m; sourceTree = "<group>"; };
 		FF11045D176950F900502C29 /* NBLoadingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBLoadingCell.h; sourceTree = "<group>"; };
@@ -1908,6 +1912,8 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF03AFE219F87A770063002A /* g_icn_folder_read.png */,
+				FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */,
 				FF3964BB192BED0A004BEE1A /* tag.png */,
 				FFB705051925921F0052101C /* line_spacing_l.png */,
 				FFB705061925921F0052101C /* line_spacing_m.png */,
@@ -3320,6 +3326,7 @@
 				FFA047A619CA54A800618DC4 /* osk-photosIcon-60@2x.png in Resources */,
 				FFC5F31116E2D2C2007AC72C /* story_share_facebook.png in Resources */,
 				FFC5F31216E2D2C2007AC72C /* story_share_facebook@2x.png in Resources */,
+				FF03AFE519F87A770063002A /* g_icn_folder_read@2x.png in Resources */,
 				FFC5F31316E2D2C2007AC72C /* story_share_twitter_active.png in Resources */,
 				FFA047AA19CA54A800618DC4 /* osk-pinboardIcon-29@2x.png in Resources */,
 				FFA0476F19CA54A800618DC4 /* osk-appDotNetIcon-29.png in Resources */,
@@ -3383,6 +3390,7 @@
 				FFA047B119CA54A800618DC4 /* osk-readabilityIcon-76.png in Resources */,
 				FFDD845D16E8871A000AA0A2 /* menu_icn_delete@2x.png in Resources */,
 				FFA047B619CA54A800618DC4 /* osk-safariIcon-76.png in Resources */,
+				FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */,
 				FFDD845E16E8871A000AA0A2 /* menu_icn_fetch_subscribers.png in Resources */,
 				FFDD845F16E8871A000AA0A2 /* menu_icn_fetch_subscribers@2x.png in Resources */,
 				FFDD846016E8871A000AA0A2 /* menu_icn_fetch.png in Resources */,

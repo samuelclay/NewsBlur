@@ -289,7 +289,8 @@
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
-                            appDelegate.storiesCollection.isSavedView) ?
+                            appDelegate.storiesCollection.isSavedView ||
+                            appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
     
     // set up layout values based on iPad/iPhone
@@ -370,7 +371,8 @@
     
     if (appDelegate.storiesCollection.isRiverView ||
         appDelegate.storiesCollection.isSocialView ||
-        appDelegate.storiesCollection.isSavedView) {
+        appDelegate.storiesCollection.isSavedView ||
+        appDelegate.storiesCollection.isReadView) {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     } else {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
@@ -1258,7 +1260,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         // only adjust for the bar if user is scrolling
         if (appDelegate.storiesCollection.isRiverView ||
             appDelegate.storiesCollection.isSocialView ||
-            appDelegate.storiesCollection.isSavedView) {
+            appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isReadView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1483,7 +1486,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         // only adjust for the bar if user is scrolling
         if (appDelegate.storiesCollection.isRiverView ||
             appDelegate.storiesCollection.isSocialView ||
-            appDelegate.storiesCollection.isSavedView) {
+            appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isReadView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1794,7 +1798,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
-                            appDelegate.storiesCollection.isSavedView) ?
+                            appDelegate.storiesCollection.isSavedView ||
+                            appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:

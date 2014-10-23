@@ -35,6 +35,7 @@
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
 @synthesize isSavedView;
+@synthesize isReadView;
 @synthesize transferredFromDashboard;
 
 
@@ -72,6 +73,7 @@
     self.isSocialView = NO;
     self.isSocialRiverView = NO;
     self.isSavedView = NO;
+    self.isReadView = NO;
 }
 
 - (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection {

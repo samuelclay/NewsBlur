@@ -276,15 +276,15 @@
     appDelegate.originalStoryCount = (int)[appDelegate unreadCount];
     
     if ((storiesCollection.isSocialRiverView ||
-         storiesCollection.isSocialView ||
-         storiesCollection.isSavedView)) {
+         storiesCollection.isSocialView)) {
         settingsBarButton.enabled = NO;
     } else {
         settingsBarButton.enabled = YES;
     }
     
     if (storiesCollection.isSocialRiverView ||
-        storiesCollection.isSavedView) {
+        storiesCollection.isSavedView ||
+        storiesCollection.isReadView) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;
@@ -557,6 +557,11 @@
                             NEWSBLUR_URL,
                             storiesCollection.feedPage,
                             [storiesCollection.activeSavedStoryTag urlEncode]];
+    } else if (storiesCollection.isReadView) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/read_stories/?page=%d&v=2",
+                            NEWSBLUR_URL,
+                            storiesCollection.feedPage];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
                             NEWSBLUR_URL,
@@ -755,6 +760,11 @@
                             @"%@/reader/starred_stories/?page=%d&v=2",
                             NEWSBLUR_URL,
                             storiesCollection.feedPage];
+    } else if (storiesCollection.isReadView) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/read_stories/?page=%d&v=2",
+                            NEWSBLUR_URL,
+                            storiesCollection.feedPage];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?f=%@&page=%d", 
@@ -838,6 +848,7 @@
     
     if (!(storiesCollection.isRiverView ||
           storiesCollection.isSavedView ||
+          storiesCollection.isReadView ||
           storiesCollection.isSocialView ||
           storiesCollection.isSocialRiverView)
         && request.tag != [feedId intValue]) {
@@ -845,7 +856,8 @@
     }
     if (storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView ||
-        storiesCollection.isSavedView) {
+        storiesCollection.isSavedView ||
+        storiesCollection.isReadView) {
         NSArray *newFeeds = [results objectForKey:@"feeds"];
         for (int i = 0; i < newFeeds.count; i++){
             NSString *feedKey = [NSString stringWithFormat:@"%@", [[newFeeds objectAtIndex:i] objectForKey:@"id"]];
@@ -858,6 +870,7 @@
     NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
     if (storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
+        storiesCollection.isReadView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
         for (id key in [newClassifiers allKeys]) {
@@ -1098,7 +1111,8 @@
     
     if (storiesCollection.isRiverView ||
         storiesCollection.isSocialView ||
-        storiesCollection.isSavedView) {
+        storiesCollection.isSavedView ||
+        storiesCollection.isReadView) {
         cellIdentifier = @"FeedRiverDetailCellIdentifier";
     } else {
         cellIdentifier = @"FeedDetailCellIdentifier";
@@ -1207,6 +1221,7 @@
     cell.isRiverOrSocial = NO;
     if (storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
+        storiesCollection.isReadView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
         cell.isRiverOrSocial = YES;
@@ -1337,6 +1352,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         return 40;
     } else if (storiesCollection.isRiverView ||
                storiesCollection.isSavedView ||
+               storiesCollection.isReadView ||
                storiesCollection.isSocialView ||
                storiesCollection.isSocialRiverView) {
         NSInteger height = kTableViewRiverRowHeight;
