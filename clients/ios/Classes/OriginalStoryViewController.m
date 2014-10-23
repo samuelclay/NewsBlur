@@ -42,6 +42,9 @@
     [super viewDidAppear:animated];
 
     [self.navigationController.navigationBar addSubview:progressView];
+    progressView.progressBarView.alpha = 0.0f;
+    [progressView setProgress:0 animated:NO];
+    [progressView setProgress:NJKInitialProgressValue animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -366,8 +369,8 @@
 }
 
 -(void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress {
-    NSLog(@"Progress: %f", progress);
-    [progressView setProgress:progress animated:NO];
+//    NSLog(@"Progress: %f", progress);
+    [progressView setProgress:progress animated:YES];
     
     if (progress == NJKInteractiveProgressValue) {
         // The web view has finished parsing the document,

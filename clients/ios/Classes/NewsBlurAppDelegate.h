@@ -84,6 +84,7 @@
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
     
+    UIColor *tintColor;
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
@@ -180,6 +181,7 @@
 @property (nonatomic, readwrite) TMCache *cachedFavicons;
 @property (nonatomic, readwrite) TMCache *cachedStoryImages;
 
+@property (nonatomic) UIColor *tintColor;
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
