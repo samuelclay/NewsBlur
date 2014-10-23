@@ -42,9 +42,6 @@
     [super viewDidAppear:animated];
 
     [self.navigationController.navigationBar addSubview:progressView];
-    progressView.progressBarView.alpha = 0.0f;
-    [progressView setProgress:0 animated:NO];
-    [progressView setProgress:NJKInitialProgressValue animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -72,7 +69,13 @@
     return YES;
 }
 
-- (void)viewDidLoad {    
+- (void)resetProgressBar {
+    progressView.progressBarView.alpha = 0.0f;
+    [progressView setProgress:0 animated:NO];
+    [progressView setProgress:NJKInitialProgressValue animated:YES];
+}
+
+- (void)viewDidLoad {
 //    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
     [super viewDidLoad];
     
@@ -232,6 +235,7 @@
 }
 
 - (void)loadInitialStory {
+    [self resetProgressBar];
     [self loadAddress:nil];
     
     titleView.text = [[[appDelegate activeStory] objectForKey:@"story_title"]
