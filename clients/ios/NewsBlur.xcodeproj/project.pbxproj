@@ -168,6 +168,19 @@
 		78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F611CA94900055C312 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE219F87A770063002A /* g_icn_folder_read.png */; };
 		FF03AFE519F87A770063002A /* g_icn_folder_read@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */; };
+		FF03AFEE19F87F2E0063002A /* safari.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE719F87F2E0063002A /* safari.png */; };
+		FF03AFEF19F87F2E0063002A /* safari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE819F87F2E0063002A /* safari@2x.png */; };
+		FF03AFF019F87F2E0063002A /* safari@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE919F87F2E0063002A /* safari@3x.png */; };
+		FF03AFF119F87F2E0063002A /* safari~iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFEA19F87F2E0063002A /* safari~iPad.png */; };
+		FF03AFF219F87F2E0063002A /* safari~iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFEB19F87F2E0063002A /* safari~iPad@2x.png */; };
+		FF03AFF319F87F2E0063002A /* TUSafariActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF03AFED19F87F2E0063002A /* TUSafariActivity.m */; };
+		FF03AFFD19F881380063002A /* ARChromeActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF03AFF619F881380063002A /* ARChromeActivity.m */; };
+		FF03AFFE19F881380063002A /* ARChromeActivity.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFF719F881380063002A /* ARChromeActivity.png */; };
+		FF03AFFF19F881380063002A /* ARChromeActivity@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFF819F881380063002A /* ARChromeActivity@2x.png */; };
+		FF03B00019F881380063002A /* ARChromeActivity@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFF919F881380063002A /* ARChromeActivity@2x~ipad.png */; };
+		FF03B00119F881380063002A /* ARChromeActivity@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFFA19F881380063002A /* ARChromeActivity@3x.png */; };
+		FF03B00219F881380063002A /* ARChromeActivity@3x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFFB19F881380063002A /* ARChromeActivity@3x~ipad.png */; };
+		FF03B00319F881380063002A /* ARChromeActivity~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFFC19F881380063002A /* ARChromeActivity~ipad.png */; };
 		FF0FAEB117B084D2008651F9 /* OfflineCleanImages.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0FAEB017B0846C008651F9 /* OfflineCleanImages.m */; };
 		FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF11045E176950F900502C29 /* NBLoadingCell.m */; };
 		FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1104601769695A00502C29 /* g_icn_offline@2x.png */; };
@@ -917,6 +930,21 @@
 		8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-iPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		FF03AFE219F87A770063002A /* g_icn_folder_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_read.png; sourceTree = "<group>"; };
 		FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_read@2x.png"; sourceTree = "<group>"; };
+		FF03AFE719F87F2E0063002A /* safari.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = safari.png; sourceTree = "<group>"; };
+		FF03AFE819F87F2E0063002A /* safari@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari@2x.png"; sourceTree = "<group>"; };
+		FF03AFE919F87F2E0063002A /* safari@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari@3x.png"; sourceTree = "<group>"; };
+		FF03AFEA19F87F2E0063002A /* safari~iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari~iPad.png"; sourceTree = "<group>"; };
+		FF03AFEB19F87F2E0063002A /* safari~iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari~iPad@2x.png"; sourceTree = "<group>"; };
+		FF03AFEC19F87F2E0063002A /* TUSafariActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUSafariActivity.h; sourceTree = "<group>"; };
+		FF03AFED19F87F2E0063002A /* TUSafariActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUSafariActivity.m; sourceTree = "<group>"; };
+		FF03AFF519F881380063002A /* ARChromeActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARChromeActivity.h; sourceTree = "<group>"; };
+		FF03AFF619F881380063002A /* ARChromeActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARChromeActivity.m; sourceTree = "<group>"; };
+		FF03AFF719F881380063002A /* ARChromeActivity.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARChromeActivity.png; sourceTree = "<group>"; };
+		FF03AFF819F881380063002A /* ARChromeActivity@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@2x.png"; sourceTree = "<group>"; };
+		FF03AFF919F881380063002A /* ARChromeActivity@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@2x~ipad.png"; sourceTree = "<group>"; };
+		FF03AFFA19F881380063002A /* ARChromeActivity@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@3x.png"; sourceTree = "<group>"; };
+		FF03AFFB19F881380063002A /* ARChromeActivity@3x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@3x~ipad.png"; sourceTree = "<group>"; };
+		FF03AFFC19F881380063002A /* ARChromeActivity~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity~ipad.png"; sourceTree = "<group>"; };
 		FF0FAEAF17B0846C008651F9 /* OfflineCleanImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineCleanImages.h; path = offline/OfflineCleanImages.h; sourceTree = "<group>"; };
 		FF0FAEB017B0846C008651F9 /* OfflineCleanImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineCleanImages.m; path = offline/OfflineCleanImages.m; sourceTree = "<group>"; };
 		FF11045D176950F900502C29 /* NBLoadingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBLoadingCell.h; sourceTree = "<group>"; };
@@ -1708,6 +1736,8 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				FF03AFF419F881380063002A /* ARChromeActivity */,
+				FF03AFE619F87F2E0063002A /* TUSafariActivity */,
 				FFA045B719CA54A400618DC4 /* Overshare Kit */,
 				FFA045AD19CA49D700618DC4 /* SloppySwiper */,
 				FFCDD8FB17F6368F000C6483 /* MCSwipeTableViewCell */,
@@ -2293,6 +2323,37 @@
 			);
 			name = JSON;
 			path = Source;
+			sourceTree = "<group>";
+		};
+		FF03AFE619F87F2E0063002A /* TUSafariActivity */ = {
+			isa = PBXGroup;
+			children = (
+				FF03AFE719F87F2E0063002A /* safari.png */,
+				FF03AFE819F87F2E0063002A /* safari@2x.png */,
+				FF03AFE919F87F2E0063002A /* safari@3x.png */,
+				FF03AFEA19F87F2E0063002A /* safari~iPad.png */,
+				FF03AFEB19F87F2E0063002A /* safari~iPad@2x.png */,
+				FF03AFEC19F87F2E0063002A /* TUSafariActivity.h */,
+				FF03AFED19F87F2E0063002A /* TUSafariActivity.m */,
+			);
+			name = TUSafariActivity;
+			path = "Other Sources/TUSafariActivity";
+			sourceTree = "<group>";
+		};
+		FF03AFF419F881380063002A /* ARChromeActivity */ = {
+			isa = PBXGroup;
+			children = (
+				FF03AFF519F881380063002A /* ARChromeActivity.h */,
+				FF03AFF619F881380063002A /* ARChromeActivity.m */,
+				FF03AFF719F881380063002A /* ARChromeActivity.png */,
+				FF03AFF819F881380063002A /* ARChromeActivity@2x.png */,
+				FF03AFF919F881380063002A /* ARChromeActivity@2x~ipad.png */,
+				FF03AFFA19F881380063002A /* ARChromeActivity@3x.png */,
+				FF03AFFB19F881380063002A /* ARChromeActivity@3x~ipad.png */,
+				FF03AFFC19F881380063002A /* ARChromeActivity~ipad.png */,
+			);
+			name = ARChromeActivity;
+			path = "Other Sources/ARChromeActivity";
 			sourceTree = "<group>";
 		};
 		FF1F13CC18A9C2BE00FDA816 /* TMCache */ = {
@@ -3105,6 +3166,7 @@
 				FFA047B719CA54A800618DC4 /* osk-safariIcon-76@2x.png in Resources */,
 				43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */,
 				43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */,
+				FF03AFF219F87F2E0063002A /* safari~iPad@2x.png in Resources */,
 				FFA0475219CA54A800618DC4 /* Drafts-Icon-29.png in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
@@ -3199,6 +3261,7 @@
 				FFA0478119CA54A800618DC4 /* osk-facebookIcon-29@2x.png in Resources */,
 				43A4BAE915C866FA00F3B8D4 /* popoverBgSimple.png in Resources */,
 				43A4BAEB15C893E300F3B8D4 /* FriendsListViewController.xib in Resources */,
+				FF03AFF119F87F2E0063002A /* safari~iPad.png in Resources */,
 				FFA047B519CA54A800618DC4 /* osk-safariIcon-60@2x.png in Resources */,
 				432EBD0E15D1A2B00000729D /* fountain_pen_on.png in Resources */,
 				432EBD0F15D1A2B00000729D /* fountain_pen_on@2x.png in Resources */,
@@ -3234,6 +3297,7 @@
 				43BC458A15D9F75700205B69 /* twitter_button_on@2x.png in Resources */,
 				43BC458B15D9F75700205B69 /* twitter_button.png in Resources */,
 				43BC458C15D9F75700205B69 /* twitter_button@2x.png in Resources */,
+				FF03AFEE19F87F2E0063002A /* safari.png in Resources */,
 				FFA0478E19CA54A800618DC4 /* osk-icon-border-76@2x.png in Resources */,
 				FFB7050A1925921F0052101C /* line_spacing_l.png in Resources */,
 				FFA047BD19CA54A800618DC4 /* osk-twitterIcon-76@2x.png in Resources */,
@@ -3248,6 +3312,7 @@
 				FFDE35D2161B9E600034BFDE /* disclosure_border.png in Resources */,
 				FFA047CD19CA54A800618DC4 /* Riposte-Icon-60@2x.png in Resources */,
 				FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */,
+				FF03B00219F881380063002A /* ARChromeActivity@3x~ipad.png in Resources */,
 				FF5F3A82162B82B5008DBE3E /* rainbow.png in Resources */,
 				FF5F3A85162B831A008DBE3E /* user_orange.png in Resources */,
 				FF5F3A87162B834E008DBE3E /* bin_closed.png in Resources */,
@@ -3293,6 +3358,7 @@
 				FF29708C16DD7AA400E92F85 /* segment_inactive.png in Resources */,
 				FF29708E16DD7C8A00E92F85 /* segment_left_selected.png in Resources */,
 				FF29709016DD7FD800E92F85 /* segment_unselected.png in Resources */,
+				FF03B00319F881380063002A /* ARChromeActivity~ipad.png in Resources */,
 				FFA047B819CA54A800618DC4 /* osk-settingsPlaceholder@2x.png in Resources */,
 				FF29709216DD80F700E92F85 /* segment_right_selected.png in Resources */,
 				FFA0475D19CA54A800618DC4 /* Instapaper-Icon-120.png in Resources */,
@@ -3363,6 +3429,7 @@
 				FF22FE6F16E554540046165A /* barbutton_refresh@2x.png in Resources */,
 				FF22FE7216E554FD0046165A /* barbutton_sendto.png in Resources */,
 				FFB9BE4D17F4B65B00FE0A36 /* logo_120@2x.png in Resources */,
+				FF03AFFF19F881380063002A /* ARChromeActivity@2x.png in Resources */,
 				FF22FE7316E554FD0046165A /* barbutton_sendto@2x.png in Resources */,
 				FF22FE7616E557D80046165A /* toolbar_tall_background.png in Resources */,
 				FF22FE7716E557D80046165A /* toolbar_tall_background@2x.png in Resources */,
@@ -3395,6 +3462,7 @@
 				FFDD845F16E8871A000AA0A2 /* menu_icn_fetch_subscribers@2x.png in Resources */,
 				FFDD846016E8871A000AA0A2 /* menu_icn_fetch.png in Resources */,
 				FFDD846116E8871A000AA0A2 /* menu_icn_fetch@2x.png in Resources */,
+				FF03AFFE19F881380063002A /* ARChromeActivity.png in Resources */,
 				FFDD846216E8871A000AA0A2 /* menu_icn_followers.png in Resources */,
 				FFDD846316E8871A000AA0A2 /* menu_icn_followers@2x.png in Resources */,
 				FFDD846416E8871A000AA0A2 /* menu_icn_move.png in Resources */,
@@ -3418,6 +3486,7 @@
 				FFDD847C16E887D3000AA0A2 /* g_icn_folder_rss.png in Resources */,
 				FFA0479A19CA54A800618DC4 /* osk-messagesIcon-29@2x.png in Resources */,
 				FFDD847D16E887D3000AA0A2 /* g_icn_folder_rss@2x.png in Resources */,
+				FF03B00119F881380063002A /* ARChromeActivity@3x.png in Resources */,
 				FFDD847E16E887D3000AA0A2 /* g_icn_folder.png in Resources */,
 				FFA0477F19CA54A800618DC4 /* osk-copyIcon-yellow-76@2x.png in Resources */,
 				FFA0478A19CA54A800618DC4 /* osk-iap-badge-76.png in Resources */,
@@ -3434,6 +3503,7 @@
 				FFDD848B16E8EBF8000AA0A2 /* train@2x.png in Resources */,
 				FFB9BE4A17F4B65B00FE0A36 /* logo_40.png in Resources */,
 				FFDD848E16E8ED75000AA0A2 /* menu_icn_share.png in Resources */,
+				FF03AFF019F87F2E0063002A /* safari@3x.png in Resources */,
 				FFA047A219CA54A800618DC4 /* osk-navbarButton.png in Resources */,
 				FFDD848F16E8ED75000AA0A2 /* menu_icn_share@2x.png in Resources */,
 				FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */,
@@ -3454,6 +3524,7 @@
 				FFA0477019CA54A800618DC4 /* osk-appDotNetIcon-29@2x.png in Resources */,
 				FF8364BF1756949E008F5C58 /* traverse_text_on.png in Resources */,
 				FFEA5AEA19D3407400ED87A0 /* launch_gradient.png in Resources */,
+				FF03AFEF19F87F2E0063002A /* safari@2x.png in Resources */,
 				FFA0476A19CA54A800618DC4 /* osk-airDropIcon-29.png in Resources */,
 				FF8364C01756949E008F5C58 /* traverse_text_on@2x.png in Resources */,
 				FFA0479819CA54A800618DC4 /* osk-mailIcon-76@2x.png in Resources */,
@@ -3479,6 +3550,7 @@
 				FFC486B319CA416D00F4758F /* logo_114.png in Resources */,
 				FF855B571794A53A0098D48A /* checkmark@2x.png in Resources */,
 				FFCDD8F517F4BCB4000C6483 /* Default-landscape@2x.png in Resources */,
+				FF03B00019F881380063002A /* ARChromeActivity@2x~ipad.png in Resources */,
 				FFA047C019CA54A800618DC4 /* osk_linkPlaceholder_phone.png in Resources */,
 				FFA0476319CA54A800618DC4 /* link-button.png in Resources */,
 				FFCDD8F817F4BCB4000C6483 /* Default.png in Resources */,
@@ -3640,6 +3712,7 @@
 				FFA0481219CA54A800618DC4 /* OSKMimeAttachment.m in Sources */,
 				43A3914D15B73A7B0074B212 /* UIImageView+AFNetworking.m in Sources */,
 				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
+				FF03AFFD19F881380063002A /* ARChromeActivity.m in Sources */,
 				4383DCD615BB8B88007E6611 /* SmallActivityCell.m in Sources */,
 				43E8381E15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.m in Sources */,
 				43E8382015BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m in Sources */,
@@ -3698,6 +3771,7 @@
 				FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */,
 				FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */,
 				FF6618C8176184560039913B /* NBNotifier.m in Sources */,
+				FF03AFF319F87F2E0063002A /* TUSafariActivity.m in Sources */,
 				FFA0482419CA54A800618DC4 /* OSKSessionController_Pad.m in Sources */,
 				FFA0481D19CA54A800618DC4 /* OSKReadabilityUtility.m in Sources */,
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,

@@ -32,6 +32,8 @@
 #import "FirstTimeUserAddSitesViewController.h"
 #import "FirstTimeUserAddFriendsViewController.h"
 #import "FirstTimeUserAddNewsBlurViewController.h"
+#import "TUSafariActivity.h"
+#import "ARChromeActivity.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
@@ -650,14 +652,17 @@
         if (url) [activityItems addObject:url];
         if (text) [activityItems addObject:text];
     //    if (images) [activityItems addObject:images];
+        NSMutableArray *appActivities = [[NSMutableArray alloc] init];
+        if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
+        if (url) [appActivities addObject:[[ARChromeActivity alloc] initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
 
         UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
                                                             initWithActivityItems:activityItems
-                                                            applicationActivities:nil];
+                                                            applicationActivities:appActivities];
         [activityViewController setTitle:title];
         void (^completion)(NSString *, BOOL) = ^void(NSString *activityType, BOOL completed){
             NSString *_completedString;
-            
+            NSLog(@"activityType: %@", activityType);
             if (!activityType) return;
             
             if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {
@@ -672,7 +677,9 @@
                 _completedString = @"Copied";
             } else if ([activityType isEqualToString:UIActivityTypeAirDrop]) {
                 _completedString = @"Airdropped";
-            } else if ([activityType isEqualToString:@"safari"]) {
+            } else if ([activityType isEqualToString:@"TUSafariActivity"]) {
+                return;
+            } else if ([activityType isEqualToString:@"ARChromeActivity"]) {
                 return;
             } else {
                 _completedString = @"Saved";
