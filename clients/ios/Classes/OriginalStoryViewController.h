@@ -34,6 +34,7 @@ UIGestureRecognizerDelegate, NJKWebViewProgressDelegate> {
 //@property (strong, nonatomic) SloppySwiper *swiper;
 @property (nonatomic) NJKWebViewProgressView *progressView;
 
+- (void)resetProgressBar;
 - (void)loadInitialStory;
 - (IBAction) doOpenActionSheet:(id)sender;
 - (IBAction)loadAddress:(id)sender;
