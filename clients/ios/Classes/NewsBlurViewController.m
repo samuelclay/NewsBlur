@@ -1166,6 +1166,7 @@ static UIFont *userLabelFont;
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed;
+    appDelegate.storiesCollection.isReadView = NO;
     if ([appDelegate isSocialFeed:feedIdStr]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         appDelegate.storiesCollection.isSocialView = YES;

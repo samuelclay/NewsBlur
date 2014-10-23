@@ -51,6 +51,7 @@
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isSavedView;
+@property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
 
 - (id)initForDashboard;
