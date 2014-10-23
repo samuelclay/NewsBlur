@@ -27,6 +27,7 @@ UIGestureRecognizerDelegate, NJKWebViewProgressDelegate> {
     UIBarButtonItem *closeButton;
     NJKWebViewProgress *progressProxy;
     NJKWebViewProgressView *progressView;
+    BOOL finishedLoading;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;

@@ -42,6 +42,7 @@
     [super viewDidAppear:animated];
 
     [self.navigationController.navigationBar addSubview:progressView];
+    [self resetProgressBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -70,6 +71,8 @@
 }
 
 - (void)resetProgressBar {
+    if (finishedLoading) return;
+    
     progressView.progressBarView.alpha = 0.0f;
     [progressView setProgress:0 animated:NO];
     [progressView setProgress:NJKInitialProgressValue animated:YES];
@@ -235,7 +238,7 @@
 }
 
 - (void)loadInitialStory {
-    [self resetProgressBar];
+    finishedLoading = NO;
     [self loadAddress:nil];
     
     titleView.text = [[[appDelegate activeStory] objectForKey:@"story_title"]
@@ -288,6 +291,8 @@
 
 - (void)webViewDidStartLoad:(UIWebView *)aWebView
 {
+    finishedLoading = NO;
+
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 }
 
@@ -296,6 +301,7 @@
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateTitle:aWebView];
+    finishedLoading = YES;
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
@@ -308,6 +314,7 @@
     if ([error code] != NSURLErrorCancelled) {
         [self informError:error];   
     }
+    finishedLoading = YES;
 }
 
 - (void)updateTitle:(UIWebView*)aWebView
@@ -382,7 +389,7 @@
     }
     
     if (progress == NJKFinalProgressValue) {
-        
+        finishedLoading = YES;
     }
 }
 
