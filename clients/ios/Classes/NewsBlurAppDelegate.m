@@ -98,6 +98,7 @@
 @synthesize firstTimeUserAddFriendsViewController;
 @synthesize firstTimeUserAddNewsBlurViewController;
 
+@synthesize tintColor;
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
@@ -190,6 +191,7 @@
     
     [window makeKeyAndVisible];
     
+    [self setTintColor:UIColorFromRGB(0x8F918B)];
     [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE3E6E0)];
     [[UIToolbar appearance] setBarTintColor:      UIColorFromRGB(0xE3E6E0)];
     [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
