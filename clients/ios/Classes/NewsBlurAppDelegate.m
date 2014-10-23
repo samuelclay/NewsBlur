@@ -654,7 +654,8 @@
     //    if (images) [activityItems addObject:images];
         NSMutableArray *appActivities = [[NSMutableArray alloc] init];
         if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
-        if (url) [appActivities addObject:[[ARChromeActivity alloc] initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
+        if (url) [appActivities addObject:[[ARChromeActivity alloc]
+                                           initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
 
         UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
                                                             initWithActivityItems:activityItems
