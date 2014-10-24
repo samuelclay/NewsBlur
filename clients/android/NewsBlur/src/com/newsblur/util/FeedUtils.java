@@ -155,6 +155,12 @@ public class FeedUtils {
             @Override
             protected Void doInBackground(Void... arg) {
                 ReadingAction ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                if (fs.isAllNormal() && (olderThan != null || newerThan != null)) {
+                    // the mark-all-read API doesn't support range bounding, so we need to pass each and every
+                    // feed ID to the API instead.
+                    FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllFeeds());
+                    ra = ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan);
+                }
                 dbHelper.enqueueAction(ra);
                 dbHelper.markStoriesRead(fs, olderThan, newerThan);
                 triggerSync(context);
