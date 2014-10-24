@@ -35,7 +35,6 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri USERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/users/");
-	public static final Uri STARRED_STORIES_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories_count/");
 	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
 	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
@@ -68,7 +67,6 @@ public class FeedProvider extends ContentProvider {
 	private static final int FEED_STORIES_NO_UPDATE = 18;
 	private static final int CLASSIFIERS_FOR_FEED = 19;
 	private static final int USERS = 21;
-	private static final int STARRED_STORIES_COUNT = 23;
 	
 	private BlurDatabase databaseHelper;
 
@@ -99,7 +97,6 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/users/", USERS);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories_count/", STARRED_STORIES_COUNT);
 	}
 
 	@Override
@@ -283,10 +280,6 @@ public class FeedProvider extends ContentProvider {
 			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			break;		
 			
-        case STARRED_STORIES_COUNT:
-            db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-            break;
-
 		case UriMatcher.NO_MATCH:
 			Log.e(this.getClass().getName(), "No match found for URI: " + uri.toString());
 			break;
@@ -363,39 +356,20 @@ public class FeedProvider extends ContentProvider {
 		case USERS:
 			return db.query(DatabaseConstants.USER_TABLE, projection, selection, selectionArgs, null, null, null);	
 
-        case STARRED_STORIES_COUNT:
-            return db.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, projection, selection, selectionArgs, null, null, null);
-			
 			// Query for classifiers for a given feed
 		case CLASSIFIERS_FOR_FEED:
 			return db.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);
 			
 			// Query for a specific folder	
 		case INDIVIDUAL_FOLDER:
-			String individualFolderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
-			" LEFT JOIN " + DatabaseConstants.FOLDER_TABLE + 
-			" ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
-			" LEFT JOIN " + DatabaseConstants.FEED_TABLE + 
-			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID + 
-			" WHERE " + DatabaseConstants.FOLDER_NAME + " = ?";
-
-			StringBuilder individualFolderbuilder = new StringBuilder();
-			individualFolderbuilder.append(individualFolderQuery);
-			selectionArgs = new String[] { uri.getLastPathSegment() };
-			
-			return db.rawQuery(individualFolderbuilder.toString(), selectionArgs);
+            throw new RuntimeException("DEPRECATED");
 			
 			// Query for total feed counts
 		case FEED_COUNT:
-			String sumQuery = "SELECT SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") AS " + DatabaseConstants.SUM_POS + ", " +
-			"SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + ") AS " + DatabaseConstants.SUM_NEUT + " FROM " + DatabaseConstants.FEED_TABLE;
-			return db.rawQuery(sumQuery, selectionArgs);	
+			throw new RuntimeException("DEPRECATED");
 			
 		case SOCIALFEED_COUNT:
-			String socialSumQuery = "SELECT SUM(" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") AS " + DatabaseConstants.SUM_POS + ", " +
-			"SUM(" + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + ") AS " + DatabaseConstants.SUM_NEUT + ", " + 
-			"SUM(" + DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT + ") AS " + DatabaseConstants.SUM_NEG + " FROM " + DatabaseConstants.SOCIALFEED_TABLE;
-			return db.rawQuery(socialSumQuery, selectionArgs);		
+			throw new RuntimeException("DEPRECATED");
 			
 			// Querying for a stories from a feed
 		case FEED_STORIES:
@@ -491,36 +465,7 @@ public class FeedProvider extends ContentProvider {
 
 			// Querying for all folders with unread items
 		case ALL_FOLDERS:
-            // Of note about the following query:
-            //  1) the union clause lets ALL_FOLDER queries also select the "root" folder that appears in the UI whether
-            //     or not it has unread stories in it.
-            //  2) the root folder is excluded from the final join so as not to create a duplicate root folder
-            //  3) values of the pos/neut/neg columns for the root folder are ignored by the UI
-            //  4) we use a union rather than a full outer join because sqlite doesn't support the latter
-            //  5) the order of the left and right sides of the union are important: due to an undocumented feature/bug in sqlite,
-            //     if the two sides of the union are reversed, the result columns are incorrectly prefixed.
-            String folderQuery = "SELECT " + DatabaseConstants.FOLDER_ID + ", " + DatabaseConstants.FOLDER_NAME + ", 0 AS " + DatabaseConstants.SUM_POS + ", 0 AS " + DatabaseConstants.SUM_NEUT + ", 0 AS " + DatabaseConstants.SUM_NEG +
-            " FROM " + DatabaseConstants.FOLDER_TABLE +
-            " WHERE " + DatabaseConstants.FOLDER_NAME + "='" + AppConstants.ROOT_FOLDER + "' UNION" +
-            " SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + 
-            " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
-            " INNER JOIN " + DatabaseConstants.FOLDER_TABLE + 
-            " ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
-            " INNER JOIN " + DatabaseConstants.FEED_TABLE + 
-            " ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID + 
-            " WHERE NOT " + DatabaseConstants.FOLDER_NAME + "='" + AppConstants.ROOT_FOLDER + "'" +
-            " GROUP BY " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME;
-
-            StringBuilder folderBuilder = new StringBuilder();
-            folderBuilder.append(folderQuery);
-            if (selectionArgs != null && selectionArgs.length > 0) {
-                // TODO: by not iterating over the selectionArgs array, this method wildly breaks the contract of the query() method and
-                //  will almost certainly confuse callers eventually
-                folderBuilder.append(selectionArgs[0]);
-            }
-            folderBuilder.append(" ORDER BY ");
-            folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
-            return db.rawQuery(folderBuilder.toString(), null);
+            throw new RuntimeException("DEPRECATED");
 		case ALL_SOCIAL_FEEDS:
 			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
 		case INDIVIDUAL_SOCIAL_FEED:
@@ -600,12 +545,6 @@ public class FeedProvider extends ContentProvider {
 		case SOCIALFEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " " + selectionArgs[2] + " WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
 			return 1;	
-        case STARRED_STORIES_COUNT:
-            int rows = db.update(DatabaseConstants.STARRED_STORY_COUNT_TABLE, values, null, null);
-            if (rows == 0 ) {
-                db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-            }
-            return 1;
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
