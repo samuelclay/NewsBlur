@@ -7,7 +7,6 @@ import android.content.Loader;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;

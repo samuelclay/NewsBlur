@@ -1,7 +1,5 @@
 package com.newsblur.view;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
-import com.newsblur.activity.FolderItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.StateFilter;
@@ -29,7 +26,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
+		if (equalsAny(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.SOCIAL_FEED_ICON)) {
 			if (cursor.getString(columnIndex) != null) {
 				String imageUrl = cursor.getString(columnIndex);
 				imageLoader.displayImage(imageUrl, (ImageView)view, false);
@@ -37,8 +34,8 @@ public class FolderTreeViewBinder implements ViewBinder {
 				Bitmap bitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.drawable.world);
 				((ImageView) view).setImageBitmap(bitmap);
 			}
-			return true;
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_POSITIVE_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_POS)) {
+            return true;
+		} else if (equalsAny(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_POSITIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT)) {
 			int feedPositive = cursor.getInt(columnIndex);
             if (feedPositive < 0) feedPositive = 0;
 			if (feedPositive > 0) {
@@ -47,8 +44,8 @@ public class FolderTreeViewBinder implements ViewBinder {
 			} else {
 				view.setVisibility(View.GONE);
 			}
-			return true;
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEUTRAL_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_NEUT)) {
+            return true;
+		} else if (equalsAny(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT)) {
 			int feedNeutral = cursor.getInt(columnIndex);
             if (feedNeutral < 0) feedNeutral = 0;
 			if (feedNeutral > 0 && currentState != StateFilter.BEST) {
@@ -57,27 +54,26 @@ public class FolderTreeViewBinder implements ViewBinder {
 			} else {
 				view.setVisibility(View.GONE);
 			}
-			return true;
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FOLDER_NAME)) {
-			final String folderName = cursor.getString(columnIndex);
-			((TextView) view).setText("" + folderName.toUpperCase());
-			view.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent i = new Intent(v.getContext(), FolderItemsList.class);
-					i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, folderName);
-					i.putExtra(FolderItemsList.EXTRA_STATE, currentState);
-					((Activity) v.getContext()).startActivity(i);
-				}
-			});
-			return true;
-		}
-
+            return true;
+		} else {
+            String text = cursor.getString(columnIndex);
+            if ((text != null) && (view instanceof TextView)) {
+                ((TextView) view).setText(text);
+                return true;
+            }
+        }
 		return false;
 	}
 
 	public void setState(StateFilter selection) {
 		currentState = selection;
 	}
+
+    private boolean equalsAny(String s, String... args) {
+        for (String a : args) {
+            if (TextUtils.equals(s, a)) return true;
+        }
+        return false;
+    }
 
 }

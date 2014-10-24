@@ -22,7 +22,6 @@ import com.newsblur.activity.FolderReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.DefaultFeedView;
