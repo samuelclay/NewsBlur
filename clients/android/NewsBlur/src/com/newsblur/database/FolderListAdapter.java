@@ -285,12 +285,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             socialFeedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT), R.id.row_socialsumneu);
             socialFeedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT), R.id.row_socialsumpos);
         }
-        recountFeeds();
         notifyDataSetChanged();
 	}
 
-    public void setFolderFeedMapCursor(Cursor cursor) {
+    public synchronized void setFolderFeedMapCursor(Cursor cursor) {
+        if (cursor.getCount() < 1) return;
         this.folderFeedMap = new TreeMap<String,List<String>>();
+        // some newer frameworks like to re-use cursors, so we cannot assume a starting index
+        cursor.moveToPosition(-1);
         while (cursor.moveToNext()) {
             String folderName = getStr(cursor, DatabaseConstants.FEED_FOLDER_FOLDER_NAME);
             String feedId = getStr(cursor, DatabaseConstants.FEED_FOLDER_FEED_ID);
@@ -301,7 +303,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
     }
 
-	public void setFeedCursor(Cursor cursor) {
+	public synchronized void setFeedCursor(Cursor cursor) {
 		this.feedCursor = cursor;
         if (feedColumnMap == null) {
             feedColumnMap = new HashMap<Integer,Integer>();
@@ -310,6 +312,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             feedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.FEED_NEUTRAL_COUNT), R.id.row_feedneutral);
             feedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.FEED_POSITIVE_COUNT), R.id.row_feedpositive);
         }
+        recountFeeds();
         notifyDataSetChanged();
 	}
 
