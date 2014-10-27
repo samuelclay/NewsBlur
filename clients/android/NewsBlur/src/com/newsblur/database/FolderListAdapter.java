@@ -1,6 +1,7 @@
 package com.newsblur.database;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private Map<String,List<String>> folderFeedMap;
     private List<String> activeFolderNames;
-    private List<List<String>> activeFolderChildren;
+    private List<List<Feed>> activeFolderChildren;
     private List<Integer> neutCounts;
     private List<Integer> posCounts;
     private int savedStoriesCount;
@@ -62,17 +63,17 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	private Context context;
 
     private Map<Integer,Integer> folderColumnMap;
-    private Map<Integer,Integer> feedColumnMap;
     private Map<Integer,Integer> socialFeedColumnMap;
 
 	private LayoutInflater inflater;
+    private ImageLoader imageLoader;
 	private ViewBinder binder;
 
 	private StateFilter currentState = StateFilter.SOME;
 
 	public FolderListAdapter(Context context) {
 		this.context = context;
-		ImageLoader imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
+		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.binder = new FolderTreeViewBinder(imageLoader);
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -182,13 +183,28 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			}
             bindView(v, socialFeedCursor, this.socialFeedColumnMap);
 		} else {
-            moveFeedCursorToId(activeFolderChildren.get(groupPosition-1).get(childPosition));
+            Feed f = activeFolderChildren.get(groupPosition-1).get(childPosition);
 			if (convertView == null) {
 				v = inflater.inflate(R.layout.row_feed, parent, false);
 			} else {
 				v = convertView;
 			}
-            bindView(v, feedCursor, this.feedColumnMap);
+            ((TextView) v.findViewById(R.id.row_feedname)).setText(f.title);
+            imageLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), false);
+            TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
+            if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
+                neutCounter.setVisibility(View.VISIBLE);
+                neutCounter.setText(Integer.toString(checkNegativeUnreads(f.neutralCount)));
+            } else {
+                neutCounter.setVisibility(View.GONE);
+            }
+            TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
+            if (f.positiveCount > 0) {
+                posCounter.setVisibility(View.VISIBLE);
+                posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
+            } else {
+                posCounter.setVisibility(View.GONE);
+            }
 		}
 		return v;
 	}
@@ -237,7 +253,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			socialFeedCursor.moveToPosition(childPosition);
 			return getStr(socialFeedCursor, DatabaseConstants.SOCIAL_FEED_ID);
         } else {
-			return activeFolderChildren.get(groupPosition-1).get(childPosition);
+			return activeFolderChildren.get(groupPosition-1).get(childPosition).feedId;
 		}
 	}
 
@@ -305,13 +321,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	public synchronized void setFeedCursor(Cursor cursor) {
 		this.feedCursor = cursor;
-        if (feedColumnMap == null) {
-            feedColumnMap = new HashMap<Integer,Integer>();
-            feedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.FEED_TITLE), R.id.row_feedname);
-            feedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.FEED_FAVICON_URL), R.id.row_feedfavicon);
-            feedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.FEED_NEUTRAL_COUNT), R.id.row_feedneutral);
-            feedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.FEED_POSITIVE_COUNT), R.id.row_feedpositive);
-        }
         recountFeeds();
         notifyDataSetChanged();
 	}
@@ -328,29 +337,29 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (feedCursor == null || folderFeedMap == null) return;
         int c = folderFeedMap.keySet().size();
         activeFolderNames = new ArrayList<String>(c);
-        activeFolderChildren = new ArrayList<List<String>>(c);
+        activeFolderChildren = new ArrayList<List<Feed>>(c);
         neutCounts = new ArrayList<Integer>(c);
         posCounts = new ArrayList<Integer>(c);
         for (String folderName : folderFeedMap.keySet()) {
-            List<String> activeFeeds = new ArrayList<String>();
+            List<Feed> activeFeeds = new ArrayList<Feed>();
             int neutCount = 0;
             int posCount = 0;
             for (String feedId : folderFeedMap.get(folderName)) {
                 moveFeedCursorToId(feedId);
                 if (!feedCursor.isBeforeFirst()) {
-                    int feedNeutCount = feedCursor.getInt(feedCursor.getColumnIndex(DatabaseConstants.FEED_NEUTRAL_COUNT));
-                    int feedPosCount = feedCursor.getInt(feedCursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
-                    if (((currentState == StateFilter.BEST) && (feedPosCount > 0)) ||
-                        ((currentState == StateFilter.SOME) && ((feedPosCount+feedNeutCount > 0))) ||
+                    Feed f = Feed.fromCursor(feedCursor);
+                    if (((currentState == StateFilter.BEST) && (f.positiveCount > 0)) ||
+                        ((currentState == StateFilter.SOME) && ((f.positiveCount + f.neutralCount > 0))) ||
                         (currentState == StateFilter.ALL)) {
-                        activeFeeds.add(feedId);
+                        activeFeeds.add(f);
                     }
-                    neutCount += feedNeutCount;
-                    posCount += feedPosCount;
+                    neutCount += f.neutralCount;
+                    posCount += f.positiveCount;
                 }
             }
             if (activeFeeds.size() > 0) {
                 activeFolderNames.add(folderName);
+                Collections.sort(activeFeeds);
                 activeFolderChildren.add(activeFeeds);
                 neutCounts.add(neutCount);
                 posCounts.add(posCount);
