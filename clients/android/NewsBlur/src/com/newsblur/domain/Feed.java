@@ -8,7 +8,7 @@ import android.util.Log;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 
-public class Feed {	
+public class Feed implements Comparable<Feed> {	
 
 	@SerializedName("id")
 	public String feedId;
@@ -112,5 +112,9 @@ public class Feed {
 				positiveCount == otherFeed.positiveCount);
 		return isEquals;
 	}
+
+    public int compareTo(Feed f) {
+        return title.compareToIgnoreCase(f.title);
+    }
 
 }
