@@ -405,7 +405,7 @@
         // = Share story =
         // ===============
         
-        share_story: function() {
+        share_story: function(disable_https) {
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
             var $error = $(".NB-bookmarklet-comment-error", this.$modal);
             
@@ -415,9 +415,11 @@
             $share.addClass('NB-disabled').text('Sharing...');
             this.feed = this.feed || {};
             
+            var scheme = {% if debug %}'http'{% else %}'https'{% endif %};
+            var url = scheme + '://' + this.domain + "{% url "api-share-story" token %}";
             
             $.ajax({
-                url: '//'+this.domain+"{% url "api-share-story" token %}",
+                url: url,
                 type: 'POST',
                 data: {
                     title: $(".NB-bookmarklet-page-title", this.$modal).html() || this.story_title,
