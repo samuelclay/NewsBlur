@@ -838,16 +838,23 @@ class UserSubscription(models.Model):
         p = r.pipeline()
         for feed_id in feed_ids:
             p.zscore('scheduled_updates', feed_id)
-            p.zscore('queued_feeds', feed_id)
             p.zscore('error_feeds', feed_id)
-
         results = p.execute()
+        
+        p = r.pipeline()
+        for feed_id in feed_ids:
+            p.zscore('queued_feeds', feed_id)
+        try:
+            results_queued = p.execute()
+        except:
+            results_queued = map(lambda x: False, range(len(feed_ids)))
+        
 
         safety_net = []
         for f, feed_id in enumerate(feed_ids):
-            scheduled_updates = results[f*3]
-            queued_feeds = results[f*3+1]
-            error_feeds = results[f*3+2]
+            scheduled_updates = results[f*2]
+            error_feeds = results[f*2+1]
+            queued_feeds = results[f]
             if not scheduled_updates and not queued_feeds and not error_feeds:
                 safety_net.append(feed_id)
 
