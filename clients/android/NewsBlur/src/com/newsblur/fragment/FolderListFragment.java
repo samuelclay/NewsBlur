@@ -213,6 +213,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
 	public void changeState(StateFilter state) {
 		currentState = state;
+        adapter.changeState(state);
 		hasUpdated();
 	}
 

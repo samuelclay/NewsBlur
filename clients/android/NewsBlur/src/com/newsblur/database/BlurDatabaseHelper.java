@@ -483,16 +483,6 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
     }
 
-    public Loader<Cursor> getFoldersLoader(final StateFilter stateFilter) {
-        return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getFoldersCursor(stateFilter);}
-        };
-    }
-
-    public Cursor getFoldersCursor(StateFilter stateFilter) {
-        return dbRO.query(DatabaseConstants.FOLDER_TABLE, null, null, null, null, null, DatabaseConstants.FOLDER_NAME + " ASC");
-    }
-
     public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getSocialFeedsCursor(stateFilter);}
@@ -500,7 +490,7 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getSocialFeedsCursor(StateFilter stateFilter) {
-        return dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(StateFilter.SOME), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
+        return dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
     }
 
     public Loader<Cursor> getFolderFeedMapLoader() {
@@ -520,7 +510,7 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getFeedsCursor(StateFilter stateFilter) {
-        return dbRO.query(DatabaseConstants.FEED_TABLE, null, null, null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC");
+        return dbRO.query(DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC");
     }
 
     public Loader<Cursor> getSavedStoryCountLoader() {

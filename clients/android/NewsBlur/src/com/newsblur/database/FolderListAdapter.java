@@ -18,7 +18,6 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Handler;
-import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,7 +39,6 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.StateFilter;
-import com.newsblur.view.FolderTreeViewBinder;
 
 /**
  * Custom adapter to display a nested folder/feed list in an ExpandableListView.
@@ -62,19 +60,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 
-    private Map<Integer,Integer> folderColumnMap;
-    private Map<Integer,Integer> socialFeedColumnMap;
-
 	private LayoutInflater inflater;
     private ImageLoader imageLoader;
-	private ViewBinder binder;
 
 	private StateFilter currentState = StateFilter.SOME;
 
 	public FolderListAdapter(Context context) {
 		this.context = context;
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
-		this.binder = new FolderTreeViewBinder(imageLoader);
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -181,7 +174,23 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			} else {
 				v = convertView;
 			}
-            bindView(v, socialFeedCursor, this.socialFeedColumnMap);
+            SocialFeed f = SocialFeed.fromCursor(socialFeedCursor);
+            ((TextView) v.findViewById(R.id.row_socialfeed_name)).setText(f.feedTitle);
+            imageLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), false);
+            TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
+            if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
+                neutCounter.setVisibility(View.VISIBLE);
+                neutCounter.setText(Integer.toString(checkNegativeUnreads(f.neutralCount)));
+            } else {
+                neutCounter.setVisibility(View.GONE);
+            }
+            TextView posCounter = ((TextView) v.findViewById(R.id.row_socialsumpos));
+            if (f.positiveCount > 0) {
+                posCounter.setVisibility(View.VISIBLE);
+                posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
+            } else {
+                posCounter.setVisibility(View.GONE);
+            }
 		} else {
             Feed f = activeFolderChildren.get(groupPosition-1).get(childPosition);
 			if (convertView == null) {
@@ -294,13 +303,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	public void setSocialFeedCursor(Cursor cursor) {
 		this.socialFeedCursor = cursor;
-        if (socialFeedColumnMap == null) {
-            socialFeedColumnMap = new HashMap<Integer,Integer>();
-            socialFeedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_TITLE), R.id.row_socialfeed_name);
-            socialFeedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_ICON), R.id.row_socialfeed_icon);
-            socialFeedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT), R.id.row_socialsumneu);
-            socialFeedColumnMap.put(cursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT), R.id.row_socialsumpos);
-        }
+        Log.d(this.getClass().getName(), "active socials: " + cursor.getCount());
         notifyDataSetChanged();
 	}
 
@@ -321,6 +324,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	public synchronized void setFeedCursor(Cursor cursor) {
 		this.feedCursor = cursor;
+        Log.d(this.getClass().getName(), "active feeds: " + cursor.getCount());
         recountFeeds();
         notifyDataSetChanged();
 	}
@@ -357,7 +361,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                     posCount += f.positiveCount;
                 }
             }
-            if (activeFeeds.size() > 0) {
+            if ((activeFeeds.size() > 0) || (folderName.equals(AppConstants.ROOT_FOLDER))) {
                 activeFolderNames.add(folderName);
                 Collections.sort(activeFeeds);
                 activeFolderChildren.add(activeFeeds);
@@ -439,15 +443,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getChildTypeCount() {
 		return ChildType.values().length;
-	}
-
-	private void bindView(View view, Cursor cursor, Map<Integer,Integer> columnMap) {
-        for (Map.Entry<Integer,Integer> column : columnMap.entrySet()) {
-			View v = view.findViewById(column.getValue());
-			if (v != null) {
-				binder.setViewValue(v, cursor, column.getKey());
-			}
-		}
 	}
 
     private int sumIntRows(Cursor c, int columnIndex) {

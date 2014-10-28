@@ -290,13 +290,9 @@ public class DatabaseConstants {
 		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
 
-    private static final String SOCIAL_INTELLIGENCE_ALL = "";
-    private static final String SOCIAL_INTELLIGENCE_SOME = " (" + SOCIAL_FEED_NEUTRAL_COUNT + " + " + SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
-    private static final String SOCIAL_INTELLIGENCE_BEST = " (" + SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
-    private static final String SUM_STORY_TOTAL = "storyTotal";
-
     public static final String FEED_FILTER_FOCUS = FEED_TABLE + "." + FEED_POSITIVE_COUNT + " > 0 ";
 
+    private static final String SUM_STORY_TOTAL = "storyTotal";
 	private static String STORY_SUM_TOTAL = " CASE " + 
 	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 
 	"THEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
@@ -304,7 +300,6 @@ public class DatabaseConstants {
 	"THEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
 	"ELSE " + STORY_INTELLIGENCE_FEED + " " +
 	"END AS " + SUM_STORY_TOTAL;
-
 	private static final String STORY_INTELLIGENCE_BEST = SUM_STORY_TOTAL + " > 0 ";
 	private static final String STORY_INTELLIGENCE_SOME = SUM_STORY_TOTAL + " >= 0 ";
 	private static final String STORY_INTELLIGENCE_NEUT = SUM_STORY_TOTAL + " = 0 ";
@@ -378,16 +373,32 @@ public class DatabaseConstants {
     }
     
     /**
+     * Selection args to filter feeds.
+     */
+    public static String getFeedSelectionFromState(StateFilter state) {
+        switch (state) {
+        case ALL:
+            return null;
+        case SOME:
+            return "((" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0)";
+        case BEST:
+            return "(" + FEED_POSITIVE_COUNT + " > 0)";
+        default:
+            return null;
+        }
+    }
+
+    /**
      * Selection args to filter social feeds.
      */
     public static String getBlogSelectionFromState(StateFilter state) {
         switch (state) {
         case ALL:
-            return SOCIAL_INTELLIGENCE_ALL;
+            return null;
         case SOME:
-            return SOCIAL_INTELLIGENCE_SOME;
+            return "((" + SOCIAL_FEED_NEUTRAL_COUNT + " + " + SOCIAL_FEED_POSITIVE_COUNT + ") > 0)";
         case BEST:
-            return SOCIAL_INTELLIGENCE_BEST;
+            return "(" + SOCIAL_FEED_POSITIVE_COUNT + " > 0)";
         default:
             return null;
         }
