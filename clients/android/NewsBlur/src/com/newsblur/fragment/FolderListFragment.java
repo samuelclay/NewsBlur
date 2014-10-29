@@ -48,7 +48,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
     private static final int SAVEDCOUNT_LOADER = 4;
 
 	private FolderListAdapter adapter;
-	private StateFilter currentState = StateFilter.SOME;
+	public StateFilter currentState = StateFilter.SOME;
 	private SharedPreferences sharedPreferences;
     private ExpandableListView list;
 
