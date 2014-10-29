@@ -95,7 +95,7 @@ You must have Java 7 installed to run Jammit.
  * Install Java 7 on OS X by following directions from http://www.cc.gatech.edu/~simpkins/teaching/gatech/cs2340/guides/java7-macosx.html
  * Also install the following gems:
    
-     sudo gem install closure-compiler jsmin cssmin uglifier
+     `sudo gem install closure-compiler jsmin cssmin uglifier`
    
 #### Other assorted packages
 
