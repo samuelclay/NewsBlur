@@ -1718,6 +1718,7 @@ class MStory(mongo.Document):
     story_latest_content     = mongo.StringField()
     story_latest_content_z   = mongo.BinaryField()
     original_text_z          = mongo.BinaryField()
+    original_page_z          = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -2068,9 +2069,9 @@ class MStory(mongo.Document):
 
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
-        feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
+            feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
         else:
@@ -2078,6 +2079,18 @@ class MStory(mongo.Document):
             original_text = zlib.decompress(original_text_z)
         
         return original_text
+
+    def fetch_original_page(self, force=False, request=None, debug=False):
+        from apps.rss_feeds.page_importer import PageImporter
+        if not self.original_page_z or force:
+            feed = Feed.get_by_id(self.story_feed_id)
+            importer = PageImporter(request=request, feed=feed, story=self)
+            original_page = importer.fetch_story()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story page, ~SBfound.")
+            original_page = zlib.decompress(self.original_page_z)
+        
+        return original_page
 
 
 class MStarredStory(mongo.Document):

@@ -3685,12 +3685,20 @@ body {
   margin-left: 8px;
 }
 
+#story_taskbar .NB-feed-error-type-proxy .NB-feed-error-text {
+    color: #93927D;
+}
+
+
 #story_taskbar .NB-feed-error .NB-feed-error-icon {
     margin: 4px 0 0 0;
     width: 24px;
     height: 19px;
     background: transparent url('/media/embed/reader/warning.png') no-repeat 0 0;
     float: left;
+}
+#story_taskbar .NB-feed-error-type-proxy .NB-feed-error-icon {
+    opacity: .5;
 }
 
 /* ======================= */

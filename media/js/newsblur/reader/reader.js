@@ -2767,9 +2767,10 @@
                     'duration': this.model.preference('animations') ? 550 : 0,
                     'queue': false
                 });
-                NEWSBLUR.app.story_tab_view.load_story_iframe();
                 if (!this.active_story) {
                     NEWSBLUR.app.story_tab_view.show_explainer_single_story_mode();                        
+                } else {
+                    NEWSBLUR.app.story_tab_view.open_story();
                 }
             }
             
@@ -6123,7 +6124,8 @@
                 if (self.flags['feed_view_showing_story_view']) {
                     self.switch_to_correct_view();
                 } else {
-                    NEWSBLUR.app.story_tab_view.open_story(null, true);
+                    NEWSBLUR.app.story_tab_view.prepare_story(null, true);
+                    NEWSBLUR.app.story_tab_view.open_story();
                 }
             });
             $document.bind('keydown', 'return', function(e) {
@@ -6131,7 +6133,8 @@
                 if (self.flags['feed_view_showing_story_view']) {
                     self.switch_to_correct_view();
                 } else {
-                    NEWSBLUR.app.story_tab_view.open_story(null, true);
+                    NEWSBLUR.app.story_tab_view.prepare_story(null, true);
+                    NEWSBLUR.app.story_tab_view.open_story();
                 }
             });
             $document.bind('keydown', 'shift+enter', function(e) {
