@@ -2,6 +2,7 @@ package com.newsblur.database;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -49,13 +50,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private enum ChildType { SOCIAL_FEED, FEED }
 
     private Cursor socialFeedCursor;
-	private Cursor feedCursor;
 
-    private Map<String,List<String>> folderFeedMap;
+    private Map<String,List<String>> folderFeedMap = Collections.emptyMap();
     private List<String> activeFolderNames;
     private List<List<Feed>> activeFolderChildren;
     private List<Integer> neutCounts;
     private List<Integer> posCounts;
+    private Map<String,Feed> feeds = Collections.emptyMap();
     private int savedStoriesCount;
 
 	private Context context;
@@ -308,10 +309,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	}
 
     public synchronized void setFolderFeedMapCursor(Cursor cursor) {
-        if (cursor.getCount() < 1) return;
+        if ((cursor.getCount() < 1) || (!cursor.isBeforeFirst())) return;
         this.folderFeedMap = new TreeMap<String,List<String>>();
-        // some newer frameworks like to re-use cursors, so we cannot assume a starting index
-        cursor.moveToPosition(-1);
         while (cursor.moveToNext()) {
             String folderName = getStr(cursor, DatabaseConstants.FEED_FOLDER_FOLDER_NAME);
             String feedId = getStr(cursor, DatabaseConstants.FEED_FOLDER_FEED_ID);
@@ -323,8 +322,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
 	public synchronized void setFeedCursor(Cursor cursor) {
-		this.feedCursor = cursor;
-        Log.d(this.getClass().getName(), "active feeds: " + cursor.getCount());
+        if ((cursor.getCount() < 1) || (!cursor.isBeforeFirst())) return;
+        feeds = new LinkedHashMap<String,Feed>(cursor.getCount());
+        while (cursor.moveToNext()) {
+            Feed f = Feed.fromCursor(cursor);
+            feeds.put(f.feedId, f);
+        }
         recountFeeds();
         notifyDataSetChanged();
 	}
@@ -338,7 +341,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	}
     
     private void recountFeeds() {
-        if (feedCursor == null || folderFeedMap == null) return;
         int c = folderFeedMap.keySet().size();
         activeFolderNames = new ArrayList<String>(c);
         activeFolderChildren = new ArrayList<List<Feed>>(c);
@@ -349,9 +351,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             int neutCount = 0;
             int posCount = 0;
             for (String feedId : folderFeedMap.get(folderName)) {
-                moveFeedCursorToId(feedId);
-                if (!feedCursor.isBeforeFirst()) {
-                    Feed f = Feed.fromCursor(feedCursor);
+                Feed f = feeds.get(feedId);
+                if (f != null) {
                     if (((currentState == StateFilter.BEST) && (f.positiveCount > 0)) ||
                         ((currentState == StateFilter.SOME) && ((f.positiveCount + f.neutralCount > 0))) ||
                         (currentState == StateFilter.ALL)) {
@@ -371,19 +372,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private void moveFeedCursorToId(String feedId) {
-        // start at -1
-        feedCursor.moveToPosition(-1);
-        while (feedCursor.moveToNext()) {
-            if (getStr(feedCursor, DatabaseConstants.FEED_ID).equals(feedId)) return;
-        }
-        // never got a hit, return to -1
-        feedCursor.moveToPosition(-1);
-    }
-
     public Feed getFeed(String feedId) {
-        moveFeedCursorToId(feedId);
-        return Feed.fromCursor(feedCursor);
+        return feeds.get(feedId);
     }
 
     public SocialFeed getSocialFeed(String socialFeedId) {
