@@ -328,10 +328,6 @@
         [self.storyTitlesTable reloadData];
     }
 
-    if (!self.isDashboardModule) {
-        [appDelegate.storyPageControl resetPages];
-    }
-
     [self.notifier setNeedsLayout];
 }
 

@@ -391,7 +391,7 @@
 
 - (void)clearStory {
     self.activeStoryId = nil;
-    [self.webView loadHTMLString:@"" baseURL:nil];
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
 }
 
