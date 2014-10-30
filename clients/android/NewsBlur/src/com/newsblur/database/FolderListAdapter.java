@@ -109,27 +109,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
             int posCount = 0;
             for (int i : posCounts) posCount += i;
-            posCount = checkNegativeUnreads(posCount);
             int neutCount = 0;
             for (int i : neutCounts) neutCount += i;
-            neutCount = checkNegativeUnreads(neutCount);
-			switch (currentState) {
-				case BEST:
-					v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
-					v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
-					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));
-					break;
-				default:
-					v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
-                    if (posCount == 0) {
-                        v.findViewById(R.id.row_foldersumpos).setVisibility(View.GONE);
-                    } else {
-                        v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
-                    }
-					((TextView) v.findViewById(R.id.row_foldersumneu)).setText(Integer.toString(neutCount));
-					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));
-					break;
-			}
+            bindCountViews(v, neutCount, posCount, true);
         } else if (isRowSavedStories(groupPosition)) {
             if (convertView == null) {
                 v = inflater.inflate(R.layout.row_saved_stories, null, false);
@@ -151,7 +133,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 					((Activity) context).startActivity(i);
 				}
 			});
-            // TODO: bind counts
+            bindCountViews(v, neutCounts.get(groupPosition-1), posCounts.get(groupPosition-1), false);
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
             ImageView folderIconView = ((ImageView) v.findViewById(R.id.row_folder_icon));
             if ( folderIconView != null ) {
@@ -358,8 +340,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                         (currentState == StateFilter.ALL)) {
                         activeFeeds.add(f);
                     }
-                    neutCount += f.neutralCount;
-                    posCount += f.positiveCount;
+                    neutCount += checkNegativeUnreads(f.neutralCount);
+                    posCount += checkNegativeUnreads(f.positiveCount);
                 }
             }
             if ((activeFeeds.size() > 0) || (folderName.equals(AppConstants.ROOT_FOLDER))) {
@@ -434,6 +416,30 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	public int getChildTypeCount() {
 		return ChildType.values().length;
 	}
+
+    private void bindCountViews(View v, int neutCount, int posCount, boolean showNeutZero) {
+        switch (currentState) {
+            case BEST:
+                v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
+                v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
+                ((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));
+                break;
+            default:
+                if ((neutCount > 0) || showNeutZero) {
+                    v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
+                } else {    
+                    v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
+                }
+                if (posCount == 0) {
+                    v.findViewById(R.id.row_foldersumpos).setVisibility(View.GONE);
+                } else {
+                    v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
+                }
+                ((TextView) v.findViewById(R.id.row_foldersumneu)).setText(Integer.toString(neutCount));
+                ((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(posCount));
+                break;
+        }
+    }
 
     private int sumIntRows(Cursor c, int columnIndex) {
         if (c == null) return 0;
