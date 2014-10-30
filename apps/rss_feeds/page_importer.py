@@ -57,7 +57,7 @@ class PageImporter(object):
             ),
         }
     
-    @timelimit(15)
+    @timelimit(10)
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
         html = None
         feed_link = self.feed.feed_link
@@ -156,7 +156,7 @@ class PageImporter(object):
         
         return html
 
-    @timelimit(1)
+    @timelimit(10)
     def _fetch_story(self):
         html = None
         story_permalink = self.story.story_permalink

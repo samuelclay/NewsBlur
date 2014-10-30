@@ -2768,7 +2768,7 @@
                 });
                 if (!this.active_story) {
                     NEWSBLUR.app.story_tab_view.show_explainer_single_story_mode();                        
-                } else {
+                } else if (!options.resize) {
                     NEWSBLUR.app.story_tab_view.open_story();
                 }
             }
