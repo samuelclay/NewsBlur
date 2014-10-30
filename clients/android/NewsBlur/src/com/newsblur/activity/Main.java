@@ -42,7 +42,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
-
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
 
         isLightTheme = PrefsUtils.isLightThemeSelected(this);
@@ -61,10 +60,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		fragmentManager = getFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
+        ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
 
         this.overlayStatusText = (TextView) findViewById(R.id.main_sync_status);
-    
-        ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
 
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
@@ -193,4 +191,5 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
         }
     }
+
 }
