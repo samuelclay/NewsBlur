@@ -502,9 +502,9 @@ public class APIManager {
 		}
 	}
 
-	public NewsBlurResponse deleteFeed(long feedId, String folderName) {
+	public NewsBlurResponse deleteFeed(String feedId, String folderName) {
 		ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_FEEDID, Long.toString(feedId));
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		if ((!TextUtils.isEmpty(folderName)) && (!folderName.equals(AppConstants.ROOT_FOLDER))) {
 			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
 		}

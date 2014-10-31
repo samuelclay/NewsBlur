@@ -5,10 +5,14 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 
-public class Feed implements Comparable<Feed> {	
+public class Feed implements Comparable<Feed>, Serializable {	
+
+    private static final long serialVersionUID = 0L;
 
 	@SerializedName("id")
 	public String feedId;

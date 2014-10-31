@@ -183,14 +183,13 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 
 		if (item.getItemId() == R.id.menu_delete_feed) {
-            String feedName;
-            if (groupPosition == 0) {
-                feedName = adapter.getSocialFeed(adapter.getChild(groupPosition, childPosition)).feedTitle;
-            } else {
-                feedName = adapter.getFeed(adapter.getChild(groupPosition, childPosition)).title;
-            }
 			String folderName = adapter.getGroup(groupPosition);
-			DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(info.id, feedName, folderName);
+			DialogFragment deleteFeedFragment;
+            if (groupPosition == 0) {
+                deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getSocialFeed(adapter.getChild(groupPosition, childPosition)), folderName);
+            } else {
+                deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getFeed(adapter.getChild(groupPosition, childPosition)), folderName);
+            }
 			deleteFeedFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_feed_as_read) {
@@ -259,8 +258,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
             Feed feed = adapter.getFeed(childName);
 			String folderName = adapter.getGroup(groupPosition);
 			Intent intent = new Intent(getActivity(), FeedItemsList.class);
-			intent.putExtra(FeedItemsList.EXTRA_FEED, feed.feedId);
-			intent.putExtra(FeedItemsList.EXTRA_FEED_TITLE, feed.title);
+			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
 			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
 			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivity(intent);
