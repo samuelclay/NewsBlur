@@ -636,6 +636,7 @@
 }
 
 - (void)markStory:(NSDictionary *)story asSaved:(BOOL)saved {
+    NSLog(@"Saving in folders: %@", [appDelegate parentFoldersForFeed:[story objectForKey:@"story_feed_id"]]);
     NSMutableDictionary *newStory = [[appDelegate getStory:[story objectForKey:@"story_hash"]] mutableCopy];
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved) {

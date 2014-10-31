@@ -2003,6 +2003,28 @@
     return folderName;
 }
 
+- (NSArray *)parentFoldersForFeed:(NSString *)feedId {
+    NSMutableArray *folderNames = [[NSMutableArray alloc] init];
+    
+    for (NSString *folderName in self.dictFoldersArray) {
+        NSArray *folder = [self.dictFolders objectForKey:folderName];
+        if ([folder containsObject:feedId]) {
+            [folderNames addObject:[self extractFolderName:folderName]];
+            [folderNames addObject:[self extractParentFolderName:folderName]];
+        }
+    }
+    NSMutableArray *uniqueFolderNames = [[NSMutableArray alloc] init];
+    for (NSString *folderName in folderNames) {
+        if ([uniqueFolderNames containsObject:folderName]) continue;
+        if ([folderName containsString:@"Top Level"]) continue;
+        if ([folderName length] < 1) continue;
+        
+        [uniqueFolderNames addObject:folderName];
+    }
+    
+    return uniqueFolderNames;
+}
+
 - (NSDictionary *)getFeed:(NSString *)feedId {
     NSDictionary *feed;
     if (storiesCollection.isSocialView ||
