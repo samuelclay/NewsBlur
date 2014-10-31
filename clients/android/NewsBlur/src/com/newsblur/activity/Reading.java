@@ -127,7 +127,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         } else {
             passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
-
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
