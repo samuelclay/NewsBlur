@@ -1,9 +1,5 @@
 package com.newsblur.fragment;
 
-import java.util.ArrayList;
-
-import android.content.ContentResolver;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -32,47 +28,41 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class AllSharedStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
 
-	private String[] feedIds;
-	private ContentResolver contentResolver;
-
-    @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
-		feedIds = new String[feedIdArrayList.size()];
-		feedIdArrayList.toArray(feedIds);
-	}
+    ListView itemList;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         setupBezelSwipeDetector(itemList);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-
-		contentResolver = getActivity().getContentResolver();
-
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
-        // TODO: defer creation of the adapter until the loader's first callback so we don't leak this first ListView cursor
-        Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
-        adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
-        itemList.setAdapter(adapter);
-
-		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
 		itemList.setOnScrollListener(this);
 		itemList.setOnItemClickListener(this);
+        if (adapter != null) {
+            itemList.setAdapter(adapter);
+        }
+
+		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
 		return v;
 	}
 
-	public static ItemListFragment newInstance(ArrayList<String> feedIds, StateFilter currentState, DefaultFeedView defaultFeedView) {
+    @Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if ((adapter == null) && (cursor != null)) {
+            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
+            int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
+            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
+            itemList.setAdapter(adapter);
+        }
+        super.onLoadFinished(loader, cursor);
+    }
+
+	public static ItemListFragment newInstance(StateFilter currentState, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllSharedStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putSerializable("currentState", currentState);
-		arguments.putStringArrayList("feedIds", feedIds);
         arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);
 
@@ -84,7 +74,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);

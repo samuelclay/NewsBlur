@@ -707,23 +707,22 @@ public class NBSyncService extends Service {
         synchronized (PendingFeeds) {
             Integer alreadySeen = FeedStoriesSeen.get(fs);
             Integer alreadyRequested = PendingFeeds.get(fs);
-            if (alreadySeen != null) {
-                if ((callerSeen >= 0) && (alreadySeen > callerSeen)) {
-                    // the caller is probably filtering and thinks they have fewer than we do, so
-                    // update our count to agree with them, and force-allow another requet
-                    alreadySeen = callerSeen;
-                    FeedStoriesSeen.put(fs, callerSeen);
-                    alreadyRequested = 0;
-                }
-
-                if (desiredStoryCount <= alreadySeen) {
-                    return false;
-                }
+            if (alreadySeen == null) alreadySeen = 0;
+            if (alreadyRequested == null) alreadyRequested = 0;
+            if ((callerSeen >= 0) && (alreadySeen > callerSeen)) {
+                // the caller is probably filtering and thinks they have fewer than we do, so
+                // update our count to agree with them, and force-allow another requet
+                alreadySeen = callerSeen;
+                FeedStoriesSeen.put(fs, callerSeen);
+                alreadyRequested = 0;
             }
-            if ((alreadyRequested != null) && (desiredStoryCount <= alreadyRequested)) {
+            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount + " requested:" + alreadyRequested);
+            if (desiredStoryCount <= alreadySeen) {
                 return false;
             }
-            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount);
+            if (desiredStoryCount <= alreadyRequested) {
+                return false;
+            }
         }
             
         PendingFeeds.put(fs, desiredStoryCount);

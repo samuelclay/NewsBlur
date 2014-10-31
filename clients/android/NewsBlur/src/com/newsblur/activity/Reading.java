@@ -50,12 +50,11 @@ import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String EXTRA_FEEDSET = "feed_set";
-	public static final String EXTRA_FEED = "feed_selected";
+	public static final String EXTRA_FEED = "feed";
 	public static final String EXTRA_POSITION = "feed_position";
 	public static final String EXTRA_USERID = "user_id";
 	public static final String EXTRA_USERNAME = "username";
 	public static final String EXTRA_FOLDERNAME = "foldername";
-	public static final String EXTRA_FEED_IDS = "feed_ids";
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
     private static final String TEXT_SIZE = "textsize";
     private static final String BUNDLE_POSITION = "position";
@@ -127,7 +126,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         } else {
             passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
-
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }

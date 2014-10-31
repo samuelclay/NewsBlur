@@ -1,5 +1,6 @@
 package com.newsblur.database;
 
+import android.database.Cursor;
 import android.text.TextUtils;
 import android.provider.BaseColumns;
 
@@ -272,11 +273,6 @@ public class DatabaseConstants {
         ACTION_INCLUDE_NEWER + INTEGER +
         ")";
 
-	// Aggregated columns
-	public static final String SUM_POS = "sum_postive";
-	public static final String SUM_NEUT = "sum_neutral";
-	public static final String SUM_NEG = "sum_negative";
-
 	public static final String[] FEED_COLUMNS = {
 		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOR, FEED_TABLE + "." + FEED_FAVICON_BORDER, FEED_TABLE + "." + FEED_FAVICON_TEXT,
 		FEED_TABLE + "." + FEED_FAVICON, FEED_TABLE + "." + FEED_POSITIVE_COUNT, FEED_TABLE + "." + FEED_NEUTRAL_COUNT, FEED_TABLE + "." + FEED_NEGATIVE_COUNT
@@ -294,21 +290,7 @@ public class DatabaseConstants {
 		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
 
-	public static final String[] FOLDER_COLUMNS = {
-		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME, " SUM(" + FEED_POSITIVE_COUNT + ") AS " + SUM_POS, " SUM(" + FEED_NEUTRAL_COUNT + ") AS " + SUM_NEUT, " SUM(" + FEED_NEGATIVE_COUNT + ") AS " + SUM_NEG
-	};
-
-    private static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + FEED_NEGATIVE_COUNT + " + " + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") >= 0";
-    private static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0";
-    private static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + FEED_POSITIVE_COUNT + ") > 0";
-
-    private static final String SOCIAL_INTELLIGENCE_ALL = "";
-    private static final String SOCIAL_INTELLIGENCE_SOME = " (" + SOCIAL_FEED_NEUTRAL_COUNT + " + " + SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
-    private static final String SOCIAL_INTELLIGENCE_BEST = " (" + SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
     private static final String SUM_STORY_TOTAL = "storyTotal";
-
-    public static final String FEED_FILTER_FOCUS = FEED_TABLE + "." + FEED_POSITIVE_COUNT + " > 0 ";
-
 	private static String STORY_SUM_TOTAL = " CASE " + 
 	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 
 	"THEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
@@ -316,7 +298,6 @@ public class DatabaseConstants {
 	"THEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
 	"ELSE " + STORY_INTELLIGENCE_FEED + " " +
 	"END AS " + SUM_STORY_TOTAL;
-
 	private static final String STORY_INTELLIGENCE_BEST = SUM_STORY_TOTAL + " > 0 ";
 	private static final String STORY_INTELLIGENCE_SOME = SUM_STORY_TOTAL + " >= 0 ";
 	private static final String STORY_INTELLIGENCE_NEUT = SUM_STORY_TOTAL + " = 0 ";
@@ -390,16 +371,16 @@ public class DatabaseConstants {
     }
     
     /**
-     * Selection args to filter feeds and folders.
+     * Selection args to filter feeds.
      */
     public static String getFeedSelectionFromState(StateFilter state) {
         switch (state) {
         case ALL:
-            return FOLDER_INTELLIGENCE_ALL;
+            return null;
         case SOME:
-            return FOLDER_INTELLIGENCE_SOME;
+            return "((" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0)";
         case BEST:
-            return FOLDER_INTELLIGENCE_BEST;
+            return "(" + FEED_POSITIVE_COUNT + " > 0)";
         default:
             return null;
         }
@@ -411,11 +392,11 @@ public class DatabaseConstants {
     public static String getBlogSelectionFromState(StateFilter state) {
         switch (state) {
         case ALL:
-            return SOCIAL_INTELLIGENCE_ALL;
+            return null;
         case SOME:
-            return SOCIAL_INTELLIGENCE_SOME;
+            return "((" + SOCIAL_FEED_NEUTRAL_COUNT + " + " + SOCIAL_FEED_POSITIVE_COUNT + ") > 0)";
         case BEST:
-            return SOCIAL_INTELLIGENCE_BEST;
+            return "(" + SOCIAL_FEED_POSITIVE_COUNT + " > 0)";
         default:
             return null;
         }
@@ -467,6 +448,10 @@ public class DatabaseConstants {
         if (l == null) return null;
         if (l.longValue() == 0L) return null;
         return l;
+    }
+
+    public static String getStr(Cursor c, String colName) {
+        return c.getString(c.getColumnIndex(colName));
     }
 
 }

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
+import static android.database.DatabaseUtils.dumpCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.text.TextUtils;
@@ -131,6 +132,13 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);}
+    }
+
+    public void deleteFeed(String feedId) {
+        String[] selArgs = new String[] {feedId};
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, DatabaseConstants.FEED_FOLDER_FEED_ID + " = ?", selArgs);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
     }
 
     private void bulkInsertValues(String table, List<ContentValues> valuesList) {
@@ -480,6 +488,46 @@ public class BlurDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, false);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
+    }
+
+    public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {
+        return new QueryCursorLoader(context) {
+            protected Cursor createCursor() {return getSocialFeedsCursor(stateFilter);}
+        };
+    }
+
+    public Cursor getSocialFeedsCursor(StateFilter stateFilter) {
+        return dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
+    }
+
+    public Loader<Cursor> getFolderFeedMapLoader() {
+        return new QueryCursorLoader(context) {
+            protected Cursor createCursor() {return getFolderFeedMapCursor();}
+        };
+    }
+
+    public Cursor getFolderFeedMapCursor() {
+        return dbRO.query(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null, null, null, null, null);
+    }
+
+    public Loader<Cursor> getFeedsLoader(final StateFilter stateFilter) {
+        return new QueryCursorLoader(context) {
+            protected Cursor createCursor() {return getFeedsCursor(stateFilter);}
+        };
+    }
+
+    public Cursor getFeedsCursor(StateFilter stateFilter) {
+        return dbRO.query(DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC");
+    }
+
+    public Loader<Cursor> getSavedStoryCountLoader() {
+        return new QueryCursorLoader(context) {
+            protected Cursor createCursor() {return getSavedStoryCountCursor();}
+        };
+    }
+
+    public Cursor getSavedStoryCountCursor() {
+        return dbRO.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null, null, null, null, null);
     }
 
     public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter) {

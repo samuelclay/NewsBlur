@@ -34,7 +34,11 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		if (stories == null || stories.getCount() == 0 || position >= stories.getCount()) {
 			return new LoadingFragment();
         } else {
-            return getReadingItemFragment(position);
+            stories.moveToPosition(position);
+            Story story = Story.fromCursor(stories);
+            String tag = this.getClass().getName() + story.storyHash;
+            ReadingItemFragment frag = getReadingItemFragment(story);
+            return frag;
         }
     }
 
@@ -57,7 +61,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
         this.stories = cursor;
     }
         
-	protected abstract ReadingItemFragment getReadingItemFragment(int position);
+	protected abstract ReadingItemFragment getReadingItemFragment(Story story);
 	
 	@Override
 	public synchronized int getCount() {

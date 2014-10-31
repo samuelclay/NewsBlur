@@ -68,7 +68,7 @@ public class FeedUtils {
         }.execute();
     }
 
-    public static void deleteFeed(final long feedId, final String folderName, final Context context, final APIManager apiManager) {
+    public static void deleteFeed(final String feedId, final String folderName, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
@@ -76,16 +76,12 @@ public class FeedUtils {
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
-                if (!result.isError()) {
-                    Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_feed_delete_error)), Toast.LENGTH_LONG).show();
-                }
+                // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
+                dbHelper.deleteFeed(feedId);
+                NbActivity.updateAllActivities();
+                Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
             }
         }.execute();
-
-        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedId)).build();
-        context.getContentResolver().delete(feedUri, null, null);
     }
 
     public static void clearReadingSession() {

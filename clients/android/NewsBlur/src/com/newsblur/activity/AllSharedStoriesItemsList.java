@@ -1,17 +1,12 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import com.newsblur.R;
-import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.AllSharedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
@@ -24,30 +19,15 @@ import com.newsblur.util.StoryOrder;
 
 public class AllSharedStoriesItemsList extends ItemsList {
 
-	private ArrayList<String> feedIds;
-
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
 		setTitle(getResources().getString(R.string.all_shared_stories));
 
-        if (bundle != null) {
-            feedIds = bundle.getStringArrayList(BUNDLE_FEED_IDS);
-        }
-
-        if (feedIds == null) {
-            feedIds = new ArrayList<String>();
-            Cursor cursor = getContentResolver().query(FeedProvider.SOCIAL_FEEDS_URI, null, null, null, null);
-            while (cursor.moveToNext()) {
-                feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
-            }
-            cursor.close();
-        }
-
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(feedIds, currentState, getDefaultFeedView());
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
@@ -100,11 +80,4 @@ public class AllSharedStoriesItemsList extends ItemsList {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle bundle) {
-        if (this.feedIds != null) {
-            bundle.putStringArrayList(BUNDLE_FEED_IDS, this.feedIds);
-        }
-        super.onSaveInstanceState(bundle);
-    }
 }

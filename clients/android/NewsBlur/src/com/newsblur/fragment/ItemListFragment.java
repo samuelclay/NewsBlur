@@ -126,7 +126,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		if (cursor != null) {
             cursorSeenYet = true;
             if (cursor.getCount() == 0) {
-                ((ItemsList) getActivity()).triggerRefresh(1);
+                ((ItemsList) getActivity()).triggerRefresh(1, 0);
             }
 			adapter.swapCursor(cursor);
 		}

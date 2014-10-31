@@ -18,6 +18,7 @@ import android.widget.AbsListView;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
@@ -41,7 +42,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
-
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
 
         isLightTheme = PrefsUtils.isLightThemeSelected(this);
@@ -51,7 +51,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-		setupActionBar();
+		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
         swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
@@ -60,6 +60,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		fragmentManager = getFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
+        ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
 
         this.overlayStatusText = (TextView) findViewById(R.id.main_sync_status);
 
@@ -84,11 +85,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-	private void setupActionBar() {
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -195,4 +191,5 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
         }
     }
+
 }

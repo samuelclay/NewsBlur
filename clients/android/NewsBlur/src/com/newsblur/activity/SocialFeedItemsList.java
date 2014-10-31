@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.domain.SocialFeed;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SocialFeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
@@ -21,21 +22,19 @@ import com.newsblur.util.StoryOrder;
 
 public class SocialFeedItemsList extends ItemsList {
 
-	private String userIcon, userId, username, title;
+	public static final String EXTRA_SOCIAL_FEED = "blurblogTitle";
+
+	private SocialFeed socialFeed;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
+	    socialFeed = (SocialFeed) getIntent().getSerializableExtra(EXTRA_SOCIAL_FEED);
 		super.onCreate(bundle);
-
-		username = getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME);
-		userIcon = getIntent().getStringExtra(EXTRA_BLURBLOG_USER_ICON );
-		userId = getIntent().getStringExtra(EXTRA_BLURBLOG_USERID);
-		title = getIntent().getStringExtra(EXTRA_BLURBLOG_TITLE);
 				
-		setTitle(title);
+		setTitle(socialFeed.feedTitle);
 		
 		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, getDefaultFeedView());
+			itemListFragment = SocialFeedItemListFragment.newInstance(socialFeed, currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SocialFeedItemListFragment.class.getName());
@@ -45,7 +44,7 @@ public class SocialFeedItemsList extends ItemsList {
 
 	@Override
     protected FeedSet createFeedSet() {
-        return FeedSet.singleSocialFeed(getIntent().getStringExtra(EXTRA_BLURBLOG_USERID), getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME));
+        return FeedSet.singleSocialFeed(socialFeed.userId, socialFeed.username);
     }
 
 	@Override
@@ -58,32 +57,32 @@ public class SocialFeedItemsList extends ItemsList {
 	
     @Override
     protected StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFeed(this, userId);
+        return PrefsUtils.getStoryOrderForFeed(this, socialFeed.userId);
     }
 
     @Override
     public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFeed(this, userId, newValue);
+        PrefsUtils.setStoryOrderForFeed(this, socialFeed.userId, newValue);
     }
     
     @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.setReadFilterForFeed(this, userId, newValue);
+        PrefsUtils.setReadFilterForFeed(this, socialFeed.userId, newValue);
     }
     
     @Override
     protected ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilterForFeed(this, userId);
+        return PrefsUtils.getReadFilterForFeed(this, socialFeed.userId);
     }
 
     @Override
     protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFeed(this, userId);
+        return PrefsUtils.getDefaultFeedViewForFeed(this, socialFeed.userId);
     }
 
     @Override
     public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFeed(this, userId, value);
+        PrefsUtils.setDefaultFeedViewForFeed(this, socialFeed.userId, value);
         if (itemListFragment != null) {
             itemListFragment.setDefaultFeedView(value);
         }

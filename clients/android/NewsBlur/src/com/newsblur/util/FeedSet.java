@@ -138,6 +138,7 @@ public class FeedSet implements Serializable {
      * Gets a single feed ID iff there is only one or null otherwise.
      */
     public String getSingleFeed() {
+        if (folderName != null) return null;
         if (feeds != null && feeds.size() == 1) return feeds.iterator().next(); else return null;
     }
 
@@ -145,7 +146,7 @@ public class FeedSet implements Serializable {
      * Gets a set of feed IDs iff there are multiples or null otherwise.
      */
     public Set<String> getMultipleFeeds() {
-        if (feeds != null && feeds.size() > 1) return feeds; else return null;
+        if (feeds != null && ((feeds.size() > 1) || (folderName != null))) return feeds; else return null;
     }
 
     /**
