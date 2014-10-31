@@ -286,7 +286,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	public void setSocialFeedCursor(Cursor cursor) {
 		this.socialFeedCursor = cursor;
-        Log.d(this.getClass().getName(), "active socials: " + cursor.getCount());
         notifyDataSetChanged();
 	}
 
