@@ -115,6 +115,7 @@
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize inStoryDetail;
+@synthesize isPresentingActivities;
 @synthesize activeComment;
 @synthesize activeShareType;
 
@@ -581,6 +582,7 @@
         
         
         OSKActivityCompletionHandler completionHandler = ^(OSKActivity *activity, BOOL successful, NSError *error){
+            self.isPresentingActivities = NO;
             if (!successful) return;
             
             NSString *activityType = [activity.class activityType];
@@ -664,6 +666,8 @@
                                                             applicationActivities:appActivities];
         [activityViewController setTitle:title];
         void (^completion)(NSString *, BOOL) = ^void(NSString *activityType, BOOL completed){
+            self.isPresentingActivities = NO;
+
             NSString *_completedString;
             NSLog(@"activityType: %@", activityType);
             if (!activityType) return;
@@ -726,7 +730,8 @@
         } else {
             [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
         }
-    }    
+    }
+    self.isPresentingActivities = YES;
 }
 
 - (OSKApplicationCredential *)applicationCredentialForActivityType:(NSString *)activityType {
