@@ -1,22 +1,21 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;
@@ -33,37 +32,15 @@ import com.newsblur.util.StateFilter;
 
 public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogListener {
 
-	private ContentResolver resolver;
-	private ArrayList<String> feedIds;
-
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
 		setTitle(getResources().getString(R.string.all_stories));
 
-		resolver = getContentResolver();
-
-        if (bundle != null) {
-            feedIds = bundle.getStringArrayList(BUNDLE_FEED_IDS);
-        }
-
-        if (feedIds == null) {
-            feedIds = new ArrayList<String>(); // default to a wildcard search
-
-            // if we're in Focus mode, only query for feeds with a nonzero focus count
-            if (this.currentState == StateFilter.BEST) {
-                Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.FEED_FILTER_FOCUS, null, null);
-                while (cursor.moveToNext() && (feedIds.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
-                    feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-                }
-                cursor.close();
-            }
-        }
-
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(AllStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(feedIds, currentState, getDefaultFeedView());
+			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllStoriesItemListFragment.class.getName());
@@ -133,11 +110,4 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
         // do nothing
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle bundle) {
-        if (this.feedIds != null) {
-            bundle.putStringArrayList(BUNDLE_FEED_IDS, this.feedIds);
-        }
-        super.onSaveInstanceState(bundle);
-    }
 }

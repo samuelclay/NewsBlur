@@ -290,8 +290,6 @@ public class DatabaseConstants {
 		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
 
-    public static final String FEED_FILTER_FOCUS = FEED_TABLE + "." + FEED_POSITIVE_COUNT + " > 0 ";
-
     private static final String SUM_STORY_TOTAL = "storyTotal";
 	private static String STORY_SUM_TOTAL = " CASE " + 
 	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 

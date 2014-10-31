@@ -220,7 +220,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         if (adapter.isFolderRoot(groupPosition)) {
 			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
-			i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
+			i.putExtra(ItemsList.EXTRA_STATE, currentState);
 			startActivity(i);
 			return true;
         } else if (adapter.isRowSavedStories(groupPosition)) {

@@ -1,6 +1,5 @@
 package com.newsblur.fragment;
 
-import java.util.ArrayList;
 
 import android.content.ContentResolver;
 import android.content.CursorLoader;
@@ -32,16 +31,7 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class AllSharedStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
 
-	private String[] feedIds;
 	private ContentResolver contentResolver;
-
-    @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
-		feedIds = new String[feedIdArrayList.size()];
-		feedIdArrayList.toArray(feedIds);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,11 +58,10 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		return v;
 	}
 
-	public static ItemListFragment newInstance(ArrayList<String> feedIds, StateFilter currentState, DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance(StateFilter currentState, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllSharedStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putSerializable("currentState", currentState);
-		arguments.putStringArrayList("feedIds", feedIds);
         arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);
 
@@ -84,7 +73,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);

@@ -49,6 +49,8 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	@Override
     protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+        // our intel state is entirely determined by the state of the Main view
+		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
         this.fs = createFeedSet();
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -57,8 +59,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getFragmentManager();
 
-        // our intel state is entirely determined by the state of the Main view
-		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
@@ -85,7 +85,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
     private void getFirstStories() {
         stopLoading = false;
-        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
+        triggerRefresh(AppConstants.READING_STORY_PRELOAD, 0);
     }
 
     @Override
@@ -93,14 +93,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         stopLoading = true;
         NBSyncService.holdStories(false);
         super.onPause();
-    }
-
-	public void triggerRefresh(int desiredStoryCount) {
-        if (!stopLoading) {
-            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
-            if (gotSome) triggerSync();
-            updateStatusIndicators();
-        }
     }
 
     public void triggerRefresh(int desiredStoryCount, int totalSeen) {
@@ -159,9 +151,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
         }
-        // re-trigger at least one story when this is reached, just in case the first update beat
-        // the sync service pagination reset. it won't do anything after the first call
-        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
     }
 
     private void updateStatusIndicators() {
