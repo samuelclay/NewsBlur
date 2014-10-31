@@ -55,7 +55,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	public static final String EXTRA_USERID = "user_id";
 	public static final String EXTRA_USERNAME = "username";
 	public static final String EXTRA_FOLDERNAME = "foldername";
-	public static final String EXTRA_FEED_IDS = "feed_ids";
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
 	private static final String TEXT_SIZE = "textsize";
     private static final String BUNDLE_POSITION = "position";
