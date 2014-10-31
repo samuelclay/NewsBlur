@@ -134,6 +134,13 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);}
     }
 
+    public void deleteFeed(String feedId) {
+        String[] selArgs = new String[] {feedId};
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, DatabaseConstants.FEED_FOLDER_FEED_ID + " = ?", selArgs);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
+    }
+
     private void bulkInsertValues(String table, List<ContentValues> valuesList) {
         if (valuesList.size() < 1) return;
         synchronized (RW_MUTEX) {
