@@ -121,7 +121,7 @@ public class NBSyncService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-        Log.d(this.getClass().getName(), "onCreate");
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
         HaltNow = false;
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
@@ -218,7 +218,6 @@ public class NBSyncService extends Service {
             c = dbHelper.getActions(false);
             if (c.getCount() < 1) return;
 
-            Log.d(this.getClass().getName(), "found new actions: " + c.getCount());
             ActionsRunning = true;
             NbActivity.updateAllActivities();
 
@@ -264,7 +263,6 @@ public class NBSyncService extends Service {
         try {
             if (FollowupActions.size() < 1) return;
 
-            Log.d(this.getClass().getName(), "found old actions: " + FollowupActions.size());
             ActionsRunning = true;
             NbActivity.updateAllActivities();
 
