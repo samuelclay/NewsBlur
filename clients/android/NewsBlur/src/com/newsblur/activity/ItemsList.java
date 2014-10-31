@@ -32,10 +32,6 @@ import com.newsblur.view.StateToggleButton.StateChangedListener;
 public abstract class ItemsList extends NbActivity implements StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
-	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
-	public static final String EXTRA_BLURBLOG_USERID = "blurblogId";
-	public static final String EXTRA_BLURBLOG_USER_ICON = "userIcon";
-	public static final String EXTRA_BLURBLOG_TITLE = "blurblogTitle";
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";

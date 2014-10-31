@@ -248,10 +248,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 		if (groupPosition == 0) {
             SocialFeed socialFeed = adapter.getSocialFeed(childName);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
-			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USER_ICON, socialFeed.photoUrl);
-			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERNAME, socialFeed.username);
-			intent.putExtra(ItemsList.EXTRA_BLURBLOG_TITLE, socialFeed.feedTitle);
-			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERID, socialFeed.userId);
+			intent.putExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED, socialFeed);
 			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivity(intent);
 		} else {
