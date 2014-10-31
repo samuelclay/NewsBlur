@@ -1,6 +1,5 @@
 package com.newsblur.fragment;
 
-import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -21,7 +20,6 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.activity.SocialFeedReading;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.DefaultFeedView;
@@ -31,46 +29,21 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class SocialFeedItemListFragment extends ItemListFragment implements OnItemClickListener {
 
-	private ContentResolver contentResolver;
-	private String userId, username;
-	private Uri storiesUri;
 	private SocialFeed socialFeed;
-	
-	private Uri socialFeedUri;
-	private String[] groupFroms;
-	private int[] groupTos;
 	private ListView itemList;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+        socialFeed = (SocialFeed) getArguments().getSerializable("social_feed");
 		super.onCreate(savedInstanceState);
-        userId = getArguments().getString("userId");
-        username = getArguments().getString("username");
-		contentResolver = getActivity().getContentResolver();
-		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		
-		socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
-		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
-
-		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
-		
-		groupFroms = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
-		groupTos = new int[] { R.id.row_item_title, R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_content, R.id.row_item_date, R.id.row_item_author, R.id.row_item_sidebar};
-
-        adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFroms, groupTos, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
-
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-		
 	}
 
-	public static SocialFeedItemListFragment newInstance(final String userId, final String username, StateFilter currentState, final DefaultFeedView defaultFeedView) {
+	public static SocialFeedItemListFragment newInstance(SocialFeed socialFeed, StateFilter currentState, DefaultFeedView defaultFeedView) {
 	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
 		Bundle args = new Bundle();
         args.putSerializable("currentState", currentState);
-        args.putString("userId", userId);
-        args.putString("username", username);
+        args.putSerializable("social_feed", socialFeed);
         args.putSerializable("defaultFeedView", defaultFeedView);
         fragment.setArguments(args);
         return fragment;
@@ -82,21 +55,34 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
 		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         setupBezelSwipeDetector(itemList);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-		
-		itemList.setOnScrollListener(this);
-		itemList.setAdapter(adapter);
+        itemList.setOnScrollListener(this);
 		itemList.setOnItemClickListener(this);
+        if (adapter != null) {
+            itemList.setAdapter(adapter);
+        }
 		
 		return v;
 	}
+
+    @Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if ((adapter == null) && (cursor != null)) {
+            String[] groupFroms = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
+            int[] groupTos = new int[] { R.id.row_item_title, R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_content, R.id.row_item_date, R.id.row_item_author, R.id.row_item_sidebar};
+            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFroms, groupTos, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
+            itemList.setAdapter(adapter);
+        }
+        super.onLoadFinished(loader, cursor);
+    }
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), SocialFeedReading.class);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(Reading.EXTRA_USERID, userId);
-		i.putExtra(Reading.EXTRA_USERNAME, username);
+		i.putExtra(Reading.EXTRA_USERID, socialFeed.userId);
+		i.putExtra(Reading.EXTRA_USERNAME, socialFeed.username);
 		i.putExtra(Reading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);

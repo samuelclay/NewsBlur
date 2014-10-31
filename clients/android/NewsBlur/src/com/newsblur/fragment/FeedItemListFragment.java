@@ -59,13 +59,13 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
         itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         setupBezelSwipeDetector(itemList);
         itemList.setEmptyView(v.findViewById(R.id.empty_view));
+        itemList.setOnItemClickListener(this);
+        itemList.setOnCreateContextMenuListener(this);
         itemList.setOnScrollListener(this);
         if (adapter != null) {
             // normally the list gets set up when the adapter is created, but sometimes
             // onCreateView gets re-called.
             itemList.setAdapter(adapter);
-            itemList.setOnItemClickListener(this);
-            itemList.setOnCreateContextMenuListener(this);
         }
 
         getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
@@ -81,8 +81,6 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
             adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
             itemList.setAdapter(adapter);
-            itemList.setOnItemClickListener(this);
-            itemList.setOnCreateContextMenuListener(this);
        }
        super.onLoadFinished(loader, cursor);
     }
