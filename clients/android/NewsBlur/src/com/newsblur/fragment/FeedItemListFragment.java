@@ -90,7 +90,7 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FeedReading.class);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(Reading.EXTRA_FEED, feed.feedId);
+		i.putExtra(Reading.EXTRA_FEED, feed);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
