@@ -32,14 +32,15 @@ import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment implements OnItemClickListener {
 
-	private String feedId;
+	private Feed feed;
+    private ListView itemList;
 
-    public static FeedItemListFragment newInstance(String feedId, StateFilter currentState, DefaultFeedView defaultFeedView) {
+    public static FeedItemListFragment newInstance(Feed feed, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putSerializable("currentState", currentState);
-		args.putString("feedId", feedId);
+		args.putSerializable("feed", feed);
         args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
@@ -49,53 +50,42 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		feedId = getArguments().getString("feedId");
+		feed = (Feed) getArguments().getSerializable("feed");
 	}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_itemlist, null);
 
-        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         setupBezelSwipeDetector(itemList);
         itemList.setEmptyView(v.findViewById(R.id.empty_view));
-
-        ContentResolver contentResolver = getActivity().getContentResolver();
-        // TODO: defer creation of the adapter until the loader's first callback so we don't leak this first stories cursor
-        Cursor storiesCursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
-        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-        Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
-
-        if (feedCursor.getCount() < 1) {
-            // This shouldn't happen, but crash reports indicate that it does (very rarely).
-            // If we are told to create an item list for a feed, but then can't find that feed ID in the DB,
-            // something is very wrong, and we won't be able to recover, so just force the user back to the
-            // feed list until we have a better understanding of how to prevent this.
-            Log.w(this.getClass().getName(), "Feed not found in DB, can't create item list.");
-            getActivity().finish();
-            return v;
+        itemList.setOnScrollListener(this);
+        if (adapter != null) {
+            // normally the list gets set up when the adapter is created, but sometimes
+            // onCreateView gets re-called.
+            itemList.setAdapter(adapter);
+            itemList.setOnItemClickListener(this);
+            itemList.setOnCreateContextMenuListener(this);
         }
-
-        feedCursor.moveToFirst();
-        Feed feed = Feed.fromCursor(feedCursor);
-        feedCursor.close();
-
-        String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
-        int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar };
-
-        // create the adapter before starting the loader, since the callback updates the adapter
-        adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, storiesCursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
-        itemList.setOnScrollListener(this);
-
-        adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
-        itemList.setAdapter(adapter);
-        itemList.setOnItemClickListener(this);
-        itemList.setOnCreateContextMenuListener(this);
-        
         return v;
+    }
+
+    @Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if ((adapter == null) && (cursor != null)) {
+            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
+            int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar };
+            adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
+            itemList.setAdapter(adapter);
+            itemList.setOnItemClickListener(this);
+            itemList.setOnCreateContextMenuListener(this);
+       }
+       super.onLoadFinished(loader, cursor);
     }
 
 	@Override
@@ -103,7 +93,7 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FeedReading.class);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(Reading.EXTRA_FEED, feedId);
+		i.putExtra(Reading.EXTRA_FEED, feed.feedId);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
