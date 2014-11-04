@@ -522,6 +522,7 @@ def load_single_feed(request, feed_id):
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
     message                 = None
     user_search             = None
+    time.sleep(3)
     
     dupe_feed_id = None
     user_profiles = []
