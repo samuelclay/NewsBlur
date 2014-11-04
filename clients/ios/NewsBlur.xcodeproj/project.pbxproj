@@ -263,6 +263,9 @@
 		FF5F3A87162B834E008DBE3E /* bin_closed.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A86162B834E008DBE3E /* bin_closed.png */; };
 		FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A88162B8377008DBE3E /* arrow_branch.png */; };
 		FF5F3A8B162B8390008DBE3E /* car.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A8A162B8390008DBE3E /* car.png */; };
+		FF6281FA1A09614C00271FDB /* all@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281F91A09614C00271FDB /* all@3x.png */; };
+		FF6281FC1A0962FA00271FDB /* unread_green@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281FB1A0962FA00271FDB /* unread_green@3x.png */; };
+		FF6281FE1A09641100271FDB /* unread_yellow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281FD1A09641100271FDB /* unread_yellow@3x.png */; };
 		FF6618C8176184560039913B /* NBNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6618C7176184560039913B /* NBNotifier.m */; };
 		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
 		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
@@ -1047,6 +1050,9 @@
 		FF5F3A86162B834E008DBE3E /* bin_closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bin_closed.png; sourceTree = "<group>"; };
 		FF5F3A88162B8377008DBE3E /* arrow_branch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_branch.png; sourceTree = "<group>"; };
 		FF5F3A8A162B8390008DBE3E /* car.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = car.png; sourceTree = "<group>"; };
+		FF6281F91A09614C00271FDB /* all@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "all@3x.png"; sourceTree = "<group>"; };
+		FF6281FB1A0962FA00271FDB /* unread_green@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_green@3x.png"; sourceTree = "<group>"; };
+		FF6281FD1A09641100271FDB /* unread_yellow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_yellow@3x.png"; sourceTree = "<group>"; };
 		FF6618C6176184560039913B /* NBNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBNotifier.h; sourceTree = "<group>"; };
 		FF6618C7176184560039913B /* NBNotifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBNotifier.m; sourceTree = "<group>"; };
 		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
@@ -2088,9 +2094,12 @@
 				43821AD215D8703F0034A4EF /* 258-checkmark@2x.png */,
 				43C3D40B15D469010066D36D /* unread_yellow.png */,
 				FF29709316DD8CB000E92F85 /* unread_yellow@2x.png */,
+				FF6281FD1A09641100271FDB /* unread_yellow@3x.png */,
+				FF6281FB1A0962FA00271FDB /* unread_green@3x.png */,
 				FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */,
 				FF88F10C1811BAEC007FEE78 /* unread_green.png */,
 				43C3D40915D468BA0066D36D /* all.png */,
+				FF6281F91A09614C00271FDB /* all@3x.png */,
 				43C3D41115D46D330066D36D /* all@2x.png */,
 				43C3D40215D44EA30066D36D /* user_light.png */,
 				43C3D40315D44EA30066D36D /* user_light@2x.png */,
@@ -3249,6 +3258,7 @@
 				FFA0475C19CA54A800618DC4 /* GooglePlus-Icon-76@2x.png in Resources */,
 				43AF417815C30B1600758366 /* 37x-Checkmark@2x.png in Resources */,
 				43A4BADB15C866FA00F3B8D4 /* popoverArrowDown.png in Resources */,
+				FF6281FE1A09641100271FDB /* unread_yellow@3x.png in Resources */,
 				FFA0474B19CA54A800618DC4 /* 1Password-Icon-76.png in Resources */,
 				FFA0477B19CA54A800618DC4 /* osk-copyIcon-yellow-29.png in Resources */,
 				FFC486A919CA40DA00F4758F /* logo_72.png in Resources */,
@@ -3262,6 +3272,7 @@
 				43A4BADF15C866FA00F3B8D4 /* popoverArrowLeft@2x.png in Resources */,
 				43A4BAE015C866FA00F3B8D4 /* popoverArrowLeftSimple.png in Resources */,
 				43A4BAE115C866FA00F3B8D4 /* popoverArrowRight.png in Resources */,
+				FF6281FC1A0962FA00271FDB /* unread_green@3x.png in Resources */,
 				43A4BAE215C866FA00F3B8D4 /* popoverArrowRight@2x.png in Resources */,
 				FFA0474A19CA54A800618DC4 /* 1Password-Icon-60@2x.png in Resources */,
 				43A4BAE315C866FA00F3B8D4 /* popoverArrowRightSimple.png in Resources */,
@@ -3412,6 +3423,7 @@
 				FFC5F31116E2D2C2007AC72C /* story_share_facebook.png in Resources */,
 				FFC5F31216E2D2C2007AC72C /* story_share_facebook@2x.png in Resources */,
 				FF03AFE519F87A770063002A /* g_icn_folder_read@2x.png in Resources */,
+				FF6281FA1A09614C00271FDB /* all@3x.png in Resources */,
 				FFC5F31316E2D2C2007AC72C /* story_share_twitter_active.png in Resources */,
 				FFA047AA19CA54A800618DC4 /* osk-pinboardIcon-29@2x.png in Resources */,
 				FFA0476F19CA54A800618DC4 /* osk-appDotNetIcon-29.png in Resources */,
