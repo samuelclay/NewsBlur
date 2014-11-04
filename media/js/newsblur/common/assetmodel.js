@@ -52,7 +52,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'ajax_group': 'queue',
             'traditional': true,
             'domSuccessTrigger': true,
-            'preventDoubleRequests': false
+            'preventDoubleRequests': false,
+            'timeout': 15000
         }, options);
         var request_type = options.request_type || 'POST';
         var clear_queue = false;
