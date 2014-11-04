@@ -1240,12 +1240,13 @@
             feedDetailView.storiesCollection.isRiverView = YES;
             NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
             
-            if ([folderName isEqualToString:@"saved_stories"]) {
+            if ([folder isEqualToString:@"saved_stories"] || [folderName isEqualToString:@"saved_stories"]) {
                 feedDetailView.storiesCollection.isSavedView = YES;
-            } else if ([folderName isEqualToString:@"read_stories"]) {
+                [feedDetailView.storiesCollection setActiveFolder:@"saved_stories"];
+            } else if ([folder isEqualToString:@"read_stories"] || [folderName isEqualToString:@"read_stories"]) {
                 feedDetailView.storiesCollection.isReadView = YES;
+                [feedDetailView.storiesCollection setActiveFolder:@"read_stories"];
             }
-            [feedDetailView.storiesCollection setActiveFolder:folderName];
             NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
             NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
             for (int l=0; l < [activeFeedLocations count]; l++) {
