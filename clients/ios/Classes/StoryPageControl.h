@@ -9,14 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "WEPopoverController.h"
+#import "WYPopoverController.h"
 #import "THCircularProgressView.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
 @interface StoryPageControl : BaseViewController
-<UIScrollViewDelegate, UIPopoverControllerDelegate, UIGestureRecognizerDelegate, WEPopoverControllerDelegate> {
+<UIScrollViewDelegate, UIPopoverControllerDelegate, UIGestureRecognizerDelegate, WYPopoverControllerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
 
@@ -30,7 +30,7 @@
     UIView *progressView;
     UIView *progressViewContainer;
     
-    WEPopoverController *popoverController;
+    WYPopoverController *popoverController;
 	Class popoverClass;
     
     BOOL isDraggingScrollview;
@@ -74,7 +74,7 @@
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic) NSInteger scrollingToPage;
 
-@property (nonatomic, strong) WEPopoverController *popoverController;
+@property (nonatomic, strong) WYPopoverController *popoverController;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;

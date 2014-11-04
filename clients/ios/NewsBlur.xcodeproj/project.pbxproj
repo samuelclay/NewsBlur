@@ -61,10 +61,6 @@
 		43A3914B15B73A7B0074B212 /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A3913F15B73A7B0074B212 /* AFURLConnectionOperation.m */; };
 		43A3914C15B73A7B0074B212 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A3914115B73A7B0074B212 /* AFXMLRequestOperation.m */; };
 		43A3914D15B73A7B0074B212 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A3914315B73A7B0074B212 /* UIImageView+AFNetworking.m */; };
-		43A4BAC815C8663600F3B8D4 /* UIBarButtonItem+WEPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4BAC015C8663600F3B8D4 /* UIBarButtonItem+WEPopover.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		43A4BAC915C8663600F3B8D4 /* WEPopoverContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4BAC215C8663600F3B8D4 /* WEPopoverContainerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		43A4BACA15C8663600F3B8D4 /* WEPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4BAC415C8663600F3B8D4 /* WEPopoverController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		43A4BACB15C8663600F3B8D4 /* WETouchableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4BAC715C8663600F3B8D4 /* WETouchableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		43A4BADB15C866FA00F3B8D4 /* popoverArrowDown.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BACC15C866FA00F3B8D4 /* popoverArrowDown.png */; };
 		43A4BADC15C866FA00F3B8D4 /* popoverArrowDown@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BACD15C866FA00F3B8D4 /* popoverArrowDown@2x.png */; };
 		43A4BADD15C866FA00F3B8D4 /* popoverArrowDownSimple.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BACE15C866FA00F3B8D4 /* popoverArrowDownSimple.png */; };
@@ -266,6 +262,8 @@
 		FF6281FA1A09614C00271FDB /* all@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281F91A09614C00271FDB /* all@3x.png */; };
 		FF6281FC1A0962FA00271FDB /* unread_green@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281FB1A0962FA00271FDB /* unread_green@3x.png */; };
 		FF6281FE1A09641100271FDB /* unread_yellow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281FD1A09641100271FDB /* unread_yellow@3x.png */; };
+		FF6282031A09685800271FDB /* WYPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282001A09685800271FDB /* WYPopoverController.m */; };
+		FF6282041A09685800271FDB /* WYStoryboardPopoverSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282021A09685800271FDB /* WYStoryboardPopoverSegue.m */; };
 		FF6618C8176184560039913B /* NBNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6618C7176184560039913B /* NBNotifier.m */; };
 		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
 		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
@@ -776,15 +774,6 @@
 		43A3914115B73A7B0074B212 /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		43A3914215B73A7B0074B212 /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		43A3914315B73A7B0074B212 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
-		43A4BABF15C8663600F3B8D4 /* UIBarButtonItem+WEPopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+WEPopover.h"; sourceTree = "<group>"; };
-		43A4BAC015C8663600F3B8D4 /* UIBarButtonItem+WEPopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+WEPopover.m"; sourceTree = "<group>"; };
-		43A4BAC115C8663600F3B8D4 /* WEPopoverContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WEPopoverContainerView.h; sourceTree = "<group>"; };
-		43A4BAC215C8663600F3B8D4 /* WEPopoverContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WEPopoverContainerView.m; sourceTree = "<group>"; };
-		43A4BAC315C8663600F3B8D4 /* WEPopoverController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WEPopoverController.h; sourceTree = "<group>"; };
-		43A4BAC415C8663600F3B8D4 /* WEPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WEPopoverController.m; sourceTree = "<group>"; };
-		43A4BAC515C8663600F3B8D4 /* WEPopoverParentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WEPopoverParentView.h; sourceTree = "<group>"; };
-		43A4BAC615C8663600F3B8D4 /* WETouchableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WETouchableView.h; sourceTree = "<group>"; };
-		43A4BAC715C8663600F3B8D4 /* WETouchableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WETouchableView.m; sourceTree = "<group>"; };
 		43A4BACC15C866FA00F3B8D4 /* popoverArrowDown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = popoverArrowDown.png; sourceTree = "<group>"; };
 		43A4BACD15C866FA00F3B8D4 /* popoverArrowDown@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverArrowDown@2x.png"; sourceTree = "<group>"; };
 		43A4BACE15C866FA00F3B8D4 /* popoverArrowDownSimple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = popoverArrowDownSimple.png; sourceTree = "<group>"; };
@@ -1053,6 +1042,10 @@
 		FF6281F91A09614C00271FDB /* all@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "all@3x.png"; sourceTree = "<group>"; };
 		FF6281FB1A0962FA00271FDB /* unread_green@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_green@3x.png"; sourceTree = "<group>"; };
 		FF6281FD1A09641100271FDB /* unread_yellow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_yellow@3x.png"; sourceTree = "<group>"; };
+		FF6281FF1A09685800271FDB /* WYPopoverController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WYPopoverController.h; path = "../../../../../Downloads/WYPopoverController-master/WYPopoverController/WYPopoverController.h"; sourceTree = "<group>"; };
+		FF6282001A09685800271FDB /* WYPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WYPopoverController.m; path = "../../../../../Downloads/WYPopoverController-master/WYPopoverController/WYPopoverController.m"; sourceTree = "<group>"; };
+		FF6282011A09685800271FDB /* WYStoryboardPopoverSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WYStoryboardPopoverSegue.h; path = "../../../../../Downloads/WYPopoverController-master/WYPopoverController/WYStoryboardPopoverSegue.h"; sourceTree = "<group>"; };
+		FF6282021A09685800271FDB /* WYStoryboardPopoverSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WYStoryboardPopoverSegue.m; path = "../../../../../Downloads/WYPopoverController-master/WYPopoverController/WYStoryboardPopoverSegue.m"; sourceTree = "<group>"; };
 		FF6618C6176184560039913B /* NBNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBNotifier.h; sourceTree = "<group>"; };
 		FF6618C7176184560039913B /* NBNotifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBNotifier.m; sourceTree = "<group>"; };
 		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
@@ -2234,15 +2227,10 @@
 		43A4BABE15C8663600F3B8D4 /* Popover */ = {
 			isa = PBXGroup;
 			children = (
-				43A4BABF15C8663600F3B8D4 /* UIBarButtonItem+WEPopover.h */,
-				43A4BAC015C8663600F3B8D4 /* UIBarButtonItem+WEPopover.m */,
-				43A4BAC115C8663600F3B8D4 /* WEPopoverContainerView.h */,
-				43A4BAC215C8663600F3B8D4 /* WEPopoverContainerView.m */,
-				43A4BAC315C8663600F3B8D4 /* WEPopoverController.h */,
-				43A4BAC415C8663600F3B8D4 /* WEPopoverController.m */,
-				43A4BAC515C8663600F3B8D4 /* WEPopoverParentView.h */,
-				43A4BAC615C8663600F3B8D4 /* WETouchableView.h */,
-				43A4BAC715C8663600F3B8D4 /* WETouchableView.m */,
+				FF6281FF1A09685800271FDB /* WYPopoverController.h */,
+				FF6282001A09685800271FDB /* WYPopoverController.m */,
+				FF6282011A09685800271FDB /* WYStoryboardPopoverSegue.h */,
+				FF6282021A09685800271FDB /* WYStoryboardPopoverSegue.m */,
 			);
 			path = Popover;
 			sourceTree = "<group>";
@@ -3751,12 +3739,8 @@
 				43E8382215BC73EB000553BE /* FirstTimeUserAddSitesViewController.m in Sources */,
 				FFA0481819CA54A800618DC4 /* OSKPinboardUtility.m in Sources */,
 				436ACA8D15BF1088004E01CC /* NBContainerViewController.m in Sources */,
-				43A4BAC815C8663600F3B8D4 /* UIBarButtonItem+WEPopover.m in Sources */,
 				FFA047EB19CA54A800618DC4 /* OSKActivityIndicatorItem.m in Sources */,
-				43A4BAC915C8663600F3B8D4 /* WEPopoverContainerView.m in Sources */,
 				FFA0483E19CA5B8400618DC4 /* EventWindow.m in Sources */,
-				43A4BACA15C8663600F3B8D4 /* WEPopoverController.m in Sources */,
-				43A4BACB15C8663600F3B8D4 /* WETouchableView.m in Sources */,
 				432EBD2315D1D4070000729D /* AddSiteTableCell.m in Sources */,
 				FFA047D719CA54A800618DC4 /* NSDate+OSK_ISO8601.m in Sources */,
 				FFA0481B19CA54A800618DC4 /* OSKPresentationManager.m in Sources */,
@@ -3802,6 +3786,7 @@
 				FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */,
 				FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */,
 				FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */,
+				FF6282041A09685800271FDB /* WYStoryboardPopoverSegue.m in Sources */,
 				FF6618C8176184560039913B /* NBNotifier.m in Sources */,
 				FF03AFF319F87F2E0063002A /* TUSafariActivity.m in Sources */,
 				FFA0482419CA54A800618DC4 /* OSKSessionController_Pad.m in Sources */,
@@ -3824,6 +3809,7 @@
 				FFF1E4BC177504CA00BF59D3 /* IASKSettingsReader.m in Sources */,
 				FFA0480719CA54A800618DC4 /* OSKInstapaperUtility.m in Sources */,
 				FFF1E4BD177504CA00BF59D3 /* IASKSettingsStore.m in Sources */,
+				FF6282031A09685800271FDB /* WYPopoverController.m in Sources */,
 				FFF1E4BE177504CA00BF59D3 /* IASKSettingsStoreFile.m in Sources */,
 				FFF1E4BF177504CA00BF59D3 /* IASKSettingsStoreUserDefaults.m in Sources */,
 				FFF1E4C0177504CA00BF59D3 /* IASKSpecifier.m in Sources */,
