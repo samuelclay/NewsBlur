@@ -104,10 +104,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
                               !!error_callback, error_callback, $.isFunction(callback)]);
                 
+                if (errorThrown == "timeout") textStatus = "NewsBlur timed out trying<br />to connect. Just try again.";
                 if (error_callback) {
                     error_callback(e, textStatus, errorThrown);
                 } else if ($.isFunction(callback)) {
-                    var message = "Please create an account. Not much to do without an account.";
+                    var message = "Please create an account. Not much<br />to do without an account.";
                     if (NEWSBLUR.Globals.is_authenticated) {
                       message = "Sorry, there was an unhandled error.";
                     }
