@@ -1874,7 +1874,7 @@ heightForHeaderInSection:(NSInteger)section {
 	NSString *bgImageName = nil;
 	CGFloat bgMargin = 0.0;
 	CGFloat bgCapSize = 0.0;
-	CGFloat contentMargin = 5.0;
+	CGFloat contentMargin = 0.0;
 	
 	bgImageName = @"popoverBg.png";
 	
