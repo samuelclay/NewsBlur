@@ -26,7 +26,6 @@
 #import "JSON.h"
 #import "NBNotifier.h"
 #import "Utilities.h"
-#import "UIBarButtonItem+WEPopover.h"
 #import "UIBarButtonItem+Image.h"
 #import "AddSiteViewController.h"
 #import "FMDatabase.h"
@@ -100,7 +99,7 @@ static UIFont *userLabelFont;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    popoverClass = [WEPopoverController class];
+    popoverClass = [WYPopoverController class];
 
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
@@ -816,7 +815,7 @@ static UIFont *userLabelFont;
         [appDelegate.masterContainerViewController showSitePopover:self.addBarButton];
     } else {
         if (self.popoverController == nil) {
-            self.popoverController = [[WEPopoverController alloc]
+            self.popoverController = [[WYPopoverController alloc]
                                       initWithContentViewController:appDelegate.addSiteViewController];
             
             self.popoverController.delegate = self;
@@ -825,9 +824,6 @@ static UIFont *userLabelFont;
             self.popoverController = nil;
         }
         
-        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
-            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
-        }
         [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
                                                                  self.view.frame.size.height - 28)];
         [self.popoverController presentPopoverFromBarButtonItem:self.addBarButton
@@ -843,7 +839,7 @@ static UIFont *userLabelFont;
         [appDelegate.masterContainerViewController showFeedMenuPopover:self.settingsBarButton];
     } else {
         if (self.popoverController == nil) {
-            self.popoverController = [[WEPopoverController alloc]
+            self.popoverController = [[WYPopoverController alloc]
                                       initWithContentViewController:appDelegate.feedsMenuViewController];
             
             self.popoverController.delegate = self;
@@ -852,9 +848,6 @@ static UIFont *userLabelFont;
             self.popoverController = nil;
         }
         
-        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
-            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
-        }
         [appDelegate.feedsMenuViewController view]; // Force viewDidLoad
         [self.popoverController setPopoverContentSize:CGSizeMake(200, 38 * [appDelegate.feedsMenuViewController.menuOptions count])];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
@@ -865,7 +858,7 @@ static UIFont *userLabelFont;
 
 - (IBAction)showInteractionsPopover:(id)sender {    
     if (self.popoverController == nil) {
-        self.popoverController = [[WEPopoverController alloc]
+        self.popoverController = [[WYPopoverController alloc]
                                   initWithContentViewController:appDelegate.dashboardViewController];
         
         self.popoverController.delegate = self;
@@ -874,9 +867,6 @@ static UIFont *userLabelFont;
         self.popoverController = nil;
     }
     
-    if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
-        [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
-    }
     [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
                                                              self.view.frame.size.height - 60)];
     [self.popoverController presentPopoverFromBarButtonItem:self.activitiesButton
@@ -1852,55 +1842,16 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 #pragma mark -
-#pragma mark WEPopoverControllerDelegate implementation
+#pragma mark WYPopoverControllerDelegate implementation
 
-- (void)popoverControllerDidDismissPopover:(WEPopoverController *)thePopoverController {
+- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
 	//Safe to release the popover here
 	self.popoverController = nil;
 }
 
-- (BOOL)popoverControllerShouldDismissPopover:(WEPopoverController *)thePopoverController {
+- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
 	//The popover is automatically dismissed if you click outside it, unless you return NO here
 	return YES;
-}
-
-
-/**
- Thanks to Paul Solt for supplying these background images and container view properties
- */
-- (WEPopoverContainerViewProperties *)improvedContainerViewProperties {
-	
-	WEPopoverContainerViewProperties *props = [WEPopoverContainerViewProperties alloc];
-	NSString *bgImageName = nil;
-	CGFloat bgMargin = 0.0;
-	CGFloat bgCapSize = 0.0;
-	CGFloat contentMargin = 0.0;
-	
-	bgImageName = @"popoverBg.png";
-	
-	// These constants are determined by the popoverBg.png image file and are image dependent
-	bgMargin = 13; // margin width of 13 pixels on all sides popoverBg.png (62 pixels wide - 36 pixel background) / 2 == 26 / 2 == 13 
-	bgCapSize = 31; // ImageSize/2  == 62 / 2 == 31 pixels
-	
-	props.leftBgMargin = bgMargin;
-	props.rightBgMargin = bgMargin;
-	props.topBgMargin = bgMargin;
-	props.bottomBgMargin = bgMargin;
-	props.leftBgCapSize = bgCapSize;
-	props.topBgCapSize = bgCapSize;
-	props.bgImageName = bgImageName;
-	props.leftContentMargin = contentMargin;
-	props.rightContentMargin = contentMargin - 1; // Need to shift one pixel for border to look correct
-	props.topContentMargin = contentMargin; 
-	props.bottomContentMargin = contentMargin;
-	
-	props.arrowMargin = 4.0;
-	
-	props.upArrowImageName = @"popoverArrowUp.png";
-	props.downArrowImageName = @"popoverArrowDown.png";
-	props.leftArrowImageName = @"popoverArrowLeft.png";
-	props.rightArrowImageName = @"popoverArrowRight.png";
-	return props;	
 }
 
 - (void)resetToolbar {
