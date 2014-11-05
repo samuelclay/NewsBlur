@@ -49,6 +49,9 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	@Override
     protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+
+        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+
         // our intel state is entirely determined by the state of the Main view
 		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
         this.fs = createFeedSet();
@@ -199,4 +202,16 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
+
+    @Override
+    public void finish() {
+        super.finish();
+        /*
+         * Animate out the list by sliding it to the right and the Main activity in from
+         * the left.  Do this when going back to Main as a subtle hint to the swipe gesture,
+         * to make the gesture feel more natural, and to override the really ugly transition
+         * used in some of the newer platforms.
+         */
+        overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
+    }
 }
