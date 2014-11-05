@@ -34,6 +34,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	public static int ITEMLIST_LOADER = 0x01;
 
+    protected ItemsList activity;
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter currentState;
@@ -45,6 +46,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		super.onCreate(savedInstanceState);
         currentState = (StateFilter) getArguments().getSerializable("currentState");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
+        activity = (ItemsList) getActivity();
     }
 
     /**
@@ -95,7 +97,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         // load an extra page or two worth of stories past the viewport
         int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
         
-        ((ItemsList) getActivity()).triggerRefresh(desiredStoryCount, totalCount);
+        activity.triggerRefresh(desiredStoryCount, totalCount);
 	}
 
 	@Override
@@ -107,7 +109,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	}
 
     protected FeedSet getFeedSet() {
-        return ((ItemsList) getActivity()).getFeedSet();
+        return activity.getFeedSet();
     }
 
 	public void hasUpdated() {
@@ -126,7 +128,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		if (cursor != null) {
             cursorSeenYet = true;
             if (cursor.getCount() == 0) {
-                ((ItemsList) getActivity()).triggerRefresh(1, 0);
+                activity.triggerRefresh(1, 0);
             }
 			adapter.swapCursor(cursor);
 		}
