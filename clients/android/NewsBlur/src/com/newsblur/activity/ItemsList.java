@@ -58,6 +58,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getFragmentManager();

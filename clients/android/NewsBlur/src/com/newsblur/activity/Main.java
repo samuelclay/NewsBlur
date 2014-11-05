@@ -49,6 +49,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_main);
 		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
