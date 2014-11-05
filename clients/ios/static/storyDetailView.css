@@ -343,6 +343,7 @@ body.NB-iphone {
     text-shadow: 0 1px 0 #986064;
 }
 .NB-story-tag .NB-highlight,
+.NB-user-tag .NB-highlight,
 .NB-story-author .NB-highlight,
 .NB-show-profile .NB-highlight {
     position: absolute;
@@ -356,12 +357,37 @@ body.NB-iphone {
     display: none;
 }
 .NB-story-tag.pressed .NB-highlight,
+.NB-user-tag.pressed .NB-highlight,
 .NB-story-author.pressed .NB-highlight,
 .pressed .NB-show-profile .NB-highlight,
 .NB-show-profile.pressed .NB-highlight {
     display: block;
     
 }
+
+.NB-user-tags {
+    font-size: .7em;
+    overflow: hidden;
+    padding: .7em 2px 0 0;
+    line-height: 1.2em;
+}
+
+.NB-user-tag {
+    float: left;
+    text-decoration: none;
+    font-weight: normal;
+    padding: 1px 5px 1px 18px;
+    margin: 4px 4px 4px 0;
+    color: #959B8B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    -webkit-border-radius: 4px;
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    position: relative;
+    background: rgba(0, 0, 0, .1) url("tag.png") no-repeat 2px 0;
+    background-size: 14px;
+}
+
 .NB-story-starred-date {
     margin: 4px 0 0 0;
     padding: 0 0 0 20px;

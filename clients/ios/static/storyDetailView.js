@@ -180,8 +180,12 @@ function attachFastClick() {
                                                    });
     var tags = document.getElementsByClassName("NB-story-tag");
     Array.prototype.slice.call(tags, 0).forEach(function(tag) {
-        new NoClickDelay(tag);
-    });
+                                                new NoClickDelay(tag);
+                                                });
+    var userTags = document.getElementsByClassName("NB-user-tag");
+    Array.prototype.slice.call(userTags, 0).forEach(function(tag) {
+                                                new NoClickDelay(tag);
+                                                });
     
     var author = document.getElementById("NB-story-author");
     if (author) {
