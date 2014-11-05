@@ -83,7 +83,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
-        getFirstStories();
     }
 
     private void getFirstStories() {
