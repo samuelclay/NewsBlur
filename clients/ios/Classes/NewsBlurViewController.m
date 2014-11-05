@@ -569,7 +569,6 @@ static UIFont *userLabelFont;
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
     NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *tempActiveFeeds = [[NSMutableDictionary alloc] init];
     appDelegate.dictActiveFeeds = tempActiveFeeds;
     
@@ -593,28 +592,9 @@ static UIFont *userLabelFont;
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
     [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
     
-    appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
-    if (appDelegate.savedStoriesCount) {
-        NSMutableArray *savedStories = [NSMutableArray array];
-        for (NSDictionary *userTag in [results objectForKey:@"starred_counts"]) {
-            if ([[userTag objectForKey:@"tag"] isKindOfClass:[NSNull class]] ||
-                [[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
-            NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", [userTag objectForKey:@"tag"]];
-            NSDictionary *savedTag = @{@"ps": [userTag objectForKey:@"count"],
-                                       @"feed_title": [userTag objectForKey:@"tag"],
-                                       @"id": [userTag objectForKey:@"tag"],
-                                       @"tag": [userTag objectForKey:@"tag"]};
-            [savedStories addObject:savedTagId];
-            [savedStoryDict setObject:savedTag forKey:savedTagId];
-            [appDelegate.dictUnreadCounts setObject:@{@"ps": [userTag objectForKey:@"count"],
-                                                      @"nt": [NSNumber numberWithInt:0],
-                                                      @"ng": [NSNumber numberWithInt:0]}
-                                             forKey:savedTagId];
-        }
-        [allFolders setValue:savedStories forKey:@"saved_stories"];
-        appDelegate.dictSavedStoryTags = savedStoryDict;
-    }
-    
+    NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
+    [allFolders setValue:savedStories forKey:@"saved_stories"];
+
     appDelegate.dictFolders = allFolders;
     
     // set up dictFeeds

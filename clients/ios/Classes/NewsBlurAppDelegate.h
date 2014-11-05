@@ -324,6 +324,7 @@
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;

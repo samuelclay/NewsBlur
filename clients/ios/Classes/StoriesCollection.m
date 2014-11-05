@@ -626,21 +626,21 @@
 
 - (void)toggleStorySaved:(NSDictionary *)story {
     BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
+    
     if (isSaved) {
-        [self markStory:story asSaved:NO];
+        story = [self markStory:story asSaved:NO];
         [self syncStoryAsUnsaved:story];
     } else {
-        [self markStory:story asSaved:YES];
+        story = [self markStory:story asSaved:YES];
         [self syncStoryAsSaved:story];
     }
 }
 
-- (void)markStory:(NSDictionary *)story asSaved:(BOOL)saved {
-    NSLog(@"Saving in folders: %@", [appDelegate parentFoldersForFeed:[story objectForKey:@"story_feed_id"]]);
+- (NSDictionary *)markStory:(NSDictionary *)story asSaved:(BOOL)saved {
     NSMutableDictionary *newStory = [[appDelegate getStory:[story objectForKey:@"story_hash"]] mutableCopy];
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved) {
-        [newStory setValue:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
+        [newStory setObject:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
     } else {
         [newStory removeObjectForKey:@"starred_date"];
     }
@@ -648,6 +648,13 @@
     if ([[newStory objectForKey:@"story_hash"]
          isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
         appDelegate.activeStory = newStory;
+    }
+    
+    // Add folder tags if no user tags
+    if (![story objectForKey:@"user_tags"]) {
+        NSArray *parentFolders = [appDelegate parentFoldersForFeed:[story objectForKey:@"story_feed_id"]];
+        NSLog(@"Saving in folders: %@", parentFolders);
+        [newStory setObject:parentFolders forKey:@"user_tags"];
     }
     
     // make the story as read in self.activeFeedStories
@@ -668,6 +675,8 @@
     } else {
         appDelegate.savedStoriesCount -= 1;
     }
+    
+    return newStory;
 }
 
 - (void)syncStoryAsSaved:(NSDictionary *)story {
@@ -676,12 +685,14 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[story
-                           objectForKey:@"story_hash"]
+    [request setPostValue:[story objectForKey:@"story_hash"]
                    forKey:@"story_id"];
-    [request setPostValue:[story
-                           objectForKey:@"story_feed_id"]
+    [request setPostValue:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
+    for (NSString *userTag in [story objectForKey:@"user_tags"]) {
+        [request addPostValue:userTag
+                       forKey:@"user_tags"];
+    }
     
     [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -697,8 +708,24 @@
     if ([request responseStatusCode] != 200) {
         return [self failedMarkAsSaved:request];
     }
-
+    
+    [self updateSavedStoryCounts:request];
+    
     [appDelegate finishMarkAsSaved:request];
+}
+
+- (void)updateSavedStoryCounts:(ASIFormDataRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization
+                             JSONObjectWithData:responseData
+                             options:kNilOptions
+                             error:&error];
+    NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
+    NSMutableDictionary *allFolders = [appDelegate.dictFolders mutableCopy];
+    [allFolders setValue:savedStories forKey:@"saved_stories"];
+    appDelegate.dictFolders = allFolders;
 }
 
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
@@ -735,6 +762,7 @@
         return [self failedMarkAsUnsaved:request];
     }
     
+    [self updateSavedStoryCounts:request];
     [appDelegate finishMarkAsUnsaved:request];
 }
 
