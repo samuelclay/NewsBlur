@@ -724,7 +724,6 @@ public class NBSyncService extends Service {
         }
             
         PendingFeeds.put(fs, desiredStoryCount);
-        //NbActivity.updateAllActivities();
         return true;
     }
 
