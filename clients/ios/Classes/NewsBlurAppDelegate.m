@@ -1951,6 +1951,36 @@
     [dashboardViewController.storiesModule reloadData];
 }
 
+- (NSArray *)updateStarredStoryCounts:(NSDictionary *)results {
+    if ([results objectForKey:@"starred_count"]) {
+        self.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
+    }
+    
+    if (!self.savedStoriesCount) return [[NSArray alloc] init];
+
+    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
+    NSMutableArray *savedStories = [NSMutableArray array];
+
+    for (NSDictionary *userTag in [results objectForKey:@"starred_counts"]) {
+        if ([[userTag objectForKey:@"tag"] isKindOfClass:[NSNull class]] ||
+            [[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
+        NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", [userTag objectForKey:@"tag"]];
+        NSDictionary *savedTag = @{@"ps": [userTag objectForKey:@"count"],
+                                   @"feed_title": [userTag objectForKey:@"tag"],
+                                   @"id": [userTag objectForKey:@"tag"],
+                                   @"tag": [userTag objectForKey:@"tag"]};
+        [savedStories addObject:savedTagId];
+        [savedStoryDict setObject:savedTag forKey:savedTagId];
+        [self.dictUnreadCounts setObject:@{@"ps": [userTag objectForKey:@"count"],
+                                                  @"nt": [NSNumber numberWithInt:0],
+                                                  @"ng": [NSNumber numberWithInt:0]}
+                                         forKey:savedTagId];
+    }
+
+    self.dictSavedStoryTags = savedStoryDict;
+    
+    return savedStories;
+}
 
 #pragma mark -
 #pragma mark Story functions
