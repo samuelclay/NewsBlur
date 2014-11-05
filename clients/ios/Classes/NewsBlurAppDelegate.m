@@ -1246,6 +1246,8 @@
             } else if ([folder isEqualToString:@"read_stories"] || [folderName isEqualToString:@"read_stories"]) {
                 feedDetailView.storiesCollection.isReadView = YES;
                 [feedDetailView.storiesCollection setActiveFolder:@"read_stories"];
+            } else {
+                [feedDetailView.storiesCollection setActiveFolder:folderName];
             }
             NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
             NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];

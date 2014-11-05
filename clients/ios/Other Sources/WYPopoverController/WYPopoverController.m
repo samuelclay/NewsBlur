@@ -31,11 +31,11 @@
 #define WY_BASE_SDK_7_ENABLED
 #endif
 
-#ifdef DEBUG
-#define WY_LOG(fmt, ...)		NSLog((@"%s (%d) : " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-#else
+//#ifdef DEBUG
+//#define WY_LOG(fmt, ...)		NSLog((@"%s (%d) : " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+//#else
 #define WY_LOG(...)
-#endif
+//#endif
 
 #define WY_IS_IOS_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
 

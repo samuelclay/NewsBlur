@@ -447,9 +447,30 @@
         }
     }
     NSString *storyStarred = @"";
+    NSString *storyUserTags = @"";
     if ([self.activeStory objectForKey:@"starred"] && [self.activeStory objectForKey:@"starred_date"]) {
-        storyStarred = [NSString stringWithFormat:@"<div class=\"NB-story-starred-date\">%@</div>",
+        storyStarred = [NSString stringWithFormat:@"<div class=\"NB-story-starred-date\">Saved on %@</div>",
                         [self.activeStory objectForKey:@"starred_date"]];
+        
+        if ([self.activeStory objectForKey:@"user_tags"]) {
+            NSArray *tagArray = [self.activeStory objectForKey:@"user_tags"];
+            if ([tagArray count] > 0) {
+                NSMutableArray *tagStrings = [NSMutableArray array];
+                for (NSString *tag in tagArray) {
+                    NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/remove-user-tag/%@\" "
+                                         "class=\"NB-user-tag\"><div class=\"NB-highlight\"></div>%@</a>",
+                                         tag,
+                                         tag];
+                    [tagStrings addObject:tagHtml];
+                }
+                storyUserTags = [NSString
+                                 stringWithFormat:@"<div id=\"NB-user-tags\" class=\"NB-user-tags\">"
+                                 "%@"
+                                 "</div>",
+                                 [tagStrings componentsJoinedByString:@""]];
+            }
+        }
+
     }
     
     NSString *storyUnread = @"";
@@ -488,6 +509,7 @@
                              "%@"
                              "%@"
                              "%@"
+                             "%@"
                              "</div></div>",
                              storyUnread,
                              storyPermalink,
@@ -495,7 +517,8 @@
                              storyDate,
                              storyAuthor,
                              storyTags,
-                             storyStarred];
+                             storyStarred,
+                             storyUserTags];
     return storyHeader;
 }
 
