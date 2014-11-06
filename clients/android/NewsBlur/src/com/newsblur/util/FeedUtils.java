@@ -99,17 +99,6 @@ public class FeedUtils {
         }.execute();
     }
 
-    public static void refreshFeedCounts(final FeedSet fs) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                dbHelper.refreshFeedCounts(fs);
-                NbActivity.updateAllActivities();
-                return null;
-            }
-        }.execute();
-    }
-
     public static void markStoryUnread(final Story story, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override

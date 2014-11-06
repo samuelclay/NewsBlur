@@ -170,15 +170,6 @@ public class APIManager {
         return nbr;
 	}
 
-    public NewsBlurResponse markStoriesAsRead(List<String> storyHashes) {
-        ValueMultimap values = new ValueMultimap();
-        for (String storyHash : storyHashes) {
-            values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
-        }
-        APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values, false);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
     public NewsBlurResponse markStoryAsRead(String storyHash) {
         ValueMultimap values = new ValueMultimap();
         values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
@@ -199,14 +190,6 @@ public class APIManager {
 		APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNSTARRED, values, false);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
-
-    public NewsBlurResponse markStoryAsUnread( String feedId, String storyId ) {
-		final ValueMultimap values = new ValueMultimap();
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_STORYID, storyId);
-		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNREAD, values, false);
-        return response.getResponse(gson, NewsBlurResponse.class); 
-    }
 
     public NewsBlurResponse markStoryHashUnread(String hash) {
 		final ValueMultimap values = new ValueMultimap();
@@ -490,7 +473,7 @@ public class APIManager {
 		return (!response.isError());
 	}
 
-	public FeedResult[] searchForFeed(String searchTerm) throws ServerErrorException {
+	public FeedResult[] searchForFeed(String searchTerm) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
 		final APIResponse response = get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
@@ -641,16 +624,6 @@ public class APIManager {
         } catch (InterruptedException ie) {
             Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
         }
-    }
-
-    /**
-     * Convenience method to call contentResolver.bulkInsert using a list rather than an array.
-     */
-    private int bulkInsertList(Uri uri, List<ContentValues> list) {
-        if (list.size() > 0) {
-            return contentResolver.bulkInsert(uri, list.toArray(new ContentValues[list.size()]));
-        }
-        return 0;
     }
 
 }

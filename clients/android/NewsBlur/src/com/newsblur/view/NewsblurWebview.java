@@ -13,8 +13,6 @@ import com.newsblur.util.AppConstants;
 
 public class NewsblurWebview extends WebView {
 
-	private Handler handler;
-
 	public NewsblurWebview(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
@@ -32,22 +30,6 @@ public class NewsblurWebview extends WebView {
         this.setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
 	}
 	
-	
-	public class JavaScriptInterface {
-		NewsblurWebview view;
-		
-		public JavaScriptInterface(NewsblurWebview bookmarkWebView) {
-			view = bookmarkWebView;
-		}
-
-	    public void scroll(final int i ) {
-	    	Message msg = new Message();
-	    	msg.obj = Integer.valueOf(i);
-	    	msg.what = 0;
-	    	handler.dispatchMessage(msg);
-	    }
-	}
-
 	public void onPause() {
         // TODO: is there anything more we can do to get media content to stop playing on pause?
         super.onPause();

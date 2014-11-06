@@ -2,7 +2,6 @@ package com.newsblur.fragment;
 
 import java.util.ArrayList;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.MultipleFeedItemsAdapter;
-import com.newsblur.domain.Folder;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
@@ -31,9 +29,7 @@ import com.newsblur.view.FeedItemViewBinder;
 
 public class FolderItemListFragment extends ItemListFragment implements OnItemClickListener {
 
-	private ContentResolver contentResolver;
 	private String folderName;
-	private Folder folder;
 	
 	public static FolderItemListFragment newInstance(String folderName, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
@@ -60,8 +56,6 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
         setupBezelSwipeDetector(itemList);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-
-		contentResolver = getActivity().getContentResolver();
 
 		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
 		getActivity().startManagingCursor(cursor);

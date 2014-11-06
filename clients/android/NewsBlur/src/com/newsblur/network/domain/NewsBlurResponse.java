@@ -11,7 +11,6 @@ public class NewsBlurResponse {
 	public int code;
     public String message;
 	public ResponseErrors errors;
-    public String result;
 
     public boolean isError() {
         if ((message != null) && (!message.equals(""))) {

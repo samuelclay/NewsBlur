@@ -13,7 +13,4 @@ public enum DefaultFeedView {
         this.parameterValue = parameterValue;
     }
 
-    public String getParameterValue() {
-        return parameterValue;
-    }
 }

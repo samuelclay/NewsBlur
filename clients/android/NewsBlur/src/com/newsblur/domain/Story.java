@@ -180,10 +180,6 @@ public class Story implements Serializable {
 		public int intelligenceTitle = 0;
 	}
 	
-	public int getIntelligenceTotal() {
-		return getIntelligenceTotal(intelligence.intelligenceTitle, intelligence.intelligenceAuthors, intelligence.intelligenceTags, intelligence.intelligenceFeed);
-	}
-
 	public static int getIntelligenceTotal(int title, int authors, int tags, int feed) {
 		int score = 0;
 		List<Integer> list = Arrays.asList(title, authors, tags);

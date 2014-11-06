@@ -16,6 +16,4 @@ public abstract class StoryItemsAdapter extends SimpleCursorAdapter {
 
     public abstract Story getStory(int position);
 
-    public abstract List<Story> getPreviousStories(int position);
-
 }

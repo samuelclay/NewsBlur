@@ -32,7 +32,6 @@ import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
 
-	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
     private TextView overlayStatusText;

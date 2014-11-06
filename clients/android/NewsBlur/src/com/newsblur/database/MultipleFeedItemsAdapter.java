@@ -125,15 +125,4 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
         return Story.fromCursor(cursor);
     }
 
-	@Override
-	public List<Story> getPreviousStories(int position) {
-        List<Story> stories = new ArrayList<Story>();
-        cursor.moveToPosition(0);
-        for(int i=0;i<=position && position < cursor.getCount();i++) {
-            Story story = Story.fromCursor(cursor);
-            stories.add(story);
-            cursor.moveToNext();
-        }
-        return stories;
-    }
 }
