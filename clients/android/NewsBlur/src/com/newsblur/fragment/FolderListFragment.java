@@ -193,7 +193,8 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 			deleteFeedFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_feed_as_read) {
-            FeedUtils.markFeedsRead(FeedSet.singleFeed(Long.toString(info.id)), null, null, getActivity());
+            String feedId = adapter.getChild(groupPosition, childPosition);
+            FeedUtils.markFeedsRead(FeedSet.singleFeed(feedId), null, null, getActivity());
             adapter.notifyDataSetChanged();
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
