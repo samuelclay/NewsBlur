@@ -42,7 +42,7 @@
         <input type="hidden" name="next" value="{{ next }}" />
         <p class="NB-static-form-alttext">
             Logged in as <b>{{ user.username }}</b><br /><br />
-            <a href="{% url "logout" %}?next={% url "login" %}?next={{ next }}">Login to a different account</a></a>
+            <a href="{% url "logout" %}?next={% url "login" %}?next={% url "redeem-code" %}?code={{ code }}">Login to a different account</a></a>
 
     </form>
 

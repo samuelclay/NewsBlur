@@ -140,6 +140,7 @@ def redeem_code(request):
 
     return render_to_response('accounts/redeem_code.html', {
         'form': form,
+        'code': request.REQUEST.get('code', ""),
         'next': request.REQUEST.get('next', "")
     }, context_instance=RequestContext(request))
     
