@@ -833,6 +833,27 @@ class PaymentHistory(models.Model):
             print "%s months ago: avg=$%s sum=$%s users=%s" % (
                 m, payments['avg'], payments['sum'], payments['count'])
 
+
+class MRedeemedCode(mongo.Document):
+    user_id = mongo.IntField()
+    gift_code = mongo.StringField()
+    redeemed_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'redeemed_codes',
+        'allow_inheritance': False,
+        'indexes': ['user_id', 'gift_code', 'redeemed_date'],
+    }
+    
+    def __unicode__(self):
+        return "%s redeemed %s on %s" % (self.user_id, self.gift_code, self.redeemed_date)
+    
+    @classmethod
+    def record(cls, user_id, gift_code):
+        cls.objects.create(user_id=user_id, 
+                           gift_code=gift_code)
+
+
 class RNewUserQueue:
     
     KEY = "new_user_queue"
