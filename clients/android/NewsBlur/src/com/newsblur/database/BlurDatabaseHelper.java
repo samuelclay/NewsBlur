@@ -275,6 +275,7 @@ public class BlurDatabaseHelper {
             for (Comment comment : story.friendsComments) {
                 comment.storyId = story.id;
                 comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
+                comment.byFriend = true;
                 commentValues.add(comment.getValues());
                 for (Reply reply : comment.replies) {
                     reply.commentId = comment.id;
