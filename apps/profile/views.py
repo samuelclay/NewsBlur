@@ -121,7 +121,8 @@ def signup(request):
 @login_required
 @csrf_protect
 def redeem_code(request):
-    form = RedeemCodeForm()
+    code = request.GET.get('code', None)
+    form = RedeemCodeForm(initial={'gift_code': code})
 
     if request.method == "POST":
         form = RedeemCodeForm(data=request.POST)
