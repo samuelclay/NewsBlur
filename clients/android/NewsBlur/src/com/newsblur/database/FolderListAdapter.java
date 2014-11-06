@@ -298,6 +298,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             if (! folderFeedMap.containsKey(folderName)) folderFeedMap.put(folderName, new ArrayList<String>());
             folderFeedMap.get(folderName).add(feedId);
         }
+        if (!folderFeedMap.containsKey(AppConstants.ROOT_FOLDER)) {
+            folderFeedMap.put(AppConstants.ROOT_FOLDER, new ArrayList<String>());
+        }
         recountFeeds();
         notifyDataSetChanged();
     }
