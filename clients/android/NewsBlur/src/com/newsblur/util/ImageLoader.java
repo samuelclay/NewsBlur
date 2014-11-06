@@ -74,40 +74,11 @@ public class ImageLoader {
 		}
 	}
 	
-	// Display an image assuming it's in cache
-	public void displayImageByUid(String uid, ImageView imageView) {
-		Bitmap bitmap = memoryCache.get(uid);
-		if (bitmap != null) {
-			bitmap = UIUtils.roundCorners(bitmap, 5);
-			imageView.setImageBitmap(bitmap);
-		} else {
-            if (uid != null ) {
-			    File f = fileCache.getFile(uid);
-			    bitmap = decodeBitmap(f);
-            }
-			if (bitmap != null) {
-				memoryCache.put(uid, bitmap);
-				bitmap = UIUtils.roundCorners(bitmap, 5);
-				imageView.setImageBitmap(bitmap);
-			} else {
-				imageView.setImageResource(R.drawable.world);
-			}
-		}
-	}
-
 	private void queuePhoto(String url, ImageView imageView) {
 		PhotoToLoad p = new PhotoToLoad(url, imageView);
 		executorService.submit(new PhotosLoader(p));
 	}
 	
-	public boolean hasImage(String uid) {
-        if (uid == null ) return false;
-		if (memoryCache.get(uid) == null) {
-			return (fileCache.getFile(uid) != null);
-		}
-		return true;
-	}
-
 	private Bitmap getBitmap(String url) {
         if (url == null) return null;
         File f = fileCache.getFile(url);

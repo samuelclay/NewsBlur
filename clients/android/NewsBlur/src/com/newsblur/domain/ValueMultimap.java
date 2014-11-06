@@ -34,18 +34,8 @@ public class ValueMultimap implements Serializable {
 		multimap.put(key, mappedValues);
 	}
 	
-	public List<String> getValues(String key) {
-		return multimap.get(key);
-	}
-	
-	public Set<String> getKeys() {
-		return multimap.keySet();
-	}
-	
 	public String getParameterString() {
-		
-		final List<String> parameters = new ArrayList<String>();
-		
+		List<String> parameters = new ArrayList<String>();
 		for (String key : multimap.keySet()) {
 			for (String value : multimap.get(key)) {
 				final StringBuilder builder = new StringBuilder();
@@ -55,7 +45,6 @@ public class ValueMultimap implements Serializable {
 				parameters.add(builder.toString());
 			}
 		}
-		
 		return TextUtils.join("&", parameters);
 	}
 	
@@ -76,7 +65,4 @@ public class ValueMultimap implements Serializable {
 		return builder.toString();
 	}
 
-	public int size() {
-		return multimap.size();
-	}
 }
