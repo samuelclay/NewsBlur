@@ -698,7 +698,7 @@ public class NBSyncService extends Service {
      */
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, int callerSeen) {
         if (ExhaustedFeeds.contains(fs)) {
-            Log.e(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
+            if (AppConstants.VERBOSE_LOG) Log.i(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
             return false;
         }
 
