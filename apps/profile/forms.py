@@ -186,10 +186,10 @@ class RedeemCodeForm(forms.Form):
     def clean_gift_code(self):
         gift_code = self.cleaned_data['gift_code']
         
+        gift_code = re.sub(r'[^a-zA-Z0-9]', '', gift_code).lower()
+
         if len(gift_code) != 12:
             raise forms.ValidationError('Your gift code should be 12 characters long.')
-
-        gift_code = re.sub(r'[^a-zA-Z0-9]', '', gift_code).lower()
         
         req = requests.get('https://demo.thinkup.com/join/api/bundle/', params={'code': gift_code})
         response = req.json()
