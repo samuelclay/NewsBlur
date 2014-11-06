@@ -727,10 +727,6 @@ public class NBSyncService extends Service {
         return true;
     }
 
-    public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount) {
-        return requestMoreForFeed(fs, desiredStoryCount, -1);
-    }
-
     public static void resetFeeds() {
         ExhaustedFeeds.clear();
         FeedPagesSeen.clear();
