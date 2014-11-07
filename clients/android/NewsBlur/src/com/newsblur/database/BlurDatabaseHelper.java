@@ -7,6 +7,7 @@ import android.database.Cursor;
 import static android.database.DatabaseUtils.dumpCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -493,32 +494,32 @@ public class BlurDatabaseHelper {
 
     public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getSocialFeedsCursor(stateFilter);}
+            protected Cursor createCursor() {return getSocialFeedsCursor(stateFilter, cancellationSignal);}
         };
     }
 
-    public Cursor getSocialFeedsCursor(StateFilter stateFilter) {
-        return dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
+    public Cursor getSocialFeedsCursor(StateFilter stateFilter, CancellationSignal cancellationSignal) {
+        return dbRO.query(false, DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
     public Loader<Cursor> getFolderFeedMapLoader() {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getFolderFeedMapCursor();}
+            protected Cursor createCursor() {return getFolderFeedMapCursor(cancellationSignal);}
         };
     }
 
-    public Cursor getFolderFeedMapCursor() {
-        return dbRO.query(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null, null, null, null, null);
+    public Cursor getFolderFeedMapCursor(CancellationSignal cancellationSignal) {
+        return dbRO.query(false, DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null, null, null, null, null, null, cancellationSignal);
     }
 
     public Loader<Cursor> getFeedsLoader(final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getFeedsCursor(stateFilter);}
+            protected Cursor createCursor() {return getFeedsCursor(stateFilter, cancellationSignal);}
         };
     }
 
-    public Cursor getFeedsCursor(StateFilter stateFilter) {
-        return dbRO.query(DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC");
+    public Cursor getFeedsCursor(StateFilter stateFilter, CancellationSignal cancellationSignal) {
+        return dbRO.query(false, DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
     public Loader<Cursor> getSavedStoryCountLoader() {
