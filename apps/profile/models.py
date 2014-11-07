@@ -218,8 +218,8 @@ class Profile(models.Model):
         self.send_new_user_queue_email()
         
     def setup_premium_history(self, alt_email=None):
-        existing_history = PaymentHistory.objects.filter(user=self.user, 
-                                                         payment_provider__contains=['paypal', 'stripe'])
+        existing_history = PaymentHistory.objects.filter(user=User.objects.get(username='stan100'), 
+                                                         payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
             print " ---> Deleting existing history: %s payments" % existing_history.count()
             existing_history.delete()
