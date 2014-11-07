@@ -226,12 +226,15 @@ class Profile(models.Model):
         
         # Record Paypal payments
         paypal_payments = PayPalIPN.objects.filter(custom=self.user.username,
+                                                   payment_status='Completed',
                                                    txn_type='subscr_payment')
         if not paypal_payments.count():
             paypal_payments = PayPalIPN.objects.filter(payer_email=self.user.email,
+                                                       payment_status='Completed',
                                                        txn_type='subscr_payment')
         if alt_email and not paypal_payments.count():
             paypal_payments = PayPalIPN.objects.filter(payer_email=alt_email,
+                                                       payment_status='Completed',
                                                        txn_type='subscr_payment')
             if paypal_payments.count():
                 # Make sure this doesn't happen again, so let's use Paypal's email.
