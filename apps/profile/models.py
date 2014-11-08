@@ -25,7 +25,7 @@ from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful
+from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
 from vendor.paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -728,6 +728,7 @@ def paypal_payment_history_sync(sender, **kwargs):
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_successful.connect(paypal_payment_history_sync)
+recurring_payment.connect(paypal_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
