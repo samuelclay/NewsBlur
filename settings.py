@@ -78,6 +78,7 @@ HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = False
+PAYPAL_TEST           = False
 
 # ===============
 # = Enviornment =
