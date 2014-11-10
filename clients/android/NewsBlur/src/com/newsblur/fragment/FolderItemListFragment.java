@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +64,7 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
-		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo);
 
 		itemList.setOnScrollListener(this);
 

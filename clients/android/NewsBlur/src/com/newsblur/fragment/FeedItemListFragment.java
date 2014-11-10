@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,7 +77,7 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
         if ((adapter == null) && (cursor != null)) {
             String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
             int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar };
-            adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo);
             adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
             itemList.setAdapter(adapter);
        }
