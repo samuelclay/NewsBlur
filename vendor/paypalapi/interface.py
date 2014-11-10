@@ -8,23 +8,31 @@ with it.
 import types
 import logging
 from pprint import pformat
+import warnings
 
 import requests
 
 from vendor.paypalapi.settings import PayPalConfig
 from vendor.paypalapi.response import PayPalResponse
-from vendor.paypalapi.exceptions import PayPalError, PayPalAPIResponseError
+from vendor.paypalapi.response_list import PayPalResponseList
+from vendor.paypalapi.exceptions import (PayPalError,
+                               PayPalAPIResponseError,
+                               PayPalConfigError)
 from vendor.paypalapi.compat import is_py3
 
 if is_py3:
     #noinspection PyUnresolvedReferences
-    import urllib.parse
+    from urllib.parse import urlencode
 else:
-    import urllib
+    from urllib import urlencode
 
 logger = logging.getLogger('paypal.interface')
 
+
 class PayPalInterface(object):
+
+    __credentials = ['USER', 'PWD', 'SIGNATURE', 'SUBJECT']
+
     """
     The end developers will do 95% of their work through this class. API
     queries, configuration, etc, all go through here. See the __init__ method
@@ -92,50 +100,72 @@ class PayPalInterface(object):
         https://www.x.com/docs/DOC-1374
 
         ``method`` must be a supported NVP method listed at the above address.
-
-        ``kwargs`` will be a hash of
+        ``kwargs`` the actual call parameters
         """
-        # This dict holds the key/value pairs to pass to the PayPal API.
-        url_values = {
-            'METHOD': method,
-            'VERSION': self.config.API_VERSION,
-        }
-
-        if self.config.API_AUTHENTICATION_MODE == "3TOKEN":
-            url_values['USER'] = self.config.API_USERNAME
-            url_values['PWD'] = self.config.API_PASSWORD
-            url_values['SIGNATURE'] = self.config.API_SIGNATURE
-        elif self.config.API_AUTHENTICATION_MODE == "UNIPAY":
-            url_values['SUBJECT'] = self.config.UNIPAY_SUBJECT
-
-        # All values passed to PayPal API must be uppercase.
-        for key, value in kwargs.items():
-            url_values[key.upper()] = value
+        post_params = self._get_call_params(method, **kwargs)
+        payload = post_params['data']
+        api_endpoint = post_params['url']
 
         # This shows all of the key/val pairs we're sending to PayPal.
         if logger.isEnabledFor(logging.DEBUG):
-            logger.debug('PayPal NVP Query Key/Vals:\n%s' % pformat(url_values))
+            logger.debug('PayPal NVP Query Key/Vals:\n%s' % pformat(payload))
 
-        req = requests.get(
-            self.config.API_ENDPOINT,
-            params=url_values,
-            timeout=self.config.HTTP_TIMEOUT,
-            verify=self.config.API_CA_CERTS,
-        )
-
-        # Call paypal API
-        response = PayPalResponse(req.text, self.config)
-
-        logger.debug('PayPal NVP API Endpoint: %s' % self.config.API_ENDPOINT)
+        http_response = requests.post(**post_params)
+        response = PayPalResponse(http_response.text, self.config)
+        logger.debug('PayPal NVP API Endpoint: %s' % api_endpoint)
 
         if not response.success:
             logger.error('A PayPal API error was encountered.')
-            logger.error('PayPal NVP Query Key/Vals:\n%s' % pformat(url_values))
+            safe_payload = dict((p, 'X' * len(v) if p in \
+                self.__credentials else v) for (p, v) in payload.items())
+            logger.error('PayPal NVP Query Key/Vals (credentials removed):' \
+                '\n%s' % pformat(safe_payload))
             logger.error('PayPal NVP Query Response')
             logger.error(response)
             raise PayPalAPIResponseError(response)
 
         return response
+
+    def _get_call_params(self, method, **kwargs):
+        """
+        Returns the prepared call parameters. Mind, these will be keyword
+        arguments to ``requests.post``.
+
+        ``method`` the NVP method
+        ``kwargs`` the actual call parameters
+        """
+        payload = {'METHOD': method,
+                   'VERSION': self.config.API_VERSION}
+        certificate = None
+
+        if self.config.API_AUTHENTICATION_MODE == "3TOKEN":
+            payload['USER'] = self.config.API_USERNAME
+            payload['PWD'] = self.config.API_PASSWORD
+            payload['SIGNATURE'] = self.config.API_SIGNATURE
+        elif self.config.API_AUTHENTICATION_MODE == "CERTIFICATE":
+            payload['USER'] = self.config.API_USERNAME
+            payload['PWD'] = self.config.API_PASSWORD
+            certificate = (self.config.API_CERTIFICATE_FILENAME,
+                           self.config.API_KEY_FILENAME)
+        elif self.config.API_AUTHENTICATION_MODE == "UNIPAY":
+            payload['SUBJECT'] = self.config.UNIPAY_SUBJECT
+
+        none_configs = [config for config, value in payload.iteritems()\
+                        if value is None]
+        if none_configs:
+            raise PayPalConfigError(
+                "Config(s) %s cannot be None. Please, check this "
+                "interface's config." % none_configs)
+
+        # all keys in the payload must be uppercase
+        for key, value in kwargs.items():
+            payload[key.upper()] = value
+
+        return {'data': payload,
+                'cert': certificate,
+                'url': self.config.API_ENDPOINT,
+                'timeout': self.config.HTTP_TIMEOUT,
+                'verify': self.config.API_CA_CERTS}
 
     def address_verify(self, email, street, zip):
         """Shortcut for the AddressVerify method.
@@ -310,6 +340,25 @@ class PayPalInterface(object):
         """
         return self._call('GetTransactionDetails', **kwargs)
 
+    def transaction_search(self, **kwargs):
+        """Shortcut for the TransactionSearch method.
+        Returns a PayPalResponseList object, which merges the L_ syntax list
+        to a list of dictionaries with properly named keys.
+
+        Note that the API will limit returned transactions to 100.
+
+        Required Kwargs
+        ---------------
+        * STARTDATE
+
+        Optional Kwargs
+        ---------------
+        STATUS = one of ['Pending','Processing','Success','Denied','Reversed']
+
+        """
+        plain = self._call('TransactionSearch', **kwargs)
+        return PayPalResponseList(plain.raw, self.config)
+
     def set_express_checkout(self, **kwargs):
         """Start an Express checkout.
 
@@ -376,7 +425,7 @@ class PayPalInterface(object):
         """
         return self._call('DoExpressCheckoutPayment', **kwargs)
 
-    def generate_express_checkout_redirect_url(self, token):
+    def generate_express_checkout_redirect_url(self, token, useraction=None):
         """Returns the URL to redirect the user to for the Express checkout.
 
         Express Checkouts must be verified by the customer by redirecting them
@@ -384,12 +433,23 @@ class PayPalInterface(object):
         :meth:`set_express_checkout` with this function to figure out where
         to redirect the user to.
 
+        The button text on the PayPal page can be controlled via `useraction`.
+        The documented possible values are `commit` and `continue`. However,
+        any other value will only result in a warning.
+
         :param str token: The unique token identifying this transaction.
+        :param str useraction: Control the button text on the PayPal page.
         :rtype: str
         :returns: The URL to redirect the user to for approval.
         """
         url_vars = (self.config.PAYPAL_URL_BASE, token)
-        return "%s?cmd=_express-checkout&token=%s" % url_vars
+        url = "%s?cmd=_express-checkout&token=%s" % url_vars
+        if useraction:
+            if not useraction.lower() in ('commit', 'continue'):
+                warnings.warn('useraction=%s is not documented' % useraction,
+                              RuntimeWarning)
+            url += '&useraction=%s' % useraction
+        return url
 
     def generate_cart_upload_redirect_url(self, **kwargs):
         """https://www.sandbox.paypal.com/webscr
@@ -400,12 +460,7 @@ class PayPalInterface(object):
         self._check_required(required_vals, **kwargs)
         url = "%s?cmd=_cart&upload=1" % self.config.PAYPAL_URL_BASE
         additional = self._encode_utf8(**kwargs)
-        if is_py3:
-            #noinspection PyUnresolvedReferences
-            additional = urllib.parse.urlencode(additional)
-        else:
-            #noinspection PyUnresolvedReferences
-            additional = urllib.urlencode(additional)
+        additional = urlencode(additional)
         return url + "&" + additional
 
     def get_recurring_payments_profile_details(self, profileid):
@@ -429,7 +484,7 @@ class PayPalInterface(object):
         args = self._sanitize_locals(locals())
         return self._call('GetRecurringPaymentsProfileDetails', **args)
 
-    def manage_recurring_payments_profile_status(self, profileid, action, note = None):
+    def manage_recurring_payments_profile_status(self, profileid, action, note=None):
         """Shortcut to the ManageRecurringPaymentsProfileStatus method.
 
         ``profileid`` is the same profile id used for getting profile details.

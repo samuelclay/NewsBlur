@@ -52,7 +52,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'ajax_group': 'queue',
             'traditional': true,
             'domSuccessTrigger': true,
-            'preventDoubleRequests': false
+            'preventDoubleRequests': false,
+            'timeout': 15000
         }, options);
         var request_type = options.request_type || 'POST';
         var clear_queue = false;
@@ -103,10 +104,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
                               !!error_callback, error_callback, $.isFunction(callback)]);
                 
+                if (errorThrown == "timeout") textStatus = "NewsBlur timed out trying<br />to connect. Just try again.";
                 if (error_callback) {
                     error_callback(e, textStatus, errorThrown);
                 } else if ($.isFunction(callback)) {
-                    var message = "Please create an account. Not much to do without an account.";
+                    var message = "Please create an account. Not much<br />to do without an account.";
                     if (NEWSBLUR.Globals.is_authenticated) {
                       message = "Sorry, there was an unhandled error.";
                     }
@@ -1610,6 +1612,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             feed_id: feed_id
         }, function(data) {
             story.set('original_text', data.original_text);
+            callback(data);
+        }, error_callback, {
+            request_type: 'GET',
+            ajax_group: 'statistics'
+        });
+    },
+    
+    fetch_original_story_page: function(story_hash, callback, error_callback) {
+        var story = this.get_story(story_hash);
+        this.make_request('/rss_feeds/original_story', {
+            story_hash: story_hash
+        }, function(data) {
+            story.set('original_page', data.original_page);
             callback(data);
         }, error_callback, {
             request_type: 'GET',

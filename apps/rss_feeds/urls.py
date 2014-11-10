@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^status', views.status, name='status'),
     url(r'^load_single_feed', views.load_single_feed, name='feed-canonical'),
     url(r'^original_text', views.original_text, name='original-text'),
+    url(r'^original_story', views.original_story, name='original-story'),
 )

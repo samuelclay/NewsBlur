@@ -8,13 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
-#import "SloppySwiper.h"
+//#import "SloppySwiper.h"
+#import "NJKWebViewProgressView.h"
+#import "NJKWebViewProgress.h"
 
 @class NewsBlurAppDelegate;
 
 @interface OriginalStoryViewController : BaseViewController
 <UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate,
-UIGestureRecognizerDelegate> {
+UIGestureRecognizerDelegate, NJKWebViewProgressDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
     NSString *activeUrl;
@@ -23,12 +25,17 @@ UIGestureRecognizerDelegate> {
     UIBarButtonItem *backBarButton;
     UILabel *titleView;
     UIBarButtonItem *closeButton;
+    NJKWebViewProgress *progressProxy;
+    NJKWebViewProgressView *progressView;
+    BOOL finishedLoading;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIWebView *webView;
-@property (strong, nonatomic) SloppySwiper *swiper;
+//@property (strong, nonatomic) SloppySwiper *swiper;
+@property (nonatomic) NJKWebViewProgressView *progressView;
 
+- (void)resetProgressBar;
 - (void)loadInitialStory;
 - (IBAction) doOpenActionSheet:(id)sender;
 - (IBAction)loadAddress:(id)sender;

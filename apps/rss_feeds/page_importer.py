@@ -6,13 +6,14 @@ import feedparser
 import time
 import urllib2
 import httplib
+import zlib
 from socket import error as SocketError
 from boto.s3.key import Key
 from django.conf import settings
 from django.utils.text import compress_string
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
-from utils.feed_functions import timelimit
+from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 # from utils.feed_functions import mail_feed_error_to_admin
@@ -38,8 +39,10 @@ BROKEN_PAGE_URLS = [
 
 class PageImporter(object):
     
-    def __init__(self, feed):
+    def __init__(self, feed, story=None, request=None):
         self.feed = feed
+        self.story = story
+        self.request = request
         
     @property
     def headers(self):
@@ -54,7 +57,7 @@ class PageImporter(object):
             ),
         }
     
-    @timelimit(15)
+    @timelimit(10)
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
         html = None
         feed_link = self.feed.feed_link
@@ -141,6 +144,62 @@ class PageImporter(object):
             self.feed.save_page_history(200, "OK")
         
         return html
+
+    def fetch_story(self):
+        html = None
+        try:
+            html = self._fetch_story()
+        except TimeoutError:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal story~FY: timed out")
+        except requests.exceptions.TooManyRedirects:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal story~FY: too many redirects")
+        
+        return html
+
+    @timelimit(10)
+    def _fetch_story(self):
+        html = None
+        story_permalink = self.story.story_permalink
+            
+        if any(story_permalink.startswith(s) for s in BROKEN_PAGES):
+            return
+        if any(s in story_permalink.lower() for s in BROKEN_PAGE_URLS):
+            return
+        if not story_permalink.startswith('http'): 
+            return
+
+        try:
+            response = requests.get(story_permalink, headers=self.headers)
+            response.connection.close()
+        except requests.exceptions.TooManyRedirects:
+            response = requests.get(story_permalink)
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error), e:
+            logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed, e))
+            return
+        try:
+            data = response.text
+        except (LookupError, TypeError):
+            data = response.content
+
+        if response.encoding and response.encoding != 'utf-8':
+            try:
+                data = data.encode(response.encoding)
+            except LookupError:
+                pass
+
+        if data:
+            html = self.rewrite_page(data)
+            self.save_story(html)
+        
+        return html
+    
+    def save_story(self, html):
+        self.story.original_page_z = zlib.compress(html)
+        try:
+            self.story.save()
+        except NotUniqueError:
+            pass
+
         
     def save_no_page(self):
         logging.debug('   ---> [%-30s] ~FYNo original page: %s' % (self.feed, self.feed.feed_link))

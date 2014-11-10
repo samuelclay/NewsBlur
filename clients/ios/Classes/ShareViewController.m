@@ -79,6 +79,9 @@
     appdotnetButton.layer.borderWidth = 1.0f;
     appdotnetButton.layer.cornerRadius = 1.0f;
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
+
     [super viewDidLoad];
 }
 
@@ -96,18 +99,40 @@
     // e.g. self.myOutlet = nil;
 }
 
+
+- (void)keyboardWasShown:(NSNotification*)aNotification
+{
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    
+    [UIView animateWithDuration:0.2f animations:^{
+        [self adjustCommentField:kbSize];
+    }];
+}
+
+
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+{
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    
+    [UIView animateWithDuration:0.2f animations:^{
+        [self adjustCommentField:kbSize];
+    }];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self adjustCommentField];
+    [self adjustCommentField:CGSizeZero];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self adjustCommentField];
+    [self adjustCommentField:CGSizeZero];
     [self adjustShareButtons];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -156,19 +181,16 @@
     }
 }
 
-- (void)adjustCommentField {
+- (void)adjustCommentField:(CGSize)kbSize {
     CGSize v = self.view.frame.size;
     int bP = 8;
     int bW = 32;
     int bH = 24;
-    int k = 0;
+    int k = kbSize.height;
     int stOffset = 6;
     int stHeight = 0;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication]
-                                                                      statusBarOrientation];
-        k = UIInterfaceOrientationIsPortrait(orientation) ? 216 : 162;
         self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
         stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
         stHeight = self.storyTitle.frame.size.height;

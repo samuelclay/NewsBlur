@@ -442,10 +442,14 @@ def status(request):
 def original_text(request):
     story_id = request.REQUEST.get('story_id')
     feed_id = request.REQUEST.get('feed_id')
+    story_hash = request.REQUEST.get('story_hash', None)
     force = request.REQUEST.get('force', False)
     debug = request.REQUEST.get('debug', False)
 
-    story, _ = MStory.find_story(story_id=story_id, story_feed_id=feed_id)
+    if story_hash:
+        story, _ = MStory.find_story(story_hash=story_hash)
+    else:
+        story, _ = MStory.find_story(story_id=story_id, story_feed_id=feed_id)
 
     if not story:
         logging.user(request, "~FYFetching ~FGoriginal~FY story text: ~FRstory not found")
@@ -459,3 +463,19 @@ def original_text(request):
         'original_text': original_text,
         'failed': not original_text or len(original_text) < 100,
     }
+
+@required_params('story_hash')
+def original_story(request):
+    story_hash = request.REQUEST.get('story_hash')
+    force = request.REQUEST.get('force', False)
+    debug = request.REQUEST.get('debug', False)
+
+    story, _ = MStory.find_story(story_hash=story_hash)
+
+    if not story:
+        logging.user(request, "~FYFetching ~FGoriginal~FY story page: ~FRstory not found")
+        return {'code': -1, 'message': 'Story not found.', 'original_page': None, 'failed': True}
+    
+    original_page = story.fetch_original_page(force=force, request=request, debug=debug)
+
+    return HttpResponse(original_page or "")

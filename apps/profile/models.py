@@ -25,7 +25,7 @@ from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful
+from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
 from vendor.paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -218,19 +218,23 @@ class Profile(models.Model):
         self.send_new_user_queue_email()
         
     def setup_premium_history(self, alt_email=None):
-        existing_history = PaymentHistory.objects.filter(user=self.user)
+        existing_history = PaymentHistory.objects.filter(user=self.user, 
+                                                         payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
             print " ---> Deleting existing history: %s payments" % existing_history.count()
             existing_history.delete()
         
         # Record Paypal payments
         paypal_payments = PayPalIPN.objects.filter(custom=self.user.username,
+                                                   payment_status='Completed',
                                                    txn_type='subscr_payment')
         if not paypal_payments.count():
             paypal_payments = PayPalIPN.objects.filter(payer_email=self.user.email,
+                                                       payment_status='Completed',
                                                        txn_type='subscr_payment')
         if alt_email and not paypal_payments.count():
             paypal_payments = PayPalIPN.objects.filter(payer_email=alt_email,
+                                                       payment_status='Completed',
                                                        txn_type='subscr_payment')
             if paypal_payments.count():
                 # Make sure this doesn't happen again, so let's use Paypal's email.
@@ -724,6 +728,7 @@ def paypal_payment_history_sync(sender, **kwargs):
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_successful.connect(paypal_payment_history_sync)
+recurring_payment.connect(paypal_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
@@ -831,6 +836,27 @@ class PaymentHistory(models.Model):
                                           count=Count('user'))
             print "%s months ago: avg=$%s sum=$%s users=%s" % (
                 m, payments['avg'], payments['sum'], payments['count'])
+
+
+class MRedeemedCode(mongo.Document):
+    user_id = mongo.IntField()
+    gift_code = mongo.StringField()
+    redeemed_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'redeemed_codes',
+        'allow_inheritance': False,
+        'indexes': ['user_id', 'gift_code', 'redeemed_date'],
+    }
+    
+    def __unicode__(self):
+        return "%s redeemed %s on %s" % (self.user_id, self.gift_code, self.redeemed_date)
+    
+    @classmethod
+    def record(cls, user_id, gift_code):
+        cls.objects.create(user_id=user_id, 
+                           gift_code=gift_code)
+
 
 class RNewUserQueue:
     

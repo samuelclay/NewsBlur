@@ -84,6 +84,7 @@
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
     
+    UIColor *tintColor;
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
@@ -180,6 +181,7 @@
 @property (nonatomic, readwrite) TMCache *cachedFavicons;
 @property (nonatomic, readwrite) TMCache *cachedStoryImages;
 
+@property (nonatomic) UIColor *tintColor;
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
@@ -192,6 +194,7 @@
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
+@property (nonatomic, readwrite) BOOL isPresentingActivities;
 @property (readwrite) NSDictionary * activeStory;
 @property (readwrite) NSURL * activeOriginalStoryURL;
 @property (readwrite) NSDictionary * activeComment;
@@ -321,10 +324,12 @@
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
+- (NSArray *)parentFoldersForFeed:(NSString *)feedId;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 - (NSDictionary *)getStory:(NSString *)storyHash;
 

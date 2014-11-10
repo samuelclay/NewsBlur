@@ -3,6 +3,7 @@
 Various PayPal API related exceptions.
 """
 
+
 class PayPalError(Exception):
     """
     Used to denote some kind of generic error. This does not include errors

@@ -557,6 +557,10 @@ function attachFastClick(options) {
     Array.prototype.slice.call(tags, 0).forEach(function(tag) {
                                                 new FastClick(tag, options);
                                                 });
+    var userTags = document.getElementsByClassName("NB-user-tag");
+    Array.prototype.slice.call(userTags, 0).forEach(function(tag) {
+                                                new FastClick(tag, options);
+                                                });
     var authors = document.getElementsByClassName("NB-story-author");
     Array.prototype.slice.call(authors, 0).forEach(function(author) {
                                                 new FastClick(author, options);
