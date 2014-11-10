@@ -307,7 +307,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
 	public synchronized void setFeedCursor(Cursor cursor) {
-        if ((cursor.getCount() < 1) || (!cursor.isBeforeFirst())) return;
+        if (!cursor.isBeforeFirst()) return;
         feeds = new LinkedHashMap<String,Feed>(cursor.getCount());
         while (cursor.moveToNext()) {
             Feed f = Feed.fromCursor(cursor);
