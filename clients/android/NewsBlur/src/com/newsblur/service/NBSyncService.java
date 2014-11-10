@@ -259,23 +259,12 @@ public class NBSyncService extends Service {
      */
     private void finishActions() {
         if (HaltNow) return;
+        if (FollowupActions.size() < 1) return;
 
-        try {
-            if (FollowupActions.size() < 1) return;
-
-            ActionsRunning = true;
-            NbActivity.updateAllActivities();
-
-            for (ReadingAction ra : FollowupActions) {
-                ra.doLocal(dbHelper);
-            }
-            FollowupActions.clear();
-        } finally {
-            if (ActionsRunning) {
-                ActionsRunning = false;
-                NbActivity.updateAllActivities();
-            }
+        for (ReadingAction ra : FollowupActions) {
+            ra.doLocal(dbHelper);
         }
+        FollowupActions.clear();
     }
 
     /**
