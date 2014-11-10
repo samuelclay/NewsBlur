@@ -59,13 +59,15 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	}
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public synchronized void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 		sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        getLoaderManager().initLoader(SOCIALFEEDS_LOADER, null, this);
-        getLoaderManager().initLoader(FOLDERFEEDMAP_LOADER, null, this);
-        getLoaderManager().initLoader(FEEDS_LOADER, null, this);
-        getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
+        if (getLoaderManager().getLoader(FOLDERFEEDMAP_LOADER) == null) {
+            getLoaderManager().initLoader(SOCIALFEEDS_LOADER, null, this);
+            getLoaderManager().initLoader(FOLDERFEEDMAP_LOADER, null, this);
+            getLoaderManager().initLoader(FEEDS_LOADER, null, this);
+            getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
+        }
     }
 
 	@Override
@@ -107,7 +109,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		;
+		; // our adapter doesn't hold on to cursors
 	}
 
 	public void hasUpdated() {
@@ -200,7 +202,6 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
             } else {
                 FeedUtils.markFeedsRead(FeedSet.singleFeed(feedId), null, null, getActivity());
             }
-            adapter.notifyDataSetChanged();
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
 			if (!adapter.isFolderRoot(groupPosition)) {
@@ -209,7 +210,6 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 			} else {
                 FeedUtils.markFeedsRead(FeedSet.allFeeds(), null, null, getActivity());
 			}
-            adapter.notifyDataSetChanged();
 			return true;
 		}
 
