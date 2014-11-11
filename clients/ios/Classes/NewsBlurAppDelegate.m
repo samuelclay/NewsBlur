@@ -946,6 +946,10 @@
 }
 
 - (void)openUserTagsStory:(id)sender {
+    if (!self.userTagsViewController) {
+        self.userTagsViewController = [[UserTagsViewController alloc] init];
+    }
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showUserTagsPopover:sender];
     } else {
@@ -960,7 +964,7 @@
         }
         
         [self.userTagsViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * 3.5)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * 6.5)];
         CGRect frame = [sender CGRectValue];
         [self.popoverController presentPopoverFromRect:frame
                                                 inView:self.storyPageControl.currentPage.view

@@ -7,7 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
 @interface UserTagsViewController : UIViewController
+<UITableViewDataSource, UITableViewDelegate> {
+    UITableView *tagsTableView;
+}
+
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
 
 @end

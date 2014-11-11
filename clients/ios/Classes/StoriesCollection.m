@@ -454,16 +454,8 @@
     
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
-        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
-            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
-            break;
-        }
-    }
-    self.activeFeedStories = newActiveFeedStories;
+    [self replaceStory:newStory withId:newStoryIdStr];
+    
     
     // If not a feed, then don't bother updating local feed
     if (!feed) return;
@@ -510,6 +502,19 @@
                                         forKey:[story objectForKey:@"story_hash"]];
     [appDelegate.unreadStoryHashes removeObjectForKey:[story objectForKey:@"story_hash"]];
     [appDelegate finishMarkAsRead:story];
+}
+
+- (void)replaceStory:(NSDictionary *)newStory withId:(NSString *)newStoryIdStr {
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
 }
 
 - (void)markStoryUnread:(NSDictionary *)story {
@@ -561,16 +566,7 @@
     
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
-        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
-            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
-            break;
-        }
-    }
-    self.activeFeedStories = newActiveFeedStories;
+    [self replaceStory:newStory withId:newStoryIdStr];
 
     // If not a feed, then don't bother updating local feed.
     if (!feed) return;
@@ -637,11 +633,11 @@
 }
 
 - (NSDictionary *)markStory:(NSDictionary *)story asSaved:(BOOL)saved {
-    NSMutableDictionary *newStory = [[appDelegate getStory:[story objectForKey:@"story_hash"]] mutableCopy];
+    NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
-    if (saved) {
+    if (saved && ![newStory objectForKey:@"starred_date"]) {
         [newStory setObject:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
-    } else {
+    } else if (!saved) {
         [newStory removeObjectForKey:@"starred_date"];
     }
     
@@ -659,16 +655,7 @@
     
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
-        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
-            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
-            break;
-        }
-    }
-    self.activeFeedStories = newActiveFeedStories;
+    [self replaceStory:newStory withId:newStoryIdStr];
     
     if (saved) {
         appDelegate.savedStoriesCount += 1;

@@ -448,6 +448,7 @@
     }
     NSString *storyStarred = @"";
     NSString *storyUserTags = @"";
+    NSMutableArray *tagStrings = [NSMutableArray array];
     if ([self.activeStory objectForKey:@"starred"] && [self.activeStory objectForKey:@"starred_date"]) {
         storyStarred = [NSString stringWithFormat:@"<div class=\"NB-story-starred-date\">Saved on %@</div>",
                         [self.activeStory objectForKey:@"starred_date"]];
@@ -455,7 +456,6 @@
         if ([self.activeStory objectForKey:@"user_tags"]) {
             NSArray *tagArray = [self.activeStory objectForKey:@"user_tags"];
             if ([tagArray count] > 0) {
-                NSMutableArray *tagStrings = [NSMutableArray array];
                 for (NSString *tag in tagArray) {
                     NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/remove-user-tag/%@\" "
                                          "class=\"NB-user-tag\"><div class=\"NB-highlight\"></div>%@</a>",
@@ -463,14 +463,15 @@
                                          tag];
                     [tagStrings addObject:tagHtml];
                 }
-                storyUserTags = [NSString
-                                 stringWithFormat:@"<div id=\"NB-user-tags\" class=\"NB-user-tags\">"
-                                 "%@"
-                                 "<a class=\"NB-user-tag NB-add-user-tag\" href=\"http://ios.newsblur.com/add-user-tag/add-user-tag/\"><div class=\"NB-highlight\"></div>Add Tag</a>"
-                                 "</div>",
-                                 [tagStrings componentsJoinedByString:@""]];
             }
         }
+
+        storyUserTags = [NSString
+                         stringWithFormat:@"<div id=\"NB-user-tags\" class=\"NB-user-tags\">"
+                         "%@"
+                         "<a class=\"NB-user-tag NB-add-user-tag\" href=\"http://ios.newsblur.com/add-user-tag/add-user-tag/\"><div class=\"NB-highlight\"></div>Add Tag</a>"
+                         "</div>",
+                         [tagStrings componentsJoinedByString:@""]];
 
     }
     
