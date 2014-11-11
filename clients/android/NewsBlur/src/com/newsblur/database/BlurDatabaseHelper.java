@@ -420,7 +420,7 @@ public class BlurDatabaseHelper {
     }
 
     public int getUnreadCount(FeedSet fs, StateFilter stateFilter) {
-        Cursor c = getStoriesCursor(fs, stateFilter, ReadFilter.PURE_UNREAD, null);
+        Cursor c = getStoriesCursor(fs, stateFilter, ReadFilter.PURE_UNREAD, null, null);
         int count = c.getCount();
         c.close();
         return count;
@@ -534,17 +534,17 @@ public class BlurDatabaseHelper {
 
     public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getStoriesCursor(fs, stateFilter);}
+            protected Cursor createCursor() {return getStoriesCursor(fs, stateFilter, cancellationSignal);}
         };
     }
 
-    public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter) {
+    public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
-        return getStoriesCursor(fs, stateFilter, readFilter, order);
+        return getStoriesCursor(fs, stateFilter, readFilter, order, cancellationSignal);
     }
 
-    public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, StoryOrder order) {
+    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, StoryOrder order, CancellationSignal cancellationSignal) {
 
         if (fs.getSingleFeed() != null) {
 
@@ -553,7 +553,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(" WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleFeed()});
+            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleFeed()}, cancellationSignal);
 
         } else if (fs.getMultipleFeeds() != null) {
 
@@ -563,7 +563,7 @@ public class BlurDatabaseHelper {
             q.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
             q.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), null);
+            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.getSingleSocialFeed() != null) {
 
@@ -573,7 +573,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()});
+            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()}, cancellationSignal);
 
         } else if (fs.isAllNormal()) {
 
@@ -582,7 +582,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE 1");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), null);
+            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSocial()) {
 
@@ -591,7 +591,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
-            return dbRO.rawQuery(q.toString(), null);
+            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSaved()) {
 
@@ -601,7 +601,7 @@ public class BlurDatabaseHelper {
             q.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
             q.append(" OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1))");
             q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
-            return dbRO.rawQuery(q.toString(), null);
+            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
 
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");

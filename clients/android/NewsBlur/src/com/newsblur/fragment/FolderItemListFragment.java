@@ -56,7 +56,7 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
-		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
+		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState, null);
 		getActivity().startManagingCursor(cursor);
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };

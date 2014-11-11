@@ -37,7 +37,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
-		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState);
+		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState, null);
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
