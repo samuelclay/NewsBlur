@@ -326,6 +326,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	}
     
     private void recountFeeds() {
+        if ((folderFeedMap == null) || (feeds == null)) return;
         int c = folderFeedMap.keySet().size();
         activeFolderNames = new ArrayList<String>(c);
         activeFolderChildren = new ArrayList<List<Feed>>(c);
