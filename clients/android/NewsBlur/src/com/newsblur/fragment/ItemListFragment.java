@@ -66,9 +66,16 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             // onCreateView gets re-called thereafter.
             itemList.setAdapter(adapter);
         }
-		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 		return v;
 	}
+
+    @Override
+    public synchronized void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (getLoaderManager().getLoader(ITEMLIST_LOADER) == null) {
+            getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
+        }
+    }
 
     /**
      * Indicate that the DB was cleared.
