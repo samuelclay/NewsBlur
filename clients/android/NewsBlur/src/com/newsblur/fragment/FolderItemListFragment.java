@@ -1,17 +1,11 @@
 package com.newsblur.fragment;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.content.Loader;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
@@ -25,10 +19,9 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FolderItemListFragment extends ItemListFragment implements OnItemClickListener {
+public class FolderItemListFragment extends ItemListFragment {
 
 	private String folderName;
-    private ListView itemList;
 	
 	public static FolderItemListFragment newInstance(String folderName, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
@@ -46,26 +39,6 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		folderName = getArguments().getString("folderName");
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-        setupBezelSwipeDetector(itemList);
-		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-		itemList.setOnItemClickListener(this);
-		itemList.setOnCreateContextMenuListener(this);
-		itemList.setOnScrollListener(this);
-        if (adapter != null) {
-            // normally the list gets set up when the adapter is created, but sometimes
-            // onCreateView gets re-called.
-            itemList.setAdapter(adapter);
-        }
-
-		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
-		return v;
 	}
 
     @Override

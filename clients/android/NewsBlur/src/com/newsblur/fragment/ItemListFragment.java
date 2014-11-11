@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -15,9 +16,11 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnCreateContextMenuListener;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,11 +33,12 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StateFilter;
 
-public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	public static int ITEMLIST_LOADER = 0x01;
 
     protected ItemsList activity;
+	protected ListView itemList;
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter currentState;
@@ -48,6 +52,23 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
     }
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View v = inflater.inflate(R.layout.fragment_itemlist, null);
+		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        setupBezelSwipeDetector(itemList);
+		itemList.setEmptyView(v.findViewById(R.id.empty_view));
+        itemList.setOnScrollListener(this);
+		itemList.setOnItemClickListener(this);
+        if (adapter != null) {
+            // normally the adapter is set when it is created in onLoadFinished(), but sometimes
+            // onCreateView gets re-called thereafter.
+            itemList.setAdapter(adapter);
+        }
+		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
+		return v;
+	}
 
     /**
      * Indicate that the DB was cleared.
@@ -207,6 +228,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return super.onContextItemSelected(item);
         }
     }
+
+	@Override
+	public abstract void onItemClick(AdapterView<?> parent, View view, int position, long id);
 
     protected void setupBezelSwipeDetector(View v) {
         final GestureDetector gestureDetector = new GestureDetector(getActivity(), new BezelSwipeDetector());

@@ -1,17 +1,11 @@
 package com.newsblur.fragment;
 
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
@@ -25,10 +19,9 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class SocialFeedItemListFragment extends ItemListFragment implements OnItemClickListener {
+public class SocialFeedItemListFragment extends ItemListFragment {
 
 	private SocialFeed socialFeed;
-	private ListView itemList;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,21 +40,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements OnIt
         return fragment;
 	}
 	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-        setupBezelSwipeDetector(itemList);
-		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-        itemList.setOnScrollListener(this);
-		itemList.setOnItemClickListener(this);
-        if (adapter != null) {
-            itemList.setAdapter(adapter);
-        }
-		
-		return v;
-	}
-
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if ((adapter == null) && (cursor != null)) {

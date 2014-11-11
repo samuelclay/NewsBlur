@@ -1,19 +1,11 @@
 package com.newsblur.fragment;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.content.CursorLoader;
 import android.content.Loader;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
@@ -28,10 +20,9 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends ItemListFragment implements OnItemClickListener {
+public class FeedItemListFragment extends ItemListFragment {
 
 	private Feed feed;
-    private ListView itemList;
 
     public static FeedItemListFragment newInstance(Feed feed, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
@@ -50,27 +41,6 @@ public class FeedItemListFragment extends ItemListFragment implements OnItemClic
 		super.onCreate(savedInstanceState);
 		feed = (Feed) getArguments().getSerializable("feed");
 	}
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_itemlist, null);
-
-        itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-        setupBezelSwipeDetector(itemList);
-        itemList.setEmptyView(v.findViewById(R.id.empty_view));
-        itemList.setOnItemClickListener(this);
-        itemList.setOnCreateContextMenuListener(this);
-        itemList.setOnScrollListener(this);
-        if (adapter != null) {
-            // normally the list gets set up when the adapter is created, but sometimes
-            // onCreateView gets re-called.
-            itemList.setAdapter(adapter);
-        }
-
-        getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
-        return v;
-    }
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {

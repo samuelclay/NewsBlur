@@ -4,13 +4,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesReading;
@@ -24,26 +19,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class AllSharedStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
-
-    ListView itemList;
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-        setupBezelSwipeDetector(itemList);
-		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-		itemList.setOnScrollListener(this);
-		itemList.setOnItemClickListener(this);
-        if (adapter != null) {
-            itemList.setAdapter(adapter);
-        }
-
-		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
-		return v;
-	}
+public class AllSharedStoriesItemListFragment extends ItemListFragment {
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
