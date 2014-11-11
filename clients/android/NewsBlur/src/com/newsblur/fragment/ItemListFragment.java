@@ -122,10 +122,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-        // load an extra page or two worth of stories past the viewport
-        int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
-        
-        activity.triggerRefresh(desiredStoryCount, totalCount);
+        // if we have seen a cursor, this method means the list was updated or scrolled. now is a good
+        // time to see if we need more stories
+        if (cursorSeenYet) {
+            // load an extra page or two worth of stories past the viewport
+            int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
+            activity.triggerRefresh(desiredStoryCount, totalCount);
+        }
 	}
 
 	@Override
