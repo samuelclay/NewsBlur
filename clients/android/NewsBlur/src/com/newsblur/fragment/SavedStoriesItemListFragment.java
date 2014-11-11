@@ -24,6 +24,8 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class SavedStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
 
+    private ListView itemList;
+
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,25 +34,18 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         setupBezelSwipeDetector(itemList);
-
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-
-		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState, null);
-		
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
+		itemList.setOnScrollListener(this);
+		itemList.setOnItemClickListener(this);
+        if (adapter != null) {
+            // normally the list gets set up when the adapter is created, but sometimes
+            // onCreateView gets re-called.
+            itemList.setAdapter(adapter);
+        }
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
-		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, true);
-
-		itemList.setOnScrollListener(this);
-
-		adapter.setViewBinder(new SocialItemViewBinder(getActivity(), true));
-		itemList.setAdapter(adapter);
-		itemList.setOnItemClickListener(this);
 
 		return v;
 	}
@@ -62,6 +57,18 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements On
         fragment.setArguments(args);
 		return fragment;
 	}
+
+    @Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if ((adapter == null) && (cursor != null)) {
+            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
+            int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
+            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, true);
+            adapter.setViewBinder(new SocialItemViewBinder(getActivity(), true));
+            itemList.setAdapter(adapter);
+       }
+       super.onLoadFinished(loader, cursor);
+    }
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
