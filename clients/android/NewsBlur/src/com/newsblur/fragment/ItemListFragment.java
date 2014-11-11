@@ -61,6 +61,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
         itemList.setOnScrollListener(this);
 		itemList.setOnItemClickListener(this);
+        itemList.setOnCreateContextMenuListener(this);
         if (adapter != null) {
             // normally the adapter is set when it is created in onLoadFinished(), but sometimes
             // onCreateView gets re-called thereafter.

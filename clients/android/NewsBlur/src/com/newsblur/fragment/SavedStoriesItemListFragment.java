@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -55,5 +57,13 @@ public class SavedStoriesItemListFragment extends ItemListFragment {
 		startActivity(i);
 	}
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.removeItem(R.id.menu_mark_story_as_read);
+        menu.removeItem(R.id.menu_mark_story_as_unread);
+        menu.removeItem(R.id.menu_mark_newer_stories_as_read);
+        menu.removeItem(R.id.menu_mark_older_stories_as_read);
+    }
 
 }
