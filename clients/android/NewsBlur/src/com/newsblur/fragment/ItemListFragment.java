@@ -204,22 +204,18 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         switch (item.getItemId()) {
         case R.id.menu_mark_story_as_read:
             FeedUtils.markStoryAsRead(story, activity);
-            hasUpdated();
             return true;
 
         case R.id.menu_mark_story_as_unread:
             FeedUtils.markStoryUnread(story, activity);
-            hasUpdated();
             return true;
 
         case R.id.menu_mark_older_stories_as_read:
             FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
-            hasUpdated();
             return true;
 
         case R.id.menu_mark_newer_stories_as_read:
             FeedUtils.markFeedsRead(getFeedSet(), null, story.timestamp, activity);
-            hasUpdated();
             return true;
 
         case R.id.menu_shared:
