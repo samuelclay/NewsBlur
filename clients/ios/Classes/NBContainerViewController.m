@@ -26,6 +26,7 @@
 #import "TrainerViewController.h"
 #import "OvershareKit.h"
 #import "StoriesCollection.h"
+#import "UserTagsViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_MASTER_WIDTH_LANDSCAPE 370
@@ -401,9 +402,10 @@
     popoverController.delegate = self;
     
     [popoverController setPopoverContentSize:CGSizeMake(220, 382)];
+    [appDelegate.userTagsViewController view]; // Force viewDidLoad
     CGRect frame = [sender CGRectValue];
     [popoverController presentPopoverFromRect:frame
-                                       inView:self.storyPageControl.view
+                                       inView:self.storyPageControl.currentPage.view
                      permittedArrowDirections:UIPopoverArrowDirectionAny
                                      animated:YES];
 }

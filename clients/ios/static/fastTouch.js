@@ -470,7 +470,7 @@ FastClick.prototype.onTouchMove = function(event) {
         (function(targetElement) {
          setTimeout(function() {
                     targetElement.className = targetElement.className.replace(/ ?pressed/gi, '');
-                    }, 100);
+                    }, 20);
          })(this.targetElement);
 
         this.targetElement = null;
@@ -534,7 +534,7 @@ FastClick.prototype.onTouchEnd = function(event) {
     (function(targetElement) {
      setTimeout(function() {
                 targetElement.className = targetElement.className.replace(/ ?pressed/gi, '');
-                }, 100);
+                }, 20);
      })(this.targetElement);
     
     // On some iOS devices, the targetElement supplied with the event is invalid if the layer
