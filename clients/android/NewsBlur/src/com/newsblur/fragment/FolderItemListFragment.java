@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.content.CursorLoader;
 import android.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +28,7 @@ import com.newsblur.view.FeedItemViewBinder;
 public class FolderItemListFragment extends ItemListFragment implements OnItemClickListener {
 
 	private String folderName;
+    private ListView itemList;
 	
 	public static FolderItemListFragment newInstance(String folderName, StateFilter currentState, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
@@ -51,30 +51,34 @@ public class FolderItemListFragment extends ItemListFragment implements OnItemCl
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         setupBezelSwipeDetector(itemList);
-
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-
-		Cursor cursor = dbHelper.getStoriesCursor(getFeedSet(), currentState, null);
-		getActivity().startManagingCursor(cursor);
-
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_feedtitle, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_author };
+		itemList.setOnItemClickListener(this);
+		itemList.setOnCreateContextMenuListener(this);
+		itemList.setOnScrollListener(this);
+        if (adapter != null) {
+            // normally the list gets set up when the adapter is created, but sometimes
+            // onCreateView gets re-called.
+            itemList.setAdapter(adapter);
+        }
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
-		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo);
-
-		itemList.setOnScrollListener(this);
-
-		adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
-		itemList.setAdapter(adapter);
-		itemList.setOnItemClickListener(this);
-		itemList.setOnCreateContextMenuListener(this);
-
 		return v;
 	}
+
+    @Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if ((adapter == null) && (cursor != null)) {
+            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
+            int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_feedtitle, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_author };
+            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo);
+            adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
+            itemList.setAdapter(adapter);
+       }
+       super.onLoadFinished(loader, cursor);
+    }
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
