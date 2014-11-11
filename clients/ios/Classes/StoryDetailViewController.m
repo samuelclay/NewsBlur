@@ -466,6 +466,7 @@
                 storyUserTags = [NSString
                                  stringWithFormat:@"<div id=\"NB-user-tags\" class=\"NB-user-tags\">"
                                  "%@"
+                                 "<a class=\"NB-user-tag NB-add-user-tag\" href=\"http://ios.newsblur.com/add-user-tag/add-user-tag/\"><div class=\"NB-highlight\"></div>Add Tag</a>"
                                  "</div>",
                                  [tagStrings componentsJoinedByString:@""]];
             }
@@ -1185,6 +1186,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([action isEqualToString:@"save"]) {
             [appDelegate.storiesCollection toggleStorySaved:self.activeStory];
             return NO;
+        } else if ([action isEqualToString:@"remove-user-tag"] || [action isEqualToString:@"add-user-tag"]) {
+            [self openUserTagsDialog:[[urlComponents objectAtIndex:3] intValue]
+                         yCoordinate:[[urlComponents objectAtIndex:4] intValue]
+                               width:[[urlComponents objectAtIndex:5] intValue]
+                              height:[[urlComponents objectAtIndex:6] intValue]];
+            return NO;
         } else if ([action isEqualToString:@"classify-author"]) {
             NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleAuthorClassifier:author feedId:feedId];
@@ -1521,8 +1528,29 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         frame = CGRectMake(x, y, width, height);
     }
-//    NSLog(@"Open trainer: %@ (%d/%d/%d/%d)", NSStringFromCGRect(frame), x, y, width, height);
+    //    NSLog(@"Open trainer: %@ (%d/%d/%d/%d)", NSStringFromCGRect(frame), x, y, width, height);
     [appDelegate openTrainStory:[NSValue valueWithCGRect:frame]];
+}
+
+- (void)openUserTagsDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    CGRect frame = CGRectZero;
+    // only adjust for the bar if user is scrolling
+    if (appDelegate.storiesCollection.isRiverView ||
+        appDelegate.storiesCollection.isSocialView ||
+        appDelegate.storiesCollection.isSavedView ||
+        appDelegate.storiesCollection.isReadView) {
+        if (self.webView.scrollView.contentOffset.y == -20) {
+            y = y + 20;
+        }
+    } else {
+        if (self.webView.scrollView.contentOffset.y == -9) {
+            y = y + 9;
+        }
+    }
+    
+    frame = CGRectMake(x, y, width, height);
+
+    [appDelegate openUserTagsStory:[NSValue valueWithCGRect:frame]];
 }
 
 - (void)tapImage:(UIGestureRecognizer *)gestureRecognizer {

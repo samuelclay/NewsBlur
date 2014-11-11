@@ -12,13 +12,13 @@ var loadImages = function() {
 
 var fitVideos = function() {
        $(".NB-story").fitVids({
-            customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
+            customSelector: "iframe[src*='youtu.be'],iframe[src*='flickr.com'],iframe[src*='vimeo.com']"
        });
 };
 
 var linkAt = function(x, y, attribute) {
     var el = document.elementFromPoint(x, y);
-    return el[attribute];
+    return el && el[attribute];
 };
 
 $('a.NB-show-profile').live('click', function () {
@@ -32,6 +32,14 @@ $('a.NB-show-profile').live('click', function () {
 $('.NB-train-button a').live('click', function () {
     var offset = $(this).offset();
     console.log(offset);
+    var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
+$('.NB-user-tag').live('click', function () {
+    var offset = $(this).offset();
+    console.log(['Offset', offset]);
     var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
     window.location = url;
     return false;

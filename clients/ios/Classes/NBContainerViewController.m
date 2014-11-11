@@ -364,12 +364,12 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.trainerViewController];
     popoverController.delegate = self;
-
+    
     [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
     if ([sender class] == [UIBarButtonItem class]) {
-       [popoverController presentPopoverFromBarButtonItem:sender
-                                 permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                 animated:NO];
+        [popoverController presentPopoverFromBarButtonItem:sender
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                  animated:NO];
     } else if ([sender class] == [FeedTableCell class]) {
         FeedTableCell *cell = (FeedTableCell *)sender;
         [popoverController presentPopoverFromRect:cell.bounds
@@ -383,12 +383,29 @@
                          permittedArrowDirections:UIPopoverArrowDirectionAny
                                          animated:YES];
     } else {
-       CGRect frame = [sender CGRectValue];
-       [popoverController presentPopoverFromRect:frame
-                                          inView:self.storyPageControl.view
-                        permittedArrowDirections:UIPopoverArrowDirectionAny
-                                        animated:YES];
+        CGRect frame = [sender CGRectValue];
+        [popoverController presentPopoverFromRect:frame
+                                           inView:self.storyPageControl.view
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
     }
+}
+
+- (void)showUserTagsPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+    }
+    
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.userTagsViewController];
+    popoverController.delegate = self;
+    
+    [popoverController setPopoverContentSize:CGSizeMake(220, 382)];
+    CGRect frame = [sender CGRectValue];
+    [popoverController presentPopoverFromRect:frame
+                                       inView:self.storyPageControl.view
+                     permittedArrowDirections:UIPopoverArrowDirectionAny
+                                     animated:YES];
 }
 
 - (void)showSendToPopover:(id)sender {

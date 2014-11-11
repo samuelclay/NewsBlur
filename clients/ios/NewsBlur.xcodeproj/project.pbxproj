@@ -264,6 +264,9 @@
 		FF6281FE1A09641100271FDB /* unread_yellow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281FD1A09641100271FDB /* unread_yellow@3x.png */; };
 		FF62820A1A098EA800271FDB /* WYPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282071A098EA800271FDB /* WYPopoverController.m */; };
 		FF62820B1A098EA800271FDB /* WYStoryboardPopoverSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282091A098EA800271FDB /* WYStoryboardPopoverSegue.m */; };
+		FF62820E1A1160DD00271FDB /* add_tag.png in Resources */ = {isa = PBXBuildFile; fileRef = FF62820C1A1160DD00271FDB /* add_tag.png */; };
+		FF62820F1A1160DD00271FDB /* add_tag@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF62820D1A1160DD00271FDB /* add_tag@2x.png */; };
+		FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282141A11613900271FDB /* UserTagsViewController.m */; };
 		FF6618C8176184560039913B /* NBNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6618C7176184560039913B /* NBNotifier.m */; };
 		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
 		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
@@ -1046,6 +1049,10 @@
 		FF6282071A098EA800271FDB /* WYPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WYPopoverController.m; sourceTree = "<group>"; };
 		FF6282081A098EA800271FDB /* WYStoryboardPopoverSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WYStoryboardPopoverSegue.h; sourceTree = "<group>"; };
 		FF6282091A098EA800271FDB /* WYStoryboardPopoverSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WYStoryboardPopoverSegue.m; sourceTree = "<group>"; };
+		FF62820C1A1160DD00271FDB /* add_tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_tag.png; sourceTree = "<group>"; };
+		FF62820D1A1160DD00271FDB /* add_tag@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add_tag@2x.png"; sourceTree = "<group>"; };
+		FF6282131A11613900271FDB /* UserTagsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTagsViewController.h; sourceTree = "<group>"; };
+		FF6282141A11613900271FDB /* UserTagsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTagsViewController.m; sourceTree = "<group>"; };
 		FF6618C6176184560039913B /* NBNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBNotifier.h; sourceTree = "<group>"; };
 		FF6618C7176184560039913B /* NBNotifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBNotifier.m; sourceTree = "<group>"; };
 		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
@@ -1941,6 +1948,8 @@
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
 				FF67D3B0168924C40057A7DA /* TrainerViewController.h */,
 				FF67D3B1168924C40057A7DA /* TrainerViewController.m */,
+				FF6282131A11613900271FDB /* UserTagsViewController.h */,
+				FF6282141A11613900271FDB /* UserTagsViewController.m */,
 			);
 			name = Story;
 			sourceTree = "<group>";
@@ -1984,6 +1993,8 @@
 				FFDD848516E8EB1E000AA0A2 /* share@2x.png */,
 				FFDD846816E88722000AA0A2 /* clock.png */,
 				FFDD846916E88722000AA0A2 /* clock@2x.png */,
+				FF62820C1A1160DD00271FDB /* add_tag.png */,
+				FF62820D1A1160DD00271FDB /* add_tag@2x.png */,
 				FFB757FC1727098D001D132F /* menu_icn_mail.png */,
 				FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */,
 				FFDD845016E8871A000AA0A2 /* menu_icn_delete.png */,
@@ -3185,6 +3196,7 @@
 				43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */,
 				FF03AFF219F87F2E0063002A /* safari~iPad@2x.png in Resources */,
 				FFA0475219CA54A800618DC4 /* Drafts-Icon-29.png in Resources */,
+				FF62820E1A1160DD00271FDB /* add_tag.png in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
 				433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */,
@@ -3383,6 +3395,7 @@
 				FFA0475D19CA54A800618DC4 /* Instapaper-Icon-120.png in Resources */,
 				FFA0475519CA54A800618DC4 /* Drafts-Icon-76.png in Resources */,
 				FF29709416DD8CB000E92F85 /* unread_yellow@2x.png in Resources */,
+				FF62820F1A1160DD00271FDB /* add_tag@2x.png in Resources */,
 				FF29709616DD9F2600E92F85 /* nav_icn_settings@2x.png in Resources */,
 				FF29709816DD9F7400E92F85 /* nav_icn_add@2x.png in Resources */,
 				FF29709A16DDA02200E92F85 /* nav_icn_activity_hover@2x.png in Resources */,
@@ -3686,6 +3699,7 @@
 				43A4C3DD15B00966008787B5 /* MBProgressHUD.m in Sources */,
 				FFA0483219CA54A800618DC4 /* OSKUITextViewSubstitute.m in Sources */,
 				43A4C3E115B00966008787B5 /* NSString+HTML.m in Sources */,
+				FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */,
 				43A4C3E215B00966008787B5 /* PullToRefreshView.m in Sources */,
 				FFA047FE19CA54A800618DC4 /* OSKFacebookActivity.m in Sources */,
 				FFA0474419CA54A800618DC4 /* PocketAPILogin.m in Sources */,
