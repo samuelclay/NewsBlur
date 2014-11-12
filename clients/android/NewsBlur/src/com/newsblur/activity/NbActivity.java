@@ -69,10 +69,6 @@ public class NbActivity extends Activity {
         synchronized (AllActivities) {
             AllActivities.add(this);
         }
-
-        // ensure that the sync service is up and running at the beginning of every activity, since
-        // FeedUtils needs the DB conn it provides
-        triggerSync();
 	}
 
 	@Override

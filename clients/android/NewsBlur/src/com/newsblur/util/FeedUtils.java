@@ -106,7 +106,7 @@ public class FeedUtils {
                 setStoryReadState(story, context, false);
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void markStoryAsRead(final Story story, final Context context) {
@@ -116,7 +116,7 @@ public class FeedUtils {
                 setStoryReadState(story, context, true);
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private static void setStoryReadState(Story story, Context context, boolean read) {
@@ -146,12 +146,13 @@ public class FeedUtils {
                     FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllFeeds());
                     ra = ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan);
                 }
-                dbHelper.enqueueAction(ra);
                 dbHelper.markStoriesRead(fs, olderThan, newerThan);
+                NbActivity.updateAllActivities();
+                dbHelper.enqueueAction(ra);
                 triggerSync(context);
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
@@ -219,12 +220,4 @@ public class FeedUtils {
         return parts[0];
     }
 
-    /**
-     * An interface usable by callers of this utility class that allows them to receive
-     * notification that the async methods here have finihed and may have updated the DB
-     * as a result.
-     */
-    public interface ActionCompletionListener {
-        public abstract void actionCompleteCallback(boolean noMoreData);
-    }
 }

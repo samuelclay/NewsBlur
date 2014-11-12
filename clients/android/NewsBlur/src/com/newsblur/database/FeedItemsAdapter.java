@@ -24,8 +24,8 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 	private final Feed feed;
 	private int storyTitleUnread, storyTitleRead, storyContentUnread, storyContentRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
 
-	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to, int flags) {
-		super(context, layout, c, from, to, flags);
+	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to) {
+		super(context, layout, c, from, to);
 		this.feed = feed;
 		this.cursor = c;
 

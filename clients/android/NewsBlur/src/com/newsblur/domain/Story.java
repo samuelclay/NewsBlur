@@ -173,23 +173,6 @@ public class Story implements Serializable {
 		@SerializedName("title")
 		public int intelligenceTitle = 0;
 	}
-	
-	public static int getIntelligenceTotal(int title, int authors, int tags, int feed) {
-		int score = 0;
-		List<Integer> list = Arrays.asList(title, authors, tags);
-		int max = Collections.max(list);
-		int min = Collections.min(list);
-
-		if (max > 0) {
-			score = max;
-		} else if (min < 0) {
-			score = min;
-		} else {
-			score = feed;
-		}
-		return score;
-
-	}
 
     /**
      * Custom equality based on storyID/feedID equality so that a Set can de-duplicate story objects.

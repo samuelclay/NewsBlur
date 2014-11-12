@@ -290,7 +290,7 @@ public class DatabaseConstants {
 		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
 
-    private static final String SUM_STORY_TOTAL = "storyTotal";
+    public static final String SUM_STORY_TOTAL = "storyTotal";
 	private static String STORY_SUM_TOTAL = " CASE " + 
 	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 
 	"THEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +

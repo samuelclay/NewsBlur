@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -145,6 +146,7 @@ public class NBSyncService extends Service {
             // allowed to do tangible work.  We spawn a thread to do so.
             Runnable r = new Runnable() {
                 public void run() {
+                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
                     doSync(startId);
                 }
             };
@@ -259,23 +261,12 @@ public class NBSyncService extends Service {
      */
     private void finishActions() {
         if (HaltNow) return;
+        if (FollowupActions.size() < 1) return;
 
-        try {
-            if (FollowupActions.size() < 1) return;
-
-            ActionsRunning = true;
-            NbActivity.updateAllActivities();
-
-            for (ReadingAction ra : FollowupActions) {
-                ra.doLocal(dbHelper);
-            }
-            FollowupActions.clear();
-        } finally {
-            if (ActionsRunning) {
-                ActionsRunning = false;
-                NbActivity.updateAllActivities();
-            }
+        for (ReadingAction ra : FollowupActions) {
+            ra.doLocal(dbHelper);
         }
+        FollowupActions.clear();
     }
 
     /**
@@ -676,7 +667,6 @@ public class NBSyncService extends Service {
      */
     public static void forceFeedsFolders() {
         DoFeedsFolders = true;
-        NbActivity.updateAllActivities();
     }
 
     /**
