@@ -10,8 +10,9 @@
 #import "NewsBlurAppDelegate.h"
 
 @interface UserTagsViewController : UIViewController
-<UITableViewDataSource, UITableViewDelegate> {
+<UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate> {
     UITableView *tagsTableView;
+    UISearchBar *addTagBar;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;

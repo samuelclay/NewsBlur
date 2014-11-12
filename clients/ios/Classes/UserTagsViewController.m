@@ -31,6 +31,19 @@ const NSInteger kHeaderHeight = 24;
     tagsTableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     tagsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:tagsTableView];
+    
+    addTagBar = [[UISearchBar alloc]
+                 initWithFrame:CGRectMake(0, 0,
+                                          CGRectGetWidth(tagsTableView.frame), 44.)];
+    [addTagBar setDelegate:self];
+    [addTagBar setImage:[UIImage imageNamed:@"add_tag.png"]
+       forSearchBarIcon:UISearchBarIconSearch
+                  state:UIControlStateNormal];
+    [addTagBar setReturnKeyType:UIReturnKeyDone];
+    [addTagBar setBackgroundColor:UIColorFromRGB(0xDCDFD6)];
+    [addTagBar setSearchBarStyle:UISearchBarStyleMinimal];
+    [addTagBar setAutocapitalizationType:UITextAutocapitalizationTypeWords];
+    tagsTableView.tableHeaderView = addTagBar;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -227,6 +240,11 @@ const NSInteger kHeaderHeight = 24;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction {
     NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", tagName];
     NSMutableDictionary *newTag = [[appDelegate.dictSavedStoryTags objectForKey:savedTagId] mutableCopy];
+    if (!newTag) {
+        newTag = [@{@"ps": [NSNumber numberWithInt:0],
+                    @"feed_title": tagName
+                    } mutableCopy];
+    }
     NSInteger newCount = [[newTag objectForKey:@"ps"] integerValue] + direction;
     [newTag setObject:[NSNumber numberWithInteger:newCount] forKey:@"ps"];
     NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
@@ -236,12 +254,39 @@ const NSInteger kHeaderHeight = 24;
                 [savedStoryDict setObject:newTag forKey:tagId];
             }
         } else {
-            [savedStoryDict setObject:[appDelegate.dictSavedStoryTags objectForKey:tagId] forKey:tagId];
+            [savedStoryDict setObject:[appDelegate.dictSavedStoryTags objectForKey:tagId]
+                               forKey:tagId];
         }
+    }
+    
+    // If adding a tag, it won't already be in dictSavedStoryTags
+    if (![appDelegate.dictSavedStoryTags objectForKey:savedStoryDict] && newCount > 0) {
+        [savedStoryDict setObject:newTag forKey:savedTagId];
     }
     appDelegate.dictSavedStoryTags = savedStoryDict;
     
     return newCount;
+}
+
+#pragma mark - Search Bar
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [addTagBar resignFirstResponder];
+    NSString *tagName = addTagBar.text;
+    NSMutableDictionary *story = [appDelegate.activeStory mutableCopy];
+    
+    [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
+    [appDelegate.storiesCollection markStory:story asSaved:YES];
+    [appDelegate.storiesCollection syncStoryAsSaved:story];
+    [self adjustSavedStoryCount:tagName direction:1];
+    
+    NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
+    [tagsTableView beginUpdates];
+    [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]]
+                         withRowAnimation:UITableViewRowAnimationTop];
+    [tagsTableView endUpdates];
+    
+    [addTagBar setText:@""];
 }
 
 @end
