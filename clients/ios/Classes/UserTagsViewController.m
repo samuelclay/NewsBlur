@@ -189,18 +189,21 @@ const NSInteger kHeaderHeight = 24;
     if (indexPath.section == 0) {
         NSString *tagName = [[self arrayUserTags] objectAtIndex:indexPath.row];
         NSMutableDictionary *story = [appDelegate.activeStory mutableCopy];
-        
         NSMutableArray *newUserTags = [[story objectForKey:@"user_tags"] mutableCopy];
         [newUserTags removeObject:tagName];
         [story setObject:newUserTags forKey:@"user_tags"];
         [appDelegate.storiesCollection markStory:story asSaved:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
+        NSInteger newCount = [self adjustSavedStoryCount:tagName direction:-1];
+        
         NSInteger row = [[self arrayUserTagsNotInStory] indexOfObject:tagName];
         [tagsTableView beginUpdates];
         [tagsTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:indexPath.row inSection:0]]
                              withRowAnimation:UITableViewRowAnimationTop];
-        [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:1]]
-                             withRowAnimation:UITableViewRowAnimationBottom];
+        if (newCount > 0) {
+            [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:1]]
+                                 withRowAnimation:UITableViewRowAnimationBottom];
+        }
         [tagsTableView endUpdates];
     } else if (indexPath.section == 1) {
         NSString *tagName = [[self arrayUserTagsNotInStory] objectAtIndex:indexPath.row];
@@ -209,6 +212,8 @@ const NSInteger kHeaderHeight = 24;
         [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
         [appDelegate.storiesCollection markStory:story asSaved:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
+        [self adjustSavedStoryCount:tagName direction:1];
+
         NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
         [tagsTableView beginUpdates];
         [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]]
@@ -217,6 +222,26 @@ const NSInteger kHeaderHeight = 24;
                              withRowAnimation:UITableViewRowAnimationBottom];
         [tagsTableView endUpdates];
     }
+}
+
+- (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction {
+    NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", tagName];
+    NSMutableDictionary *newTag = [[appDelegate.dictSavedStoryTags objectForKey:savedTagId] mutableCopy];
+    NSInteger newCount = [[newTag objectForKey:@"ps"] integerValue] + direction;
+    [newTag setObject:[NSNumber numberWithInteger:newCount] forKey:@"ps"];
+    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
+    for (NSString *tagId in [appDelegate.dictSavedStoryTags allKeys]) {
+        if ([tagId isEqualToString:savedTagId]) {
+            if (newCount > 0) {
+                [savedStoryDict setObject:newTag forKey:tagId];
+            }
+        } else {
+            [savedStoryDict setObject:[appDelegate.dictSavedStoryTags objectForKey:tagId] forKey:tagId];
+        }
+    }
+    appDelegate.dictSavedStoryTags = savedStoryDict;
+    
+    return newCount;
 }
 
 @end
