@@ -39,7 +39,7 @@
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId;
 - (void)adjustShareButtons;
-- (void)adjustCommentField;
+- (void)adjustCommentField:(CGSize)kbSize;
 - (NSString *)stringByStrippingHTML:(NSString *)s;
 
 @end

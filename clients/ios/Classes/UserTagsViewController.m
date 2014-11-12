@@ -8,6 +8,7 @@
 
 #import "UserTagsViewController.h"
 #import "FeedTableCell.h"
+#import "FolderTitleView.h"
 #import "StoriesCollection.h"
 
 @interface UserTagsViewController ()
@@ -15,6 +16,8 @@
 @end
 
 @implementation UserTagsViewController
+
+const NSInteger kHeaderHeight = 24;
 
 @synthesize appDelegate;
 
@@ -82,7 +85,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if ([self tableView:tableView numberOfRowsInSection:section] == 0) return 0;
-    return 20;
+    return kHeaderHeight;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -92,6 +95,50 @@
         return @"Available Tags";
     }
     return @"";
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    CGRect rect = CGRectMake(0, 0, CGRectGetWidth(tableView.frame), kHeaderHeight);
+    UIView *customView = [[UIView alloc] initWithFrame:rect];
+
+    // Background
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = rect;
+    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(0xEAECE5) CGColor],
+                       (id)[UIColorFromRGB(0xDCDFD6) CGColor], nil];
+    [customView.layer insertSublayer:gradient atIndex:0];
+
+    // Borders
+    UIView *topBorder = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(rect), 1)];
+    topBorder.backgroundColor = UIColorFromRGB(0xFAFCF5);
+    [customView addSubview:topBorder];
+    
+    // bottom border
+    UIView *bottomBorder = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(rect)-0.25f,
+                                                                    CGRectGetWidth(rect), 1)];
+    bottomBorder.backgroundColor = UIColorFromRGB(0xB7BBAA);
+    [customView addSubview:bottomBorder];
+    
+    // Folder title
+    UIColor *textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    UIFontDescriptor *boldFontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:UIFontTextStyleCaption1];
+    boldFontDescriptor = [boldFontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+    UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+    UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
+
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12, 0,
+                                                               CGRectGetWidth(rect),
+                                                               CGRectGetHeight(rect))];
+    [label setText:[self tableView:tableView titleForHeaderInSection:section]];
+    [label setFont:font];
+    [label setTextColor:textColor];
+    [label setShadowColor:shadowColor];
+    [label setShadowOffset:CGSizeMake(0, 1)];
+    [label setLineBreakMode:NSLineBreakByTruncatingTail];
+    [label setTextAlignment:NSTextAlignmentLeft];
+    [customView addSubview:label];
+    
+    return customView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
