@@ -25,7 +25,7 @@
     tagsTableView = [[UITableView alloc] init];
     tagsTableView.delegate = self;
     tagsTableView.dataSource = self;
-    tagsTableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);;
+    tagsTableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     tagsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:tagsTableView];
 }
@@ -33,7 +33,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    [tagsTableView sizeToFit];
+    tagsTableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     [tagsTableView reloadData];
 }
 
@@ -141,15 +141,34 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         NSString *tagName = [[self arrayUserTags] objectAtIndex:indexPath.row];
-
+        NSMutableDictionary *story = [appDelegate.activeStory mutableCopy];
         
+        NSMutableArray *newUserTags = [[story objectForKey:@"user_tags"] mutableCopy];
+        [newUserTags removeObject:tagName];
+        [story setObject:newUserTags forKey:@"user_tags"];
+        [appDelegate.storiesCollection markStory:story asSaved:YES];
+        [appDelegate.storiesCollection syncStoryAsSaved:story];
+        NSInteger row = [[self arrayUserTagsNotInStory] indexOfObject:tagName];
+        [tagsTableView beginUpdates];
+        [tagsTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:indexPath.row inSection:0]]
+                             withRowAnimation:UITableViewRowAnimationTop];
+        [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:1]]
+                             withRowAnimation:UITableViewRowAnimationBottom];
+        [tagsTableView endUpdates];
     } else if (indexPath.section == 1) {
         NSString *tagName = [[self arrayUserTagsNotInStory] objectAtIndex:indexPath.row];
         NSMutableDictionary *story = [appDelegate.activeStory mutableCopy];
-
+        
         [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
         [appDelegate.storiesCollection markStory:story asSaved:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
+        NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
+        [tagsTableView beginUpdates];
+        [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]]
+                             withRowAnimation:UITableViewRowAnimationTop];
+        [tagsTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:indexPath.row inSection:1]]
+                             withRowAnimation:UITableViewRowAnimationBottom];
+        [tagsTableView endUpdates];
     }
 }
 

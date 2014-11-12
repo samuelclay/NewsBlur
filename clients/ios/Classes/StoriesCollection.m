@@ -637,8 +637,10 @@
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved && ![newStory objectForKey:@"starred_date"]) {
         [newStory setObject:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
+        appDelegate.savedStoriesCount += 1;
     } else if (!saved) {
         [newStory removeObjectForKey:@"starred_date"];
+        appDelegate.savedStoriesCount -= 1;
     }
     
     if ([[newStory objectForKey:@"story_hash"]
@@ -656,12 +658,6 @@
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];
-    
-    if (saved) {
-        appDelegate.savedStoriesCount += 1;
-    } else {
-        appDelegate.savedStoriesCount -= 1;
-    }
     
     return newStory;
 }

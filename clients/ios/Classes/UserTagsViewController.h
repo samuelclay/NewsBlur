@@ -16,4 +16,7 @@
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 
+- (NSArray *)arrayUserTags;
+- (NSArray *)arrayUserTagsNotInStory;
+
 @end
