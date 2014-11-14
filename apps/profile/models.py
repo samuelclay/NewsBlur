@@ -1,5 +1,6 @@
 import time
 import datetime
+import dateutil
 import stripe
 import hashlib
 import redis
@@ -822,20 +823,23 @@ class PaymentHistory(models.Model):
         }
     
     @classmethod
-    def report(cls, months=12):
+    def report(cls, months=24):
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
         print "Total: $%s" % total['sum']
         
-        for m in range(months):
+        for m in reversed(range(months)):
             now = datetime.datetime.now()
-            start_date = now - datetime.timedelta(days=(m+1)*30)
-            end_date = now - datetime.timedelta(days=m*30)
-            payments = cls.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
+            end_time = start_date + datetime.timedelta(days=31)
+            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+            payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
             payments = payments.aggregate(avg=Avg('payment_amount'), 
                                           sum=Sum('payment_amount'), 
                                           count=Count('user'))
-            print "%s months ago: avg=$%s sum=$%s users=%s" % (
-                m, payments['avg'], payments['sum'], payments['count'])
+            print "%s-%02d-%02d - %s-%02d-%02d:\t$%.2f\t$%-6s\t%-4s" % (
+                start_date.year, start_date.month, start_date.day,
+                end_date.year, end_date.month, end_date.day,
+                round(payments['avg'], 2), payments['sum'], payments['count'])
 
 
 class MRedeemedCode(mongo.Document):
