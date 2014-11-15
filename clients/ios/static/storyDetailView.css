@@ -560,6 +560,11 @@ div + p {
     margin-left: -30px !important;
     width: 736px !important;
 }
+.NB-width-768 .NB-story img.NB-large-image {
+    max-width: 768px;
+    margin-left: -30px !important;
+    width: 768px !important;
+}
 
 .NB-story img.NB-small-image {
     display: inline-block;
