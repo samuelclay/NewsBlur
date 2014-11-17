@@ -279,7 +279,7 @@ class Profile(models.Model):
             self.save()
 
         logging.user(self.user, "Found %s paypal and %s stripe payments (%s payments expire: %s)" % (
-            len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire)
+                     len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
 
     def refund_premium(self, partial=False):
         refunded = False
