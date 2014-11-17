@@ -51,6 +51,9 @@ NEWSBLUR.Modal.prototype = {
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
+                    if (self.options.onOpen) {
+                        self.options.onOpen();
+                    }
                     dialog.overlay.empty().remove();
                     $.modal.close(callback);
                 });
