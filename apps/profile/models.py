@@ -224,7 +224,7 @@ class Profile(models.Model):
         existing_history = PaymentHistory.objects.filter(user=self.user, 
                                                          payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
-            logging.user(self.user, "~BY~SN~FWDeleting existing history: ~SB%s payments" % existing_history.count())
+            logging.user(self.user, "~BY~SN~FRDeleting~FW existing history: ~SB%s payments" % existing_history.count())
             existing_history.delete()
         
         # Record Paypal payments
@@ -278,7 +278,7 @@ class Profile(models.Model):
                                    datetime.timedelta(days=365*recent_payments_count))
             self.save()
 
-        logging.user(self.user, "~BY~SN~FWFound %s paypal and %s stripe payments (~SB%s payments expire: ~SN~FC%s~FW)" % (
+        logging.user(self.user, "~BY~SN~FWFound ~SB%s paypal~SN and ~SB%s stripe~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
                      len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
 
     def refund_premium(self, partial=False):
