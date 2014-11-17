@@ -842,6 +842,12 @@
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];
+    
+    if (storiesCollection.isSavedView &&
+        ![[results objectForKey:@"stories"] count] &&
+        [results objectForKey:@"message"]) {
+        [self informError:nil details:[results objectForKey:@"message"]];
+    }
     id feedId = [results objectForKey:@"feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     
