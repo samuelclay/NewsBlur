@@ -224,7 +224,7 @@ class Profile(models.Model):
         existing_history = PaymentHistory.objects.filter(user=self.user, 
                                                          payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
-            logging.user(self.uer, " ---> Deleting existing history: %s payments" % existing_history.count())
+            logging.user(self.user, " ---> Deleting existing history: %s payments" % existing_history.count())
             existing_history.delete()
         
         # Record Paypal payments
