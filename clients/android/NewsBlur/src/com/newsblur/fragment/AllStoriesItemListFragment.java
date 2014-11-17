@@ -3,15 +3,9 @@ package com.newsblur.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.content.CursorLoader;
 import android.content.Loader;
-import android.widget.CursorAdapter;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllStoriesReading;
@@ -25,34 +19,14 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class AllStoriesItemListFragment extends ItemListFragment implements OnItemClickListener {
-
-    private ListView itemList;
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-        setupBezelSwipeDetector(itemList);
-		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-		itemList.setOnScrollListener(this);
-		itemList.setOnItemClickListener(this);
-		itemList.setOnCreateContextMenuListener(this);
-
-        if (adapter != null) {
-            itemList.setAdapter(adapter);
-        }
-
-		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-		return v;
-	}
+public class AllStoriesItemListFragment extends ItemListFragment {
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if ((adapter == null) && (cursor != null)) {
-            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
+            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.SUM_STORY_TOTAL, DatabaseConstants.FEED_TITLE };
             int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
-            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo);
             adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
             itemList.setAdapter(adapter);
         }

@@ -15,7 +15,7 @@ import android.os.OperationCanceledException;
 public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private Cursor cursor;
-    private CancellationSignal cancellationSignal;
+    protected CancellationSignal cancellationSignal;
 
     public QueryCursorLoader(Context context) {
         super(context);

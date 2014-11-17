@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIApplication">
@@ -35,6 +35,7 @@
                 <outlet property="storyPageControl" destination="290" id="292"/>
                 <outlet property="trainerViewController" destination="287" id="289"/>
                 <outlet property="userProfileViewController" destination="235" id="236"/>
+                <outlet property="userTagsViewController" destination="v2Q-Hh-f3K" id="5CE-5l-aoS"/>
                 <outlet property="window" destination="12" id="78"/>
             </connections>
         </customObject>
@@ -136,6 +137,7 @@
                 <outlet property="appDelegate" destination="3" id="125"/>
             </connections>
         </viewController>
+        <viewController id="v2Q-Hh-f3K" customClass="UserTagsViewController"/>
         <viewController nibName="TrainerViewController" id="287" userLabel="Trainer View Controller" customClass="TrainerViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>

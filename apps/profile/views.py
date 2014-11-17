@@ -15,10 +15,11 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
+from apps.profile.models import Profile, PaymentHistory, RNewUserQueue, MRedeemedCode
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
+from apps.profile.forms import RedeemCodeForm
 from apps.reader.forms import SignupForm, LoginForm
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
@@ -116,7 +117,34 @@ def signup(request):
         'form': form,
         'next': request.REQUEST.get('next', "")
     }, context_instance=RequestContext(request))
+
+@login_required
+@csrf_protect
+def redeem_code(request):
+    code = request.GET.get('code', None)
+    form = RedeemCodeForm(initial={'gift_code': code})
+
+    if request.method == "POST":
+        form = RedeemCodeForm(data=request.POST)
+        if form.is_valid():
+            gift_code = request.POST['gift_code']
+            PaymentHistory.objects.create(user=request.user,
+                                          payment_date=datetime.datetime.now(),
+                                          payment_amount=12,
+                                          payment_provider='good-web-bundle')
+            MRedeemedCode.record(request.user.pk, gift_code)
+            request.user.profile.activate_premium()
+            logging.user(request.user, "~FG~BBRedeeming gift code: %s~FW" % gift_code)
+            return render_to_response('reader/paypal_return.xhtml', 
+                                      {}, context_instance=RequestContext(request))
+
+    return render_to_response('accounts/redeem_code.html', {
+        'form': form,
+        'code': request.REQUEST.get('code', ""),
+        'next': request.REQUEST.get('next', "")
+    }, context_instance=RequestContext(request))
     
+
 @ajax_login_required
 @require_POST
 @json.json_view

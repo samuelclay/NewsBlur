@@ -2,6 +2,7 @@ package com.newsblur.database;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -291,19 +292,22 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public synchronized void setFolderFeedMapCursor(Cursor cursor) {
         if ((cursor.getCount() < 1) || (!cursor.isBeforeFirst())) return;
-        this.folderFeedMap = new TreeMap<String,List<String>>();
+        folderFeedMap = newCustomSortedMap();
         while (cursor.moveToNext()) {
             String folderName = getStr(cursor, DatabaseConstants.FEED_FOLDER_FOLDER_NAME);
             String feedId = getStr(cursor, DatabaseConstants.FEED_FOLDER_FEED_ID);
             if (! folderFeedMap.containsKey(folderName)) folderFeedMap.put(folderName, new ArrayList<String>());
             folderFeedMap.get(folderName).add(feedId);
         }
+        if (!folderFeedMap.containsKey(AppConstants.ROOT_FOLDER)) {
+            folderFeedMap.put(AppConstants.ROOT_FOLDER, new ArrayList<String>());
+        }
         recountFeeds();
         notifyDataSetChanged();
     }
 
 	public synchronized void setFeedCursor(Cursor cursor) {
-        if ((cursor.getCount() < 1) || (!cursor.isBeforeFirst())) return;
+        if (!cursor.isBeforeFirst()) return;
         feeds = new LinkedHashMap<String,Feed>(cursor.getCount());
         while (cursor.moveToNext()) {
             Feed f = Feed.fromCursor(cursor);
@@ -322,6 +326,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	}
     
     private void recountFeeds() {
+        if ((folderFeedMap == null) || (feeds == null)) return;
         int c = folderFeedMap.keySet().size();
         activeFolderNames = new ArrayList<String>(c);
         activeFolderChildren = new ArrayList<List<Feed>>(c);
@@ -460,5 +465,25 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return 0;
         }
         return count;
+    }
+
+    /**
+     * Custom sorting for folders. Handles the special case to keep the root
+     * folder on top, and also the expectation that *despite locale*, folders
+     * starting with an underscore should show up on top.
+     */
+    private Map<String,List<String>> newCustomSortedMap() {
+        Comparator<String> c = new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                if (TextUtils.equals(s1, s2)) return 0;
+                if (s1.equals(AppConstants.ROOT_FOLDER)) return -1;
+                if (s2.equals(AppConstants.ROOT_FOLDER)) return 1;
+                if (s1.startsWith("_")) return -1;
+                if (s2.startsWith("_")) return 1;
+                return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
+            }
+        };
+        return new TreeMap<String,List<String>>(c);
     }
 }

@@ -19,11 +19,9 @@ import android.widget.ViewSwitcher;
 import com.newsblur.R;
 import com.newsblur.activity.LoginProgress;
 import com.newsblur.activity.RegisterProgress;
-import com.newsblur.network.APIManager;
 
 public class LoginRegisterFragment extends Fragment implements OnClickListener {
 
-	public APIManager apiManager;
 	private EditText username, password;
 	private ViewSwitcher viewSwitcher;
 

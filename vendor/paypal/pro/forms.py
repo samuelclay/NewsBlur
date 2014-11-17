@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-from vendor.paypal.pro.fields import CreditCardField, CreditCardExpiryField, CreditCardCVV2Field, CountryField
+from paypal.pro.fields import CreditCardField, CreditCardExpiryField, CreditCardCVV2Field, CountryField
+from paypal.pro.exceptions import PayPalFailure
 
 
 class PaymentForm(forms.Form):
@@ -17,27 +18,29 @@ class PaymentForm(forms.Form):
     acct = CreditCardField(label="Credit Card Number")
     expdate = CreditCardExpiryField(label="Expiration Date")
     cvv2 = CreditCardCVV2Field(label="Card Security Code")
+    currencycode = forms.CharField(widget=forms.HiddenInput(), initial="USD")
 
     def process(self, request, item):
         """Process a PayPal direct payment."""
-        from vendor.paypal.pro.helpers import PayPalWPP
-        wpp = PayPalWPP(request) 
-        ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
+        from paypal.pro.helpers import PayPalWPP
+
+        wpp = PayPalWPP(request)
         params = self.cleaned_data
         params['creditcardtype'] = self.fields['acct'].card_type
         params['expdate'] = self.cleaned_data['expdate'].strftime("%m%Y")
-        params['ipaddress'] = ip
+        params['ipaddress'] = request.META.get("REMOTE_ADDR", "")
         params.update(item)
- 
-        # Create single payment:
-        if 'billingperiod' not in params:
-            response = wpp.doDirectPayment(params)
 
-        # Create recurring payment:
-        else:
-            response = wpp.createRecurringPaymentsProfile(params, direct=True)
- 
-        return response
+        try:
+            # Create single payment:
+            if 'billingperiod' not in params:
+                nvp_obj = wpp.doDirectPayment(params)
+            # Create recurring payment:
+            else:
+                nvp_obj = wpp.createRecurringPaymentsProfile(params, direct=True)
+        except PayPalFailure:
+            return False
+        return True
 
 
 class ConfirmForm(forms.Form):

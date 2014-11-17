@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags zebra_tags %}
+
+{% block bodyclass %}NB-static NB-static-oauth NB-static-login NB-static-redeemcode{% endblock %}
+{% block extra_head_js %}
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $("input[name=gift_code]").focus();
+        });
+    </script>
+    
+  {% include_stylesheets "common" %}
+  
+  <meta name="viewport" content="width=320, initial-scale=.85">
+{% endblock %}
+
+{% block title %}Redeem a Gift Code{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-title">
+    Redeem a Gift Code
+</div>
+
+<div class="NB-static-form-wrapper" style="overflow:hidden">
+    <form method="post" class="NB-static-form" action="{% url "redeem-code" %}">
+        {% if form.errors %}
+            {% if form.errors.gift_code %}
+                <p class="NB-error error">{{ form.errors.gift_code.as_text }}</p>
+            {% else %}
+                <p class="NB-error error">{{ form.non_field_errors.as_text }}</p>
+            {% endif %}
+        {% endif %}
+
+        {% csrf_token %}
+        <div class="NB-static-form-label">{{ form.gift_code.label_tag }}</div>
+        <div class="NB-static-form-input">{{ form.gift_code }}</div>
+
+        <input type="submit" value="Redeem Code" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
+        <input type="hidden" name="next" value="{{ next }}" />
+        <p class="NB-static-form-alttext">
+            Logged in as <b>{{ user.username }}</b><br /><br />
+            <a href="{% url "logout" %}?next={% url "login" %}?next={% url "redeem-code" %}?code={{ code }}">Login to a different account</a></a>
+
+    </form>
+
+</div>
+
+{% endblock %}

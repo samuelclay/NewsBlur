@@ -4,14 +4,16 @@ This module contains config objects needed by paypal.interface.PayPalInterface.
 Most of this is transparent to the end developer, as the PayPalConfig object
 is instantiated by the PayPalInterface object.
 """
+
 import logging
 import os
 from pprint import pformat
 
-from paypalapi.compat import basestring
-from paypalapi.exceptions import PayPalConfigError
+from vendor.paypalapi.compat import basestring
+from vendor.paypalapi.exceptions import PayPalConfigError
 
 logger = logging.getLogger('paypal.settings')
+
 
 class PayPalConfig(object):
     """
@@ -29,17 +31,20 @@ class PayPalConfig(object):
     # Various API servers.
     _API_ENDPOINTS = {
         # In most cases, you want 3-Token. There's also Certificate-based
-        # authentication, which uses different servers, but that's not
-        # implemented.
+        # authentication, which uses different servers.
         '3TOKEN': {
             'SANDBOX': 'https://api-3t.sandbox.paypal.com/nvp',
             'PRODUCTION': 'https://api-3t.paypal.com/nvp',
-        }
+        },
+        'CERTIFICATE': {
+            'SANDBOX': 'https://api.sandbox.paypal.com/nvp',
+            'PRODUCTION': 'https://api.paypal.com/nvp',
+        },
     }
 
     _PAYPAL_URL_BASE = {
-        'SANDBOX': 'https://www.sandbox.paypal.com/webscr',
-        'PRODUCTION': 'https://www.paypal.com/webscr',
+        'SANDBOX': 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+        'PRODUCTION': 'https://www.paypal.com/cgi-bin/webscr',
     }
 
     API_VERSION = '98.0'
@@ -52,6 +57,10 @@ class PayPalConfig(object):
     API_USERNAME = None
     API_PASSWORD = None
     API_SIGNATURE = None
+
+    # CERTIFICATE credentials
+    API_CERTIFICATE_FILENAME = None
+    API_KEY_FILENAME = None
 
     # API Endpoints are just API server addresses.
     API_ENDPOINT = None
@@ -114,9 +123,15 @@ class PayPalConfig(object):
                 # A CA Cert path was specified, but it's invalid.
                 raise PayPalConfigError('Invalid API_CA_CERTS')
 
-        # set the 3TOKEN required fields
-        if self.API_AUTHENTICATION_MODE == '3TOKEN':
-            for arg in ('API_USERNAME', 'API_PASSWORD', 'API_SIGNATURE'):
+        # check authentication fields
+        if self.API_AUTHENTICATION_MODE in ('3TOKEN', 'CERTIFICATE'):
+            auth_args = ['API_USERNAME', 'API_PASSWORD']
+            if self.API_AUTHENTICATION_MODE == '3TOKEN':
+                auth_args.append('API_SIGNATURE')
+            elif self.API_AUTHENTICATION_MODE == 'CERTIFICATE':
+                auth_args.extend(['API_CERTIFICATE_FILENAME', 'API_KEY_FILENAME'])
+
+            for arg in auth_args:
                 if arg not in kwargs:
                     raise PayPalConfigError('Missing in PayPalConfig: %s ' % arg)
                 setattr(self, arg, kwargs[arg])

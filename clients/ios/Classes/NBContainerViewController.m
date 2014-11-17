@@ -26,6 +26,7 @@
 #import "TrainerViewController.h"
 #import "OvershareKit.h"
 #import "StoriesCollection.h"
+#import "UserTagsViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_MASTER_WIDTH_LANDSCAPE 370
@@ -364,12 +365,12 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.trainerViewController];
     popoverController.delegate = self;
-
+    
     [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
     if ([sender class] == [UIBarButtonItem class]) {
-       [popoverController presentPopoverFromBarButtonItem:sender
-                                 permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                 animated:NO];
+        [popoverController presentPopoverFromBarButtonItem:sender
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                  animated:NO];
     } else if ([sender class] == [FeedTableCell class]) {
         FeedTableCell *cell = (FeedTableCell *)sender;
         [popoverController presentPopoverFromRect:cell.bounds
@@ -383,12 +384,30 @@
                          permittedArrowDirections:UIPopoverArrowDirectionAny
                                          animated:YES];
     } else {
-       CGRect frame = [sender CGRectValue];
-       [popoverController presentPopoverFromRect:frame
-                                          inView:self.storyPageControl.view
-                        permittedArrowDirections:UIPopoverArrowDirectionAny
-                                        animated:YES];
+        CGRect frame = [sender CGRectValue];
+        [popoverController presentPopoverFromRect:frame
+                                           inView:self.storyPageControl.view
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
     }
+}
+
+- (void)showUserTagsPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+    }
+    
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.userTagsViewController];
+    popoverController.delegate = self;
+    
+    [popoverController setPopoverContentSize:CGSizeMake(220, 382)];
+    [appDelegate.userTagsViewController view]; // Force viewDidLoad
+    CGRect frame = [sender CGRectValue];
+    [popoverController presentPopoverFromRect:frame
+                                       inView:self.storyPageControl.currentPage.view
+                     permittedArrowDirections:UIPopoverArrowDirectionAny
+                                     animated:YES];
 }
 
 - (void)showSendToPopover:(id)sender {

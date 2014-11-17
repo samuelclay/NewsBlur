@@ -302,12 +302,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		});
 	}
 
-	public void changeTextSize(float newTextSize) {
-		if (web != null) {
-			web.setTextSize(newTextSize);
-		}
-	}
-
 	private void setupItemCommentsAndShares(final View view) {
 		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, resolver, apiManager, story, imageLoader).execute();
 	}

@@ -290,7 +290,7 @@ public class DatabaseConstants {
 		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
 
-    private static final String SUM_STORY_TOTAL = "storyTotal";
+    public static final String SUM_STORY_TOTAL = "storyTotal";
 	private static String STORY_SUM_TOTAL = " CASE " + 
 	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 
 	"THEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
@@ -410,40 +410,6 @@ public class DatabaseConstants {
         }
     }
     
-    public static String getStorySharedSortOrder(StoryOrder storyOrder) {
-        if (storyOrder == StoryOrder.NEWEST) {
-            return STORY_SHARED_DATE + " DESC";
-        } else {
-            return STORY_SHARED_DATE + " ASC";
-        }
-    }
-
-    /**
-     * Get the name of the feed count column that is impacted by a story of the given intel total.
-     */
-    public static String getFeedCountColumnForStoryIntelValue(int storyIntelTotal) {
-        if (storyIntelTotal > 0) {
-            return FEED_POSITIVE_COUNT;
-        } else if (storyIntelTotal == 0) {
-            return FEED_NEUTRAL_COUNT;
-        } else {
-            return FEED_NEGATIVE_COUNT;
-        }
-    }
-
-    /**
-     * Get the name of the social feed count column that is impacted by a story of the given intel total.
-     */
-    public static String getSocialFeedCountColumnForStoryIntelValue(int storyIntelTotal) {
-        if (storyIntelTotal > 0) {
-            return SOCIAL_FEED_POSITIVE_COUNT;
-        } else if (storyIntelTotal == 0) {
-            return SOCIAL_FEED_NEUTRAL_COUNT;
-        } else {
-            return SOCIAL_FEED_NEGATIVE_COUNT;
-        }
-    }
-
     public static Long nullIfZero(Long l) {
         if (l == null) return null;
         if (l.longValue() == 0L) return null;

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_feed_background" >
+    style="?selectorFeedBackground" >
 
     <LinearLayout
         android:id="@+id/row_foldersums"
@@ -63,7 +63,7 @@
         android:textStyle="bold"
         android:layout_toLeftOf="@id/row_foldersums"
         android:layout_toRightOf="@id/row_socialfeed_icon"
-        android:textColor="@color/folder_text"
+        style="?selectorRowFeedName"
         android:paddingBottom="7dp"
     	android:paddingTop="7dp" 
         android:textSize="14dp" />

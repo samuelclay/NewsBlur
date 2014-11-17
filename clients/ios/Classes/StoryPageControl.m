@@ -862,7 +862,6 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate.storiesCollection markStory:request.userInfo asSaved:YES];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];

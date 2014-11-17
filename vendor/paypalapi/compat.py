@@ -125,4 +125,4 @@ elif is_py3:
 
     str = str
     bytes = bytes
-    basestring = (str,bytes)
+    basestring = (str, bytes)

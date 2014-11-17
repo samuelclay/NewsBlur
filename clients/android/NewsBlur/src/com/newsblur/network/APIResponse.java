@@ -25,7 +25,6 @@ import com.newsblur.util.AppConstants;
  */
 public class APIResponse {
 	
-    private Context context;
     private boolean isError;
     private String errorMessage;
 	private String cookie;

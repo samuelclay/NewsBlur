@@ -250,6 +250,7 @@ COUNTRY_TUPLES = (
     ('ZZ', 'Unknown or unspecified country'),
 )
 
+
 def is_valid_country_abbrev(abbrev, case_sensitive=False):
     """
     Given a country code abbreviation, check to see if it matches the
@@ -270,6 +271,7 @@ def is_valid_country_abbrev(abbrev, case_sensitive=False):
             return True
 
     return False
+
 
 def get_name_from_abbrev(abbrev, case_sensitive=False):
     """
