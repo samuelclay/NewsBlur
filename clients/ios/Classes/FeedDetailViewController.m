@@ -389,6 +389,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
+    [self.searchBar resignFirstResponder];
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -458,6 +459,7 @@
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
+    storiesCollection.storyCount = 0;
     if (!self.isDashboardModule) {
         [appDelegate.storyPageControl resetPages];
     }
@@ -471,6 +473,7 @@
 }
 
 - (void)reloadStories {
+    appDelegate.hasLoadedFeedDetail = NO;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
@@ -642,7 +645,7 @@
     if (appDelegate.inSearch && appDelegate.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            appDelegate.searchQuery];
+                            [appDelegate.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
     [self cancelRequests];
     __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
@@ -851,7 +854,7 @@
     if (appDelegate.inSearch && appDelegate.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            appDelegate.searchQuery];
+                            [appDelegate.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
 
     [self cancelRequests];
