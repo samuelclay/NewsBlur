@@ -272,7 +272,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         }
     },
     
-    add_feed_to_decline: function(feed_id, update) {
+    add_feed_to_decline: function(feed, update) {
         feed.highlight_in_all_folders(false, true, {silent: !update});
         
         if (update) {
