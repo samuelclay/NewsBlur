@@ -272,48 +272,11 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         }
     },
     
-<<<<<<< HEAD
-    open_modal: function() {
-        var self = this;
-        this.$modal.modal({
-            'minWidth': this.options.premium_only || this.options.chooser_only ? 460 : 900,
-            'maxWidth': this.options.premium_only || this.options.chooser_only ? 460 : 900,
-            'overlayClose': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200, function() {
-                        _.defer(_.bind(self.resize_modal, self), 10);
-                    });
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-            },
-            'onClose': function(dialog, callback) {
-                if (!self.flags['has_saved'] && !self.model.flags['has_chosen_feeds']) {
-                    NEWSBLUR.reader.show_feed_chooser_button();
-                }
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close(callback);
-                });
-                $('.NB-modal-holder').empty().remove();
-            }
-        });
-    },
-    
-    add_feed_to_decline: function(feed, update) {
-        feed.highlight_in_all_folders(false, true, {silent: !update});
-=======
     add_feed_to_decline: function(feed_id, update) {
         this.approve_list = _.without(this.approve_list, feed_id);
         var $feed = this.$feeds[feed_id];
         
         if (!$feed) return;
->>>>>>> master
         
         if (update) {
             this.update_counts();
