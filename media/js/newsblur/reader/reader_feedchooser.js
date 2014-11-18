@@ -273,10 +273,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     },
     
     add_feed_to_decline: function(feed_id, update) {
-        this.approve_list = _.without(this.approve_list, feed_id);
-        var $feed = this.$feeds[feed_id];
-        
-        if (!$feed) return;
+        feed.highlight_in_all_folders(false, true, {silent: !update});
         
         if (update) {
             this.update_counts();
