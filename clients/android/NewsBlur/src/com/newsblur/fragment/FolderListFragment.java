@@ -88,23 +88,29 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        switch (loader.getId()) {
-            case SOCIALFEEDS_LOADER:
-                adapter.setSocialFeedCursor(cursor);
-                break;
-            case FOLDERFEEDMAP_LOADER:
-                adapter.setFolderFeedMapCursor(cursor);
-                break;
-            case FEEDS_LOADER:
-                adapter.setFeedCursor(cursor);
-                break;
-            case SAVEDCOUNT_LOADER:
-                adapter.setSavedCountCursor(cursor);
-                break;
-            default:
-                throw new IllegalArgumentException("unknown loader created");
+        try {
+            switch (loader.getId()) {
+                case SOCIALFEEDS_LOADER:
+                    adapter.setSocialFeedCursor(cursor);
+                    break;
+                case FOLDERFEEDMAP_LOADER:
+                    adapter.setFolderFeedMapCursor(cursor);
+                    break;
+                case FEEDS_LOADER:
+                    adapter.setFeedCursor(cursor);
+                    break;
+                case SAVEDCOUNT_LOADER:
+                    adapter.setSavedCountCursor(cursor);
+                    break;
+                default:
+                    throw new IllegalArgumentException("unknown loader created");
+            }
+            checkOpenFolderPreferences();
+        } catch (Exception e) {
+            // for complex folder sets, these ops can take so long that they butt heads
+            // with the destruction of the fragment and adapter. crashes can ensue.
+            Log.w(this.getClass().getName(), "failed up update fragment state", e);
         }
-		checkOpenFolderPreferences();
     }
 
 	@Override
