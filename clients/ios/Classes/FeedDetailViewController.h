@@ -24,7 +24,7 @@
  UIActionSheetDelegate, UIAlertViewDelegate,
  UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
  WYPopoverControllerDelegate, MCSwipeTableViewCellDelegate,
- UIGestureRecognizerDelegate> {
+ UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL pageFetching;
@@ -54,6 +54,7 @@
 @property (nonatomic, retain) WYPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
+@property (nonatomic) UISearchBar *searchBar;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -67,7 +68,7 @@
 
 - (void)reloadData;
 - (void)resetFeedDetail;
-- (void)reloadPage;
+- (void)reloadStories;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)loadOfflineStories;

@@ -155,6 +155,8 @@
 @synthesize categoryFeeds;
 @synthesize activeCachedImages;
 @synthesize hasQueuedReadStories;
+@synthesize inSearch;
+@synthesize searchQuery;
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
 @synthesize backgroundCompletionHandler;
@@ -997,8 +999,6 @@
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
-    [storiesCollection setStories:nil];
-    [storiesCollection setFeedUserProfiles:nil];
     self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
 
