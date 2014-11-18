@@ -7,6 +7,7 @@ import android.database.Cursor;
 import static android.database.DatabaseUtils.dumpCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
@@ -499,7 +500,7 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getSocialFeedsCursor(StateFilter stateFilter, CancellationSignal cancellationSignal) {
-        return dbRO.query(false, DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
+        return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
     public Loader<Cursor> getFolderFeedMapLoader() {
@@ -509,7 +510,7 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getFolderFeedMapCursor(CancellationSignal cancellationSignal) {
-        return dbRO.query(false, DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null, null, null, null, null, null, cancellationSignal);
+        return query(false, DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null, null, null, null, null, null, cancellationSignal);
     }
 
     public Loader<Cursor> getFeedsLoader(final StateFilter stateFilter) {
@@ -519,7 +520,7 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getFeedsCursor(StateFilter stateFilter, CancellationSignal cancellationSignal) {
-        return dbRO.query(false, DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
+        return query(false, DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
     public Loader<Cursor> getSavedStoryCountLoader() {
@@ -553,7 +554,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(" WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleFeed()}, cancellationSignal);
+            return rawQuery(q.toString(), new String[]{fs.getSingleFeed()}, cancellationSignal);
 
         } else if (fs.getMultipleFeeds() != null) {
 
@@ -563,7 +564,7 @@ public class BlurDatabaseHelper {
             q.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
             q.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
+            return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.getSingleSocialFeed() != null) {
 
@@ -573,7 +574,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()}, cancellationSignal);
+            return rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()}, cancellationSignal);
 
         } else if (fs.isAllNormal()) {
 
@@ -582,7 +583,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE 1");
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
-            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
+            return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSocial()) {
 
@@ -591,7 +592,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
-            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
+            return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSaved()) {
 
@@ -601,7 +602,7 @@ public class BlurDatabaseHelper {
             q.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
             q.append(" OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1))");
             q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
-            return dbRO.rawQuery(q.toString(), null, cancellationSignal);
+            return rawQuery(q.toString(), null, cancellationSignal);
 
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
@@ -626,6 +627,30 @@ public class BlurDatabaseHelper {
         }
         if (s == null) return null;
         return s.toString();
+    }
+
+    /**
+     * Invoke the rawQuery() method on our read-only SQLiteDatabase memeber using the provided CancellationSignal
+     * only if the device's platform provides support.
+     */
+    private Cursor rawQuery(String sql, String[] selectionArgs, CancellationSignal cancellationSignal) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            return dbRO.rawQuery(sql, selectionArgs, cancellationSignal);
+        } else {
+            return dbRO.rawQuery(sql, selectionArgs);
+        }
+    }
+
+    /**
+     * Invoke the query() method on our read-only SQLiteDatabase memeber using the provided CancellationSignal
+     * only if the device's platform provides support.
+     */
+    private Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
+        } else {
+            return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
+        }
     }
 
 }
