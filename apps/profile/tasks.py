@@ -25,6 +25,12 @@ class PremiumExpire(Task):
         five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
         expired_profiles = Profile.objects.filter(is_premium=True, 
                                                   premium_expire__lte=five_days_ago)
+        logging.debug(" ---> %s users have expired premiums, syncing payments..." % expired_profiles.count())
+        for profile in expired_profiles:
+            profile.setup_premium_history()
+
+        expired_profiles = Profile.objects.filter(is_premium=True, 
+                                                  premium_expire__lte=five_days_ago)
         logging.debug(" ---> %s users have expired premiums, emailing grace..." % expired_profiles.count())
         for profile in expired_profiles:
             profile.send_premium_expire_grace_period_email()

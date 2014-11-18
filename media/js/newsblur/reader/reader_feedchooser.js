@@ -1,7 +1,24 @@
 NEWSBLUR.ReaderFeedchooser = function(options) {
+    options = options || {};
     var defaults = {
+        'width': options.premium_only || options.chooser_only ? 460 : 900,
         'premium_only': false,
-        'chooser_only': false
+        'chooser_only': false,
+        'onOpen': _.bind(function() {
+            this.resize_modal();
+        }, this),
+        'onClose': _.bind(function() {
+            if (!this.flags['has_saved'] && !this.model.flags['has_chosen_feeds']) {
+                NEWSBLUR.reader.show_feed_chooser_button();
+            }
+            dialog.data.hide().empty().remove();
+            dialog.container.hide().empty().remove();
+            dialog.overlay.fadeOut(200, function() {
+                dialog.overlay.empty().remove();
+                $.modal.close(callback);
+            });
+            $('.NB-modal-holder').empty().remove();
+        }, this)
     };
 
     this.options = $.extend({}, defaults, options);
@@ -9,7 +26,10 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
     this.runner();
 };
 
-NEWSBLUR.ReaderFeedchooser.prototype = {
+NEWSBLUR.ReaderFeedchooser.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderFeedchooser.prototype.constructor = NEWSBLUR.ReaderFeedchooser;
+
+_.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     
     runner: function() {
         var self = this;
@@ -22,8 +42,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
         this.make_modal();
         this.make_paypal_button();
-        _.defer(_.bind(function() { this.open_modal(); }, this));
-        this.choose_dollar_amount(2);
+
         if (!this.options.premium_only) {
             this.initial_load_feeds();
         }
@@ -33,6 +52,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.flags = {
             'has_saved': false
         };
+        this.open_modal();
         
         this.$modal.bind('mousedown', $.rescope(this.handle_mousedown, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
@@ -252,6 +272,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         }
     },
     
+<<<<<<< HEAD
     open_modal: function() {
         var self = this;
         this.$modal.modal({
@@ -286,6 +307,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     add_feed_to_decline: function(feed, update) {
         feed.highlight_in_all_folders(false, true, {silent: !update});
+=======
+    add_feed_to_decline: function(feed_id, update) {
+        this.approve_list = _.without(this.approve_list, feed_id);
+        var $feed = this.$feeds[feed_id];
+        
+        if (!$feed) return;
+>>>>>>> master
         
         if (update) {
             this.update_counts();
@@ -555,4 +583,4 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         });
     }
                 
-};
+});

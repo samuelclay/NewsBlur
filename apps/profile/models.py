@@ -219,10 +219,12 @@ class Profile(models.Model):
         self.send_new_user_queue_email()
         
     def setup_premium_history(self, alt_email=None):
+        paypal_payments = []
+        stripe_payments = []
         existing_history = PaymentHistory.objects.filter(user=self.user, 
                                                          payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
-            print " ---> Deleting existing history: %s payments" % existing_history.count()
+            logging.user(self.user, "~BY~SN~FRDeleting~FW existing history: ~SB%s payments" % existing_history.count())
             existing_history.delete()
         
         # Record Paypal payments
@@ -246,28 +248,19 @@ class Profile(models.Model):
                                           payment_date=payment.payment_date,
                                           payment_amount=payment.payment_gross,
                                           payment_provider='paypal')
-        
-        print " ---> Found %s paypal_payments" % len(paypal_payments)
-        
+                
         # Record Stripe payments
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
             stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
             
-            existing_history = PaymentHistory.objects.filter(user=self.user,
-                                                             payment_provider='stripe')
-            if existing_history.count():
-                print " ---> Deleting existing history: %s stripe payments" % existing_history.count()
-                existing_history.delete()
-        
             for payment in stripe_payments:
                 created = datetime.datetime.fromtimestamp(payment.created)
                 PaymentHistory.objects.create(user=self.user,
                                               payment_date=created,
                                               payment_amount=payment.amount / 100.0,
                                               payment_provider='stripe')
-            print " ---> Found %s stripe_payments" % len(stripe_payments)
         
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
@@ -279,12 +272,14 @@ class Profile(models.Model):
                 recent_payments_count += 1
                 if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
                     oldest_recent_payment_date = payment.payment_date
-        print " ---> %s payments" % len(payment_history)
         
         if oldest_recent_payment_date:
             self.premium_expire = (oldest_recent_payment_date +
                                    datetime.timedelta(days=365*recent_payments_count))
             self.save()
+
+        logging.user(self.user, "~BY~SN~FWFound ~SB%s paypal~SN and ~SB%s stripe~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
+                     len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
 
     def refund_premium(self, partial=False):
         refunded = False

@@ -100,6 +100,8 @@
     BOOL inFindingStoryMode;
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
+    BOOL inSearch;
+    NSString *searchQuery;
     NSString *tryFeedStoryId;
     
     NSDictionary * activeStory;
@@ -246,6 +248,8 @@
 @property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
+@property (nonatomic, readwrite) BOOL inSearch;
+@property (nonatomic) NSString *searchQuery;
 
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 

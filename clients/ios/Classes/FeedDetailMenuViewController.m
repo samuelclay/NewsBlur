@@ -247,7 +247,7 @@
     
     [userPreferences synchronize];
     
-    [appDelegate.feedDetailViewController reloadPage];
+    [appDelegate.feedDetailViewController reloadStories];
 }
 
 - (IBAction)changeReadFilter:(id)sender {
@@ -261,7 +261,7 @@
     
     [userPreferences synchronize];
     
-    [appDelegate.feedDetailViewController reloadPage];
+    [appDelegate.feedDetailViewController reloadStories];
     
 }
 
