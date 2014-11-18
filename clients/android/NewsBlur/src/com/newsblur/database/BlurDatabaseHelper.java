@@ -56,8 +56,10 @@ public class BlurDatabaseHelper {
     public BlurDatabaseHelper(Context context) {
         this.context = context;
         dbWrapper = new BlurDatabase(context);
-        dbRO = dbWrapper.getRO();
-        dbRW = dbWrapper.getRW();
+        synchronized (RW_MUTEX) {
+            dbRO = dbWrapper.getRO();
+            dbRW = dbWrapper.getRW();
+        }
     }
 
     public void close() {
