@@ -191,7 +191,7 @@ class RedeemCodeForm(forms.Form):
         if len(gift_code) != 12:
             raise forms.ValidationError('Your gift code should be 12 characters long.')
         
-        req = requests.get('https://demo.thinkup.com/join/api/bundle/', params={'code': gift_code})
+        req = requests.get('https://www.thinkup.com/join/api/bundle/', params={'code': gift_code})
         response = req.json()
         
         is_valid = response.get('is_valid', None)
