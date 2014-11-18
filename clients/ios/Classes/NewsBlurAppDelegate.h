@@ -11,6 +11,7 @@
 #import "FMDatabaseQueue.h"
 #import "OvershareKit.h"
 #import "EventWindow.h"
+#import "WYPopoverController.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -39,6 +40,7 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class TrainerViewController;
+@class UserTagsViewController;
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
@@ -48,7 +50,7 @@
 @class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations, OSKPresentationStyle>  {
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations, OSKPresentationStyle, WYPopoverControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
@@ -79,11 +81,13 @@
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
+    UserTagsViewController *userTagsViewController;
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
-    
+    WYPopoverController *popoverController;
+
     UIColor *tintColor;
     NSString * activeUsername;
     NSString * activeUserProfileId;
@@ -96,6 +100,8 @@
     BOOL inFindingStoryMode;
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
+    BOOL inSearch;
+    NSString *searchQuery;
     NSString *tryFeedStoryId;
     
     NSDictionary * activeStory;
@@ -166,11 +172,14 @@
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
+@property (nonatomic) IBOutlet UserTagsViewController *userTagsViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
+@property (nonatomic, retain) WYPopoverController *popoverController;
+
 
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
@@ -239,6 +248,8 @@
 @property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
+@property (nonatomic, readwrite) BOOL inSearch;
+@property (nonatomic) NSString *searchQuery;
 
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 
@@ -271,6 +282,7 @@
 - (void)openTrainSite;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
+- (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;

@@ -1965,14 +1965,16 @@ def _mark_story_as_starred(request):
     if random.random() < 0.01:
         MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
     MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
-    starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
+    starred_counts, starred_count = MStarredStoryCounts.user_counts(request.user.pk, include_total=True)
+    if not starred_count and len(starred_counts):
+        starred_count = MStarredStory.objects(user_id=user.pk).count()    
     
     if created:
         logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        
     else:
         logging.user(request, "~FCUpdating starred:~SN~FC ~SB%s~SN (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))
     
-    return {'code': code, 'message': message, 'starred_counts': starred_counts}
+    return {'code': code, 'message': message, 'starred_count': starred_count, 'starred_counts': starred_counts}
     
 @required_params('story_id')
 @ajax_login_required

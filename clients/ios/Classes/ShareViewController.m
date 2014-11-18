@@ -194,6 +194,8 @@
         self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
         stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
         stHeight = self.storyTitle.frame.size.height;
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        k = 0;
     }
     NSLog(@"Share type: %@", self.currentType);
     BOOL showingShareButtons = [self.currentType isEqualToString:@"share"] ||

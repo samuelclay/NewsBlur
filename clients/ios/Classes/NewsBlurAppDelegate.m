@@ -21,6 +21,7 @@
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
 #import "TrainerViewController.h"
+#import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
@@ -88,10 +89,12 @@
 @synthesize addSiteViewController;
 @synthesize moveSiteViewController;
 @synthesize trainerViewController;
+@synthesize userTagsViewController;
 @synthesize originalStoryViewController;
 @synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
 @synthesize preferencesViewController;
+@synthesize popoverController;
 
 @synthesize firstTimeUserViewController;
 @synthesize firstTimeUserAddSitesViewController;
@@ -152,6 +155,8 @@
 @synthesize categoryFeeds;
 @synthesize activeCachedImages;
 @synthesize hasQueuedReadStories;
+@synthesize inSearch;
+@synthesize searchQuery;
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
 @synthesize backgroundCompletionHandler;
@@ -942,6 +947,49 @@
     }
 }
 
+- (void)openUserTagsStory:(id)sender {
+    if (!self.userTagsViewController) {
+        self.userTagsViewController = [[UserTagsViewController alloc] init];
+    }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController showUserTagsPopover:sender];
+    } else {
+        if (self.popoverController == nil) {
+            self.popoverController = [[WYPopoverController alloc]
+                                      initWithContentViewController:self.userTagsViewController];
+            
+            self.popoverController.delegate = self;
+        } else {
+            [self.popoverController dismissPopoverAnimated:YES];
+            self.popoverController = nil;
+        }
+        
+        [self.userTagsViewController view]; // Force viewDidLoad
+        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count]+0.5))];
+        CGRect frame = [sender CGRectValue];
+        [self.popoverController presentPopoverFromRect:frame
+                                                inView:self.storyPageControl.currentPage.view
+                              permittedArrowDirections:WYPopoverArrowDirectionAny
+                                              animated:YES];
+    }
+}
+
+#pragma mark -
+#pragma mark WYPopoverControllerDelegate implementation
+
+- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
+    //Safe to release the popover here
+    self.popoverController = nil;
+}
+
+- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
+    //The popover is automatically dismissed if you click outside it, unless you return NO here
+    return YES;
+}
+
+#pragma mark -
+
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
 }
@@ -951,8 +999,6 @@
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
-    [storiesCollection setStories:nil];
-    [storiesCollection setFeedUserProfiles:nil];
     self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
 

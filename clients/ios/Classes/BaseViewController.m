@@ -53,6 +53,10 @@
 #pragma mark View methods
 
 - (void)informError:(id)error {
+    [self informError:error details:nil];
+}
+
+- (void)informError:(id)error details:(NSString *)details {
     NSLog(@"informError: %@", error);
     NSString *errorMessage;
     if ([error isKindOfClass:[NSString class]]) {
@@ -70,8 +74,11 @@
     [HUD setCustomView:[[UIImageView alloc] 
                          initWithImage:[UIImage imageNamed:@"warning.gif"]]];
     [HUD setMode:MBProgressHUDModeCustomView];
+    if (details) {
+        [HUD setDetailsLabelText:details];
+    }
     HUD.labelText = errorMessage;
-    [HUD hide:YES afterDelay:1];
+    [HUD hide:YES afterDelay:(details ? 3 : 1)];
     
 //    UIAlertView* alertView = [[UIAlertView alloc]
 //                              initWithTitle:@"Error"
