@@ -351,6 +351,7 @@
         !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
         [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
     }
+    
     if (!appDelegate.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
@@ -602,6 +603,9 @@
             }];
         });
     }
+    if (!appDelegate.inSearch && storiesCollection.feedPage == 1) {
+        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+    }
     
     if (!self.isOnline) {
         [self loadOfflineStories];
@@ -795,6 +799,9 @@
 
     }
     
+    if (!appDelegate.inSearch && storiesCollection.feedPage == 1) {
+        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+    }
     if (storiesCollection.feedPage == 1) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
