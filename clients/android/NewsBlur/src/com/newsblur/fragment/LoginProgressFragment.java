@@ -103,7 +103,7 @@ public class LoginProgressFragment extends Fragment {
                 getActivity().startActivity(startMain);
 
 			} else {
-                Toast.makeText(getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG).show();
+                UIUtils.safeToast(getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG);
 				startActivity(new Intent(getActivity(), Login.class));
 			}
 		}
