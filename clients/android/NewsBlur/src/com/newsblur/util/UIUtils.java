@@ -87,6 +87,12 @@ public class UIUtils {
         }
     }
 
+    public static void safeToast(Context c, String text, int duration) {
+        if ((c != null) && (text != null)) {
+            Toast.makeText(c, text, duration).show();
+        }
+    }
+
     /**
      * Restart an activity. See http://stackoverflow.com/a/11651252/70795
      * We post this on the Handler to allow onResume to finish before the activity restarts
