@@ -1235,6 +1235,7 @@ a img {
     padding: 1px 4px 1px 8px;
     line-height: 14px;
     margin: 3px 0 0;
+    white-space: nowrap;
 }
 .NB-feedbar .NB-feedbar-options:hover,
 .NB-feedbar .NB-feedbar-options.NB-active {
