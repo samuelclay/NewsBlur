@@ -68,7 +68,7 @@ public class BlurDatabaseHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                dbWrapper.close();
+                synchronized (RW_MUTEX) {dbWrapper.close();}
                 return null;
             }
         }.execute();
