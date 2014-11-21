@@ -105,7 +105,9 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
+        synchronized (BlurDatabaseHelper.RW_MUTEX) {
 		databaseHelper = new BlurDatabase(getContext().getApplicationContext());
+        }
 		return true;
 	}
 
