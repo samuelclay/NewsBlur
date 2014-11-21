@@ -102,20 +102,28 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-preference-saved-stories-date' }),
-                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-saved-stories' }, '删除我收藏的文章')
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            '删除已收藏文章'
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-delete' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-all-sites' }, '删除站点')
+<<<<<<< HEAD
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-all-sites' }, '删除我的全部站点')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             '删除站点',
                             $.make('div', { className: 'NB-preference-sublabel' }, '注意：您将会收到一份包含站点备份的邮件')
+=======
+                            $.make('div', { className: 'NB-preference-saved-stories-date' }),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-saved-stories' }, 'Delete my saved stories')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Erase your saved stories'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-delete' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-all-sites' }, 'Delete all of my sites')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Erase yourself',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Friendly note: You will be emailed a backup of your sites')
+>>>>>>> remotes/upstream/master
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
