@@ -74,7 +74,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+	public synchronized View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (groupPosition == 0) {
 			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
@@ -149,7 +149,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+	public synchronized View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		View v;
 		if (groupPosition == 0) {
 			socialFeedCursor.moveToPosition(childPosition);
