@@ -111,6 +111,8 @@
             folderTitle = [@"All Shared Stories" uppercaseString];
     } else if (section == 2) {
         folderTitle = [@"All Stories" uppercaseString];
+    } else if ([folderName isEqual:@"read_stories"]) {
+        folderTitle = [@"Read Stories" uppercaseString];
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = [@"Saved Stories" uppercaseString];
     } else {
@@ -159,7 +161,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 3, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2) {
+        if (section != 0 && section != 2 && ![folderName isEqual:@"read_stories"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -181,6 +183,8 @@
     UIImage *folderImage;
     int folderImageViewX = 10;
     BOOL allowLongPress = NO;
+    int width = 20;
+    int height = 20;
     
     if (section == 0) {
         folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
@@ -210,6 +214,13 @@
         } else {
             folderImageViewX = 7;
         }
+    } else if ([folderName isEqual:@"read_stories"]) {
+        folderImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
     } else {
         if (isFolderCollapsed) {
             folderImage = [UIImage imageNamed:@"g_icn_folder_rss"];
@@ -222,7 +233,7 @@
         }
         allowLongPress = YES;
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 8, 20, 20)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 8, width, height)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.newsblur.R;
 import com.newsblur.view.StateToggleButton;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
+import com.newsblur.util.StateFilter;
 
 public class FeedIntelligenceSelectorFragment extends Fragment implements StateChangedListener {
 	
@@ -24,11 +25,11 @@ public class FeedIntelligenceSelectorFragment extends Fragment implements StateC
 	}
 
 	@Override
-	public void changedState(int state) {
+	public void changedState(StateFilter state) {
 		((StateChangedListener) getActivity()).changedState(state);
 	}
 	
-	public void setState(int state) {
+	public void setState(StateFilter state) {
 		button.setState(state);
 	}
 

@@ -1,5 +1,4 @@
 import datetime
-import random
 from celery.task import Task
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
@@ -24,6 +23,12 @@ class PremiumExpire(Task):
     def run(self, **kwargs):
         # Get expired but grace period users
         five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
+        expired_profiles = Profile.objects.filter(is_premium=True, 
+                                                  premium_expire__lte=five_days_ago)
+        logging.debug(" ---> %s users have expired premiums, syncing payments..." % expired_profiles.count())
+        for profile in expired_profiles:
+            profile.setup_premium_history()
+
         expired_profiles = Profile.objects.filter(is_premium=True, 
                                                   premium_expire__lte=five_days_ago)
         logging.debug(" ---> %s users have expired premiums, emailing grace..." % expired_profiles.count())
@@ -52,8 +57,8 @@ class CleanupUser(Task):
     
     def run(self, user_id):
         UserSubscription.trim_user_read_stories(user_id)
+        UserSubscription.verify_feeds_scheduled(user_id)
 
-        if random.random() < 0.01:
-            ss = MSocialServices.objects.get(user_id=user_id)
-            ss.sync_twitter_photo()
+        ss = MSocialServices.objects.get(user_id=user_id)
+        ss.sync_twitter_photo()
 

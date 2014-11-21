@@ -8,4 +8,4 @@ from paypalapi.exceptions import PayPalError, PayPalConfigError, PayPalAPIRespon
 #noinspection PyUnresolvedReferences
 import paypalapi.countries
 
-VERSION = '1.2.0'
+VERSION = '1.2.2'

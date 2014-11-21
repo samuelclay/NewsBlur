@@ -18,6 +18,7 @@ import android.widget.AbsListView;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
@@ -25,12 +26,12 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
 
-	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
     private TextView overlayStatusText;
@@ -40,7 +41,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
-
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
 
         isLightTheme = PrefsUtils.isLightThemeSelected(this);
@@ -48,9 +48,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_main);
-		setupActionBar();
+		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
         swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
@@ -59,6 +60,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		fragmentManager = getFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
+        ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
 
         this.overlayStatusText = (TextView) findViewById(R.id.main_sync_status);
 
@@ -71,7 +73,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         super.onResume();
 
         // clear the read-this-session flag from stories so they don't show up in the wrong place
-        FeedUtils.clearReadingSession(this);
+        FeedUtils.clearReadingSession();
 
         updateStatusIndicators();
         // this view doesn't show stories, it is safe to perform cleanup
@@ -83,11 +85,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-	private void setupActionBar() {
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -139,7 +136,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 	
 	@Override
-	public void changedState(int state) {
+	public void changedState(StateFilter state) {
 		folderFeedList.changeState(state);
 	}
 	
@@ -194,4 +191,5 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
         }
     }
+
 }

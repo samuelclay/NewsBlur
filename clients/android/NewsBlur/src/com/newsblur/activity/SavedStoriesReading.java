@@ -24,9 +24,10 @@ public class SavedStoriesReading extends Reading {
     }
 
     @Override
-    protected int getUnreadCount() {
-        // effectively disable the notion of unreads for this feed
-        return 0;
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // every time we see a set of saved stories, tag them so they don't disappear during this reading session
+        dbHelper.markSavedReadingSession();
+        super.onLoadFinished(loader, cursor);
     }
 
 }

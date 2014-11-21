@@ -26,8 +26,8 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 	private int storyTitleUnread, storyContentUnread, storyAuthorUnread, storyTitleRead, storyContentRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
     private boolean ignoreReadStatus;
 
-	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags, boolean ignoreReadStatus) {
-		super(context, layout, c, from, to, flags);
+	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, boolean ignoreReadStatus) {
+		super(context, layout, c, from, to);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;
 
@@ -45,8 +45,8 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
         this.ignoreReadStatus = ignoreReadStatus;
 	}
 
-    public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
-        this(context, layout, c, from, to, flags, false);
+    public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+        this(context, layout, c, from, to, false);
     }
 
 	@Override
@@ -125,15 +125,4 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
         return Story.fromCursor(cursor);
     }
 
-	@Override
-	public List<Story> getPreviousStories(int position) {
-        List<Story> stories = new ArrayList<Story>();
-        cursor.moveToPosition(0);
-        for(int i=0;i<=position && position < cursor.getCount();i++) {
-            Story story = Story.fromCursor(cursor);
-            stories.add(story);
-            cursor.moveToNext();
-        }
-        return stories;
-    }
 }

@@ -88,6 +88,7 @@ window.Inflector = {
         if (count != 1) {
             if (s == 'person') s = 'people';
             else if (s == 'is') s = 'are';
+            else if (s == 'has') s = 'have';
             else if (s == 'following') s = s;
             else if (s.match(/y$/i)) s = s.replace(/y$/i, 'ies');
             else s = s + 's';

@@ -22,9 +22,7 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
 	}
 
 	@Override
-	protected synchronized Fragment getReadingItemFragment(int position) {
-        stories.moveToPosition(position);
-        Story story = Story.fromCursor(stories);
+	protected synchronized ReadingItemFragment getReadingItemFragment(Story story) {
         String feedTitle = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_TITLE));
         String feedFaviconColor = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
         String feedFaviconFade = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));

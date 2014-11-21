@@ -11,7 +11,7 @@
 #import "ASIHTTPRequest.h"
 #import "BaseViewController.h"
 #import "Utilities.h"
-#import "WEPopoverController.h"
+#import "WYPopoverController.h"
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 
@@ -23,8 +23,8 @@
 <UITableViewDelegate, UITableViewDataSource, 
  UIActionSheetDelegate, UIAlertViewDelegate,
  UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
- WEPopoverControllerDelegate, MCSwipeTableViewCellDelegate,
- UIGestureRecognizerDelegate> {
+ WYPopoverControllerDelegate, MCSwipeTableViewCellDelegate,
+ UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL pageFetching;
@@ -34,13 +34,13 @@
     BOOL isShowingFetching;
     BOOL isDashboardModule;
     BOOL inDoubleTap;
+    BOOL invalidateFontCache;
      
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
-    WEPopoverController *popoverController;
+    WYPopoverController *popoverController;
     Class popoverClass;
     NBNotifier *notifier;
-    UIFontDescriptor *fontDescriptorSize;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -51,9 +51,10 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
-@property (nonatomic, retain) WEPopoverController *popoverController;
+@property (nonatomic, retain) WYPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
+@property (nonatomic) UISearchBar *searchBar;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -63,10 +64,11 @@
 @property (nonatomic, readwrite) BOOL isDashboardModule;
 @property (nonatomic, readwrite) BOOL showContentPreview;
 @property (nonatomic, readwrite) BOOL showImagePreview;
+@property (nonatomic, readwrite) BOOL invalidateFontCache;
 
 - (void)reloadData;
 - (void)resetFeedDetail;
-- (void)reloadPage;
+- (void)reloadStories;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)loadOfflineStories;

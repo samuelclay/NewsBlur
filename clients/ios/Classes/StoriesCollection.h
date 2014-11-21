@@ -51,6 +51,7 @@
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isSavedView;
+@property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
 
 - (id)initForDashboard;
@@ -92,7 +93,7 @@
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
 
-- (void)markStory:story asSaved:(BOOL)saved;
+- (NSDictionary *)markStory:story asSaved:(BOOL)saved;
 - (void)toggleStorySaved;
 - (void)toggleStorySaved:(NSDictionary *)story;
 - (void)syncStoryAsSaved:(NSDictionary *)story;

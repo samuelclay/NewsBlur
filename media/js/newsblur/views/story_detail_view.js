@@ -566,6 +566,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     attach_syntax_highlighter_handler: function() {
         _.delay(_.bind(function() {
+            // hljs.configure({useBR: true}); // Don't use
             this.$('pre').each(function(i, e) {
                 hljs.highlightBlock(e);
             });

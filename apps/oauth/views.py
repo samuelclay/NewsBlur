@@ -455,14 +455,14 @@ def api_unread_story(request, trigger_slug=None):
             "Site": feed and feed['title'],
             "SiteURL": feed and feed['website'],
             "SiteRSS": feed and feed['address'],
-            "ifttt": {
+            "meta": {
                 "id": story['story_hash'],
                 "timestamp": int(story['story_date'].strftime("%s"))
             },
         })
     
     if after:
-        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
+        entries = sorted(entries, key=lambda s: s['meta']['timestamp'])
         
     logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if trigger_slug == "new-unread-focus-story" else "", feed_or_folder, len(entries)))
     
@@ -511,14 +511,14 @@ def api_saved_story(request):
             "Site": feed and feed['title'],
             "SiteURL": feed and feed['website'],
             "SiteRSS": feed and feed['address'],
-            "ifttt": {
+            "meta": {
                 "id": story['story_hash'],
                 "timestamp": int(story['starred_date'].strftime("%s"))
             },
         })
 
     if after:
-        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
+        entries = sorted(entries, key=lambda s: s['meta']['timestamp'])
         
     logging.user(request, "~FCChecking saved stories from ~SBIFTTT~SB: ~SB%s~SN - ~SB%s~SN stories" % (story_tag if story_tag else "[All stories]", len(entries)))
     
@@ -597,14 +597,14 @@ def api_shared_story(request):
             "Site": feed and feed['title'],
             "SiteURL": feed and feed['website'],
             "SiteRSS": feed and feed['address'],
-            "ifttt": {
+            "meta": {
                 "id": story['story_hash'],
                 "timestamp": int(story['shared_date'].strftime("%s"))
             },
         })
 
     if after:
-        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
+        entries = sorted(entries, key=lambda s: s['meta']['timestamp'])
         
     logging.user(request, "~FMChecking shared stories from ~SB~FCIFTTT~SN~FM: ~SB~FM%s~FM~SN - ~SB%s~SN stories" % (blurblog_user, len(entries)))
 

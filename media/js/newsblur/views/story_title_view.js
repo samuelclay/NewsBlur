@@ -372,7 +372,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     open_story_in_story_view: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        NEWSBLUR.app.story_tab_view.open_story(this.model, true);
+        NEWSBLUR.app.story_tab_view.prepare_story(this.model, true);
+        NEWSBLUR.app.story_tab_view.open_story(this.model);
         return false;
     }
         

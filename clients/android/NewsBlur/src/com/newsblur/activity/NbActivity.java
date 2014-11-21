@@ -8,7 +8,6 @@ import android.util.Log;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
@@ -66,8 +65,6 @@ public class NbActivity extends Activity {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onResume");
 		super.onResume();
 		finishIfNotLoggedIn();
-
-        FeedUtils.offerDB(dbHelper);
 
         synchronized (AllActivities) {
             AllActivities.add(this);

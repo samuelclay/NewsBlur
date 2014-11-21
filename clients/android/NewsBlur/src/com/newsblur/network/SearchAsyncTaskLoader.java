@@ -22,19 +22,14 @@ public class SearchAsyncTaskLoader extends AsyncTaskLoader<SearchLoaderResponse>
 
 	@Override
 	public SearchLoaderResponse loadInBackground() {
-		SearchLoaderResponse response;
-		try {
-			ArrayList<FeedResult> list = new ArrayList<FeedResult>();
-            FeedResult[] results = apiManager.searchForFeed(searchTerm);
-            if (results != null) {
-                for (FeedResult result : results) {
-                    list.add(result);
-                }
+        ArrayList<FeedResult> list = new ArrayList<FeedResult>();
+        FeedResult[] results = apiManager.searchForFeed(searchTerm);
+        if (results != null) {
+            for (FeedResult result : results) {
+                list.add(result);
             }
-			response = new SearchLoaderResponse(list);
-		} catch (ServerErrorException ex) {
-			response = new SearchLoaderResponse(ex.getMessage());
-		}
+        }
+        SearchLoaderResponse response = new SearchLoaderResponse(list);
 		return response;
 	}
 

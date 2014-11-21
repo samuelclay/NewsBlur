@@ -20,6 +20,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(DatabaseConstants.FOLDER_SQL);
 		db.execSQL(DatabaseConstants.USER_SQL);
 		db.execSQL(DatabaseConstants.STORY_SQL);
+        db.execSQL(DatabaseConstants.STORY_TEXT_SQL);
 		db.execSQL(DatabaseConstants.COMMENT_SQL);
 		db.execSQL(DatabaseConstants.REPLY_SQL);
 		db.execSQL(DatabaseConstants.CLASSIFIER_SQL);
@@ -29,13 +30,14 @@ public class BlurDatabase extends SQLiteOpenHelper {
         db.execSQL(DatabaseConstants.ACTION_SQL);
 	}
 	
-	public void dropAndRecreateTables() {
+	void dropAndRecreateTables() {
 		SQLiteDatabase db = getWritableDatabase();
 		String drop = "DROP TABLE IF EXISTS ";
 		db.execSQL(drop + DatabaseConstants.FEED_TABLE);
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_TABLE);
 		db.execSQL(drop + DatabaseConstants.FOLDER_TABLE);
 		db.execSQL(drop + DatabaseConstants.STORY_TABLE);
+        db.execSQL(drop + DatabaseConstants.STORY_TEXT_TABLE);
 		db.execSQL(drop + DatabaseConstants.USER_TABLE);
 		db.execSQL(drop + DatabaseConstants.COMMENT_TABLE);
 		db.execSQL(drop + DatabaseConstants.REPLY_TABLE);
@@ -46,8 +48,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.ACTION_TABLE);
 		
 		onCreate(db);
-		
-		db.close();
 	}
 
     @Override

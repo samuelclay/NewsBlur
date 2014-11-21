@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,8 +24,8 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 	private final Feed feed;
 	private int storyTitleUnread, storyTitleRead, storyContentUnread, storyContentRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
 
-	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to, int flags) {
-		super(context, layout, c, from, to, flags);
+	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to) {
+		super(context, layout, c, from, to);
 		this.feed = feed;
 		this.cursor = c;
 
@@ -101,16 +102,4 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 		return Story.fromCursor(cursor);
 	}
 	
-	@Override
-	public List<Story> getPreviousStories(int position) {
-		List<Story> stories = new ArrayList<Story>();
-		cursor.moveToPosition(0);
-		for(int i=0;i<=position && position < cursor.getCount();i++) {
-			Story story = Story.fromCursor(cursor);
-			stories.add(story);
-			cursor.moveToNext();
-		}
-		return stories;
-	}
-
 }

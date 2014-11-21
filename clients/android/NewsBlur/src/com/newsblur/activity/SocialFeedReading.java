@@ -7,7 +7,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.FeedUtils;
@@ -30,16 +29,6 @@ public class SocialFeedReading extends Reading {
         readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView, userId);
 
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    protected int getUnreadCount() {
-        Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
-        Cursor cursor = contentResolver.query(socialFeedUri, null, null, null, null);
-        if (cursor.getCount() == 0) return 0;
-        SocialFeed socialFeed = SocialFeed.fromCursor(cursor);
-        cursor.close();
-        return FeedUtils.getFeedUnreadCount(socialFeed, this.currentState);
     }
 
 }

@@ -24,7 +24,6 @@
     BOOL isSaved;
     UIView *cellContent;
     UnreadCountView *unreadCount;
-    UIFontDescriptor *fontDescriptorSize;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;

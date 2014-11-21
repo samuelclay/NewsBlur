@@ -28,7 +28,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
@@ -117,11 +116,28 @@ public class APIManager {
 		return (!response.isError());
 	}
 
-	public NewsBlurResponse markFeedsAsRead(Set<String> feedIds, Long includeOlder, Long includeNewer) {
+	public NewsBlurResponse markFeedsAsRead(FeedSet fs, Long includeOlder, Long includeNewer) {
 		ValueMultimap values = new ValueMultimap();
-		for (String feedId : feedIds) {
-			values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		}
+
+        if (fs.getSingleFeed() != null) {
+            values.put(APIConstants.PARAMETER_FEEDID, fs.getSingleFeed());
+        } else if (fs.getMultipleFeeds() != null) {
+            for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        } else if (fs.getSingleSocialFeed() != null) {
+            values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + fs.getSingleSocialFeed().getKey());
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
+                values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + entry.getKey());
+            }
+        } else if (fs.isAllNormal()) {
+            // all stories uses a special API call
+            return markAllAsRead();
+        } else if (fs.isAllSocial()) {
+            values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_ALLSOCIAL);
+        } else {
+            throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
+        }
+
         if (includeOlder != null) {
             // the app uses  milliseconds but the API wants seconds
             long cut = includeOlder.longValue();
@@ -143,7 +159,7 @@ public class APIManager {
         return nbr;
 	}
 	
-	public NewsBlurResponse markAllAsRead() {
+	private NewsBlurResponse markAllAsRead() {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
 		APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
@@ -154,15 +170,6 @@ public class APIManager {
         return nbr;
 	}
 
-    public NewsBlurResponse markStoriesAsRead(List<String> storyHashes) {
-        ValueMultimap values = new ValueMultimap();
-        for (String storyHash : storyHashes) {
-            values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
-        }
-        APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values, false);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
     public NewsBlurResponse markStoryAsRead(String storyHash) {
         ValueMultimap values = new ValueMultimap();
         values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
@@ -170,29 +177,19 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
-	public NewsBlurResponse markStoryAsStarred(final String feedId, final String storyId) {
-		final ValueMultimap values = new ValueMultimap();
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_STORYID, storyId);
-		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
+	public NewsBlurResponse markStoryAsStarred(String storyHash) {
+		ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
+		APIResponse response = post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
 	
-    public NewsBlurResponse markStoryAsUnstarred(final String feedId, final String storyId) {
-		final ValueMultimap values = new ValueMultimap();
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_STORYID, storyId);
-		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNSTARRED, values, false);
+    public NewsBlurResponse markStoryAsUnstarred(String storyHash) {
+		ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
+		APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNSTARRED, values, false);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
-
-    public NewsBlurResponse markStoryAsUnread( String feedId, String storyId ) {
-		final ValueMultimap values = new ValueMultimap();
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_STORYID, storyId);
-		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNREAD, values, false);
-        return response.getResponse(gson, NewsBlurResponse.class); 
-    }
 
     public NewsBlurResponse markStoryHashUnread(String hash) {
 		final ValueMultimap values = new ValueMultimap();
@@ -476,7 +473,7 @@ public class APIManager {
 		return (!response.isError());
 	}
 
-	public FeedResult[] searchForFeed(String searchTerm) throws ServerErrorException {
+	public FeedResult[] searchForFeed(String searchTerm) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
 		final APIResponse response = get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
@@ -488,9 +485,9 @@ public class APIManager {
 		}
 	}
 
-	public NewsBlurResponse deleteFeed(long feedId, String folderName) {
+	public NewsBlurResponse deleteFeed(String feedId, String folderName) {
 		ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_FEEDID, Long.toString(feedId));
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		if ((!TextUtils.isEmpty(folderName)) && (!folderName.equals(AppConstants.ROOT_FOLDER))) {
 			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
 		}
@@ -627,16 +624,6 @@ public class APIManager {
         } catch (InterruptedException ie) {
             Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
         }
-    }
-
-    /**
-     * Convenience method to call contentResolver.bulkInsert using a list rather than an array.
-     */
-    private int bulkInsertList(Uri uri, List<ContentValues> list) {
-        if (list.size() > 0) {
-            return contentResolver.bulkInsert(uri, list.toArray(new ContentValues[list.size()]));
-        }
-        return 0;
     }
 
 }

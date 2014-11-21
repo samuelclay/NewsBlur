@@ -199,6 +199,13 @@
         - >
           The story score (red, neutral, green) can be computed by following 
           the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> `compute_story_score` in reader_utils.js on GitHub</a>.
+        - > 
+            Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
+            <ul>
+            <li> <code>ps</code>: positive/focus count</li>
+            <li> <code>nt</code>: neutral/unread count</li>
+            <li> <code>ng</code>: negative/hidden count</li>
+            </ul>
   
     - url: /reader/starred_stories
       method: GET
@@ -255,6 +262,15 @@
           optional: true
           default: unread
           example: all
+      tips:
+        - > 
+            Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
+            <ul>
+            <li> <code>ps</code>: positive/focus count</li>
+            <li> <code>nt</code>: neutral/unread count</li>
+            <li> <code>ng</code>: negative/hidden count</li>
+            </ul>
+
 
     - url: /reader/river_stories
       method: GET

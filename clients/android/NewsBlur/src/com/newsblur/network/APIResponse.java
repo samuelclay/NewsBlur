@@ -25,7 +25,6 @@ import com.newsblur.util.AppConstants;
  */
 public class APIResponse {
 	
-    private Context context;
     private boolean isError;
     private String errorMessage;
 	private String cookie;
@@ -75,7 +74,7 @@ public class APIResponse {
             return;
         }
 
-        if (AppConstants.VERBOSE_LOG) {
+        if (AppConstants.VERBOSE_LOG_NET) {
             Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
         }
 

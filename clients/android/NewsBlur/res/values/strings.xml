@@ -21,6 +21,7 @@
     <string name="add_feed_message">Add \"%s\" to your feeds?</string>
     
     <string name="loading">Loading…</string>
+    <string name="orig_text_loading">Fetching text…</string>
     <string name="edit">Shared</string>
     
     <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
@@ -101,7 +102,8 @@
     <string name="menu_textsize">Adjust text size</string>
     <string name="menu_save_story">Save this story</string>
     <string name="menu_unsave_story">Unsave this story</string>
-    <string name="menu_mark_previous_stories_as_read">Mark previous as read</string>
+    <string name="menu_mark_older_stories_as_read">Mark older as read</string>
+    <string name="menu_mark_newer_stories_as_read">Mark newer as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_fullscreen">Full screen</string>

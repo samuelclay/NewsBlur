@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+import re
+import requests
 from django import forms
 from vendor.zebra.forms import StripePaymentForm
 from django.utils.safestring import mark_safe
@@ -59,13 +61,13 @@ class DeleteAccountForm(forms.Form):
         if not user_auth:
             raise forms.ValidationError('你的密码不匹配。')
 
-        return self.cleaned_data
+        return self.cleaned_data['password']
 
     def clean_confirm(self):
         if self.cleaned_data.get('confirm', "").lower() != "delete":
             raise forms.ValidationError('请输入“Delete”以确认删除。')
 
-        return self.cleaned_data
+        return self.cleaned_data['confirm']
 
 class ForgotPasswordForm(forms.Form):
     email = forms.CharField(widget=forms.TextInput(),
@@ -85,7 +87,7 @@ class ForgotPasswordForm(forms.Form):
         except User.DoesNotExist:
             raise forms.ValidationError('没有用户使用此邮件地址。')
 
-        return self.cleaned_data
+        return self.cleaned_data['email']
 
 class ForgotPasswordReturnForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(),
@@ -177,5 +179,28 @@ class AccountSettingsForm(forms.Form):
         if old_password or new_password:
             change_password(self.user, old_password, new_password)
         
-
+class RedeemCodeForm(forms.Form):
+    gift_code = forms.CharField(widget=forms.TextInput(),
+                               label="Gift code",
+                               required=True)
+    
+    def clean_gift_code(self):
+        gift_code = self.cleaned_data['gift_code']
         
+        gift_code = re.sub(r'[^a-zA-Z0-9]', '', gift_code).lower()
+
+        if len(gift_code) != 12:
+            raise forms.ValidationError('Your gift code should be 12 characters long.')
+        
+        req = requests.get('https://www.thinkup.com/join/api/bundle/', params={'code': gift_code})
+        response = req.json()
+        
+        is_valid = response.get('is_valid', None)
+        if is_valid:
+            return gift_code
+        elif is_valid == False:
+            raise forms.ValidationError('Your gift code is invalid. Check it for errors.')
+        elif response.get('error', None):
+            raise forms.ValidationError('Your gift code is invalid, says the server: %s' % response['error'])
+        
+        return gift_code

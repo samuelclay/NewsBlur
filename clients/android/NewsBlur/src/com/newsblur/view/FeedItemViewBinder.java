@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -48,13 +49,8 @@ public class FeedItemViewBinder implements ViewBinder {
 				((TextView) view).setText(cursor.getString(columnIndex).toUpperCase());
 			}
 			return true;
-		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS)) {
-			int authors = cursor.getInt(columnIndex);
-			int tags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
-			int feed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
-			int title = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
-			int score = Story.getIntelligenceTotal(title, authors, tags, feed);
-			
+		} else if (TextUtils.equals(columnName, DatabaseConstants.SUM_STORY_TOTAL)) {
+            int score = cursor.getInt(columnIndex);
 			Drawable icon;
             if (score > 0) {
                 icon = view.getResources().getDrawable(R.drawable.g_icn_focus);

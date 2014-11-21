@@ -190,6 +190,7 @@ NEWSBLUR.utils = {
         var BROKEN_URLS = [
             'nytimes.com',
             'github.com',
+            'medium.com',
             'washingtonpost.com',
             'stackoverflow.com',
             'stackexchange.com',

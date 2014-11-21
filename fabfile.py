@@ -714,12 +714,12 @@ def maintenance_off():
 def setup_haproxy(debug=False):
     sudo('ufw allow 81')    # nginx moved
     sudo('ufw allow 1936')  # haproxy stats
-    sudo('apt-get install -y haproxy')
-    sudo('apt-get remove -y haproxy')
+    # sudo('apt-get install -y haproxy')
+    # sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
-        run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
-        run('tar -xf haproxy-1.5-dev17.tar.gz')
-        with cd('haproxy-1.5-dev17'):
+        run('wget http://www.haproxy.org/download/1.5/src/haproxy-1.5.6.tar.gz')
+        run('tar -xf haproxy-1.5.6.tar.gz')
+        with cd('haproxy-1.5.6'):
             run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
@@ -1077,6 +1077,10 @@ def copy_task_settings():
             '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
+@parallel
+def copy_spam():
+    put(os.path.join(env.SECRETS_PATH, 'spam/spam.py'), '%s/apps/social/spam.py' % env.NEWSBLUR_PATH)
+    
 # =========================
 # = Setup - Digital Ocean =
 # =========================

@@ -18,32 +18,23 @@ import com.newsblur.util.StoryOrder;
 
 public class FeedReading extends Reading {
 
-    String feedId;
+    Feed feed;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
+        feed = (Feed) getIntent().getSerializableExtra(EXTRA_FEED);
         super.onCreate(savedInstanceBundle);
 
-        feedId = getIntent().getStringExtra(Reading.EXTRA_FEED);
-
-        Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
+        Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feed.feedId).build();
         Cursor feedClassifierCursor = contentResolver.query(classifierUri, null, null, null, null);
         Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
+        feedClassifierCursor.close();
 
-        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-        Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
-        Feed feed = Feed.fromCursor(feedCursor);
-        feedCursor.close();
         setTitle(feed.title);
 
-        readingAdapter = new FeedReadingAdapter(getFragmentManager(), feed, classifier, defaultFeedView);
+        readingAdapter = new FeedReadingAdapter(fragmentManager, feed, classifier, defaultFeedView);
 
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    protected int getUnreadCount() {
-        return dbHelper.getFeedUnreadCount(feedId, currentState);
     }
 
 }

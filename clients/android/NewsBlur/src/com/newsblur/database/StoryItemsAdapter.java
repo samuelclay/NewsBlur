@@ -10,12 +10,11 @@ import com.newsblur.domain.Story;
 
 public abstract class StoryItemsAdapter extends SimpleCursorAdapter {
 
-	public StoryItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
-		super(context, layout, c, from, to, flags);
+	public StoryItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+        // don't set *any* flags, we use auto-refreshing Loaders or plain Loaders and an explict load after syncs
+		super(context, layout, c, from, to, 0);
     }
 
     public abstract Story getStory(int position);
-
-    public abstract List<Story> getPreviousStories(int position);
 
 }

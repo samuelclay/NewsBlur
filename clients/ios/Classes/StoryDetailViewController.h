@@ -67,6 +67,7 @@ UIActionSheetDelegate> {
 
 - (void)openShareDialog;
 - (void)openTrainingDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
+- (void)openUserTagsDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)subscribeToBlurblog;
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;

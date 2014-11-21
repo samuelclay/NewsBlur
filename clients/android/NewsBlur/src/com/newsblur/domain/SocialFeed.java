@@ -4,10 +4,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 
-public class SocialFeed {
+public class SocialFeed implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 	
 	public String username;
 	

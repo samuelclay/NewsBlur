@@ -48,6 +48,7 @@ public class ImageCache {
             }
 
             File f = new File(cacheDir, fileName);
+            if (f.exists()) return;
             URL u = new URL(url);
             NetworkUtils.loadURL(u, new FileOutputStream(f));
         } catch (IOException e) {
@@ -70,7 +71,6 @@ public class ImageCache {
             if (f.exists()) {
                 return f.getAbsolutePath();
             } else { 
-                Log.d(this.getClass().getName(), "image cache miss");
                 return null;
             }
         } catch (Exception e) {

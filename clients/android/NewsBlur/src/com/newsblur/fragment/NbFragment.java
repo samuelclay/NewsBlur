@@ -1,9 +1,12 @@
 package com.newsblur.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.newsblur.database.BlurDatabaseHelper;
+import com.newsblur.service.NBSyncService;
 
 public class NbFragment extends Fragment {
 
@@ -27,5 +30,16 @@ public class NbFragment extends Fragment {
 
         super.onDestroy();
     }
+
+    /**
+     * Pokes the sync service to perform any pending sync actions.
+     */
+    protected void triggerSync() {
+        Activity a = getActivity();
+        if (a != null) {
+            Intent i = new Intent(a, NBSyncService.class);
+            a.startService(i);
+        }
+	}
 
 }

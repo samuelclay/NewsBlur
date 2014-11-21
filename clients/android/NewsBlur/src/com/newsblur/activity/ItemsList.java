@@ -24,6 +24,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -31,10 +32,6 @@ import com.newsblur.view.StateToggleButton.StateChangedListener;
 public abstract class ItemsList extends NbActivity implements StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
-	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
-	public static final String EXTRA_BLURBLOG_USERID = "blurblogId";
-	public static final String EXTRA_BLURBLOG_USER_ICON = "userIcon";
-	public static final String EXTRA_BLURBLOG_TITLE = "blurblogTitle";
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
@@ -43,7 +40,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
     private TextView overlayStatusText;
-	protected int currentState;
+	protected StateFilter currentState;
 
     private FeedSet fs;
 	
@@ -51,17 +48,21 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	@Override
     protected void onCreate(Bundle bundle) {
+		super.onCreate(bundle);
+
+        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+
+        // our intel state is entirely determined by the state of the Main view
+		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
         this.fs = createFeedSet();
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		super.onCreate(bundle);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getFragmentManager();
 
-        // our intel state is entirely determined by the state of the Main view
-		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
@@ -83,12 +84,11 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
-        getFirstStories();
     }
 
     private void getFirstStories() {
         stopLoading = false;
-        triggerRefresh(AppConstants.READING_STORY_PRELOAD);
+        triggerRefresh(AppConstants.READING_STORY_PRELOAD, 0);
     }
 
     @Override
@@ -98,12 +98,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         super.onPause();
     }
 
-	public void triggerRefresh(int desiredStoryCount) {
-		if (!stopLoading) {
-            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+    public void triggerRefresh(int desiredStoryCount, int totalSeen) {
+        if (!stopLoading) {
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
             if (gotSome) triggerSync();
             updateStatusIndicators();
-		}
+        }
     }
 
 	public void markItemListAsRead() {
@@ -175,14 +175,14 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
 	@Override
-	public void changedState(int state) {
+	public void changedState(StateFilter state) {
 		itemListFragment.changeState(state);
 	}
 	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        FeedUtils.clearReadingSession(this); 
+        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
@@ -194,7 +194,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        FeedUtils.clearReadingSession(this); 
+        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
@@ -202,4 +202,16 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
+
+    @Override
+    public void finish() {
+        super.finish();
+        /*
+         * Animate out the list by sliding it to the right and the Main activity in from
+         * the left.  Do this when going back to Main as a subtle hint to the swipe gesture,
+         * to make the gesture feel more natural, and to override the really ugly transition
+         * used in some of the newer platforms.
+         */
+        overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
+    }
 }

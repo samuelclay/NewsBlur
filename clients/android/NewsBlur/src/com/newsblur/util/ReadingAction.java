@@ -45,6 +45,20 @@ public class ReadingAction {
         return ra;
     }
 
+    public static ReadingAction saveStory(String hash) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.SAVE;
+        ra.storyHash = hash;
+        return ra;
+    }
+
+    public static ReadingAction unsaveStory(String hash) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.UNSAVE;
+        ra.storyHash = hash;
+        return ra;
+    }
+
     public static ReadingAction markFeedRead(FeedSet fs, Long olderThan, Long newerThan) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.MARK_READ;
@@ -64,7 +78,7 @@ public class ReadingAction {
                 if (storyHash != null) {
                     values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
                 } else if (feedSet != null) {
-                    values.put(DatabaseConstants.ACTION_FEED_ID, TextUtils.join(",", feedSet.getFeedIds()));
+                    values.put(DatabaseConstants.ACTION_FEED_ID, feedSet.toCompactSerial());
                     if (olderThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_OLDER, olderThan);
                     if (newerThan != null) values.put(DatabaseConstants.ACTION_INCLUDE_NEWER, newerThan);
                 }
@@ -75,6 +89,16 @@ public class ReadingAction {
                 if (storyHash != null) {
                     values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
                 }
+                break;
+
+            case SAVE:
+                values.put(DatabaseConstants.ACTION_SAVE, 1);
+                values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
+                break;
+
+            case UNSAVE:
+                values.put(DatabaseConstants.ACTION_UNSAVE, 1);
+                values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
                 break;
 
             default:
@@ -96,13 +120,7 @@ public class ReadingAction {
             if (hash != null) {
                 ra.storyHash = hash;
             } else if (feedIds != null) {
-                Set<String> feeds = new HashSet<String>();
-                for (String feedId : TextUtils.split(feedIds, ",")) feeds.add(feedId);
-                if (feeds.size() == 0) {
-                    ra.feedSet = FeedSet.allFeeds();
-                } else {
-                    ra.feedSet = FeedSet.folder(null, feeds);
-                }
+                ra.feedSet = FeedSet.fromCompactSerial(feedIds);
                 ra.olderThan = includeOlder;
                 ra.newerThan = includeNewer;
             } else {
@@ -110,8 +128,13 @@ public class ReadingAction {
             }
         } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_UNREAD)) == 1) {
             ra.type = ActionType.MARK_UNREAD;
-            String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
-            ra.storyHash = hash;
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_SAVE)) == 1) {
+            ra.type = ActionType.SAVE;
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_UNSAVE)) == 1) {
+            ra.type = ActionType.UNSAVE;
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -128,19 +151,18 @@ public class ReadingAction {
                 if (storyHash != null) {
                     return apiManager.markStoryAsRead(storyHash);
                 } else if (feedSet != null) {
-                    if (feedSet.isAllNormal()) {
-                        return apiManager.markAllAsRead();
-                    } else if (feedSet.getFeedIds() != null) {
-                        return apiManager.markFeedsAsRead(feedSet.getFeedIds(), olderThan, newerThan);
-                    } 
+                    return apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
                 }
                 break;
                 
             case MARK_UNREAD:
-                if (storyHash != null) {
-                    return apiManager.markStoryHashUnread(storyHash);
-                }
-                break;
+                return apiManager.markStoryHashUnread(storyHash);
+
+            case SAVE:
+                return apiManager.markStoryAsStarred(storyHash);
+
+            case UNSAVE:
+                return apiManager.markStoryAsUnstarred(storyHash);
 
             default:
 
@@ -150,24 +172,29 @@ public class ReadingAction {
     }
 
     /**
-     * Excecute this action on the local DB performing only idempotent sub-actions.
-     * Basically, double-check any local effects of this action that can be done safely.
+     * Excecute this action on the local DB. These must be idempotent.
      */
-    public void doLocalSecondary(BlurDatabaseHelper dbHelper) {
+    public void doLocal(BlurDatabaseHelper dbHelper) {
         switch (type) {
 
             case MARK_READ:
                 if (storyHash != null) {
                     dbHelper.setStoryReadState(storyHash, true);
                 } else if (feedSet != null) {
-                    dbHelper.markFeedsRead_storyCounts(feedSet, olderThan, newerThan);
+                    dbHelper.markStoriesRead(feedSet, olderThan, newerThan);
                 }
                 break;
                 
             case MARK_UNREAD:
-                if (storyHash != null) {
-                    dbHelper.setStoryReadState(storyHash, false);
-                }
+                dbHelper.setStoryReadState(storyHash, false);
+                break;
+
+            case SAVE:
+                dbHelper.setStoryStarred(storyHash, true);
+                break;
+
+            case UNSAVE:
+                dbHelper.setStoryStarred(storyHash, false);
                 break;
 
             default:

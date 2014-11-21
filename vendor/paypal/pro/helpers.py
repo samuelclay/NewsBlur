@@ -1,28 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import datetime
+import logging
 import pprint
 import time
-import urllib
-import urllib2
 
 from django.conf import settings
 from django.forms.models import fields_for_model
-from django.utils.datastructures import MergeDict
+from django.http import QueryDict
+from django.utils.functional import cached_property
 from django.utils.http import urlencode
+from six.moves.urllib.request import urlopen
 
-from vendor.paypal.pro.models import PayPalNVP, L
+from paypal.pro.signals import payment_was_successful, recurring_cancel, recurring_suspend, recurring_reactivate, payment_profile_created
+from paypal.pro.models import PayPalNVP
+from paypal.pro.exceptions import PayPalFailure
 
-
-TEST = settings.PAYPAL_TEST
-USER = settings.PAYPAL_WPP_USER 
+USER = settings.PAYPAL_WPP_USER
 PASSWORD = settings.PAYPAL_WPP_PASSWORD
 SIGNATURE = settings.PAYPAL_WPP_SIGNATURE
-VERSION = 54.0
-BASE_PARAMS = dict(USER=USER , PWD=PASSWORD, SIGNATURE=SIGNATURE, VERSION=VERSION)
+VERSION = 116.0
+BASE_PARAMS = dict(USER=USER, PWD=PASSWORD, SIGNATURE=SIGNATURE, VERSION=VERSION)
 ENDPOINT = "https://api-3t.paypal.com/nvp"
 SANDBOX_ENDPOINT = "https://api-3t.sandbox.paypal.com/nvp"
-NVP_FIELDS = fields_for_model(PayPalNVP).keys()
+
+
+log = logging.getLogger(__file__)
 
 
 def paypal_time(time_obj=None):
@@ -30,7 +34,8 @@ def paypal_time(time_obj=None):
     if time_obj is None:
         time_obj = time.gmtime()
     return time.strftime(PayPalNVP.TIMESTAMP_FORMAT, time_obj)
-    
+
+
 def paypaltime2datetime(s):
     """Convert a PayPal time string to a DateTime."""
     return datetime.datetime(*(time.strptime(s, PayPalNVP.TIMESTAMP_FORMAT)[:6]))
@@ -38,7 +43,7 @@ def paypaltime2datetime(s):
 
 class PayPalError(TypeError):
     """Error thrown when something be wrong."""
-    
+
 
 class PayPalWPP(object):
     """
@@ -50,28 +55,51 @@ class PayPalWPP(object):
     Name-Value Pair API Developer Guide and Reference:
     https://cms.paypal.com/cms_content/US/en_US/files/developer/PP_NVPAPI_DeveloperGuide.pdf
     """
+
     def __init__(self, request, params=BASE_PARAMS):
         """Required - USER / PWD / SIGNATURE / VERSION"""
         self.request = request
-        if TEST:
+        if getattr(settings, 'PAYPAL_TEST', True):
             self.endpoint = SANDBOX_ENDPOINT
         else:
             self.endpoint = ENDPOINT
         self.signature_values = params
         self.signature = urlencode(self.signature_values) + "&"
 
+    @cached_property
+    def NVP_FIELDS(self):
+        # Put this onto class and load lazily, because in some cases there is an
+        # import order problem if we put it at module level.
+        return list(fields_for_model(PayPalNVP).keys())
+
     def doDirectPayment(self, params):
         """Call PayPal DoDirectPayment method."""
         defaults = {"method": "DoDirectPayment", "paymentaction": "Sale"}
-        required = L("creditcardtype acct expdate cvv2 ipaddress firstname lastname street city state countrycode zip amt")
+        required = ["creditcardtype",
+                    "acct",
+                    "expdate",
+                    "cvv2",
+                    "ipaddress",
+                    "firstname",
+                    "lastname",
+                    "street",
+                    "city",
+                    "state",
+                    "countrycode",
+                    "zip",
+                    "amt",
+                    ]
         nvp_obj = self._fetch(params, required, defaults)
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        payment_was_successful.send(sender=nvp_obj, **params)
         # @@@ Could check cvv2match / avscode are both 'X' or '0'
         # qd = django.http.QueryDict(nvp_obj.response)
         # if qd.get('cvv2match') not in ['X', '0']:
         #   nvp_obj.set_flag("Invalid cvv2match: %s" % qd.get('cvv2match')
         # if qd.get('avscode') not in ['X', '0']:
         #   nvp_obj.set_flag("Invalid avscode: %s" % qd.get('avscode')
-        return not nvp_obj.flag
+        return nvp_obj
 
     def setExpressCheckout(self, params):
         """
@@ -80,49 +108,98 @@ class PayPalWPP(object):
         reference transactions and recurring payments.
         Returns a NVP instance - check for token and payerid to continue!
         """
+        if "amt" in params:
+            import warnings
+
+            warnings.warn("'amt' has been deprecated. 'paymentrequest_0_amt' "
+                          "should be used instead.", DeprecationWarning)
+            # Make a copy so we don't change things unexpectedly
+            params = params.copy()
+            params.update({'paymentrequest_0_amt': params['amt']})
+            del params['amt']
         if self._is_recurring(params):
             params = self._recurring_setExpressCheckout_adapter(params)
 
         defaults = {"method": "SetExpressCheckout", "noshipping": 1}
-        required = L("returnurl cancelurl amt")
-        return self._fetch(params, required, defaults)
+        required = ["returnurl", "cancelurl", "paymentrequest_0_amt"]
+        nvp_obj = self._fetch(params, required, defaults)
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        return nvp_obj
 
     def doExpressCheckoutPayment(self, params):
         """
         Check the dude out:
         """
+        if "amt" in params:
+            import warnings
+
+            warnings.warn("'amt' has been deprecated. 'paymentrequest_0_amt' "
+                          "should be used instead.", DeprecationWarning)
+            # Make a copy so we don't change things unexpectedly
+            params = params.copy()
+            params.update({'paymentrequest_0_amt': params['amt']})
+            del params['amt']
         defaults = {"method": "DoExpressCheckoutPayment", "paymentaction": "Sale"}
-        required =L("returnurl cancelurl amt token payerid")
+        required = ["returnurl", "cancelurl", "paymentrequest_0_amt", "token", "payerid"]
         nvp_obj = self._fetch(params, required, defaults)
-        return not nvp_obj.flag
-        
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        payment_was_successful.send(sender=nvp_obj, **params)
+        return nvp_obj
+
     def createRecurringPaymentsProfile(self, params, direct=False):
         """
         Set direct to True to indicate that this is being called as a directPayment.
         Returns True PayPal successfully creates the profile otherwise False.
         """
         defaults = {"method": "CreateRecurringPaymentsProfile"}
-        required = L("profilestartdate billingperiod billingfrequency amt")
+        required = ["profilestartdate", "billingperiod", "billingfrequency", "amt"]
 
         # Direct payments require CC data
         if direct:
-            required + L("creditcardtype acct expdate firstname lastname")
+            required + ["creditcardtype", "acct", "expdate", "firstname", "lastname"]
         else:
-            required + L("token payerid")
+            required + ["token", "payerid"]
 
         nvp_obj = self._fetch(params, required, defaults)
-        
+
         # Flag if profile_type != ActiveProfile
-        return not nvp_obj.flag
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        payment_profile_created.send(sender=nvp_obj, **params)
+        return nvp_obj
 
     def getExpressCheckoutDetails(self, params):
-        raise NotImplementedError
+        defaults = {"method": "GetExpressCheckoutDetails"}
+        required = ["token"]
+        nvp_obj = self._fetch(params, required, defaults)
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        return nvp_obj
 
     def setCustomerBillingAgreement(self, params):
         raise DeprecationWarning
 
+    def createBillingAgreement(self, params):
+        """
+        Create a billing agreement for future use, without any initial payment
+        """
+        defaults = {"method": "CreateBillingAgreement"}
+        required = ["token"]
+        nvp_obj = self._fetch(params, required, defaults)
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        return nvp_obj
+
     def getTransactionDetails(self, params):
-        raise NotImplementedError
+        defaults = {"method": "GetTransactionDetails"}
+        required = ["transactionid"]
+
+        nvp_obj = self._fetch(params, required, defaults)
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        return nvp_obj
 
     def massPay(self, params):
         raise NotImplementedError
@@ -131,16 +208,58 @@ class PayPalWPP(object):
         raise NotImplementedError
 
     def updateRecurringPaymentsProfile(self, params):
-        raise NotImplementedError
-    
+        defaults = {"method": "UpdateRecurringPaymentsProfile"}
+        required = ["profileid"]
+
+        nvp_obj = self._fetch(params, required, defaults)
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        return nvp_obj
+
     def billOutstandingAmount(self, params):
         raise NotImplementedError
-        
-    def manangeRecurringPaymentsProfileStatus(self, params):
-        raise NotImplementedError
-        
+
+    def manangeRecurringPaymentsProfileStatus(self, params, fail_silently=False):
+        """
+        Requires `profileid` and `action` params.
+        Action must be either "Cancel", "Suspend", or "Reactivate".
+        """
+        defaults = {"method": "ManageRecurringPaymentsProfileStatus"}
+        required = ["profileid", "action"]
+
+        nvp_obj = self._fetch(params, required, defaults)
+
+        # TODO: This fail silently check should be using the error code, but its not easy to access
+        if not nvp_obj.flag or (
+            fail_silently and nvp_obj.flag_info == 'Invalid profile status for cancel action; profile should be active or suspended'):
+            if params['action'] == 'Cancel':
+                recurring_cancel.send(sender=nvp_obj)
+            elif params['action'] == 'Suspend':
+                recurring_suspend.send(sender=nvp_obj)
+            elif params['action'] == 'Reactivate':
+                recurring_reactivate.send(sender=nvp_obj)
+        else:
+            raise PayPalFailure(nvp_obj.flag_info)
+        return nvp_obj
+
     def refundTransaction(self, params):
         raise NotImplementedError
+
+    def doReferenceTransaction(self, params):
+        """
+        Process a payment from a buyer's account, identified by a previous
+        transaction.
+        The `paymentaction` param defaults to "Sale", but may also contain the
+        values "Authorization" or "Order".
+        """
+        defaults = {"method": "DoReferenceTransaction",
+                    "paymentaction": "Sale"}
+        required = ["referenceid", "amt"]
+
+        nvp_obj = self._fetch(params, required, defaults)
+        if nvp_obj.flag:
+            raise PayPalFailure(nvp_obj.flag_info)
+        return nvp_obj
 
     def _is_recurring(self, params):
         """Returns True if the item passed is a recurring transaction."""
@@ -154,32 +273,32 @@ class PayPalWPP(object):
         params['l_billingtype0'] = "RecurringPayments"
         params['l_billingagreementdescription0'] = params['desc']
 
-        REMOVE = L("billingfrequency billingperiod profilestartdate desc")
+        REMOVE = ["billingfrequency", "billingperiod", "profilestartdate", "desc"]
         for k in params.keys():
             if k in REMOVE:
                 del params[k]
-                
+
         return params
 
     def _fetch(self, params, required, defaults):
         """Make the NVP request and store the response."""
         defaults.update(params)
-        pp_params = self._check_and_update_params(required, defaults)        
+        pp_params = self._check_and_update_params(required, defaults)
         pp_string = self.signature + urlencode(pp_params)
         response = self._request(pp_string)
         response_params = self._parse_response(response)
-        
-        if settings.DEBUG:
-            print 'PayPal Request:'
-            pprint.pprint(defaults)
-            print '\nPayPal Response:'
-            pprint.pprint(response_params)
+
+        if getattr(settings, 'PAYPAL_DEBUG', settings.DEBUG):
+            log.debug('PayPal Request:\n%s\n', pprint.pformat(defaults))
+            log.debug('PayPal Response:\n%s\n', pprint.pformat(response_params))
 
         # Gather all NVP parameters to pass to a new instance.
         nvp_params = {}
-        for k, v in MergeDict(defaults, response_params).items():
-            if k in NVP_FIELDS:
-                nvp_params[k] = v    
+        tmpd = defaults.copy()
+        tmpd.update(response_params)
+        for k, v in tmpd.items():
+            if k in self.NVP_FIELDS:
+                nvp_params[str(k)] = v
 
         # PayPal timestamp has to be formatted.
         if 'timestamp' in nvp_params:
@@ -189,10 +308,10 @@ class PayPalWPP(object):
         nvp_obj.init(self.request, params, response_params)
         nvp_obj.save()
         return nvp_obj
-        
+
     def _request(self, data):
         """Moved out to make testing easier."""
-        return urllib2.urlopen(self.endpoint, data).read()
+        return urlopen(self.endpoint, data.encode("ascii")).read()
 
     def _check_and_update_params(self, required, params):
         """
@@ -201,15 +320,12 @@ class PayPalWPP(object):
         """
         for r in required:
             if r not in params:
-                raise PayPalError("Missing required param: %s" % r)    
+                raise PayPalError("Missing required param: %s" % r)
 
         # Upper case all the parameters for PayPal.
-        return (dict((k.upper(), v) for k, v in params.iteritems()))
+        return (dict((k.upper(), v) for k, v in params.items()))
 
     def _parse_response(self, response):
         """Turn the PayPal response into a dict"""
-        response_tokens = {}
-        for kv in response.split('&'):
-            key, value = kv.split("=")
-            response_tokens[key.lower()] = urllib.unquote(value)
-        return response_tokens
+        q = QueryDict(response, encoding='UTF-8').dict()
+        return {k.lower(): v for k,v in q.items()}

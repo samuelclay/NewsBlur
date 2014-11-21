@@ -249,6 +249,7 @@
         if ([folder isEqualToString:@"everything"]) continue;
         if ([folder isEqualToString:@"river_blurblogs"]) continue;
         if ([folder isEqualToString:@"river_global"]) continue;
+        if ([folder isEqualToString:@"read_stories"]) continue;
         if ([folder isEqualToString:@"saved_stories"]) continue;
         if ([[folder trim] isEqualToString:@""]) continue;
         if (appDelegate.storiesCollection.isRiverView) {

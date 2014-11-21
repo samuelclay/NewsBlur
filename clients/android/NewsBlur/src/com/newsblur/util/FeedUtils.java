@@ -50,44 +50,25 @@ public class FeedUtils {
         c.startService(i);
     }
 
-	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager) {
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
-            @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                if (saved) {
-                    return apiManager.markStoryAsStarred(story.feedId, story.storyHash);
-                } else {
-                    return apiManager.markStoryAsUnstarred(story.feedId, story.storyHash);
-                }
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                if (!result.isError()) {
-                    Toast.makeText(context, (saved ? R.string.toast_story_saved : R.string.toast_story_unsaved), Toast.LENGTH_SHORT).show();
-                    story.starred = saved;
-                    Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseConstants.STORY_STARRED, saved);
-                    context.getContentResolver().update(storyUri, values, null, null);
-                } else {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(saved ? R.string.toast_story_save_error : R.string.toast_story_unsave_error)), Toast.LENGTH_LONG).show();
-                }
+    public static void dropAndRecreateTables() {
+        dbHelper.dropAndRecreateTables();
+    }
 
+	public static void setStorySaved(final Story story, final boolean saved, final Context context) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                ReadingAction ra = (saved ? ReadingAction.saveStory(story.storyHash) : ReadingAction.unsaveStory(story.storyHash));
+                ra.doLocal(dbHelper);
                 NbActivity.updateAllActivities();
+                dbHelper.enqueueAction(ra);
+                triggerSync(context);
+                return null;
             }
         }.execute();
-	}
-
-	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
-        setStorySaved(story, true, context, apiManager);
     }
 
-	public static void unsaveStory(final Story story, final Context context, final APIManager apiManager) {
-        setStorySaved(story, false, context, apiManager);
-    }
-
-    public static void deleteFeed( final long feedId, final String folderName, final Context context, final APIManager apiManager) {
-
+    public static void deleteFeed(final String feedId, final String folderName, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
@@ -95,29 +76,24 @@ public class FeedUtils {
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
-                if (!result.isError()) {
-                    Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_feed_delete_error)), Toast.LENGTH_LONG).show();
-                }
+                // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
+                dbHelper.deleteFeed(feedId);
+                NbActivity.updateAllActivities();
+                Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
             }
         }.execute();
-
-        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedId)).build();
-        context.getContentResolver().delete(feedUri, null, null);
-
     }
 
-    public static void clearReadingSession(final Context context) {
+    public static void clearReadingSession() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
+                NBSyncService.resetFeeds();
                 try {
                     dbHelper.clearReadingSession();
                 } catch (Exception e) {
                     ; // this one call can evade the on-upgrade DB wipe and throw exceptions
                 }
-                NBSyncService.resetFeeds();
                 return null;
             }
         }.execute();
@@ -130,7 +106,7 @@ public class FeedUtils {
                 setStoryReadState(story, context, false);
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void markStoryAsRead(final Story story, final Context context) {
@@ -140,28 +116,18 @@ public class FeedUtils {
                 setStoryReadState(story, context, true);
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private static void setStoryReadState(Story story, Context context, boolean read) {
         if (story.read == read) { return; }
-
-        // it is imperative that we are idempotent.  query the DB for a fresh copy of the story
-        // to ensure it isn't already in the requested state.  if so, do not update feed counts
-        Cursor cursor = dbHelper.getStory(story.storyHash);
-        if (cursor.getCount() < 1) {
-            Log.w(FeedUtils.class.getName(), "can't mark story as read, not found in DB: " + story.id);
-            return;
-        }
-        Story freshStory = Story.fromCursor(cursor);
-        cursor.close();
-        if (freshStory.read == read) { return; }
 
         // update the local object to show as read before DB is touched
         story.read = read;
         
         // update unread state and unread counts in the local DB
         dbHelper.setStoryReadState(story, read);
+        NbActivity.updateAllActivities();
 
         // tell the sync service we need to mark read
         ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
@@ -174,12 +140,19 @@ public class FeedUtils {
             @Override
             protected Void doInBackground(Void... arg) {
                 ReadingAction ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                if (fs.isAllNormal() && (olderThan != null || newerThan != null)) {
+                    // the mark-all-read API doesn't support range bounding, so we need to pass each and every
+                    // feed ID to the API instead.
+                    FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllFeeds());
+                    ra = ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan);
+                }
+                dbHelper.markStoriesRead(fs, olderThan, newerThan);
+                NbActivity.updateAllActivities();
                 dbHelper.enqueueAction(ra);
-                dbHelper.markFeedsRead(fs, olderThan, newerThan);
                 triggerSync(context);
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
@@ -214,50 +187,6 @@ public class FeedUtils {
 
     }
 
-    /** 
-     * Gets the unread story count for a feed, filtered by view state.
-     */
-    public static int getFeedUnreadCount(Feed feed, int currentState) {
-        if (feed == null ) return 0;
-        int count = 0;
-        count += feed.positiveCount;
-        if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
-            count += feed.neutralCount;
-        }
-        if (currentState ==  AppConstants.STATE_ALL ) {
-            count += feed.negativeCount;
-        }
-        return count;
-    }
-
-    public static int getFeedUnreadCount(SocialFeed feed, int currentState) {
-        if (feed == null ) return 0;
-        int count = 0;
-        count += feed.positiveCount;
-        if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
-            count += feed.neutralCount;
-        }
-        if (currentState ==  AppConstants.STATE_ALL ) {
-            count += feed.negativeCount;
-        }
-        return count;
-    }
-
-    public static int getCursorUnreadCount(Cursor cursor, int currentState) {
-        int count = 0;
-        for (int i = 0; i < cursor.getCount(); i++) {
-            cursor.moveToPosition(i);
-            count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_POS));
-            if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
-                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEUT));
-            }
-            if (currentState ==  AppConstants.STATE_ALL ) {
-                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEG));
-            }
-        }
-        return count;
-    }
-    
     public static void shareStory(Story story, Context context) {
         if (story == null ) { return; } 
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
@@ -275,12 +204,20 @@ public class FeedUtils {
         return FeedSet.folder(folderName, feedIds);
     }
 
-    /**
-     * An interface usable by callers of this utility class that allows them to receive
-     * notification that the async methods here have finihed and may have updated the DB
-     * as a result.
-     */
-    public interface ActionCompletionListener {
-        public abstract void actionCompleteCallback(boolean noMoreData);
+    public static String getStoryText(String hash) {
+        return dbHelper.getStoryText(hash);
     }
+
+    /**
+     * Infer the feed ID for a story from the story's hash.  Useful for APIs
+     * that takes a feed ID and story ID and only the story hash is known.
+     *
+     * TODO: this has a smell to it. can't all APIs just accept story hashes?
+     */
+    public static String inferFeedId(String storyHash) {
+        String[] parts = TextUtils.split(storyHash, ":");
+        if (parts.length != 2) return null;
+        return parts[0];
+    }
+
 }

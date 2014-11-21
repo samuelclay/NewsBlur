@@ -74,7 +74,6 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         this.hide_stories_progress_bar();
         
         NEWSBLUR.app.original_tab_view.iframe_not_busting();
-        NEWSBLUR.assets.flags['no_more_stories'] = true;
         
         if (!message || message == 'error') {
             message = "抱歉！ <br> 发生了一个错误！";
@@ -87,8 +86,13 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
                 message = "NewsZeit 正在维护。 <br> 请稍后再试。";
                 this.show_maintenance_page();
             }
+            NEWSBLUR.assets.flags['no_more_stories'] = true;
+            NEWSBLUR.app.story_titles.end_loading();
+            NEWSBLUR.app.story_list.end_loading();
         }
-        var $error = $.make('div', { className: 'NB-feed-error' }, [
+
+        var type = data.proxied_https ? 'proxy' : 'feed';
+        var $error = $.make('div', { className: 'NB-feed-error NB-feed-error-type-'+type }, [
             $.make('div', { className: 'NB-feed-error-icon' }),
             $.make('div', { className: 'NB-feed-error-text' }, message)
         ]).css({'opacity': 0});
@@ -101,9 +105,6 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         }
         
         $error.animate({'opacity': 1}, {'duration': 500, 'queue': false});
-
-        NEWSBLUR.app.story_titles.end_loading();
-        NEWSBLUR.app.story_list.end_loading();
     },
     
     hide_stories_error: function() {

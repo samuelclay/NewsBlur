@@ -4,12 +4,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.newsblur.domain.Feed;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Special handler for the "feeds" field that appears in API responses and is sometimes
@@ -23,9 +25,14 @@ public class FeedListTypeAdapter implements JsonDeserializer<List<Feed>> {
         List<Feed> result = new ArrayList<Feed>();
 
         if (jsonElement.isJsonObject()) {
-            Feed feed = (Feed) jsonDeserializationContext.deserialize(jsonElement, Feed.class);
-            result.add(feed);
+            // the feeds member is a map of feed IDs to feed objects.  just grab the objects
+            JsonObject o = jsonElement.getAsJsonObject();
+            for (Map.Entry<String,JsonElement> e : o.entrySet()) {
+                Feed feed = (Feed) jsonDeserializationContext.deserialize(e.getValue(), Feed.class);
+                result.add(feed);
+            }
         } else if (jsonElement.isJsonArray()) {
+            // the feeds member is a list of objects. parse them as usual
             for (JsonElement arrayMember : jsonElement.getAsJsonArray()) {
                 Feed feed = (Feed) jsonDeserializationContext.deserialize(arrayMember, Feed.class);
                 result.add(feed);

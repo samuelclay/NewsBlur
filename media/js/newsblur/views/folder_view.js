@@ -28,7 +28,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         _.bindAll(this, 'update_title', 'update_selected', 'delete_folder', 'check_collapsed',
                   'update_hidden');
 
-        this.options.folder_title = this.model && this.model.get('folder_title');
+        this.options.folder_title = this.options.folder_title || 
+                                    (this.model && this.model.get('folder_title'));
 
         if (this.model && !this.options.feed_chooser) {
             // Root folder does not have a model.

@@ -16,6 +16,7 @@
 - (void) cancelRequests;
 
 - (void)informError:(id)error;
+- (void)informError:(id)error details:(NSString *)details;
 - (void)informMessage:(NSString *)message;
 - (void)informLoadingMessage:(NSString *)message;
 

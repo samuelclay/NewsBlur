@@ -1,12 +1,14 @@
 package com.newsblur.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,6 +47,7 @@ public class FeedSet implements Serializable {
         if (feeds != null) {
             if (feeds.size() < 1) {
                 isAllNormal = true;
+                this.feeds = feeds;
                 return;
             } else {
                 this.feeds = Collections.unmodifiableSet(feeds);
@@ -55,6 +58,7 @@ public class FeedSet implements Serializable {
         if (socialFeeds != null) {
             if (socialFeeds.size() < 1) {
                 isAllSocial = true;
+                this.socialFeeds = socialFeeds;
                 return;
             } else {
                 this.socialFeeds = Collections.unmodifiableMap(socialFeeds);
@@ -85,6 +89,18 @@ public class FeedSet implements Serializable {
     public static FeedSet singleSocialFeed(String userId, String username) {
         Map<String,String> socialFeedIds = new HashMap<String,String>(1);
         socialFeedIds.put(userId, username);
+        return new FeedSet(null, socialFeedIds, false);
+    }
+
+    /**
+     * Convenience constructor for multiple social feeds with IDs but no usernames. Useful
+     * for local operations only.
+     */
+    public static FeedSet multipleSocialFeeds(Set<String> userIds) {
+        Map<String,String> socialFeedIds = new HashMap<String,String>(userIds.size());
+        for (String id : userIds) {
+            socialFeedIds.put(id, "");
+        }
         return new FeedSet(null, socialFeedIds, false);
     }
 
@@ -122,14 +138,15 @@ public class FeedSet implements Serializable {
      * Gets a single feed ID iff there is only one or null otherwise.
      */
     public String getSingleFeed() {
-        if (feeds != null && folderName == null && feeds.size() == 1) return feeds.iterator().next(); else return null;
+        if (folderName != null) return null;
+        if (feeds != null && feeds.size() == 1) return feeds.iterator().next(); else return null;
     }
 
     /**
      * Gets a set of feed IDs iff there are multiples or null otherwise.
      */
     public Set<String> getMultipleFeeds() {
-        if (feeds != null && (folderName != null || feeds.size() > 1)) return feeds; else return null;
+        if (feeds != null && ((feeds.size() > 1) || (folderName != null))) return feeds; else return null;
     }
 
     /**
@@ -166,23 +183,51 @@ public class FeedSet implements Serializable {
         return this.folderName;
     }
 
-    /**
-     * Get a list of feed IDs suitable for passing to mark-read APIs.
-     */
-    public Set<String> getFeedIds() {
-        Set s = new HashSet<String>();
-        if (isAllNormal) {
-            ; // an empty set represents "all stories"
-        } else if (isAllSocial) {
-            s.add(APIConstants.VALUE_ALLSOCIAL);
-        } else if (feeds != null) {
-            s.addAll(feeds);
-        } else if ((socialFeeds != null) && (socialFeeds.size() == 1)) {
-            s.addAll(socialFeeds.keySet());
+    private static final String COM_SER_NUL = "NUL";
+
+    public String toCompactSerial() {
+        StringBuilder s = new StringBuilder("FS|");
+        if (feeds == null) {
+            s.append(COM_SER_NUL).append("|");
         } else {
-            throw new UnsupportedOperationException("feed set does not support mark-read ops");
+            s.append(TextUtils.join(",", feeds)).append("|");
         }
-        return s;
+        if (socialFeeds == null) {
+            s.append(COM_SER_NUL).append("|");
+        } else {
+            Iterator<Map.Entry<String,String>> i = socialFeeds.entrySet().iterator();
+            while (i.hasNext()) {
+                Map.Entry<String,String> e = i.next();
+                s.append(e.getKey()).append(":").append(e.getValue());
+                if (i.hasNext()) s.append(",");
+            }
+            s.append("|");
+        }
+        s.append(isAllSaved);
+        return s.toString();
+    }
+
+    public static FeedSet fromCompactSerial(String s) {
+        String[] fields = TextUtils.split(s, "\\|");
+        if ((fields.length != 4) || (!fields[0].equals("FS"))) throw new IllegalArgumentException("invalid compact form");
+        if (! fields[1].equals(COM_SER_NUL)) {
+            HashSet<String> feeds = new HashSet<String>();
+            for (String id : TextUtils.split(fields[1], ",")) feeds.add(id);
+            return new FeedSet(feeds, null, false);
+        }
+        if (! fields[2].equals(COM_SER_NUL)) {
+            HashMap<String,String> socialFeeds = new HashMap<String,String>();
+            for (String pair : TextUtils.split(fields[2], ",")) {
+                String[] kv = TextUtils.split(pair, ":");
+                if (kv.length != 2) throw new IllegalArgumentException("invalid compact form");
+                socialFeeds.put(kv[0], kv[1]);
+            }
+            return new FeedSet(null, socialFeeds, false);
+        }
+        if (fields[3].equals(Boolean.TRUE.toString())) {
+            return new FeedSet(null, null, true);
+        }
+        throw new IllegalArgumentException("invalid compact form");
     }
 
     private int booleanCardinality(boolean... args) {

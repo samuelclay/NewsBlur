@@ -34,7 +34,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
-import com.newsblur.network.APIManager;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
@@ -43,6 +42,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
@@ -50,16 +50,16 @@ import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String EXTRA_FEEDSET = "feed_set";
-	public static final String EXTRA_FEED = "feed_selected";
+	public static final String EXTRA_FEED = "feed";
 	public static final String EXTRA_POSITION = "feed_position";
 	public static final String EXTRA_USERID = "user_id";
 	public static final String EXTRA_USERNAME = "username";
 	public static final String EXTRA_FOLDERNAME = "foldername";
-	public static final String EXTRA_FEED_IDS = "feed_ids";
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
-	private static final String TEXT_SIZE = "textsize";
+    private static final String TEXT_SIZE = "textsize";
     private static final String BUNDLE_POSITION = "position";
     private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
+    private static final String BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView";
 
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
@@ -75,7 +75,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private CountDownLatch unreadSearchLatch;
 
 	protected int passedPosition;
-	protected int currentState;
+	protected StateFilter currentState;
     protected StoryOrder storyOrder;
     protected ReadFilter readFilter;
 
@@ -90,7 +90,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
-    private APIManager apiManager;
     private boolean stopLoading;
     protected FeedSet fs;
 
@@ -127,20 +126,23 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         } else {
             passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
-
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
 
-		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
+		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
-        defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_SELECTED_FEED_VIEW)) {
+            defaultFeedView = (DefaultFeedView)savedInstanceBundle.getSerializable(BUNDLE_SELECTED_FEED_VIEW);
+        } else {
+            defaultFeedView = (DefaultFeedView) getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
+        }
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
-
-        this.apiManager = new APIManager(this);
 
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
@@ -160,6 +162,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
         if (startingUnreadCount != 0) {
             outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
+        }
+
+        ReadingItemFragment item = getReadingFragment();
+        if (item != null) {
+            outState.putSerializable(BUNDLE_SELECTED_FEED_VIEW, item.getSelectedFeedView());
         }
     }
 
@@ -197,48 +204,46 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         synchronized (STORIES_MUTEX) {
-            if (cursor != null) {
-                readingAdapter.swapCursor(cursor);
-                stories = cursor;
-            }
+            if (cursor == null) return;
+
+            readingAdapter.swapCursor(cursor);
+            stories = cursor;
 
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
-
                 int currentUnreadCount = getUnreadCount();
                 if (currentUnreadCount > this.startingUnreadCount ) {
                     this.startingUnreadCount = currentUnreadCount;
                 }
-
                 // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
                 setupPager();
             }
 
             try {
                 readingAdapter.notifyDataSetChanged();
-                checkStoryCount(pager.getCurrentItem());
-                if (this.unreadSearchLatch != null) {
-                    this.unreadSearchLatch.countDown();
-                }
-                ReadingItemFragment fragment = getReadingFragment();
-                if (fragment != null ) {
-                    fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
-                    fragment.updateSaveButton();
-
-                    updateOverlayNav();
-                    updateOverlayText();
-                }
             } catch (IllegalStateException ise) {
                 // sometimes the pager is already shutting down by the time the callback finishes
                 finish();
             }
+
+            checkStoryCount(pager.getCurrentItem());
+            if (this.unreadSearchLatch != null) {
+                this.unreadSearchLatch.countDown();
+            }
+            updateOverlayNav();
+            updateOverlayText();
         }
 	}
 
 	private void setupPager() {
 		pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
-		pager.setPageMarginDrawable(R.drawable.divider_light);
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            pager.setPageMarginDrawable(R.drawable.divider_light);
+        } else {
+            pager.setPageMarginDrawable(R.drawable.divider_dark);
+        }
+
 		pager.setOnPageChangeListener(this);
 		pager.setAdapter(readingAdapter);
 
@@ -254,7 +259,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /**
      * Query the DB for the current unreadcount for this view.
      */
-    protected abstract int getUnreadCount();
+    private int getUnreadCount() {
+        if (fs.isAllSaved()) return 0; // saved stories doesn't have unreads
+        return dbHelper.getUnreadCount(fs, currentState);
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -303,9 +311,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
-			    FeedUtils.unsaveStory(story, Reading.this, apiManager);
+			    FeedUtils.setStorySaved(story, false, Reading.this);
             } else {
-                FeedUtils.saveStory(story, Reading.this, apiManager);
+			    FeedUtils.setStorySaved(story, true, Reading.this);
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
@@ -326,11 +334,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     private void updateCursor() {
-        try {
-            getLoaderManager().restartLoader(0, null, this);
-        } catch (IllegalStateException ise) {
-            ; // our heavy use of async can race loader calls, which it will gripe about, but this
-             //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
+        synchronized (STORIES_MUTEX) {
+            try {
+                getLoaderManager().restartLoader(0, null, this);
+            } catch (IllegalStateException ise) {
+                ; // our heavy use of async can race loader calls, which it will gripe about, but this
+                 //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
+            }
         }
     }
 
@@ -352,13 +362,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 if (readingAdapter == null) return null;
                 Story story = readingAdapter.getStory(position);
                 if (story != null) {
+                    markStoryRead(story);
                     synchronized (pageHistory) {
                         // if the history is just starting out or the last entry in it isn't this page, add this page
                         if ((pageHistory.size() < 1) || (!story.equals(pageHistory.get(pageHistory.size()-1)))) {
                             pageHistory.add(story);
                         }
                     }
-                    markStoryRead(story);
                 }
 
                 checkStoryCount(position);
@@ -456,6 +466,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
                     overlayText.setText(R.string.overlay_story);
                 }
+                item.handleUpdate();
             }
         });
     }
@@ -519,25 +530,20 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         
 	private void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
-            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount);
+            int currentCount = (stories == null) ? 0 : stories.getCount();
+            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, currentCount);
             if (gotSome) triggerSync();
 		}
     }
 
     private void markStoryRead(Story story) {
-        synchronized (STORIES_MUTEX) {
-            FeedUtils.markStoryAsRead(story, this);
-            updateCursor();
-        }
+        FeedUtils.markStoryAsRead(story, this);
         enableOverlays();
     }
 
     private void markStoryUnread(Story story) {
-        synchronized (STORIES_MUTEX) {
-            FeedUtils.markStoryUnread(story, this);
-            Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
-            updateCursor();
-        }
+        FeedUtils.markStoryUnread(story, this);
+        Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
         enableOverlays();
     }
 
@@ -710,11 +716,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private ReadingItemFragment getReadingFragment() {
         if (readingAdapter == null || pager == null) { return null; }
-        Object o = readingAdapter.instantiateItem(pager, pager.getCurrentItem());
-        if (o instanceof ReadingItemFragment) {
-            return (ReadingItemFragment) o;
-        } else {
-            return null;
-        }
+        return readingAdapter.getExistingItem(pager.getCurrentItem());
     }
+
 }

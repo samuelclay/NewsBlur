@@ -3,7 +3,6 @@ package com.newsblur.domain;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -43,8 +42,8 @@ public class Story implements Serializable {
     @SerializedName("starred")
     public boolean starred;
 
-    @SerializedName("starred_dated")
-    public Date starredDate;
+    @SerializedName("starred_timestamp")
+    public long starredTimestamp;
 
 	@SerializedName("story_tags")
 	public String[] tags;
@@ -60,9 +59,6 @@ public class Story implements Serializable {
 
 	@SerializedName("story_timestamp")
 	public long timestamp;
-
-	@SerializedName("shared_date")
-	public Date sharedDate;
 
     @SerializedName("story_content")
     public String content;
@@ -102,7 +98,6 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_ID, id);
 		values.put(DatabaseConstants.STORY_TITLE, title.replace("\n", " ").replace("\r", " "));
 		values.put(DatabaseConstants.STORY_TIMESTAMP, timestamp);
-		values.put(DatabaseConstants.STORY_SHARED_DATE, sharedDate != null ? sharedDate.getTime() : new Date().getTime());
 		values.put(DatabaseConstants.STORY_SHORTDATE, shortDate);
 		values.put(DatabaseConstants.STORY_LONGDATE, longDate);
         values.put(DatabaseConstants.STORY_CONTENT, content);
@@ -123,7 +118,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_TAGS, TextUtils.join(",", tags));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_STARRED, starred);
-		values.put(DatabaseConstants.STORY_STARRED_DATE, starredDate != null ? starredDate.getTime() : new Date().getTime());
+		values.put(DatabaseConstants.STORY_STARRED_DATE, starredTimestamp);
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
         values.put(DatabaseConstants.STORY_HASH, storyHash);
 		return values;
@@ -139,7 +134,6 @@ public class Story implements Serializable {
 		story.shortContent = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORT_CONTENT));
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
 		story.timestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
-		story.sharedDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_DATE)));
 		story.shortDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORTDATE));
 		story.longDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_LONGDATE));
 		story.shareCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARE_COUNT));
@@ -156,6 +150,7 @@ public class Story implements Serializable {
 		story.intelligence.intelligenceTitle = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
 		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ)) > 0;
 		story.starred = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED)) > 0;
+		story.starredTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE));
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
@@ -177,27 +172,6 @@ public class Story implements Serializable {
 
 		@SerializedName("title")
 		public int intelligenceTitle = 0;
-	}
-	
-	public int getIntelligenceTotal() {
-		return getIntelligenceTotal(intelligence.intelligenceTitle, intelligence.intelligenceAuthors, intelligence.intelligenceTags, intelligence.intelligenceFeed);
-	}
-
-	public static int getIntelligenceTotal(int title, int authors, int tags, int feed) {
-		int score = 0;
-		List<Integer> list = Arrays.asList(title, authors, tags);
-		int max = Collections.max(list);
-		int min = Collections.min(list);
-
-		if (max > 0) {
-			score = max;
-		} else if (min < 0) {
-			score = min;
-		} else {
-			score = feed;
-		}
-		return score;
-
 	}
 
     /**
