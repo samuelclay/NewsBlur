@@ -50,6 +50,7 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
+        synchronized (BlurDatabaseHelper.RW_MUTEX) {
 		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		switch (uriMatcher.match(uri)) {
 			case CLASSIFIERS_FOR_FEED:
@@ -58,6 +59,7 @@ public class FeedProvider extends ContentProvider {
 			default:
 				return 0;
 		}
+        }
 	}
 
 	@Override
@@ -67,6 +69,7 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
+        synchronized (BlurDatabaseHelper.RW_MUTEX) {
 		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		Uri resultUri = null;
 		switch (uriMatcher.match(uri)) {
@@ -97,6 +100,7 @@ public class FeedProvider extends ContentProvider {
 			break;
 		}
 		return resultUri;
+        }
 	}
 
 	@Override
