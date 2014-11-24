@@ -79,6 +79,7 @@ public class NBSyncService extends Service {
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean isMemoryLow = false;
     private volatile static boolean HaltNow = false;
+    public volatile static Boolean isPremium = null;
 
     private static long lastFeedCount = 0L;
     private static long lastFFWriteMillis = 0L;
@@ -302,9 +303,6 @@ public class NBSyncService extends Service {
 
         // there is a rare issue with feeds that have no folder.  capture them for workarounds.
         List<String> debugFeedIds = new ArrayList<String>();
-
-        // remember if we are premium
-        boolean isPremium;
 
         try {
             // a metadata sync invalidates pagination and feed status
