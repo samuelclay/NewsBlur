@@ -31,7 +31,9 @@ import com.newsblur.domain.Story;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StoryOrder;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
@@ -179,7 +181,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.context_story, menu);
+        if (PrefsUtils.getStoryOrder(activity, getFeedSet()) == StoryOrder.NEWEST) {
+            inflater.inflate(R.menu.context_story_newest, menu);
+        } else {
+            inflater.inflate(R.menu.context_story_oldest, menu);
+        }
 
         Story story = adapter.getStory(((AdapterView.AdapterContextMenuInfo) (menuInfo)).position);
         if (story.read) {

@@ -102,8 +102,10 @@
     <string name="menu_textsize">Adjust text size</string>
     <string name="menu_save_story">Save this story</string>
     <string name="menu_unsave_story">Unsave this story</string>
-    <string name="menu_mark_older_stories_as_read">Mark older as read</string>
-    <string name="menu_mark_newer_stories_as_read">Mark newer as read</string>
+    <string name="menu_newest_mark_older_stories_as_read">\u21E3 Mark older as read</string>
+    <string name="menu_newest_mark_newer_stories_as_read">\u21E1 Mark newer as read</string>
+    <string name="menu_oldest_mark_older_stories_as_read">\u21E1 Mark older as read</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">\u21E3 Mark newer as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_fullscreen">Full screen</string>
