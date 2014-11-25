@@ -403,10 +403,12 @@ public class DatabaseConstants {
     }
 
     public static String getStorySortOrder(StoryOrder storyOrder) {
+        // it is not uncommon for a feed to have multiple stories with exactly the same timestamp. we
+        // arbitrarily pick a second sort column so sortation is stable.
         if (storyOrder == StoryOrder.NEWEST) {
-            return STORY_TIMESTAMP + " DESC";
+            return STORY_TIMESTAMP + " DESC, " + STORY_HASH + " DESC";
         } else {
-            return STORY_TIMESTAMP + " ASC";
+            return STORY_TIMESTAMP + " ASC, " + STORY_HASH + " ASC";
         }
     }
     
