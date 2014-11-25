@@ -117,11 +117,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
 
                 $.make('div', { className: 'NB-static-form NB-stripe-form' }, [
                     $.make('label', '支付说明'),
-                    $.make('label', { className: 'payextra-label', 'for': 'payextra' }, '普通帐户免费，高级帐户50元每年，欢迎一次购买多年，支付200元即可终身使用。<br><br>通过付费您能够为 NewsZeit 分担一点日益增长的费用，并且能够支持我们为 NewsZeit 开发更好的功能。<br><br>支持 “支付宝”、“淘宝” 和 “PayPal” 付款，付款时请在支付说明中写下你的帐号信息，我们会尽快为您开通。<br><br>'),
-                    $.make('label', '支付宝'),
-                    $.make('a', { href: 'https://me.alipay.com/bruceyou', target: '_blank' }, [
-                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/alipay.png'}),
-                    ]),
+                    $.make('label', { className: 'payextra-label', 'for': 'payextra' }, '普通帐户免费，高级帐户50元每年，欢迎一次购买多年，支付200元即可终身使用。<br><br>通过付费您能够支持 NewsZeit 更好地活下去并提供更稳定的服务。<br><br>支持 “淘宝” 和 “PayPal” 付款，付款时请在支付说明中写下你的帐号信息，我们会尽快为您开通。(注意：NewsZeit 目前使用手动方式开通高级功能，所以有一定的时延，一般不超过一天，请耐心等待。)<br><br>'),
 
                     $.make('label', '淘宝'),
                     $.make('label', { className: 'payextra-label', 'for': 'payextra' }, '店铺链接'),
