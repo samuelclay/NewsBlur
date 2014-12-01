@@ -205,6 +205,10 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    self.feedTitleGradient.frame = CGRectMake(0, -1, self.view.frame.size.width, 21);
+}
+
 #pragma mark -
 #pragma mark Story setup
 

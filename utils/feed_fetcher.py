@@ -17,7 +17,7 @@ from apps.rss_feeds.icon_importer import IconImporter
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
 # from utils import feedparser
-from utils import feedparser_trunk as feedparser
+from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
@@ -41,7 +41,7 @@ class FetchFeed:
         self.options = options
         self.fpf = None
     
-    @timelimit(20)
+    @timelimit(30)
     def fetch(self):
         """ 
         Uses feedparser to download the feed. Will be parsed later.
