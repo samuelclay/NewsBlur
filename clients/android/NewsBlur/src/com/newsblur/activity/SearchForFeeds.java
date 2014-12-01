@@ -2,6 +2,8 @@ package com.newsblur.activity;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.SearchManager;
 import android.content.Intent;
@@ -28,7 +30,11 @@ import com.newsblur.network.SearchLoaderResponse;
 
 public class SearchForFeeds extends NbActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
     
-    private static String SUPPORTED_URL_PROTOCOL = "http";
+    private static final Set<String> SUPPORTED_URL_PROTOCOLS = new HashSet<String>();
+    static {
+        SUPPORTED_URL_PROTOCOLS.add("http");
+        SUPPORTED_URL_PROTOCOLS.add("https");
+    }
 
 	private ListView resultsList;
 	private Loader<SearchLoaderResponse> searchLoader;
@@ -97,7 +103,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
             ; // this just signals that the string wasn't a URL, we will return
         }
         if (u == null) { return false; }
-        if (!u.getProtocol().equals(SUPPORTED_URL_PROTOCOL)) { return false; };
+        if (! SUPPORTED_URL_PROTOCOLS.contains(u.getProtocol())) { return false; };
         if ((u.getHost() == null) || (u.getHost().trim().isEmpty())) { return false; }
 
 		DialogFragment addFeedFragment = AddFeedFragment.newInstance(s, s);

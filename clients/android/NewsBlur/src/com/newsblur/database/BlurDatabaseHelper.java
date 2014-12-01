@@ -46,7 +46,7 @@ import java.util.Set;
 public class BlurDatabaseHelper {
 
     // manual synchro isn't needed if you only use one DBHelper, but at present the app uses several
-    private final static Object RW_MUTEX = new Object();
+    public final static Object RW_MUTEX = new Object();
 
     private Context context;
     private final BlurDatabase dbWrapper;
@@ -55,8 +55,8 @@ public class BlurDatabaseHelper {
 
     public BlurDatabaseHelper(Context context) {
         this.context = context;
-        dbWrapper = new BlurDatabase(context);
         synchronized (RW_MUTEX) {
+            dbWrapper = new BlurDatabase(context);
             dbRO = dbWrapper.getRO();
             dbRW = dbWrapper.getRW();
         }

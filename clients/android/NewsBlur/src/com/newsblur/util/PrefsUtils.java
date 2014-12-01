@@ -87,6 +87,14 @@ public class PrefsUtils {
         s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
         s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
         s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());
+        s.append("%0Apremium: ");
+        if (NBSyncService.isPremium == Boolean.TRUE) {
+            s.append("yes");
+        } else if (NBSyncService.isPremium == Boolean.FALSE) {
+            s.append("no");
+        } else {
+            s.append("unknown");
+        }
         return s.toString();
     }
 
