@@ -11008,7 +11008,13 @@ form.opml_import_form input {
 .NB-modal-organizer .NB-organizer-action.NB-active,
 .NB-modal-organizer .NB-organizer-action.NB-active:hover {
     color: #000;
-    cursor: default;
+    padding-right: 12px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat right 3px;
+    background-size: 8px;
+}
+.NB-modal-organizer .NB-sort-inverse .NB-organizer-action.NB-active {
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat right 4px;
+    background-size: 8px;    
 }
 .NB-modal-organizer .NB-organizer-selects .NB-organizer-action {
     float: left;

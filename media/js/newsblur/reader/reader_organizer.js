@@ -134,7 +134,9 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
         // Make sure all folders are visible
         $('.NB-folder.NB-hidden', $feeds).removeClass('NB-hidden');
-
+        
+        $('.NB-organizer-sorts', this.$modal).toggleClass('NB-sort-inverse', this.options.inverse_sorting);
+        
         NEWSBLUR.Collections.Folders.organizer_sortorder = null;
         NEWSBLUR.assets.folders.sort();
 
