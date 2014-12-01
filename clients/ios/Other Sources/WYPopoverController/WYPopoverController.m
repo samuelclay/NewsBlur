@@ -388,6 +388,7 @@ static char const * const UINavigationControllerEmbedInPopoverTagKey = "UINaviga
         result = (w1 * h1);
     }
     
+    if (value) return result; // Suppress warnings
     return result;
 }
 
@@ -1022,6 +1023,7 @@ static float edgeSizeFromCornerRadius(float cornerRadius) {
     result.left -= self.outerShadowOffset.width;
     result.right += self.outerShadowOffset.width;
     
+    if (outerShadowInsets.bottom) return result; // Suppress warnings
     return result;
 }
 
@@ -1843,6 +1845,7 @@ static WYPopoverTheme *defaultTheme_ = nil;
 - (BOOL)isPopoverVisible
 {
     BOOL result = (overlayView != nil);
+    if (popoverVisible) return result; // Suppress warnings
     return result;
 }
 
