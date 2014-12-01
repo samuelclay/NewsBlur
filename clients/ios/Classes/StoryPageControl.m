@@ -297,16 +297,27 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-//    [self changePage:currentPage.pageIndex animated:YES];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .01 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^
+    {
+        [self reorientPages:fromInterfaceOrientation];
+        
+        [appDelegate adjustStoryDetailWebView];
+        
+        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
+        NSLog(@"Scrolling to %2.2f%% of %.0f", scrollPct*100, currentPage.webView.scrollView.contentSize.height);
+        
+        [currentPage.webView.scrollView setContentOffset:scrollPosition animated:YES];
+    });
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                          duration:(NSTimeInterval)duration {
     if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
+        NSLog(@"Rotate: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
         
     } else if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
-        NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
+        NSLog(@"Rotate: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
     }
     
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
@@ -321,7 +332,9 @@
 //    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
-        [self refreshPages];
+        scrollPct = currentPage.webView.scrollView.contentOffset.y / currentPage.webView.scrollView.contentSize.height;
+        NSLog(@"Current scroll is %2.2f%% (%f.0/%.0f)", scrollPct*100, currentPage.webView.scrollView.contentOffset.y,
+              currentPage.webView.scrollView.contentSize.height);
         if (currentPage.pageIndex == 0) {
             previousPage.view.hidden = YES;
         }
@@ -403,6 +416,20 @@
     //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
+- (void)reorientPages:(UIInterfaceOrientation)fromOrientation {
+    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage];
+    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage];
+    [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
+    [self resizeScrollView];
+
+    CGRect frame = self.scrollView.frame;
+    frame.origin.x = frame.size.width * currentPage.pageIndex;
+    frame.origin.y = 0;
+    [self.scrollView scrollRectToVisible:frame animated:NO];
+
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+}
+
 - (void)refreshHeaders {
     [currentPage setActiveStoryAtIndex:[appDelegate.storiesCollection
                                         indexOfStoryId:currentPage.activeStoryId]];
@@ -466,6 +493,12 @@
 
 - (void)applyNewIndex:(NSInteger)newIndex
        pageController:(StoryDetailViewController *)pageController {
+    [self applyNewIndex:newIndex pageController:pageController supressRedraw:NO];
+}
+
+- (void)applyNewIndex:(NSInteger)newIndex
+       pageController:(StoryDetailViewController *)pageController
+        supressRedraw:(BOOL)suppressRedraw {
 	NSInteger pageCount = [[appDelegate.storiesCollection activeFeedStoryLocations] count];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
@@ -486,8 +519,11 @@
 		pageController.view.frame = pageFrame;
 	}
     
+    if (suppressRedraw) return;
+    
+    NSInteger wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
-//    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count], outOfBounds);
+    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds);
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;

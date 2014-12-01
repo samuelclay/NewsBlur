@@ -37,6 +37,7 @@
     BOOL isAnimatedIntoPlace;
     BOOL waitingForNextUnreadFromServer;
     UIInterfaceOrientation _orientation;
+    CGFloat scrollPct;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
