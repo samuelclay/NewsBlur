@@ -206,7 +206,7 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    self.feedTitleGradient.frame = CGRectMake(0, -1, self.view.frame.size.width, 21);
+    [self drawFeedGradient];
 }
 
 #pragma mark -
@@ -234,6 +234,8 @@
         NSLog(@"Already drawn story.");
 //        return;
     }
+    
+    [self drawFeedGradient];
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
@@ -351,7 +353,12 @@
     
     [self.webView setMediaPlaybackRequiresUserAction:NO];
     [self.webView loadHTMLString:htmlString baseURL:baseURL];
+    
+    self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
+    self.inTextView = NO;
+}
 
+- (void)drawFeedGradient {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
@@ -382,9 +389,6 @@
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
-
-    self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
-    self.inTextView = NO;
 }
 
 - (void)showStory {
@@ -1840,7 +1844,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    } else if (!UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-narrow";
     } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         contentWidthClass = @"NB-iphone-wide";
