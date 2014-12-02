@@ -65,24 +65,31 @@
     }
     
     __block NSCondition *lock = [NSCondition new];
+    __weak __typeof(&*self)weakSelf = self;
+
     [lock lock];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?page=0&h=%@",
                                        NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
-    AFJSONRequestOperation *request = [AFJSONRequestOperation
-                                       JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
-                                       success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                                           [self storeAllUnreadStories:JSON withHashes:hashes];
-                                           
-                                           [lock signal];
-                                       } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                                           NSLog(@"Failed fetch all unreads.");
-                                           [lock signal];
-                                       }];
+    if (request) request = nil;
+    request = [AFJSONRequestOperation
+               JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
+               success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                   __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+                   if (!strongSelf) return;
+                   [strongSelf storeAllUnreadStories:JSON withHashes:hashes];
+                   
+                   [lock signal];
+               } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                   NSLog(@"Failed fetch all unreads.");
+                   [lock signal];
+               }];
     request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                              (unsigned long)NULL);
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [request start];
     [request waitUntilFinished];
+    
+    [request.outputStream close];
     
     [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
     [lock unlock];
@@ -92,8 +99,11 @@
 
 - (NSArray *)unfetchedStoryHashes {
     NSMutableArray *hashes = [NSMutableArray array];
+    __weak __typeof(&*self)weakSelf = self;
     
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+        if (!strongSelf) return;
         NSString *commonQuery = @"FROM unread_hashes u "
         "LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) "
         "WHERE s.story_hash IS NULL";
@@ -119,7 +129,7 @@
         }
         
         [cursor close];
-        [self updateProgress];
+        [strongSelf updateProgress];
     }];
     
     return hashes;
@@ -138,16 +148,23 @@
         progress = 1.f - ((float)appDelegate.remainingUnfetchedStoryCount /
                           (float)appDelegate.totalUnfetchedStoryCount);
     }
+    __weak __typeof(&*self)weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"appDelegate.remainingUnfetchedStoryCount %d (%f)", appDelegate.remainingUnfetchedStoryCount, progress);
-        if (self.isCancelled) return;
+        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+        if (!strongSelf) return;
+        if (strongSelf.isCancelled) return;
         [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
     });
 }
 
 - (void)storeAllUnreadStories:(NSDictionary *)results withHashes:(NSArray *)hashes {
     NSMutableArray *storyHashes = [hashes mutableCopy];
+    __weak __typeof(&*self)weakSelf = self;
+
     [appDelegate.database inDatabase:^(FMDatabase *db) {
+        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+        if (!strongSelf) return;
         BOOL anyInserted = NO;
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
             NSString *storyTimestamp = [story objectForKey:@"story_timestamp"];
@@ -187,7 +204,7 @@
             }
             appDelegate.remainingUnfetchedStoryCount--;
             if (appDelegate.remainingUnfetchedStoryCount % 10 == 0) {
-                [self updateProgress];
+                [strongSelf updateProgress];
             }
 
         }
