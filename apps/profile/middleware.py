@@ -245,6 +245,7 @@ class UserAgentBanMiddleware:
         if 'profile' in request.path: return
         if 'haproxy' in request.path: return
         if 'account' in request.path: return
+        if 'push' in request.path: return
         if getattr(settings, 'TEST_DEBUG'): return
         
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
@@ -252,7 +253,7 @@ class UserAgentBanMiddleware:
                 'error': 'User agent banned: %s' % user_agent,
                 'code': -1
             }
-            logging.user(request, "~FB~SN~BBBanned UA: ~SB%s" % (user_agent))
+            logging.user(request, "~FB~SN~BBBanned UA: ~SB%s / %s (%s)" % (user_agent, request.path, request.META))
             
             return HttpResponse(json.encode(data), status=403, mimetype='text/json')
 
