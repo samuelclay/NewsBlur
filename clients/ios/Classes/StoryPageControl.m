@@ -539,7 +539,7 @@
     
     NSInteger wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
-    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds);
+    NSLog(@"Applied Index: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d]", (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds);
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
