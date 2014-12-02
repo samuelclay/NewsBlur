@@ -35,7 +35,11 @@
 
 //    NSLog(@"Fetching images...");
     NSArray *urls = [self uncachedImageUrls];
-
+    
+    if (imageDownloadOperationQueue) {
+        [imageDownloadOperationQueue cancelAllOperations];
+        imageDownloadOperationQueue = nil;
+    }
     imageDownloadOperationQueue = [[ASINetworkQueue alloc] init];
     imageDownloadOperationQueue.maxConcurrentOperationCount = 8;
     imageDownloadOperationQueue.delegate = self;
@@ -84,7 +88,10 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [imageDownloadOperationQueue addOperations:downloadRequests waitUntilFinished:YES];
     
-    
+    for (ASIHTTPRequest *request in downloadRequests) {
+        [request setRawResponseData:nil];
+    }
+    [imageDownloadOperationQueue reset];
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [appDelegate.feedsViewController hideNotifier];
     //    });
@@ -106,7 +113,7 @@
             appDelegate.remainingUncachedImagesCount = count;
         }
         
-        int limit = 36;
+        int limit = 120;
         NSString *order;
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
             order = @"ASC";
