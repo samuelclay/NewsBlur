@@ -87,6 +87,9 @@
 	[self.scrollView addSubview:currentPage.view];
 	[self.scrollView addSubview:nextPage.view];
     [self.scrollView addSubview:previousPage.view];
+    [self addChildViewController:currentPage];
+    [self addChildViewController:nextPage];
+    [self addChildViewController:previousPage];
     [self.scrollView setPagingEnabled:YES];
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
@@ -182,6 +185,19 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
+}
+
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
+}
+
+- (BOOL)automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers {
+    return YES;
+}
+
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+    return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
