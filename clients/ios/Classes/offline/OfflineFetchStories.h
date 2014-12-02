@@ -7,9 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AFJSONRequestOperation.h"
 #import "NewsBlurAppDelegate.h"
 
-@interface OfflineFetchStories : NSOperation
+@interface OfflineFetchStories : NSOperation {
+    AFJSONRequestOperation *request;
+}
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 
