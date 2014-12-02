@@ -550,6 +550,11 @@ div + p {
     margin-left: -30px !important;
     width: 568px !important;
 }
+.NB-width-480 .NB-story img.NB-large-image {
+    max-width: 480px;
+    margin-left: -30px !important;
+    width: 480px !important;
+}
 .NB-width-667 .NB-story img.NB-large-image {
     max-width: 667px;
     margin-left: -30px !important;
