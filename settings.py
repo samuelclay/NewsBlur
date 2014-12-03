@@ -216,7 +216,7 @@ DAYS_OF_UNREAD_FREE     = 14
 # you can then up the DAYS_OF_UNREAD value with no impact.
 DAYS_OF_STORY_HASHES    = 30
 
-SUBSCRIBER_EXPIRE       = 2
+SUBSCRIBER_EXPIRE       = 7
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
