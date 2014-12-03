@@ -37,7 +37,8 @@
 @synthesize isSavedView;
 @synthesize isReadView;
 @synthesize transferredFromDashboard;
-
+@synthesize inSearch;
+@synthesize searchQuery;
 
 - (id)init {
     if (self = [super init]) {
@@ -82,6 +83,8 @@
     [self setFeedUserProfiles:fromCollection.activeFeedUserProfiles];
     self.activeFolderFeeds = fromCollection.activeFolderFeeds;
     self.activeClassifiers = fromCollection.activeClassifiers;
+    self.inSearch = fromCollection.inSearch;
+    self.searchQuery = fromCollection.searchQuery;
     
 }
 

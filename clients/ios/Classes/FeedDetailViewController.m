@@ -204,13 +204,14 @@
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
+    [self.searchBar resignFirstResponder];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     [self.searchBar setText:@""];
     [self.searchBar resignFirstResponder];
-    appDelegate.inSearch = NO;
-    appDelegate.searchQuery = nil;
+    storiesCollection.inSearch = NO;
+    storiesCollection.searchQuery = nil;
     [self reloadStories];
 }
 
@@ -218,14 +219,18 @@
     [self.searchBar resignFirstResponder];
 }
 
+- (BOOL)disablesAutomaticKeyboardDismissal {
+    return NO;
+}
+
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     if ([searchText length]) {
-        appDelegate.inSearch = YES;
-        appDelegate.searchQuery = searchText;
+        storiesCollection.inSearch = YES;
+        storiesCollection.searchQuery = searchText;
         [self reloadStories];
     } else {
-        appDelegate.inSearch = NO;
-        appDelegate.searchQuery = nil;
+        storiesCollection.inSearch = NO;
+        storiesCollection.searchQuery = nil;
         [self reloadStories];
     }
 }
@@ -353,8 +358,13 @@
         [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
     }
     
-    if (!appDelegate.inSearch && storiesCollection.feedPage == 1) {
+    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+    }
+    if (storiesCollection.inSearch && storiesCollection.searchQuery) {
+        [self.searchBar setText:storiesCollection.searchQuery];
+    } else {
+        [self.searchBar setText:@""];
     }
     if ([self.searchBar.text length]) {
         [self.searchBar setShowsCancelButton:YES animated:YES];
@@ -470,8 +480,8 @@
     if (!self.isDashboardModule) {
         [appDelegate.storyPageControl resetPages];
     }
-    appDelegate.inSearch = NO;
-    appDelegate.searchQuery = nil;
+    storiesCollection.inSearch = NO;
+    storiesCollection.searchQuery = nil;
     [self.searchBar setText:@""];
     [self.notifier hideIn:0];
     [self cancelRequests];
@@ -609,7 +619,7 @@
             }];
         });
     }
-    if (!appDelegate.inSearch && storiesCollection.feedPage == 1) {
+    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     
@@ -652,10 +662,10 @@
     theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
                         theFeedDetailURL,
                         [storiesCollection activeReadFilter]];
-    if (appDelegate.inSearch && appDelegate.searchQuery) {
+    if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            [appDelegate.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                            [storiesCollection.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
     [self cancelRequests];
     __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
@@ -805,7 +815,7 @@
 
     }
     
-    if (!appDelegate.inSearch && storiesCollection.feedPage == 1) {
+    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     if (storiesCollection.feedPage == 1) {
@@ -864,10 +874,10 @@
     theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
                         theFeedDetailURL,
                         [storiesCollection activeReadFilter]];
-    if (appDelegate.inSearch && appDelegate.searchQuery) {
+    if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            [appDelegate.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                            [storiesCollection.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
 
     [self cancelRequests];
@@ -1407,6 +1417,7 @@
             NSDictionary *activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
             appDelegate.activeStory = activeStory;
             [appDelegate openDashboardRiverForStory:[activeStory objectForKey:@"story_hash"] showFindingStory:NO];
+            
         } else {
             FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
@@ -1418,6 +1429,9 @@
                 return;
             }
             [self loadStory:cell atRow:indexPath.row];
+        }
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
         }
     }
 }

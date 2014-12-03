@@ -79,7 +79,6 @@
 @synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
 @synthesize feedDetailMenuViewController;
-@synthesize feedDashboardViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
@@ -155,8 +154,6 @@
 @synthesize categoryFeeds;
 @synthesize activeCachedImages;
 @synthesize hasQueuedReadStories;
-@synthesize inSearch;
-@synthesize searchQuery;
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
 @synthesize backgroundCompletionHandler;
@@ -1472,19 +1469,6 @@
     }
         
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
-}
-
-- (void)navigationController:(UINavigationController *)navController 
-      willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-         [viewController viewWillAppear:animated];
-    }
-}
-
-- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [viewController viewDidAppear:animated];
-    }    
 }
 
 - (void)setTitle:(NSString *)title {
