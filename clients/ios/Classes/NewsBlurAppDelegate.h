@@ -26,7 +26,6 @@
 @class FeedsMenuViewController;
 @class FeedDetailViewController;
 @class FeedDetailMenuViewController;
-@class FeedDashboardViewController;
 @class FirstTimeUserViewController;
 @class FirstTimeUserAddSitesViewController;
 @class FirstTimeUserAddFriendsViewController;
@@ -70,7 +69,6 @@
     FeedsMenuViewController *feedsMenuViewController;
     FeedDetailViewController *feedDetailViewController;
     FeedDetailMenuViewController *feedDetailMenuViewController;
-    FeedDashboardViewController *feedDashboardViewController;
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
@@ -100,8 +98,6 @@
     BOOL inFindingStoryMode;
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
-    BOOL inSearch;
-    NSString *searchQuery;
     NSString *tryFeedStoryId;
     
     NSDictionary * activeStory;
@@ -164,7 +160,6 @@
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic) IBOutlet FeedDetailMenuViewController *feedDetailMenuViewController;
-@property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
@@ -248,8 +243,6 @@
 @property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
-@property (nonatomic, readwrite) BOOL inSearch;
-@property (nonatomic) NSString *searchQuery;
 
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 

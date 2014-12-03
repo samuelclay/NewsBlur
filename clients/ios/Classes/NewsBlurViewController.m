@@ -13,6 +13,7 @@
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FeedTableCell.h"
+#import "DashboardViewController.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "FeedDetailViewController.h"
@@ -1116,6 +1117,10 @@ static UIFont *userLabelFont;
     if (appDelegate.hasNoSites) {
         return;
     }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
+    }
 
     [appDelegate.storiesCollection reset];
     
@@ -1269,6 +1274,10 @@ heightForHeaderInSection:(NSInteger)section {
         tag = [NSString stringWithFormat:@"%ld", (long)button.tag];
     }
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
+    }
+
     [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:tag];
 }
 
