@@ -30,6 +30,7 @@ UIActionSheetDelegate> {
     NSInteger actionSheetViewImageIndex;
     NSInteger actionSheetCopyImageIndex;
     NSInteger actionSheetSaveImageIndex;
+    CGSize preRotateSize;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
