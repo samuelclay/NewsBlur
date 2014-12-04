@@ -704,6 +704,7 @@ def paypal_signup(sender, **kwargs):
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    logging.user(user, "~BC~SB~FBPaypal subscription signup")
     try:
         if not user.email:
             user.email = ipn_obj.payer_email
@@ -719,17 +720,31 @@ def paypal_payment_history_sync(sender, **kwargs):
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_successful.connect(paypal_payment_history_sync)
-recurring_payment.connect(paypal_payment_history_sync)
+
+def paypal_recurring_payment_history_sync(sender, **kwargs):
+    ipn_obj = sender
+    try:
+        user = User.objects.get(username__iexact=ipn_obj.custom)
+    except User.DoesNotExist:
+        user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    logging.user(user, "~BC~SB~FBPaypal subscription recurring payment")
+    try:
+        user.profile.setup_premium_history()
+    except:
+        return {"code": -1, "message": "User doesn't exist."}
+recurring_payment.connect(paypal_recurring_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
+        logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
         profile.activate_premium()
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}
@@ -739,6 +754,7 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
+        logging.user(profile.user, "~BC~SB~FBStripe subscription payment")
         profile.setup_premium_history()
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}    
