@@ -27,6 +27,7 @@ from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
+from vendor.paypal.standard.ipn.signals import payment_was_flagged
 from vendor.paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -726,6 +727,20 @@ def paypal_payment_history_sync(sender, **kwargs):
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_successful.connect(paypal_payment_history_sync)
+print payment_was_successful.receivers
+
+def paypal_payment_was_flagged(sender, **kwargs):
+    ipn_obj = sender
+    try:
+        user = User.objects.get(username__iexact=ipn_obj.custom)
+    except User.DoesNotExist:
+        user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
+    try:
+        user.profile.setup_premium_history()
+    except:
+        return {"code": -1, "message": "User doesn't exist."}
+payment_was_flagged.connect(paypal_payment_was_flagged)
 
 def paypal_recurring_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
