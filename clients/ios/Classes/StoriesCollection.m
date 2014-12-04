@@ -205,6 +205,7 @@
 
 - (NSInteger)indexFromLocation:(NSInteger)location {
     if (location == -1) return -1;
+    if (location >= [activeFeedStoryLocations count]) return -1;
     return [[activeFeedStoryLocations objectAtIndex:location] intValue];
 }
 
