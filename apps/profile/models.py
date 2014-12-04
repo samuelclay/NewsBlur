@@ -727,7 +727,7 @@ def paypal_payment_history_sync(sender, **kwargs):
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_successful.connect(paypal_payment_history_sync)
-print payment_was_successful.receivers
+logging.debug(" ---> ~SN~FBHooking up signal ~SB%s~SN." % payment_was_successful.receivers)
 
 def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
