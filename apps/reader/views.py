@@ -384,6 +384,7 @@ def load_feeds_flat(request):
         "social_profile": social_profile,
         "social_services": social_services,
         "user": user.username,
+        "is_staff": user.is_staff,
         "user_profile": user.profile,
         "iphone_version": iphone_version,
         "categories": categories,
