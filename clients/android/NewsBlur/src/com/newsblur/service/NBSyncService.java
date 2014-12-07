@@ -64,6 +64,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class NBSyncService extends Service {
 
+    // this value is somewhat arbitrary. ideally we would wait the max network timeout, but
+    // the system like to force-kill terminating services that take too long, so it is often
+    // moot to tune.
+    private final static long SHUTDOWN_SLACK_SECONDS = 60L;
+
     private volatile static boolean ActionsRunning = false;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
@@ -114,7 +119,8 @@ public class NBSyncService extends Service {
     static { FollowupActions = new ArrayList<ReadingAction>(); }
 
     private PowerManager.WakeLock wl = null;
-    private ExecutorService executor;
+    private ExecutorService primaryExecutor;
+    private ExecutorService secondaryExecutor;
 	private APIManager apiManager;
     private BlurDatabaseHelper dbHelper;
     private ImageCache imageCache;
@@ -127,8 +133,9 @@ public class NBSyncService extends Service {
         HaltNow = false;
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
-        wl.setReferenceCounted(false);
-        executor = Executors.newFixedThreadPool(1);
+        wl.setReferenceCounted(true);
+        primaryExecutor = Executors.newFixedThreadPool(1);
+        secondaryExecutor = Executors.newFixedThreadPool(1);
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
@@ -150,7 +157,7 @@ public class NBSyncService extends Service {
                     doSync(startId);
                 }
             };
-            executor.execute(r);
+            primaryExecutor.execute(r);
         } else {
             Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
             stopSelf(startId);
@@ -164,14 +171,9 @@ public class NBSyncService extends Service {
     /**
      * Do the actual work of syncing.
      */
-    private synchronized void doSync(int startId) {
+    private synchronized void doSync(final int startId) {
         try {
-            if (HaltNow) {
-                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "skipping sync, soft interrupt set.");
-                return;
-            }
-
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting sync . . .");
+            if (HaltNow) return;
 
             wl.acquire();
 
@@ -197,9 +199,30 @@ public class NBSyncService extends Service {
 
             syncMetadata();
 
-            syncUnreads();
-
             finishActions();
+
+            Runnable r = new Runnable() {
+                public void run() {
+                    doSyncSecondary(startId);
+                }
+            };
+            secondaryExecutor.execute(r);
+
+        } catch (Exception e) {
+            Log.e(this.getClass().getName(), "Sync error.", e);
+        }
+    }
+
+    /**
+     * Do lower-priority sync tasks that are strictly safe to perform in parallel with
+     * other tasks.
+     */
+    private synchronized void doSyncSecondary(int startId) {
+        try {
+            // run one step below normal background priority
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_LESS_FAVORABLE);
+
+            syncUnreads();
 
             syncOriginalTexts();
             
@@ -213,7 +236,6 @@ public class NBSyncService extends Service {
             }
             lastStartIdCompleted = startId;
             if (wl != null) wl.release();
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), " . . . sync done");
         }
     }
 
@@ -577,9 +599,9 @@ public class NBSyncService extends Service {
     }
 
     private void prefetchImages() {
-        if (!PrefsUtils.isImagePrefetchEnabled(this)) return;
         try {
             while (ImageQueue.size() > 0) {
+                if (!PrefsUtils.isImagePrefetchEnabled(this)) return;
                 ImagePrefetchRunning = true;
                 NbActivity.updateAllActivities();
 
@@ -623,7 +645,10 @@ public class NBSyncService extends Service {
     }
 
     private boolean stopSync() {
-        if (HaltNow) return true;
+        if (HaltNow) {
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "stopping sync, soft interrupt set.");
+            return true;
+        }
         if (!NetworkUtils.isOnline(this)) return true;
         return false;
     }
@@ -658,10 +683,10 @@ public class NBSyncService extends Service {
         if (ActionsRunning) return "Catching up reading actions . . .";
         if (FFSyncRunning) return "Syncing feeds . . .";
         if (CleanupRunning) return "Cleaning up storage . . .";
+        if (StorySyncRunning) return "Syncing stories . . .";
         if (UnreadHashSyncRunning) return "Syncing unread status . . .";
         if (UnreadSyncRunning) return "Syncing " + StoryHashQueue.size() + " stories . . .";
         if (ImagePrefetchRunning) return "Caching " + ImageQueue.size() + " images . . .";
-        if (StorySyncRunning) return "Syncing stories . . .";
         if (OriginalTextSyncRunning) return "Syncing text for " + OriginalTextQueue.size() + " stories. . .";
         return null;
     }
@@ -745,15 +770,18 @@ public class NBSyncService extends Service {
     public void onDestroy() {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
         HaltNow = true;
-        executor.shutdown();
-        boolean cleanShutdown = false;
+        primaryExecutor.shutdown();
+        secondaryExecutor.shutdown();
         try {
-            cleanShutdown = executor.awaitTermination(60, TimeUnit.SECONDS);
+            primaryExecutor.awaitTermination(SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            // this value is somewhat arbitrary. ideally we would wait the max network timeout, but
-            // the system like to force-kill terminating services that take too long, so it is often
-            // moot to tune.
-            executor.shutdownNow();
+            primaryExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+        try {
+            secondaryExecutor.awaitTermination(SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            secondaryExecutor.shutdownNow();
             Thread.currentThread().interrupt();
         }
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
