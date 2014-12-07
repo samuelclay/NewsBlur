@@ -147,7 +147,6 @@ public class NBSyncService extends Service {
             // allowed to do tangible work.  We spawn a thread to do so.
             Runnable r = new Runnable() {
                 public void run() {
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
                     doSync(startId);
                 }
             };
@@ -180,6 +179,14 @@ public class NBSyncService extends Service {
             if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
                 return;
+            }
+
+            if (NbActivity.getActiveActivityCount() < 1) {
+                // if the UI isn't running, politely run at background priority
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+            } else {
+                // if the UI is running, run just one step below normal priority so we don't step on async tasks that are updating the UI
+                Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
             }
 
             // first: catch up
