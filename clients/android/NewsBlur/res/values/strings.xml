@@ -139,6 +139,9 @@
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
+    <string name="menu_loginas">Login as...</string>
+
+    <string name="loginas_title">Login As User</string>
 
     <string name="empty_list_view_loading">Loading…</string>
     <string name="empty_list_view_no_stories">No stories to read</string>

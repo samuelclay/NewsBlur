@@ -80,6 +80,7 @@ public class NBSyncService extends Service {
     private volatile static boolean isMemoryLow = false;
     private volatile static boolean HaltNow = false;
     public volatile static Boolean isPremium = null;
+    public volatile static Boolean isStaff = null;
 
     private static long lastFeedCount = 0L;
     private static long lastFFWriteMillis = 0L;
@@ -327,6 +328,7 @@ public class NBSyncService extends Service {
             long startTime = System.currentTimeMillis();
 
             isPremium = feedResponse.isPremium;
+            isStaff = feedResponse.isStaff;
 
             // clean out the feed / folder tables
             dbHelper.cleanupFeedsFolders();
