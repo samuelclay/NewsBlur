@@ -385,14 +385,18 @@ public class NBSyncService extends Service {
 
             // data for the feeds table
             List<ContentValues> feedValues = new ArrayList<ContentValues>();
-            for (String feedId : feedResponse.feeds.keySet()) {
+            feedaddloop: for (String feedId : feedResponse.feeds.keySet()) {
                 // sanity-check that the returned feeds actually exist in a folder or at the root
                 // if they do not, they should neither display nor count towards unread numbers
-                if (debugFeedIds.contains(feedId)) {
-                    feedValues.add(feedResponse.feeds.get(feedId).getValues());
-                } else {
+                if (! debugFeedIds.contains(feedId)) {
                     Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feedId );
+                    continue feedaddloop;
                 }
+                if (! feedResponse.feeds.get(feedId).active) {
+                    // the feed is disabled/hidden, pretend it doesn't exist
+                    continue feedaddloop;
+                }
+                feedValues.add(feedResponse.feeds.get(feedId).getValues());
             }
             
             // data for the the social feeds table
