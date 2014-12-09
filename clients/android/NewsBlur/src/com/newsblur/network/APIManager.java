@@ -100,6 +100,13 @@ public class APIManager {
         return loginResponse;
     }
 
+    public NewsBlurResponse loginAs(final String username) {
+        final ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_USER, username);
+        final APIResponse response = get(APIConstants.URL_LOGINAS, values);
+        return response.getResponse(gson);
+    }
+
 	public boolean setAutoFollow(boolean autofollow) {
 		ContentValues values = new ContentValues();
 		values.put("autofollow_friends", autofollow ? "true" : "false");
