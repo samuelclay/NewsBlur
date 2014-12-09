@@ -64,6 +64,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     clear: function() {
         _.invoke(this.stories, 'destroy');
+        this.cache = {};
     },
 
     append_river_premium_only_notification: function() {
@@ -287,6 +288,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (visible_height + scroll_y >= total_height) {
             NEWSBLUR.reader.load_page_of_feed_stories({scroll_to_loadbar: false});
         }
+        if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
+            this.mark_read_stories_above_scroll(scroll_y);
+        }
+    },
+    
+    mark_read_stories_above_scroll: function(scroll_y) {
+        
     }
     
 });

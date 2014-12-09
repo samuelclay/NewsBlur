@@ -33,7 +33,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             story_pane_position: null,
             feed_title_floater_feed_id: null,
             feed_view_story_positions: {},
-            feed_view_story_positions_keys: []
+            feed_view_story_positions_keys: [],
+            latest_mark_read_scroll_position: -1
         };
         this.flags = {
             mousemove_timeout: false
@@ -560,17 +561,17 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
     },
     
-    check_feed_view_scrolling_from_top: function() {
-        var lock_position = NEWSBLUR.reader.cache.mouse_position_y;
+    check_feed_view_scrolling_from_top: function(scroll_top) {
+        var cursor_position = NEWSBLUR.reader.cache.mouse_position_y + scroll_top;
         var positions = this.cache.feed_view_story_positions_keys;
         _.any(positions, _.bind(function(position) {
-            if (position > lock_position) {
-                return true;
-            }
-
+            if (position > cursor_position) return true;
+            if (position <= this.cache.latest_mark_read_scroll_position) return false;
+            
             var story = this.cache.feed_view_story_positions[position];
-            story.mark_read();
+            if (!story.get('read_status')) story.mark_read();
 
+            this.cache.latest_mark_read_scroll_position = position;
             return false;
         }, this));
     },
@@ -686,8 +687,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             }
 
             this.check_feed_view_scrolled_to_bottom();
-            if (scroll_top < 10) {
-                this.check_feed_view_scrolling_from_top();
+            if (scroll_top < 10 || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
+                this.check_feed_view_scrolling_from_top(scroll_top);
             }
         }
         
