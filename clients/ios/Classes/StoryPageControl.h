@@ -35,6 +35,7 @@
     
     BOOL isDraggingScrollview;
     BOOL isAnimatedIntoPlace;
+    BOOL inRotation;
     BOOL waitingForNextUnreadFromServer;
     UIInterfaceOrientation _orientation;
     CGFloat scrollPct;
@@ -86,6 +87,7 @@
 - (void)resetPages;
 - (void)hidePages;
 - (void)refreshPages;
+- (void)reorientPages:(UIInterfaceOrientation)fromOrientation;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;

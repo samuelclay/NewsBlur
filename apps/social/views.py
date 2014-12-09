@@ -31,6 +31,7 @@ from utils.view_functions import required_params
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import strip_tags
+from utils.ratelimit import ratelimit
 from utils import jennyholzer
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -995,6 +996,7 @@ def load_follow_requests(request):
         'request_profiles': request_profiles,
     }
 
+@ratelimit(minutes=1, requests=10)
 @json.json_view
 def load_user_friends(request):
     user = get_user(request.user)

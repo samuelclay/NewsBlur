@@ -217,10 +217,19 @@
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    preRotateSize = webView.scrollView.contentSize;
+    NSLog(@"Height is %@ (Offset is %@)", @(preRotateSize.height), @(webView.scrollView.contentOffset.y));
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self drawFeedGradient];
+    
+    CGSize newSize = webView.scrollView.contentSize;
+    CGPoint newOffset = webView.scrollView.contentOffset;
+    CGFloat preOffset = newOffset.y;
+    newOffset.y *= newSize.height / preRotateSize.height;
+    NSLog(@"Height was %@, now %@ (Offset was %@, now %@)", @(preRotateSize.height), @(newSize.height), @(preOffset), @(newOffset.y));
+//    webView.scrollView.contentOffset = newOffset;
 }
 
 #pragma mark -
@@ -1851,7 +1860,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
-    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
+//    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     NSString *contentWidthClass;

@@ -222,10 +222,13 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
 
-    if (!self.feedDetailIsVisible) {
-        [self layoutDashboardScreen];
-    } else if (!self.originalViewIsVisible) {
-        [self layoutFeedDetailScreen];
+//    if (!self.feedDetailIsVisible) {
+//        [self layoutDashboardScreen];
+//    } else if (!self.originalViewIsVisible) {
+//        [self layoutFeedDetailScreen];
+//    }
+    if (self.feedDetailIsVisible) {
+        [self.storyPageControl reorientPages:fromInterfaceOrientation];
     }
 }
 
