@@ -656,13 +656,14 @@
         NSMutableArray *activityItems = [[NSMutableArray alloc] init];
         if (title) [activityItems addObject:title];
         if (url) [activityItems addObject:url];
-        if (text) [activityItems addObject:text];
+        NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
+        if (text) [activityItems addObject:[NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text]];
     //    if (images) [activityItems addObject:images];
         NSMutableArray *appActivities = [[NSMutableArray alloc] init];
         if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
         if (url) [appActivities addObject:[[ARChromeActivity alloc]
                                            initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
-
+        
         UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
                                                             initWithActivityItems:activityItems
                                                             applicationActivities:appActivities];
