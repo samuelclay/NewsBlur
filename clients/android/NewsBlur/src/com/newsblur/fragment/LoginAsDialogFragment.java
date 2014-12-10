@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -68,16 +69,20 @@ public class LoginAsDialogFragment extends DialogFragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            return apiManager.loginAs(username);
+            boolean result = apiManager.loginAs(username);
+            if (result) {
+                PrefsUtils.clearPrefsAndDbForLoginAs(activity);
+                apiManager.updateUserProfile();
+            }
+            return result;
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                PrefsUtils.clearPrefsAndDbForLoginAs(activity);
-                apiManager.updateUserProfile();
+                NBSyncService.resumeFromInterrupt();
                 Intent startMain = new Intent(activity, Main.class);
-                getActivity().startActivity(startMain);
+                activity.startActivity(startMain);
             } else {
                 UIUtils.safeToast(activity, "Login as " + username + " failed", Toast.LENGTH_LONG);
             }
