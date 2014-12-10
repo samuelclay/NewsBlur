@@ -91,6 +91,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         MenuItem loginAsItem = menu.findItem(R.id.menu_loginas);
         if (NBSyncService.isStaff == Boolean.TRUE) {
             loginAsItem.setVisible(true);
+        } else {
+            loginAsItem.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
