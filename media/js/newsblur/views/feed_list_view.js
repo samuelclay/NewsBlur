@@ -53,7 +53,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     make_feeds: function(options) {
         options = options || {};
         var self = this;
-        var folders = NEWSBLUR.assets.folders;
+        var folders = options.folders || NEWSBLUR.assets.folders;
         var feeds = NEWSBLUR.assets.feeds;
         
         this.$el.empty();

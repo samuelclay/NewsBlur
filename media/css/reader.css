@@ -11038,7 +11038,7 @@ form.opml_import_form input {
     font-weight: bold;
     margin-top: 12px;
 }
-.NB-modal-organizer .NB-organizer-sidebar-move .NB-organizer-sidebar-title {
+.NB-modal-organizer .NB-organizer-sidebar-hierarchy .NB-organizer-sidebar-title {
     margin-top: 0;
 } 
 .NB-modal-organizer .NB-organizer-sidebar-container {
@@ -11046,6 +11046,20 @@ form.opml_import_form input {
     border: 1px solid rgba(0, 0, 0, .2);
     background-color: #F7F8F5;
     padding: 6px;
+}
+.NB-modal-organizer .segmented-control {
+    margin: 0;
+    line-height: 18px;
+    display: block;
+    overflow: hidden;
+}
+.NB-modal-organizer .segmented-control li {
+    padding: 2px 12px 0;
+    font-size: 11px;
+    width: 50%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .NB-modal-organizer .NB-modal-submit-button {
     text-align: center;
