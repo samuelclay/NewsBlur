@@ -116,11 +116,11 @@ public class PrefsUtils {
         context.startActivity(i);
     }
 
-    public static void logoutForLoginAs(Context context) {
+    public static void clearPrefsAndDbForLoginAs(Context context) {
         NBSyncService.softInterrupt();
 
         // wipe the prefs store except for the cookie and login keys since we need to
-        // authenticate the login_as API call
+        // authenticate further API calls
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Set<String> keys = new HashSet<String>(prefs.getAll().keySet());
         keys.remove(PrefConstants.PREF_COOKIE);

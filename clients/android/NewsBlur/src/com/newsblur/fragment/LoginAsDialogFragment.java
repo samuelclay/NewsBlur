@@ -1,5 +1,6 @@
 package com.newsblur.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -13,10 +14,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.activity.Login;
 import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -38,10 +37,9 @@ public class LoginAsDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                PrefsUtils.logoutForLoginAs(getActivity());
 
                 APIManager apiManager = new APIManager(getActivity());
-                LoginAsTask loginTask = new LoginAsTask(apiManager, username.getText().toString());
+                LoginAsTask loginTask = new LoginAsTask(apiManager, username.getText().toString(), getActivity());
                 loginTask.execute();
 
                 LoginAsDialogFragment.this.dismiss();
@@ -56,35 +54,32 @@ public class LoginAsDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    private class LoginAsTask extends AsyncTask<Void, Void, NewsBlurResponse> {
+    private class LoginAsTask extends AsyncTask<Void, Void, Boolean> {
 
         private final APIManager apiManager;
         private final String username;
+        private final Activity activity;
 
-        public LoginAsTask(APIManager apiManager, String username) {
+        public LoginAsTask(APIManager apiManager, String username, Activity activity) {
             this.apiManager = apiManager;
             this.username = username;
+            this.activity = activity;
         }
 
         @Override
-        protected NewsBlurResponse doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
             return apiManager.loginAs(username);
         }
 
         @Override
-        protected void onPostExecute(NewsBlurResponse result) {
-            if (!result.isError()) {
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                PrefsUtils.clearPrefsAndDbForLoginAs(activity);
                 apiManager.updateUserProfile();
-
-                Intent startMain = new Intent(getActivity(), Main.class);
+                Intent startMain = new Intent(activity, Main.class);
                 getActivity().startActivity(startMain);
             } else {
-                UIUtils.safeToast(getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG);
-
-                // TODO we should be able to restart main since our login cookie still exists but
-                // this fails
-                Intent startMain = new Intent(getActivity(), Main.class);
-                getActivity().startActivity(startMain);
+                UIUtils.safeToast(activity, "Login as " + username + " failed", Toast.LENGTH_LONG);
             }
         }
     }
