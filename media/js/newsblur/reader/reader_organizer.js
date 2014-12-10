@@ -130,6 +130,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         this.feedlist = new NEWSBLUR.Views.FeedList({
             feed_chooser: true,
             organizer: true,
+            hierarchy: this.options.hierarchy,
             sorting: this.options.sorting,
             inverse_sorting: this.options.inverse_sorting
         }).make_feeds({folders: this.options.folders});
@@ -229,7 +230,10 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     // ==========
     
     serialize: function() {
-        var highlighted_feeds = this.feedlist.folder_view.highlighted_feeds();
+        // Using full folders and not flat folders to get all folder highlights.
+        var highlighted_feeds = this.feedlist.folder_view.highlighted_feeds({
+            collection: NEWSBLUR.assets.folders
+        });
         console.log(["highlighted feeds", highlighted_feeds]);
         
         return highlighted_feeds;

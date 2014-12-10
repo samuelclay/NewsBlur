@@ -245,7 +245,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         if (!this.get('highlighted_in_folders')) {
             this.set('highlighted_in_folders', [], {silent: true});
         }
-        var folders = this.in_folders() || [];
+        var folders = _.unique(this.in_folders()) || [];
         
         if (!off && (on || !this.get('highlighted_in_folders').length)) {
             this.set('highlighted_in_folders', folders, {silent: true});

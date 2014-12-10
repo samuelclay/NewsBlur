@@ -73,6 +73,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var folder_title = this.options.folder_title || "";
         var feed_chooser = this.options.feed_chooser;
         var organizer = this.options.organizer;
+        var hierarchy = this.options.hierarchy;
         var sorting = this.options.sorting;
         var folder_collection = this.collection;
         this.options.collapsed =  folder_title && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title);
@@ -97,6 +98,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             folder: folder_collection,
                             feed_chooser: feed_chooser,
                             organizer: organizer,
+                            hierarchy: hierarchy,
                             sorting: sorting
                         }).render();
                         item.feed.views.push(feed_title_view);
@@ -513,8 +515,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         feeds = feeds || [];
         
         var folder_title = this.options.folder_title;
+        var collection = options.collection || this.collection;
         
-        this.collection.each(function(item) {
+        // If using overridden collection, only use for root level. Used for organizer.
+        if (options.collection) delete options.collection;
+        
+        collection.each(function(item) {
             if (item.is_feed() && item.feed.get('highlighted')) {
                 if (_.contains(item.feed.get('highlighted_in_folders'), folder_title)) {
                     feeds.push([item.feed.id, folder_title]);

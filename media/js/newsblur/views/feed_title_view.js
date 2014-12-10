@@ -332,7 +332,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (!this.options.feed_chooser) return;
         var model = this.model;
         
-        if (this.options.organizer) {
+        if (this.options.organizer && this.options.hierarchy != 'flat') {
             model.highlight_in_folder(this.options.folder_title, on, off);
         } else {
             // Highlight all folders

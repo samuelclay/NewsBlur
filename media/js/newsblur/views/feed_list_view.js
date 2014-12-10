@@ -61,6 +61,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         this.folder_view = new NEWSBLUR.Views.Folder({
             collection: folders, 
             root: true,
+            hierarchy: this.options.hierarchy,
             feed_chooser: this.options.feed_chooser,
             organizer: this.options.organizer
         }).render();
