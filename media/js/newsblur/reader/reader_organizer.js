@@ -230,11 +230,9 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     // ==========
     
     serialize: function() {
-        // Using full folders and not flat folders to get all folder highlights.
         var highlighted_feeds = this.feedlist.folder_view.highlighted_feeds({
-            collection: NEWSBLUR.assets.folders
+            collection: this.options.folders
         });
-        console.log(["highlighted feeds", highlighted_feeds]);
         
         return highlighted_feeds;
     },
@@ -256,7 +254,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         
         console.log(["Moving feeds by folder", highlighted_feeds, to_folder, new_folder]);
 
-        NEWSBLUR.assets.move_feeds_by_folder(highlighted_feeds, to_folder, new_folder, function(data) {
+        NEWSBLUR.assets.move_feeds_by_folder(highlighted_feeds, to_folder, new_folder, function() {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.reset_feeds();
@@ -286,7 +284,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
         console.log(["Deleting feeds by folder", highlighted_feeds]);
         
-        NEWSBLUR.assets.delete_feeds_by_folder(highlighted_feeds, function(data) {
+        NEWSBLUR.assets.delete_feeds_by_folder(highlighted_feeds, function() {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.reset_feeds();

@@ -1015,6 +1015,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     delete_feeds_by_folder: function(feeds_by_folder, callback, error_callback) {
         var pre_callback = _.bind(function(data) {
+            _.each(feeds_by_folder, _.bind(function(feed_in_folder) {
+                this.feeds.remove(feed_in_folder[0]);
+            }, this));
             this.folders.reset(_.compact(data.folders), {parse: true});
             return callback();
         }, this);
