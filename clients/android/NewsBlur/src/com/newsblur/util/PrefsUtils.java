@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import android.app.Activity;
@@ -465,4 +464,15 @@ public class PrefsUtils {
         return theme.equals("light");
     }
 
+    public static StateFilter getStateFilter(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StateFilter.valueOf(prefs.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString()));
+    }
+
+    public static void setStateFilter(Context context, StateFilter newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.STATE_FILTER, newValue.toString());
+        editor.commit();
+    }
 }
