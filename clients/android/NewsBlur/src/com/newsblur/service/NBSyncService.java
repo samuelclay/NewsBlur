@@ -64,6 +64,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class NBSyncService extends Service {
 
+    /**
+     * Mode switch for which newly received stories are suitable for display so
+     * that they don't disrupt actively visible pager and list offsets.
+     */
+    public enum ActivationMode { ALL, OLDER, NEWER };
+
     // this value is somewhat arbitrary. ideally we would wait the max network timeout, but
     // the system like to force-kill terminating services that take too long, so it is often
     // moot to tune.
@@ -78,14 +84,15 @@ public class NBSyncService extends Service {
     private volatile static boolean OriginalTextSyncRunning = false;
     private volatile static boolean ImagePrefetchRunning = false;
 
-    /** Don't do any actions that might modify the story list for a feed or folder in a way that
-        would annoy a user who is on the story list or paging through stories. */
-    private volatile static boolean HoldStories = false;
     private volatile static boolean DoFeedsFolders = false;
-    private volatile static boolean isMemoryLow = false;
+    private volatile static boolean DoUnreads = false;
     private volatile static boolean HaltNow = false;
+    private volatile static ActivationMode ActMode = ActivationMode.ALL;
+    private volatile static long ModeCutoff = 0L;
+
     public volatile static Boolean isPremium = null;
 
+    private volatile static boolean isMemoryLow = false;
     private static long lastFeedCount = 0L;
     private static long lastFFWriteMillis = 0L;
 
@@ -117,6 +124,8 @@ public class NBSyncService extends Service {
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
+
+    private Set<String> orphanFeedIds;
 
     private PowerManager.WakeLock wl = null;
     private ExecutorService primaryExecutor;
@@ -176,6 +185,7 @@ public class NBSyncService extends Service {
             if (HaltNow) return;
 
             wl.acquire();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting primary sync");
 
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
@@ -200,6 +210,7 @@ public class NBSyncService extends Service {
             syncMetadata();
 
             finishActions();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
             Runnable r = new Runnable() {
                 public void run() {
@@ -219,6 +230,7 @@ public class NBSyncService extends Service {
      */
     private synchronized void doSyncSecondary(int startId) {
         try {
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting secondary sync");
             // run one step below normal background priority
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_LESS_FAVORABLE);
 
@@ -227,6 +239,7 @@ public class NBSyncService extends Service {
             syncOriginalTexts();
             
             prefetchImages();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing secondary sync");
 
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
@@ -305,7 +318,7 @@ public class NBSyncService extends Service {
      */
     private void syncMetadata() {
         if (stopSync()) return;
-        if (HoldStories) return;
+        if (ActMode != ActivationMode.ALL) return;
 
         if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
             PrefsUtils.updateLastSyncTime(this);
@@ -325,13 +338,14 @@ public class NBSyncService extends Service {
 
         // cleanup may have taken a while, so re-check our running status
         if (stopSync()) return;
-        if (HoldStories) return;
+        if (ActMode != ActivationMode.ALL) return;
 
         FFSyncRunning = true;
         NbActivity.updateAllActivities();
 
         // there is a rare issue with feeds that have no folder.  capture them for workarounds.
-        List<String> debugFeedIds = new ArrayList<String>();
+        Set<String> debugFeedIds = new HashSet<String>();
+        orphanFeedIds = new HashSet<String>();
 
         try {
             // a metadata sync invalidates pagination and feed status
@@ -390,6 +404,7 @@ public class NBSyncService extends Service {
                 // if they do not, they should neither display nor count towards unread numbers
                 if (! debugFeedIds.contains(feedId)) {
                     Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feedId );
+                    orphanFeedIds.add(feedId);
                     continue feedaddloop;
                 }
                 if (! feedResponse.feeds.get(feedId).active) {
@@ -413,20 +428,26 @@ public class NBSyncService extends Service {
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();
 
+            DoUnreads = true;
+
         } finally {
             FFSyncRunning = false;
             NbActivity.updateAllActivities();
         }
 
-        if (HaltNow) return;
-        if (HoldStories) return;
+    }
 
-        UnreadHashSyncRunning = true;
+    /**
+     * Fetch any unread stories (by hash) that we learnt about during the FFSync.
+     */
+    private void syncUnreads() {
+        if (HaltNow) return;
 
         try {
-
             // only use the unread status API if the user is premium
-            if (isPremium) {
+            if ((isPremium == Boolean.TRUE) && DoUnreads) {
+                UnreadHashSyncRunning = true;
+                NbActivity.updateAllActivities();
                 UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
                 
                 // note all the stories we thought were unread before. if any fail to appear in
@@ -436,7 +457,7 @@ public class NBSyncService extends Service {
                 for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
                     String feedId = entry.getKey();
                     // ignore unreads from orphaned feeds
-                    if( debugFeedIds.contains(feedId)) {
+                    if( ! orphanFeedIds.contains(feedId)) {
                         // only fetch the reported unreads if we don't already have them
                         List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
                         for (String newHash : entry.getValue()) {
@@ -449,24 +470,17 @@ public class NBSyncService extends Service {
                 }
 
                 dbHelper.markStoryHashesRead(oldUnreadHashes);
-            } else {
-                // if the user isn't premium, go so far as to clean up everything, there is no offline support
-                dbHelper.cleanupAllStories();
-            }
+
+                DoUnreads = false;
+            } 
         } finally {
             UnreadHashSyncRunning = false;
             NbActivity.updateAllActivities();
         }
-    }
 
-    /**
-     * Fetch any unread stories (by hash) that we learnt about during the FFSync.
-     */
-    private void syncUnreads() {
         try {
             unreadsyncloop: while (StoryHashQueue.size() > 0) {
                 if (stopSync()) return;
-                if (HoldStories) return;
 
                 UnreadSyncRunning = true;
                 NbActivity.updateAllActivities();
@@ -482,6 +496,7 @@ public class NBSyncService extends Service {
                     break unreadsyncloop;
                 }
                 dbHelper.insertStories(response);
+                dbHelper.markStoriesActive(ActMode, ModeCutoff);
                 for (String hash : hashBatch) {
                     StoryHashQueue.remove(hash);
                 } 
@@ -583,6 +598,7 @@ public class NBSyncService extends Service {
                     FeedStoriesSeen.put(fs, totalStoriesSeen);
 
                     dbHelper.insertStories(apiResponse);
+                    dbHelper.markStoriesActive(ActMode, ModeCutoff);
                 
                     if (apiResponse.stories.length == 0) {
                         ExhaustedFeeds.add(fs);
@@ -618,7 +634,6 @@ public class NBSyncService extends Service {
                 try {
                     for (String url : batch) {
                         if (stopSync()) return;
-                        if (HoldStories) return;
                         
                         imageCache.cacheImage(url);
 
@@ -704,12 +719,15 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Indicates that now is *not* an appropriate time to modify the story list because the user is
-     * actively seeing stories. Only updates and appends should be performed, not cleanup or
-     * a pagination reset.
+     * Tell the service which stories can be activated if received. See ActivationMode.
      */
-    public static void holdStories(boolean holdStories) {
-        HoldStories = holdStories;
+    public static void setActivationMode(ActivationMode actMode) {
+        ActMode = actMode;
+    }
+
+    public static void setActivationMode(ActivationMode actMode, long modeCutoff) {
+        ActMode = actMode;
+        ModeCutoff = modeCutoff;
     }
 
     /**
@@ -762,7 +780,7 @@ public class NBSyncService extends Service {
     }
 
     public static void softInterrupt() {
-        Log.d(NBSyncService.class.getName(), "soft stop");
+        if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "soft stop");
         HaltNow = true;
     }
 

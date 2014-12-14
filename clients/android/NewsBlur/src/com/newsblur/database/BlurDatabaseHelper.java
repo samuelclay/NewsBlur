@@ -21,6 +21,7 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -493,6 +494,23 @@ public class BlurDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, false);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
+    }
+
+    public void markStoriesActive(NBSyncService.ActivationMode actMode, long modeCutoff) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_ACTIVE, true);
+
+        String selection = null;
+        if (actMode == NBSyncService.ActivationMode.ALL) {
+            // leave the selection null to mark all
+        } else if (actMode == NBSyncService.ActivationMode.OLDER) {
+            selection = DatabaseConstants.STORY_TIMESTAMP + " <= " + Long.toString(modeCutoff);
+        } else if (actMode == NBSyncService.ActivationMode.NEWER) {
+            selection = DatabaseConstants.STORY_TIMESTAMP + " >= " + Long.toString(modeCutoff);
+        }
+
+        Log.d(this.getClass().getName(), "activating stories where " + selection);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, selection, null);}
     }
 
     public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {

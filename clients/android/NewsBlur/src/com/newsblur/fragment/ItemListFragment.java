@@ -26,8 +26,10 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -158,11 +160,23 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	}
 
     @Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
-            cursorSeenYet = true;
             if (cursor.getCount() == 0) {
                 activity.triggerRefresh(1, 0);
+            }
+            if ((!cursorSeenYet) && (cursor.getCount() > 0)) {
+                cursorSeenYet = true;
+                // once we have at least a single story, we can instruct the sync service as to how to safely
+                // activate new stories we recieve
+                cursor.moveToFirst();
+                long cutoff = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
+                cursor.moveToPosition(-1);
+                if (activity.getStoryOrder() == StoryOrder.NEWEST) {
+                    NBSyncService.setActivationMode(NBSyncService.ActivationMode.OLDER, cutoff);
+                } else {
+                    NBSyncService.setActivationMode(NBSyncService.ActivationMode.NEWER, cutoff);
+                }
             }
 			adapter.swapCursor(cursor);
 		}

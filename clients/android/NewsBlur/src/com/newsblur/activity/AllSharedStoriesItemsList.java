@@ -48,7 +48,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
     }
 
     @Override
-    protected StoryOrder getStoryOrder() {
+    public StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
     }
 

@@ -79,8 +79,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         super.onResume();
         updateStatusIndicators();
         stopLoading = false;
-        // this view shows stories, it is not safe to perform cleanup
-        NBSyncService.holdStories(true);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
@@ -94,7 +92,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     protected void onPause() {
         stopLoading = true;
-        NBSyncService.holdStories(false);
         super.onPause();
     }
 
@@ -142,7 +139,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	}
 	
     // TODO: can all of these be replaced with PrefsUtils queries via FeedSet?
-	protected abstract StoryOrder getStoryOrder();
+	public abstract StoryOrder getStoryOrder();
 	
 	protected abstract ReadFilter getReadFilter();
 
