@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -27,19 +26,13 @@ import android.webkit.CookieSyncManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Classifier;
-import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
-import com.newsblur.domain.Reply;
-import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
-import com.newsblur.domain.UserProfile;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
-import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
@@ -58,6 +51,8 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+
+import org.apache.http.HttpStatus;
 
 public class APIManager {
 
@@ -93,11 +88,24 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		final APIResponse response = post(APIConstants.URL_LOGIN, values);
-        NewsBlurResponse loginResponse =  response.getResponse(gson);
+        NewsBlurResponse loginResponse = response.getResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
 		} 
         return loginResponse;
+    }
+
+    public boolean loginAs(final String username) {
+        final ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_USER, username);
+        String urlString = APIConstants.URL_LOGINAS + "?" + builderGetParametersString(values);
+        final APIResponse response = get_single(urlString, HttpStatus.SC_MOVED_TEMPORARILY);
+        if (!response.isError()) {
+            PrefsUtils.saveLogin(context, username, response.getCookie());
+            return true;
+        } else {
+            return false;
+        }
     }
 
 	public boolean setAutoFollow(boolean autofollow) {
@@ -506,7 +514,12 @@ public class APIManager {
         } while ((response.isError()) && (tryCount < AppConstants.MAX_API_TRIES));
         return response;
     }
-	private APIResponse get_single(final String urlString) {
+
+    private APIResponse get_single(final String urlString) {
+        return get_single(urlString, HttpStatus.SC_OK);
+    }
+
+	private APIResponse get_single(final String urlString, int expectedReturnCode) {
 		if (!NetworkUtils.isOnline(context)) {
 			return new APIResponse(context);
 		}
@@ -522,7 +535,7 @@ public class APIManager {
 				connection.setRequestProperty("Cookie", cookie);
 			}
             connection.setRequestProperty("User-Agent", this.customUserAgent);
-			return new APIResponse(context, url, connection);
+			return new APIResponse(context, url, connection, expectedReturnCode);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse(context);
@@ -530,6 +543,10 @@ public class APIManager {
 	}
 	
 	private APIResponse get(final String urlString, final ContentValues values) {
+        return this.get(urlString + "?" + builderGetParametersString(values));
+	}
+
+    private String builderGetParametersString(ContentValues values) {
         List<String> parameters = new ArrayList<String>();
         for (Entry<String, Object> entry : values.valueSet()) {
             StringBuilder builder = new StringBuilder();
@@ -538,8 +555,8 @@ public class APIManager {
             builder.append(URLEncoder.encode((String) entry.getValue()));
             parameters.add(builder.toString());
         }
-        return this.get(urlString + "?" + TextUtils.join("&", parameters));
-	}
+        return TextUtils.join("&", parameters);
+    }
 	
 	private APIResponse get(final String urlString, final ValueMultimap valueMap) {
         return this.get(urlString + "?" + valueMap.getParameterString());

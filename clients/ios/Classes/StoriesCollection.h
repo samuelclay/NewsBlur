@@ -28,6 +28,8 @@
     BOOL isSocialView;
     BOOL isSocialRiverView;
     BOOL transferredFromDashboard;
+    BOOL inSearch;
+    NSString *searchQuery;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
@@ -53,6 +55,8 @@
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
+@property (nonatomic, readwrite) BOOL inSearch;
+@property (nonatomic) NSString *searchQuery;
 
 - (id)initForDashboard;
 - (void)reset;

@@ -202,11 +202,34 @@
     [super viewDidDisappear:animated];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.feedDetailViewController.view endEditing:YES];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.feedDetailViewController.view endEditing:YES];
+    }
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    preRotateSize = webView.scrollView.contentSize;
+    NSLog(@"Height is %@ (Offset is %@)", @(preRotateSize.height), @(webView.scrollView.contentOffset.y));
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    self.feedTitleGradient.frame = CGRectMake(0, -1, self.view.frame.size.width, 21);
+    [self drawFeedGradient];
+    
+    CGSize newSize = webView.scrollView.contentSize;
+    CGPoint newOffset = webView.scrollView.contentOffset;
+    CGFloat preOffset = newOffset.y;
+    newOffset.y *= newSize.height / preRotateSize.height;
+    NSLog(@"Height was %@, now %@ (Offset was %@, now %@)", @(preRotateSize.height), @(newSize.height), @(preOffset), @(newOffset.y));
+//    webView.scrollView.contentOffset = newOffset;
 }
 
 #pragma mark -
@@ -234,6 +257,8 @@
         NSLog(@"Already drawn story.");
 //        return;
     }
+    
+    [self drawFeedGradient];
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
@@ -351,7 +376,12 @@
     
     [self.webView setMediaPlaybackRequiresUserAction:NO];
     [self.webView loadHTMLString:htmlString baseURL:baseURL];
+    
+    self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
+    self.inTextView = NO;
+}
 
+- (void)drawFeedGradient {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
@@ -382,9 +412,6 @@
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
-
-    self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
-    self.inTextView = NO;
 }
 
 - (void)showStory {
@@ -1840,7 +1867,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    } else if (!UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-narrow";
     } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         contentWidthClass = @"NB-iphone-wide";

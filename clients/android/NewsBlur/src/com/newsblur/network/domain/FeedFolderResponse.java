@@ -36,6 +36,7 @@ public class FeedFolderResponse {
 
 	public boolean isAuthenticated;
     public boolean isPremium;
+    public boolean isStaff;
 	
 	public FeedFolderResponse(String json, Gson gson) {
 
@@ -44,6 +45,7 @@ public class FeedFolderResponse {
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
 
         this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
+        this.isStaff = asJsonObject.get("is_staff").getAsBoolean();
 
         JsonElement userProfile = asJsonObject.get("user_profile");
         if (userProfile != null) {

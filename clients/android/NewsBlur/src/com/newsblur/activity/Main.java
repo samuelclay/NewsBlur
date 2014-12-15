@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
+import com.newsblur.fragment.LoginAsDialogFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
@@ -86,7 +87,18 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-	@Override
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem loginAsItem = menu.findItem(R.id.menu_loginas);
+        if (NBSyncService.isStaff == Boolean.TRUE) {
+            loginAsItem.setVisible(true);
+        } else {
+            loginAsItem.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
@@ -132,6 +144,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
             }
             return true;
+        } else if (item.getItemId() == R.id.menu_loginas) {
+            DialogFragment newFragment = new LoginAsDialogFragment();
+            newFragment.show(getFragmentManager(), "dialog");
         }
 		return super.onOptionsItemSelected(item);
 	}

@@ -254,7 +254,6 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     mark_read: function(story, options) {
         options = options || {};
         var delay = NEWSBLUR.assets.preference('read_story_delay');
-
         if (options.skip_delay) {
             delay = 0;
         } else if (options.force) {
@@ -265,7 +264,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
 
         clearTimeout(this.read_story_delay);
         
-        this.read_story_delay = _.delay(_.bind(function() {
+        var _mark_read = _.bind(function() {
             if (!delay || (delay && this.active_story.id == story.id)) {
                 var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
                 if (!feed) {
@@ -275,7 +274,13 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
                     this.update_read_count(story, {previously_read: read});
                 }, this));
             }
-        }, this), delay * 1000);
+        }, this);
+        
+        if (delay) {
+            this.read_story_delay = _.delay(_mark_read, delay * 1000);
+        } else {
+            _mark_read();
+        }
     },
     
     mark_unread: function(story, options) {

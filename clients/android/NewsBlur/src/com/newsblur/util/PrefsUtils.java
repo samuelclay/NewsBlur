@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
@@ -100,10 +102,10 @@ public class PrefsUtils {
 
     public static void logout(Context context) {
         NBSyncService.softInterrupt();
-        
+
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
-        
+
         // wipe the local DB
         FeedUtils.dropAndRecreateTables();
         
@@ -111,6 +113,25 @@ public class PrefsUtils {
         Intent i = new Intent(context, Login.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(i);
+    }
+
+    public static void clearPrefsAndDbForLoginAs(Context context) {
+        NBSyncService.softInterrupt();
+
+        // wipe the prefs store except for the cookie and login keys since we need to
+        // authenticate further API calls
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Set<String> keys = new HashSet<String>(prefs.getAll().keySet());
+        keys.remove(PrefConstants.PREF_COOKIE);
+        keys.remove(PrefConstants.PREF_UNIQUE_LOGIN);
+        SharedPreferences.Editor editor = prefs.edit();
+        for (String key : keys) {
+            editor.remove(key);
+        }
+        editor.commit();
+
+        // wipe the local DB
+        FeedUtils.dropAndRecreateTables();
     }
 
 	/**
@@ -443,4 +464,15 @@ public class PrefsUtils {
         return theme.equals("light");
     }
 
+    public static StateFilter getStateFilter(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StateFilter.valueOf(prefs.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString()));
+    }
+
+    public static void setStateFilter(Context context, StateFilter newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.STATE_FILTER, newValue.toString());
+        editor.commit();
+    }
 }

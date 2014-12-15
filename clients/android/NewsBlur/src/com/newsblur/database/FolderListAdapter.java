@@ -6,20 +6,12 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeMap;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.database.DataSetObserver;
-import android.net.Uri;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,10 +57,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	private LayoutInflater inflater;
     private ImageLoader imageLoader;
 
-	private StateFilter currentState = StateFilter.SOME;
+	private StateFilter currentState;
 
-	public FolderListAdapter(Context context) {
+	public FolderListAdapter(Context context, StateFilter currentState) {
 		this.context = context;
+        this.currentState = currentState;
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}

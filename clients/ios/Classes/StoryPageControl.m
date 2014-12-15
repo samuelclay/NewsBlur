@@ -87,6 +87,9 @@
 	[self.scrollView addSubview:currentPage.view];
 	[self.scrollView addSubview:nextPage.view];
     [self.scrollView addSubview:previousPage.view];
+    [self addChildViewController:currentPage];
+    [self addChildViewController:nextPage];
+    [self addChildViewController:previousPage];
     [self.scrollView setPagingEnabled:YES];
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
@@ -182,6 +185,19 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
+}
+
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
+}
+
+- (BOOL)automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers {
+    return YES;
+}
+
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+    return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -296,32 +312,30 @@
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .01 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^
-    {
-        [self reorientPages:fromInterfaceOrientation];
-        
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {        
         [appDelegate adjustStoryDetailWebView];
         
-        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
-        NSLog(@"Scrolling to %2.2f%% of %.0f", scrollPct*100, currentPage.webView.scrollView.contentSize.height);
-        
-        [currentPage.webView.scrollView setContentOffset:scrollPosition animated:YES];
-    });
+//        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
+//        NSLog(@"Scrolling to %2.2f%% of %.0f", scrollPct*100, currentPage.webView.scrollView.contentSize.height);
+//        
+//        [currentPage.webView.scrollView setContentOffset:scrollPosition animated:YES];
+    inRotation = NO;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                          duration:(NSTimeInterval)duration {
+    inRotation = YES;
+    
     if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        NSLog(@"Rotate: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
+        NSLog(@"Rotating to portrait: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
         
     } else if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
-        NSLog(@"Rotate: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
+        NSLog(@"Rotating to landscape: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
     }
     
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
     [self adjustDragBar:toInterfaceOrientation];
+    [self reorientPages:toInterfaceOrientation];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -333,7 +347,7 @@
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
         scrollPct = currentPage.webView.scrollView.contentOffset.y / currentPage.webView.scrollView.contentSize.height;
-        NSLog(@"Current scroll is %2.2f%% (%f.0/%.0f)", scrollPct*100, currentPage.webView.scrollView.contentOffset.y,
+        NSLog(@"Current scroll is %2.2f%% (offset %.0f - height %.0f)", scrollPct*100, currentPage.webView.scrollView.contentOffset.y,
               currentPage.webView.scrollView.contentSize.height);
         if (currentPage.pageIndex == 0) {
             previousPage.view.hidden = YES;
@@ -417,13 +431,16 @@
 }
 
 - (void)reorientPages:(UIInterfaceOrientation)fromOrientation {
-    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage];
-    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage];
+    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
+    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
     [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
-    [self resizeScrollView];
 
+    NSInteger currentIndex = currentPage.pageIndex;
+    [self resizeScrollView]; // Will change currentIndex, so preserve
+    
+    // Scroll back to preserved index
     CGRect frame = self.scrollView.frame;
-    frame.origin.x = frame.size.width * currentPage.pageIndex;
+    frame.origin.x = frame.size.width * currentIndex;
     frame.origin.y = 0;
     [self.scrollView scrollRectToVisible:frame animated:NO];
 
@@ -523,7 +540,7 @@
     
     NSInteger wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
-    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds);
+    NSLog(@"Applied Index: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d]", (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds);
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
@@ -559,7 +576,9 @@
         [pageController clearStory];
     }
     
-    [self resizeScrollView];
+    if (!suppressRedraw) {
+        [self resizeScrollView];
+    }
     [self setTextButton];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
@@ -567,6 +586,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
 //    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
+    if (inRotation) return;
     CGFloat pageWidth = self.scrollView.frame.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	

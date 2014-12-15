@@ -37,7 +37,8 @@
 @synthesize isSavedView;
 @synthesize isReadView;
 @synthesize transferredFromDashboard;
-
+@synthesize inSearch;
+@synthesize searchQuery;
 
 - (id)init {
     if (self = [super init]) {
@@ -82,6 +83,8 @@
     [self setFeedUserProfiles:fromCollection.activeFeedUserProfiles];
     self.activeFolderFeeds = fromCollection.activeFolderFeeds;
     self.activeClassifiers = fromCollection.activeClassifiers;
+    self.inSearch = fromCollection.inSearch;
+    self.searchQuery = fromCollection.searchQuery;
     
 }
 
@@ -202,6 +205,7 @@
 
 - (NSInteger)indexFromLocation:(NSInteger)location {
     if (location == -1) return -1;
+    if (location >= [activeFeedStoryLocations count]) return -1;
     return [[activeFeedStoryLocations objectAtIndex:location] intValue];
 }
 

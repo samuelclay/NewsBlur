@@ -479,7 +479,7 @@ numberOfRowsInComponent:(NSInteger)component {
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
     [self.siteAddressInput setText:[result objectForKey:@"value"]];
-    [self addSite];
+//    [self addSite]; // Don't auto-add. Let user select folder.
     [UIView animateWithDuration:.35 animations:^{
         siteScrollView.alpha = 0;
     }];
