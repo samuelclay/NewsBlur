@@ -37,6 +37,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
@@ -55,7 +56,8 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new FolderListAdapter(getActivity());
+        currentState = PrefsUtils.getStateFilter(getActivity());
+		adapter = new FolderListAdapter(getActivity(), currentState);
 	}
 
     @Override
@@ -224,6 +226,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
 	public void changeState(StateFilter state) {
 		currentState = state;
+        PrefsUtils.setStateFilter(getActivity(), state);
         adapter.changeState(state);
 		hasUpdated();
 	}

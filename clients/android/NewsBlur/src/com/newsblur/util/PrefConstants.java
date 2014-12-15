@@ -57,4 +57,5 @@ public class PrefConstants {
 
     public static final String THEME = "theme";
 
+    public static final String STATE_FILTER = "state_filter";
 }
