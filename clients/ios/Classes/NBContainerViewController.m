@@ -592,6 +592,7 @@
 }
 - (void)transitionToFeedDetail:(BOOL)resetLayout {
     [self hidePopover];
+    if (self.feedDetailIsVisible) resetLayout = NO;
     self.feedDetailIsVisible = YES;
     
     if (resetLayout) {

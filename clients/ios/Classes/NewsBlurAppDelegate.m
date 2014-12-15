@@ -1034,14 +1034,6 @@
                      isSocial:(BOOL)social
                      withUser:(NSDictionary *)user
              showFindingStory:(BOOL)showHUD {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
-        }
-    }
-    
     NSDictionary *feed = [self getFeed:feedId];
     
     if (social) {
@@ -1066,15 +1058,20 @@
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     
-    [self loadFeedDetailView];
-    
-    if (showHUD) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.storyPageControl showShareHUD:@"Finding story..."];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self loadFeedDetailView];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        if (self.feedsViewController.popoverController) {
+            [self.feedsViewController.popoverController dismissPopoverAnimated:YES];
+        }
+        if (self.navigationController.presentedViewController) {
+            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                [self loadFeedDetailView];
+            }];
         } else {
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
-            HUD.labelText = @"Finding story...";
-        }        
+            [self loadFeedDetailView];
+        }
     }
 }
 
