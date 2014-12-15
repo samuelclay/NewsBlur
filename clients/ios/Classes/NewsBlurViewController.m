@@ -659,8 +659,8 @@ static UIFont *userLabelFont;
     [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
 
     // Add Saved Stories folder
+    [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
     if (appDelegate.savedStoriesCount) {
-        [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
         [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
     }
     
