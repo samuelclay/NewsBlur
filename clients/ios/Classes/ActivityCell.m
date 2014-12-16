@@ -58,9 +58,9 @@
     
     // position label to bounds
     labelFrame.origin.x = leftMargin*2 + avatarSize;
-    labelFrame.origin.y = topMargin - 1;
+    labelFrame.origin.y = 0;
     labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
-    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    labelFrame.size.height = contentRect.size.height;
     self.activityLabel.frame = labelFrame;
 }
 
@@ -108,8 +108,8 @@
             feedId = [activity objectForKey:@"story_feed_id"];
         }
         if (feedId && [feedId class] != [NSNull class]) {
-            NSString *faviconUrl = [NSString stringWithFormat:@"%@/rss_feeds/icon/%i",
-                                    NEWSBLUR_URL,
+            NSString *faviconUrl = [NSString stringWithFormat:@"%@/%i",
+                                    ICONS_HOST,
                                     [feedId intValue]];
             [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl]
                              placeholderImage:nil];

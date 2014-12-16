@@ -42,8 +42,8 @@
         myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
         self.selectedBackgroundView = myBackView;
         
-        topMargin = 15;
-        bottomMargin = 15;
+        topMargin = 12;
+        bottomMargin = 12;
         leftMargin = 20;
         rightMargin = 20;
         avatarSize = 48;
@@ -65,9 +65,9 @@
     
     // position label to bounds
     labelFrame.origin.x = leftMargin*2 + avatarSize;
-    labelFrame.origin.y = topMargin - 1;
+    labelFrame.origin.y = 0;
     labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
-    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    labelFrame.size.height = contentRect.size.height;
     self.interactionLabel.frame = labelFrame;
 }
 
