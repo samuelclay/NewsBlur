@@ -958,7 +958,7 @@
     [self.shareNavigationController didMoveToParentViewController:self];
 
     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
-                                                           vb.size.height, 
+                                                           vb.size.height,
                                                            self.storyPageControl.view.frame.size.width,
                                                            NB_DEFAULT_SHARE_HEIGHT);
     [self.storyPageControl resizeScrollView];

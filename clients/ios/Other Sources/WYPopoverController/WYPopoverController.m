@@ -150,6 +150,8 @@ static char const * const UINavigationControllerEmbedInPopoverTagKey = "UINaviga
 {
     Method original, swizzle;
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) return;
+    
     original = class_getInstanceMethod(self, @selector(pushViewController:animated:));
     swizzle = class_getInstanceMethod(self, @selector(sizzled_pushViewController:animated:));
     
