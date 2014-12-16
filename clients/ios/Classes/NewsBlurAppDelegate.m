@@ -2274,10 +2274,10 @@
         titleLabel.text = [NSString stringWithFormat:@"     Read Stories"];
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
-    } else if (storiesCollection.isRiverView) {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
     } else if (storiesCollection.isSocialView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+    } else if (storiesCollection.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
     } else {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     }
