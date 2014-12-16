@@ -329,6 +329,7 @@
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 
 + (int)computeStoryScore:(NSDictionary *)intelligence;

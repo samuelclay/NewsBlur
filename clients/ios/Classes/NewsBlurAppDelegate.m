@@ -1988,6 +1988,38 @@
     [dashboardViewController.storiesModule reloadData];
 }
 
+
+- (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction {
+    NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", tagName];
+    NSMutableDictionary *newTag = [[self.dictSavedStoryTags objectForKey:savedTagId] mutableCopy];
+    if (!newTag) {
+        newTag = [@{@"ps": [NSNumber numberWithInt:0],
+                    @"feed_title": tagName
+                    } mutableCopy];
+    }
+    NSInteger newCount = [[newTag objectForKey:@"ps"] integerValue] + direction;
+    [newTag setObject:[NSNumber numberWithInteger:newCount] forKey:@"ps"];
+    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
+    for (NSString *tagId in [self.dictSavedStoryTags allKeys]) {
+        if ([tagId isEqualToString:savedTagId]) {
+            if (newCount > 0) {
+                [savedStoryDict setObject:newTag forKey:tagId];
+            }
+        } else {
+            [savedStoryDict setObject:[self.dictSavedStoryTags objectForKey:tagId]
+                               forKey:tagId];
+        }
+    }
+    
+    // If adding a tag, it won't already be in dictSavedStoryTags
+    if (![self.dictSavedStoryTags objectForKey:savedStoryDict] && newCount > 0) {
+        [savedStoryDict setObject:newTag forKey:savedTagId];
+    }
+    self.dictSavedStoryTags = savedStoryDict;
+    
+    return newCount;
+}
+
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results {
     if ([results objectForKey:@"starred_count"]) {
         self.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
@@ -1997,7 +2029,12 @@
 
     NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
     NSMutableArray *savedStories = [NSMutableArray array];
-
+    
+    if (![results objectForKey:@"starred_counts"] ||
+        [[results objectForKey:@"starred_counts"] isKindOfClass:[NSNull class]]) {
+        return savedStories;
+    }
+    
     for (NSDictionary *userTag in [results objectForKey:@"starred_counts"]) {
         if ([[userTag objectForKey:@"tag"] isKindOfClass:[NSNull class]] ||
             [[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;

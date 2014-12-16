@@ -45,6 +45,14 @@ $('.NB-user-tag').live('click', function () {
     return false;
 });
 
+$('.NB-save-button').live('click', function () {
+    var offset = $('a', this).offset();
+    console.log(['Offset', offset]);
+    var url = $('a', this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
 $('.NB-button').live('touchstart', function () {
     $(this).addClass('active');
 });

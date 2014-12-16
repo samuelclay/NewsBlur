@@ -574,7 +574,7 @@
                              "    </div></a>"
                              "  </div>"
                              "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button %@'>"
-                             "    <a href=\"http://ios.newsblur.com/save\"><div>"
+                             "    <a href=\"http://ios.newsblur.com/save/save/\"><div>"
                              "      <span class=\"NB-icon\"></span> %@"
                              "    </div></a>"
                              "  </div>"
@@ -1216,7 +1216,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                               height:[[urlComponents objectAtIndex:5] intValue]];
             return NO;
         } else if ([action isEqualToString:@"save"]) {
-            [appDelegate.storiesCollection toggleStorySaved:self.activeStory];
+            BOOL isSaved = [appDelegate.storiesCollection toggleStorySaved:self.activeStory];
+            if (isSaved) {
+                [self openUserTagsDialog:[[urlComponents objectAtIndex:3] intValue]
+                             yCoordinate:[[urlComponents objectAtIndex:4] intValue]
+                                   width:[[urlComponents objectAtIndex:5] intValue]
+                                  height:[[urlComponents objectAtIndex:6] intValue]];
+            }
             return NO;
         } else if ([action isEqualToString:@"remove-user-tag"] || [action isEqualToString:@"add-user-tag"]) {
             [self openUserTagsDialog:[[urlComponents objectAtIndex:3] intValue]

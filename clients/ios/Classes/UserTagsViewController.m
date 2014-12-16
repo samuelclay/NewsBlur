@@ -52,6 +52,7 @@ const NSInteger kHeaderHeight = 24;
 
     tagsTableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     [tagsTableView reloadData];
+    [tagsTableView setContentOffset:CGPointZero];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -193,8 +194,13 @@ const NSInteger kHeaderHeight = 24;
         NSString *tagName = [[self arrayUserTags] objectAtIndex:indexPath.row];
         NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", tagName];
         NSDictionary *tag = [appDelegate.dictSavedStoryTags objectForKey:savedTagId];
-        title = [tag objectForKey:@"feed_title"];
-        count = [[tag objectForKey:@"ps"] intValue];;
+        if (!tag) {
+            title = tagName;
+            count = 0;
+        } else {
+            title = [tag objectForKey:@"feed_title"];
+            count = [[tag objectForKey:@"ps"] intValue];
+        }
     } else if (indexPath.section == 1) {
         // Story tags
         NSString *tagName = [[self arrayStoryTags] objectAtIndex:indexPath.row];
@@ -240,7 +246,7 @@ const NSInteger kHeaderHeight = 24;
         [story setObject:newUserTags forKey:@"user_tags"];
         [appDelegate.storiesCollection markStory:story asSaved:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
-        NSInteger newCount = [self adjustSavedStoryCount:tagName direction:-1];
+        NSInteger newCount = [appDelegate adjustSavedStoryCount:tagName direction:-1];
         
         NSInteger row = [[self arrayUserTagsNotInStory] indexOfObject:tagName];
         [tagsTableView beginUpdates];
@@ -265,7 +271,7 @@ const NSInteger kHeaderHeight = 24;
         [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
         [appDelegate.storiesCollection markStory:story asSaved:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
-        [self adjustSavedStoryCount:tagName direction:1];
+        [appDelegate adjustSavedStoryCount:tagName direction:1];
         
         NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
         [tagsTableView beginUpdates];
@@ -287,7 +293,7 @@ const NSInteger kHeaderHeight = 24;
         [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
         [appDelegate.storiesCollection markStory:story asSaved:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
-        [self adjustSavedStoryCount:tagName direction:1];
+        [appDelegate adjustSavedStoryCount:tagName direction:1];
         
         NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
         [tagsTableView beginUpdates];
@@ -304,37 +310,6 @@ const NSInteger kHeaderHeight = 24;
     }
 }
 
-- (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction {
-    NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", tagName];
-    NSMutableDictionary *newTag = [[appDelegate.dictSavedStoryTags objectForKey:savedTagId] mutableCopy];
-    if (!newTag) {
-        newTag = [@{@"ps": [NSNumber numberWithInt:0],
-                    @"feed_title": tagName
-                    } mutableCopy];
-    }
-    NSInteger newCount = [[newTag objectForKey:@"ps"] integerValue] + direction;
-    [newTag setObject:[NSNumber numberWithInteger:newCount] forKey:@"ps"];
-    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
-    for (NSString *tagId in [appDelegate.dictSavedStoryTags allKeys]) {
-        if ([tagId isEqualToString:savedTagId]) {
-            if (newCount > 0) {
-                [savedStoryDict setObject:newTag forKey:tagId];
-            }
-        } else {
-            [savedStoryDict setObject:[appDelegate.dictSavedStoryTags objectForKey:tagId]
-                               forKey:tagId];
-        }
-    }
-    
-    // If adding a tag, it won't already be in dictSavedStoryTags
-    if (![appDelegate.dictSavedStoryTags objectForKey:savedStoryDict] && newCount > 0) {
-        [savedStoryDict setObject:newTag forKey:savedTagId];
-    }
-    appDelegate.dictSavedStoryTags = savedStoryDict;
-    
-    return newCount;
-}
-
 #pragma mark - Search Bar
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
@@ -345,7 +320,7 @@ const NSInteger kHeaderHeight = 24;
     [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
     [appDelegate.storiesCollection markStory:story asSaved:YES];
     [appDelegate.storiesCollection syncStoryAsSaved:story];
-    [self adjustSavedStoryCount:tagName direction:1];
+    [appDelegate adjustSavedStoryCount:tagName direction:1];
     
     NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
     [tagsTableView beginUpdates];
