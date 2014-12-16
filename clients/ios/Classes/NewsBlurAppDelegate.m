@@ -59,6 +59,7 @@
 #import "UIView+ViewController.h"
 #import "UIViewController+OSKUtilities.h"
 #import "NBURLCache.h"
+#import "NBActivityItemProvider.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
@@ -654,12 +655,18 @@
     } else {
         // iOS 8+
         NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-        if (title) [activityItems addObject:title];
+//        if (title) [activityItems addObject:title];
         if (url) [activityItems addObject:url];
         NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
-        if (text) [activityItems addObject:[NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text]];
+        if (text) text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
     //    if (images) [activityItems addObject:images];
         NSMutableArray *appActivities = [[NSMutableArray alloc] init];
+        [activityItems addObject:[[NBActivityItemProvider alloc] initWithUrl:(NSURL *)url
+                                                              authorName:(NSString *)authorName
+                                                                    text:(NSString *)text
+                                                                   title:(NSString *)title
+                                                               feedTitle:(NSString *)feedTitle
+                                                                  images:(NSArray *)images]];
         if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
         if (url) [appActivities addObject:[[ARChromeActivity alloc]
                                            initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
@@ -695,12 +702,14 @@
                 _completedString = @"Saved";
             }
             [MBProgressHUD hideHUDForView:vc.view animated:NO];
-            MBProgressHUD *storyHUD = [MBProgressHUD showHUDAddedTo:vc.view animated:YES];
-            storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
-            storyHUD.mode = MBProgressHUDModeCustomView;
-            storyHUD.removeFromSuperViewOnHide = YES;
-            storyHUD.labelText = _completedString;
-            [storyHUD hide:YES afterDelay:1];
+            if (completed) {
+                MBProgressHUD *storyHUD = [MBProgressHUD showHUDAddedTo:vc.view animated:YES];
+                storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+                storyHUD.mode = MBProgressHUDModeCustomView;
+                storyHUD.removeFromSuperViewOnHide = YES;
+                storyHUD.labelText = _completedString;
+                [storyHUD hide:YES afterDelay:1];
+            }
         };
         [activityViewController setCompletionHandler:completion];
 
