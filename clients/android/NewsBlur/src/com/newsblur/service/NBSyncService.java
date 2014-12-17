@@ -25,7 +25,6 @@ import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageCache;
 import com.newsblur.util.NetworkUtils;
@@ -71,8 +70,6 @@ public class NBSyncService extends Service {
     private volatile static boolean ActionsRunning = false;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
-    private volatile static boolean UnreadSyncRunning = false;
-    private volatile static boolean UnreadHashSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
     private volatile static boolean ImagePrefetchRunning = false;
 
@@ -102,22 +99,19 @@ public class NBSyncService extends Service {
     private static Map<FeedSet,Integer> FeedStoriesSeen;
     static { FeedStoriesSeen = new HashMap<FeedSet,Integer>(); }
 
-    /** Unread story hashes the API listed that we do not appear to have locally yet. */
-    private static Set<String> StoryHashQueue;
-    static { StoryHashQueue = new HashSet<String>(); }
-
     /** URLs of images contained in recently fetched stories that are candidates for prefetch. */
-    private static Set<String> ImageQueue;
+    static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
 
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
 
-    private Set<String> orphanFeedIds;
+    Set<String> orphanFeedIds;
 
     private ExecutorService primaryExecutor;
-    private OriginalTextService originalTextService;
+    OriginalTextService originalTextService;
+    UnreadsService unreadsService;
 
     PowerManager.WakeLock wl = null;
 	APIManager apiManager;
@@ -141,6 +135,7 @@ public class NBSyncService extends Service {
 
         primaryExecutor = Executors.newFixedThreadPool(1);
         originalTextService = new OriginalTextService(this);
+        unreadsService = new UnreadsService(this);
 	}
 
     /**
@@ -199,7 +194,7 @@ public class NBSyncService extends Service {
             // these requests are expressly enqueued by the UI/user, do them next
             syncPendingFeeds();
 
-            syncMetadata();
+            syncMetadata(startId);
 
             finishActions();
 
@@ -220,7 +215,6 @@ public class NBSyncService extends Service {
      */
     private synchronized void doSyncSecondary(int startId) {
         try {
-            syncUnreads();
 
             prefetchImages();
 
@@ -294,7 +288,7 @@ public class NBSyncService extends Service {
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private void syncMetadata() {
+    private void syncMetadata(int startId) {
         if (stopSync()) return;
         if (ActMode != ActivationMode.ALL) return;
 
@@ -330,7 +324,7 @@ public class NBSyncService extends Service {
             ExhaustedFeeds.clear();
             FeedPagesSeen.clear();
             FeedStoriesSeen.clear();
-            StoryHashQueue.clear();
+            UnreadsService.clearHashes();
 
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
 
@@ -407,97 +401,13 @@ public class NBSyncService extends Service {
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();
 
-            DoUnreads = true;
+            unreadsService.start(startId);
 
         } finally {
             FFSyncRunning = false;
             NbActivity.updateAllActivities(true);
         }
 
-    }
-
-    /**
-     * Fetch any unread stories (by hash) that we learnt about during the FFSync.
-     */
-    private void syncUnreads() {
-        if (HaltNow) return;
-
-        try {
-            // only use the unread status API if the user is premium
-            if ((isPremium == Boolean.TRUE) && DoUnreads) {
-                UnreadHashSyncRunning = true;
-                NbActivity.updateAllActivities();
-                UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
-                
-                // note all the stories we thought were unread before. if any fail to appear in
-                // the API request for unreads, we will mark them as read
-                List<String> oldUnreadHashes = dbHelper.getUnreadStoryHashes();
-
-                for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
-                    String feedId = entry.getKey();
-                    // ignore unreads from orphaned feeds
-                    if( ! orphanFeedIds.contains(feedId)) {
-                        // only fetch the reported unreads if we don't already have them
-                        List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
-                        for (String newHash : entry.getValue()) {
-                            if (!existingHashes.contains(newHash)) {
-                                StoryHashQueue.add(newHash);
-                            }
-                            oldUnreadHashes.remove(newHash);
-                        }
-                    }
-                }
-
-                dbHelper.markStoryHashesRead(oldUnreadHashes);
-
-                DoUnreads = false;
-            } 
-        } finally {
-            UnreadHashSyncRunning = false;
-            NbActivity.updateAllActivities();
-        }
-
-        try {
-            unreadsyncloop: while (StoryHashQueue.size() > 0) {
-                if (stopSync()) return;
-
-                UnreadSyncRunning = true;
-                NbActivity.updateAllActivities();
-
-                List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
-                batchloop: for (String hash : StoryHashQueue) {
-                    hashBatch.add(hash);
-                    if (hashBatch.size() >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break batchloop;
-                }
-                StoriesResponse response = apiManager.getStoriesByHash(hashBatch);
-                if (! isStoryResponseGood(response)) {
-                    Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
-                    break unreadsyncloop;
-                }
-                dbHelper.insertStories(response);
-                dbHelper.markStoriesActive(ActMode, ModeCutoff);
-                for (String hash : hashBatch) {
-                    StoryHashQueue.remove(hash);
-                } 
-
-                for (Story story : response.stories) {
-                    if (story.imageUrls != null) {
-                        for (String url : story.imageUrls) {
-                            ImageQueue.add(url);
-                        }
-                    }
-                    DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(this, story.feedId);
-                    if (mode == DefaultFeedView.TEXT) {
-                        originalTextService.addHash(story.storyHash);
-                    }
-                }
-            }
-        } finally {
-            if (UnreadSyncRunning) {
-                UnreadSyncRunning = false;
-                NbActivity.updateAllActivities();
-            }
-        }
     }
 
     /**
@@ -540,7 +450,7 @@ public class NBSyncService extends Service {
                     FeedStoriesSeen.put(fs, totalStoriesSeen);
 
                     dbHelper.insertStories(apiResponse);
-                    dbHelper.markStoriesActive(ActMode, ModeCutoff);
+                    markStoriesActive();
                     NbActivity.updateAllActivities(true);
                 
                     if (apiResponse.stories.length == 0) {
@@ -606,6 +516,10 @@ public class NBSyncService extends Service {
         return true;
     }
 
+    void markStoriesActive() {
+        dbHelper.markStoriesActive(ActMode, ModeCutoff);
+    }
+
     void incrementRunningChild() {
         wl.acquire();
     }
@@ -647,7 +561,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || OriginalTextService.running() || ImagePrefetchRunning);
+        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchRunning);
     }
 
     /**
@@ -662,8 +576,7 @@ public class NBSyncService extends Service {
         if (FFSyncRunning) return "Syncing feeds . . .";
         if (CleanupRunning) return "Cleaning up storage . . .";
         if (StorySyncRunning) return "Syncing stories . . .";
-        if (UnreadHashSyncRunning) return "Syncing unread status . . .";
-        if (UnreadSyncRunning) return "Syncing " + StoryHashQueue.size() + " stories . . .";
+        if (UnreadsService.running()) return "Syncing" + UnreadsService.getPendingCount() + "unread stories . . .";
         if (ImagePrefetchRunning) return "Caching " + ImageQueue.size() + " images . . .";
         if (OriginalTextService.running()) return "Syncing text for " + OriginalTextService.getPendingCount() + " stories. . .";
         return null;
@@ -751,6 +664,7 @@ public class NBSyncService extends Service {
     public void onDestroy() {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
         HaltNow = true;
+        unreadsService.shutdown();
         originalTextService.shutdown();
         primaryExecutor.shutdown();
         try {

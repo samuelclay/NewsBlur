@@ -18,11 +18,9 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class SubService {
 
-    private static volatile boolean Running = false;
-
     protected NBSyncService parent;
     private ExecutorService executor;
-    private int startId;
+    protected int startId;
 
     private SubService() {
         ; // no default construction
@@ -44,9 +42,7 @@ public abstract class SubService {
                 } else {
                     Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE + Process.THREAD_PRIORITY_LESS_FAVORABLE );
                 }
-                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");
                 exec_();
-                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
                 parent.decrementRunningChild(startId);
             }
         };
@@ -55,12 +51,14 @@ public abstract class SubService {
 
     private synchronized void exec_() {
         try {
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");
             exec();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
-            if (Running) {
-                Running = false;
+            if (isRunning()) {
+                setRunning(false);
                 NbActivity.updateAllActivities(false);
             }
         }
@@ -82,7 +80,7 @@ public abstract class SubService {
     }
 
     protected void gotWork() {
-        Running = true;
+        setRunning(true);
         NbActivity.updateAllActivities(false);
     }
 
@@ -90,9 +88,8 @@ public abstract class SubService {
         NbActivity.updateAllActivities(true);
     }
 
-    public static boolean running() {
-        return Running;
-    }
+    protected abstract void setRunning(boolean running);
+    protected abstract boolean isRunning();
 
 }
         

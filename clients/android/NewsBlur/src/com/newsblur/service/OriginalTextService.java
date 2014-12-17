@@ -11,6 +11,8 @@ import java.util.Set;
 
 public class OriginalTextService extends SubService {
 
+    private static volatile boolean Running = false;
+
     /** story hashes we need to fetch (from newly found stories) */
     private static Set<String> Hashes;
     static {Hashes = new HashSet<String>();}
@@ -65,6 +67,18 @@ public class OriginalTextService extends SubService {
 
     public static int getPendingCount() {
         return (Hashes.size() + PriorityHashes.size());
+    }
+
+    public static boolean running() {
+        return Running;
+    }
+    @Override
+    protected void setRunning(boolean running) {
+        Running = running;
+    }
+    @Override
+    public boolean isRunning() {
+        return Running;
     }
 
 }
