@@ -279,7 +279,7 @@ public class NBSyncService extends Service {
         if (FollowupActions.size() < 1) return;
 
         for (ReadingAction ra : FollowupActions) {
-            //ra.doLocal(dbHelper);
+            ra.doLocal(dbHelper);
         }
         FollowupActions.clear();
     }
