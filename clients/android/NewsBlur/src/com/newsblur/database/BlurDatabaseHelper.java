@@ -509,7 +509,6 @@ public class BlurDatabaseHelper {
             selection = DatabaseConstants.STORY_TIMESTAMP + " >= " + Long.toString(modeCutoff);
         }
 
-        Log.d(this.getClass().getName(), "activating stories where " + selection);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, selection, null);}
     }
 

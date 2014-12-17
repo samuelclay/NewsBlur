@@ -343,7 +343,7 @@ public class DatabaseConstants {
             q.append(" AND " + stateSelection);
         }
         
-        q.append(" AND (" + STORY_ACTIVE + " = 1)");
+        q.append(" AND (" + STORY_TABLE + "." + STORY_ACTIVE + " = 1)");
 
         if (dedupCol != null) {
             q.append( " GROUP BY " + dedupCol);
