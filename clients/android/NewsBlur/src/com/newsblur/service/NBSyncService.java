@@ -23,12 +23,10 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
-import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageCache;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefsUtils;
@@ -70,18 +68,12 @@ public class NBSyncService extends Service {
      */
     public enum ActivationMode { ALL, OLDER, NEWER };
 
-    // this value is somewhat arbitrary. ideally we would wait the max network timeout, but
-    // the system like to force-kill terminating services that take too long, so it is often
-    // moot to tune.
-    private final static long SHUTDOWN_SLACK_SECONDS = 60L;
-
     private volatile static boolean ActionsRunning = false;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean UnreadSyncRunning = false;
     private volatile static boolean UnreadHashSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
-    private volatile static boolean OriginalTextSyncRunning = false;
     private volatile static boolean ImagePrefetchRunning = false;
 
     private volatile static boolean DoFeedsFolders = false;
@@ -118,21 +110,18 @@ public class NBSyncService extends Service {
     private static Set<String> ImageQueue;
     static { ImageQueue = new HashSet<String>(); }
 
-    /** Stories for which we want to fetch original text data. */
-    private static Set<String> OriginalTextQueue;
-    static { OriginalTextQueue = new HashSet<String>(); }
-
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
 
     private Set<String> orphanFeedIds;
 
-    private PowerManager.WakeLock wl = null;
     private ExecutorService primaryExecutor;
-    private ExecutorService secondaryExecutor;
-	private APIManager apiManager;
-    private BlurDatabaseHelper dbHelper;
+    private OriginalTextService originalTextService;
+
+    PowerManager.WakeLock wl = null;
+	APIManager apiManager;
+    BlurDatabaseHelper dbHelper;
     private ImageCache imageCache;
     private int lastStartIdCompleted = -1;
 
@@ -144,12 +133,14 @@ public class NBSyncService extends Service {
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
         wl.setReferenceCounted(true);
-        primaryExecutor = Executors.newFixedThreadPool(1);
-        secondaryExecutor = Executors.newFixedThreadPool(1);
+
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
         imageCache = new ImageCache(this);
+
+        primaryExecutor = Executors.newFixedThreadPool(1);
+        originalTextService = new OriginalTextService(this);
 	}
 
     /**
@@ -185,7 +176,7 @@ public class NBSyncService extends Service {
         try {
             if (HaltNow) return;
 
-            wl.acquire();
+            incrementRunningChild();
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting primary sync");
 
             // check to see if we are on an allowable network only after ensuring we have CPU
@@ -211,17 +202,15 @@ public class NBSyncService extends Service {
             syncMetadata();
 
             finishActions();
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
-            Runnable r = new Runnable() {
-                public void run() {
-                    doSyncSecondary(startId);
-                }
-            };
-            secondaryExecutor.execute(r);
+            originalTextService.start(startId);
+
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
+        } finally {
+            decrementRunningChild(startId);
         }
     }
 
@@ -231,25 +220,13 @@ public class NBSyncService extends Service {
      */
     private synchronized void doSyncSecondary(int startId) {
         try {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting secondary sync");
-            // run one step below normal background priority
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_LESS_FAVORABLE);
-
             syncUnreads();
 
-            syncOriginalTexts();
-            
             prefetchImages();
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing secondary sync");
 
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
-            if (NbActivity.getActiveActivityCount() < 1) {
-                stopSelf(startId);
-            }
-            lastStartIdCompleted = startId;
-            if (wl != null) wl.release();
         }
     }
 
@@ -308,7 +285,7 @@ public class NBSyncService extends Service {
         if (FollowupActions.size() < 1) return;
 
         for (ReadingAction ra : FollowupActions) {
-            ra.doLocal(dbHelper);
+            //ra.doLocal(dbHelper);
         }
         FollowupActions.clear();
     }
@@ -511,50 +488,13 @@ public class NBSyncService extends Service {
                     }
                     DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(this, story.feedId);
                     if (mode == DefaultFeedView.TEXT) {
-                        OriginalTextQueue.add(story.storyHash);
+                        originalTextService.addHash(story.storyHash);
                     }
                 }
             }
         } finally {
             if (UnreadSyncRunning) {
                 UnreadSyncRunning = false;
-                NbActivity.updateAllActivities();
-            }
-        }
-    }
-
-    private void syncOriginalTexts() {
-        try {
-            while (OriginalTextQueue.size() > 0) {
-                OriginalTextSyncRunning = true;
-                NbActivity.updateAllActivities();
-
-                Set<String> fetchedHashes = new HashSet<String>();
-                Set<String> batch = new HashSet<String>(AppConstants.IMAGE_PREFETCH_BATCH_SIZE);
-                batchloop: for (String hash : OriginalTextQueue) {
-                    batch.add(hash);
-                    if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
-                }
-                try {
-                    fetchloop: for (String hash : batch) {
-                        if (stopSync()) return;
-                        
-                        String result = "";
-                        StoryTextResponse response = apiManager.getStoryText(FeedUtils.inferFeedId(hash), hash);
-                        if ((response != null) && (response.originalText != null)) {
-                            result = response.originalText;
-                        }
-                        dbHelper.putStoryText(hash, result);
-
-                        fetchedHashes.add(hash);
-                    }
-                } finally {
-                    OriginalTextQueue.removeAll(fetchedHashes);
-                }
-            }
-        } finally {
-            if (OriginalTextSyncRunning) {
-                OriginalTextSyncRunning = false;
                 NbActivity.updateAllActivities();
             }
         }
@@ -665,7 +605,23 @@ public class NBSyncService extends Service {
         return true;
     }
 
-    private boolean stopSync() {
+    void incrementRunningChild() {
+        wl.acquire();
+    }
+
+    void decrementRunningChild(int startId) {
+        if (wl != null) wl.release();
+        // our wakelock reference counts.  only stop the service if it is in the background and if
+        // we are the last thread to release the lock.
+        if (!wl.isHeld()) {
+            if (NbActivity.getActiveActivityCount() < 1) {
+                stopSelf(startId);
+            }
+            lastStartIdCompleted = startId;
+        }
+    }
+
+    boolean stopSync() {
         if (HaltNow) {
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "stopping sync, soft interrupt set.");
             return true;
@@ -690,7 +646,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || OriginalTextSyncRunning || ImagePrefetchRunning);
+        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadSyncRunning || StorySyncRunning || OriginalTextService.running() || ImagePrefetchRunning);
     }
 
     /**
@@ -708,7 +664,7 @@ public class NBSyncService extends Service {
         if (UnreadHashSyncRunning) return "Syncing unread status . . .";
         if (UnreadSyncRunning) return "Syncing " + StoryHashQueue.size() + " stories . . .";
         if (ImagePrefetchRunning) return "Caching " + ImageQueue.size() + " images . . .";
-        if (OriginalTextSyncRunning) return "Syncing text for " + OriginalTextQueue.size() + " stories. . .";
+        if (OriginalTextService.running()) return "Syncing text for " + OriginalTextService.getPendingCount() + " stories. . .";
         return null;
     }
 
@@ -778,7 +734,7 @@ public class NBSyncService extends Service {
     }
 
     public static void getOriginalText(String hash) {
-        OriginalTextQueue.add(hash);
+        OriginalTextService.addHash(hash);
     }
 
     public static void softInterrupt() {
@@ -794,18 +750,12 @@ public class NBSyncService extends Service {
     public void onDestroy() {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
         HaltNow = true;
+        originalTextService.shutdown();
         primaryExecutor.shutdown();
-        secondaryExecutor.shutdown();
         try {
-            primaryExecutor.awaitTermination(SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
+            primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             primaryExecutor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
-        try {
-            secondaryExecutor.awaitTermination(SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            secondaryExecutor.shutdownNow();
             Thread.currentThread().interrupt();
         }
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");

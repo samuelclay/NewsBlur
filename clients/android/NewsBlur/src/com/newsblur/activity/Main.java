@@ -163,9 +163,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 
     @Override
-	public void handleUpdate() {
-		folderFeedList.hasUpdated();
+	public void handleUpdate(boolean freshData) {
         updateStatusIndicators();
+		if (freshData) folderFeedList.hasUpdated();
 	}
 
     private void updateStatusIndicators() {
