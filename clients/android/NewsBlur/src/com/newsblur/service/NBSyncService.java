@@ -628,10 +628,10 @@ public class NBSyncService extends Service {
                 FeedStoriesSeen.put(fs, callerSeen);
                 alreadyRequested = 0;
             }
-            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount + " requested:" + alreadyRequested);
             if (desiredStoryCount <= alreadySeen) {
                 return false;
             }
+            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount + " requested:" + alreadyRequested);
             if (desiredStoryCount <= alreadyRequested) {
                 return false;
             }
