@@ -242,7 +242,7 @@ public class NBSyncService extends Service {
             if (c.getCount() < 1) return;
 
             ActionsRunning = true;
-            NbActivity.updateAllActivities();
+            NbActivity.updateAllActivities(false);
 
             actionsloop : while (c.moveToNext()) {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
@@ -271,7 +271,7 @@ public class NBSyncService extends Service {
             closeQuietly(c);
             if (ActionsRunning) {
                 ActionsRunning = false;
-                NbActivity.updateAllActivities();
+                NbActivity.updateAllActivities(false);
             }
         }
     }
@@ -307,19 +307,19 @@ public class NBSyncService extends Service {
 
         // cleanup is expensive, so do it as part of the metadata sync
         CleanupRunning = true;
-        NbActivity.updateAllActivities();
+        NbActivity.updateAllActivities(false);
         dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
         imageCache.cleanup();
         dbHelper.cleanupStoryText();
         CleanupRunning = false;
-        NbActivity.updateAllActivities();
+        NbActivity.updateAllActivities(false);
 
         // cleanup may have taken a while, so re-check our running status
         if (stopSync()) return;
         if (ActMode != ActivationMode.ALL) return;
 
         FFSyncRunning = true;
-        NbActivity.updateAllActivities();
+        NbActivity.updateAllActivities(false);
 
         // there is a rare issue with feeds that have no folder.  capture them for workarounds.
         Set<String> debugFeedIds = new HashSet<String>();
@@ -411,7 +411,7 @@ public class NBSyncService extends Service {
 
         } finally {
             FFSyncRunning = false;
-            NbActivity.updateAllActivities();
+            NbActivity.updateAllActivities(true);
         }
 
     }
@@ -515,7 +515,7 @@ public class NBSyncService extends Service {
                 }
 
                 StorySyncRunning = true;
-                NbActivity.updateAllActivities();
+                NbActivity.updateAllActivities(false);
                 
                 if (!FeedPagesSeen.containsKey(fs)) {
                     FeedPagesSeen.put(fs, 0);
@@ -541,6 +541,7 @@ public class NBSyncService extends Service {
 
                     dbHelper.insertStories(apiResponse);
                     dbHelper.markStoriesActive(ActMode, ModeCutoff);
+                    NbActivity.updateAllActivities(true);
                 
                     if (apiResponse.stories.length == 0) {
                         ExhaustedFeeds.add(fs);
@@ -555,7 +556,7 @@ public class NBSyncService extends Service {
         } finally {
             if (StorySyncRunning) {
                 StorySyncRunning = false;
-                NbActivity.updateAllActivities();
+                NbActivity.updateAllActivities(false);
             }
         }
     }
