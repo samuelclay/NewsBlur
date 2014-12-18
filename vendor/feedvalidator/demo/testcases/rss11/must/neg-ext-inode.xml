@@ -1,0 +1,34 @@
+<!-- neg-ext-inode.xml -->
+
+<!--
+  Description:  Any section has an invalid node element
+  Expect:       InvalidRDF
+-->
+
+<Channel xmlns="http://purl.org/net/rss1.1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:util="http://example.org/util#"
+   rdf:about="http://www.xml.com/xml/news.rss">
+<title>XML.com</title>
+<link>http://xml.com/pub</link>
+<description>
+   XML.com features a rich mix of information and services
+   for the XML community.
+</description>
+<items rdf:parseType="Collection">
+   <item rdf:about="http://www.xml.com/pub/a/2005/01/05/restful.html">
+      <title>The Restful Web: Amazon's Simple Queue Service</title>
+      <link>http://www.xml.com/pub/a/2005/01/05/restful.html</link>
+      <description>
+         In Joe Gregorio's latest Restful Web column, he explains that
+         Amazon's Simple Queue Service, a web service offering a queue
+         for reliable storage of transient messages, isn't as RESTful as
+         it claims.
+      </description>
+      <dc:creator>
+         <util:JoeGregorio rdf:resource="http://example.org/#Joe"/>
+      </dc:creator>
+   </item>
+</items>
+</Channel>

@@ -1,0 +1,22 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  item description contains safe CSS markup
+  Expect:       !DangerousStyleAttr{parent:item,element:description}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Safe CSS Markup</title>
+<link>http://example.com/italics</link>
+<description>Safe CSS Markup</description>
+<item>
+<title>Safe CSS Markup</title>
+<guid>http://example.com/italics</guid>
+<description>&lt;span style=&quot;font-style: italic;&quot;&gt;blah&lt;/span&gt;</description>
+</item>
+</channel>
+</rss>

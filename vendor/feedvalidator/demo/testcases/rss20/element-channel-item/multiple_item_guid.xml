@@ -1,0 +1,22 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one item guid
+  Expect:       DuplicateElement{parent:item,element:guid}
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS</title>
+<link>http://example.com/</link>
+<description>various duplicate item elements that can't be duplicated</description>
+<item>
+<title>multiple guids</title>
+<guid>http://example.com/permalink/1</guid>
+<guid>http://example.com/permalink/2</guid>
+</item>
+</channel>
+</rss>

@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>There is no <code>thr:when</code> attribute in Atom</p>
+</div>
+<div id='explanation'>
+<p>There is no <code>thr:when</code> attribute in Atom.  The attribute was proposed but an alternate syntax was chosen instead.</p>
+</div>
+<div id='solution'>
+<p>Use the <a href="http://www.ietf.org/rfc/rfc4685.txt">thr:updated</a> attribute instead.</p>
+</div>
+</div>
+</fvdoc>

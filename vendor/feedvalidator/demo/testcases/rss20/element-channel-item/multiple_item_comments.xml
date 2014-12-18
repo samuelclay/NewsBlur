@@ -1,0 +1,22 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one item comments
+  Expect:       DuplicateElement{parent:item,element:comments}
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS</title>
+<link>http://example.com/</link>
+<description>various duplicate item elements that can't be duplicated</description>
+<item>
+<title>multiple comments</title>
+<comments>http://purl.org/rss/2.0/comments.cgi</comments>
+<comments>http://purl.org/rss/2.0/comments2.cgi</comments>
+</item>
+</channel>
+</rss>

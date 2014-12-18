@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  undefined element in known namespace is assumed valid
+  Expect:       !UndefinedElement{parent:channel,element:sy:updatePeriod}
+-->
+
+<rss version="2.0" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/">
+<channel>
+<title>Contains sy_updatePeriod</title>
+<link>http://example.com/</link>
+<description>undefined element in known namespace is assumed valid</description>
+<sy:updatePeriod>hourly</sy:updatePeriod>
+</channel>
+</rss>

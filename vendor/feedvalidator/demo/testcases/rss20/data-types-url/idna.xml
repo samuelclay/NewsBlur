@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid uri: IDNA
+  Expect:       ValidURI{parent:channel,element:link}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Validity test</title>
+<link>http://www.xn--8ws00zhy3a.com/</link>
+<description>valid uri: IDNA</description>
+</channel>
+</rss>

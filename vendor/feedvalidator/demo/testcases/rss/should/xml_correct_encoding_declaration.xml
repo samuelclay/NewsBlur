@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='windows-1252'?>
+
+<!--
+  Description:  Textual content declared as windows-1252 should parse as valid
+  Expect:       !BadCharacters{parent:item,element:description}
+-->
+
+<rss version="2.0">
+<channel>
+<item>
+<title>Foo</title>
+<link>http://purl.org/rss/2.0/?item</link>
+<description>This is a £“test.”</description>
+</item>
+</channel>
+</rss>

@@ -1,0 +1,19 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  item xhtml:body should not contain ONSUBMIT attribute
+  Expect:       SecurityRisk{parent:item,element:xhtml:body}
+-->
+
+<rss version="2.0">
+<channel>
+<item>
+<title>Foo</title>
+<link>http://purl.org/rss/2.0/?item</link>
+<body xmlns="http://www.w3.org/1999/xhtml"><a onsubmit="doevil()">clickme</a></body>
+</item>
+</channel>
+</rss>

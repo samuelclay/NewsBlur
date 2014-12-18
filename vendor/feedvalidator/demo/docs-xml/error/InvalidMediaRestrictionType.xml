@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>type</code> must be 'country' or 'uri'</p>
+</div>
+<div id='explanation'>
+<p>The specified attribute value is not a valid media:restriction type value.</p>
+</div>
+<div id='solution'>
+<p>Change the attribute value to either <code>country</code> or <code>uri</code>.</p>
+</div>
+</div>
+</fvdoc>

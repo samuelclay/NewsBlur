@@ -1,0 +1,36 @@
+<!DOCTYPE fvdoc [
+<!ENTITY ldquo "&#8220;">
+<!ENTITY rdquo "&#8221;">
+]>
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Identifier &ldquo;foo&rdquo; is not in canonical form (tha canonical form would be &ldquo;bar&rdquo;)</p>
+</div>
+<div id='explanation'>
+<p>URIs used as identifiers should be in canonical form, as described
+by section 6 of
+<a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+This means that insignificant differences
+(e.g., case of hostname) are removed, so URIs can be compared
+character-by-character to determine equivalence. This is particularly
+important when content is syndicated, and the same entry may appear
+in multiple feeds.</p>
+<p>Also avoid leading and trailing whitespace as clients
+vary in their interpretation of such characters.</p>
+</div>
+<div id='solution'>
+<p>All newly issued ids should be in canonical form.
+Use the canonical form given in the warning message for guidance.</p>
+<p><b>Notes</b>:</p>
+<ul>
+<li>Do <b>not</b> update previously issued ids, unless they were issued
+in error.</li>
+<li>Do <b>not</b> canonicalize ids that you are resyndicating from
+other sources.  Those <b>must</b> be character by character identical
+to the original.  Instead, consider contacting the original source and
+see if this can be corrected for any new ids they may issue.</li>
+</ul>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,33 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Problematical RFC 822 date-time value</p>
+</div>
+<div id='explanation'>
+<p>The specified date-time value, while technically valid, is likely to cause interoperability issues.</p>
+<p>The value specified must meet the Date and Time specifications as defined by <a href="http://www.faqs.org/rfcs/rfc822.html">RFC822</a>, with the exception that the year SHOULD be expressed as four digits.</p>
+<p>Additionally:</p>
+<ul>
+<li><a href="http://www.w3.org/Protocols/rfc822/3_Lexical.html#z3">RFC 822 &#167; 3.4.2:</a>
+<cite>Exactly ONE SPACE should be used in place of arbitrary linear-white-space and comment sequences</cite>.</li>
+<li><a href="http://www.w3.org/Protocols/rfc822/3_Lexical.html#z3">RFC 822 &#167; 3.4.7:</a>
+<cite>The case shown in this specification is suggested for message-creating
+processes</cite>.</li>
+<li><a href="http://rfc.net/rfc1123.html#p56">RFC 1123 &#167; 5.2.14:</a>:
+<cite>the military time zones are specified incorrectly in RFC-822: they count the wrong way from UT (the signs are reversed)</cite>.  As such, they shoud be avoided.</li>
+</ul>
+</div>
+<div id='solution'>
+<p>Change the date-time to contain a four digit year, no comments, and either US or numeric timezone indicators, all single spaced.  Here are examples:</p>
+
+<blockquote>
+<p><samp>&lt;pubDate&gt;Wed, 02 Oct 2002 08:00:00 EST&lt;/pubDate&gt;</samp></p>
+<p><samp>&lt;pubDate&gt;Wed, 02 Oct 2002 13:00:00 GMT&lt;/pubDate&gt;</samp></p>
+<p><samp>&lt;pubDate&gt;Wed, 02 Oct 2002 15:00:00 +0200&lt;/pubDate&gt;</samp></p>
+</blockquote>
+<p>For best results, conform to the recommendations in James Holderness'
+<a href="http://groups.yahoo.com/group/rss-public/message/536">RFC822
+date support</a> survey.</p>
+</div>
+</div>
+</fvdoc>

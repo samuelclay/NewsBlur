@@ -1,0 +1,22 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  textInput must contain description
+  Expect:       MissingDescription{parent:textInput,element:description}
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS 2.0 test case</title>
+<link>http://www.feedvalidator.org/testcases/rss20/</link>
+<description>textInput must contain description</description>
+<textInput>
+<title>Search Slashdot</title>
+<name>query</name>
+<link>http://slashdot.org/search.pl</link>
+</textInput>
+</channel>
+</rss>

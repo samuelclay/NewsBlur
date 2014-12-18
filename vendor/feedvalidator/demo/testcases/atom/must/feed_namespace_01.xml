@@ -1,0 +1,12 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  0.1 snapshot of Atom is no longer supported by this validator
+  Expect:       InvalidNamespace{element:feed}
+-->
+
+<feed version="1.0" xmlns="http://example.com/newformat#">
+</feed>

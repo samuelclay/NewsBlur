@@ -1,0 +1,16 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  channel can only have one admin:generatorAgent
+  Expect:       DuplicateElement{parent:channel,element:admin:generatorAgent}
+-->
+
+<rss version="2.0" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<channel>
+<admin:generatorAgent rdf:resource="mailto:me@example.com" />
+<admin:generatorAgent rdf:resource="mailto:me@example.com" />
+</channel>
+</rss>

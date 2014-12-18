@@ -1,0 +1,18 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>"self" link references a non-Atom representation.</p>
+</div>
+<div id='explanation'>
+<p>This often occurs when people confuse "self" for "alternate".</p>
+<p>From RFC 4287, section 4.2.7.2 (emphasis added)</p>
+<blockquote>
+<p>1. The value "alternate" signifies that the IRI in the value of the href attribute identifies an <strong>alternate</strong> version of the resource described by the containing element.</p>
+<p>3. The value "self" signifies that the IRI in the value of the href attribute identifies a resource <strong>equivalent</strong> to the containing element.</p>
+</blockquote>
+</div>
+<div id='solution'>
+<p>Generally, this problem can be solved by changing the rel value on the link from "self" to "alternate"</p>
+</div>
+</div>
+</fvdoc>

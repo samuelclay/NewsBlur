@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  copyright is actually inline code
+  Expect:       !ContainsUndeclaredHTML{parent:feed,element:copyright}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<copyright type="application/xhtml+xml">
+  <code>&lt;p&gt;foo&lt;/p&gt;</code>
+</rights>
+</feed>

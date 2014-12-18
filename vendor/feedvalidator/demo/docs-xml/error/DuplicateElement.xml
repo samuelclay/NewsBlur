@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> contains more than one <code>bar</code></p>
+</div>
+<div id='explanation'>
+<p>Only one occurrence of the specified element is allowed in this context.  For example, <code>channel</code> can only contain one <code>title</code> element.</p>
+</div>
+<div id='solution'>
+<p>Delete the redundant element.</p>
+</div>
+</div>
+</fvdoc>

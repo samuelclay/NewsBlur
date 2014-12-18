@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  summary says it's text/plain, but isn't
+  Expect:       UndefinedElement{parent:summary,element:a}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<summary>
+  So I was reading <a href="http://example.com/">example.com</a> the other day, it's really interesting.
+</summary>
+</entry>
+</feed>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  OPML Specification reference:
+
+  <head> notes
+  All date-times conform to the Date and Time Specification of RFC 822.
+-->
+
+<!--
+  Description:  All dates should conform to RFC 822
+  Expect:       InvalidRFC2822Date{element:created}
+-->
+
+<opml version="1.1">
+	<head>
+		<title>Badly Formed Dates</title>
+		<dateCreated>2005-11-02T01:23:45Z</dateCreated>
+		<dateModified>Wednesday, 02-Nov-05 01:23:45 GMT</dateModified>
+		</head>
+	<body>
+		<outline text="Outline text" created="1130894625"/>
+		</body>
+	</opml>

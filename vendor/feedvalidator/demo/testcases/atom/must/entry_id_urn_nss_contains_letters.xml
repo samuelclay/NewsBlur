@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid URN (namespace specific string contains letters)
+  Expect:       ValidURN{parent:entry,element:id}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<id>urn:diveintomark-org:blog-14:post-123</id>
+</entry>
+</feed>

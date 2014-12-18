@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  category
+  Expect:       !Error
+-->
+
+<opml version="1.1">
+	<head>
+		<title>Illustrating the category attribute</title>
+		<dateCreated>Mon, 31 Oct 2005 19:23:00 GMT</dateCreated>
+		</head>
+	<body>
+		<outline text="The Mets are the best team in baseball." category="/Philosophy/Baseball/Mets,/Tourism/New York" created="Mon, 31 Oct 2005 18:21:33 GMT"/>
+		</body>
+	</opml>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  Sample file
+  Expect:       !Error
+-->
+
+<rss version ="2.0"
+
+xmlns:g ="http://base.google.com/ns/1.0">
+
+
+ <channel>
+  	<title>Provider's Title</title>
+  	<description>A description of the channels content.</description>
+  	<link>http://www.providers-website.com</link>
+  <item>
+
+   <title>Train tickets to Anytown</title>
+   <description>Luxury train tickets </description>
+   <link>http://provider-website.com/item1-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image1.jpg</g:image_link>
+   <g:expiration_date>2005-12-20</g:expiration_date>
+   <g:label>Vacation</g:label>
+   <g:label>Train</g:label>
+
+   <g:currency>USD</g:currency>
+   <g:price>250</g:price>
+   <g:price_type>starting</g:price_type>
+   <g:payment_accepted>Check</g:payment_accepted>
+   <g:payment_accepted>Visa</g:payment_accepted>
+   <g:payment_notes>minimum payment on credit cards:45</g:payment_notes>
+   <g:quantity>204</g:quantity>
+   <g:from_location>Mytown, USA</g:from_location>
+   <g:to_location>Anytown, USA</g:to_location>
+   <g:travel_date_range>
+     	<g:start>2005-12-20T18:00:00</g:start>
+     	<g:end>2005-12-22T18:00:00</g:end>
+   </g:travel_date_range>
+   <g:location>123 Main St, Mytown, CA, 12345, USA</g:location>
+   <g:shipping>
+     	<g:country>US</g:country>
+     	<g:service>Overnight</g:service>
+     	<g:price>32.95</g:price>
+   </g:shipping>
+   <g:tax_region>California</g:tax_region>
+   <g:tax_percent>8.25</g:tax_percent>
+
+  </item>
+
+  <item>
+
+   <title>Cruise Hawaii</title>
+   <description>3 day Crusie, visit Hawaii</description>
+   <link>http://provider-website.com/item2-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image2.jpg</g:image_link>
+   <g:expiration_date>2005-12-20</g:expiration_date>
+   <g:label>Cruise</g:label>
+   <g:label>Hawaii</g:label>
+
+   <g:currency>USD</g:currency>
+   <g:price>1200</g:price>
+   <g:price_type>starting</g:price_type>
+   <g:payment_accepted>Visa</g:payment_accepted>
+   <g:payment_accepted>MasterCard</g:payment_accepted>
+   <g:payment_notes>minimum payment on credit cards:45</g:payment_notes>
+   <g:quantity>210</g:quantity>
+   <g:from_location>San Francisco, CA, USA</g:from_location>
+   <g:to_location>Hawaii, USA</g:to_location>
+   <g:travel_date_range>
+     	<g:start>2005-11-20T18:00:00</g:start>
+     	<g:end>2005-11-26T12:00:00</g:end>
+   </g:travel_date_range>
+   <g:location>123 Main St., San Francisco, CA, 12345, USA</g:location>
+   <g:shipping>
+     	<g:country>US</g:country>
+     	<g:service>Overnight</g:service>
+     	<g:price>32.95</g:price>
+   </g:shipping>
+   <g:tax_region>California</g:tax_region>
+   <g:tax_percent>8.25</g:tax_percent>
+
+  </item>
+ </channel>
+</rss>

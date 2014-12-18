@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  invalid uri: IRI
+  Expect:       UriNotIri{parent:channel,element:link}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Validity test</title>
+<link>http://www.詹姆斯.com/</link>
+<description>invalid uri: IRI</description>
+</channel>
+</rss>

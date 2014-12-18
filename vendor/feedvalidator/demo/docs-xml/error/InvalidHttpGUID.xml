@@ -1,0 +1,21 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>guid</code> must be a full URL, unless isPermaLink attribute is false</p>
+</div>
+<div id='explanation'>
+<p>By default, the <code>guid</code> element specifies a permanent link for an item, the value must be a full URL (starting with "<code>&quot;http://&quot;</code>").</p>
+</div>
+<div id='solution'>
+<p>If you are using the <code>guid</code> element as a permanent link, make sure the value is a full URL, including the "<code>http://</code>" at the beginning.</p>
+
+<p>If you are using the <code>guid</code> element simply as a unique identifier (and not a link to the item), then the value can be whatever you want, but you must include the attribute <code>isPermaLink="false"</code> in the <code>guid</code> tag.</p>
+
+<p>Both of these are valid <code>guid</code>s:</p>
+
+<p><samp>&lt;guid&gt;http://www.example.com/archives/000054.html&lt;/guid&gt;</samp></p>
+
+<p><samp>&lt;guid isPermaLink="false"&gt;article 54 at example.com&lt;/guid&gt;</samp></p>
+</div>
+</div>
+</fvdoc>

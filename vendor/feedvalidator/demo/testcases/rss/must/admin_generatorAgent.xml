@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid admin:generatorAgent
+  Expect:       ValidURI{element:admin:generatorAgent}
+-->
+
+<rss version="2.0" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<channel>
+<title>Validity test</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>valid admin:generatorAgent</description>
+<admin:generatorAgent rdf:resource="http://www.movabletype.org/?v=2.21" />
+</channel>
+</rss>

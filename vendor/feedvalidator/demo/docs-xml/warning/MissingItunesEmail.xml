@@ -1,0 +1,23 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>The recommended <code>&lt;itunes:email&gt;</code> element is missing</p>
+</div>
+<div id='explanation'>
+<p>If an itunes:email element is not included, iTunes will send automated
+messages to the email associated with the iTunes Music  Store account
+through which the podcast was submitted.</p>
+</div>
+<div id='solution'>
+<p>Consider including the itunes:owner element, along with a valid
+email address, immediately under the channel element.</p>
+<p>An example follows:</p>
+<pre>
+&lt;itunes:owner&gt;
+  &lt;itunes:name>Your Name&lt;/itunes:name&gt;
+  &lt;itunes:email&gt;your-email@example.com&lt;/itunes:email&gt;
+&lt;/itunes:owner&gt;
+</pre>
+</div>
+</div>
+</fvdoc>

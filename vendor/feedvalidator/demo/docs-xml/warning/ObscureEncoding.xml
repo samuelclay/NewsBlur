@@ -1,0 +1,15 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Obscure XML character encoding: <i>foo</i></p>
+</div>
+<div id='explanation'>
+<p>Although the validator <span xml:lang="en-gb">recognised</span> the
+character encoding that this feed uses, many aggregators may well not. This
+will most likely mean that users' attempts to subscribe will fail.</p>
+</div>
+<div id='solution'>
+<p>For maximum portability, convert the characters to either a utf or iso encoding.</p>
+</div>
+</div>
+</fvdoc>

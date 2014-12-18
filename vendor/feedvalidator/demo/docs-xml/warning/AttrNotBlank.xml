@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> attribute of <code>bar</code> should not be blank</p>
+</div>
+<div id='explanation'>
+<p>If this attribute is present, it should not be blank.</p>
+</div>
+<div id='solution'>
+<p>Add a meaningful value that conforms to the attribute's required format.  (Sorry this error message isn't more helpful.  If you add a value and it's in the wrong format, you'll get a more helpful error message next time.)</p>
+</div>
+</div>
+</fvdoc>

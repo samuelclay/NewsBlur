@@ -1,0 +1,21 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com/)
+  Copyright:    Copyright (c) 2005 Phil Ringnalda
+-->
+
+<!--
+  Description:  ev:enddate is ISO8601 (W3CDTF with implied timezone)
+  Expect:       ValidW3CDTFDate{parent:item,element:ev:enddate}
+-->
+
+<rss version="2.0" xmlns:ev="http://purl.org/rss/1.0/modules/event/">
+<channel>
+<title>Valid ev:enddate</title>
+<description>foo</description>
+<link>http://purl.org/rss/1.0/modules/event/</link>
+<item>
+<title>bar</title>
+<ev:enddate>2005-07-02T10:00:00</ev:enddate>
+</item>
+</channel>
+</rss>

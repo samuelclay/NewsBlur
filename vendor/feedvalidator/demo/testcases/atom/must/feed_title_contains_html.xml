@@ -1,0 +1,13 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  feed title may not include HTML unless declared in @type
+  Expect:       ContainsUndeclaredHTML{parent:feed,element:title}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>&lt;b&gt;Invalid title&lt;/b&gt;</title>
+</feed>

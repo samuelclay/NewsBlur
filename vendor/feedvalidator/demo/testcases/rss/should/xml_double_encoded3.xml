@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+
+<!--
+  Description:  "smart quote" double escaped
+  Expect:       BadCharacters{parent:item,element:description}
+-->
+
+<rss version="2.0">
+<channel>
+<item>
+<title>Foo</title>
+<link>http://purl.org/rss/2.0/?item</link>
+<description>isn&amp;#x92;t</description>
+</item>
+</channel>
+</rss>

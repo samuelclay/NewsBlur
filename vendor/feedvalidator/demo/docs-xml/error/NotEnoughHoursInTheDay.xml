@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>skipHours can not contain more than 24 hour elements</p>
+</div>
+<div id='explanation'>
+<p><a href="http://backend.userland.com/skipHoursDays#skiphours">skipHours</a> can not contain more than 24 <code>hour</code> elements.</p>
+</div>
+<div id='solution'>
+<p>Remove the duplicate <code>hour</code> elements.</p>
+</div>
+</div>
+</fvdoc>

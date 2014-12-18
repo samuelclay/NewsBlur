@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  content says it's inline, but isn't
+  Expect:       NotInline{parent:entry,element:content}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<content type="xhtml">
+&lt;p&gt;foo&lt;/p&gt;
+</content>
+</entry>
+</feed>

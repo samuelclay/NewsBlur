@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+
+<!--
+  Description:  http://www.rssboard.org/files/test-double-escaped.xml
+  Expect:       !ContainsHTML{parent:item,element:title}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Validity test</title>
+<link>http://www.rssboard.org/rss-profile#data-types-characterdata</link>
+<description>Recommendations</description>
+<item>
+<title>The &#x26;amp; entity</title>
+</item>
+</channel>
+</rss>

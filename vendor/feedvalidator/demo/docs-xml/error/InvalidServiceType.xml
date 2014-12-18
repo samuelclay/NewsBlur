@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid value for <code>g:service</code>: "<code>foo</code>"</p>
+</div>
+<div id='explanation'>
+<p>Acceptable values are 'FedEx', 'UPS', 'DHL', 'Mail', and 'Other'.</p>
+</div>
+<div id='solution'>
+<p>Consult the <a href="http://base.google.com/base/attribute_list.html#shipping">documentation for the attribute</a> for further details.</p>
+</div>
+</div>
+</fvdoc>

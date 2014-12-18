@@ -1,0 +1,20 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid content medium: "<code>foo</code>"</p>
+</div>
+<div id='explanation'>
+<p>The specified attribute value is not a valid media:content medium value.</p>
+</div>
+<div id='solution'>
+<p>Change the attribute to one of the following:</p>
+<ul>
+<li>audio</li>
+<li>document</li>
+<li>executable</li>
+<li>image</li>
+<li>video</li>
+</ul>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  presentation.opml from the OPML specification
+  Expect:       !Error
+-->
+
+<opml version="1.0">
+	<head>
+		<title>presentation.xml</title>
+		<dateCreated>Thu, 27 Jul 2000 01:35:52 GMT</dateCreated>
+		<dateModified>Fri, 15 Sep 2000 09:05:37 GMT</dateModified>
+		<ownerName>Dave Winer</ownerName>
+		<ownerEmail>dave@userland.com</ownerEmail>
+		<expansionState></expansionState>
+		<vertScrollState>1</vertScrollState>
+		<windowTop>317</windowTop>
+		<windowLeft>252</windowLeft>
+		<windowBottom>514</windowBottom>
+		<windowRight>634</windowRight>
+		</head>
+	<body>
+		<outline text="Welcome to Frontier 5!">
+			<outline text="What is Frontier?"/>
+			<outline text="It's a Content Management System"/>
+			</outline>
+		<outline text="Why Manage Content?">
+			<outline text="Form separated from content"/>
+			<outline text="Make it easy to change the look of a site"/>
+			<outline text="Keep the technical stuff out of the way of writers"/>
+			<outline text="Let designers work without having to deal with writers"/>
+			<outline text="Everyone works on what they do best"/>
+			</outline>
+		<outline text="Three groups">
+			<outline text="Writers write"/>
+			<outline text="Designers design"/>
+			<outline text="Geeks keep everything working"/>
+			<outline text="Frontier is for the geeks"/>
+			</outline>
+		<outline text="How does Content Flow?">
+			<outline text="Thru LANs, watched, shared folders"/>
+			<outline text="HTTP Put protocol"/>
+			<outline text="Email"/>
+			</outline>
+		<outline text="Cookie-cutter or workbench?">
+			<outline text="No two organizations work the same way"/>
+			<outline text="You need a highly customizable environment to make it work"/>
+			<outline text="A cookie-cutter approach is a dead-end"/>
+			<outline text="Frontier is &lt;i&gt;designed&lt;/i&gt; for customization"/>
+			<outline text="It's a website system workbench"/>
+			</outline>
+		<outline text="Frontier is an environment">
+			<outline text="Everything is integrated"/>
+			<outline text="Much more powerful"/>
+			<outline text="Much higher performance"/>
+			<outline text="Key point!"/>
+			</outline>
+		<outline text="The Object Database is the Center">
+			<outline text="Everything is built around a fast scalable object database"/>
+			<outline text="Millions of hours of burn-in"/>
+			<outline text="Hierarchical"/>
+			<outline text="It's also the symbol table for the language"/>
+			</outline>
+		<outline text="The scripting language">
+			<outline text="Patterned after C, totally dynamic"/>
+			<outline text="No need for structure symbols, semicolons or curly braces"/>
+			<outline text="Because it's integrated with a revolutionary script editor"/>
+			</outline>
+		<outline text="The script editor">
+			<outline text="Is an outliner"/>
+			<outline text="Expand a construct to see the detail"/>
+			<outline text="Collapse it to hide detail"/>
+			<outline text="When you move a statement, all the statements under it move too"/>
+			<outline text="This may be the single most revolutionary feature in Frontier"/>
+			</outline>
+		<outline text="Complete script debugger">
+			<outline text="Set a breakpoint"/>
+			<outline text="Step into and out of procedure calls"/>
+			<outline text="Easily examine all data while a script is running"/>
+			</outline>
+		<outline text="Object oriented website framework">
+			<outline text="Link management with hierarchical glossaries"/>
+			<outline text="Inherited and overridable attributes"/>
+			<outline text="Filter scripts also allow overrides and multiple content flows"/>
+			<outline text="All content is stored in database"/>
+			</outline>
+		<outline text="The runtime environment">
+			<outline text="Full built-in TCP support via inetd"/>
+			<outline text="Fully supports client and server HTTP"/>
+			<outline text="Fully multi-threaded"/>
+			<outline text="Large comprehensive verb set"/>
+			<outline text="Background processes, agents"/>
+			<outline text="Semaphores"/>
+			</outline>
+		<outline text="Editing tools">
+			<outline text="The object database editor is an outliner"/>
+			<outline text="Outlines are a great format for complex HTML"/>
+			<outline text="Simple text editor with easy HTML commands"/>
+			</outline>
+		<outline text="Key Components of Frontier">
+			<outline text="Integrated database storage system"/>
+			<outline text="Object oriented website framework"/>
+			<outline text="Powerful scripting environment with development tools, debugger"/>
+			<outline text="Outliner and text tools"/>
+			<outline text="Link management"/>
+			<outline text="Multithreaded runtime"/>
+			<outline text="Comprehensive verb set"/>
+			</outline>
+		<outline text="Frontier is content management">
+			<outline text="It's not an application development environment"/>
+			<outline text="It *is* a content management system"/>
+			<outline text="Suitable for a newspaper or magazine"/>
+			<outline text="A marketing department"/>
+			<outline text="A university department"/>
+			</outline>
+		<outline text="A brief history of Frontier">
+			<outline text="Automated DTP production with Quark and PageMaker on Mac (1992-93)"/>
+			<outline text="Transitioned to the web in 1996"/>
+			<outline text="Ships 1/28/98 for Win32 and Mac"/>
+			<outline text="Websites are cross platform!"/>
+			<outline text="So are many utility scripts"/>
+			<outline text="It's the first truly cross-platform web scripting environment"/>
+			</outline>
+		<outline text="A brief future of Frontier">
+			<outline text="Ease of use is our focus"/>
+			<outline text="Remote procedure calling"/>
+			<outline text="Sandboxes with scripted firewalls"/>
+			<outline text="Scalable content"/>
+			<outline text="XML"/>
+			</outline>
+		</body>
+	</opml>

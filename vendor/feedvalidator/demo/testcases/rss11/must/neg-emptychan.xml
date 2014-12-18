@@ -1,0 +1,11 @@
+<!-- neg-emptychan.xml -->
+
+<!--
+  Description:  Channel is missing required children elements.
+  Expect:       MissingDescription{parent:Channel}
+-->
+
+<Channel xmlns="http://purl.org/net/rss1.1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   rdf:about="http://www.xml.com/xml/news.rss">
+</Channel>

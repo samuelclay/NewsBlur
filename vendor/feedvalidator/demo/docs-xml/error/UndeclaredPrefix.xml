@@ -1,0 +1,20 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Undeclared <code>foo</code> prefix: <code>bar</code></p>
+</div>
+<div id='explanation'>
+<p>All namespace prefixes must be declared prior to use.  Namespace
+prefixes are case-sensitive.</p>
+</div>
+<div id='solution'>
+<p>Correct the typo, or declare the prefix with an <code>xmlns:</code>
+attribute, for example:</p>
+<blockquote>
+<pre>&lt;Url type="application/rss+xml" 
+     <span style="background-color:yellow">xmlns:example=</span>"http://example.com/opensearchextensions/1.0/"
+     template="http://example.com?f={<span style="background-color:yellow">example:</span>format?}"/&gt;</pre>
+</blockquote>
+</div>
+</div>
+</fvdoc>

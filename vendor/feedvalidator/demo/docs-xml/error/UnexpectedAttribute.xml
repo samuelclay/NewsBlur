@@ -1,0 +1,22 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Unexpected <i>foo</i> attribute on <i>bar</i> element</p>
+</div>
+<div id='explanation'>
+<p>Your feed contains elements with attributes that are not defined in the
+relevant specifications. Perhaps this is a typo (remember that XML is
+case-sensitive; for example, <code>isPerma<strong>l</strong>ink</code> and
+<code>isPerma<strong>L</strong>ink</code> have no relation to each other,
+and only the latter has any meaning in the RSS 2.0 standard).</p>
+
+<p>If you are trying to extend RSS, a new element in its own namespace is
+likely to be more flexible, and less liable to cause interoperability
+problems.</p>
+</div>
+<div id='solution'>
+<p>Correct the attributes, or move the information into a namespaced
+element.</p>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one author name
+  Expect:       DuplicateElement{parent:author,element:name}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<author>
+<name>Validation ain't what it used to be</name>
+<name>Validation ain't what it used to be</name>
+</author>
+</entry>
+</feed>

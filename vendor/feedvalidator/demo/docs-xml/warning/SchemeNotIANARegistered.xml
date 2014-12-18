@@ -1,0 +1,15 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>URI scheme not IANA registered: <code>foo</code></p>
+</div>
+<div id='explanation'>
+<p>URIs are expected to start with an
+<a href="http://www.iana.org/assignments/uri-schemes.html">IANA registered scheme</a>.</p>
+</div>
+<div id='solution'>
+<p>Check for potential typos and/or consider switching to a documented
+IANA scheme.</p>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,16 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  content type must be MIME type
+  Expect:       AttrNotBlank{parent:entry,element:content}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<content type="">
+</content>
+</entry>
+</feed>

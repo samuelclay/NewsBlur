@@ -1,0 +1,19 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> must be an ISO-639 language code</p>
+</div>
+<div id='explanation'>
+<p>The value specified must adhere to the <a href="http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes">W3C format for language codes</a>. </p>
+
+<p>An example of a valid language code: <samp>en-us</samp></p>
+</div>
+<div id='solution'>
+<p>Don't use the actual name of the language, like "English".  Instead, use the 2- or 3-character language code, like "en" (ISO 639-1) or "eng" (ISO 639-2).  (You can also specify a country code after it, like "en-us".  This is optional, and the validator will ignore it.)</p>
+
+<p>If you do include a country code, you need to separate the language code and the country code by a hyphen.  "en-us" is valid; "en_us" is not.</p>
+
+<p>The full set of language codes are defined by <a href="http://en.wikipedia.org/wiki/List_of_ISO_639_codes">ISO-639 language codes</a>.</p>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>XML Parsing error: syntax error</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="http://www.feedvalidator.org/favicon.ico" />
+<link rel="shortcut icon" href="http://www.feedvalidator.org/favicon.ico" />
+<style type="text/css" media="screen">@import "../../css/common.css";
+@import "../../css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+<link rel="start" href="http://feedvalidator.org/docs/" title="Home" />
+</head>
+<body>
+<div id="logo">
+<h1><a href="../../"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>Documentation</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+<h2>Message</h2>
+<div class="docbody">
+<p>XML Parsing error: <code>syntax error</code></p>
+</div>
+<h2>Explanation</h2>
+
+<div class="docbody">
+<p>Your feed is not <a href="http://www.w3.org/TR/REC-xml/#sec-well-formed">well formed</a> according to the <a href="http://www.w3.org/TR/REC-xml">XML specification</a>.  All feeds should be well-formed XML.</p>
+</div>
+<h2>Solution</h2>
+<div class="docbody">
+<p>The text of the error may contain additional helpful details. At a minimum, the actual line and column number where the error was detected will be reported. </p>
+
+<p>The most common cause is encoding errors. There are several basic approaches to solving this: escaping problematic characters, <a href="http://www.w3.org/TR/REC-xml#dt-chardata">escaping entire blocks of text</a> with <a href="http://www.w3.org/TR/REC-xml#dt-cdsection">CDATA sections</a>, or putting an <a href="http://www.w3.org/TR/REC-xml#NT-EncodingDecl">encoding declaration</a> at the start of the feed.</p>
+
+<p>Another common error is the inclusion of whitespace characters (spaces, tabs, newlines) before the <a href="http://www.w3.org/TR/REC-xml/#NT-XMLDecl">XML Declaration</a>.  If an XML Declaration is included, it must be the first thing in the document</p>
+</div>
+<h2>Not clear?  Disagree?</h2>
+<div class="docbody">
+<p>Let us know on the <a href="http://lists.sourceforge.net/lists/listinfo/feedvalidator-users">feedvalidator-users</a> discussion list!</p>
+</div>
+
+</div><!--main-->
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="../../">Home</a> &middot;
+<a href="../../about.html">About</a> &middot;
+<a href="../../news/">News</a> &middot;
+<a href="../../docs/">Docs</a> &middot;
+<a href="../../terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper -->
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-4 <a href="http://diveintomark.org/">Mark Pilgrim</a> and <a href="http://www.intertwingly.net/blog/">Sam Ruby</a></address>
+</div>
+
+</body>
+</html>

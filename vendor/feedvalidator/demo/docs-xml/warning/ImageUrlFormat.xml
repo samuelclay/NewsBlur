@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Image not in required format</p>
+</div>
+<div id='explanation'>
+<p>Image must be in the GIF, JPEG or PNG formats.</p>
+</div>
+<div id='solution'>
+<p>Change the <code>url</code> element to reference an image in one of the supported formats.</p>
+</div>
+</div>
+</fvdoc>

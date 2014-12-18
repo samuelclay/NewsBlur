@@ -1,0 +1,14 @@
+<!-- neg-noabout.xml -->
+
+<!--
+  Description:  Channel missing required rdf:about attribute.
+  Expect:       MissingAttribute{parent:Channel,attr:rdf:about}
+-->
+
+<Channel xmlns="http://purl.org/net/rss1.1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<title>XML.com</title>
+<link>http://xml.com/pub</link>
+<description>XML.com features XML stuff</description>
+<items rdf:parseType="Collection"/>
+</Channel>

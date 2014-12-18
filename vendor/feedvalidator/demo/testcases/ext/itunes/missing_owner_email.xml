@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Author:       Sam Ruby <rubys@intertwingly.net>
+-->
+
+<!--
+  Description:  Missing Owner Email
+  Expect:       MissingElement{element:itunes:email}
+-->
+
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  <channel>
+    <title>All About Everything</title>
+    <link> http://www.itunes.com/podcasts/everything/index.html</link>
+    <description>All About Everything is a show about everything. Each week we dive into every subject known to man and talk about everything as much as we can.</description>
+    <language>en-us</language>
+    <itunes:explicit>clean</itunes:explicit>
+    <itunes:category text="Movies &amp; Television"/>
+    <itunes:owner>
+      <itunes:name>me</itunes:name>
+    </itunes:owner>
+  </channel>
+</rss>

@@ -1,0 +1,18 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>This encoding is not mandated by the XML specification: <i>foo</i></p>
+</div>
+<div id='explanation'>
+<p>The
+<a href="http://www.w3.org/TR/2004/REC-xml-20040204/" title="Extensible Markup Language (XML) 1.0 (Third Edition)">XML specification</a>
+requires XML processors to support two encodings: UTF-8 and UTF-16.
+Although most will support many more, any compliant processor <strong>must</strong>
+support these two.</p>
+</div>
+<div id='solution'>
+<p>For standards-guaranteed compatibility, use either UTF-8 or UTF-16
+to encode your XML.</p>
+</div>
+</div>
+</fvdoc>

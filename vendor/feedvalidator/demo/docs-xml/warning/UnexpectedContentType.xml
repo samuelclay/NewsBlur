@@ -1,0 +1,32 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Feeds should not be served with the '<i>foo</i>' media type</p>
+</div>
+<div id='explanation'>
+<p>The web server is reporting an unexpected MIME type for a feed.
+Although we tried to parse it as a feed, aggregators may well report this
+as an error and act as if the user had pointed them at something other than
+a feed.</p>
+<p>RSS feeds should be served as <code>application/rss+xml</code>
+(RSS 1.0 is an RDF format, so it may be served as
+<code>application/rdf+xml</code> instead).
+Atom feeds should use <code>application/atom+xml</code>.
+Alternatively, for compatibility with widely-deployed web browsers, any of
+these feeds can use one of the more
+general XML types -  preferably <code>application/xml</code>.</p>
+</div>
+<div id='solution'>
+<p>Use the appropriate MIME type for your feed.</p>
+<ul>
+<li>For static content served with Apache, use the 
+<a href="http://httpd.apache.org/docs/mod/mod_mime.html#addtype">AddType</a>
+directive.</li>
+<li>For static content served with Microsoft IIS,
+<a href="http://www.microsoft.com/resources/documentation/WindowsServ/2003/all/deployguide/en-us/Default.asp?url=/resources/documentation/WindowsServ/2003/all/deployguide/en-us/iisdg_dep_wzvf.asp">add a MIME type</a>.</li>
+<li>Other information can be found
+<a href="http://www.w3.org/International/O-HTTP-charset">here</a> or in the documentation provided by your server.</li>
+</ul>
+</div>
+</div>
+</fvdoc>

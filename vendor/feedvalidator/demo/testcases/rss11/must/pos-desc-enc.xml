@@ -1,0 +1,29 @@
+<!-- pos-desc-enc.xml -->
+
+<!--
+  Description:  description contains encoded content
+  Expect:       !Error
+-->
+
+<Channel xmlns="http://purl.org/net/rss1.1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   rdf:about="http://www.xml.com/xml/news.rss">
+<title>XML.com</title>
+<link>http://xml.com/pub</link>
+<description>
+   XML.com features a rich mix of information and services
+   for the XML community.
+</description>
+<items rdf:parseType="Collection">
+   <item rdf:about="http://www.xml.com/pub/a/2005/01/05/restful.html">
+      <title>The Restful Web: Amazon's Simple Queue Service</title>
+      <link>http://www.xml.com/pub/a/2005/01/05/restful.html</link>
+      <description>
+         In Joe Gregorio's latest &lt;em&gt;Restful Web&lt;/em&gt; column, he
+         explains that Amazon's &lt;q class="product"&gt;Simple Queue
+         Service&lt;/q&gt;, a web service offering a queue for reliable
+         storage of transient messages, isn't as RESTful as it claims.
+      </description>
+   </item>
+</items>
+</Channel>

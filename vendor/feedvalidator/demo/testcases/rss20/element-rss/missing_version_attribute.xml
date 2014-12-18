@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  rss must include version attribute
+  Expect:       MissingAttribute{element:rss}
+-->
+
+<rss>
+<channel>
+<title>Test case: missing RSS version attribute</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>rss must include version attribute</description>
+</channel>
+</rss>

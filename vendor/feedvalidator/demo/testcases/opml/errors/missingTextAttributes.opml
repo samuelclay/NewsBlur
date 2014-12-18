@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  Missing text attribute
+  Expect:       MissingAttribute{attr:text,element:outline}
+-->
+
+<opml version="1.1">
+	<head>
+		<title>Missing Text Attribute Test</title>
+		</head>
+	<body>
+		<outline>
+			<outline>
+				<outline text="Illinois"/>
+				<outline text="Indiana"/>
+				<outline text="Iowa"/>
+				<outline text="Kentucky"/>
+				<outline text="Michigan"/>
+				<outline text="Minnesota"/>
+				<outline text="Missouri"/>
+				<outline text="Ohio"/>
+				<outline text="West Virginia"/>
+				<outline text="Wisconsin"/>
+				</outline>
+			</outline>
+		</body>
+	</opml>

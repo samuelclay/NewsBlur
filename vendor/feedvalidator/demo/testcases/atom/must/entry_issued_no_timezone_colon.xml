@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  invalid issued date (missing colon in timezone)
+  Expect:       InvalidRFC3339Date{parent:entry,element:published}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<published>2003-07-01T01:55:07-0500</published>
+</entry>
+</feed>

@@ -1,0 +1,13 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  invalid modified date (no year)
+  Expect:       InvalidRFC3339Date{parent:feed,element:updated}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<updated>07-01T01:55:07-05:00</updated>
+</feed>

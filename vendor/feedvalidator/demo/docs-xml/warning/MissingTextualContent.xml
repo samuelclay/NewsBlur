@@ -1,0 +1,24 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Missing Textual Content</p>
+</div>
+<div id='explanation'>
+<p>Experience teaches that feeds which contain textual content are in
+general more useful than those which do not.  Some applications (one
+example is full-text indexers) require a minimum amount of text or
+(X)HTML to function reliably and predictably.  Feed producers should
+be aware of these issues.  It is advisable that each atom:entry
+element contain a non-empty atom:title element, a non-empty atom:
+content element when that element is present, and a non-empty atom:
+summary element when the entry contains no atom:content element.
+However, the absence of atom:summary is not an error.</p>
+</div>
+<div id='solution'>
+<p>No action is required as Atom processors MUST NOT fail to function
+correctly as a consequence of such an absence.  However, consider
+ensuring that there is at least a human readable summary
+or content for each entry.</p>
+</div>
+</div>
+</fvdoc>

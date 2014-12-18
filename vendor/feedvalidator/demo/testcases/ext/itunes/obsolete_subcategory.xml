@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Author:       Sam Ruby <rubys@intertwingly.net>
+-->
+
+<!--
+  Description:  Valid Subcategory
+  Expect:       ObsoleteItunesCategory{parent:itunes:category,element:itunes:category}
+-->
+
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  <channel>
+    <title>All About Everything</title>
+    <link> http://www.itunes.com/podcasts/everything/index.html</link>
+    <description>All About Everything is a show about everything. Each week we dive into every subject known to man and talk about everything as much as we can.</description>
+    <itunes:category text="Technology">
+      <itunes:category text="Computers"/>
+    </itunes:category>
+
+    <item>
+      <title>Shake Shake Shake Your Spices</title>
+      <description>This week we talk about salt and pepper shakers, comparing and contrasting pour rates, construction materials, and overall aesthetics.</description>
+      <enclosure url="http://www.itunes.com/podcasts/everything/AllAboutEverythingEpisode3.mp3" length="8727310" type="x-audio/mp3" />
+    </item>
+  </channel>
+</rss>

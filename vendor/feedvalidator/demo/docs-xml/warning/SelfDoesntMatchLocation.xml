@@ -1,0 +1,17 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Self reference doesn't match document location</p>
+</div>
+<div id='explanation'>
+<p>When <code>rel="self"</code>, the href attribute is expected to identify
+a resource equivalent to the containing element.</p>
+</div>
+<div id='solution'>
+<p>Check the document referenced by the href attribute.  If it is not the
+intended feed, correct it.</p>
+<p>This may not be a problem.  At the current time, the
+feedvalidator does not probe to assess equivalence of documents.</p>
+</div>
+</div>
+</fvdoc>

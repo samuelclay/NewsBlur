@@ -1,0 +1,25 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: Oversize geourl:latitude 
+  Expect: InvalidLatitude{parent:item,element:geourl:latitude,value:91.048}
+
+-->
+
+<rss version="2.0"
+  xmlns:geourl="http://geourl.org/rss/module/"
+>
+  <channel>
+    <title>Geographic extensions test</title>
+    <link>http://philringnalda.com/</link>
+    <description>Foo.</description>
+    <item>
+      <title>trainedmonkey</title>
+      <link>http://trainedmonkey.com/</link>
+      <geourl:longitude>-118.2473</geourl:longitude>
+      <geourl:latitude>91.048</geourl:latitude>
+    </item>
+  </channel>
+</rss>

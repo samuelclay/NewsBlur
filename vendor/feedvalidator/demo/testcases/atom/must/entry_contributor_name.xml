@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  contributor name must not include HTML
+  Expect:       !ContainsHTML{parent:contributor,element:name}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<contributor>
+<name>Valid name</name>
+</contributor>
+</entry>
+</feed>

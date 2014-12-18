@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  pubDate must be RFC 2822 date format
+  Expect:       InvalidRFC2822Date{parent:channel,element:pubDate}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Invalid date format</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>pubDate must be RFC 2822 date format</description>
+<pubDate>2002-12-31T01:15:07-05:00</pubDate>
+</channel>
+</rss>

@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  issued must be W3CDTF date format
+  Expect:       InvalidRFC3339Date{parent:entry,element:published}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<published>Mon, 31 Dec 2002 14:20:20 GMT</published>
+</entry>
+</feed>

@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Comma found in coordinate pair</p>
+</div>
+<div id='explanation'>
+<p>A coordinate pair contains a latitude value and a longitude value in that order. The preferred serialization of this uses a space to separate the two values.</p>
+</div>
+<div id='solution'>
+<p>Consult the <a href="http://www.georss.org/">GeoRSS documentation</a> for further details.  You might find the <a href="http://www.georss.org/gml.html#examples">examples</a> particularly helpful.</p>
+</div>
+</div>
+</fvdoc>

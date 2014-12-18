@@ -1,0 +1,16 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>OpenSearchDescription</code> should include an example <code>Query</code></p>
+</div>
+<div id='explanation'>
+<p>OpenSearch description documents should include at least one Query element of type="example" that is expected to return search results. Search clients may use this example query to validate that the search engine is working properly.</p>
+</div>
+<div id='solution'>
+<p>Add such a query element.  Example:</p>
+<blockquote>
+<pre>&lt;Query role="example" searchTerms="cat" /&gt;</pre>
+</blockquote>
+</div>
+</div>
+</fvdoc>

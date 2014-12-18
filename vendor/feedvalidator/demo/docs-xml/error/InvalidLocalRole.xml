@@ -1,0 +1,35 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid local role: <i>foo</i></p>
+</div>
+<div id='explanation'>
+<p>The specified role is not one of the permissable local role values:</p>
+<dl><dt><code>"request"</code></dt>
+<dd>   Represents the search query that can be performed to retrieve the same set of search results.
+</dd>
+<dt><code>"example"</code></dt>
+<dd>   Represents a search query that can be performed to demonstrate the search engine. 
+</dd>
+<dt><code>"related"</code></dt>
+<dd>   Represents a search query that can be performed to retrieve similar but different search results.
+</dd>
+<dt><code>"correction"</code></dt>
+<dd>   Represents a search query that can be performed to improve the result set, such as with a spelling correction.
+</dd>
+<dt><code>"subset"</code></dt>
+<dd>   Represents a search query that will narrow the current set of search results.
+</dd>
+<dt><code>"superset"</code></dt>
+
+<dd>  Represents a search query that will broaden the current set of search results.
+</dd></dl>
+</div>
+<div id='solution'>
+<p>Either replace the role value with one listed in the
+<a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#Local_role_values">OpenSearch 1.1 specification</a>, or use a
+<a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#Local_role_values">fully qualified role.</a>.
+.</p>
+</div>
+</div>
+</fvdoc>

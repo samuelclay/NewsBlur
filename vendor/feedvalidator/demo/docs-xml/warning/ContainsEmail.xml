@@ -1,0 +1,14 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>name</code> should not contain email address</p>
+</div>
+<div id='explanation'>
+<p>This value appears to contain an email address.  Atom Person
+constructs have separate elements defined for names and email addresses.</p>
+</div>
+<div id='solution'>
+<p>Email addresses should be placed in separate &lt;email&gt; elements.</p>
+</div>
+</div>
+</fvdoc>

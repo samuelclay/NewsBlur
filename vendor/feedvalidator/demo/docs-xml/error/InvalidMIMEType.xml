@@ -1,0 +1,25 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> is not a valid MIME type</p>
+</div>
+<div id='explanation'>
+<p>This attribute is not a valid MIME type.</p>
+</div>
+<div id='solution'>
+<p>Valid MIME types are specified in <a href="http://www.faqs.org/rfcs/rfc2046.html">RFC 2046</a>.</p>
+
+<p>Examples of valid MIME types:</p>
+
+<p><samp>application/xhtml+html</samp><br />
+<samp>text/html</samp><br />
+<samp>text/plain</samp></p>
+
+<p>Examples of <em>invalid</em> MIME types:</p>
+
+<p><samp>HTML</samp><br />
+<samp>text</samp><br />
+<samp>some stuff I threw together last night</samp></p>
+</div>
+</div>
+</fvdoc>

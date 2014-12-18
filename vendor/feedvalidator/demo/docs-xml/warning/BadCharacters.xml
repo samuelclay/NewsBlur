@@ -1,0 +1,14 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>The XML encoding does not appear to match the characters used.</p>
+</div>
+<div id='explanation'>
+<p>This error is commonly seen when an encoding like iso-8859-1 is declared when what actually is desired is windows-1252.  It also occurs when <a href="http://www.w3.org/TR/2000/REC-xml-20001006#dt-charref">numeric character references</a> are computed based on windows-1252 code points values as opposed to the character's code point in <a href="http://www.unicode.org/faq/unicode_iso.html">ISO/IEC 10646</a>.</p>
+</div>
+<div id='solution'>
+<p>For maximum portability, convert the characters to either a utf or iso encoding.  If that is not practical, try to match the declaration to reflect the actual encoding used.</p>
+<p>If you chose to use numeric character references, make sure that you use the Unicode codepoint value rather than the codepoint in the native character set.  Users on windows platform may find the, <a href="http://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP1252.TXT">cp1252 to Unicode table</a> helpful - of special interest is the mapping of characters in the 0x80 through 0x9F range.</p>
+</div>
+</div>
+</fvdoc>

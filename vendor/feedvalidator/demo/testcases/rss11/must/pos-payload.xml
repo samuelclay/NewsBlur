@@ -1,0 +1,27 @@
+<!-- pos-minimal.xml -->
+
+<!--
+  Description:  Payload element
+  Expect:       !Error
+-->
+
+<Channel xmlns="http://purl.org/net/rss1.1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:p="http://purl.org/net/rss1.1/payload#"
+   rdf:about="http://www.xml.com/xml/news.rss">
+<title>XML.com</title>
+<link>http://xml.com/pub</link>
+<description>XML.com features XML stuff</description>
+<items rdf:parseType="Collection">
+  <item rdf:about="http://example.org/58">
+    <title>Morbus Speaks</title>
+    <link>http://example.org/58</link>
+    <description>Morbus talks out about the morning.</description>
+    <p:payload rdf:parseType="Literal" 
+      xmlns="http://www.w3.org/1999/xhtml">
+      Morbus says he woke up today feeling minty fresh and exclaimed: 
+      <q>Oh, what a <em>BeaaAUauUatiful</em> day!</q>
+    </p:payload>
+  </item>  
+</items>
+</Channel>

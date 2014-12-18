@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+<env:Body>
+<m:feedvalidationresponse env:encodingStyle="http://www.w3.org/2003/05/soap-encoding" xmlns:m="http://www.w3.org/2005/10/feed-validator">
+      <m:uri>%(url)s</m:uri> 
+      <m:checkedby>%(home_url)s</m:checkedby>
+      <m:date>%(date_time)s</m:date>
+      <m:validity>%(validation_bool)s</m:validity>
+  <m:errors>
+        <m:errorcount>%(errorcount)s</m:errorcount>
+        <m:errorlist>%(errorlist)s</m:errorlist>
+    </m:errors>
+    <m:warnings>
+        <m:warningcount>%(warningcount)s</m:warningcount>
+	<m:warninglist>%(warninglist)s</m:warninglist>
+    </m:warnings>
+    <m:informations>
+	<m:infocount>%(infocount)s</m:infocount>
+	<m:infolist>%(infolist)s</m:infolist>
+    </m:informations>
+</m:feedvalidationresponse>
+</env:Body>
+</env:Envelope>

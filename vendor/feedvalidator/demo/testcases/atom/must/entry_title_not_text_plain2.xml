@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  title says it's text/plain, but isn't
+  Expect:       ContainsUndeclaredHTML{parent:entry,element:title}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<title>
+  So I was reading &lt;a href="http://example.com/"&gt;example.com&lt;/a&gt; the other day, it's really interesting.
+</title>
+</entry>
+</feed>

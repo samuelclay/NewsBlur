@@ -1,0 +1,1285 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+ <head>
+  <title>RDF Site Summary (RSS) 1.0</title>
+
+     </head>
+
+ <body>
+
+  <h1>RDF Site Summary (RSS) 1.0</h1>
+
+<!-- Abstract -->
+
+   <h2><a name="abstract">Abstract</a></h2>
+
+    <p>
+
+     RDF Site Summary (RSS) is a lightweight multipurpose
+     extensible metadata description and syndication format.  RSS is
+     an XML application, conforms to the W3C's RDF Specification
+     and is extensible via XML-namespace and/or RDF based modularization.
+    </p>
+
+<!-- Authors -->
+
+   <h2><a name="authors">Authors</a></h2>
+
+     <p>The members of the RSS-DEV Working Group:</p>
+
+<dl>
+     <dt><a href="mailto:begeddov@jfinity.com">Gabe Beged-Dov</a>, 
+      <a href="http://www.jfinity.com">JFinity Systems LLC</a></dt>
+
+     <dt><a href="mailto:daniel.brickley@bristol.ac.uk">Dan Brickley</a>, 
+      <a href="http://www.ilrt.bris.ac.uk/discovery/">ILRT</a></dt>
+     <dt><a href="mailto:rael@oreilly.com">Rael Dornfest</a>, 
+      <a href="http://www.oreilly.com">O'Reilly &amp; Associates</a></dt>
+     <dt><a href="mailto:ian@calaba.com">Ian Davis</a>, 
+      <a href="http://www.calaba.com">Calaba, Ltd.</a></dt>
+
+     <dt><a href="mailto:ldodds@ingenta.com">Leigh Dodds</a>, 
+      <a href="http://www.xmlhack.com">xmlhack</a></dt>
+     <dt><a href="mailto:eisen@pobox.com">Jonathan Eisenzopf</a>,
+      <a href="http://www.wwind.com">Whirlwind Interactive</a></dt>
+     <dt><a href="mailto:david@moreover.com">David Galbraith</a>,
+      <a href="http://www.moreover.com">Moreover.com</a></dt>
+     <dt><a href="mailto:guha@guha.com">R.V. Guha</a>,
+      <a href="http://www.guha.com">guha.com</a></dt>
+
+     <dt><a href="mailto:ken@bitsko.slc.ut.us">Ken MacLeod</a>,
+      <a href="http://bitsko.slc.ut.us/">(Independent)</a></dt>
+     <dt><a href="mailto:emiller@oclc.org">Eric Miller</a>,
+      <a href="http://www.oclc.org">Online Computer Library Center, Inc.</a></dt>
+     <dt><a href="mailto:aaron@theinfo.org">Aaron Swartz</a>, 
+      <a href="http://www.theinfo.org">The Info Network</a></dt>
+     <dt><a href="mailto:vdv@dyomedea.com">Eric van der Vlist</a>, 
+      <a href="http://www.dyomedea.com">Dyomedea</a></dt>
+
+</dl>
+
+
+<!-- Version -->
+
+   <h2><a name="version">Version</a></h2>
+
+        <p>Latest Version: <a href="http://purl.org/rss/1.0/spec">http://purl.org/rss/1.0/spec</a></p>
+
+    <div class="version">1.3.4 2001-05-30 Fixed small typo in <a href="#s5.3.6">section 5.3.6</a> (<a href="http://www.aaronsw.com/">as</a>, <a href="http://groups.yahoo.com/group/rss-dev/message/1988">announcement</a>)</div>
+
+    <div class="version">1.3.3 2001-03-20 Updated mime-type and URI (<a href="mailto:aaron@theinfo.org">as</a>, <a href="http://groups.yahoo.com/group/rss-dev/message/1779">announcement</a>)</div>
+    <div class="version">1.3.2 2000-12-19 (Changed style and tidied markup; revisions author: <a href="mailto:sean@mysterylights.com">SBP</a>)</div>
+    <div class="version">1.3.1 2000-12-17 (Typo correction: An upper limit of 15 items per RSS document is recommended, not enforced [<a href="#s5.5">5.5</a>].)</div>
+
+    <div class="version">1.3 2000-12-09</div>
+
+<!-- Status -->
+
+   <h2><a name="status">Status</a></h2>
+
+    <p>
+     <a href="http://www.egroups.com/surveys/rss-dev?id=444214">Release</a>
+    </p>
+
+    <p>
+     Comments should be directed to the 
+     <a href="http://purl.org/rss/1.0/mailinglist/">RSS-DEV mailing list</a>,
+     archived at 
+     <a href="http://www.egroups.com/messages/rss-dev">http://www.egroups.com/messages/rss-dev</a>.
+    </p>
+
+<!-- Rights -->
+
+   <h2><a name="rights">Rights</a></h2>
+
+    <p>
+
+     Copyright &#169; 2000 by the Authors.
+    </p>
+    <p>
+     Permission to use, copy, modify and distribute the RDF Site Summary 1.0 
+     Specification and its accompanying documentation for any purpose and 
+     without fee is hereby granted in perpetuity, provided that the above 
+     copyright notice and this paragraph appear in all copies.  The copyright
+     holders make no representation about the suitability of the specification
+     for any purpose.  It is provided "as is" without expressed or implied
+     warranty.
+    </p>
+    <p>
+     This copyright applies to the RDF Site Summary 1.0 Specification and 
+     accompanying documentation and does not extend to the RSS format itself.
+    </p>
+
+<!-- TOC -->
+
+   <h2><a name="toc">Table of Contents</a></h2>
+
+<dl>
+<dt>1. <a href="#s1">Introduction</a></dt>
+<dt>2. <a href="#s2">Background</a></dt>
+<dt>3. <a href="#s3">Motivation</a></dt>
+<dt>4. <a href="#s4">Design Goals</a></dt>
+
+<dd>4.1 <a href="#s4.1">Lightweight</a></dd>
+<dd>4.2 <a href="#s4.2">Multipurpose</a></dd>
+<dd>4.3 <a href="#s4.3">Extensible</a></dd>
+<dd>4.4 <a href="#s4.4">Metadata</a></dd>
+<dd>4.5 <a href="#s4.5">Syndication</a></dd>
+<dt>5. <a href="#s5">Core Syntax</a></dt>
+
+<dd>5.1 <a href="#s5.1">&lt;?xml version="1.0"?&gt;</a></dd>
+<dd>5.2 <a href="#s5.2">&lt;rdf:RDF&gt;</a></dd>
+<dd>5.3 <a href="#s5.3">&lt;channel&gt;</a></dd>
+<dd class="indent">5.3.1 <a href="#s5.3.1">&lt;title&gt;</a></dd>
+<dd class="indent">5.3.2 <a href="#s5.3.2">&lt;link&gt;</a></dd>
+<dd class="indent">5.3.3 <a href="#s5.3.3">&lt;description&gt;</a></dd>
+
+<dd class="indent">5.3.4 <a href="#s5.3.4">&lt;image&gt;</a></dd>
+<dd class="indent">5.3.5 <a href="#s5.3.5">&lt;items&gt;</a></dd>
+<dd class="indent">5.3.6 <a href="#s5.3.6">&lt;textinput&gt;</a></dd>
+<dd>5.4 <a href="#s5.4">&lt;image&gt;</a></dd>
+<dd class="indent">5.4.1 <a href="#s5.4.1">&lt;title&gt;</a></dd>
+<dd class="indent">5.4.2 <a href="#s5.4.2">&lt;url&gt;</a></dd>
+
+<dd class="indent">5.4.3 <a href="#s5.4.3">&lt;link&gt;</a></dd>
+<dd>5.5 <a href="#s5.5">&lt;item&gt;</a></dd>
+<dd class="indent">5.5.1 <a href="#s5.5.1">&lt;title&gt;</a></dd>
+<dd class="indent">5.5.2 <a href="#s5.5.2">&lt;link&gt;</a></dd>
+<dd class="indent">5.5.3 <a href="#s5.5.3">&lt;description&gt;</a></dd>
+<dd>5.6 <a href="#s5.6">&lt;textinput&gt;</a></dd>
+
+<dd class="indent">5.6.1 <a href="#s5.6.1">&lt;title&gt;</a></dd>
+<dd class="indent">5.6.2 <a href="#s5.6.2">&lt;description&gt;</a></dd>
+<dd class="indent">5.6.3 <a href="#s5.6.3">&lt;name&gt;</a></dd>
+<dd class="indent">5.6.4 <a href="#s5.6.4">&lt;link&gt;</a></dd>
+<dt>6. <a href="#s6">Modules</a></dt>
+<dt>7. <a href="#s7">Examples</a></dt>
+
+<dt>8. <a href="#s8">Resources</a></dt>
+<dt>9. <a href="#s9">Acknowledgements</a></dt>
+</dl>
+
+<!-- Introduction -->
+
+   <h2><a name="s1">1. Introduction</a></h2>
+        <p>
+     RDF Site Summary (RSS) is a lightweight multipurpose
+     extensible metadata description and syndication format.  RSS is
+     an XML application, conforming to the W3C's 
+     <a href="http://www.w3.org/TR/REC-rdf-syntax/">RDF</a> Specification.
+     RSS is extensible via XML-namespace and/or RDF based modularization.
+    </p>
+
+    <p>
+     An RSS summary, at a minimum, is a document describing a "channel" consisting      of URL-retrievable items.  Each item consists of a title, link, and brief description.
+     While items have traditionally been news headlines, RSS has seen much repurposing in
+     its short existence.  For sample RSS 1.0 documents, see the <a href="#s7">Examples</a>
+     section below.
+    </p>
+
+<!-- Background -->
+
+   <h2><a name="s2">2. Background</a></h2>
+
+    <p>
+
+     RSS 0.9 was introduced in 1999 by Netscape as a channel description 
+     framework / content-gathering mechanism for their 
+     <a href="http://my.netscape.com">My Netscape Network</a> (MNN) portal.
+     By providing a simple snapshot-in-a-document, web site producers
+     acquired audience through the presence of their content on My
+     Netscape.
+    </p>
+    <p>
+     A by-product of MNN's work was RSS's use as an XML-based
+     lightweight syndication format, quickly becoming a viable alternative
+     to ad hoc syndication systems and practical in many scenarios where 
+     heavyweight standards like 
+     <a href="http://www.icestandard.org/">ICE</a>
+     were overkill.  And the repurposing didn't stop at headline syndication; 
+     today's RSS feeds carry an array of content types: news headlines, discussion 
+     forums, software announcements, and various bits of proprietary data.
+    </p>
+    <p>
+
+     RSS 0.91, re-dubbed "Rich Site Summary," followed shortly on the
+     heels of 0.9. It had dropped its roots in RDF and sported new
+     elements from <a href="http://www.userland.com">Userland</a>'s 
+     <a href="http://my.userland.com/stories/storyReader$11">scriptingNews</a>
+     format -- most notably being a new item-level &lt;description&gt;      element, bringing RSS into the (lightweight) content syndication arena.
+    </p>
+    <p>
+     While Netscape discontinued its RSS efforts, evangelism by Userland's
+     Dave Winer led to a groundswell of RSS-as-syndication-framework adoption.
+     Inclusion of RSS 0.91 as one of the syndicaton formats
+     for its <a href="http://manila.userland.com/">Manila</a> product and
+     related <a href="http://www.editthispage.com">EditThisPage.com</a>      service brought together the weblog and syndication worlds.
+    </p>
+
+<!-- Motivation -->
+
+   <h2><a name="s3">3. Motivation</a></h2>
+
+    <p>
+     As RSS continues to be re-purposed, aggregated, and categorized,
+     the need for an enhanced metadata framework grows. Channel- and
+     item-level title and description elements are being overloaded with
+     metadata and HTML. Some producers are even resorting to inserting 
+     unofficial ad hoc elements (e.g., &lt;category&gt;, &lt;date&gt;, 
+     &lt;author&gt;) in an attempt to augment the sparse metadata facilities 
+     of RSS.
+    </p>
+
+    <p>
+     One proposed solution is the addition of more simple elements to the
+     RSS core.  This direction, while possibly being the simplest in the short 
+     run, sacrifices scalability and requires iterative modifications to the
+     core format, adding requested and removing unused functionality.  See
+     Ian Davis's 
+     <a href="http://www.egroups.com/message/syndication/330">RSS Survey</a>      (2000-07-25) for a more concrete representation of element usage.
+    </p>
+    <p>
+     A second solution, and the one adopted here, is the compartmentalization 
+     of specific functionality into the pluggable RSS modules.  This is one of 
+     the approaches used in this specification: modularization is achieved by 
+     using <a href="http://www.w3.org/TR/REC-xml-names/">XML Namespaces</a> for
+     partitioning vocabularies.  Adding and removing RSS functionality is then 
+     just a matter of the inclusion of a particular set of modules best suited 
+     to the task at hand.  No reworking of the RSS core is necessary.
+    </p>
+    <p>
+
+     Advanced applications of RSS are demanding richer respresentation of 
+     relationships between intra- and inter-channel elements
+     (e.g. threaded discussions). RDF (Resource Description Framework)
+     provides a framework for just such rich metadata modeling.  RSS
+     0.9 provided a basic (albeit limited) RDF base upon which to
+     layer further structure.
+    </p>
+
+<!-- Design Goals -->
+
+   <h2><a name="s4">4. Design Goals</a></h2>
+
+    <p>
+     The RSS 1.0 design goal is an 
+     <a href="http://www.w3.org/TR/2000/REC-xml-20001006">XML</a>-based 
+     lightweight multipurpose extensible metadata description and syndication 
+     format. Backward compatibility with RSS 0.9 is a goal for ease of 
+     adoption by existing syndicated content producers.
+    </p>
+
+    <h3><a name="s4.1">4.1 Lightweight</a></h3>
+       <p>
+      Much of RSS's success stems from the fact that it is simply an XML
+      document rather than a full syndication framework such as
+      <a href="http://www.xmlnews.org">XMLNews</a> and 
+      <a href="http://www.icestandard.org/">ICE</a>.
+    </p>
+
+
+
+    <p id="s4.1_basic"><a name="s4.1_basic"> </a>
+     The following is a basic sample RSS 1.0 document, making use of only the 
+     core RSS 1.0 element set.
+    </p>
+
+<pre>&lt;?xml version="1.0"?&gt;
+
+&lt;rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/rss/1.0/"
+&gt;
+
+  &lt;channel rdf:about="http://www.xml.com/xml/news.rss"&gt;
+    &lt;title&gt;XML.com&lt;/title&gt;
+
+    &lt;link&gt;http://xml.com/pub&lt;/link&gt;
+    &lt;description&gt;
+      XML.com features a rich mix of information and services 
+      for the XML community.
+    &lt;/description&gt;
+
+    &lt;image rdf:resource="http://xml.com/universal/images/xml_tiny.gif" /&gt;
+
+    &lt;items&gt;
+      &lt;rdf:Seq&gt;
+        &lt;rdf:li resource="http://xml.com/pub/2000/08/09/xslt/xslt.html" /&gt;
+        &lt;rdf:li resource="http://xml.com/pub/2000/08/09/rdfdb/index.html" /&gt;
+      &lt;/rdf:Seq&gt;
+    &lt;/items&gt;
+
+  &lt;/channel&gt;
+    &lt;image rdf:about="http://xml.com/universal/images/xml_tiny.gif"&gt;
+    &lt;title&gt;XML.com&lt;/title&gt;
+    &lt;link&gt;http://www.xml.com&lt;/link&gt;
+
+    &lt;url&gt;http://xml.com/universal/images/xml_tiny.gif&lt;/url&gt;
+  &lt;/image&gt;
+    &lt;item rdf:about="http://xml.com/pub/2000/08/09/xslt/xslt.html"&gt;
+    &lt;title&gt;Processing Inclusions with XSLT&lt;/title&gt;
+    &lt;link&gt;http://xml.com/pub/2000/08/09/xslt/xslt.html&lt;/link&gt;
+
+    &lt;description&gt;
+     Processing document inclusions with general XML tools can be 
+     problematic. This article proposes a way of preserving inclusion 
+     information through SAX-based processing.
+    &lt;/description&gt;
+  &lt;/item&gt;
+    &lt;item rdf:about="http://xml.com/pub/2000/08/09/rdfdb/index.html"&gt;
+    &lt;title&gt;Putting RDF to Work&lt;/title&gt;
+
+    &lt;link&gt;http://xml.com/pub/2000/08/09/rdfdb/index.html&lt;/link&gt;
+    &lt;description&gt;
+     Tool and API support for the Resource Description Framework 
+     is slowly coming of age. Edd Dumbill takes a look at RDFDB, 
+     one of the most exciting new RDF toolkits.
+    &lt;/description&gt;
+  &lt;/item&gt;
+
+&lt;/rdf:RDF&gt;</pre>
+
+    <h3><a name="s4.2">4.2 Multipurpose</a></h3>
+       <p>
+      The 12 months since version 0.91 was released have seen the
+      surfacing of various novel uses for RSS.  RSS is being called
+      upon to evolve with growing application needs: aggregation,
+      discussion threads, job listings, homes for sale (multiple
+      listings services), sports scores, document cataloging, etc.
+      Via XML-namespace based modularization and RDF, RSS 1.0 builds a
+      framework for both standardized and ad hoc re-purposing.
+     </p>
+        <h3><a name="s4.3">4.3 Extensible</a></h3>
+      <p>
+      The crux of the difference between RSS 1.0 and earlier (or lateral) 
+      versions lies in its extensibility via 
+      <a href="http://www.w3.org/TR/REC-xml-names/">XML Namespaces</a> and 
+      <a href="http://www.w3.org/TR/REC-rdf-syntax/">RDF</a> (Resource Description Framework)
+      compliance.
+     </p>
+
+     <p>
+      Namespace-based 
+      <a href="#s6">modules</a>       allow compartmentalized extensibility.  This allows RSS to be extended:
+     </p>
+     <ul>
+      <li>without need of iterative rewrites of the core specification<br /></li>
+      <li> without need of consensus on each and every element<br /></li>
+
+      <li> without bloating RSS with elements the majority of which won't 
+           be used in any particular arena or application<br /></li>
+      <li> without naming collisions</li>
+     </ul>
+     <p>
+      RSS modules are covered in more detail in the <a href="#s6">modules</a> section below.
+     </p>
+
+      <h3><a name="s4.4">4.4 Metadata</a></h3>
+       <p>
+      Metadata is data about data.  While there is no dearth of information floating
+      about the Web, there is precious little description thereof. The W3C's 
+      <a href="http://www.w3.org/Metadata/Activity">Metadata Activity Statement</a>
+      has this to say on the subject:
+     </p>
+
+          <p>
+       The possible uses of the Web seem endless, but there the
+       technology is missing a crucial piece. Missing is a part of the
+       Web which contains information about information - labeling,
+       cataloging and descriptive information structured in such a way
+       that allows Web pages to be properly searched and processed in
+       particular by computer.
+      </p>
+
+          <p>
+      <a href="http://www.w3.org/TR/REC-rdf-syntax">RDF</a>
+      allows for representation of rich metadata 
+      relationships beyond what is possible with earlier flat-structured RSS.
+      The existing RDF base in RSS 0.9 was the reason for choosing to build
+      on the earlier version of RSS; attempting to re-introduce RDF into RSS
+      version 0.91 proved a "putting the toothpaste back into the tube" 
+      proposition.
+     </p>
+          <h3><a name="s4.5">4.5 Syndication</a></h3>
+       <p>
+      Syndication is here defined as making data available online for retrieval and further transmission,
+      aggregation, or online publication.  The specifics of the various intricacies of 
+      syndication systems (free vs. subscription, push vs. pull, etc.) is beyond the scope of 
+      this specification.
+     </p>
+
+<!-- Core Syntax -->
+
+   <h2><a name="s5">5. Core Syntax</a></h2>
+
+    <p>
+     The core of RSS 1.0 is built upon
+     <a href="http://my.netscape.com/publish/help/quickstart.html">RSS 0.9</a>.
+     RSS 1.0's focus is on extensibility through XML-namespaces and RDF 
+     whilst maintaining backward compatibility.
+    </p>
+    <p>
+     Backward Compatibility with RSS 0.9<br />      Backward compatibility is accomplished by the assumption and stipulation 
+     that basic RSS parsers, modules, and libraries ignore what they weren't 
+     designed to understand:
+    </p>
+
+    <ol>
+     <li> Attributes; RSS 0.9 has no attributes outside of the RDF
+     namespace declarations.<br /></li>
+     <li> Element members of modularized extensions residing outside
+     the default namespace.<br /></li>
+     <li> Ad-hoc elements that don't interfere with the overall structure
+     of the RSS 0.9 document.
+     </li>
+    </ol>
+    <p>
+
+     Extensibility via XML Namespace-Based Modularization<br />
+     RSS 1.0 is extensible through XML-namespace based modules.
+     While ad hoc extensibility is of course encouraged, it is hoped
+     that a core set of agreed-upon modules covering such functionality
+     as taxonomy, aggregation, Dublin Core, etc will emerge.  See the
+     <a href="#s6">Modules</a> section below, as well as the registry of core
+     <a href="http://purl.org/rss/1.0/modules/">RSS 1.0 Modules</a>.
+    </p>
+    <p>
+     One restriction imposed on sub-elements of 
+     top-level channel, image, item, and textinput elements
+     [<a href="#s5.3">5.3 &lt;channel&gt;</a>, 
+      <a href="#s5.4">5.4 &lt;image&gt;</a>,
+      <a href="#s5.5">5.5 &lt;item&gt;</a>,
+      <a href="#s5.6">5.6 &lt;textinput&gt;</a>] is that 
+     these elements may not contain repeating sub-elements
+     (e.g. &lt;item&gt;&lt;dc:subject /&gt;&lt;dc:subject /&gt;&lt;/item&gt;).
+     This proposal only constrains the immediate sub-elements. Any
+     further depth (of rich content or repeated elements) is already
+     well-defined using RDF syntax.
+    </p>
+
+    <p>
+     RDF<br />      RSS 1.0 builds on the fledgling RDF framework
+     found in RSS 0.9 (and lost in RSS 0.91) via the following minimal
+     additions:
+    </p>
+    <ul>
+     <li> Each second-level element (channel, image, item, and textinput) 
+     must include an rdf:about attribute 
+     <a href="#s5.3">5.3</a>,
+     <a href="#s5.4">5.4</a>,
+     <a href="#s5.5">5.5</a>,
+     <a href="#s5.6">5.6</a>
+
+     ].<br /></li>
+     <li> A channel-level RDF table of contents associating the image, items, 
+     and textinput with the channel at hand: 
+     [<a href="#s5.3.4">5.3.4 &lt;image&gt;</a>, 
+      <a href="#s5.3.5">5.3.5 &lt;items&gt;</a>,
+      <a href="#s5.3.6">5.3.6 &lt;textinput&gt;</a>] 
+     </li>
+    </ul>
+
+    <p>
+     In order to keep the RDF and plain XML views of RSS 1.0 in synch as much
+     as possible, RSS 1.0 only supports usage of typed-element RDF syntax
+     in the core elements.
+    </p>
+    <p>
+     <a name="s5_mimetype">Mime Type</a><br />
+     The current mime-type recommendation for an RSS 1.0 document is application/xml.
+     However, work is currently being done to register a mime-type for RDF (and 
+     possibly RSS). The RDF (or preferably RSS) mime-type should be used once it
+     has been registered.
+    </p>
+    <p>
+     <a name="s5_fileextension">File Extension</a><br />
+
+     A specific file-extension for an RSS 1.0 document is not required.
+     Either .rdf or .xml is recommended, the former
+     being preferred.
+    </p>
+    <p>
+     <a name="s5_encoding">Encoding</a><br />
+     While RSS 0.9 supported only ASCII encoding, RSS 1.0 assumes 
+     UTF-8.  Using US-ASCII (i.e. encoding all characters over 127 as
+     &amp;#nnn;) is conformant with UTF-8 (and ISO-8859-1, HTTP's default
+     header encoding).
+    </p>
+    <p>
+     URLs<br />
+
+     As a measure to assure backward compatibility with RSS 0.9, 
+     only the following schemes are acceptable in url and link elements:
+     http:, https:, ftp:.  mailto: is acceptable in the textinput's 
+     link element only.
+    </p>
+    <p>
+     Entities:<br />      XML reserves certain characters for markup.  In order to include these in an
+     RSS document, they must be replaced by their entity reference:
+    </p>
+    <ul>
+     <li>&lt; becomes &amp;lt;</li>
+
+     <li>&gt; becomes &amp;gt;</li>
+     <li>&amp; becomes &amp;amp;</li>
+    </ul>
+    <p>
+     The following two entity references are also recognized by
+     conforming XML parsers. While common, their use is optional.  They 
+     are, however, required when including a quote  character in a string
+     quoted using the same character; e.g. ""Hello," she said" should
+     be encoded as "&amp;quot;Hello,&amp;quot; she said".
+    </p>
+
+    <ul>
+     <li>' becomes &amp;apos;</li>
+     <li>" becomes &amp;quot;</li>
+    </ul>
+    <p>
+     Note: Since RSS 1.0 does not require a DTD, be sure to include
+     inline declarations of entities used aside from the aforementioned five.
+     The following DTD fragments are very useful as a source of 
+     HTML-compatible entities.  
+    </p>
+
+    <ul>
+     <li><a href="http://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent">http://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent</a></li>
+     <li><a href="http://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent">http://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent</a></li>
+     <li><a href="http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent">http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent</a></li>
+    </ul>
+    <p>
+     Usage example:
+    </p>
+
+<pre>
+&lt;?xml version="1.0"?&gt;
+
+&lt;!DOCTYPE rdf:RDF [
+&lt;!ENTITY % HTMLlat1 PUBLIC
+ "-//W3C//ENTITIES Latin 1 for XHTML//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent"&gt;
+%HTMLlat1;
+]&gt;
+
+&lt;rdf:RDF
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns="http://purl.org/rss/1.0/"
+&gt;
+
+...</pre>
+
+    <p>
+     Content Length:<br />      While RSS 1.0 leaves acceptable content length for elements such as
+     title, link, and description to the application, RSS 0.9's maximum
+     character lengths are deprecated to a status of suggested good practice 
+     for strict adherence to backward compatibility.
+    </p>
+
+    <p>
+     Notation:<br />      In the following core element descriptions, the following notation
+     is used:
+    </p>
+    <ul>
+
+     <li>{something} is simply a placeholder for a URI, 
+         value, etc.</li>
+     <li>While, in model descriptions a DTD-like syntax is used, this
+         is for presentation purposes only and does not imply
+         order.  Element order is not important.</li>
+     <li>In Model descriptions, ? signifies that an element
+         or attribute is optional.</li>
+     <li>In Model descriptions, + means "one or more" 
+         instances of this element or attribute is allowed.</li>
+     <li>In Model descriptions, * means "zero or more" 
+         instances of this element or attribute is allowed.</li>
+    </ul>
+
+    <h3><a name="s5.1">5.1 &lt;?xml version="1.0"?&gt;</a></h3>
+
+     <p>
+      As an XML application, an RSS document is not required to
+      begin with an XML declaration.  As a best practice suggestion
+      and to further ensure backward compatibility with RSS 0.9 
+      (the specification for 0.9 required it), this specification 
+      recommends doing so.
+     </p>
+     <p>
+      Syntax: &lt;?xml version="1.0"?&gt;<br />
+
+      Requirement: Optional (unless specifying encoding)<br />
+     </p>
+
+    <h3><a name="s5.2">5.2 &lt;rdf:RDF&gt;</a></h3>
+
+     <p>
+      The outermost level in every RSS 1.0 compliant document is the
+      RDF element.  The opening RDF tag assocaties the rdf: namespace
+      prefix with the RDF syntax schema and establishes the RSS 1.0
+      schema as the default namespace for the document.  
+     </p>
+     <p>
+
+      While any valid namespace prefix may be used, document creators 
+      are advised to consider "rdf:" normative.  Those wishing to be
+      strictly backward-compatible with RSS 0.9 must use "rdf:".
+     </p>
+     <p>
+      Syntax: &lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/"&gt;<br />
+      Requirement: Required exactly as shown, aside from any additional namespace
+        declarations<br />
+      Model: (channel, image?, item+, textinput?)
+     </p>
+
+    <h3><a name="s5.3">5.3 &lt;channel&gt;</a></h3>
+
+     <p>
+      The channel element contains metadata describing the channel itself,
+      including a title, brief description, and URL link to the described
+      resource (the channel provider's home page, for instance). 
+      The {resource} URL of the channel element's rdf:about attribute
+      must be unique with respect to any other rdf:about attributes in
+      the RSS document and is a URI which identifies the channel. Most
+      commonly, this is either the URL of the homepage being described
+      or a URL where the RSS file can be found.
+     </p>
+     <p>
+     </p>
+     <p>
+      Syntax: &lt;channel rdf:about="{resource}"&gt;<br />
+      Requirement: Required<br />
+
+      Required Attribute(s): rdf:about<br />
+      Model: (title, link, description, image?, items, textinput?)<br />
+      Example:<br />
+     </p>
+
+<pre>  &lt;channel rdf:about="http://www.xml.com/xml/news.rss"&gt;
+    &lt;title&gt;XML.com&lt;/title&gt;
+
+    &lt;link&gt;http://xml.com/pub&lt;/link&gt;
+    &lt;description&gt;
+      XML.com features a rich mix of information and services 
+      for the XML community.
+    &lt;/description&gt;
+
+    &lt;image rdf:resource="http://xml.com/universal/images/xml_tiny.gif" /&gt;
+
+    &lt;items&gt;
+      &lt;rdf:Seq&gt;
+        &lt;rdf:li resource="http://xml.com/pub/2000/08/09/xslt/xslt.html" /&gt;
+        &lt;rdf:li resource="http://xml.com/pub/2000/08/09/rdfdb/index.html" /&gt;
+      &lt;/rdf:Seq&gt;
+    &lt;/items&gt;
+
+    &lt;textinput rdf:resource="http://search.xml.com" /&gt;
+
+  &lt;/channel&gt;</pre>
+
+    <h3><a name="s5.3.1">5.3.1 &lt;title&gt;</a></h3>
+
+     <p>
+      A descriptive title for the channel.
+     </p>
+
+     <p>
+      Syntax: &lt;title&gt;{channel_title}&lt;/title&gt;<br />
+      Requirement: Required<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 40 (characters)<br />
+
+     </p>
+
+    <h3><a name="s5.3.2">5.3.2 &lt;link&gt;</a></h3>
+
+     <p>
+      The URL to which an HTML rendering of the channel title will link, commonly
+      the parent site's home or news page.
+     </p>
+     <p>
+      Syntax: &lt;link&gt;{channel_link}&lt;/link&gt;<br />
+
+      Requirement: Required<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+    <h3><a name="s5.3.3">5.3.3 &lt;description&gt;</a></h3>
+
+     <p>
+      A brief description of the channel's content, function, source, etc.
+     </p>
+     <p>
+      Syntax: &lt;description&gt;{channel_description}&lt;/description&gt;<br />
+      Requirement: Required<br />
+      Model: (#PCDATA)<br />
+
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+    <h3><a name="s5.3.4">5.3.4 &lt;image&gt;</a></h3>
+
+     <p>
+      Establishes an RDF association between the optional image element 
+      [<a href="#s5.4">5.4</a>] and this particular RSS channel.  The
+      rdf:resource's {image_uri} must be the same as the image element's 
+      rdf:about {image_uri}.
+     </p>
+
+     <p>
+      Syntax: &lt;image rdf:resource="{image_uri}" /&gt;<br />
+      Requirement: Required only if image element present<br />
+      Model: Empty<br />
+     </p>
+
+    <h3><a name="s5.3.5">5.3.5 &lt;items&gt;</a></h3>
+
+     <p>
+      An RDF table of contents, associating the document's items 
+      [<a href="#s5.5">5.5</a>] with 
+      this particular RSS channel.  Each item's rdf:resource {item_uri}
+      must be the same as the associated item element's rdf:about
+      {item_uri}.
+     </p>
+     <p>
+      An RDF Seq (sequence) is used to contain all the items rather than
+      an RDF Bag to denote item order for rendering and reconstruction.  
+     </p>
+     <p>
+      Note that items appearing in the document but not as members of the
+      channel level items sequence are likely to be discarded by RDF parsers.
+     </p>
+
+     <p>
+      Syntax: &lt;items&gt;&lt;rdf:Seq&gt;&lt;rdf:li resource="{item_uri}" /&gt; ... &lt;/rdf:Seq&gt;&lt;/items&gt;<br />
+      Requirement: Required<br />
+     </p>
+
+    <h3><a name="s5.3.6">5.3.6 &lt;textinput&gt;</a></h3>
+
+     <p>
+      Establishes an RDF association between the optional textinput element 
+      [<a href="#s5.6">5.6</a>] and this particular RSS channel.  The 
+      {textinput_uri} rdf:resource must be the same as the textinput element's 
+      rdf:about {textinput_uri}.
+     </p>
+     <p>
+      Syntax: &lt;textinput rdf:resource="{textinput_uri}" /&gt;<br />
+
+      Requirement: Required only if texinput element present<br />
+      Model: Empty<br />
+     </p>
+
+    <h3><a name="s5.4">5.4 &lt;image&gt;</a></h3>
+
+     <p>
+      An image to be associated with an HTML rendering of the channel.  
+      This image should be of a format supported by the majority
+      of Web browsers.  While the later 0.91 specification
+      allowed for a width of 1-144 and height of 1-400, convention (and
+      the 0.9 specification) dictate 88x31.
+     </p>
+
+     <p>
+      Syntax: &lt;image rdf:about="{image_uri}"&gt;<br />
+      Requirement: Optional; if present, must also be present in channel element [<a href="#s5.3.4">5.3.4</a>]<br />
+      Required Attribute(s): rdf:about<br />
+      Model: (title, url, link)<br />
+
+      Example:<br />
+     </p>
+
+<pre>  &lt;image rdf:about="http://xml.com/universal/images/xml_tiny.gif"&gt;
+    &lt;title&gt;XML.com&lt;/title&gt;
+    &lt;link&gt;http://www.xml.com&lt;/link&gt;
+
+    &lt;url&gt;http://xml.com/universal/images/xml_tiny.gif&lt;/url&gt;
+  &lt;/image&gt;</pre>
+
+
+    <h3><a name="s5.4.1">5.4.1 &lt;title&gt;</a></h3>
+
+     <p>
+
+      The alternative text ("alt" attribute) associated with the channel's
+      image tag when rendered as HTML.
+     </p>
+     <p>
+      Syntax: &lt;title&gt;{image_alt_text}&lt;/title&gt;<br />
+      Requirement: Required if the image element is present<br />
+      Model: (#PCDATA)<br />
+
+      (Suggested) Maximum Length: 40<br />
+     </p>
+
+    <h3><a name="s5.4.2">5.4.2 &lt;url&gt;</a></h3>
+
+     <p>
+      The URL of the image to used in the "src" attribute of the channel's 
+      image tag when rendered as HTML.
+     </p>
+     <p>
+
+      Syntax: &lt;url&gt;{image_url}&lt;/url&gt;<br />
+      Requirement: Required if the image element is present<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+    <h3><a name="s5.4.3">5.4.3 &lt;link&gt;</a></h3>
+
+     <p>
+      The URL to which an HTML rendering of the channel image will link.  This,
+      as with the channel's title link, is commonly the parent site's home or 
+      news page.
+     </p>
+     <p>
+      Syntax: &lt;link&gt;{image_link}&lt;/link&gt;<br />
+
+      Requirement: Required if the image element is present<br />
+      Model: (#PCDATA)<br />
+      Member of: image<br />
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+    <h3><a name="s5.5">5.5 &lt;item&gt;</a></h3>
+
+     <p>
+      While commonly a news headline, with RSS 1.0's
+      modular extensibility, this can be just about anything: discussion posting,
+      job listing, software patch -- any object with a URI.  There may be
+      a minimum of one item per RSS document.  While RSS 1.0 does not enforce
+      an upper limit, for backward compatibility with RSS 0.9 and 0.91, a maximum 
+      of fifteen items is recommended.
+     </p>
+     <p>
+     {item_uri} must be unique with respect to any other rdf:about
+     attributes in the RSS document and is a URI which identifies the
+     item. {item_uri} should be identical to the value of the &lt;link&gt;
+     sub-element of the &lt;item&gt; element, if possible.
+     </p>
+
+     <p>
+      Syntax: &lt;item rdf:about="{item_uri}"&gt;<br />
+      Requirement: >= 1<br />
+      Recommendation (for backward compatibility with 0.9x): 1-15<br />
+      Required Attribute(s): rdf:about<br />
+      Model: (title, link, description?)<br />
+
+      Example:<br />
+     </p>
+
+<pre>  &lt;item rdf:about="http://xml.com/pub/2000/08/09/xslt/xslt.html"&gt;
+    &lt;title&gt;Processing Inclusions with XSLT&lt;/title&gt;
+    &lt;link&gt;http://xml.com/pub/2000/08/09/xslt/xslt.html&lt;/link&gt;
+
+    &lt;description&gt;
+     Processing document inclusions with general XML tools can be 
+     problematic. This article proposes a way of preserving inclusion 
+     information through SAX-based processing.
+    &lt;/description&gt;
+  &lt;/item&gt;</pre>
+
+
+    <h3><a name="s5.5.1">5.5.1 &lt;title&gt;</a></h3>
+
+     <p>
+      The item's title.
+     </p>
+     <p>
+      Syntax: &lt;title&gt;{item_title}&lt;/title&gt;<br />
+      Requirement: Required<br />
+      Model: (#PCDATA)<br />
+
+      (Suggested) Maximum Length: 100<br />
+     </p>
+
+    <h3><a name="s5.5.2">5.5.2 &lt;link&gt;</a></h3>
+
+     <p>
+      The item's URL.
+     </p>
+     <p>
+
+      Syntax: &lt;link&gt;{item_link}&lt;/link&gt;<br />
+      Requirement: Required<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+    <h3><a name="s5.5.3">5.5.3 &lt;description&gt;</a></h3>
+
+     <p>
+      A brief description/abstract of the item.
+     </p>
+     <p>
+      Syntax: &lt;description&gt;{item_description}&lt;/description&gt;<br />
+
+      Requirement: Optional<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+
+    <h3><a name="s5.6">5.6 &lt;textinput&gt;</a></h3>
+
+     <p>
+      The textinput element affords a method for submitting form data to
+      an arbitrary URL -- usually located at the parent website.  The 
+      form processor at the receiving end only is assumed to handle the HTTP 
+      GET method.
+     </p>
+     <p>
+      The field is typically used as a search box or subscription form -- among 
+      others.  While this is of some use when RSS documents are rendered as 
+      channels (see <a href="http://my.netscape.com/">MNN</a>) and accompanied
+      by human readable title and description, the ambiguity in automatic
+      determination of meaning of this overloaded element renders it otherwise
+      not particularly useful. RSS 1.0 therefore suggests either deprecation or
+      augmentation with some form of resource discovery of this element in future 
+      versions while maintaining it for backward compatiblity with RSS 0.9.
+     </p>
+     <p>
+     {textinput_uri} must be unique with respect to any other rdf:about
+     attributes in the RSS document and is a URI which identifies the
+     textinput. {textinput_uri} should be identical to the value of the
+     &lt;link&gt; sub-element of the &lt;textinput&gt; element, if possible.
+     </p>
+
+     <p>
+      Syntax: &lt;textinput rdf:about="{textinput_uri}"&gt;<br />
+      Requirement: Optional; if present, must also be present in channel element [<a href="#s5.3.6">5.3.6</a>]<br />
+      Required Attribute(s): rdf:about<br />
+      Model: (title, description, name, link)<br />
+
+      Example:<br />
+     </p>
+
+
+<pre>  &lt;textinput rdf:about="http://search.xml.com"&gt;
+    &lt;title&gt;Search XML.com&lt;/title&gt;
+    &lt;description&gt;Search XML.com's XML collection&lt;/description&gt;
+
+    &lt;name&gt;s&lt;/name&gt;
+    &lt;link&gt;http://search.xml.com&lt;/link&gt;
+  &lt;/textinput&gt;</pre>
+
+
+    <h3><a name="s5.6.1">5.6.1 &lt;title&gt;</a></h3>
+
+     <p>
+      A descriptive title for the textinput field.  For example:
+      "Subscribe" or "Search!"
+     </p>
+     <p>
+      Syntax: &lt;title&gt;{textinput_title}&lt;/title&gt;<br />
+      Description: Textinput title<br />
+
+      Requirement: Required if textinput<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 40<br />
+     </p>
+
+    <h3><a name="s5.6.2">5.6.2 &lt;description&gt;</a></h3>
+
+     <p>
+      A brief description of the textinput field's purpose.  For
+      example: "Subscribe to our newsletter for..." or
+      "Search our site's archive of..."
+     </p>
+     <p>
+      Syntax: &lt;description&gt;{textinput_description}&lt;/description&gt;<br />
+      Requirement: Required if textinput<br />
+      Model: (#PCDATA)<br />
+
+      (Suggested) Maximum Length: 100<br />
+     </p>
+
+    <h3><a name="s5.6.3">5.6.3 &lt;name&gt;</a></h3>
+
+     <p>
+      The text input field's (variable) name.
+     </p>
+     <p>
+
+      Syntax: &lt;name&gt;{textinput_varname}&lt;/name&gt;<br />
+      Requirement: Required if textinput<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+    <h3><a name="s5.6.4">5.6.4 &lt;link&gt;</a></h3>
+
+     <p>
+      The URL to which a textinput submission will be directed
+      (using GET).
+     </p>
+     <p>
+      Syntax: &lt;link&gt;{textinput_action_url}&lt;/link&gt;<br />
+
+      Description: Textinput form action URL<br />
+      Requirement: Required if textinput<br />
+      Model: (#PCDATA)<br />
+      (Suggested) Maximum Length: 500<br />
+     </p>
+
+<!-- Modules -->
+
+   <h2><a name="s6">6. Modules</a></h2>
+
+    <p>
+     Namespace-based modularization affords RSS 1.0 compartmentalized extensibility.
+    </p>
+    <p>
+     The only modules that ship "in the box" with RSS 1.0 are
+     <a href="http://purl.org/rss/1.0/modules/dc/">Dublin Core</a> and 
+     <a href="http://purl.org/rss/1.0/modules/syndication/">Syndication</a>, 
+     Consult the appropriate module documentation for further information.
+    </p>
+
+    <p>
+     Refer to <a href="http://purl.org/rss/1.0/modules/">RSS 1.0 Modules</a>
+     for module creation guidelines and registered core RSS 1.0 modules.
+    </p>
+    <p>
+     Some examples of module usage may be found in the
+                 <a href="#s7">Examples</a> section below.
+    </p>
+
+<!-- Examples -->
+
+   <h2><a name="s7">7. Examples</a></h2>
+
+<!-- Examples: 0.9 -->
+
+
+    <p id="s7_1.0"><a name="s7_1.0"> </a>
+     A basic RSS 1.0 (0.9-like) document, making use of only the core RSS 1.0 element set.
+    </p>
+
+<pre>&lt;?xml version="1.0"?&gt;
+
+&lt;rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/rss/1.0/"
+&gt;
+
+  &lt;channel rdf:about="http://www.xml.com/xml/news.rss"&gt;
+    &lt;title&gt;XML.com&lt;/title&gt;
+    &lt;link&gt;http://xml.com/pub&lt;/link&gt;
+
+    &lt;description&gt;
+      XML.com features a rich mix of information and services 
+      for the XML community.
+    &lt;/description&gt;
+
+    &lt;image rdf:resource="http://xml.com/universal/images/xml_tiny.gif" /&gt;
+
+    &lt;items&gt;
+      &lt;rdf:Seq&gt;
+
+        &lt;rdf:li resource="http://xml.com/pub/2000/08/09/xslt/xslt.html" /&gt;
+        &lt;rdf:li resource="http://xml.com/pub/2000/08/09/rdfdb/index.html" /&gt;
+      &lt;/rdf:Seq&gt;
+    &lt;/items&gt;
+
+    &lt;textinput rdf:resource="http://search.xml.com" /&gt;
+
+  &lt;/channel&gt;
+    &lt;image rdf:about="http://xml.com/universal/images/xml_tiny.gif"&gt;
+    &lt;title&gt;XML.com&lt;/title&gt;
+    &lt;link&gt;http://www.xml.com&lt;/link&gt;
+    &lt;url&gt;http://xml.com/universal/images/xml_tiny.gif&lt;/url&gt;
+
+  &lt;/image&gt;
+    &lt;item rdf:about="http://xml.com/pub/2000/08/09/xslt/xslt.html"&gt;
+    &lt;title&gt;Processing Inclusions with XSLT&lt;/title&gt;
+    &lt;link&gt;http://xml.com/pub/2000/08/09/xslt/xslt.html&lt;/link&gt;
+    &lt;description&gt;
+
+     Processing document inclusions with general XML tools can be 
+     problematic. This article proposes a way of preserving inclusion 
+     information through SAX-based processing.
+    &lt;/description&gt;
+  &lt;/item&gt;
+    &lt;item rdf:about="http://xml.com/pub/2000/08/09/rdfdb/index.html"&gt;
+    &lt;title&gt;Putting RDF to Work&lt;/title&gt;
+    &lt;link&gt;http://xml.com/pub/2000/08/09/rdfdb/index.html&lt;/link&gt;
+
+    &lt;description&gt;
+     Tool and API support for the Resource Description Framework 
+     is slowly coming of age. Edd Dumbill takes a look at RDFDB, 
+     one of the most exciting new RDF toolkits.
+    &lt;/description&gt;
+  &lt;/item&gt;
+
+  &lt;textinput rdf:about="http://search.xml.com"&gt;
+    &lt;title&gt;Search XML.com&lt;/title&gt;
+
+    &lt;description&gt;Search XML.com's XML collection&lt;/description&gt;
+    &lt;name&gt;s&lt;/name&gt;
+    &lt;link&gt;http://search.xml.com&lt;/link&gt;
+  &lt;/textinput&gt;
+
+&lt;/rdf:RDF&gt;</pre>
+
+<!-- Examples: 1.0 w/ Modules -->
+
+
+    <p id="s7_1.0w_modules"><a name="s7_1.0w_modules"> </a>
+     An RSS 1.0 document pulling in elements from various modules
+     (highlighted in different colours).  
+     Note: the modules in this example are for illustrative purposes only; 
+     refer to 
+     <a href="http://purl.org/rss/1.0/modules/">RSS 1.0 Modules</a>
+     for consummate module information.
+    </p>
+
+<pre>&lt;?xml version="1.0" encoding="utf-8"?&gt; &lt;rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+  xmlns:co="http://purl.org/rss/1.0/modules/company/"
+  xmlns:ti="http://purl.org/rss/1.0/modules/textinput/"
+  xmlns="http://purl.org/rss/1.0/"
+&gt;   &lt;channel rdf:about="http://meerkat.oreillynet.com/?_fl=rss1.0"&gt;
+    &lt;title&gt;Meerkat&lt;/title&gt;
+    &lt;link&gt;http://meerkat.oreillynet.com&lt;/link&gt;
+
+    &lt;description&gt;Meerkat: An Open Wire Service&lt;/description&gt;
+    &lt;dc:publisher&gt;The O'Reilly Network&lt;/dc:publisher&gt;
+    &lt;dc:creator&gt;Rael Dornfest (mailto:rael@oreilly.com)&lt;/dc:creator&gt;
+    &lt;dc:rights&gt;Copyright &amp;#169; 2000 O'Reilly &amp;amp; Associates, Inc.&lt;/dc:rights&gt;
+
+    &lt;dc:date&gt;2000-01-01T12:00+00:00&lt;/dc:date&gt;
+    &lt;sy:updatePeriod&gt;hourly&lt;/sy:updatePeriod&gt;
+    &lt;sy:updateFrequency&gt;2&lt;/sy:updateFrequency&gt;
+    &lt;sy:updateBase&gt;2000-01-01T12:00+00:00&lt;/sy:updateBase&gt;
+
+    &lt;image rdf:resource="http://meerkat.oreillynet.com/icons/meerkat-powered.jpg" /&gt;
+
+    &lt;items&gt;
+      &lt;rdf:Seq&gt;
+        &lt;rdf:li resource="http://c.moreover.com/click/here.pl?r123" /&gt;
+      &lt;/rdf:Seq&gt;
+
+    &lt;/items&gt;
+
+    &lt;textinput rdf:resource="http://meerkat.oreillynet.com" /&gt;
+
+  &lt;/channel&gt;
+
+  &lt;image rdf:about="http://meerkat.oreillynet.com/icons/meerkat-powered.jpg"&gt;
+    &lt;title&gt;Meerkat Powered!&lt;/title&gt;
+
+    &lt;url&gt;http://meerkat.oreillynet.com/icons/meerkat-powered.jpg&lt;/url&gt;
+    &lt;link&gt;http://meerkat.oreillynet.com&lt;/link&gt;
+  &lt;/image&gt;
+
+  &lt;item rdf:about="http://c.moreover.com/click/here.pl?r123"&gt;
+
+    &lt;title&gt;XML: A Disruptive Technology&lt;/title&gt;     &lt;link&gt;http://c.moreover.com/click/here.pl?r123&lt;/link&gt;
+    &lt;dc:description&gt;
+      XML is placing increasingly heavy loads on the existing technical
+      infrastructure of the Internet.
+    &lt;/dc:description&gt;
+    &lt;dc:publisher&gt;The O'Reilly Network&lt;/dc:publisher&gt;
+
+    &lt;dc:creator&gt;Simon St.Laurent (mailto:simonstl@simonstl.com)&lt;/dc:creator&gt;
+    &lt;dc:rights&gt;Copyright &amp;#169; 2000 O'Reilly &amp;amp; Associates, Inc.&lt;/dc:rights&gt;
+    &lt;dc:subject&gt;XML&lt;/dc:subject&gt;
+
+    &lt;co:name&gt;XML.com&lt;/co:name&gt;
+    &lt;co:market&gt;NASDAQ&lt;/co:market&gt;
+    &lt;co:symbol&gt;XML&lt;/co:symbol&gt;
+  &lt;/item&gt;   &lt;textinput rdf:about="http://meerkat.oreillynet.com"&gt;
+
+    &lt;title&gt;Search Meerkat&lt;/title&gt;
+    &lt;description&gt;Search Meerkat's RSS Database...&lt;/description&gt;
+    &lt;name&gt;s&lt;/name&gt;
+    &lt;link&gt;http://meerkat.oreillynet.com/&lt;/link&gt;
+
+    &lt;ti:function&gt;search&lt;/ti:function&gt;
+    &lt;ti:inputType&gt;regex&lt;/ti:inputType&gt;
+  &lt;/textinput&gt;
+
+&lt;/rdf:RDF&gt;</pre>
+
+<!-- Resources -->
+
+   <h2><a name="s8">8. Resources</a></h2>
+
+   <ul>
+    <li>Background
+     <ul>
+      <li><a href="http://www.xml.com/pub/2000/07/17/syndication/rss.html">"RSS: Lightweight Web Syndication"</a></li>
+      <li>XML Deviant: <a href="http://www.xml.com/pub/2000/07/05/deviant/rss.html">"RSS Modularization"</a></li>
+
+      <li><a href="http://www.xmlhack.com/read.php?item=621">"Will RSS Fork?"</a></li>
+     </ul>
+    </li>
+    <li>RSS
+     <ul>
+      <li><a href="http://my.netscape.com/publish/help/quickstart.html">Netscape's RSS 0.9 Specification</a></li>
+      <li><a href="http://my.netscape.com/publish/help/mnn20/quickstart.html">Netscape's RSS 0.91 Specification</a></li>
+      <li><a href="http://my.netscape.com/publish/formats/rss-spec-0.91.html">Netscape's RSS 0.91 Specification, Revision 3</a></li>
+
+      <li><a href="http://my.netscape.com/publish/help/futures.html">Netscape's RSS/MNN Future Directions</a></li>
+      <li><a href="http://backend.userland.com/rss091">Userland's RSS 0.91 Specification</a></li>
+      <li><a href="http://www.egroups.com/message/syndication/330">RSS Usage Survey</a> (25 July 2000)</li>
+      <li><a href="http://www.xmltree.com/xml/rootSchema.xml?schema=11">xmlTree's Directory of RSS channels</a></li>
+     </ul>
+    </li>
+
+    <li>RDF &amp; Metadata
+     <ul>
+      <li><a href="http://www.w3.org/RDF/">Resource Description Framework (RDF)</a></li>
+      <li><a href="http://www.w3.org/Metadata/Activity">W3C Metadata Activity Statement</a></li>
+      <li><a href="http://www.ilrt.bris.ac.uk/discovery/rdf-dev/rudolf/rdfviz/">RDFViz</a></li>
+     </ul>
+    </li>
+
+    <li>XML Namespaces
+     <ul>
+      <li><a href="http://www.w3.org/TR/REC-xml-names/">Namespaces in XML</a></li>
+     </ul>
+    </li>
+    <li>Where to go for more...
+     <ul>
+      <li><a href="http://www.oreillynet.com/rss/">O'Reilly Network RSS DevCenter</a></li>
+      <li><a href="http://www.blogspace.com/rss/">RSS Info -- News and information on the RSS format</a></li>
+
+      <li><a href="http://www.webreference.com/perl/tutorial/rss1/">"RSS 1.0: The New Syndication Format"</a></li>
+      <li><a href="http://xmlhack.com/search.php?q=rss">xmlhack</a></li>
+      <li><a href="http://xmlfr.org/index/object.title/RSS_1.0/">XMLfr</a></li>
+     </ul>
+    </li>
+    <li>Mailing Lists
+     <ul>
+      <li><a href="http://purl.org/rss/1.0/mailinglist/">[RSS-DEV] Mailing List</a></li>
+
+      <li><a href="http://www.egroups.com/group/syndication">[Syndication] Mailing List</a></li>
+      <li><a href="http://www.topica.com/lists/alchemy/read">[Alchemy] Mailing List</a></li>
+     </ul>
+    </li>
+   </ul>
+
+<!-- Acknowledgements -->
+
+   <h2><a name="s9">9. Acknowledgements</a></h2>
+
+   <ul>
+    <li>The members of the <a href="http://purl.org/rss/1.0/mailinglist/">[RSS-DEV]</a>, <a href="http://www.egroups.com/group/syndication">[Syndication]</a> and <a href="http://www.oreillynet.com/pub/a/rss/rss-ml.html">[RSS]</a> mailing lists for all their continued discussion and input</li>
+    <li>The members of the <a href="http://my.netscape.com/publish/help/mnn20/quickstart.html">My Netscape Network</a> "Brooklyn" team for RSS 0.9 and 0.91
+        (Eckart Walther, Jeff Treuhaft, Wade Hennesey, Rafael Cedano, Bill Turpin,
+        Dan Libby, and Mike Homer)
+    </li>
+
+    <li><a href="mailto:james@xmltree.com">James Carlyle</a></li>
+    <li><a href="mailto:dale@oreilly.com">Dale Dougherty</a></li>
+    <li><a href="mailto:edd@usefulinc.com">Edd Dumbill</a></li>
+    <li><a href="mailto:peter@oreilly.com">Peter Wiggin</a></li>
+    <li><a href="mailto:dave@userland.com">Dave Winer</a></li>
+  </ul>
+
+ </body>
+
+</html>

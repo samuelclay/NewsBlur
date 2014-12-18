@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  "dc" is reserved for Dublin Core
+  Expect:       ReservedPrefix
+-->
+
+<rss version="2.0" xmlns:dc="http://example.com/rss/marks_made_up_namespace/">
+<channel>
+<title>Made up namespace with reserved prefix</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>"dc" is reserved for Dublin Core</description>
+<dc:foo>bar</dc:foo>
+</channel>
+</rss>

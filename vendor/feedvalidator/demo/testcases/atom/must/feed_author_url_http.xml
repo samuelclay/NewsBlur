@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid feed author url (http)
+  Expect:       ValidURI{parent:author,element:uri}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<author>
+<uri>http://example.com/</uri>
+</author>
+</feed>

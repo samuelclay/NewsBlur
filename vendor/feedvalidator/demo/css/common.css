@@ -1,0 +1,170 @@
+/* ----- general ----- */
+
+body {
+  background: white;
+  color: black;
+  font-size: 100%;
+  /* UNIX-friendly fonts from <http://www.realworldstyle.com/fonts.html> */
+  font-family: "Lucida Grande", "Trebuchet MS", Verdana, Geneva, Lucida, Helvetica, sans-serif;
+}
+
+a.skip {
+  display: none;
+}
+
+div.centered {
+  text-align: center;
+}
+
+p.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ----- logo ----- */
+
+#logo {
+  text-align: center;
+  padding-bottom: 10px;
+  padding-top: 20px;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+  background-color: transparent;
+  color: #444;
+  font-size: 400%;
+  font-family: LuciduxSerif, Georgia, "Book Antiqua", Palatino, serif;
+  font-weight: bold;
+}
+
+h1 a {
+  text-decoration: none;
+}
+
+#rss {
+  letter-spacing: 0.2em;
+}
+
+#f {
+  background-color: transparent;
+  color: #cc0000;
+}
+
+#e1 {
+  background-color: transparent;
+  color: #009900;
+}
+
+#e2 {
+  background-color: transparent;
+  color: #3366cc;
+}
+
+#d {
+  background-color: transparent;
+  color: #cc6633;
+}
+
+#logo p {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: bold;
+}
+
+/* ----- navbar ----- */
+
+/* rounded corners from <http://www.albin.net/CSS/RoundedCorners/> */
+.navbarWrapper {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  padding: 0px;
+  border: 0px;
+}
+
+.navbarContent {
+  margin: 0px;
+  padding: 0px;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.navbarContent p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.roundedCornerSpacer {
+  margin: 0px; padding: 0px; border: 0px;
+  font-size: 1px; line-height: 1px;
+  clear: both;
+}
+
+.borderTL, .borderTR, .borderBL, .borderBR {
+    width: 14px; height: 14px;
+    padding: 0px; border: 0px;
+    z-index: 99;
+}
+
+.borderTL, .borderBL { float: left; clear: both; }
+.borderTR, .borderBR { float: right; clear: right; }
+.borderTL { margin: -1px 0px 0px -1px; }
+.borderTR { margin: -1px -1px 0px 0px; }
+.borderBL { margin: -14px 0px 0px 0px; }
+.borderBR { margin: -14px 0px 0px 0px; }
+
+.borderTL {
+    margin-left: -4px;
+    ma\rgin-left: -1px;
+}
+html>body .borderTL {
+    margin-left: -1px;
+}
+.borderTR {
+    margin-right: -4px;
+    ma\rgin-right: -1px;
+}
+html>body .borderTR {
+    margin-right: -1px;
+}
+.borderBL {
+    margin-left: -3px;
+    ma\rgin-left: 0px;
+}
+html>body .borderBL {
+    margin-left: 0px;
+}
+.borderBR {
+    margin-right: -3px;
+    ma\rgin-right: 0px;
+}
+html>body .borderBR {
+    margin-right: 0px;
+} 
+
+/* ----- footer ----- */
+
+address {
+  font-size: x-small;
+  font-style: normal;
+}
+
+#poweredby {
+  font-size: x-small;
+  background: transparent;
+  color: #333;
+}
+
+code {
+  font-size: larger;
+}

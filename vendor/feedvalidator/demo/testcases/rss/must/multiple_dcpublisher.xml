@@ -1,0 +1,16 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can have multiple dc:publisher
+  Expect:       !DuplicateElement{parent:channel,element:dc:publisher}
+-->
+
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<dc:publisher>Me (me@example.com)</dc:publisher>
+<dc:publisher>You (you@example.com)</dc:publisher>
+</channel>
+</rss>

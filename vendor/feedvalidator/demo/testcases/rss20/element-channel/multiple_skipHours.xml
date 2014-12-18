@@ -1,0 +1,23 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one channel skipHours
+  Expect:       DuplicateElement{parent:channel,element:skipHours}
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS 2.0 test case</title>
+<link>http://www.feedvalidator.org/testcases/rss20/</link>
+<description>can only have one channel skipHours</description>
+<skipHours>
+  <hour>3</hour>
+</skipHours>
+<skipHours>
+  <hour>4</hour>
+</skipHours>
+</channel>
+</rss>

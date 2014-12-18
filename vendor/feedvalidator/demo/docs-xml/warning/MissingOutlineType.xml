@@ -1,0 +1,14 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>An &lt;outline&gt; element with more than just a "text" attribute should have a "type" attribute indicating how the other attributes are to be interpreted.</p>
+</div>
+<div id='explanation'>
+<p>You've used an attribute associated with type <code>rss</code>.</p>
+</div>
+<div id='solution'>
+<p>Either omit the attribute entirely, or change <code>type</code> to be
+<code>rss</code>.</p>
+</div>
+</div>
+</fvdoc>

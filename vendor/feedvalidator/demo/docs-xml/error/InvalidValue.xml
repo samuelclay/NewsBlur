@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid value for <code>foo</code>: "<code>bar</code>"</p>
+</div>
+<div id='explanation'>
+<p>Value out of range.</p>
+</div>
+<div id='solution'>
+<p>Consult the documentation for the attribute for further details.</p>
+</div>
+</div>
+</fvdoc>

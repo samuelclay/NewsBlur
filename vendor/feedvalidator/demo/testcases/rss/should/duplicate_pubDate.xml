@@ -1,0 +1,19 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  channel must not include both pubDate and dc:date
+  Expect:       DuplicateSemantics{core:pubDate,ext:dc:date}
+-->
+
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<title>Duplicate semantics</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>channel must not include both pubDate and dc:date</description>
+<pubDate>Mon, 31 Dec 2002 14:20:20 GMT</pubDate>
+<dc:date>2002-12-31T01:15:07-05:00</dc:date>
+</channel>
+</rss>

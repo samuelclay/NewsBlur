@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  Sample file
+  Expect:       !Error
+-->
+
+<rss version ="2.0"
+
+ xmlns:g="http://base.google.com/ns/1.0">
+
+
+ <channel>
+  	<title>Provider's Title</title>
+  	<description>A description of the channels content.</description>
+  	<link>http://www.providers-website.com</link>
+  
+  <item>
+
+   <title>Google Earth - Explore the World from your PC</title>
+   <description>Read about Google Earth and its many features</description>
+   <link>http://provider-website.com/item1-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image1.jpg</g:image_link>
+   <g:expiration_date>2005-12-20</g:expiration_date>
+   <g:label>Review</g:label> 
+   <g:label>Earth</g:label> 
+   <g:label>Google</g:label> 
+
+   <g:name_of_item_being_reviewed>Google Earth</g:name_of_item_being_reviewed>
+   <g:review_type>Product</g:review_type>
+   <g:reviewer_type>editorial</g:reviewer_type>
+   <g:rating>5</g:rating>
+   <g:url_of_item_being_reviewed>http://earth.google.com/</g:url_of_item_being_reviewed>
+   <g:publish_date>2005-03-24</g:publish_date>
+   <g:author>Jimmy Smith</g:author>
+
+  </item>
+
+  <item>
+
+   <title>Movie Review: Star Wars</title>
+   <description>Movie review for Star Wars </description>
+   <link>http://provider-website.com/item2-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image2.jpg</g:image_link>
+   <g:expiration_date>2005-12-20</g:expiration_date>
+   <g:label>Movie Review</g:label>
+   <g:label>Star Wars</g:label>
+   
+   <g:name_of_item_being_reviewed>Star Wars Movie</g:name_of_item_being_reviewed>
+   <g:review_type>Movies</g:review_type>
+   <g:reviewer_type>editorial</g:reviewer_type>
+   <g:rating>4</g:rating>
+   <g:url_of_item_being_reviewed>http://www.example.com/asp/sp.asp?id=169</g:url_of_item_being_reviewed>
+   <g:publish_date>2004-04-23</g:publish_date>
+   <g:author>Sue Smith</g:author>
+
+  </item>
+ </channel>
+</rss>

@@ -1,0 +1,26 @@
+<!--
+  Author:       Sam Ruby (http://www.intertwingly.net/blog/)
+  Copyright:    Copyright (c) 2006 Sam Ruby
+-->
+
+<!--
+  Description:  duplicate media:title
+  Expect:       DuplicateElement{element:media:title}
+-->
+
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"
+xmlns:creativeCommons="http://backend.userland.com/creativeCommonsRssModule">
+<channel>
+<title>My Movie Review Site</title>
+<link>http://www.foo.com</link>
+<description>I review movies.</description>
+        <item>
+                <title>Movie Title: Is this a good movie?</title>
+                <link>http://www.foo.com/item1.htm</link>
+                <media:content url="http://www.foo.com/trailer.mov" 
+                fileSize="12216320" type="video/quicktime" expression="sample"/>
+                <media:title>foo</media:title>
+                <media:title>bar</media:title>
+        </item>
+</channel>
+</rss>

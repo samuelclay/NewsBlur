@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Feed Validator Documentation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="http://www.feedvalidator.org/favicon.ico" />
+<link rel="shortcut icon" href="http://www.feedvalidator.org/favicon.ico" />
+<style type="text/css" media="screen">@import "../css/common.css";
+@import "../css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+</head>
+<body>
+
+<div id="logo">
+<h1><a href="/"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>Documentation</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+
+<div id="main">
+
+<h2>Tutorials</h2>
+
+<ul>
+<li><a href="howto/declare_namespaces.html">How do I declare namespaces in my RSS feed?</a></li>
+<li><a href="howto/install_and_run.html">How do I install and run the Feed Validator?</a></li>
+
+</ul>
+
+<h2>Specifications</h2>
+
+<ul>
+<li><a href="http://www.atomenabled.org/developers/syndication/atom-format-spec.php">Atom 1.0</a></li>
+<li><a href="rss1.html">RSS 1.0 specification</a></li>
+<li><a href="rss2.html">RSS 2.0 specification</a></li>
+</ul>
+
+<h2>Validator messages</h2>
+
+<h3>Errors</h3>
+<ul>
+<li><a href="error/AtomLinkNotEmpty.html"><code>foo</code> should not have text (all data is in attributes)</a></li>
+<li><a href="error/BadXmlVersion.html">Feeds must specify XML Version 1.0</a></li>
+<li><a href="error/ContainsSystemEntity.html">Feeds must not contain SYSTEM entities</a></li>
+<li><a href="error/DuplicateAtomLink.html">Duplicate alternate links with the same type and hreflang</a></li>
+<li><a href="error/DuplicateElement.html"><code>foo</code> contains more than one <code>bar</code></a></li>
+<li><a href="error/DuplicateValue.html"><code>foo</code> values must not be duplicated within a feed</a></li>
+<li><a href="error/EightDaysAWeek.html">skipDays can not contain more than 7 day elements</a></li>
+<li><a href="error/HttpError.html">HTTP Error</a></li>
+<li><a href="error/HttpProtocolError.html">HTTP Protocol Error</a></li>
+<li><a href="error/IOError.html">IO Error</a></li>
+<li><a href="error/IncorrectDOW.html">Incorrect day of week: <code>foo</code></a></li>
+<li><a href="error/InvalidAccessRestrictionRel.html">Invalid value for access:restriction: <code>foo</code></a></li>
+<li><a href="error/InvalidAddrSpec.html"><code>foo</code> must be an email address</a></li>
+<li><a href="error/InvalidBooleanAttribute.html"><code>foo</code> attribute of <code>bar</code> must be 'true' or 'false'</a></li>
+<li><a href="error/InvalidCommaSeparatedIntegers.html"><code>foo</code> must be comma-separated integers</a></li>
+<li><a href="error/InvalidContact.html"><code>foo</code> must include an email address</a></li>
+<li><a href="error/InvalidContentMode.html"><code>foo</code> is not a valid mode</a></li>
+<li><a href="error/InvalidCoord.html">Invalid Coordinate</a></li>
+<li><a href="error/InvalidCoordList.html">Invalid Coordinate</a></li>
+<li><a href="error/InvalidCountryCode.html">Invalid counry code: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidCreditRole.html">Invalid Credit Role</a></li>
+<li><a href="error/InvalidCurrencyUnit.html">Invalid value for <code>g:currency</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidDay.html"><code>foo</code> must be Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday</a></li>
+<li><a href="error/InvalidDuration.html">Invalid duration: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidEncoding.html">Invalid character encoding: <i>foo</i></a></li>
+<li><a href="error/InvalidExpansionState.html">&lt;expansionState&gt; is a comma-separated list of line numbers.</a></li>
+<li><a href="error/InvalidFloat.html">Invalid value for <code>foo</code>: "<code>bar</code>"</a></li>
+<li><a href="error/InvalidFloatUnit.html">Invalid value for <code>foo</code>: "<code>bar</code>"</a></li>
+<li><a href="error/InvalidFormComponentName.html">Invalid form component name</a></li>
+<li><a href="error/InvalidFullLink.html"><code>foo</code> must be a full URI</a></li>
+<li><a href="error/InvalidFullLocation.html">Invalid value for <code>g:location</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidGender.html">Invalid value for <code>g:gender</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidHeight.html"><code>foo</code> must be between 1 and 400</a></li>
+<li><a href="error/InvalidHour.html"><code>foo</code> must be between an integer 0 and 24</a></li>
+<li><a href="error/InvalidHttpGUID.html"><code>guid</code> must be a full URL, unless isPermaLink attribute is false</a></li>
+<li><a href="error/InvalidIRI.html"><code>foo</code> must be a valid IRI</a></li>
+<li><a href="error/InvalidISO8601Date.html"><code>foo</code> must be an ISO-8601 date</a></li>
+<li><a href="error/InvalidISO8601DateTime.html"><code>foo</code> must be an ISO-8601 date-time</a></li>
+<li><a href="error/InvalidIntUnit.html">Invalid value for <code>foo</code>: "<code>bar</code>"</a></li>
+<li><a href="error/InvalidInteger.html"><code>foo</code> must be an integer</a></li>
+<li><a href="error/InvalidIntegerAttribute.html"><code>foo</code> attribute of <code>bar</code> must be a positive integer</a></li>
+<li><a href="error/InvalidItunesCategory.html"><code>foo</code> is not one of the predefined iTunes categories or sub-categories</a></li>
+<li><a href="error/InvalidLabel.html">Invalid value for <code>g:label</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidLanguage.html"><code>foo</code> must be an ISO-639 language code</a></li>
+<li><a href="error/InvalidLatitude.html"><code>foo</code> must be between -90 and 90</a></li>
+<li><a href="error/InvalidLink.html"><code>foo</code> must be a valid URI</a></li>
+<li><a href="error/InvalidLocalParameter.html">Invalid local parameter name: <i>foo</i></a></li>
+<li><a href="error/InvalidLocalRole.html">Invalid local role: <i>foo</i></a></li>
+<li><a href="error/InvalidLocation.html">Invalid value for <code>foo</code>: "<code>bar</code>"</a></li>
+<li><a href="error/InvalidLongitude.html"><code>foo</code> must be between -180 and 180</a></li>
+<li><a href="error/InvalidMIMEAttribute.html"><code>foo</code> attribute of <code>bar</code> must be a valid MIME type</a></li>
+<li><a href="error/InvalidMIMEType.html"><code>foo</code> is not a valid MIME type</a></li>
+<li><a href="error/InvalidMaritalStatus.html">Invalid value for <code>g:marital_status</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidMediaExpression.html">Invalid content expression: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidMediaHash.html">Invalid Media Hash</a></li>
+<li><a href="error/InvalidMediaMedium.html">Invalid content medium: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidMediaRating.html">Invalid Media Rating</a></li>
+<li><a href="error/InvalidMediaRestriction.html"><code>media:restriction</code> must be 'all' or 'none'</a></li>
+<li><a href="error/InvalidMediaRestrictionRel.html"><code>relationship</code> must be 'allow' or 'disallow'</a></li>
+<li><a href="error/InvalidMediaRestrictionType.html"><code>type</code> must be 'country' or 'uri'</a></li>
+<li><a href="error/InvalidMediaTextType.html">type attribute must be "plain" or "html"</a></li>
+<li><a href="error/InvalidMetaContent.html">Invalid value for <code>content</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidMetaName.html">Invalid value for <code>name</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidNPTTime.html"><code>foo</code> must be an NPT-time</a></li>
+<li><a href="error/InvalidNamespace.html"><code>foo</code> is in an invalid namespace</a></li>
+<li><a href="error/InvalidNonNegativeInteger.html"><code>foo</code> must be a non-negative integer</a></li>
+<li><a href="error/InvalidOPMLVersion.html">The "version" attribute for the opml element must be <code>1.0</code> or <code>1.1</code>.</a></li>
+<li><a href="error/InvalidPaymentMethod.html">Invalid value for <code>g:payment_accepted</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidPercentage.html"><code>foo</code> must be a percentage</a></li>
+<li><a href="error/InvalidPermalink.html"><code>guid</code> must be a full URL, unless isPermaLink attribute is false</a></li>
+<li><a href="error/InvalidPositiveInteger.html"><code>foo</code> must be a positive integer</a></li>
+<li><a href="error/InvalidPriceType.html">Invalid value for <code>g:price_type</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidRDF.html">RDF Parsing Error</a></li>
+<li><a href="error/InvalidRFC2822Date.html"><code>foo</code> must be an RFC-822 date-time</a></li>
+<li><a href="error/InvalidRFC3339Date.html"><code>foo</code> must be an RFC 3339 date-time</a></li>
+<li><a href="error/InvalidRatingType.html">Invalid value for <code>g:rating</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidReviewerType.html">Invalid value for <code>g:reviewer_type</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidSalaryType.html">Invalid value for <code>g:salary_type</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidServiceType.html">Invalid value for <code>g:service</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidSyndicationRight.html">Invalid value for <code>SyndicationRight</code>: <code>foo</code></a></li>
+<li><a href="error/InvalidTAG.html"><code>foo</code> is not a valid TAG</a></li>
+<li><a href="error/InvalidTextType.html">type attribute must be "text", "html", or "xhtml"</a></li>
+<li><a href="error/InvalidTrueFalse.html"><code>foo</code> attribute of <code>bar</code> must be 'true' or 'false'</a></li>
+<li><a href="error/InvalidURI.html"><code>foo</code> is not a valid URI</a></li>
+<li><a href="error/InvalidURIAttribute.html"><code>foo</code> attribute of <code>bar</code> must be a valid URI</a></li>
+<li><a href="error/InvalidURLAttribute.html"><code>foo</code> attribute of <code>bar</code> must be a full URL</a></li>
+<li><a href="error/InvalidURN.html"><code>foo</code> is not a valid URN</a></li>
+<li><a href="error/InvalidUpdatePeriod.html"><code>foo</code> must be hourly, daily, weekly, monthly, or yearly</a></li>
+<li><a href="error/InvalidUriChar.html">Invalid characters in a URI: <code>c</code></a></li>
+<li><a href="error/InvalidValue.html">Invalid value for <code>foo</code>: "<code>bar</code>"</a></li>
+<li><a href="error/InvalidW3CDTFDate.html"><code>foo</code> must be an W3CDTF date</a></li>
+<li><a href="error/InvalidWidth.html"><code>foo</code> must be between 1 and 144</a></li>
+<li><a href="error/InvalidYear.html">Invalid value for <code>g:year</code>: "<code>foo</code>"</a></li>
+<li><a href="error/InvalidYesNo.html"><code>foo</code> attribute of <code>bar</code> must be 'yes', 'no', or 'clean'</a></li>
+<li><a href="error/ItemMustContainTitleOrDescription.html"><code>item</code> must contain either <code>title</code> or <code>description</code></a></li>
+<li><a href="error/MisplacedMetadata.html"><code>foo</code> must appear before all entries</a></li>
+<li><a href="error/MissingAttribute.html">Missing <code>foo</code> attribute: <code>bar</code></a></li>
+<li><a href="error/MissingContentOrAlternate.html">Missing content or alternate link</a></li>
+<li><a href="error/MissingDescription.html">Missing <code>foo</code> element: <code>description</code></a></li>
+<li><a href="error/MissingElement.html">Missing <code>foo</code> element: <code>bar</code></a></li>
+<li><a href="error/MissingHref.html"><code>foo</code> must have an <code>href</code> attribute</a></li>
+<li><a href="error/MissingLink.html">Missing <code>foo</code> element: <code>link</code></a></li>
+<li><a href="error/MissingNamespace.html">Missing namespace for <code>foo</code></a></li>
+<li><a href="error/MissingSummary.html">Missing Summary</a></li>
+<li><a href="error/MissingTitle.html">Missing <code>foo</code> element: <code>title</code></a></li>
+<li><a href="error/MissingXhtmlDiv.html">Missing xhtml:div</a></li>
+<li><a href="error/NoBlink.html">There is no <code>blink</code> element in RSS</a></li>
+<li><a href="error/NoThrWhen.html">There is no <code>thr:when</code> attribute in Atom</a></li>
+<li><a href="error/NotBase64.html"><code>foo</code> claims to be base64-encoded, but isn't</a></li>
+<li><a href="error/NotEnoughHoursInTheDay.html">skipHours can not contain more than 24 hour elements</a></li>
+<li><a href="error/NotEscaped.html"><code>foo</code> claims to be escaped, but isn't</a></li>
+<li><a href="error/NotInANamespace.html">Missing namespace for <code>foo</code></a></li>
+<li><a href="error/NotURLEncoded.html">searchTerms must be URL encoded</a></li>
+<li><a href="error/ObsoleteNamespace.html">Feed uses an obsolete namespace</a></li>
+<li><a href="error/SAXError.html">XML Parsing error: <code>syntax error</code></a></li>
+<li><a href="error/TooLong.html">length of <code>nnn</code> exceeds the maximum allowable for <code>foo</code> of <code>mmm</code></a></li>
+<li><a href="error/TooMany.html"><code>foo</code> contains more than ten <code>bar</code> elements</a></li>
+<li><a href="error/UndeclaredPrefix.html">Undeclared <code>foo</code> prefix: <code>bar</code></a></li>
+<li><a href="error/UndefinedElement.html">Undefined <code>foo</code> element: <code>bar</code></a></li>
+<li><a href="error/UndefinedNamedEntity.html">Undefined named entity: <code>foo</code></a></li>
+<li><a href="error/UnexpectedAttribute.html">Unexpected <i>foo</i> attribute on <i>bar</i> element</a></li>
+<li><a href="error/UnexpectedText.html">Unexpected text</a></li>
+<li><a href="error/UnexpectedWhitespace.html">Whitespace not permitted here</a></li>
+<li><a href="error/UnicodeError.html">UnicodeError: decoding error, invalid data</a></li>
+<li><a href="error/UnknownEncoding.html">Unknown XML character encoding: <i>foo</i></a></li>
+<li><a href="error/UriNotIri.html">IRI found where URL expected</a></li>
+<li><a href="error/ValidatorLimit.html">Unable to validate, due to hardcoded resource limits (<i>limit</i>)</a></li>
+</ul>
+
+<h3>Warnings</h3>
+<ul>
+<li><a href="warning/AttrNotBlank.html"><code>foo</code> attribute of <code>bar</code> should not be blank</a></li>
+<li><a href="warning/BadCharacters.html">The XML encoding does not appear to match the characters used.</a></li>
+<li><a href="warning/CommentRSS.html"><code>wfw:commentRSS</code> should be <code>wfw:commentRss</code></a></li>
+<li><a href="warning/ContainsEmail.html"><code>name</code> should not contain email address</a></li>
+<li><a href="warning/ContainsHTML.html"><code>foo</code> should not contain HTML</a></li>
+<li><a href="warning/ContainsRelRef.html"><code>foo</code> should not contain relative URL references</a></li>
+<li><a href="warning/ContainsScript.html"><code>foo</code> should not contain <code>script</code> tag</a></li>
+<li><a href="warning/ContainsUndeclaredHTML.html"><code>foo</code> should not contain HTML unless declared in the type attribute</a></li>
+<li><a href="warning/CoordComma.html">Comma found in coordinate pair</a></li>
+<li><a href="warning/DangerousStyleAttr.html"><code>style</code> attribute contains potentially dangerous content</a></li>
+<li><a href="warning/DeprecatedDTD.html">The use of this DTD has been deprecated by Netscape</a></li>
+<li><a href="warning/DeprecatedMediaAdult.html"><code>media:adult</code> is deprecated</a></li>
+<li><a href="warning/DuplicateDescriptionSemantics.html">Avoid <code>foo:bar</code></a></li>
+<li><a href="warning/DuplicateEnclosure.html">item contains more than one enclosure</a></li>
+<li><a href="warning/DuplicateEntries.html">Two entries with the same id</a></li>
+<li><a href="warning/DuplicateItemSemantics.html">An <code>item</code> should not include both <code>foo</code> and <code>bar</code></a></li>
+<li><a href="warning/DuplicateSemantics.html">A <code>channel</code> should not include both <code>foo</code> and <code>bar</code></a></li>
+<li><a href="warning/DuplicateUpdated.html">Two entries with the same value for <code>atom:updated</code></a></li>
+<li><a href="warning/EncodingMismatch.html">Your feed appears to be encoded as &ldquo;<i>foo</i>&rdquo;, but your server is reporting &ldquo;<i>bar</i>&rdquo;</a></li>
+<li><a href="warning/HtmlFragment.html">type <code>foo/bar</code> used for a document fragment</a></li>
+<li><a href="warning/ImageLinkDoesntMatch.html">Image link doesn't match channel link</a></li>
+<li><a href="warning/ImageUrlFormat.html">Image not in required format</a></li>
+<li><a href="warning/ImplausibleDate.html">Implausible date: <code>foo</code></a></li>
+<li><a href="warning/InvalidAdultContent.html">Non-boolean value for <code>AdultContent</code>: <code>foo</code></a></li>
+<li><a href="warning/InvalidExtensionAttr.html">Invalid extension attribute: <code>(namespace,name)</code></a></li>
+<li><a href="warning/InvalidKeywords.html">Use commas to separate keywords</a></li>
+<li><a href="warning/InvalidOutlineType.html">The type attribute on an &lt;outline&gt; element should be a known type.</a></li>
+<li><a href="warning/InvalidOutlineVersion.html">An &lt;outline&gt; element whose type is "rss" may have a version attribute, whose value must be RSS, RSS1, RSS2, or scriptingNews.</a></li>
+<li><a href="warning/MisplacedXHTMLContent.html">Misplaced XHTML content</a></li>
+<li><a href="warning/MissingEncoding.html">No character encoding was specified</a></li>
+<li><a href="warning/MissingGuid.html"><code>item</code> should contain a <code>guid</code> element</a></li>
+<li><a href="warning/MissingItunesElement.html">Missing recommended iTunes <code>foo</code> element: <code>bar</code></a></li>
+<li><a href="warning/MissingItunesEmail.html">The recommended <code>&lt;itunes:email&gt;</code> element is missing</a></li>
+<li><a href="warning/MissingOutlineType.html">An &lt;outline&gt; element with more than just a "text" attribute should have a "type" attribute indicating how the other attributes are to be interpreted.</a></li>
+<li><a href="warning/MissingSelf.html">Missing <code>atom:link</code> with <code>rel="self"</code></a></li>
+<li><a href="warning/MissingSourceElement.html">Missing source element: <code>foo</code></a></li>
+<li><a href="warning/MissingTextualContent.html">Missing Textual Content</a></li>
+<li><a href="warning/MissingTitleAttr.html">Missing outline attribute: title</a></li>
+<li><a href="warning/MissingTypeAttr.html">Missing content attribute: type</a></li>
+<li><a href="warning/MissingUrlAttr.html">Missing outline attribute: url</a></li>
+<li><a href="warning/MissingXmlURL.html">An &lt;outline&gt; element whose type is "rss" must have an "xmlUrl" attribute.</a></li>
+<li><a href="warning/NonCanonicalURI.html">Identifier &ldquo;foo&rdquo; is not in canonical form (tha canonical form would be &ldquo;bar&rdquo;)</a></li>
+<li><a href="warning/NonSpecificMediaType.html">'<i>foo</i>' media type is not specific enough</a></li>
+<li><a href="warning/NotBlank.html"><code>foo</code> should not be blank</a></li>
+<li><a href="warning/NotHtml.html">Invalid HTML: <code>explanation</code></a></li>
+<li><a href="warning/NotInline.html"><code>foo</code> claims to be inline, but may contain HTML.</a></li>
+<li><a href="warning/NotSufficientlyUnique.html">The specified guid is not sufficiently unique.</a></li>
+<li><a href="warning/NotUTF8.html">iTunes elements should only be present in feeds encoded as UTF-8</a></li>
+<li><a href="warning/ObscureEncoding.html">Obscure XML character encoding: <i>foo</i></a></li>
+<li><a href="warning/ObsoleteItunesCategory.html"><code>foo</code> is an obsolete iTunes category or sub-category</a></li>
+<li><a href="warning/ObsoleteVersion.html">Feed is an obsolete version</a></li>
+<li><a href="warning/ObsoleteWikiNamespace.html">Obsolete Wiki Namespace</a></li>
+<li><a href="warning/ProblematicalRFC822Date.html">Problematical RFC 822 date-time value</a></li>
+<li><a href="warning/ReservedPrefix.html">The prefix <code>foo</code> generally is associated with the namespace <code>http://some/other/namespace</code></a></li>
+<li><a href="warning/SameDocumentReference.html">Same-document reference</a></li>
+<li><a href="warning/SchemeNotIANARegistered.html">URI scheme not IANA registered: <code>foo</code></a></li>
+<li><a href="warning/SecurityRisk.html"><code>foo</code> should not contain <code>script</code> tag</a></li>
+<li><a href="warning/SecurityRiskAttr.html"><code>foo</code> should not contain <code>script</code> attribute</a></li>
+<li><a href="warning/SelfDoesntMatchLocation.html">Self reference doesn't match document location</a></li>
+<li><a href="warning/SelfNotAtom.html">"self" link references a non-Atom representation.</a></li>
+<li><a href="warning/ShouldIncludeExample.html"><code>OpenSearchDescription</code> should include an example <code>Query</code></a></li>
+<li><a href="warning/UndeterminableVocabulary.html">Missing namespace for <code>foo</code></a></li>
+<li><a href="warning/UnexpectedContentType.html">Feeds should not be served with the '<i>foo</i>' media type</a></li>
+<li><a href="warning/UnregisteredAtomLinkRel.html"><code>foo</code> is not a registered <code>link</code> relationship</a></li>
+<li><a href="warning/UnsupportedItunesFormat.html">Format <code>foo</code> is not supported by iTunes</a></li>
+</ul>
+
+<h3>Information</h3>
+<ul>
+<li><a href="info/NonstdEncoding.html">This encoding is not mandated by the XML specification: <i>foo</i></a></li>
+<li><a href="info/W3CDTFDateNonUTC.html">Date should be a UTC date</a></li>
+</ul>
+
+</div><!--main-->
+
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="../">Home</a> &middot;
+<a href="../about.html">About</a> &middot;
+<a href="../news/">News</a> &middot;
+<a href="../docs/">Docs</a> &middot;
+<a href="../terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper --> 
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-3 <a href="http://diveintomark.org/">Mark Pilgrim</a> and <a href="http://www.intertwingly.net/blog/">Sam Ruby</a></address>
+</div>
+
+</body>
+</html>

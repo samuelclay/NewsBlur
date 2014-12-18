@@ -1,0 +1,23 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  description contains html
+  Expect:       ContainsHTML{parent:image,element:description}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Valid image</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>foo</description>
+<image>
+<title>Valid image</title>
+<link>http://purl.org/rss/2.0/</link>
+<url>http://example.com/image.jpg</url>
+<description>Description should &lt;b&gt;not&lt;/b&gt; contain HTML</description>
+</image>
+</channel>
+</rss>

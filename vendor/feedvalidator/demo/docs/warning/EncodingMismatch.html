@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Your feed appears to be encoded as &#8220;foo&#8221;, but your server is reporting &#8220;bar&#8221;</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css" media="screen">@import "../../css/common.css";
+@import "../../css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+<link rel="start" href="http://feedvalidator.org/docs/" title="Home" />
+</head>
+<body>
+<div id="logo">
+<h1><a href="../../"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>Documentation</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+<h2>Message</h2>
+<div class="docbody">
+<p>Your feed appears to be encoded as &ldquo;<i>foo</i>&rdquo;, but your server is reporting &ldquo;<i>bar</i>&rdquo;</p>
+</div>
+<h2>Explanation</h2>
+
+<div class="docbody">
+<p>The XML appears to be using one encoding, but the HTTP headers from the
+web server indicate a different charset. Internet standards require that the
+web server's version takes preference, but many aggregators ignore this.
+Note that, if you are serving content as '<code>text/*</code>', then
+the default charset is US-ASCII, which is probably not what you want.
+(See
+<a href="http://www.faqs.org/rfcs/rfc3023.html" title="RFC 3023 (rfc3023) - XML Media Types">RFC 3023</a> for technical details.)</p>
+<p>RSS feeds should be served as <code>application/rss+xml</code>
+(RSS 1.0 is an RDF format, so it may be served as
+<code>application/rdf+xml</code> instead).
+Atom feeds should use <code>application/atom+xml</code>.
+Alternatively, for compatibility with widely-deployed web browsers, any of
+these feeds can use one of the more
+general XML types -  preferably <code>application/xml</code>.</p>
+<p>Another possible cause is the use of single quotes to delimit the charset parameter in the http header, whereas the http definition of <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2.2">Basic Rules</a> only permits the use of double quotes.  The result is somewhat confusing messages such as:</p>
+<blockquote>
+<p>
+Your feed appears to be encoded as &ldquo;utf-8&rdquo;, but your server is reporting &ldquo;'utf-8'&rdquo;
+</p>
+</blockquote>
+</div>
+<h2>Solution</h2>
+<div class="docbody">
+<p>Either ensure that the charset parameter of the <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">HTTP Content-Type header</a> matches the
+<a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-EncodingDecl">encoding
+declaration</a>, or ensure that the server makes no claims
+about the encoding. Serving the feed as <code>application/xml</code> means
+that the encoding will be taken from the file's declaration.</p>
+<p>The W3C has 
+<a href="http://www.w3.org/International/O-HTTP-charset">published
+information</a> on how to set the HTTP charset parameter with various popular
+web servers.</p>
+<p>If you are unable to control your server's charset declaration,
+<a href="http://www.w3.org/TR/2000/REC-xml-20001006#sec-references">Character
+and Entity References</a> may be used to specify the full range of Unicode
+characters in an feed served as US-ASCII.</p>
+</div>
+<h2>Not clear?  Disagree?</h2>
+<div class="docbody">
+<p>Let us know on the <a href="http://lists.sourceforge.net/lists/listinfo/feedvalidator-users">feedvalidator-users</a> discussion list!</p>
+</div>
+
+</div><!--main-->
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="../../">Home</a> &middot;
+<a href="../../about.html">About</a> &middot;
+<a href="../../news/">News</a> &middot;
+<a href="../../docs/">Docs</a> &middot;
+<a href="../../terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper -->
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-4 <a href="http://diveintomark.org/">Mark Pilgrim</a> and <a href="http://www.intertwingly.net/blog/">Sam Ruby</a></address>
+</div>
+
+</body>
+</html>

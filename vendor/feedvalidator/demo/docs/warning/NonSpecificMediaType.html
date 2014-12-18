@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>'foo' media type is not specific enough</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="http://www.feedvalidator.org/favicon.ico" />
+<link rel="shortcut icon" href="http://www.feedvalidator.org/favicon.ico" />
+<style type="text/css" media="screen">@import "../../css/common.css";
+@import "../../css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+<link rel="start" href="http://feedvalidator.org/docs/" title="Home" />
+</head>
+<body>
+<div id="logo">
+<h1><a href="../../"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>Documentation</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+<h2>Message</h2>
+<div class="docbody">
+<p>'<i>foo</i>' media type is not specific enough</p>
+</div>
+<h2>Explanation</h2>
+
+<div class="docbody">
+<p>The web server is reporting an MIME type that is not
+specific enough for consumers to consistently identify it as a a feed.
+Although we tried to parse it as a feed, aggregators may well report this
+as an error and act as if the user had pointed them at something other than
+a feed.</p>
+</div>
+<h2>Solution</h2>
+<div class="docbody">
+<p>RSS feeds should be served as <code>application/rss+xml</code>.
+Atom feeds should use <code>application/atom+xml</code>.</p>
+<ul>
+<li>For static content served with Apache, use the 
+<a href="http://httpd.apache.org/docs/mod/mod_mime.html#addtype">AddType</a>
+directive.</li>
+<li>For static content served with Microsoft IIS,
+<a href="http://www.microsoft.com/resources/documentation/WindowsServ/2003/all/deployguide/en-us/Default.asp?url=/resources/documentation/WindowsServ/2003/all/deployguide/en-us/iisdg_dep_wzvf.asp">add a MIME type</a>.</li>
+<li>Other information can be found
+<a href="http://www.w3.org/International/O-HTTP-charset">here</a> or in the documentation provided by your server.</li>
+</ul>
+<p>If this is not possible, make sure that one of the following set of markers is present in the first 512 bytes of your feed:</p>
+<ul>
+<li><code>&lt;rss</code></li>
+<li><code>&lt;feed</code></li>
+<li><code>&lt;rdf:RDF</code> <b>AND</b>
+<code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code> <b>AND</b>
+<code>http://purl.org/rss/1.0/</code></li>
+</ul>
+<p>For more information see:</p>
+<ul>
+<li><a href="http://blogs.msdn.com/rssteam/articles/PublishersGuide.aspx">Windows RSS Publisher's Guide</a></li>
+<li><a href="http://weblogs.mozillazine.org/ben/archives/010116.html">A Journey Through Feed Handling</a></li>
+</ul>
+</div>
+<h2>Not clear?  Disagree?</h2>
+<div class="docbody">
+<p>Let us know on the <a href="http://lists.sourceforge.net/lists/listinfo/feedvalidator-users">feedvalidator-users</a> discussion list!</p>
+</div>
+
+</div><!--main-->
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="../../">Home</a> &middot;
+<a href="../../about.html">About</a> &middot;
+<a href="../../news/">News</a> &middot;
+<a href="../../docs/">Docs</a> &middot;
+<a href="../../terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper -->
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-4 <a href="http://diveintomark.org/">Mark Pilgrim</a> and <a href="http://www.intertwingly.net/blog/">Sam Ruby</a></address>
+</div>
+
+</body>
+</html>

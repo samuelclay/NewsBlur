@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Justification:
+
+  The guidelines for validating OPML imply that a "link" outline has
+  an address of some sort. While an actual attribute name is never
+  specified, the example given shows the attribute to be "url".
+
+  As confirmation, OPML Validator Beta specifically detects a missing
+  url attribute as an error when the outline type is "link".
+-->
+
+<!--
+  Description:  A url attribute is required in a "link" outline
+  Expect:       MissingUrlAttr{element:outline}
+-->
+
+<opml version="1.1">
+	<head>
+		<title>Missing url Attribute</title>
+		</head>
+	<body>
+		<outline text="Outline text" type="link"/>
+		</body>
+	</opml>

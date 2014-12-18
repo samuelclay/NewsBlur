@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> must be hourly, daily, weekly, monthly, or yearly</p>
+</div>
+<div id='explanation'>
+<p><code>sy:updatePeriod</code> elements must be one of the following strings: "hourly", "daily", "weekly", "monthly", or "yearly".</p>
+</div>
+<div id='solution'>
+<p>Fix it.  (Note that the value is case-sensitive, and should be all lowercase with no surrounding quotes.)</p>
+</div>
+</div>
+</fvdoc>

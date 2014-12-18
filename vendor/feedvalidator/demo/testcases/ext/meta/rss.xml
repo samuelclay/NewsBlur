@@ -1,0 +1,14 @@
+<!--
+  Description:  meta robot noindex - RSS 2.0
+  Expect:       !Error
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS 2.0 test case</title>
+<link>http://publisher.yahoo.com/rss_guide/faq.php</link>
+<description>noindex</description>
+<meta xmlns="http://www.w3.org/1999/xhtml" name="robots" content="noindex" />
+</channel>
+</rss>
+

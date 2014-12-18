@@ -1,0 +1,24 @@
+<!--
+  Author:       Sam Ruby (http://www.intertwingly.net/blog/)
+  Copyright:    Copyright (c) 2006 Sam Ruby
+-->
+
+<!--
+  Description:  invalid media restriction - allow bogus
+  Expect:       InvalidMediaRestriction
+-->
+
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+<title>My Movie Review Site</title>
+<link>http://www.foo.com</link>
+<description>I review movies.</description>
+        <item>
+                <title>Movie Title: Is this a good movie?</title>
+                <link>http://www.foo.com/item1.htm</link>
+                <media:content url="http://www.foo.com/trailer.mov" 
+                fileSize="12216320" type="video/quicktime" expression="sample"/>
+                <media:restriction relationship="allow">bogus</media:restriction>
+        </item>
+</channel>
+</rss>

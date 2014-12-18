@@ -1,0 +1,17 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Feed is an obsolete version</p>
+</div>
+<div id='explanation'>
+<p>This document appears to be based an obsolete version of the specification.</p>
+</div>
+<div id='solution'>
+<p>Early adopters of the Atom format should upgrade their feed to conform to <a href="http://www.ietf.org/rfc/rfc4287">RFC 4287</a>.  For more information about Atom, please see the
+<a href="http://www.atomenabled.org/">AtomEnabled.org</a> web site.</p>
+<p>If you are looking to validate an Atom 0.3 feed,
+<a href="http://www.kbcafe.com/rss/?guid=20041030111147">this validator</a>
+does not appear to have been upgraded to support Atom 1.0 yet.</p>
+</div>
+</div>
+</fvdoc>

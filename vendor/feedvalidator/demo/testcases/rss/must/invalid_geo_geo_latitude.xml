@@ -1,0 +1,24 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: Oversize geo:lat
+  Expect: InvalidLatitude{parent:item,element:geo:lat,value:91.048}
+-->
+
+<rss version="2.0"
+  xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+>
+  <channel>
+    <title>Geographic extensions test</title>
+    <link>http://philringnalda.com/</link>
+    <description>Foo.</description>
+    <item>
+      <title>trainedmonkey</title>
+      <link>http://trainedmonkey.com/</link>
+      <geo:long>-118.2473</geo:long>
+      <geo:lat>91.048</geo:lat>
+    </item>
+  </channel>
+</rss>

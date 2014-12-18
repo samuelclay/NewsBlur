@@ -1,0 +1,23 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>UnicodeError: decoding error, invalid data</p>
+</div>
+<div id='explanation'>
+<p>Your feed contains an invalid character.</p>
+</div>
+<div id='solution'>
+<p>A common cause of this error is having a high-bit character (such as a curly quote or curly apostrophe) in your RSS feed.  This can happen if you copy-and-paste a quote from another page that contains curly quotes.  For maximum compatibility with readers, you should remove the invalid character or use a numeric entity equivalent.</p>
+
+<p>You can also try changing your character encoding to a more liberal encoding.  For example, if you have this at the top of your feed:</p>
+
+<p><samp>&lt;?xml version="1.0" encoding="utf-8"?&gt;</samp></p>
+
+<p>Try changing it to this:</p>
+
+<p><samp>&lt;?xml version="1.0" encoding="iso-8859-1"?&gt;</samp></p>
+
+<p>This can be a difficult error to diagnose, because the validator can not give you the exact location of the error.  (This is due to a limitation of our parsing library; sorry, we tried very hard to work around it!)  For example, if the validator says the error occurred at the end of a <code>description</code> element, the actual invalid character could be anywhere within the description.</p>
+</div>
+</div>
+</fvdoc>

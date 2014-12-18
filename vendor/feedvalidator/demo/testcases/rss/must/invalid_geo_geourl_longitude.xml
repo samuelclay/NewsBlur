@@ -1,0 +1,24 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: Oversize geourl_longitude
+  Expect: InvalidLongitude{parent:item,element:geourl:longitude,value:-188.2473}
+-->
+
+<rss version="2.0"
+  xmlns:geourl="http://geourl.org/rss/module/"
+>
+  <channel>
+    <title>Geographic extensions test</title>
+    <link>http://philringnalda.com/</link>
+    <description>Foo.</description>
+    <item>
+      <title>trainedmonkey</title>
+      <link>http://trainedmonkey.com/</link>
+      <geourl:longitude>-188.2473</geourl:longitude>
+      <geourl:latitude>34.048</geourl:latitude>
+    </item>
+  </channel>
+</rss>

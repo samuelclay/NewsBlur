@@ -1,0 +1,15 @@
+<!--
+  Description:  Unescaped ampersand
+  Expect:       SAXError
+-->
+
+<opml version="1.1">
+  <head>
+    <title>This & That</title>
+  </head>
+  <body>
+    <outline text="Folder">
+      <outline text="Nick Bradbury & Co" type="rss" xmlUrl="http://feeds.feedburner.com/NickBradbury" htmlUrl="http://nick.typepad.com/blog/"/>
+    </outline>
+  </body>
+</opml>

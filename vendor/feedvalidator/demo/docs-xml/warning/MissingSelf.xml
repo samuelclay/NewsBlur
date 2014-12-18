@@ -1,0 +1,18 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Missing <code>atom:link</code> with <code>rel="self"</code></p>
+</div>
+<div id='explanation'>
+<p>atom:feed elements SHOULD contain one atom:link element with a rel
+attribute value of "self".  This is the preferred URI for
+retrieving Atom Feed Documents representing this Atom feed.</p>
+<p>This value is important in a number of subscription scenarios where
+often times the feed aggregator only has access to the content of
+the feed and not the location from which the feed was fetched.</p>
+</div>
+<div id='solution'>
+<p>Insert a fully qualified link to your feed using rel="self".</p>
+</div>
+</div>
+</fvdoc>

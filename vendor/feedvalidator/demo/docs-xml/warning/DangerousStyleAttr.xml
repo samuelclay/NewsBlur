@@ -1,0 +1,99 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>style</code> attribute contains potentially dangerous content</p>
+</div>
+<div id='explanation'>
+<p>Style attributes are very problematic in feeds.  One one hand, they can be used to convey important Unicode or accessibility information.  Style attributes even at times have been used to convey semantic information.  But on the other hand, they can be used as Trojan Horses and cause dangerous scripts to be executed.</p>
+
+<p>The list of dangerous properties varies from browser to browser, and even
+from browser version to browser version.  As such the Feed Validator takes a
+white-list approach, and only accepts the following CSS properties:</p>
+
+<blockquote>
+<code>azimuth</code>,
+<code>background</code>,
+<code>background-color</code>,
+<code>border</code>,
+<code>border-bottom</code>,
+<code>border-bottom-color</code>,
+<code>border-bottom-style</code>,
+<code>border-bottom-width</code>,
+<code>border-collapse</code>,
+<code>border-color</code>,
+<code>border-left</code>,
+<code>border-left-color</code>,
+<code>border-left-style</code>,
+<code>border-left-width</code>,
+<code>border-right</code>,
+<code>border-right-color</code>,
+<code>border-right-style</code>,
+<code>border-right-width</code>,
+<code>border-spacing</code>,
+<code>border-style</code>,
+<code>border-top</code>,
+<code>border-top-color</code>,
+<code>border-top-style</code>,
+<code>border-top-width</code>,
+<code>border-width</code>,
+<code>clear</code>,
+<code>color</code>,
+<code>cursor</code>,
+<code>direction</code>,
+<code>display</code>,
+<code>elevation</code>,
+<code>float</code>,
+<code>font</code>,
+<code>font-family</code>,
+<code>font-size</code>,
+<code>font-style</code>,
+<code>font-variant</code>,
+<code>font-weight</code>,
+<code>height</code>,
+<code>letter-spacing</code>,
+<code>line-height</code>,
+<code>margin</code>,
+<code>margin-bottom</code>,
+<code>margin-left</code>,
+<code>margin-right</code>,
+<code>margin-top</code>,
+<code>overflow</code>,
+<code>padding</code>,
+<code>padding-bottom</code>,
+<code>padding-left</code>,
+<code>padding-right</code>,
+<code>padding-top</code>,
+<code>pause</code>,
+<code>pause-after</code>,
+<code>pause-before</code>,
+<code>pitch</code>,
+<code>pitch-range</code>,
+<code>richness</code>,
+<code>speak</code>,
+<code>speak-header</code>,
+<code>speak-numeral</code>,
+<code>speak-punctuation</code>,
+<code>speech-rate</code>,
+<code>stress</code>,
+<code>text-align</code>,
+<code>text-decoration</code>,
+<code>text-indent</code>,
+<code>unicode-bidi</code>,
+<code>vertical-align</code>,
+<code>voice-family</code>,
+<code>volume</code>,
+<code>white-space</code>, and
+<code>width</code>
+</blockquote>
+<p>Additionally, the values of a number of these properties can be problematic
+to verify as safe, so any references to URIs or difficult to parse
+constructs should be avoided.</p>
+</div>
+<div id='solution'>
+<p>Consider simplifying or completely removing the potentially unsafe
+<code>style</code> attribute.  At a minimum, ensure that your content will
+still display as intended if this attribute is stripped by 
+<a href="http://diveintomark.org/archives/2003/06/12/how_to_consume_rss_safely">security conscious clients</a>.</p>
+</div>
+</div>
+</fvdoc>

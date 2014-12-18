@@ -1,0 +1,21 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>An <code>item</code> should not include both <code>foo</code> and <code>bar</code></p>
+</div>
+<div id='explanation'>
+<p>This <code>item</code> contains two elements which mean the same thing.  This can occur in RSS 2.0 when you mix core elements and namespace elements.  This can confuse news aggregators and RSS parsers, since there are no universally accepted rules about which element takes precedence.</p>
+
+<p>Examples of <code>item</code> elements that mean the same thing:</p>
+
+<p><samp>author</samp> and <samp>dc:creator</samp></p>
+
+<p><samp>category</samp> and <samp>dc:subject</samp></p>
+
+<p><samp>source</samp> and <samp>dc:source</samp></p>
+</div>
+<div id='solution'>
+<p>Remove one of the duplicate elements.</p>
+</div>
+</div>
+</fvdoc>

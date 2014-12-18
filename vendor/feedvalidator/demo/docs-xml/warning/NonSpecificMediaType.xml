@@ -1,0 +1,40 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>'<i>foo</i>' media type is not specific enough</p>
+</div>
+<div id='explanation'>
+<p>The web server is reporting an MIME type that is not
+specific enough for consumers to consistently identify it as a a feed.
+Although we tried to parse it as a feed, aggregators may well report this
+as an error and act as if the user had pointed them at something other than
+a feed.</p>
+</div>
+<div id='solution'>
+<p>RSS feeds should be served as <code>application/rss+xml</code>.
+Atom feeds should use <code>application/atom+xml</code>.</p>
+<ul>
+<li>For static content served with Apache, use the 
+<a href="http://httpd.apache.org/docs/mod/mod_mime.html#addtype">AddType</a>
+directive.</li>
+<li>For static content served with Microsoft IIS,
+<a href="http://www.microsoft.com/resources/documentation/WindowsServ/2003/all/deployguide/en-us/Default.asp?url=/resources/documentation/WindowsServ/2003/all/deployguide/en-us/iisdg_dep_wzvf.asp">add a MIME type</a>.</li>
+<li>Other information can be found
+<a href="http://www.w3.org/International/O-HTTP-charset">here</a> or in the documentation provided by your server.</li>
+</ul>
+<p>If this is not possible, make sure that one of the following set of markers is present in the first 512 bytes of your feed:</p>
+<ul>
+<li><code>&lt;rss</code></li>
+<li><code>&lt;feed</code></li>
+<li><code>&lt;rdf:RDF</code> <b>AND</b>
+<code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code> <b>AND</b>
+<code>http://purl.org/rss/1.0/</code></li>
+</ul>
+<p>For more information see:</p>
+<ul>
+<li><a href="http://blogs.msdn.com/rssteam/articles/PublishersGuide.aspx">Windows RSS Publisher's Guide</a></li>
+<li><a href="http://weblogs.mozillazine.org/ben/archives/010116.html">A Journey Through Feed Handling</a></li>
+</ul>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,24 @@
+<!DOCTYPE fvdoc [
+<!ENTITY ldquo "&#8220;">
+<!ENTITY rdquo "&#8221;">
+<!ENTITY rsquo "&#8217;">
+]>
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>HTTP Protocol Error</p>
+</div>
+<div id='explanation'>
+<p>The HTTP response from the server was invalid. This will prevent some
+aggregators from downloading the feed at all.</p>
+</div>
+<div id='solution'>
+<p>One common cause for this is WordPress&rsquo;s &ldquo;Last Modified&rdquo; header
+(with a space, rather than a dash, separating the words).
+See
+<a href="http://wordpress.org/support/topic/13097#post-87665" title="RSS Feed Problems &#xab; WordPress Support">WordPress support</a>,
+or upgrade to
+<a href="http://wordpress.org/download/">a newer version</a>.</p>
+</div>
+</div>
+</fvdoc>

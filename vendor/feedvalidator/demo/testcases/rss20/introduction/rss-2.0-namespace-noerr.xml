@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!--
+  Author:       RSS Advisory Board <http://www.rssboard.org/>
+-->
+
+<!--
+  Description:  No errors should be produced by the sample from the RSS 2.0 profile
+  Expect:       !Error
+-->
+
+<rss version="2.0"
+  xmlns:creativeCommons="http://backend.userland.com/creativeCommonsRssModule"
+  xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+  <channel>
+    <creativeCommons:license>http://www.creativecommons.org/licenses/by-nd/1.0</creativeCommons:license>
+    <description>Current headlines from the Dallas Times-Herald newspaper</description>
+    <link>http://dallas.example.com</link>
+    <title>Dallas Times-Herald</title>
+    <category>Media</category>
+    <category domain="dmoz">News/Newspapers/Regional/United_States/Texas</category>
+    <cloud domain="server.example.com" path="/rpc" port="80" protocol="xml-rpc" registerProcedure="cloud.notify" />
+    <copyright>Copyright 2006 Dallas Times-Herald</copyright>
+    <docs>http://www.rssboard.org/rss-specification</docs>
+    <generator>Radio UserLand v8.2.1</generator>
+    <image>
+      <link>http://dallas.example.com</link>
+      <title>Dallas Times-Herald</title>
+      <url>http://dallas.example.com/masthead.gif</url>
+      <description>Read the Dallas Times-Herald</description>
+      <height>32</height>
+      <width>96</width>
+    </image>
+    <language>epo</language>
+    <lastBuildDate>Sun, 29 Jan 2006 17:17:44 GMT</lastBuildDate>
+    <managingEditor>jlehrer@dallas.example.com (Jim Lehrer)</managingEditor>
+    <pubDate>Sun, 29 Jan 2006 05:00:00 GMT</pubDate>
+    <rating>(PICS-1.1 "http://www.rsac.org/ratingsv01.html" l by "webmaster@example.com" on "2006.01.29T10:09-0800" r (n 0 s 0 v 0 l 0))</rating>
+    <skipDays>
+      <day>Saturday</day>
+      <day>Sunday</day>
+    </skipDays>
+    <skipHours>
+      <hour>0</hour>
+      <hour>1</hour>
+      <hour>2</hour>
+      <hour>22</hour>
+      <hour>23</hour>
+    </skipHours>
+    <textInput>
+      <description>Your aggregator supports the textInput element. What software are you using?</description>
+      <link>http://www.cadenhead.org/textinput.php</link>
+      <name>query</name>
+      <title>TextInput Inquiry</title>
+    </textInput>
+    <ttl>60</ttl>
+    <webMaster>helpdesk@dallas.example.com</webMaster>
+    <item>
+      <trackback:ping>http://dallas.example.com/trackback/tb.php?id=1991/05/02/nolan.htm</trackback:ping>
+      <title>Seventh Heaven! Ryan Hurls Another No Hitter</title>
+      <link>http://dallas.example.com/1991/05/02/nolan.htm</link>
+      <description>Texas Rangers pitcher Nolan Ryan hurled the seventh no-hitter of his legendary career on Arlington Appreciation Night, defeating the Toronto Blue Jays 3-0. The 44-year-old struck out 16 batters before a crowd of 33,439.</description>
+      <guid>http://dallas.example.com/1991/05/02/nolan.htm</guid>
+    </item>
+    <item>
+      <trackback:ping>http://dallas.example.com/trackback/tb.php?id=1983/06/joebob.htm</trackback:ping>
+      <author>jbb@dallas.example.com (Joe Bob Briggs)</author>
+      <category>movies</category>
+      <category domain="rec.arts.movies.reviews">1983/V</category>
+      <comments>http://dallas.example.com/feedback/1983/06/joebob.htm</comments>
+      <description>I'm headed for France. I wasn't gonna go this year, but then last week "Valley Girl" came out and I said to myself, Joe Bob, you gotta get out of the country for a while.</description>
+      <enclosure length="24986239" type="audio/mpeg" url="http://dallas.example.com/joebob_050689.mp3" />
+      <guid>http://dallas.example.com/1983/05/06/joebob.htm</guid>
+      <link>http://dallas.example.com/1983/05/06/joebob.htm</link>
+      <pubDate>Fri, 06 May 1983 09:00:00 CST</pubDate>
+      <source url="http://la.example.com/rss.xml">Los Angeles Herald-Examiner</source>
+      <title>Joe Bob Goes to the Drive-In</title>
+    </item>
+    <item>
+      <trackback:ping>http://dallas.example.com/trackback/tb.php?id=1983/06/joebob2.htm</trackback:ping>
+      <trackback:about>http://www.imdb.com/title/tt0086525/</trackback:about>
+      <description>I'm headed for France. I wasn't gonna go this year, but then last week &lt;a href="http://www.imdb.com/title/tt0086525/"&gt;Valley Girl&lt;/a&gt; came out and I said to myself, Joe Bob, you gotta get out of the country for a while.</description>
+      <guid isPermaLink="false">1983-05-06+lifestyle+joebob+1</guid>
+    </item>
+    <item>
+      <description><![CDATA[I'm headed for France. I wasn't gonna go this year, but then last week <a href="http://www.imdb.com/title/tt0086525/">Valley Girl</a> came out and I said to myself, Joe Bob, you gotta get out of the country for a while.]]></description>
+      <guid isPermaLink="false">1983-05-06+lifestyle+joebob+2</guid>
+    </item>    
+  </channel>
+</rss>

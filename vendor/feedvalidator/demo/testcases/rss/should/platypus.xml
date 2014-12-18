@@ -1,0 +1,22 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  item description contains unsafe CSS markup
+  Expect:       DangerousStyleAttr{parent:item,element:description}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Platypus hack</title>
+<link>http://diveintomark.org/public/platypus.xml</link>
+<description>Platypus hack</description>
+<item>
+<title>Platypus hack</title>
+<guid>http://diveintomark.org/public/platypus.xml</guid>
+<description>&lt;a href="http://www.ragingplatypus.com/" style="display:block; position:absolute; left:0; top:0; width:100%; height:100%; z-index:1; background-color:black; background-image:url(http://www.ragingplatypus.com/i/cam-full.jpg); background-x:center; background-y:center; background-repeat:repeat;">&lt;/a></description>
+</item>
+</channel>
+</rss>

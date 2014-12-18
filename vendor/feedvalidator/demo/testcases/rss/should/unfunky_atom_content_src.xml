@@ -1,0 +1,24 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  Unfunky content (due to the source attribute)
+  Expect:       !DuplicateDescriptionSemantics{element:atom:content}
+-->
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>Duplicate semantics</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>Unfunky content (due to the source attribute)</description>
+<item>
+<title>Duplicate semantics</title>
+<link>http://purl/org/rss/2.0/?item</link>
+<guid isPermaLink="false">tag:example.com,2006:weblog.180</guid>
+<description>Foo</description>
+<atom:content src="http://example.com/foo" type="text/html"/>
+</item>
+</channel>
+</rss>

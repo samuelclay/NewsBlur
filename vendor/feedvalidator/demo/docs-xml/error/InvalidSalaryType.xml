@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid value for <code>g:salary_type</code>: "<code>foo</code>"</p>
+</div>
+<div id='explanation'>
+<p>Accepted values are "starting" or "negotiable".</p>
+</div>
+<div id='solution'>
+<p>Consult the <a href="http://base.google.com/base/attribute_list.html#salary_type">documentation for the attribute</a> for further details.</p>
+</div>
+</div>
+</fvdoc>

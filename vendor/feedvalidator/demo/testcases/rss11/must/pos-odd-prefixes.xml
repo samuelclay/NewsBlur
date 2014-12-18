@@ -1,0 +1,20 @@
+<!-- pos-odd-prefixes.xml -->
+
+<!--
+  Description:  Non-standard prefixes
+  Expect:       !Error
+-->
+
+<something:Channel xmlns:something="http://purl.org/net/rss1.1#"
+   xmlns:util="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   util:about="http://www.xml.com/xml/news.rss">
+<something:title>XML.com</something:title>
+<rss:link xmlns:rss="http://purl.org/net/rss1.1#">
+   http://xml.com/pub
+</rss:link>
+<description xmlns="http://purl.org/net/rss1.1#">
+   XML.com features XML stuff
+</description>
+<something:items rdfns:parseType="Collection"
+   xmlns:rdfns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+</something:Channel>

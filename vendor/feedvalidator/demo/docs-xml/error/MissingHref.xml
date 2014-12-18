@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> must have an <code>href</code> attribute</p>
+</div>
+<div id='explanation'>
+<p>This element must have an <code>href</code> attribute that is a URI.</p>
+</div>
+<div id='solution'>
+<p>Add an <code>href</code> attribute that gives the address of the web page or resource that you are linking to.</p>
+</div>
+</div>
+</fvdoc>

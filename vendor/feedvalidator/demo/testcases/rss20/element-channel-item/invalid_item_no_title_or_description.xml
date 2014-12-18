@@ -1,0 +1,20 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  item must contain either title or description
+  Expect:       ItemMustContainTitleOrDescription
+-->
+
+<rss version="2.0">
+<channel>
+<title>Invalid item</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>invalid item (no title or description)</description>
+<item>
+<link>http://purl.org/rss/2.0/?item</link>
+</item>
+</channel>
+</rss>

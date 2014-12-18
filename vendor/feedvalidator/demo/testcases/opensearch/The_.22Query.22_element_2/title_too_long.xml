@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Description:  Title is too long
+  Expect:       TooLong{element:title}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>Example.com Search: New York history</title> 
+  <link href="http://example.com/New+York+history"/>
+  <updated>2003-12-13T18:30:02Z</updated>
+  <author> 
+    <name>Example.com, Inc.</name>
+  </author> 
+  <id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6</id>
+  <opensearch:Query role="request" searchTerms="New York History" startPage="1" title="1234567 10 234567 20 234567 30 234567 40 234567 50 234567 60 234567 70 234567 80 234567 90 23456 100 23456 110 23456 120 23456 130 23456 140 23456 150 23456 160 23456 170 23456 180 23456 190 23456 200 23456 210 23456 220 23456 230 23456 240 23456 250 234567"/>
+  <link rel="alternate" href="http://example.com/New+York+History?pw=3" type="text/html"/>
+  <entry>
+    <title>New York History</title>
+    <link href="http://www.columbia.edu/cu/lweb/eguids/amerihist/nyc.html"/>
+    <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
+    <updated>2003-12-13T18:30:02Z</updated>
+    <content type="text">
+      ... Harlem.NYC - A virtual tour and information on 
+      businesses ...  with historic photos of Columbia's own New York 
+      neighborhood ... Internet Resources for the City's History. ...
+    </content>
+  </entry>
+</feed>

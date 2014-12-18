@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid value for access:restriction: <code>foo</code></p>
+</div>
+<div id='explanation'>
+<p>The specified attribute value is not a valid access:restriction.</p>
+</div>
+<div id='solution'>
+<p>Change the attribute value to either <code>allow</code> or <code>deny</code>.</p>
+</div>
+</div>
+</fvdoc>
