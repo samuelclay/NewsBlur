@@ -1,41 +1,56 @@
-import zlib
-import math
-from operator import itemgetter
-from apps.rss_feeds.models import MStory
-from BeautifulSoup import BeautifulSoup
+#!/usr/bin/env python
 
-def freq(word, document):
-  return document.split(None).count(word)
+"""
+The simplest TF-IDF library imaginable.
+Add your documents as two-element lists `[docname, [list_of_words_in_the_document]]` with `addDocument(docname, list_of_words)`. Get a list of all the `[docname, similarity_score]` pairs relative to a document by calling `similarities([list_of_words])`.
+See the README for a usage example.
+"""
 
-def wordCount(document):
-  return len(document.split(None))
+import sys
+import os
 
-def numDocsContaining(word,documentList):
-  count = 0
-  for document in documentList:
-    if freq(word,document) > 0:
-      count += 1
-  return count
+class tfidf:
+    def __init__(self):
+        self.weighted = False
+        self.documents = []
+        self.corpus_dict = {}
 
-def tf(word, document):
-  return (freq(word,document) / float(wordCount(document)))
+    def addDocument(self, doc_name, list_of_words):
+        # building a dictionary
+        doc_dict = {}
+        for w in list_of_words:
+            doc_dict[w] = doc_dict.get(w, 0.) + 1.0
+            self.corpus_dict[w] = self.corpus_dict.get(w, 0.0) + 1.0
 
-def idf(word, documentList):
-  return math.log(len(documentList) / numDocsContaining(word,documentList))
+        # normalizing the dictionary
+        length = float(len(list_of_words))
+        for k in doc_dict:
+            doc_dict[k] = doc_dict[k] / length
 
-def tfidf(word, document, documentList):
-  return (tf(word,document) * idf(word,documentList))
+        # add the normalized document to the corpus
+        self.documents.append([doc_name, doc_dict])
 
-if __name__ == '__main__':
-  stories = MStory.objects(story_feed_id=184)
-  documentList = []
-  for story in stories:
-    text = zlib.decompress(story.story_content_z)
-    text = ''.join(BeautifulSoup(text).findAll(text=True)).lower()
-    documentList.append(text)
-  words = {}
-  documentNumber = 0
-  for word in documentList[documentNumber].split(None):
-    words[word] = tfidf(word,documentList[documentNumber],documentList)
-  for item in sorted(words.items(), key=itemgetter(1), reverse=True):
-    print "%f <= %s" % (item[1], item[0])
+    def similarities(self, list_of_words):
+        """Returns a list of all the [docname, similarity_score] pairs relative to a list of words."""
+
+        # building the query dictionary
+        query_dict = {}
+        for w in list_of_words:
+            query_dict[w] = query_dict.get(w, 0.0) + 1.0
+
+        # normalizing the query
+        length = float(len(list_of_words))
+        for k in query_dict:
+            query_dict[k] = query_dict[k] / length
+
+        # computing the list of similarities
+        sims = []
+        for doc in self.documents:
+            score = 0.0
+            doc_dict = doc[1]
+            for k in query_dict:
+                if doc_dict.has_key(k):
+                    score += (query_dict[k] / self.corpus_dict[k]) + (doc_dict[k] / self.corpus_dict[k])
+            sims.append([doc[0], score])
+
+        return sims

@@ -22,7 +22,6 @@ class Category(models.Model):
     
     def __unicode__(self):
         return '%s (%s)' % (self.category, self.count)
-        
 
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
