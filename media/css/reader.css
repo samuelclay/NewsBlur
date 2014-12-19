@@ -1978,6 +1978,7 @@ a img {
     background: -moz-linear-gradient(center top, #F8F8F8 0%, #F1F6F0 100%);
     background-image:  no-repeat center center;
     overflow: hidden;
+    clear: both;
 }
 .NB-end-line.NB-short {
     height: 8px;
@@ -1996,11 +1997,150 @@ a img {
     display: none;
 }
 /* ============================= */
-/* = Story Detial in List View = */
+/* = Story Detail in List View = */
 /* ============================= */
 
 .NB-story-title-container .NB-feed-story {
 }
+
+/* ============================= */
+/* = Story Detail in Grid View = */
+/* ============================= */
+
+#story_titles.NB-layout-grid .NB-story-title-container {
+}
+#story_titles.NB-layout-grid .NB-story-title-container.NB-selected {
+    clear: both;
+    margin-top: 24px;
+}
+#story_titles .NB-story-grid {
+    margin: 4% 0 0 4%;
+    border: 1px solid #F0F0F0;
+    position: relative;
+    float: left;
+    width: 42%;
+    height: 400px;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.NB-view-river #story_titles .NB-story-grid {
+    padding-left: 0;
+    border: 1px solid #F0F0F0;
+}
+#story_titles .NB-story-grid,
+#story_titles .NB-story-title.NB-story-grid:hover {
+    border: 1px solid #F0F0F0;
+}
+
+#story_titles .NB-story-grid.NB-selected {
+    clear: both;
+}
+
+#story_titles .NB-story-grid .NB-storytitles-content {
+    position: relative;
+    margin: 12px 8px 8px 30px;
+    height: 100%;
+    z-index: 0;
+}
+#story_titles .NB-story-grid a.story_title {
+    padding: 2px 0 0 0;
+    margin: 0;
+}
+
+#story_titles .NB-story-grid .NB-storytitles-title {
+    font-size: 16px;
+    line-height: 1.3em;
+    padding: 0;
+}
+#story_titles .NB-story-grid .NB-storytitles-content-preview {
+    margin: 12px 0 0 0;
+}
+
+#story_titles .NB-story-grid .NB-storytitles-story-image-container {
+    margin-left: 8px;
+}
+#story_titles .NB-story-grid .NB-storytitles-story-image {
+    width: 100%;
+    height: 216px;
+    background-size: cover;
+    background-position: 50% 50%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+#story_titles .NB-story-grid.read .NB-storytitles-story-image {
+    opacity: .5;
+}
+#story_titles .NB-story-grid.NB-selected .NB-storytitles-story-image {
+    display: none;
+}
+#story_titles .NB-story-grid .NB-storytitles-feed-border-inner,
+#story_titles .NB-story-grid .NB-storytitles-feed-border-outer {
+/*    height: 4px;*/
+/*    width: 100%;*/
+/*    position: static;*/
+    z-index: 1;
+}
+#story_titles .NB-story-grid.read .NB-storytitles-feed-border-inner,
+#story_titles .NB-story-grid.read .NB-storytitles-feed-border-outer {
+    opacity: .2;
+}
+#story_titles .NB-story-grid .NB-storytitles-content-preview {
+    height: auto;
+    -webkit-line-clamp: inherit;
+    font-size: 12px;
+    line-height: 1.35em;
+}
+#story_titles .NB-story-grid.read .NB-storytitles-content-preview {
+    color: #D6D6DE;
+}
+#story_titles .NB-story-grid .story_date {
+    position: absolute;
+    bottom: 0;
+    top: inherit;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: #FDFCFA;
+    margin-left: 30px;
+    padding: 12px 0 8px;
+}
+#story_titles .NB-story-grid:not(.read):hover .story_date {
+    background-color: #F7F7F6;
+}
+#story_titles .NB-story-grid .NB-storytitles-sentiment,
+#story_titles .NB-story-grid .NB-story-manage-icon {
+    left: -28px;
+}
+#story_titles .NB-story-grid .NB-story-feed {
+    position: static;
+    margin: 10px 0;
+    height: auto;
+    overflow: hidden;
+}
+#story_titles .NB-story-grid .story_title {
+    position: relative;
+}
+#story_titles .NB-story-grid .NB-story-feed .feed_favicon {
+    margin: 0 4px 0 0;
+    float: left;
+    position: static;
+}
+#story_titles .NB-story-grid .NB-story-feed .feed_title {
+    width: auto;
+    -webkit-line-clamp: 1;
+    height: 16px;
+    margin: 2px 0 0 0;
+    line-height: 16px;
+    text-overflow: ellipsis;
+}
+#story_titles .NB-story-grid .feed_favicon,
+#story_titles .NB-story-grid .feed_title {
+    position: static;
+}
+
 
 /* =================== */
 /* = Story Navigator = */
@@ -4285,6 +4425,16 @@ background: transparent;
 .NB-taskbar .NB-task-layout-list.NB-active .NB-task-image {
     left: 12px;
     background: transparent url('/media/img/icons/circular/nav_story_list_active.png') no-repeat 0 0;
+    background-size: 18px 14px;
+}
+.NB-taskbar .NB-task-layout-grid .NB-task-image {
+    left: 12px;
+    background: transparent url('/media/img/icons/circular/nav_story_grid.png') no-repeat 0 0;
+    background-size: 18px 14px;
+}
+.NB-taskbar .NB-task-layout-grid.NB-active .NB-task-image {
+    left: 12px;
+    background: transparent url('/media/img/icons/circular/nav_story_grid_active.png') no-repeat 0 0;
     background-size: 18px 14px;
 }
 

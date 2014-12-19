@@ -610,7 +610,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 href = footnote_href;
                 var offset = $(href).offset().top;
                 var $scroll;
-                if (NEWSBLUR.assets.preference('story_layout') == "list") {
+                if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
                     $scroll = NEWSBLUR.reader.$s.$story_titles;
                 } else if (NEWSBLUR.reader.flags['temporary_story_view'] || 
                     NEWSBLUR.reader.story_view == 'text') {

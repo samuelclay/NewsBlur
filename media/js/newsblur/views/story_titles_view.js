@@ -30,7 +30,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var stories = this.collection.map(function(story) {
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
-                collection: collection
+                collection: collection,
+                is_grid: NEWSBLUR.assets.preference('story_layout') == 'grid'
             }).render();
         });
         this.stories = stories;
@@ -49,7 +50,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
-                    collection: collection
+                    collection: collection,
+                    is_grid: NEWSBLUR.assets.preference('story_layout') == 'grid'
                 }).render();
             }));
             this.stories = this.stories.concat(stories);
@@ -206,7 +208,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-fleuron' })
         ]);
         
-        if (NEWSBLUR.assets.preference('story_layout') == 'list') {
+        if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
             var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
             var endbar_height = 20;
             var last_story_height = 280;
@@ -251,14 +253,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         
         var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble || options.force || 
-            NEWSBLUR.assets.preference('story_layout') == 'list') {
+            _.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;
             var scroll = story_title_view.$el.position().top;
             var container = NEWSBLUR.reader.$s.$story_titles.scrollTop();
             var height = NEWSBLUR.reader.$s.$story_titles.outerHeight();
             var position = scroll+container-height/5;
             
-            if (NEWSBLUR.assets.preference('story_layout') == 'list') {
+            if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
                 position = scroll+container;
             }
 
