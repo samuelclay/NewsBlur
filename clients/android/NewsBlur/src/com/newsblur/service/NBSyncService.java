@@ -449,8 +449,7 @@ public class NBSyncService extends Service {
                     totalStoriesSeen += apiResponse.stories.length;
                     FeedStoriesSeen.put(fs, totalStoriesSeen);
 
-                    dbHelper.insertStories(apiResponse);
-                    markStoriesActive();
+                    insertStories(apiResponse);
                     NbActivity.updateAllActivities(true);
                 
                     if (apiResponse.stories.length == 0) {
@@ -516,8 +515,8 @@ public class NBSyncService extends Service {
         return true;
     }
 
-    void markStoriesActive() {
-        dbHelper.markStoriesActive(ActMode, ModeCutoff);
+    void insertStories(StoriesResponse apiResponse) {
+        dbHelper.insertStories(apiResponse, ActMode, ModeCutoff);
     }
 
     void incrementRunningChild() {

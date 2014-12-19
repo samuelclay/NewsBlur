@@ -205,7 +205,7 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
-    public void insertStories(StoriesResponse apiResponse) {
+    public void insertStories(StoriesResponse apiResponse, NBSyncService.ActivationMode actMode, long modeCutoff) {
         // to insert classifiers, we need to determine the feed ID of the stories in this
         // response, so sniff one out.
         String impliedFeedId = null;
@@ -244,8 +244,35 @@ public class BlurDatabaseHelper {
             }
             impliedFeedId = story.feedId;
         }
-        bulkInsertValues(DatabaseConstants.STORY_TABLE, storyValues);
-        bulkInsertValues(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, socialStoryValues);
+        // we don't use bulkInsertValues for stories, since we need to put markStoriesActive within the transaction
+        if (storyValues.size() > 0) {
+            synchronized (RW_MUTEX) {
+                dbRW.beginTransaction();
+                try {
+                    for(ContentValues values: storyValues) {
+                        dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                    }
+                    markStoriesActive(actMode, modeCutoff);
+                    dbRW.setTransactionSuccessful();
+                } finally {
+                    dbRW.endTransaction();
+                }
+            }
+        }
+        if (socialStoryValues.size() > 0) {
+            synchronized (RW_MUTEX) {
+                dbRW.beginTransaction();
+                try {
+                    for(ContentValues values: socialStoryValues) {
+                        dbRW.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                    }
+                    markStoriesActive(actMode, modeCutoff);
+                    dbRW.setTransactionSuccessful();
+                } finally {
+                    dbRW.endTransaction();
+                }
+            }
+        }
 
         // handle classifiers
         if (apiResponse.classifiers != null) {

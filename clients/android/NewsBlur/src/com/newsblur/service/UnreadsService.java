@@ -81,8 +81,7 @@ public class UnreadsService extends SubService {
                 Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
                 break unreadsyncloop;
             }
-            parent.dbHelper.insertStories(response);
-            parent.markStoriesActive();
+            parent.insertStories(response);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);
             } 
