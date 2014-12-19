@@ -2007,6 +2007,15 @@ a img {
 /* = Story Detail in Grid View = */
 /* ============================= */
 
+#story_titles.NB-layout-grid {
+    background-color: #F7F8F5;
+}
+#story_titles.NB-layout-grid .NB-story-content-container {
+    background-color: white;
+}
+#story_titles.NB-layout-grid .NB-end-line {
+    margin-top: 24px;
+}
 #story_titles.NB-layout-grid .NB-story-title-container {
 }
 #story_titles.NB-layout-grid .NB-story-title-container.NB-selected {
@@ -2015,7 +2024,7 @@ a img {
 }
 #story_titles .NB-story-grid {
     margin: 4% 0 0 4%;
-    border: 1px solid #F0F0F0;
+    border: 1px solid rgba(0, 0, 0, .2);
     position: relative;
     float: left;
     width: 42%;
@@ -2027,11 +2036,11 @@ a img {
 }
 .NB-view-river #story_titles .NB-story-grid {
     padding-left: 0;
-    border: 1px solid #F0F0F0;
+    border: 1px solid rgba(0, 0, 0, .2);
 }
 #story_titles .NB-story-grid,
 #story_titles .NB-story-title.NB-story-grid:hover {
-    border: 1px solid #F0F0F0;
+    border: 1px solid rgba(0, 0, 0, .2);
 }
 
 #story_titles .NB-story-grid.NB-selected {
