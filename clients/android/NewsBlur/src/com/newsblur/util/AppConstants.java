@@ -60,7 +60,7 @@ public class AppConstants {
     public static final boolean ENABLE_FEEDBACK = true;
 
     // link to app feedback page
-    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new?topic[style]=question&from=company&product=NewsBlur+Android+App&topic[additional_detail]=";
+    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new/add_details?topic[subject]=Android%3A+&topic[categories][][id]=80957&topic[type]=question&topic[content]=";
 
     // how long to wait for sync threads to shutdown. ideally we would wait the max network timeout,
     // but the system like to force-kill terminating services that take too long, so it is often
