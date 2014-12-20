@@ -188,6 +188,8 @@ public class NBSyncService extends Service {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
             }
 
+            originalTextService.start(startId);
+
             // first: catch up
             syncActions();
             
@@ -197,8 +199,6 @@ public class NBSyncService extends Service {
             syncMetadata(startId);
 
             finishActions();
-
-            originalTextService.start(startId);
 
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
