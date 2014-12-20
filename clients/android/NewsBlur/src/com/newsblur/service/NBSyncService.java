@@ -305,6 +305,7 @@ public class NBSyncService extends Service {
         dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
         imageCache.cleanup();
         dbHelper.cleanupStoryText();
+        if (NbActivity.getActiveActivityCount() < 1) dbHelper.vacuum();
         CleanupRunning = false;
         NbActivity.updateAllActivities(false);
 

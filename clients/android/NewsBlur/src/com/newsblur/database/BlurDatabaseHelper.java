@@ -139,6 +139,10 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);}
     }
 
+    public void vacuum() {
+        synchronized (RW_MUTEX) {dbRW.execSQL("VACUUM");}
+    }
+
     public void deleteFeed(String feedId) {
         String[] selArgs = new String[] {feedId};
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);}
