@@ -89,7 +89,7 @@ public class UnreadsService extends SubService {
             for (Story story : response.stories) {
                 if (story.imageUrls != null) {
                     for (String url : story.imageUrls) {
-                        parent.ImageQueue.add(url);
+                        parent.imagePrefetchService.addUrl(url);
                     }
                 }
                 DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(parent, story.feedId);
@@ -98,6 +98,7 @@ public class UnreadsService extends SubService {
                 }
             }
             parent.originalTextService.start(startId);
+            parent.imagePrefetchService.start(startId);
         }
     }
 

@@ -26,7 +26,6 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.ImageCache;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
@@ -71,7 +70,6 @@ public class NBSyncService extends Service {
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
-    private volatile static boolean ImagePrefetchRunning = false;
 
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean DoUnreads = false;
@@ -99,10 +97,6 @@ public class NBSyncService extends Service {
     private static Map<FeedSet,Integer> FeedStoriesSeen;
     static { FeedStoriesSeen = new HashMap<FeedSet,Integer>(); }
 
-    /** URLs of images contained in recently fetched stories that are candidates for prefetch. */
-    static Set<String> ImageQueue;
-    static { ImageQueue = new HashSet<String>(); }
-
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
@@ -112,11 +106,11 @@ public class NBSyncService extends Service {
     private ExecutorService primaryExecutor;
     OriginalTextService originalTextService;
     UnreadsService unreadsService;
+    ImagePrefetchService imagePrefetchService;
 
     PowerManager.WakeLock wl = null;
 	APIManager apiManager;
     BlurDatabaseHelper dbHelper;
-    private ImageCache imageCache;
     private int lastStartIdCompleted = -1;
 
 	@Override
@@ -131,11 +125,11 @@ public class NBSyncService extends Service {
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
-        imageCache = new ImageCache(this);
 
         primaryExecutor = Executors.newFixedThreadPool(1);
         originalTextService = new OriginalTextService(this);
         unreadsService = new UnreadsService(this);
+        imagePrefetchService = new ImagePrefetchService(this);
 	}
 
     /**
@@ -206,21 +200,6 @@ public class NBSyncService extends Service {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
             decrementRunningChild(startId);
-        }
-    }
-
-    /**
-     * Do lower-priority sync tasks that are strictly safe to perform in parallel with
-     * other tasks.
-     */
-    private synchronized void doSyncSecondary(int startId) {
-        try {
-
-            prefetchImages();
-
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), "Sync error.", e);
-        } finally {
         }
     }
 
@@ -303,7 +282,6 @@ public class NBSyncService extends Service {
         CleanupRunning = true;
         NbActivity.updateAllActivities(false);
         dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
-        imageCache.cleanup();
         dbHelper.cleanupStoryText();
         if (NbActivity.getActiveActivityCount() < 1) dbHelper.vacuum();
         CleanupRunning = false;
@@ -471,39 +449,6 @@ public class NBSyncService extends Service {
         }
     }
 
-    private void prefetchImages() {
-        try {
-            while (ImageQueue.size() > 0) {
-                if (!PrefsUtils.isImagePrefetchEnabled(this)) return;
-                ImagePrefetchRunning = true;
-                NbActivity.updateAllActivities();
-
-                Set<String> fetchedImages = new HashSet<String>();
-                Set<String> batch = new HashSet<String>(AppConstants.IMAGE_PREFETCH_BATCH_SIZE);
-                batchloop: for (String url : ImageQueue) {
-                    batch.add(url);
-                    if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
-                }
-                try {
-                    for (String url : batch) {
-                        if (stopSync()) return;
-                        
-                        imageCache.cacheImage(url);
-
-                        fetchedImages.add(url);
-                    }
-                } finally {
-                    ImageQueue.removeAll(fetchedImages);
-                }
-            }
-        } finally {
-            if (ImagePrefetchRunning) {
-                ImagePrefetchRunning = false;
-                NbActivity.updateAllActivities();
-            }
-        }
-    }
-
     private boolean isStoryResponseGood(StoriesResponse response) {
         if (response == null) {
             Log.e(this.getClass().getName(), "Null response received while loading stories.");
@@ -561,7 +506,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchRunning);
+        return (ActionsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
     }
 
     /**
@@ -577,8 +522,8 @@ public class NBSyncService extends Service {
         if (CleanupRunning) return "Cleaning up storage . . .";
         if (StorySyncRunning) return "Syncing stories . . .";
         if (UnreadsService.running()) return "Syncing" + UnreadsService.getPendingCount() + "unread stories . . .";
-        if (ImagePrefetchRunning) return "Caching " + ImageQueue.size() + " images . . .";
         if (OriginalTextService.running()) return "Syncing text for " + OriginalTextService.getPendingCount() + " stories. . .";
+        if (ImagePrefetchService.running()) return "Caching " + ImagePrefetchService.getPendingCount() + " images . . .";
         return null;
     }
 
@@ -666,6 +611,7 @@ public class NBSyncService extends Service {
         HaltNow = true;
         unreadsService.shutdown();
         originalTextService.shutdown();
+        imagePrefetchService.shutdown();
         primaryExecutor.shutdown();
         try {
             primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);

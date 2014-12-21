@@ -27,6 +27,7 @@ public class OriginalTextService extends SubService {
     @Override
     protected void exec() {
         while ((Hashes.size() > 0) || (PriorityHashes.size() > 0)) {
+            if (parent.stopSync()) return;
             gotWork();
             fetchBatch(PriorityHashes);
             fetchBatch(Hashes);
