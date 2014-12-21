@@ -285,6 +285,11 @@ public class PrefsUtils {
     private static StoryOrder getDefaultStoryOrder(SharedPreferences prefs) {
         return StoryOrder.valueOf(prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString()));
     }
+
+    public static StoryOrder getDefaultStoryOrder(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return getDefaultStoryOrder(preferences);
+    }
     
     private static ReadFilter getDefaultReadFilter(SharedPreferences prefs) {
         return ReadFilter.valueOf(prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString()));
