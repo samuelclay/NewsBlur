@@ -29,14 +29,13 @@ public abstract class SubService {
     SubService(NBSyncService parent) {
         this.parent = parent;
         executor = Executors.newFixedThreadPool(1);
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService created");
     }
 
     public void start(final int startId) {
+        parent.incrementRunningChild();
         this.startId = startId;
         Runnable r = new Runnable() {
             public void run() {
-                parent.incrementRunningChild();
                 if (NbActivity.getActiveActivityCount() < 1) {
                     Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_LESS_FAVORABLE );
                 } else {
