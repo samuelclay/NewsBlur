@@ -234,6 +234,17 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
     }
 
+    public static boolean isTimeToVacuum(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        long lastTime = prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L);
+        return ( (lastTime + AppConstants.VACUUM_TIME_MILLIS) < (new Date()).getTime() );
+    }
+
+    public static void updateLastVacuumTime(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        prefs.edit().putLong(PrefConstants.LAST_VACUUM_TIME, (new Date()).getTime()).commit();
+    }
+
     public static StoryOrder getStoryOrderForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder(prefs).toString()));

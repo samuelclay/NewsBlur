@@ -168,18 +168,22 @@ public class NBSyncService extends Service {
             incrementRunningChild();
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting primary sync");
 
-            // check to see if we are on an allowable network only after ensuring we have CPU
-            if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
-                Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
-                return;
-            }
-
             if (NbActivity.getActiveActivityCount() < 1) {
                 // if the UI isn't running, politely run at background priority
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             } else {
                 // if the UI is running, run just one step below normal priority so we don't step on async tasks that are updating the UI
                 Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
+            }
+
+            // do this even if background syncs aren't enabled, because it absolutely must happen
+            // in the background on all devices
+            doVacuum();
+
+            // check to see if we are on an allowable network only after ensuring we have CPU
+            if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
+                Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
+                return;
             }
 
             originalTextService.start(startId);
@@ -201,6 +205,16 @@ public class NBSyncService extends Service {
         } finally {
             decrementRunningChild(startId);
         }
+    }
+
+    private void doVacuum() {
+        // this will lock up the DB for a few seconds, only do it if the UI is hidden
+        if (NbActivity.getActiveActivityCount() > 0) return;
+        if (!PrefsUtils.isTimeToVacuum(this)) return;
+        PrefsUtils.updateLastVacuumTime(this);
+        Log.i(this.getClass().getName(), "rebuilding DB . . .");
+        dbHelper.vacuum();
+        Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
     }
 
     /**
@@ -283,7 +297,6 @@ public class NBSyncService extends Service {
         NbActivity.updateAllActivities(false);
         dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
         dbHelper.cleanupStoryText();
-        if (NbActivity.getActiveActivityCount() < 1) dbHelper.vacuum();
         CleanupRunning = false;
         NbActivity.updateAllActivities(false);
 
