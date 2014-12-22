@@ -44,8 +44,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
     private FeedSet fs;
 	
-	protected boolean stopLoading = false;
-
 	@Override
     protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -78,29 +76,19 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     protected void onResume() {
         super.onResume();
         updateStatusIndicators();
-        stopLoading = false;
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
     }
 
     private void getFirstStories() {
-        stopLoading = false;
         triggerRefresh(AppConstants.READING_STORY_PRELOAD, 0);
     }
 
-    @Override
-    protected void onPause() {
-        stopLoading = true;
-        super.onPause();
-    }
-
     public void triggerRefresh(int desiredStoryCount, int totalSeen) {
-        if (!stopLoading) {
-            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
-            if (gotSome) triggerSync();
-            updateStatusIndicators();
-        }
+        boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+        if (gotSome) triggerSync();
+        updateStatusIndicators();
     }
 
 	public void markItemListAsRead() {
