@@ -44,8 +44,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
     private FeedSet fs;
 	
-	protected boolean stopLoading = false;
-
 	@Override
     protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -78,32 +76,19 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     protected void onResume() {
         super.onResume();
         updateStatusIndicators();
-        stopLoading = false;
-        // this view shows stories, it is not safe to perform cleanup
-        NBSyncService.holdStories(true);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
     }
 
     private void getFirstStories() {
-        stopLoading = false;
         triggerRefresh(AppConstants.READING_STORY_PRELOAD, 0);
     }
 
-    @Override
-    protected void onPause() {
-        stopLoading = true;
-        NBSyncService.holdStories(false);
-        super.onPause();
-    }
-
     public void triggerRefresh(int desiredStoryCount, int totalSeen) {
-        if (!stopLoading) {
-            boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
-            if (gotSome) triggerSync();
-            updateStatusIndicators();
-        }
+        boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+        if (gotSome) triggerSync();
+        updateStatusIndicators();
     }
 
 	public void markItemListAsRead() {
@@ -142,16 +127,16 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	}
 	
     // TODO: can all of these be replaced with PrefsUtils queries via FeedSet?
-	protected abstract StoryOrder getStoryOrder();
+	public abstract StoryOrder getStoryOrder();
 	
 	protected abstract ReadFilter getReadFilter();
 
     protected abstract DefaultFeedView getDefaultFeedView();
 	
     @Override
-	public void handleUpdate() {
+	public void handleUpdate(boolean freshData) {
         updateStatusIndicators();
-		if (itemListFragment != null) {
+		if (freshData && (itemListFragment != null)) {
 			itemListFragment.hasUpdated();
         }
     }

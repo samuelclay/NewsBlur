@@ -108,14 +108,14 @@ public class NbActivity extends Activity {
      * Called on each NB activity after the DB has been updated by the sync service. This method
      * should return as quickly as possible.
      */
-    protected void handleUpdate() {
+    protected void handleUpdate(boolean freshData) {
         Log.w(this.getClass().getName(), "activity doesn't implement handleUpdate");
     }
 
-    private void _handleUpdate() {
+    private void _handleUpdate(final boolean freshData) {
         runOnUiThread(new Runnable() {
             public void run() {
-                handleUpdate();
+                handleUpdate(freshData);
             }
         });
     }
@@ -124,12 +124,17 @@ public class NbActivity extends Activity {
      * Notify all activities in the app that the DB has been updated. Should only be called
      * by the sync service, which owns updating the DB.
      */
-    public static void updateAllActivities() {
+    public static void updateAllActivities(boolean freshData) {
         synchronized (AllActivities) {
             for (NbActivity activity : AllActivities) {
-                activity._handleUpdate();
+                activity._handleUpdate(freshData);
             }
         }
+    }
+
+    public static void updateAllActivities() {
+        Log.w(NbActivity.class.getName(), "legacy handleUpdate used");
+        NbActivity.updateAllActivities(true);
     }
 
     /**

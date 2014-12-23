@@ -247,7 +247,9 @@ public class APIManager {
 	}
 
     public UnreadStoryHashesResponse getUnreadStoryHashes() {
-        APIResponse response = get(APIConstants.URL_UNREAD_HASHES);
+		ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1");
+        APIResponse response = get(APIConstants.URL_UNREAD_HASHES, values);
         return (UnreadStoryHashesResponse) response.getResponse(gson, UnreadStoryHashesResponse.class);
     }
 

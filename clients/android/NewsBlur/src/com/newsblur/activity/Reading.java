@@ -174,7 +174,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected void onResume() {
         super.onResume();
         // this view shows stories, it is not safe to perform cleanup
-        NBSyncService.holdStories(true);
         this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.
@@ -183,7 +182,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     protected void onPause() {
-        NBSyncService.holdStories(false);
         this.stopLoading = true;
         if (this.unreadSearchLatch != null) {
             this.unreadSearchLatch.countDown();
@@ -328,9 +326,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
-	protected void handleUpdate() {
+	protected void handleUpdate(boolean freshData) {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
-        updateCursor();
+        if (freshData) updateCursor();
     }
 
     private void updateCursor() {

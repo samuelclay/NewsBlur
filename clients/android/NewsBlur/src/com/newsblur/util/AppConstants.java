@@ -5,7 +5,7 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = false;
+    public static final boolean VERBOSE_LOG = true;
     public static final boolean VERBOSE_LOG_DB = false;
     public static final boolean VERBOSE_LOG_NET = false;
 	
@@ -29,6 +29,9 @@ public class AppConstants {
 
     // how long to wait before auto-syncing the feed/folder list
     public static final long AUTO_SYNC_TIME_MILLIS = 15L * 60L * 1000L;
+
+    // how often to rebuild the DB
+    public static final long VACUUM_TIME_MILLIS = 24L * 60L * 60L * 1000L;
 
     // how often to trigger the BG service. slightly longer than how often we will find new stories,
     // to account for the fact that it is approximate, and missing a cycle is bad.
@@ -60,6 +63,11 @@ public class AppConstants {
     public static final boolean ENABLE_FEEDBACK = true;
 
     // link to app feedback page
-    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new?topic[style]=question&from=company&product=NewsBlur+Android+App&topic[additional_detail]=";
+    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new/add_details?topic[subject]=Android%3A+&topic[categories][][id]=80957&topic[type]=question&topic[content]=";
+
+    // how long to wait for sync threads to shutdown. ideally we would wait the max network timeout,
+    // but the system like to force-kill terminating services that take too long, so it is often
+    // moot to tune.
+    public final static long SHUTDOWN_SLACK_SECONDS = 60L;
 
 }

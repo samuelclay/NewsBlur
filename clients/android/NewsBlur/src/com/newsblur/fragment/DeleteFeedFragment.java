@@ -58,7 +58,7 @@ public class DeleteFeedFragment extends DialogFragment {
                 // called from the feed view so finish
                 Activity activity = DeleteFeedFragment.this.getActivity();
                 if (activity instanceof Main) {
-                    ((Main)activity).handleUpdate();
+                    ((Main)activity).handleUpdate(true);
                 } else {
                     activity.finish();
                 }

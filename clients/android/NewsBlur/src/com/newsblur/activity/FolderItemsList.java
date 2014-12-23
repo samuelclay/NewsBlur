@@ -76,7 +76,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
     }
 
     @Override
-    protected StoryOrder getStoryOrder() {
+    public StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, folderName);
     }
 

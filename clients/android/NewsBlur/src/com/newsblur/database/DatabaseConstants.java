@@ -97,6 +97,7 @@ public class DatabaseConstants {
 	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
     public static final String STORY_HASH = "story_hash";
+    public static final String STORY_ACTIVE = "active";
 
     public static final String STORY_TEXT_TABLE = "storytext";
     public static final String STORY_TEXT_STORY_HASH = "story_hash";
@@ -226,7 +227,8 @@ public class DatabaseConstants {
 		STORY_READ_THIS_SESSION + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
-		STORY_TITLE + TEXT +
+		STORY_TITLE + TEXT + ", " +
+        STORY_ACTIVE + INTEGER + " DEFAULT 0" +
         ")";
 
     static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
@@ -340,6 +342,8 @@ public class DatabaseConstants {
         if (stateSelection != null) {
             q.append(" AND " + stateSelection);
         }
+        
+        q.append(" AND (" + STORY_TABLE + "." + STORY_ACTIVE + " = 1)");
 
         if (dedupCol != null) {
             q.append( " GROUP BY " + dedupCol);
@@ -403,10 +407,12 @@ public class DatabaseConstants {
     }
 
     public static String getStorySortOrder(StoryOrder storyOrder) {
+        // it is not uncommon for a feed to have multiple stories with exactly the same timestamp. we
+        // arbitrarily pick a second sort column so sortation is stable.
         if (storyOrder == StoryOrder.NEWEST) {
-            return STORY_TIMESTAMP + " DESC";
+            return STORY_TIMESTAMP + " DESC, " + STORY_HASH + " DESC";
         } else {
-            return STORY_TIMESTAMP + " ASC";
+            return STORY_TIMESTAMP + " ASC, " + STORY_HASH + " ASC";
         }
     }
     

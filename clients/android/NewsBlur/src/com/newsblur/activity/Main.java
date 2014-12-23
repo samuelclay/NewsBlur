@@ -77,8 +77,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         FeedUtils.clearReadingSession();
 
         updateStatusIndicators();
-        // this view doesn't show stories, it is safe to perform cleanup
-        NBSyncService.holdStories(false);
+        // this view doesn't show stories, it is safe to alter stories
+        FeedUtils.activateAllStories();
+        NBSyncService.setActivationMode(NBSyncService.ActivationMode.ALL);
         triggerSync();
 
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
@@ -162,9 +163,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 
     @Override
-	public void handleUpdate() {
-		folderFeedList.hasUpdated();
+	public void handleUpdate(boolean freshData) {
         updateStatusIndicators();
+		if (freshData) folderFeedList.hasUpdated();
 	}
 
     private void updateStatusIndicators() {
