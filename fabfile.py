@@ -1239,7 +1239,7 @@ def deploy_code(copy_assets=False, full=False, fast=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        sudo('supervisorctl reload')
+        sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
         if fast:
             kill_gunicorn()
 
