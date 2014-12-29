@@ -90,6 +90,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor == null) return;
         try {
             switch (loader.getId()) {
                 case SOCIALFEEDS_LOADER:
