@@ -43,15 +43,16 @@ public class PrefsUtils {
     /**
      * Check to see if this is the first launch of the app after an upgrade, in which case
      * we clear the DB to prevent bugs associated with non-forward-compatibility.
+     * @return true if an upgrade was detected.
      */
-    public static void checkForUpgrade(Context context) {
+    public static boolean checkForUpgrade(Context context) {
 
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 
         String version = getVersion(context);
         if (version == null) {
             Log.w(PrefsUtils.class.getName(), "could not determine app version");
-            return;
+            return false;
         }
         Log.i(PrefsUtils.class.getName(), "launching version: " + version);
 
@@ -68,7 +69,9 @@ public class PrefsUtils {
             prefs.edit().putString(AppConstants.LAST_APP_VERSION, version).commit();
             // also make sure we auto-trigger an update, since all data are now gone
             prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
+            return true;
         }
+        return false;
 
     }
 
