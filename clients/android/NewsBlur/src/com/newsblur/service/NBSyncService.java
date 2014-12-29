@@ -66,6 +66,8 @@ public class NBSyncService extends Service {
      */
     public enum ActivationMode { ALL, OLDER, NEWER };
 
+    private static final Object WAKELOCK_MUTEX = new Object();
+
     private volatile static boolean ActionsRunning = false;
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
@@ -487,18 +489,22 @@ public class NBSyncService extends Service {
     }
 
     void incrementRunningChild() {
-        wl.acquire();
+        synchronized (WAKELOCK_MUTEX) {
+            wl.acquire();
+        }
     }
 
     void decrementRunningChild(int startId) {
-        if (wl != null) wl.release();
-        // our wakelock reference counts.  only stop the service if it is in the background and if
-        // we are the last thread to release the lock.
-        if (!wl.isHeld()) {
-            if (NbActivity.getActiveActivityCount() < 1) {
-                stopSelf(startId);
+        synchronized (WAKELOCK_MUTEX) {
+            if (wl != null) wl.release();
+            // our wakelock reference counts.  only stop the service if it is in the background and if
+            // we are the last thread to release the lock.
+            if (!wl.isHeld()) {
+                if (NbActivity.getActiveActivityCount() < 1) {
+                    stopSelf(startId);
+                }
+                lastStartIdCompleted = startId;
             }
-            lastStartIdCompleted = startId;
         }
     }
 
