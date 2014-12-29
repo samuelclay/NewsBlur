@@ -37,7 +37,7 @@ import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
-    private static BlurDatabaseHelper dbHelper;
+    public static BlurDatabaseHelper dbHelper;
 
     public static void offerDB(BlurDatabaseHelper _dbHelper) {
         if (_dbHelper.isOpen()) {

@@ -76,13 +76,13 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SOCIALFEEDS_LOADER:
-                return dbHelper.getSocialFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getSocialFeedsLoader(currentState);
             case FOLDERFEEDMAP_LOADER:
-                return dbHelper.getFolderFeedMapLoader();
+                return FeedUtils.dbHelper.getFolderFeedMapLoader();
             case FEEDS_LOADER:
-                return dbHelper.getFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getFeedsLoader(currentState);
             case SAVEDCOUNT_LOADER:
-                return dbHelper.getSavedStoryCountLoader();
+                return FeedUtils.dbHelper.getSavedStoryCountLoader();
             default:
                 throw new IllegalArgumentException("unknown loader created");
         }

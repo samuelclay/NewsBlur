@@ -191,7 +191,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        return dbHelper.getStoriesLoader(fs, currentState);
+        return FeedUtils.dbHelper.getStoriesLoader(fs, currentState);
     }
 
 	@Override
@@ -259,7 +259,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private int getUnreadCount() {
         if (fs.isAllSaved()) return 0; // saved stories doesn't have unreads
-        return dbHelper.getUnreadCount(fs, currentState);
+        return FeedUtils.dbHelper.getUnreadCount(fs, currentState);
     }
 
 	@Override
