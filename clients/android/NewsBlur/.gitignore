@@ -12,3 +12,6 @@ bin/
 .metadata/
 gen/
 libs/ActionBarSherlock/
+.settings/
+.classpath
+.project

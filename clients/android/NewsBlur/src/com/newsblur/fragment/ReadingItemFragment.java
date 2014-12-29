@@ -381,8 +381,14 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse(story.permalink));
-				startActivity(i);
+                try {
+                    i.setData(Uri.parse(story.permalink));
+                    startActivity(i);
+                } catch (Throwable t) {
+                    // we don't actually know if the user will successfully be able to open whatever string
+                    // was in the permalink or if the Intent could throw errors
+                    Log.e(this.getClass().getName(), "Error opening story by permalink URL.", t);
+                }
 			}
 		});
 

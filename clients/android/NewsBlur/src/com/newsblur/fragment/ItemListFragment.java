@@ -48,6 +48,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StateFilter currentState;
     private boolean isLoading = true;
     private boolean cursorSeenYet = false;
+    private boolean firstStorySeenYet = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      */
     public void resetEmptyState() {
         cursorSeenYet = false;
+        firstStorySeenYet = false;
         setLoading(true);
     }
 
@@ -156,29 +158,31 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		return dbHelper.getStoriesLoader(getFeedSet(), currentState);
+		return FeedUtils.dbHelper.getStoriesLoader(getFeedSet(), currentState);
 	}
 
     @Override
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
-            if (cursor.getCount() == 0) {
+            cursorSeenYet = true;
+            if (cursor.getCount() < 1) {
                 activity.triggerRefresh(1, 0);
-            }
-            if ((!cursorSeenYet) && (cursor.getCount() > 0)) {
-                cursorSeenYet = true;
-                // once we have at least a single story, we can instruct the sync service as to how to safely
-                // activate new stories we recieve
-                cursor.moveToFirst();
-                long cutoff = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
-                cursor.moveToPosition(-1);
-                if (activity.getStoryOrder() == StoryOrder.NEWEST) {
-                    NBSyncService.setActivationMode(NBSyncService.ActivationMode.OLDER, cutoff);
-                } else {
-                    NBSyncService.setActivationMode(NBSyncService.ActivationMode.NEWER, cutoff);
+            } else {
+                if (!firstStorySeenYet) {
+                    // once we have at least a single story, we can instruct the sync service as to how to safely
+                    // activate new stories we recieve
+                    firstStorySeenYet = true;
+                    cursor.moveToFirst();
+                    long cutoff = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
+                    cursor.moveToPosition(-1);
+                    if (activity.getStoryOrder() == StoryOrder.NEWEST) {
+                        NBSyncService.setActivationMode(NBSyncService.ActivationMode.OLDER, cutoff);
+                    } else {
+                        NBSyncService.setActivationMode(NBSyncService.ActivationMode.NEWER, cutoff);
+                    }
                 }
             }
-			adapter.swapCursor(cursor);
+            adapter.swapCursor(cursor);
 		}
         updateLoadingIndicator();
 	}

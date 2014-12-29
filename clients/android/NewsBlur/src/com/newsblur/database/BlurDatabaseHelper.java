@@ -590,12 +590,14 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
+        if (fs == null) return null;
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return getStoriesCursor(fs, stateFilter, readFilter, order, cancellationSignal);
     }
 
     private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, StoryOrder order, CancellationSignal cancellationSignal) {
+        if (fs == null) return null;
 
         if (fs.getSingleFeed() != null) {
 
