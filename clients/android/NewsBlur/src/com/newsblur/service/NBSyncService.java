@@ -291,6 +291,7 @@ public class NBSyncService extends Service {
             ra.doLocal(dbHelper);
         }
         FollowupActions.clear();
+        NbActivity.updateAllActivities(false);
     }
 
     /**

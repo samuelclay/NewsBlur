@@ -328,6 +328,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
 	protected void handleUpdate(boolean freshData) {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
+        updateOverlayNav();
         if (freshData) updateCursor();
     }
 
@@ -430,7 +431,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     /**
-     * Update the left/right overlay UI after the read-state of a story changes or we navigate in any way.
+     * Update the next/back overlay UI after the read-state of a story changes or we navigate in any way.
      */
     private void updateOverlayNav() {
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
