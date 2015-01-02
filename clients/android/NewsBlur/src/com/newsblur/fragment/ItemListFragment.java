@@ -83,7 +83,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     }
 
     private void triggerRefresh(int desiredStoryCount, int totalSeen) {
-        boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+        boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
         if (gotSome) triggerSync();
     }
 
@@ -93,7 +93,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     public void resetEmptyState() {
         cursorSeenYet = false;
         firstStorySeenYet = false;
-        setLoading(true);
     }
 
     private void updateLoadingIndicator() {
@@ -107,7 +106,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         TextView emptyView = (TextView) itemList.getEmptyView();
 
-        boolean isLoading = NBSyncService.isFeedSetSyncing(fs);
+        boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet());
         if (isLoading || (!cursorSeenYet)) {
             emptyView.setText(R.string.empty_list_view_loading);
         } else {
