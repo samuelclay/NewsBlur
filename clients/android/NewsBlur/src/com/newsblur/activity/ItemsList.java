@@ -81,16 +81,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         itemListFragment.hasUpdated();
     }
 
-    private void getFirstStories() {
-        triggerRefresh(AppConstants.READING_STORY_PRELOAD, 0);
-    }
-
-    public void triggerRefresh(int desiredStoryCount, int totalSeen) {
-        boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
-        if (gotSome) triggerSync();
-        updateStatusIndicators();
-    }
-
 	public void markItemListAsRead() {
         FeedUtils.markFeedsRead(fs, null, null, this);
         Toast.makeText(this, R.string.toast_marked_stories_as_read, Toast.LENGTH_SHORT).show();
@@ -144,9 +134,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     private void updateStatusIndicators() {
         boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs);
         setProgressBarIndeterminateVisibility(isLoading);
-		if (itemListFragment != null) {
-			itemListFragment.setLoading(isLoading);
-        }
 
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage();
@@ -171,7 +158,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
-        getFirstStories();
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
@@ -183,7 +169,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
-        getFirstStories();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);

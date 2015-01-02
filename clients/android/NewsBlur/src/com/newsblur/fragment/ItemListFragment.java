@@ -46,7 +46,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter currentState;
-    private boolean isLoading = true;
     private boolean cursorSeenYet = false;
     private boolean firstStorySeenYet = false;
 
@@ -83,6 +82,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
     }
 
+    private void triggerRefresh(int desiredStoryCount, int totalSeen) {
+        boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+        if (gotSome) triggerSync();
+    }
+
     /**
      * Indicate that the DB was cleared.
      */
@@ -90,10 +94,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         cursorSeenYet = false;
         firstStorySeenYet = false;
         setLoading(true);
-    }
-
-    public void setLoading(boolean loading) {
-        isLoading = loading;
     }
 
     private void updateLoadingIndicator() {
@@ -107,6 +107,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         TextView emptyView = (TextView) itemList.getEmptyView();
 
+        boolean isLoading = NBSyncService.isFeedSetSyncing(fs);
         if (isLoading || (!cursorSeenYet)) {
             emptyView.setText(R.string.empty_list_view_loading);
         } else {
@@ -129,13 +130,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-        // if we have seen a cursor, this method means the list was updated or scrolled. now is a good
-        // time to see if we need more stories
-        if (cursorSeenYet) {
-            // load an extra page or two worth of stories past the viewport
-            int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
-            activity.triggerRefresh(desiredStoryCount, totalCount);
-        }
+        // load an extra page or two worth of stories past the viewport
+        int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
+        triggerRefresh(desiredStoryCount, totalCount);
 	}
 
 	@Override
@@ -166,7 +163,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		if (cursor != null) {
             cursorSeenYet = true;
             if (cursor.getCount() < 1) {
-                activity.triggerRefresh(1, 0);
+                triggerRefresh(1, 0);
             } else {
                 if (!firstStorySeenYet) {
                     // once we have at least a single story, we can instruct the sync service as to how to safely
