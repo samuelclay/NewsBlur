@@ -201,6 +201,10 @@ public class NBSyncService extends Service {
 
             syncMetadata(startId);
 
+            unreadsService.start(startId);
+
+            imagePrefetchService.start(startId);
+
             finishActions();
 
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
@@ -406,6 +410,7 @@ public class NBSyncService extends Service {
             lastFeedCount = feedValues.size();
 
             unreadsService.start(startId);
+            UnreadsService.doMetadata();
 
         } finally {
             FFSyncRunning = false;

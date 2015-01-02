@@ -24,6 +24,8 @@ public class UnreadsService extends SubService {
 
     private static volatile boolean Running = false;
 
+    private static volatile boolean doMetadata = false;
+
     /** Unread story hashes the API listed that we do not appear to have locally yet. */
     private static List<String> StoryHashQueue;
     static { StoryHashQueue = new ArrayList<String>(); }
@@ -37,8 +39,11 @@ public class UnreadsService extends SubService {
         // only use the unread status API if the user is premium
         if (parent.isPremium != Boolean.TRUE) return;
 
-        gotWork();
-        syncUnreadList();
+        if (doMetadata) {
+            gotWork();
+            syncUnreadList();
+            doMetadata = false;
+        }
 
         if (StoryHashQueue.size() < 1) return;
 
@@ -94,6 +99,7 @@ public class UnreadsService extends SubService {
     private void getNewUnreadStories() {
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) return;
+            if(!PrefsUtils.isOfflineEnabled(parent)) return;
             gotWork();
 
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
@@ -153,6 +159,10 @@ public class UnreadsService extends SubService {
         } else {
             return " " + c + " ";
         }
+    }
+
+    public static void doMetadata() {
+        doMetadata = true;
     }
 
     public static boolean running() {
