@@ -207,10 +207,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             readingAdapter.swapCursor(cursor);
             stories = cursor;
 
-            int currentUnreadCount = getUnreadCount();
-            if (currentUnreadCount > this.startingUnreadCount ) {
-                this.startingUnreadCount = currentUnreadCount;
-            }
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
                 setupPager();
@@ -433,16 +429,20 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * Update the next/back overlay UI after the read-state of a story changes or we navigate in any way.
      */
     private void updateOverlayNav() {
+        int currentUnreadCount = getUnreadCount();
+        if (currentUnreadCount > this.startingUnreadCount ) {
+            this.startingUnreadCount = currentUnreadCount;
+        }
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
-        this.overlayRight.setText((getUnreadCount() > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((getUnreadCount() > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
+        this.overlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
+        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
             this.overlayProgress.setMax(1);
             this.overlayProgress.setProgress(1);
         } else {
-            int unreadProgress = this.startingUnreadCount - getUnreadCount();
+            int unreadProgress = this.startingUnreadCount - currentUnreadCount;
             this.overlayProgress.setMax(this.startingUnreadCount);
             this.overlayProgress.setProgress(unreadProgress);
         }
