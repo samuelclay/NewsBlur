@@ -47,7 +47,6 @@ public class UnreadsService extends SubService {
 
         if (StoryHashQueue.size() < 1) return;
 
-        gotWork();
         getNewUnreadStories();
     }
 
