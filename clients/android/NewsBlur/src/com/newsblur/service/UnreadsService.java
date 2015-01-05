@@ -100,6 +100,7 @@ public class UnreadsService extends SubService {
             if (parent.stopSync()) return;
             if(!PrefsUtils.isOfflineEnabled(parent)) return;
             gotWork();
+            startExpensiveCycle();
 
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : StoryHashQueue) {

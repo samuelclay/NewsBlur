@@ -70,4 +70,11 @@ public class AppConstants {
     // moot to tune.
     public final static long SHUTDOWN_SLACK_SECONDS = 60L;
 
+    // the maximum duty cycle for expensive background tasks. Tune to <1.0 to force sync loops
+    // to pause periodically and not peg the network/CPU
+    public final static double MAX_BG_DUTY_CYCLE = 0.9;
+
+    // cap duty cycle backoffs to prevent unnecessarily large backoffs
+    public final static long DUTY_CYCLE_BACKOFF_CAP_MILLIS = 5L * 1000L;
+
 }
