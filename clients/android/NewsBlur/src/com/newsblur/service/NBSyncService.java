@@ -517,7 +517,10 @@ public class NBSyncService extends Service {
 
     void decrementRunningChild(int startId) {
         synchronized (WAKELOCK_MUTEX) {
-            if (wl != null) wl.release();
+            if (wl == null) return;
+            if (wl.isHeld()) {
+                wl.release();
+            }
             // our wakelock reference counts.  only stop the service if it is in the background and if
             // we are the last thread to release the lock.
             if (!wl.isHeld()) {
