@@ -48,7 +48,7 @@ public class AppConstants {
     public static final int MAX_FEED_LIST_SIZE = 250;
 
     // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
-    public static final int READING_STORY_PRELOAD = 5;
+    public static final int READING_STORY_PRELOAD = 10;
 
     // max old stories to keep in the DB per feed before fetching new unreads
     public static final int MAX_READ_STORIES_STORED = 500;
