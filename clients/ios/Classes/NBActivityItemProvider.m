@@ -30,7 +30,7 @@
 -(id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType {
     if ([activityType isEqualToString:UIActivityTypeMail] ||
         [activityType isEqualToString:@"com.evernote.iPhone.Evernote.EvernoteShare"]) {
-        return @{@"body": text, @"subject": title};
+        return @{@"body": text ?: @"", @"subject": title};
     } else if ([activityType isEqualToString:UIActivityTypePostToTwitter] ||
                [activityType isEqualToString:UIActivityTypePostToFacebook] ||
                [activityType isEqualToString:UIActivityTypePostToWeibo]) {
