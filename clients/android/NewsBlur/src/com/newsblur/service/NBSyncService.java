@@ -454,6 +454,10 @@ public class NBSyncService extends Service {
             
                 if (! isStoryResponseGood(apiResponse)) return;
 
+                // if any reading activities happened during the API call, the result is now stale.
+                // discard it and start again
+                if (dbHelper.getActions(false).getCount() > 0) return;
+
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
                 FeedStoriesSeen.put(fs, totalStoriesSeen);
