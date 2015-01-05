@@ -39,7 +39,8 @@ public class ImagePrefetchService extends SubService {
 
         gotWork();
 
-        while (ImageQueue.size() > 0) {
+        while ((ImageQueue.size() > 0) && PrefsUtils.isImagePrefetchEnabled(parent)) {
+            startExpensiveCycle();
             Set<String> fetchedImages = new HashSet<String>();
             Set<String> batch = new HashSet<String>(AppConstants.IMAGE_PREFETCH_BATCH_SIZE);
             batchloop: for (String url : ImageQueue) {

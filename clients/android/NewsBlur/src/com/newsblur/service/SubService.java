@@ -21,6 +21,7 @@ public abstract class SubService {
     protected NBSyncService parent;
     private ExecutorService executor;
     protected int startId;
+    private long cycleStartTime = 0L;
 
     private SubService() {
         ; // no default construction
@@ -50,9 +51,10 @@ public abstract class SubService {
 
     private synchronized void exec_() {
         try {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");
+            //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");
             exec();
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
+            //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
+            cycleStartTime = 0;
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
@@ -89,6 +91,37 @@ public abstract class SubService {
 
     protected abstract void setRunning(boolean running);
     protected abstract boolean isRunning();
+
+    /**
+     * If called at the beginning of an expensive loop in a SubService, enforces the maximum duty cycle
+     * defined in AppConstants by sleeping for a short while so the SubService does not dominate system
+     * resources.
+     */
+    protected void startExpensiveCycle() {
+        if (cycleStartTime == 0) {
+            cycleStartTime = System.nanoTime();
+            return;
+        }
+
+        double lastCycleTime = (System.nanoTime() - cycleStartTime);
+        if (lastCycleTime < 1) return;
+
+        cycleStartTime = System.nanoTime();
+
+        double cooloffTime = lastCycleTime * (1.0 - AppConstants.MAX_BG_DUTY_CYCLE);
+        if (cooloffTime < 1) return;
+        long cooloffTimeMs = Math.round(cooloffTime / 1000000.0);
+        if (cooloffTimeMs > AppConstants.DUTY_CYCLE_BACKOFF_CAP_MILLIS) cooloffTimeMs = AppConstants.DUTY_CYCLE_BACKOFF_CAP_MILLIS;
+
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "Sleeping for : " + cooloffTimeMs + "ms to enforce max duty cycle.");
+        try {
+            Thread.sleep(cooloffTimeMs);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+
 
 }
         

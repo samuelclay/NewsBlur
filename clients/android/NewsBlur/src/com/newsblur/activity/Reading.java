@@ -209,11 +209,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
-                int currentUnreadCount = getUnreadCount();
-                if (currentUnreadCount > this.startingUnreadCount ) {
-                    this.startingUnreadCount = currentUnreadCount;
-                }
-                // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
                 setupPager();
             }
 
@@ -328,6 +323,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
 	protected void handleUpdate(boolean freshData) {
         enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
+        updateOverlayNav();
         if (freshData) updateCursor();
     }
 
@@ -430,19 +426,23 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     /**
-     * Update the left/right overlay UI after the read-state of a story changes or we navigate in any way.
+     * Update the next/back overlay UI after the read-state of a story changes or we navigate in any way.
      */
     private void updateOverlayNav() {
+        int currentUnreadCount = getUnreadCount();
+        if (currentUnreadCount > this.startingUnreadCount ) {
+            this.startingUnreadCount = currentUnreadCount;
+        }
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
-        this.overlayRight.setText((getUnreadCount() > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((getUnreadCount() > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
+        this.overlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
+        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
             this.overlayProgress.setMax(1);
             this.overlayProgress.setProgress(1);
         } else {
-            int unreadProgress = this.startingUnreadCount - getUnreadCount();
+            int unreadProgress = this.startingUnreadCount - currentUnreadCount;
             this.overlayProgress.setMax(this.startingUnreadCount);
             this.overlayProgress.setProgress(unreadProgress);
         }
@@ -488,13 +488,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * load is not needed and all latches are tripped.
      */
     private void checkStoryCount(int position) {
-        if (AppConstants.VERBOSE_LOG) {
-            Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
-        }
-        // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if ((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) {
+        if (stories == null ) {
 			triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
-		}
+        } else {
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
+            }
+            // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
+            if ((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) {
+                triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
+            }
+        }
         
         if (stopLoading) {
             // if we terminated because we are well and truly done, break any search loops and stop progress indication

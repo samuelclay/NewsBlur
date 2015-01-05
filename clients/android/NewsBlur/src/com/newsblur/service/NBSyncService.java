@@ -67,6 +67,7 @@ public class NBSyncService extends Service {
     public enum ActivationMode { ALL, OLDER, NEWER };
 
     private static final Object WAKELOCK_MUTEX = new Object();
+    private static final Object PENDING_FEED_MUTEX = new Object();
 
     private volatile static boolean ActionsRunning = false;
     private volatile static boolean CleanupRunning = false;
@@ -87,9 +88,10 @@ public class NBSyncService extends Service {
     private static long lastFeedCount = 0L;
     private static long lastFFWriteMillis = 0L;
 
-    /** Feed sets that we need to sync and how many stories the UI wants for them. */
-    private static Map<FeedSet,Integer> PendingFeeds;
-    static { PendingFeeds = new HashMap<FeedSet,Integer>(); }
+    /** Feed set that we need to sync immediately for the UI. */
+    private static FeedSet PendingFeed;
+    private static Integer PendingFeedTarget = 0;
+
     /** Feed sets that the API has said to have no more pages left. */
     private static Set<FeedSet> ExhaustedFeeds;
     static { ExhaustedFeeds = new HashSet<FeedSet>(); }
@@ -195,9 +197,13 @@ public class NBSyncService extends Service {
             syncActions();
             
             // these requests are expressly enqueued by the UI/user, do them next
-            syncPendingFeeds();
+            syncPendingFeedStories();
 
             syncMetadata(startId);
+
+            unreadsService.start(startId);
+
+            imagePrefetchService.start(startId);
 
             finishActions();
 
@@ -285,6 +291,7 @@ public class NBSyncService extends Service {
             ra.doLocal(dbHelper);
         }
         FollowupActions.clear();
+        NbActivity.updateAllActivities(false);
     }
 
     /**
@@ -404,6 +411,7 @@ public class NBSyncService extends Service {
             lastFeedCount = feedValues.size();
 
             unreadsService.start(startId);
+            UnreadsService.doMetadata();
 
         } finally {
             FFSyncRunning = false;
@@ -415,59 +423,72 @@ public class NBSyncService extends Service {
     /**
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
-    private void syncPendingFeeds() {
+    private void syncPendingFeedStories() {
+        FeedSet fs = PendingFeed;
+        boolean finished = false;
+        if (fs == null) {
+            return;
+        }
         try {
-            Set<FeedSet> handledFeeds = new HashSet<FeedSet>();
-            feedloop: for (FeedSet fs : PendingFeeds.keySet()) {
+            if (ExhaustedFeeds.contains(fs)) {
+                Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
+                finished = true;
+                return;
+            }
+            
+            if (!FeedPagesSeen.containsKey(fs)) {
+                FeedPagesSeen.put(fs, 0);
+                FeedStoriesSeen.put(fs, 0);
+            }
+            int pageNumber = FeedPagesSeen.get(fs);
+            int totalStoriesSeen = FeedStoriesSeen.get(fs);
 
-                if (ExhaustedFeeds.contains(fs)) {
-                    Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
-                    handledFeeds.add(fs);
-                    continue feedloop;
+            StoryOrder order = PrefsUtils.getStoryOrder(this, fs);
+            ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
+            
+            while (totalStoriesSeen < PendingFeedTarget) {
+                if (stopSync()) return;
+
+                if (!fs.equals(PendingFeed)) {
+                    // the active view has changed
+                    if (fs == null) finished = true;
+                    return; 
                 }
 
                 StorySyncRunning = true;
                 NbActivity.updateAllActivities(false);
-                
-                if (!FeedPagesSeen.containsKey(fs)) {
-                    FeedPagesSeen.put(fs, 0);
-                    FeedStoriesSeen.put(fs, 0);
+
+                pageNumber++;
+                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
+            
+                if (! isStoryResponseGood(apiResponse)) return;
+
+                // if any reading activities happened during the API call, the result is now stale.
+                // discard it and start again
+                if (dbHelper.getActions(false).getCount() > 0) return;
+
+                FeedPagesSeen.put(fs, pageNumber);
+                totalStoriesSeen += apiResponse.stories.length;
+                FeedStoriesSeen.put(fs, totalStoriesSeen);
+
+                insertStories(apiResponse);
+                NbActivity.updateAllActivities(true);
+            
+                if (apiResponse.stories.length == 0) {
+                    ExhaustedFeeds.add(fs);
+                    finished = true;
+                    return;
                 }
-                int pageNumber = FeedPagesSeen.get(fs);
-                int totalStoriesSeen = FeedStoriesSeen.get(fs);
-
-                StoryOrder order = PrefsUtils.getStoryOrder(this, fs);
-                ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
-                
-                pageloop: while (totalStoriesSeen < PendingFeeds.get(fs)) {
-                    if (stopSync()) return;
-
-                    pageNumber++;
-                    StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
-                
-                    if (! isStoryResponseGood(apiResponse)) break feedloop;
-
-                    FeedPagesSeen.put(fs, pageNumber);
-                    totalStoriesSeen += apiResponse.stories.length;
-                    FeedStoriesSeen.put(fs, totalStoriesSeen);
-
-                    insertStories(apiResponse);
-                    NbActivity.updateAllActivities(true);
-                
-                    if (apiResponse.stories.length == 0) {
-                        ExhaustedFeeds.add(fs);
-                        break pageloop;
-                    }
-                }
-
-                handledFeeds.add(fs);
             }
+            finished = true;
 
-            PendingFeeds.keySet().removeAll(handledFeeds);
         } finally {
             if (StorySyncRunning) {
                 StorySyncRunning = false;
                 NbActivity.updateAllActivities(false);
+            }
+            synchronized (PENDING_FEED_MUTEX) {
+                if (finished && fs.equals(PendingFeed)) PendingFeed = null;
             }
         }
     }
@@ -496,7 +517,10 @@ public class NBSyncService extends Service {
 
     void decrementRunningChild(int startId) {
         synchronized (WAKELOCK_MUTEX) {
-            if (wl != null) wl.release();
+            if (wl == null) return;
+            if (wl.isHeld()) {
+                wl.release();
+            }
             // our wakelock reference counts.  only stop the service if it is in the background and if
             // we are the last thread to release the lock.
             if (!wl.isHeld()) {
@@ -540,7 +564,7 @@ public class NBSyncService extends Service {
      * Is there a sync for a given FeedSet running?
      */
     public static boolean isFeedSetSyncing(FeedSet fs) {
-        return (PendingFeeds.containsKey(fs) && StorySyncRunning);
+        return (fs.equals(PendingFeed) && StorySyncRunning);
     }
 
     public static String getSyncStatusMessage() {
@@ -589,29 +613,37 @@ public class NBSyncService extends Service {
             return false;
         }
 
-        synchronized (PendingFeeds) {
+        synchronized (PENDING_FEED_MUTEX) {
+            Integer alreadyPending = 0;
+            if (fs.equals(PendingFeed)) alreadyPending = PendingFeedTarget;
             Integer alreadySeen = FeedStoriesSeen.get(fs);
-            Integer alreadyRequested = PendingFeeds.get(fs);
             if (alreadySeen == null) alreadySeen = 0;
-            if (alreadyRequested == null) alreadyRequested = 0;
-            if ((callerSeen >= 0) && (alreadySeen > callerSeen)) {
+            if (callerSeen < alreadySeen) {
                 // the caller is probably filtering and thinks they have fewer than we do, so
                 // update our count to agree with them, and force-allow another requet
                 alreadySeen = callerSeen;
                 FeedStoriesSeen.put(fs, callerSeen);
-                alreadyRequested = 0;
+                alreadyPending = 0;
             }
+
+            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount + " pending:" + alreadyPending);
             if (desiredStoryCount <= alreadySeen) {
                 return false;
             }
-            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount + " requested:" + alreadyRequested);
-            if (desiredStoryCount <= alreadyRequested) {
+            if (desiredStoryCount <= alreadyPending) {
                 return false;
             }
-        }
             
-        PendingFeeds.put(fs, desiredStoryCount);
+            PendingFeed = fs;
+            PendingFeedTarget = desiredStoryCount;
+        }
         return true;
+    }
+
+    public static void clearPendingStoryRequest() {
+        synchronized (PENDING_FEED_MUTEX) {
+            PendingFeed = null;
+        }
     }
 
     public static void resetFeeds() {

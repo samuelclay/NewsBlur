@@ -73,13 +73,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     protected void onResume() {
         super.onResume();
 
-        // clear the read-this-session flag from stories so they don't show up in the wrong place
+        NBSyncService.clearPendingStoryRequest();
+        NBSyncService.setActivationMode(NBSyncService.ActivationMode.ALL);
+        FeedUtils.activateAllStories();
         FeedUtils.clearReadingSession();
 
         updateStatusIndicators();
-        // this view doesn't show stories, it is safe to alter stories
-        FeedUtils.activateAllStories();
-        NBSyncService.setActivationMode(NBSyncService.ActivationMode.ALL);
         triggerSync();
 
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {

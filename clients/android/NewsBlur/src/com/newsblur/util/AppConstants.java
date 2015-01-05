@@ -48,7 +48,7 @@ public class AppConstants {
     public static final int MAX_FEED_LIST_SIZE = 250;
 
     // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
-    public static final int READING_STORY_PRELOAD = 5;
+    public static final int READING_STORY_PRELOAD = 10;
 
     // max old stories to keep in the DB per feed before fetching new unreads
     public static final int MAX_READ_STORIES_STORED = 500;
@@ -69,5 +69,12 @@ public class AppConstants {
     // but the system like to force-kill terminating services that take too long, so it is often
     // moot to tune.
     public final static long SHUTDOWN_SLACK_SECONDS = 60L;
+
+    // the maximum duty cycle for expensive background tasks. Tune to <1.0 to force sync loops
+    // to pause periodically and not peg the network/CPU
+    public final static double MAX_BG_DUTY_CYCLE = 0.9;
+
+    // cap duty cycle backoffs to prevent unnecessarily large backoffs
+    public final static long DUTY_CYCLE_BACKOFF_CAP_MILLIS = 5L * 1000L;
 
 }

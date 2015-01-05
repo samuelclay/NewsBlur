@@ -602,57 +602,63 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 	@Override
 	public void sharedCallback(String sharedText, boolean hasAlreadyBeenShared) {
-		view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
-		view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
-		
-		if (!hasAlreadyBeenShared) {
-			
-			if (!TextUtils.isEmpty(sharedText)) {
-				View commentView = inflater.inflate(R.layout.include_comment, null);
-				commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
+        try {
+            view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
+            
+            if (!hasAlreadyBeenShared) {
+                
+                if (!TextUtils.isEmpty(sharedText)) {
+                    View commentView = inflater.inflate(R.layout.include_comment, null);
+                    commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
 
-                TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-                commentText.setTag("commentBy" + user.id);
+                    TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
+                    commentText.setTag("commentBy" + user.id);
+                    commentText.setText(sharedText);
+
+                    TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
+                    if (!TextUtils.isEmpty(user.location)) {
+                        commentLocation.setText(user.location.toUpperCase());
+                    } else {
+                        commentLocation.setVisibility(View.GONE);
+                    }
+
+                    if (PrefsUtils.getUserImage(getActivity()) != null) {
+                        ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+                        commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
+                    }
+
+                    TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
+                    commentSharedDate.setText(R.string.now);
+
+                    TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
+                    commentUsername.setText(user.username);
+
+                    ((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
+
+                    ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
+                    
+                    final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
+                    ((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
+                    
+                } else {
+                    ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
+                    final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
+                    ((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
+                }
+            } else {
+                View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
+                TextView commentText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_BY + user.id);
                 commentText.setText(sharedText);
 
-                TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
-                if (!TextUtils.isEmpty(user.location)) {
-                    commentLocation.setText(user.location.toUpperCase());
-                } else {
-                    commentLocation.setVisibility(View.GONE);
-                }
-
-                if (PrefsUtils.getUserImage(getActivity()) != null) {
-					ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
-					commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
-				}
-
-				TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-				commentSharedDate.setText(R.string.now);
-
-				TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
-				commentUsername.setText(user.username);
-
-				((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
-
-				ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
-				
-				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
-				((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
-				
-			} else {
-				ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
-				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
-				((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
-			}
-		} else {
-			View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
-			TextView commentText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_BY + user.id);
-			commentText.setText(sharedText);
-
-			TextView commentDateText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_DATE_BY + user.id);
-			commentDateText.setText(R.string.now);
-		}
+                TextView commentDateText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_DATE_BY + user.id);
+                commentDateText.setText(R.string.now);
+            }
+        } catch (Exception e) {
+            // this entire method does not respect context state and can be triggered on stale fragments. it should
+            // be replaced with a proper Loader, or it will always risk crashing the application
+            Log.w(this.getClass().getName(), "async error in callback", e);
+        }
 	}
 
 

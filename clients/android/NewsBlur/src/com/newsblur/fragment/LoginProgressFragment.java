@@ -1,5 +1,6 @@
 package com.newsblur.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -85,26 +86,28 @@ public class LoginProgressFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(NewsBlurResponse result) {
+            Context c = getActivity();
+            if (c == null) return; // we might have run past the lifecycle of the activity
 			if (!result.isError()) {
-				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
+				final Animation a = AnimationUtils.loadAnimation(c, R.anim.text_down);
 				updateStatus.setText(R.string.login_logged_in);
 				loggingInProgress.setVisibility(View.GONE);
 				updateStatus.startAnimation(a);
 
 				loginProfilePicture.setVisibility(View.VISIBLE);
-				loginProfilePicture.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
+				loginProfilePicture.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(c), 10f));
 				feedProgress.setVisibility(View.VISIBLE);
 
-				final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
+				final Animation b = AnimationUtils.loadAnimation(c, R.anim.text_up);
 				retrievingFeeds.setText(R.string.login_retrieving_feeds);
 				retrievingFeeds.startAnimation(b);
 
                 Intent startMain = new Intent(getActivity(), Main.class);
-                getActivity().startActivity(startMain);
+                c.startActivity(startMain);
 
 			} else {
-                UIUtils.safeToast(getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG);
-				startActivity(new Intent(getActivity(), Login.class));
+                UIUtils.safeToast(c, result.getErrorMessage(), Toast.LENGTH_LONG);
+				startActivity(new Intent(c, Login.class));
 			}
 		}
 	}
