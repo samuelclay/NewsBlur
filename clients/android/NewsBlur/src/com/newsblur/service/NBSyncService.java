@@ -427,7 +427,6 @@ public class NBSyncService extends Service {
         FeedSet fs = PendingFeed;
         boolean finished = false;
         if (fs == null) {
-            Log.i(this.getClass().getName(), "No feed set to sync.");
             return;
         }
         try {
