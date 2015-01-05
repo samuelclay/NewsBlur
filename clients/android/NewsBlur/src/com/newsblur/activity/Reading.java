@@ -488,13 +488,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * load is not needed and all latches are tripped.
      */
     private void checkStoryCount(int position) {
-        if (AppConstants.VERBOSE_LOG) {
-            Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
-        }
-        // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if ((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) {
+        if (stories == null ) {
 			triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
-		}
+        } else {
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
+            }
+            // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
+            if ((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) {
+                triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
+            }
+        }
         
         if (stopLoading) {
             // if we terminated because we are well and truly done, break any search loops and stop progress indication
