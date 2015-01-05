@@ -425,10 +425,15 @@ public class NBSyncService extends Service {
      */
     private void syncPendingFeedStories() {
         FeedSet fs = PendingFeed;
-        if (fs == null) return;
+        boolean finished = false;
+        if (fs == null) {
+            Log.i(this.getClass().getName(), "No feed set to sync.");
+            return;
+        }
         try {
             if (ExhaustedFeeds.contains(fs)) {
                 Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
+                finished = true;
                 return;
             }
             
@@ -444,7 +449,12 @@ public class NBSyncService extends Service {
             
             while (totalStoriesSeen < PendingFeedTarget) {
                 if (stopSync()) return;
-                if (!fs.equals(PendingFeed)) return; // the active view has changed
+
+                if (!fs.equals(PendingFeed)) {
+                    // the active view has changed
+                    if (fs == null) finished = true;
+                    return; 
+                }
 
                 StorySyncRunning = true;
                 NbActivity.updateAllActivities(false);
@@ -467,17 +477,19 @@ public class NBSyncService extends Service {
             
                 if (apiResponse.stories.length == 0) {
                     ExhaustedFeeds.add(fs);
+                    finished = true;
                     return;
                 }
             }
+            finished = true;
 
         } finally {
-            synchronized (PENDING_FEED_MUTEX) {
-                if (fs.equals(PendingFeed)) PendingFeed = null;
-            }
             if (StorySyncRunning) {
                 StorySyncRunning = false;
                 NbActivity.updateAllActivities(false);
+            }
+            synchronized (PENDING_FEED_MUTEX) {
+                if (finished && fs.equals(PendingFeed)) PendingFeed = null;
             }
         }
     }
