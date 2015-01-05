@@ -50,9 +50,9 @@ public abstract class SubService {
 
     private synchronized void exec_() {
         try {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");
+            //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");
             exec();
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
+            //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {

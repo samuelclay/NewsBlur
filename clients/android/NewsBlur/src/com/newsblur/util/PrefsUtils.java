@@ -54,7 +54,7 @@ public class PrefsUtils {
             Log.w(PrefsUtils.class.getName(), "could not determine app version");
             return false;
         }
-        Log.i(PrefsUtils.class.getName(), "launching version: " + version);
+        if (AppConstants.VERBOSE_LOG) Log.i(PrefsUtils.class.getName(), "launching version: " + version);
 
         String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
