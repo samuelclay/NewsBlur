@@ -207,13 +207,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             readingAdapter.swapCursor(cursor);
             stories = cursor;
 
+            int currentUnreadCount = getUnreadCount();
+            if (currentUnreadCount > this.startingUnreadCount ) {
+                this.startingUnreadCount = currentUnreadCount;
+            }
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
-                int currentUnreadCount = getUnreadCount();
-                if (currentUnreadCount > this.startingUnreadCount ) {
-                    this.startingUnreadCount = currentUnreadCount;
-                }
-                // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
                 setupPager();
             }
 
