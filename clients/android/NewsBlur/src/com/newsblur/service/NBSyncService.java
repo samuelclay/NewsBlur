@@ -569,13 +569,13 @@ public class NBSyncService extends Service {
 
     public static String getSyncStatusMessage() {
         if (VacuumRunning) return "Tidying up . . .";
-        if (ActionsRunning) return "Catching up reading actions . . .";
-        if (FFSyncRunning) return "Syncing feeds . . .";
-        if (CleanupRunning) return "Cleaning up storage . . .";
-        if (StorySyncRunning) return "Syncing stories . . .";
-        if (UnreadsService.running()) return "Syncing" + UnreadsService.getPendingCount() + "unread stories . . .";
-        if (OriginalTextService.running()) return "Syncing text for " + OriginalTextService.getPendingCount() + " stories. . .";
-        if (ImagePrefetchService.running()) return "Caching " + ImagePrefetchService.getPendingCount() + " images . . .";
+        if (ActionsRunning) return "Syncing read stories...";
+        if (FFSyncRunning) return "On its way...";
+        if (CleanupRunning) return "Cleaning up...";
+        if (StorySyncRunning) return "Fetching recent stories...";
+        if (UnreadsService.running()) return "Storing" + UnreadsService.getPendingCount() + "unread stories...";
+        if (OriginalTextService.running()) return "Storing text for " + OriginalTextService.getPendingCount() + " stories...";
+        if (ImagePrefetchService.running()) return "Storing " + ImagePrefetchService.getPendingCount() + " images...";
         return null;
     }
 

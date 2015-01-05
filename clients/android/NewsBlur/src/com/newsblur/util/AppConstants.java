@@ -54,10 +54,10 @@ public class AppConstants {
     public static final int MAX_READ_STORIES_STORED = 500;
 
     // how many unread stories to fetch via hash at a time
-    public static final int UNREAD_FETCH_BATCH_SIZE = 50;
+    public static final int UNREAD_FETCH_BATCH_SIZE = 100;
 
     // how many images to prefetch before updating the countdown UI
-    public static final int IMAGE_PREFETCH_BATCH_SIZE = 10;
+    public static final int IMAGE_PREFETCH_BATCH_SIZE = 6;
 
     // should the feedback link be enabled (read: is this a beta?)
     public static final boolean ENABLE_FEEDBACK = true;
