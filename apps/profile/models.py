@@ -282,7 +282,8 @@ class Profile(models.Model):
         logging.user(self.user, "~BY~SN~FWFound ~SB%s paypal~SN and ~SB%s stripe~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
                      len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
 
-        if check_premium and self.premium_expire > datetime.datetime.now() and not self.is_premium:
+        if (check_premium and not self.is_premium and
+            (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
             self.activate_premium()
 
     def refund_premium(self, partial=False):
