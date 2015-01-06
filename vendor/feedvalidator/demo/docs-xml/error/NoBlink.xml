@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>There is no <code>blink</code> element in RSS</p>
+</div>
+<div id='explanation'>
+<p>There is no <code>blink</code> element in RSS.  The element was proposed but an alternate syntax was chosen instead.</p>
+</div>
+<div id='solution'>
+<p>Use the <a href="http://backend.userland.com/blogChannelModule">blogChannel:blink</a> element instead.</p>
+</div>
+</div>
+</fvdoc>

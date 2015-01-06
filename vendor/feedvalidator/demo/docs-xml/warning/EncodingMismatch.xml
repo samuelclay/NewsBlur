@@ -1,0 +1,48 @@
+<!DOCTYPE fvdoc [
+<!ENTITY ldquo "&#8220;">
+<!ENTITY rdquo "&#8221;">
+]>
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Your feed appears to be encoded as &ldquo;<i>foo</i>&rdquo;, but your server is reporting &ldquo;<i>bar</i>&rdquo;</p>
+</div>
+<div id='explanation'>
+<p>The XML appears to be using one encoding, but the HTTP headers from the
+web server indicate a different charset. Internet standards require that the
+web server's version takes preference, but many aggregators ignore this.
+Note that, if you are serving content as '<code>text/*</code>', then
+the default charset is US-ASCII, which is probably not what you want.
+(See
+<a href="http://www.faqs.org/rfcs/rfc3023.html" title="RFC 3023 (rfc3023) - XML Media Types">RFC 3023</a> for technical details.)</p>
+<p>RSS feeds should be served as <code>application/rss+xml</code>
+(RSS 1.0 is an RDF format, so it may be served as
+<code>application/rdf+xml</code> instead).
+Atom feeds should use <code>application/atom+xml</code>.
+Alternatively, for compatibility with widely-deployed web browsers, any of
+these feeds can use one of the more
+general XML types -  preferably <code>application/xml</code>.</p>
+<p>Another possible cause is the use of single quotes to delimit the charset parameter in the http header, whereas the http definition of <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2.2">Basic Rules</a> only permits the use of double quotes.  The result is somewhat confusing messages such as:</p>
+<blockquote>
+<p>
+Your feed appears to be encoded as &ldquo;utf-8&rdquo;, but your server is reporting &ldquo;'utf-8'&rdquo;
+</p>
+</blockquote>
+</div>
+<div id='solution'>
+<p>Either ensure that the charset parameter of the <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">HTTP Content-Type header</a> matches the
+<a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-EncodingDecl">encoding
+declaration</a>, or ensure that the server makes no claims
+about the encoding. Serving the feed as <code>application/xml</code> means
+that the encoding will be taken from the file's declaration.</p>
+<p>The W3C has 
+<a href="http://www.w3.org/International/O-HTTP-charset">published
+information</a> on how to set the HTTP charset parameter with various popular
+web servers.</p>
+<p>If you are unable to control your server's charset declaration,
+<a href="http://www.w3.org/TR/2000/REC-xml-20001006#sec-references">Character
+and Entity References</a> may be used to specify the full range of Unicode
+characters in an feed served as US-ASCII.</p>
+</div>
+</div>
+</fvdoc>

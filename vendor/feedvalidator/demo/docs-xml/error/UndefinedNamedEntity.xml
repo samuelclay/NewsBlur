@@ -1,0 +1,18 @@
+<!DOCTYPE fvdoc [
+<!ENTITY mdash "&#8212;">
+]>
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Undefined named entity: <code>foo</code></p>
+</div>
+<div id='explanation'>
+<p>Your feed is not <a href="http://www.w3.org/TR/REC-xml/#sec-well-formed">well formed</a> according to the <a href="http://www.w3.org/TR/REC-xml">XML specification</a>.  It makes use of a named entity other than one of the ones <a href="http://www.w3.org/TR/REC-xml/#sec-predefined-ent">predefined</a> in the XML specification: <code>&amp;lt;</code> for <code>&lt;</code>, <code>&amp;amp;</code> for <code>&amp;</code>, <code>&amp;gt;</code> for <code>&gt;</code>, <code>&apos;</code> for <code>&amp;apos;</code>, and <code>&amp;quot;</code> for <code>&quot;.</code></p>
+</div>
+<div id='solution'>
+<p>It is possible to create a <a href="http://www.w3.org/TR/REC-xml/#dt-doctype">DTD</a> which declares additional <a href="http://www.w3.org/TR/REC-xml/#sec-entity-decl">entities</a>, reference this DTD in a <a href="http://www.w3.org/TR/REC-xml/#NT-doctypedecl">DOCTYPE declaration</a>, and then make use of such entities.  XHTML defines a <a href="http://www.w3.org/TR/xhtml1/#normative">set of such doctypes</a> which defines additional <a href="http://www.w3.org/TR/xhtml1/#h-A2">entities</a>.  Support for the HTML and XHTML doctypes in now widespread &mdash; in browsers.  While the Feed Validator will validate feeds which make use of DTDs specifically defined for use with Atom or RSS, the support for such advanced &mdash; and optional &mdash; XML features is not widespread in feed readers.  As such, this approach is <b>not recommended</b>.</p>
+<p>One solution that <b>is</b> widely supported is to replace the use of named entity references with their <a href="http://www.w3.org/TR/REC-xml/#sec-entity-decl">numerical equivalents</a>.  For example, use <code>&amp;#160</code> or <code>&amp;#xa0;</code> instead of <code>&amp;nbsp;</code>.  A complete list of XHTML characters and their numeric equivalents can be found <a href="http://www.w3.org/TR/xhtml1/dtds.html#a_dtd_Latin-1_characters">here</a>.  Many programming languages have libraries that can assist with this task.</p>
+<p>Another approach it to make use of entity-encoded HTML.  For example, use <code>&amp;amp;nbsp</code> instead of <code>&amp;nbsp;</code>.  In Atom, this requires the use of the <code>type="html"</code> attribute on the construct.</p>
+</div>
+</div>
+</fvdoc>

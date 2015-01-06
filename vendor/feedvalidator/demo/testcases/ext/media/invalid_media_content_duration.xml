@@ -1,0 +1,36 @@
+<!--
+  Author:       Sam Ruby (http://www.intertwingly.net/blog/)
+  Copyright:    Copyright (c) 2006 Sam Ruby
+-->
+
+<!--
+  Description:  invalid media content - duration
+  Expect:       Error
+-->
+
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+<title>My Movie Review Site</title>
+<link>http://www.foo.com</link>
+<description>I review movies.</description>
+        <item>
+                <title>Movie Title: Is this a good movie?</title>
+                <link>http://www.foo.com/item1.htm</link>
+                <media:content 
+                    url="http://www.foo.com/movie.mov" 
+                    fileSize="12216320" 
+                    type="video/quicktime"
+                    medium="video"
+                    isDefault="true" 
+                    expression="full" 
+                    bitrate="128" 
+                    framerate="25"
+                    samplingrate="44.1"
+                    channels="2"
+                    duration="seems like forever" 
+                    height="200"
+                    width="300" 
+                    lang="en" />
+        </item>
+</channel>
+</rss>

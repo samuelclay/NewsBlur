@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  noDuplicates shouldn't cause next element to be undefined
+  Expect:       !UndefinedElement{element:language}
+-->
+
+<rss version="0.91"> 
+<channel> 
+<title>Not Exactly</title> 
+<link>http://www.physics.utoronto.ca/~kaveh/r/</link> 
+<description>This is <i>not exactly</i> the weblog (online journal) of Kaveh Khodjasteh.</description> 
+<language>en-us</language> 
+</channel>
+</rss>

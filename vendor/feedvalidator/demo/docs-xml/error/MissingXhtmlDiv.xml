@@ -1,0 +1,29 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Missing xhtml:div</p>
+</div>
+<div id='explanation'>
+<p>If the value of "type" is "xhtml", the content of the Text construct
+MUST be a single XHTML div element, and SHOULD be suitable
+for handling as XHTML.</p>
+<p>Note: the XHTML div element itself is not considered part of the
+content</p>
+</div>
+<div id='solution'>
+<p>If your content is intended to be XHTML, insert <code>&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;</code> before your XHTML content, and
+<code>&lt;/div&gt;</code> after it.</p>
+<p>If, however, your content is simple text or html, change the type attribute to match your content.  Here are a few example titles, each intended to convey the simple string <code>AT&amp;T</code> as a title:</p>
+
+<ul>
+<li><pre>&lt;title&gt;AT&amp;amp;T&lt;/title&gt;</pre></li>
+<li><pre>&lt;title type="text"&gt;AT&amp;amp;T&lt;/title&gt;</pre></li>
+<li><pre>&lt;title type="html"&gt;AT&amp;amp;amp;T&lt;/title&gt;</pre></li>
+<li><pre>&lt;title type="html"&gt;&lt;![CDATA[AT&amp;amp;T]]&gt;&lt;/title&gt;</pre></li>
+<li><pre>&lt;title type="xhtml"&gt;
+&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;AT&amp;amp;T&lt;/div&gt;
+&lt;/title&gt;</pre></li>
+</ul>
+</div>
+</div>
+</fvdoc>

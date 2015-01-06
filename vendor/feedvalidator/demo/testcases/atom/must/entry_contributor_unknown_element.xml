@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  undefined entry element in contributor
+  Expect:       UndefinedElement{parent:contributor,element:foo}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<contributor>
+<foo>bar</foo>
+</contributor>
+</entry>
+</feed>

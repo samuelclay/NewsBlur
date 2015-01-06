@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  child extension element not in a namespace
+  Expect:       NotInANamespace{element:PhotoDate}
+-->
+
+<rss version="2.0" xmlns:apple-wallpapers="http://www.apple.com/ilife/wallpapers">
+    <channel>
+        <title>photocast_test</title>
+        <link>http://web.mac.com/mrakes/iPhoto/photocast_test/index.rss</link>
+        <description>photocast_test</description>
+        <pubDate>2006-01-11 16:43:22 -0800</pubDate>
+        <lastBuildDate>2006-01-11 16:43:22 -0800</lastBuildDate>
+        <generator>iPhoto [iLife Publication Framework] (6.0)</generator>
+        <apple-wallpapers:feedVersion>0.9</apple-wallpapers:feedVersion>
+        <guid isPermaLink="false">95148ACD-C1A3-45C3-A927-15C836892DCC</guid>
+        <image>
+            <url>http://web.mac.com/mrakes/iPhoto/photocast_test/1C8C5C8D-651D-4990-B6DD-DF11D515213C.jpg?transform=medium</url>
+            <title>photocast_test</title>
+            <link>http://web.mac.com/mrakes/iPhoto/photocast_test/index.rss</link>
+        </image>
+        <item>
+            <title>IMG_0663.JPG</title>
+            <link>http://web.mac.com/mrakes/iPhoto/photocast_test/1C8C5C8D-651D-4990-B6DD-DF11D515213C.jpg</link>
+            <description>&lt;p>&lt;a href="http://web.mac.com/mrakes/iPhoto/photocast_test/1C8C5C8D-651D-4990-B6DD-DF11D515213C.jpg">&lt;img src="http://web.mac.com/mrakes/iPhoto/photocast_test/1C8C5C8D-651D-4990-B6DD-DF11D515213C.jpg?transform=medium" alt="photo" title="" style="float:left; padding-right:10px; padding-bottom:10px;"/>&lt;/a>&lt;/p>&lt;br clear=all></description>
+            <pubDate>2006-01-11 16:42:55 -0800</pubDate>
+            <category>Rakes</category>
+            <category>photocast_test</category>
+            <category>Mark</category>
+            <guid isPermaLink="false">1C8C5C8D-651D-4990-B6DD-DF11D515213C</guid>
+            <apple-wallpapers:photoDate>2005-11-29T04:36:06</apple-wallpapers:photoDate>
+            <apple-wallpapers:cropDate>2006-01-11 16:42:26 -0800</apple-wallpapers:cropDate>
+            <apple-wallpapers:thumbnail>http://web.mac.com/mrakes/iPhoto/photocast_test/1C8C5C8D-651D-4990-B6DD-DF11D515213C.jpg?transform=medium</apple-wallpapers:thumbnail>
+            <apple-wallpapers:image>http://web.mac.com/mrakes/iPhoto/photocast_test/1C8C5C8D-651D-4990-B6DD-DF11D515213C.jpg</apple-wallpapers:image>
+            <apple-wallpapers:metadata>
+                <PhotoDate>2159.525069</PhotoDate>
+                <Comments></Comments>
+            </apple-wallpapers:metadata>
+        </item>
+        <item>
+            <title>IMG_0664.JPG</title>
+            <link>http://web.mac.com/mrakes/iPhoto/photocast_test/7ED6492F-6F0E-47CA-8262-EBB4C374EAB1.jpg</link>
+            <description>&lt;p>&lt;a href="http://web.mac.com/mrakes/iPhoto/photocast_test/7ED6492F-6F0E-47CA-8262-EBB4C374EAB1.jpg">&lt;img src="http://web.mac.com/mrakes/iPhoto/photocast_test/7ED6492F-6F0E-47CA-8262-EBB4C374EAB1.jpg?transform=medium" alt="photo" title="" style="float:left; padding-right:10px; padding-bottom:10px;"/>&lt;/a>&lt;/p>&lt;br clear=all></description>
+            <pubDate>2006-01-11 16:43:05 -0800</pubDate>
+            <category>Rakes</category>
+            <category>photocast_test</category>
+            <category>Mark</category>
+            <guid isPermaLink="false">7ED6492F-6F0E-47CA-8262-EBB4C374EAB1</guid>
+            <apple-wallpapers:photoDate>2005-11-29T04:36:30</apple-wallpapers:photoDate>
+            <apple-wallpapers:cropDate>2006-01-11 16:42:26 -0800</apple-wallpapers:cropDate>
+            <apple-wallpapers:thumbnail>http://web.mac.com/mrakes/iPhoto/photocast_test/7ED6492F-6F0E-47CA-8262-EBB4C374EAB1.jpg?transform=medium</apple-wallpapers:thumbnail>
+            <apple-wallpapers:image>http://web.mac.com/mrakes/iPhoto/photocast_test/7ED6492F-6F0E-47CA-8262-EBB4C374EAB1.jpg</apple-wallpapers:image>
+            <apple-wallpapers:metadata>
+                <PhotoDate>2159.525347</PhotoDate>
+                <Comments></Comments>
+            </apple-wallpapers:metadata>
+        </item>
+        <item>
+            <title>IMG_0665.JPG</title>
+            <link>http://web.mac.com/mrakes/iPhoto/photocast_test/0FE733FE-55EB-4D83-A7B7-33878108DF0A.jpg</link>
+            <description>&lt;p>&lt;a href="http://web.mac.com/mrakes/iPhoto/photocast_test/0FE733FE-55EB-4D83-A7B7-33878108DF0A.jpg">&lt;img src="http://web.mac.com/mrakes/iPhoto/photocast_test/0FE733FE-55EB-4D83-A7B7-33878108DF0A.jpg?transform=medium" alt="photo" title="" style="float:left; padding-right:10px; padding-bottom:10px;"/>&lt;/a>&lt;/p>&lt;br clear=all></description>
+            <pubDate>2006-01-11 16:42:47 -0800</pubDate>
+            <category>Rakes</category>
+            <category>photocast_test</category>
+            <category>Mark</category>
+            <guid isPermaLink="false">0FE733FE-55EB-4D83-A7B7-33878108DF0A</guid>
+            <apple-wallpapers:photoDate>2005-11-29T04:36:52</apple-wallpapers:photoDate>
+            <apple-wallpapers:cropDate>2006-01-11 16:42:26 -0800</apple-wallpapers:cropDate>
+            <apple-wallpapers:thumbnail>http://web.mac.com/mrakes/iPhoto/photocast_test/0FE733FE-55EB-4D83-A7B7-33878108DF0A.jpg?transform=medium</apple-wallpapers:thumbnail>
+            <apple-wallpapers:image>http://web.mac.com/mrakes/iPhoto/photocast_test/0FE733FE-55EB-4D83-A7B7-33878108DF0A.jpg</apple-wallpapers:image>
+            <apple-wallpapers:metadata>
+                <PhotoDate>2159.525602</PhotoDate>
+                <Comments></Comments>
+            </apple-wallpapers:metadata>
+        </item>
+        <item>
+            <title>IMG_0666.JPG</title>
+            <link>http://web.mac.com/mrakes/iPhoto/photocast_test/AE9870D4-3CA3-4BC8-B3CB-71CD9EC0CEF1.jpg</link>
+            <description>&lt;p>&lt;a href="http://web.mac.com/mrakes/iPhoto/photocast_test/AE9870D4-3CA3-4BC8-B3CB-71CD9EC0CEF1.jpg">&lt;img src="http://web.mac.com/mrakes/iPhoto/photocast_test/AE9870D4-3CA3-4BC8-B3CB-71CD9EC0CEF1.jpg?transform=medium" alt="photo" title="" style="float:left; padding-right:10px; padding-bottom:10px;"/>&lt;/a>&lt;/p>&lt;br clear=all></description>
+            <pubDate>2006-01-11 16:43:21 -0800</pubDate>
+            <category>Rakes</category>
+            <category>photocast_test</category>
+            <category>Mark</category>
+            <guid isPermaLink="false">AE9870D4-3CA3-4BC8-B3CB-71CD9EC0CEF1</guid>
+            <apple-wallpapers:photoDate>2005-11-29T04:37:24</apple-wallpapers:photoDate>
+            <apple-wallpapers:cropDate>2006-01-11 16:42:26 -0800</apple-wallpapers:cropDate>
+            <apple-wallpapers:thumbnail>http://web.mac.com/mrakes/iPhoto/photocast_test/AE9870D4-3CA3-4BC8-B3CB-71CD9EC0CEF1.jpg?transform=medium</apple-wallpapers:thumbnail>
+            <apple-wallpapers:image>http://web.mac.com/mrakes/iPhoto/photocast_test/AE9870D4-3CA3-4BC8-B3CB-71CD9EC0CEF1.jpg</apple-wallpapers:image>
+            <apple-wallpapers:metadata>
+                <PhotoDate>2159.525972</PhotoDate>
+                <Comments></Comments>
+            </apple-wallpapers:metadata>
+        </item>
+    </channel>
+</rss>

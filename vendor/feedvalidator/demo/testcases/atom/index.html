@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Feed Validator Documentation</title>
+<link rel="icon" href="http://www.feedvalidator.org/favicon.ico" />
+<link rel="shortcut icon" href="http://www.feedvalidator.org/favicon.ico" />
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css" media="screen">@import "../../css/common.css";
+@import "../../css/documentation.css";
+ul, li {
+  list-style-type: none;
+  line-height: 1ex;
+}
+</style>
+</head>
+<body>
+
+<div id="logo">
+<h1><a href="/"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+
+<p>RFC 4287 Test Cases</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<h2><a href="http://www.atomenabled.org/developers/syndication/atom-format-spec.php#rfc.toc">Table of Contents</a></h2>
+
+<div id="main">
+
+<ul>
+ <li><p>1. Introduction</p>
+  <ul>
+   <li><p><a href="1.1/">1.1</a> Examples</p></li>
+   <li><p><a href="1.2/">1.2</a> Namespace and Version</p></li>
+   <li><p>1.3 Notational Conventions</p></li>
+  </ul>
+ </li>
+ <li><p><a href="2/">2.</a> Atom Documents</p></li>
+ <li><p><a href="3/">3.</a> Common Atom Constructs</p>
+  <ul>
+   <li><p>3.1 Text Constructs</p>
+    <ul>
+     <li><p><a href="3.1.1/">3.1.1</a> The "type" Attribute</p>
+      <ul>
+       <li><p><a href="3.1.1.1/">3.1.1.1</a> Text</p></li>
+       <li><p><a href="3.1.1.2/">3.1.1.2</a> HTML</p></li>
+       <li><p><a href="3.1.1.3/">3.1.1.3</a> XHTML</p></li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li><p>3.2 Person Constructs</p>
+    <ul>
+     <li><p><a href="3.2.1/">3.2.1</a> The "atom:name" Element</p></li>
+     <li><p><a href="3.2.2/">3.2.2</a> The "atom:uri" Element</p></li>
+     <li><p><a href="3.2.3/">3.2.3</a> The "atom:email" Element</p></li>
+    </ul>
+   </li>
+   <li><p><a href="3.3/">3.3</a> Date Constructs</p></li>
+  </ul>
+ </li>
+ <li><p>4. Atom Element Definitions</p>
+  <ul>
+   <li><p>4.1 Container Elements</p>
+    <ul>
+     <li><p><a href="4.1.1/">4.1.1</a> The "atom:feed" Element</p>
+      <ul>
+       <li><p><a href="4.1.1.1/">4.1.1.1</a> Providing Textual Content</p></li>
+      </ul>
+     </li>
+     <li><p><a href="4.1.2/">4.1.2</a> The "atom:entry" Element</p></li>
+     <li><p>4.1.3 The "atom:content" Element</p>
+      <ul>
+       <li><p><a href="4.1.3.1/">4.1.3.1</a> The "type" attribute</p></li>
+       <li><p><a href="4.1.3.2/">4.1.3.2</a> The "src" attribute</p></li>
+       <li><p><a href="4.1.3.3/">4.1.3.3</a> Processing Model</p></li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li><p>4.2 Metadata Elements</p>
+    <ul>
+     <li><p>4.2.1 The "atom:author" Element</p></li>
+     <li><p>4.2.2 The "atom:category" Element</p>
+      <ul>
+       <li><p><a href="4.2.2.1/">4.2.2.1</a> The "term" Attribute</p></li>
+       <li><p><a href="4.2.2.2/">4.2.2.2</a> The "scheme" Attribute</p></li>
+       <li><p><a href="4.2.2.3/">4.2.2.3</a> The "label" Attribute</p></li>
+      </ul>
+     </li>
+     <li><p>4.2.3 The "atom:contributor" Element</p></li>
+     <li><p><a href="4.2.4/">4.2.4</a> The "atom:generator" Element</p></li>
+     <li><p><a href="4.2.5/">4.2.5</a> The "atom:icon" Element</p></li>
+     <li><p><a href="4.2.6/">4.2.6</a> The "atom:id" Element</p></li>
+     <li><p>4.2.7 The "atom:link" Element</p>
+      <ul>
+       <li><p><a href="4.2.7.1/">4.2.7.1</a> The "href" Attribute</p></li>
+       <li><p><a href="4.2.7.2/">4.2.7.2</a> The "rel" Attribute</p></li>
+       <li><p><a href="4.2.7.3/">4.2.7.3</a> The "type" Attribute</p></li>
+       <li><p><a href="4.2.7.4/">4.2.7.4</a> The "hreflang" Attribute</p></li>
+       <li><p><a href="4.2.7.5/">4.2.7.5</a> The "title" Attribute</p></li>
+       <li><p><a href="4.2.7.6/">4.2.7.6</a> The "length" Attribute</p></li>
+      </ul>
+     </li>
+     <li><p><a href="4.2.8/">4.2.8</a> The "atom:logo" Element</p></li>
+     <li><p><a href="4.2.9/">4.2.9</a> The "atom:published" Element</p></li>
+     <li><p><a href="4.2.10/">4.2.10</a> The "atom:rights" Element</p></li>
+     <li><p><a href="4.2.11/">4.2.11</a> The "atom:source" Element</p></li>
+     <li><p><a href="4.2.12/">4.2.12</a> The "atom:subtitle" Element</p></li>
+     <li><p><a href="4.2.13/">4.2.13</a> The "atom:summary" Element</p></li>
+     <li><p><a href="4.2.14/">4.2.14</a> The "atom:title" Element</p></li>
+     <li><p><a href="4.2.15/">4.2.15</a> The "atom:updated" Element</p></li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li><p>5. Securing Atom Documents</p></li>
+ <li><p>6. Extending Atom</p>
+  <ul>
+   <li><p><a href="6.1/">6.1</a> Extensions From Non-Atom Vocabularies</p></li>
+   <li><p>6.2 Extensions To the Atom Vocabulary</p></li>
+   <li><p>6.3 Processing Foreign Markup</p></li>
+   <li><p><a href="6.4/">6.4</a> Extension Elements</p></li>
+  </ul>
+ </li>
+ <li><p>7. IANA Considerations</p></li>
+ <li><p>8. Security Considerations</p></li>
+  <ul>
+   <li><p><a href="8.1/">8.1 HTML and XHTML Content</a></p></li>
+  </ul>
+ <li><p>9. References</p>
+  <ul>
+   <li><p>9.1 Normative References</p></li>
+   <li><p>9.2 Informative References</p></li>
+  </ul>
+ </li>
+</ul>
+
+<hr />
+
+<h2>Legacy</h2>
+
+<ul>
+  <li><p><a href="must/">must</a></p></li>
+  <li><p><a href="should/">should</a></p></li>
+</ul>
+</div>
+
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="../../">Home</a> &middot;
+<a href="../../about.html">About</a> &middot;
+<a href="../../news/">News</a> &middot;
+<a href="../../docs/">Docs</a> &middot;
+<a href="../../terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper --> 
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-6
+<a href="http://www.intertwingly.net/blog/">Sam Ruby</a>, 
+<a href="http://diveintomark.org/">Mark Pilgrim</a>,
+<a href="http://www.kafsemo.org/">Joseph Walton</a>, and
+<a href="http://philringnalda.com/">Phil Ringnalda</a>
+</address>
+</div>
+</body>
+</html>

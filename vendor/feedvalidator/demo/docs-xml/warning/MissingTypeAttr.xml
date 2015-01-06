@@ -1,0 +1,20 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Missing content attribute: type</p>
+</div>
+<div id='explanation'>
+<p>If the "src" attribute is present, the "type" attribute SHOULD be
+provided and MUST be a MIME media type, rather than "text",
+"html", or "xhtml".  The value is advisory; that is to say, when the
+corresponding URI (mapped from an IRI, if necessary), is
+dereferenced, if the server providing that content also provides a
+media type, the server-provided media type is authoritative.</p>
+</div>
+<div id='solution'>
+<p>This may just be a typo.  Element names are case-sensitive; make sure you're using the right case.</p>
+<p>Otherwise, insert the media type (example: <code>audio/mpeg</code>) of the
+content as the value of the type attribute.</p>
+</div>
+</div>
+</fvdoc>

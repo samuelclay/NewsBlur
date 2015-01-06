@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Identifier &#8220;foo&#8221; is not in canonical form (tha canonical form would be &#8220;bar&#8221;)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="http://www.feedvalidator.org/favicon.ico" />
+<link rel="shortcut icon" href="http://www.feedvalidator.org/favicon.ico" />
+<style type="text/css" media="screen">@import "../../css/common.css";
+@import "../../css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+<link rel="start" href="http://feedvalidator.org/docs/" title="Home" />
+</head>
+<body>
+<div id="logo">
+<h1><a href="../../"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>Documentation</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+<h2>Message</h2>
+<div class="docbody">
+<p>Identifier &ldquo;foo&rdquo; is not in canonical form (tha canonical form would be &ldquo;bar&rdquo;)</p>
+</div>
+<h2>Explanation</h2>
+
+<div class="docbody">
+<p>URIs used as identifiers should be in canonical form, as described
+by section 6 of
+<a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+This means that insignificant differences
+(e.g., case of hostname) are removed, so URIs can be compared
+character-by-character to determine equivalence. This is particularly
+important when content is syndicated, and the same entry may appear
+in multiple feeds.</p>
+<p>Also avoid leading and trailing whitespace as clients
+vary in their interpretation of such characters.</p>
+</div>
+<h2>Solution</h2>
+<div class="docbody">
+<p>All newly issued ids should be in canonical form.
+Use the canonical form given in the warning message for guidance.</p>
+<p><b>Notes</b>:</p>
+<ul>
+<li>Do <b>not</b> update previously issued ids, unless they were issued
+in error.</li>
+<li>Do <b>not</b> canonicalize ids that you are resyndicating from
+other sources.  Those <b>must</b> be character by character identical
+to the original.  Instead, consider contacting the original source and
+see if this can be corrected for any new ids they may issue.</li>
+</ul>
+</div>
+<h2>Not clear?  Disagree?</h2>
+<div class="docbody">
+<p>Let us know on the <a href="http://lists.sourceforge.net/lists/listinfo/feedvalidator-users">feedvalidator-users</a> discussion list!</p>
+</div>
+
+</div><!--main-->
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="../../">Home</a> &middot;
+<a href="../../about.html">About</a> &middot;
+<a href="../../news/">News</a> &middot;
+<a href="../../docs/">Docs</a> &middot;
+<a href="../../terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper -->
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-4 <a href="http://diveintomark.org/">Mark Pilgrim</a> and <a href="http://www.intertwingly.net/blog/">Sam Ruby</a></address>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Description: A namespace prefix is used in element without declaration
+  Expect:      SAXError{}
+-->
+<rss>
+ <channel>
+   <foo xmlns="http://www.example.com/">
+     <bar unknown:attribute="1"/>
+   </foo>
+ </channel>
+</rss>

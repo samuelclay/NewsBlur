@@ -1519,7 +1519,12 @@ def mark_feed_as_read(request):
     for feed_id in feed_ids:
         if 'social:' in feed_id:
             user_id = int(feed_id.replace('social:', ''))
-            sub = MSocialSubscription.objects.get(user_id=request.user.pk, subscription_user_id=user_id)
+            try:
+                sub = MSocialSubscription.objects.get(user_id=request.user.pk, 
+                                                      subscription_user_id=user_id)
+            except MSocialSubscription.DoesNotExist:
+                logging.user(request, "~FRCouldn't find socialsub: %s" % user_id)
+                continue
             if not multiple:
                 sub_user = User.objects.get(pk=sub.subscription_user_id)
                 logging.user(request, "~FMMarking social feed as read: ~SB%s" % (sub_user.username,))

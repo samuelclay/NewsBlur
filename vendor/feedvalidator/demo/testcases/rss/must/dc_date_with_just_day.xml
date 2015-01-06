@@ -1,0 +1,13 @@
+<!--
+  Description:	A dc:date with just a day is valid
+  Expect:	ValidW3CDTFDate{parent:channel,element:dc:date}
+-->
+
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<title>Validity test</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>A dc:date with just a day is valid</description>
+<dc:date>2003-09-24</dc:date>
+</channel>
+</rss>

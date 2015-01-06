@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  The isComment attribute should be either "true" or "false"
+  OPML Specification reference:
+
+  Common attributes
+  isComment is a string, either "true" or "false"
+-->
+
+<!--
+  Description:  The isComment attribute should be either "true" or "false"
+  Expect:       InvalidTrueFalse{element:isComment}
+-->
+
+<opml version="1.1">
+	<head>
+		<title>Invalid isComment Attribute</title>
+		</head>
+	<body>
+		<outline text="Outline text" isComment="maybe"/>
+		</body>
+	</opml>

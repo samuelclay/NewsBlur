@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid value for <code>g:rating</code>: "<code>foo</code>"</p>
+</div>
+<div id='explanation'>
+<p> Rating of the product or service on a scale of 1-5, with 5 as the best. Numeric values only.</p>
+</div>
+<div id='solution'>
+<p>Consult the <a href="http://base.google.com/base/attribute_list.html#rating">documentation for the attribute</a> for further details.</p>
+</div>
+</div>
+</fvdoc>

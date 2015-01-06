@@ -1,0 +1,23 @@
+<!--
+  Author:       Sam Ruby (http://www.intertwingly.net/blog/)
+  Copyright:    Copyright (c) 2006 Sam Ruby
+-->
+
+<!--
+  Description:  Example from Bloglines spec
+  Expect:       !InvalidAccessRestrictionRel
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:access="http://www.bloglines.com/about/specs/fac-1.0">
+  <access:restriction relationship="allow" />
+  <title>Bloglines | News</title> 
+  <link href="http://www.bloglines.com"/>
+  <updated>2006-04-28T19:03:11Z</updated>
+  <entry>
+    <title>Ping Away, Bloggers</title>
+    <link href="http://www.bloglines.com/about/news#103"/>
+    <id>http://www.bloglines.com/about/news#103</id>
+    <updated>2006-04-28T19:03:11Z</updated>
+    <summary>Hello World</summary>
+  </entry>
+</feed>

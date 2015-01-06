@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  content says it's inline, but it's really in a CDATA block
+  Expect:       NotInline{parent:entry,element:content}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<content type="xhtml">
+<![CDATA[<p>This does not count as inline content, because it's in a CDATA block</p>]]>
+</content>
+</entry>
+</feed>

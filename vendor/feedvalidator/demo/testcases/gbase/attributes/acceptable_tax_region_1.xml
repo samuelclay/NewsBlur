@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  tax_region
+  Expect:       !Error
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:g="http://base.google.com/ns/1.0">
+
+  <title>tax_region test case 1</title>
+  <link href="http://base.google.com/base/attribute_list.html" />
+  <updated>2003-12-13T18:30:02Z</updated>
+  <id>http://feedvalidator.org/gbase</id>
+  <author><name>Google</name></author>
+
+  <entry>
+    <title>tax_region test case 1</title>
+    <id>tag:base.google.com,2005:tax_region_1</id>
+    <link href="http://base.google.com/base/attribute_list.html#tax_region" />
+    <updated>2003-12-13T18:30:02Z</updated>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+      From <a href="http://base.google.com/base/attribute_list.html#tax_region">tax_region</a>
+      </div>
+    </summary>
+
+    <g:tax_region>California</g:tax_region>
+  </entry>
+</feed>

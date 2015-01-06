@@ -1,0 +1,24 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  item must not include both atom:published and pubDate
+  Expect:       DuplicateItemSemantics{core:pubDate,ext:atom:published}
+-->
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>Duplicate semantics</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>item must not include both atom:published and pubDate</description>
+<item>
+<title>Duplicate semantics</title>
+<link>http://purl/org/rss/2.0/?item</link>
+<description>Foo</description>
+<atom:published>2002-12-31T01:15:07-05:00</atom:published>
+<pubDate>Mon, 31 Dec 2002 14:20:20 GMT</pubDate>
+</item>
+</channel>
+</rss>

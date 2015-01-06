@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid feed author name (in CDATA)
+  Expect:       !ContainsHTML{element:name}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<author>
+<name><![CDATA[Valid name]]></name>
+</author>
+</feed>

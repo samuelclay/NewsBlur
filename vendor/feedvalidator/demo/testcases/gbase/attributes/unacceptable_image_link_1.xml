@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  image_link
+  Expect:       InvalidValue{element:g:image_link}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:g="http://base.google.com/ns/1.0">
+
+  <title>image_link test case 1</title>
+  <link href="http://base.google.com/base/attribute_list.html" />
+  <updated>2003-12-13T18:30:02Z</updated>
+  <id>http://feedvalidator.org/gbase</id>
+  <author><name>Google</name></author>
+
+  <entry>
+    <title>image_link test case 1</title>
+    <id>tag:base.google.com,2005:image_link_1</id>
+    <link href="http://base.google.com/base/attribute_list.html#image_link" />
+    <updated>2003-12-13T18:30:02Z</updated>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+      From <a href="http://base.google.com/base/attribute_list.html#image_link">image_link</a>
+      </div>
+    </summary>
+
+    <g:image_link>/images/1006.jpg</g:image_link>
+  </entry>
+</feed>

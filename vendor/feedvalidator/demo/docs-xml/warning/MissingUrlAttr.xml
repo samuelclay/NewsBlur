@@ -1,0 +1,18 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Missing outline attribute: url</p>
+</div>
+<div id='explanation'>
+<p>The <a href="http://www.opml.org/guidelinesForValidation#directories">Guidelines for validating OPML</a> imply that a "link" outline has
+an address of some sort. While an actual attribute name is never
+specified, the <a href="http://hosting.opml.org/dave/validatorTests/clean/directory.opml">example given</a> shows the attribute to be "url".</p>
+
+<p>As confirmation, OPML Validator Beta specifically detects a missing
+url attribute as an error when the outline type is "link".</p>
+</div>
+<div id='solution'>
+<p>Include the value for the link in a url attribute.</p>
+</div>
+</div>
+</fvdoc>

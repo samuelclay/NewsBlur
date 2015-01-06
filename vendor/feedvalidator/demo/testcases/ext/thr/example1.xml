@@ -1,0 +1,38 @@
+<!--
+  Author:       Sam Ruby (http://www.intertwingly.net/blog/)
+  Copyright:    Copyright (c) 2006 Sam Ruby
+-->
+
+<!--
+  Description:  example1 from feed-thread
+  Expect:       !Error
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:thr="http://purl.org/syndication/thread/1.0">
+  <id>http://www.example.org/myfeed</id>
+  <title>My Example Feed</title>
+  <updated>2005-07-28T12:00:00Z</updated>
+  <link href="http://www.example.org/myfeed" />
+  <author><name>James</name></author>
+  <entry>
+    <id>tag:example.org,2005:1</id>
+    <title>My original entry</title>
+    <updated>2005-07-28T11:00:00Z</updated>
+    <link
+      type="application/xhtml+xml"
+      href="http://www.example.org/entries/1" />
+    <summary>This is my original entry</summary>
+  </entry>
+  <entry>
+    <id>tag:example.org,2005:1,1</id>
+    <title>A response to the original</title>
+    <updated>2005-07-28T12:00:00Z</updated>
+    <link href="http://www.example.org/entries/1/1" />
+    <thr:in-reply-to
+      ref="tag:entries.com,2005:1"
+      type="application/xhtml+xml"
+      href="http://www.example.org/entries/1"/>
+    <summary>This is a response to the original entry</summary>
+  </entry>
+</feed>

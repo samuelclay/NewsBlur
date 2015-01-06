@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Author:       Sam Ruby <rubys@intertwingly.net>
+-->
+
+<!--
+  Description:  New Feed URL
+  Expect:       !UndefinedElement
+-->
+
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  <channel>
+    <title>All About Everything</title>
+    <link> http://www.itunes.com/podcasts/everything/index.html</link>
+    <description>All About Everything is a show about everything. Each week we dive into every subject known to man and talk about everything as much as we can.</description>
+    <itunes:new-feed-url>http://www.example.com/</itunes:new-feed-url>
+  </channel>
+</rss>

@@ -1,0 +1,15 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Duplicate alternate links with the same type and hreflang</p>
+</div>
+<div id='explanation'>
+<p>atom:feed elements MUST NOT contain more than one atom:link
+element with a rel attribute value of "alternate" that has the
+same combination of type and hreflang attribute values.</p>
+</div>
+<div id='solution'>
+<p>Remove one of the links.</p>
+</div>
+</div>
+</fvdoc>

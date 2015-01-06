@@ -59,6 +59,7 @@
 #import "UIView+ViewController.h"
 #import "UIViewController+OSKUtilities.h"
 #import "NBURLCache.h"
+#import "NBActivityItemProvider.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
@@ -654,12 +655,18 @@
     } else {
         // iOS 8+
         NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-        if (title) [activityItems addObject:title];
+//        if (title) [activityItems addObject:title];
         if (url) [activityItems addObject:url];
         NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
-        if (text) [activityItems addObject:[NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text]];
+        if (text) text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
     //    if (images) [activityItems addObject:images];
         NSMutableArray *appActivities = [[NSMutableArray alloc] init];
+        [activityItems addObject:[[NBActivityItemProvider alloc] initWithUrl:(NSURL *)url
+                                                              authorName:(NSString *)authorName
+                                                                    text:(NSString *)text
+                                                                   title:(NSString *)title
+                                                               feedTitle:(NSString *)feedTitle
+                                                                  images:(NSArray *)images]];
         if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
         if (url) [appActivities addObject:[[ARChromeActivity alloc]
                                            initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
@@ -695,12 +702,14 @@
                 _completedString = @"Saved";
             }
             [MBProgressHUD hideHUDForView:vc.view animated:NO];
-            MBProgressHUD *storyHUD = [MBProgressHUD showHUDAddedTo:vc.view animated:YES];
-            storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
-            storyHUD.mode = MBProgressHUDModeCustomView;
-            storyHUD.removeFromSuperViewOnHide = YES;
-            storyHUD.labelText = _completedString;
-            [storyHUD hide:YES afterDelay:1];
+            if (completed) {
+                MBProgressHUD *storyHUD = [MBProgressHUD showHUDAddedTo:vc.view animated:YES];
+                storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+                storyHUD.mode = MBProgressHUDModeCustomView;
+                storyHUD.removeFromSuperViewOnHide = YES;
+                storyHUD.labelText = _completedString;
+                [storyHUD hide:YES afterDelay:1];
+            }
         };
         [activityViewController setCompletionHandler:completion];
 
@@ -1034,14 +1043,6 @@
                      isSocial:(BOOL)social
                      withUser:(NSDictionary *)user
              showFindingStory:(BOOL)showHUD {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
-        }
-    }
-    
     NSDictionary *feed = [self getFeed:feedId];
     
     if (social) {
@@ -1066,15 +1067,20 @@
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     
-    [self loadFeedDetailView];
-    
-    if (showHUD) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.storyPageControl showShareHUD:@"Finding story..."];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self loadFeedDetailView];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        if (self.feedsViewController.popoverController) {
+            [self.feedsViewController.popoverController dismissPopoverAnimated:YES];
+        }
+        if (self.navigationController.presentedViewController) {
+            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                [self loadFeedDetailView];
+            }];
         } else {
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
-            HUD.labelText = @"Finding story...";
-        }        
+            [self loadFeedDetailView];
+        }
     }
 }
 
@@ -1982,6 +1988,38 @@
     [dashboardViewController.storiesModule reloadData];
 }
 
+
+- (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction {
+    NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", tagName];
+    NSMutableDictionary *newTag = [[self.dictSavedStoryTags objectForKey:savedTagId] mutableCopy];
+    if (!newTag) {
+        newTag = [@{@"ps": [NSNumber numberWithInt:0],
+                    @"feed_title": tagName
+                    } mutableCopy];
+    }
+    NSInteger newCount = [[newTag objectForKey:@"ps"] integerValue] + direction;
+    [newTag setObject:[NSNumber numberWithInteger:newCount] forKey:@"ps"];
+    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
+    for (NSString *tagId in [self.dictSavedStoryTags allKeys]) {
+        if ([tagId isEqualToString:savedTagId]) {
+            if (newCount > 0) {
+                [savedStoryDict setObject:newTag forKey:tagId];
+            }
+        } else {
+            [savedStoryDict setObject:[self.dictSavedStoryTags objectForKey:tagId]
+                               forKey:tagId];
+        }
+    }
+    
+    // If adding a tag, it won't already be in dictSavedStoryTags
+    if (![self.dictSavedStoryTags objectForKey:savedStoryDict] && newCount > 0) {
+        [savedStoryDict setObject:newTag forKey:savedTagId];
+    }
+    self.dictSavedStoryTags = savedStoryDict;
+    
+    return newCount;
+}
+
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results {
     if ([results objectForKey:@"starred_count"]) {
         self.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
@@ -1991,7 +2029,12 @@
 
     NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
     NSMutableArray *savedStories = [NSMutableArray array];
-
+    
+    if (![results objectForKey:@"starred_counts"] ||
+        [[results objectForKey:@"starred_counts"] isKindOfClass:[NSNull class]]) {
+        return savedStories;
+    }
+    
     for (NSDictionary *userTag in [results objectForKey:@"starred_counts"]) {
         if ([[userTag objectForKey:@"tag"] isKindOfClass:[NSNull class]] ||
             [[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
@@ -2268,10 +2311,10 @@
         titleLabel.text = [NSString stringWithFormat:@"     Read Stories"];
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
-    } else if (storiesCollection.isRiverView) {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
     } else if (storiesCollection.isSocialView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+    } else if (storiesCollection.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
     } else {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     }

@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one channel
+  Expect:       DuplicateElement{parent:rdf_RDF,element:channel}
+-->
+
+<rdf:RDF 
+  xmlns="http://purl.org/rss/1.0/" 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <channel/>
+  <foo/>
+  <channel/>
+</rdf:RDF>

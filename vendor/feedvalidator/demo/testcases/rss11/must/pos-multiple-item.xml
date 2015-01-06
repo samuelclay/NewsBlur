@@ -1,0 +1,27 @@
+<!-- pos-multiple-item.xml -->
+
+<!--
+  Description:  Multiple item elements
+  Expect:       !Error
+-->
+
+<Channel xmlns="http://purl.org/net/rss1.1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   rdf:about="http://www.xml.com/xml/news.rss">
+<title>XML.com</title>
+<link>http://xml.com/pub</link>
+<description>
+   XML.com features a rich mix of information and services
+   for the XML community.
+</description>
+<items rdf:parseType="Collection">
+   <item rdf:about="http://www.xml.com/pub/a/2005/01/05/restful.html">
+      <title>The Restful Web: Amazon's Simple Queue Service</title>
+      <link>http://www.xml.com/pub/a/2005/01/05/restful.html</link>
+   </item>
+   <item rdf:about="http://www.xml.com/pub/a/2005/01/05/tr-xml.html">
+      <title>Transforming XML: Extending XSLT with EXSLT</title>
+      <link>http://www.xml.com/pub/a/2005/01/05/tr-xml.html</link>
+   </item>
+</items>
+</Channel>

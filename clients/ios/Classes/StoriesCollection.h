@@ -99,7 +99,7 @@
 
 - (NSDictionary *)markStory:story asSaved:(BOOL)saved;
 - (void)toggleStorySaved;
-- (void)toggleStorySaved:(NSDictionary *)story;
+- (BOOL)toggleStorySaved:(NSDictionary *)story;
 - (void)syncStoryAsSaved:(NSDictionary *)story;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request;

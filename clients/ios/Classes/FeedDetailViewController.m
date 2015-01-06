@@ -372,7 +372,7 @@
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
 
-    [self testForTryFeed];
+//    [self testForTryFeed];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -410,7 +410,13 @@
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-
+    
+    if (self.isMovingToParentViewController) {
+        appDelegate.inFindingStoryMode = NO;
+        appDelegate.tryFeedStoryId = nil;
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         self.isMovingToParentViewController &&
         (appDelegate.masterContainerViewController.storyTitlesOnLeft ||
@@ -1111,8 +1117,17 @@
     if (self.isDashboardModule ||
         !appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) return;
-
-//    NSLog(@"Test for try feed");
+    
+    if (!self.view.window) {
+        NSLog(@"No longer looking for try feed.");
+        appDelegate.inFindingStoryMode = NO;
+        appDelegate.tryFeedStoryId = nil;
+        return;
+    }
+    NSLog(@"Test for try feed");
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Finding story...";
 
     for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
         NSString *storyIdStr = [[storiesCollection.activeFeedStories

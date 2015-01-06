@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Feeds must not contain SYSTEM entities</p>
+</div>
+<div id='explanation'>
+<p>Your feed contains a <code>SYSTEM</code> entity.  This is a security risk.</p>
+</div>
+<div id='solution'>
+<p>Remove the <code>SYSTEM</code> entity.  RSS feeds must be self-contained.</p>
+</div>
+</div>
+</fvdoc>

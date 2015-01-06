@@ -224,11 +224,6 @@ static UIFont *userLabelFont;
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
     
-//    // reset all feed detail specific data
-//    appDelegate.activeFeed = nil;
-//    appDelegate.isSocialView = NO;
-//    appDelegate.isRiverView = NO;
-    appDelegate.inFindingStoryMode = NO;
     self.interactiveFeedDetailTransition = NO;
 }
 
@@ -659,8 +654,8 @@ static UIFont *userLabelFont;
     [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
 
     // Add Saved Stories folder
+    [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
     if (appDelegate.savedStoriesCount) {
-        [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
         [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
     }
     
@@ -1132,7 +1127,7 @@ static UIFont *userLabelFont;
     if (indexPath.section == 0) {
         folderName = @"river_global";
     } else if (indexPath.section == 1) {
-            folderName = @"river_blurblogs";
+        folderName = @"river_blurblogs";
     } else if (indexPath.section == 2) {
         folderName = @"everything";
     } else {

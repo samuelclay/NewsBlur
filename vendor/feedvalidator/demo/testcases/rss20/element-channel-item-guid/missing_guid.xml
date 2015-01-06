@@ -1,0 +1,20 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  guid is missing
+  Expect:       MissingGuid
+-->
+
+<rss version="2.0">
+<channel>
+<title>Missing GUID</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>foo</description>
+<item>
+<title>Missing GUID</title>
+</item>
+</channel>
+</rss>

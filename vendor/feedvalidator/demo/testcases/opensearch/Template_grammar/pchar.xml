@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Description:  Pchar in template name
+  Expect:       !Error
+-->
+
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Web Search</ShortName>
+  <Description>Use Example.com to search the Web.</Description>
+  <Tags>example web</Tags>
+  <Contact>admin@example.com</Contact>
+  <Url type="application/rss+xml" 
+       xmlns:es="http://www.spanishdict.com/"
+       template="http://example.com/?q={searchTerms}&amp;loc={es:localizaci%C3%B3n}"/>
+</OpenSearchDescription>

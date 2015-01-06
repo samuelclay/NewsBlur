@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Description:  Various Date Tests
+  Expect:       !InvalidRFC2822Date{parent:item,element:pubDate}
+-->
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+
+<title>Date Tests</title>
+<description/>
+<link>http://216.93.169.119/rsstests/dates/</link>
+<atom:link rel="self" href="http://216.93.169.119/rsstests/dates/everything.rss"/>
+
+<item>
+<title>01. Simple date</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/1</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>02. No weekday</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/2</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>09 Feb 2006 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>03. Single digit day</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/3</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 9 Feb 2006 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>04. No seconds</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/4</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:00 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 23:59 +0000</pubDate>
+</item>
+
+<item>
+<title>05. Two digit year ('06)</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/5</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 06 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>06. Two digit year ('96)</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/6</guid>
+<description>The date on this item should be February, 9th 1996, 23:59:45 GMT.</description>
+<pubDate>Fri, 09 Feb 96 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>07. PDT timezone</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/7</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 16:59:45 PDT</pubDate>
+</item>
+
+<item>
+<title>08. CST timezone</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/8</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 17:59:45 CST</pubDate>
+</item>
+
+<item>
+<title>09. Military timezone G</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/9</guid>
+<description>The date on this item should be one of the following:
+&lt;ul>
+&lt;li>February, 9th 2006, 23:59:45 GMT&lt;/li>
+&lt;li>February, 9th 2006, 09:59:45 GMT&lt;/li>
+&lt;li>February, 9th 2006, 16:59:45 GMT&lt;/li>
+&lt;/ul>
+</description>
+<pubDate>Thu, 09 Feb 2006 16:59:45 G</pubDate>
+</item>
+
+<item>
+<title>10. Military timezone L</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/10</guid>
+<description>The date on this item should be one of the following:
+&lt;ul>
+&lt;li>February, 9th 2006, 23:59:45 GMT&lt;/li>
+&lt;li>February, 9th 2006, 01:59:45 GMT&lt;/li>
+&lt;li>February, 9th 2006, 12:59:45 GMT&lt;/li>
+&lt;/ul>
+</description>
+<pubDate>Thu, 09 Feb 2006 12:59:45 L</pubDate>
+</item>
+
+<item>
+<title>11. Military timezone Q</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/11</guid>
+<description>The date on this item should be one of the following:
+&lt;ul>
+&lt;li>February, 9th 2006, 23:59:45 GMT&lt;/li>
+&lt;li>February, 10th 2006, 07:59:45 GMT&lt;/li>
+&lt;li>February, 10th 2006, 03:59:45 GMT&lt;/li>
+&lt;/ul>
+</description>
+<pubDate>Fri, 10 Feb 2006 03:59:45 Q</pubDate>
+</item>
+
+<item>
+<title>12. Numeric timezone +0400</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/12</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Fri, 10 Feb 2006 03:59:45 +0400</pubDate>
+</item>
+
+<item>
+<title>13. Numeric timezone -0700</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/13</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 16:59:45 -0700</pubDate>
+</item>
+
+<item>
+<title>14. Numeric timezone -0000</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/14</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 23:59:45 -0000</pubDate>
+</item>
+
+<item>
+<title>15. Numeric timezone -0234</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/15</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 21:25:45 -0234</pubDate>
+</item>
+
+<item>
+<title>16. UT timezone</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/16</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 23:59:45 UT</pubDate>
+</item>
+
+<item>
+<title>17. GMT timezone</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/17</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 23:59:45 GMT</pubDate>
+</item>
+
+<item>
+<title>18. Z timezone</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/18</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 23:59:45 Z</pubDate>
+</item>
+
+<item>
+<title>19. Multicase day</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/19</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>tHu, 09 Feb 2006 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>20. Multicase month</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/20</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 fEb 2006 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>21. Multicase timezone PDT</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/21</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 16:59:45 pDt</pubDate>
+</item>
+
+<item>
+<title>22. Lowercase timezone Z</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/22</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 Feb 2006 23:59:45 z</pubDate>
+</item>
+
+<item>
+<title>23. Comments</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/23</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu(oh how I hate thursdays), 9(th) Feb(ruary) 2006 23:59:45 +0000(GMT r0x0rz)</pubDate>
+</item>
+
+<item>
+<title>24. Complex comments</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/24</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>Thu, 09 (nested (comment) Mar)Feb(escaped comment\) 2005) 2006()23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>25. Whitespace</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/25</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>	Thu , 	 09  Feb	2006  23:59:45	 +0000</pubDate>
+</item>
+
+<item>
+<title>26. Multiline whitespace</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/26</guid>
+<description>The date on this item should be February, 9th 2006, 23:59:45 GMT.</description>
+<pubDate>
+ Thu,
+ 09 Feb 2006
+ 23:59:45 +0000
+</pubDate>
+</item>
+
+<item>
+<title>27. Distant past (past min unix time)</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/27</guid>
+<description>The date on this item should be February, 9th 1806, 23:59:45 GMT.</description>
+<pubDate>Sun, 09 Feb 1806 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>28. Near past</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/28</guid>
+<description>The date on this item should be February, 9th 1906, 23:59:45 GMT.</description>
+<pubDate>Fri, 09 Feb 1906 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>29. Near future</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/29</guid>
+<description>The date on this item should be February, 9th 2016, 23:59:45 GMT.</description>
+<pubDate>Tue, 09 Feb 2016 23:59:45 +0000</pubDate>
+</item>
+
+<item>
+<title>30. Distant future (past max unix time)</title>
+<guid isPermaLink="false">tag:snarfware.com,2006-01-20:/rsstests/dates/30</guid>
+<description>The date on this item should be February, 9th 2106, 23:59:45 GMT.</description>
+<pubDate>Tue, 09 Feb 2106 23:59:45 +0000</pubDate>
+</item>
+
+</channel>
+</rss>

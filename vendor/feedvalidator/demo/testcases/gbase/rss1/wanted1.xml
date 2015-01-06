@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  Sample File
+  Expect:       !Error
+-->
+
+<rdf:RDF 
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns="http://purl.org/rss/1.0/"
+xmlns:g="http://base.google.com/ns/1.0">
+
+ <channel rdf:about="http://provider-site.com/RSS1.xml">    
+	<title>The name of your channel</title>
+  	<description>A description of the channels content.</description>
+	<link>http://www.providers-website.com</link>
+  
+ <items>
+
+      <rdf:Seq>
+        <rdf:li resource="http://provider-site.com/item1-info-page.html"/>
+        <rdf:li resource="http://provider-site.com/item2-info-page.html"/>
+      </rdf:Seq>
+
+  </items>
+
+ </channel>	
+
+  <item rdf:about="http://provider-site.com/item1-info-page.html">
+
+    <title>Wanted: Used Acme Bio Truck</title>
+    <description>Wanted a used Acme Bio Truct </description>
+    <link>http://provider-site.com/item1-info-page.html</link>
+    <g:image_link>http://www.providers-website.com/image.jpg</g:image_link>
+    <g:id>69</g:id>
+    <g:expiration_date>2005-12-20</g:expiration_date>
+    <g:label>Wanted</g:label>
+    <g:label>Truck</g:label>
+
+    <g:location>123 Main Street, Anytown, CA, 12345, USA</g:location>
+
+  </item>
+ 
+  <item rdf:about="http://provider-site.com/item2-info-page.html">
+
+   <title>Wanted: Acme 2000 Camera</title>
+   <description>Wanted new or used Acme 2000 camera </description>
+   <link>http://provider-site.com/item2-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image.jpg</g:image_link>
+   <g:id>19</g:id>
+   <g:expiration_date>2005-12-20</g:expiration_date>
+   <g:label>Camera</g:label>
+   <g:label>Acme</g:label>
+   
+   <g:location>123 Main Street, Anytown, CA, 12345, USA</g:location>
+  
+  </item>
+
+</rdf:RDF>
+

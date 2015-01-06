@@ -1,0 +1,22 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  image must contain url (fully qualified URL)
+  Expect:       InvalidLink{parent:image,element:url}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Invalid image</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>foo</description>
+<image>
+<title>Invalid image</title>
+<link>http://purl.org/rss/2.0/</link>
+<url>example.com/images/cat.jpg</url>
+</image>
+</channel>
+</rss>

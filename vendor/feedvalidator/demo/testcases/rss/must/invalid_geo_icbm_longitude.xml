@@ -1,0 +1,24 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: Oversize icbm:longitude 
+  Expect: InvalidLongitude{parent:item,element:icbm:longitude,value:-188.2473}
+-->
+
+<rss version="2.0"
+  xmlns:icbm="http://postneo.com/icbm"
+>
+  <channel>
+    <title>Geographic extensions test</title>
+    <link>http://philringnalda.com/</link>
+    <description>Foo.</description>
+    <item>
+      <title>trainedmonkey</title>
+      <link>http://trainedmonkey.com/</link>
+      <icbm:longitude>-188.2473</icbm:longitude>
+      <icbm:latitude>34.048</icbm:latitude>
+    </item>
+  </channel>
+</rss>

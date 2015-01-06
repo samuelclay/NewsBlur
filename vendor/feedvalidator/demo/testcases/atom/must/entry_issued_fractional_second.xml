@@ -1,0 +1,16 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid issued date (fractional seconds)
+  Expect:       ValidW3CDTFDate{parent:entry,element:published}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<published>2002-12-31T19:20:30.45+01:00</published>
+</entry>
+</feed>
+

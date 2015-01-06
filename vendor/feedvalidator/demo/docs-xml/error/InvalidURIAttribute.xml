@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> attribute of <code>bar</code> must be a valid URI</p>
+</div>
+<div id='explanation'>
+<p>The URI contains an invalid character.  A complete list of acceptable characters can be found in <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.</p>
+</div>
+<div id='solution'>
+<p>Replace the invalid characters with the proper escape sequence.  For example, "{" and "}" characters should be replaced with "%7B" and "%7D" respectively.</p>
+</div>
+</div>
+</fvdoc>

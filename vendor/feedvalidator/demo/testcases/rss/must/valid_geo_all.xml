@@ -1,0 +1,37 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: Geographic extensions 
+  Expect: !Error
+-->
+
+<rss version="2.0"
+  xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+  xmlns:geourl="http://geourl.org/rss/module/"
+  xmlns:icbm="http://postneo.com/icbm"
+>
+  <channel>
+    <title>Geographic extensions test</title>
+    <link>http://philringnalda.com/</link>
+    <description>Foo.</description>
+    <geourl:longitude>-124.267</geourl:longitude>
+    <geourl:latitude>42.050</geourl:latitude>
+    <geo:long>-124.267</geo:long>
+    <geo:lat>42.050</geo:lat>
+    <icbm:longitude>-124.267</icbm:longitude>
+    <icbm:latitude>34.048</icbm:latitude>
+    <item>
+      <title>trainedmonkey</title>
+      <link>http://trainedmonkey.com/</link>
+      <geourl:longitude>-118.2473</geourl:longitude>
+      <geourl:latitude>34.048</geourl:latitude>
+      <geo:long>-118.2473</geo:long>
+      <geo:lat>34.048</geo:lat>
+      <geo:alt>-71000</geo:alt>
+      <icbm:longitude>-118.2473</icbm:longitude>
+      <icbm:latitude>34.048</icbm:latitude>
+    </item>
+  </channel>
+</rss>

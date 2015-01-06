@@ -153,8 +153,10 @@ public class FeedProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-		final SQLiteDatabase rdb = databaseHelper.getReadableDatabase();
-        final LoggingDatabase db = new LoggingDatabase(rdb);
+        final LoggingDatabase db;
+        synchronized (BlurDatabaseHelper.RW_MUTEX) {
+            db = new LoggingDatabase(databaseHelper.getReadableDatabase());
+        }
 		switch (uriMatcher.match(uri)) {
 
 		case USERS:

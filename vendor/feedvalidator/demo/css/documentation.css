@@ -1,0 +1,16 @@
+#main h2 {
+  font-size: 120%;
+}
+
+#main .docbody {
+  margin-left: 2em;
+  line-height: 140%;
+}
+
+#main p.meta {
+  font-size: xx-small;
+  background: transparent;
+  color: #999;
+  margin-top: 1em;
+  margin-left: 0;
+}

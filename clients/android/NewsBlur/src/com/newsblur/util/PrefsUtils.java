@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
@@ -41,17 +43,18 @@ public class PrefsUtils {
     /**
      * Check to see if this is the first launch of the app after an upgrade, in which case
      * we clear the DB to prevent bugs associated with non-forward-compatibility.
+     * @return true if an upgrade was detected.
      */
-    public static void checkForUpgrade(Context context) {
+    public static boolean checkForUpgrade(Context context) {
 
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 
         String version = getVersion(context);
         if (version == null) {
             Log.w(PrefsUtils.class.getName(), "could not determine app version");
-            return;
+            return false;
         }
-        Log.i(PrefsUtils.class.getName(), "launching version: " + version);
+        if (AppConstants.VERBOSE_LOG) Log.i(PrefsUtils.class.getName(), "launching version: " + version);
 
         String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
@@ -66,7 +69,9 @@ public class PrefsUtils {
             prefs.edit().putString(AppConstants.LAST_APP_VERSION, version).commit();
             // also make sure we auto-trigger an update, since all data are now gone
             prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
+            return true;
         }
+        return false;
 
     }
 
@@ -100,10 +105,10 @@ public class PrefsUtils {
 
     public static void logout(Context context) {
         NBSyncService.softInterrupt();
-        
+
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
-        
+
         // wipe the local DB
         FeedUtils.dropAndRecreateTables();
         
@@ -111,6 +116,25 @@ public class PrefsUtils {
         Intent i = new Intent(context, Login.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(i);
+    }
+
+    public static void clearPrefsAndDbForLoginAs(Context context) {
+        NBSyncService.softInterrupt();
+
+        // wipe the prefs store except for the cookie and login keys since we need to
+        // authenticate further API calls
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Set<String> keys = new HashSet<String>(prefs.getAll().keySet());
+        keys.remove(PrefConstants.PREF_COOKIE);
+        keys.remove(PrefConstants.PREF_UNIQUE_LOGIN);
+        SharedPreferences.Editor editor = prefs.edit();
+        for (String key : keys) {
+            editor.remove(key);
+        }
+        editor.commit();
+
+        // wipe the local DB
+        FeedUtils.dropAndRecreateTables();
     }
 
 	/**
@@ -213,6 +237,17 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
     }
 
+    public static boolean isTimeToVacuum(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        long lastTime = prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L);
+        return ( (lastTime + AppConstants.VACUUM_TIME_MILLIS) < (new Date()).getTime() );
+    }
+
+    public static void updateLastVacuumTime(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        prefs.edit().putLong(PrefConstants.LAST_VACUUM_TIME, (new Date()).getTime()).commit();
+    }
+
     public static StoryOrder getStoryOrderForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder(prefs).toString()));
@@ -263,6 +298,11 @@ public class PrefsUtils {
     
     private static StoryOrder getDefaultStoryOrder(SharedPreferences prefs) {
         return StoryOrder.valueOf(prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString()));
+    }
+
+    public static StoryOrder getDefaultStoryOrder(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return getDefaultStoryOrder(preferences);
     }
     
     private static ReadFilter getDefaultReadFilter(SharedPreferences prefs) {
@@ -443,4 +483,15 @@ public class PrefsUtils {
         return theme.equals("light");
     }
 
+    public static StateFilter getStateFilter(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StateFilter.valueOf(prefs.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString()));
+    }
+
+    public static void setStateFilter(Context context, StateFilter newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.STATE_FILTER, newValue.toString());
+        editor.commit();
+    }
 }

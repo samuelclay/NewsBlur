@@ -1,0 +1,15 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>The type attribute on an &lt;outline&gt; element should be a known type.</p>
+</div>
+<div id='explanation'>
+<p>For maximum interoperability, limit the values of the type attribute to
+<code>link</code> and <code>rss</code>.</p>
+</div>
+<div id='solution'>
+<p>Either omit the type attribute entirely, or change it to be one of
+values listed above.</p>
+</div>
+</div>
+</fvdoc>

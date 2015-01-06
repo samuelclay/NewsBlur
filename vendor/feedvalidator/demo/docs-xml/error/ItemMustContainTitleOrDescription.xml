@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>item</code> must contain either <code>title</code> or <code>description</code></p>
+</div>
+<div id='explanation'>
+<p>Within each <code>item</code> element, the <code>title</code> and <code>description</code> elements are semi-optional: you can skip one or the other, but not both.</p>
+</div>
+<div id='solution'>
+<p>Add either a <code>title</code> or a <code>description</code> for this <a href="../../docs/rss2.html#hrelementsOfLtitemgt"><code>item</code></a>.</p>
+</div>
+</div>
+</fvdoc>

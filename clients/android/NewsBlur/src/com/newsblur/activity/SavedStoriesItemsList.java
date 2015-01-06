@@ -81,7 +81,7 @@ public class SavedStoriesItemsList extends ItemsList {
     // relevant since saved stories have no read/unread status nor ordering.
 
     @Override
-    protected StoryOrder getStoryOrder() {
+    public StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
     }
 

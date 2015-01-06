@@ -1,0 +1,16 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid form component name</p>
+</div>
+<div id='explanation'>
+<p>The name MUST begin with a letter and
+contain only these characters: the letters A to Z in either case,
+numeric digits, colons (":"), hyphens ("-"), periods (".") and
+underscores ("_").</p>
+</div>
+<div id='solution'>
+<p>Consult the <a href="http://www.rssboard.org/rss-draft-1#element-channel-textinput-name">documentation for the textInput name element</a> for further details.</p>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,14 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one channel
+  Expect:       DuplicateElement{parent:rss,element:channel}
+-->
+
+<rss version="2.0">
+  <channel/>
+  <channel/>
+</rss>

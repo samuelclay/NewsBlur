@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Description:  Valid Language: star
+  Expect:       !InvalidLanguage
+-->
+
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Web Search</ShortName>
+  <Description>Use Example.com to search the Web.</Description>
+  <Language>*</Language>
+  <Tags>example web</Tags>
+  <Contact>admin@example.com</Contact>
+  <Url type="application/rss+xml" 
+       template="http://example.com/?q={searchTerms}&amp;pw={startPage?}&amp;format=rss"/>
+</OpenSearchDescription>

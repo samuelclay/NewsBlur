@@ -1,0 +1,18 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid Media Hash</p>
+</div>
+<div id='explanation'>
+<ul>
+<li><samp>algo</samp> must be <samp>'md5'</samp> or <samp>'sha-1'</samp></li>
+<li>value must be encoded as hex</li>
+<li>value length must be 32 for md5 or 40 for sha-1</li>
+</ul>
+</div>
+<div id='solution'>
+<p>Convert the hash to a valid value, and/or use the <samp>algo</samp>
+attribute to correctly indicate the hash algorithm used.</p>
+</div>
+</div>
+</fvdoc>

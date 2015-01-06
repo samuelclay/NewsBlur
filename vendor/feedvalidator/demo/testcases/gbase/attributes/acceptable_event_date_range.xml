@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  event_dateTime
+  Expect:       !Error
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:g="http://base.google.com/ns/1.0">
+
+  <title>event_dateTime test case 1</title>
+  <link href="http://base.google.com/base/attribute_list.html" />
+  <updated>2003-12-13T18:30:02Z</updated>
+  <id>http://feedvalidator.org/gbase</id>
+  <author><name>Google</name></author>
+
+  <entry>
+    <title>event_dateTime test case 1</title>
+    <id>tag:base.google.com,2005:event_dateTime_1</id>
+    <link href="http://base.google.com/base/attribute_list.html#event_dateTime" />
+    <updated>2003-12-13T18:30:02Z</updated>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+      From <a href="http://base.google.com/base/attribute_list.html#event_dateTime">event_dateTime</a>
+      </div>
+    </summary>
+
+    <g:event_date_range>
+    <g:start>2005-12-20T14:00:00</g:start>
+    <g:end>2005-12-20T19:00:00</g:end>
+    </g:event_date_range>
+  </entry>
+</feed>

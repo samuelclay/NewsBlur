@@ -1,0 +1,19 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  channel must not include both dc:publisher and webMaster
+  Expect:       DuplicateSemantics{core:webMaster,ext:dc:publisher}
+-->
+
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<title>Duplicate semantics</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>channel must not include both dc:publisher and webMaster</description>
+<dc:publisher>me@example.com (Mark Pilgrim)</dc:publisher>
+<webMaster>me@example.com (Mark Pilgrim)</webMaster>
+</channel>
+</rss>

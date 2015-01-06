@@ -1,0 +1,16 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one sy:updateBase
+  Expect:       DuplicateElement{parent:channel,element:sy:updateBase}
+-->
+
+<rss version="2.0" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/">
+<channel>
+<sy:updateBase>2000-01-01T12:00+00:00</sy:updateBase>
+<sy:updateBase>2000-01-01T12:00+00:00</sy:updateBase>
+</channel>
+</rss>

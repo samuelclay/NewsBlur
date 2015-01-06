@@ -1,0 +1,20 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  Tuesday, Wednesday, Happy Days
+  Expect:       ValidDay{parent:skipDays,element:day}
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS 2.0 test case</title>
+<link>http://www.feedvalidator.org/testcases/rss20/</link>
+<description>Tuesday, Wednesday, Happy Days</description>
+<skipDays>
+<day>Wednesday</day>
+</skipDays>
+</channel>
+</rss>

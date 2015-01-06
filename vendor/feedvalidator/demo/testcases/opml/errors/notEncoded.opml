@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  Unescaped ampersand
+  Expect:       SAXError
+-->
+
+<opml version="1.1">
+	<head>
+		<title>Favorite Things</title>
+		<ownerName>Bull "The Geek Enforcer" Mancuso</ownerName>
+		<ownerEmail>bull&atsign;mancuso.com</ownerEmail>
+		</head>
+	<body>
+		<outline text="Movies">
+			<outline text="Wallace & Gromit" type="link" url="http://www.google.com/movies/reviews?cid=b7bb880da37e97d6&amp;oi=moviesr"/>
+			<outline text="Sophie's Choice (1982)" type="link" url="http://movies2.nytimes.com/gst/movies/movie.html?v_id=45699"/>
+			</outline>
+		<outline text="Math formula">
+			<outline text="x + y < 12"/>
+			</outline>
+		</body>
+	</opml>

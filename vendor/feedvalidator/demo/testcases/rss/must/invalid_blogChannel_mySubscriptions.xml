@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  blogChannel:mySubscriptions must be full URL
+  Expect:       InvalidLink{parent:channel,element:blogChannel:mySubscriptions}
+-->
+
+<rss version="2.0" xmlns:blogChannel="http://backend.userland.com/blogChannelModule">
+<channel>
+<blogChannel:mySubscriptions>radio.weblogs.com/0001015/userland/scriptingNewsLeftLinks.opml</blogChannel:mySubscriptions>
+</channel>
+</rss>

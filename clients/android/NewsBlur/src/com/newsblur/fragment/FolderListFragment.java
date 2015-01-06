@@ -37,6 +37,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
@@ -55,7 +56,8 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new FolderListAdapter(getActivity());
+        currentState = PrefsUtils.getStateFilter(getActivity());
+		adapter = new FolderListAdapter(getActivity(), currentState);
 	}
 
     @Override
@@ -74,13 +76,13 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SOCIALFEEDS_LOADER:
-                return dbHelper.getSocialFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getSocialFeedsLoader(currentState);
             case FOLDERFEEDMAP_LOADER:
-                return dbHelper.getFolderFeedMapLoader();
+                return FeedUtils.dbHelper.getFolderFeedMapLoader();
             case FEEDS_LOADER:
-                return dbHelper.getFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getFeedsLoader(currentState);
             case SAVEDCOUNT_LOADER:
-                return dbHelper.getSavedStoryCountLoader();
+                return FeedUtils.dbHelper.getSavedStoryCountLoader();
             default:
                 throw new IllegalArgumentException("unknown loader created");
         }
@@ -88,6 +90,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor == null) return;
         try {
             switch (loader.getId()) {
                 case SOCIALFEEDS_LOADER:
@@ -224,6 +227,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
 	public void changeState(StateFilter state) {
 		currentState = state;
+        PrefsUtils.setStateFilter(getActivity(), state);
         adapter.changeState(state);
 		hasUpdated();
 	}

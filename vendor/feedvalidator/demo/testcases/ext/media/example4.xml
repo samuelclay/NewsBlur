@@ -1,0 +1,39 @@
+<!--
+  Author:       Sam Ruby (http://www.intertwingly.net/blog/)
+  Copyright:    Copyright (c) 2006 Sam Ruby
+-->
+
+<!--
+  Description:  example4 from http://search.yahoo.com/mrss
+  Expect:       !Error
+-->
+
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+<title>Song Site</title>
+<link>http://www.foo.com</link>
+<description>Discussion on different songs</description>
+        <item>
+                <title>These songs make me think about blah</title>
+                <link>http://www.foo.com/item1.htm</link>
+                <media:content url="http://www.foo.com/band1-song1.mp3" 
+                fileSize="1000" type="audio/mpeg" expression="full">
+                <media:credit role="musician">member of band1</media:credit>
+                <media:category>music/band1/album/song</media:category>
+                <media:rating>nonadult</media:rating>
+                </media:content>
+                <media:content url="http://www.foo.com/band2-song1.mp3" 
+                fileSize="2000" type="audio/mpeg" expression="full">
+                <media:credit role="musician">member of band2</media:credit>
+                <media:category>music/band2/album/song</media:category>
+                <media:rating>nonadult</media:rating>
+                </media:content>
+                <media:content url="http://www.foo.com/band3-song1.mp3" 
+                fileSize="1500" type="audio/mpeg" expression="full">
+                <media:credit role="musician">member of band3</media:credit>
+                <media:category>music/band3/album/song</media:category>
+                <media:rating>nonadult</media:rating>
+                </media:content>
+        </item>
+</channel>
+</rss>

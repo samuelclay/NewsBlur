@@ -1,0 +1,17 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Missing namespace for <code>foo</code></p>
+</div>
+<div id='explanation'>
+<p>This element is in a namespace, but you have not declared the namespace.</p>
+</div>
+<div id='solution'>
+<p>Declare the namespace at the top of your feed.  For example, if you use <code>dc:date</code> in your feed, you will need to declare the proper <code>dc</code> namespace, like this:</p>
+
+<p><samp>&lt;rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;</samp></p>
+
+<p>Check the <a href="../../docs/howto/declare_namespaces.html">full list of namespaces</a> for the exact declaration you need.</p>
+</div>
+</div>
+</fvdoc>

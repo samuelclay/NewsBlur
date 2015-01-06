@@ -1,0 +1,18 @@
+<!--
+  Contributor:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid contributor email
+  Expect:       ValidContact{parent:contributor,element:email}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+<contributor>
+<name>Valid name</name>
+<email>valid@example.com</email>
+</contributor>
+
+</feed>

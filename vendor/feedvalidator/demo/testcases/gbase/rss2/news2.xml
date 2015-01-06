@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  Sample file
+  Expect:       !Error
+-->
+
+<rss version ="2.0" 
+
+xmlns:g="http://base.google.com/ns/1.0"> 
+
+
+ <channel>
+  	<title>The name of the channel</title>
+  	<description>A description of the channels content.</description>
+  	<link>http://www.providers-website.com</link>
+
+  <item>
+   
+   <title>First man in Space</title>
+   <description>Colonel Yuri A. Gagarin,1934 - 1968, 1961</description>
+   <link>http://provider-website.com/item1-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image1.jpg</g:image_link>
+   <g:expiration_date>2007-03-20</g:expiration_date>
+   <g:label>news</g:label>
+   <g:label>old</g:label>
+
+   <g:news_source>Journal</g:news_source>
+   <g:publish_date>1961-04-12</g:publish_date>
+   <g:author>James Smith</g:author>
+   <g:pages>1</g:pages>
+
+  </item>
+
+  <item>
+
+   <title>Cloning in focus</title>
+   <description>Some of the issues in cloning.</description>
+   <link>http://provider-website.com/item2-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image2.jpg</g:image_link>
+   <g:expiration_date>2010-03-20</g:expiration_date>
+   <g:label>news</g:label>
+   <g:label>risk</g:label>
+   <g:label>flash</g:label>
+
+   <g:news_source>Government Press release</g:news_source>
+   <g:publish_date>2007-02-13</g:publish_date>
+   <g:author>James Smith</g:author>
+   <g:pages>1</g:pages>
+
+  </item>
+ </channel>
+</rss>

@@ -1,0 +1,23 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  item enclosure valid type
+  Expect:       ValidMIMEAttribute{parent:item,element:enclosure,attr:type}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Invalid author</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>item author must include email address</description>
+<item>
+<title>Invalid author item</title>
+<link>http://purl/org/rss/2.0/?item</link>
+<description>Foo</description>
+<enclosure url="http://example.com/" length="1" type="audio/mpeg"/>
+</item>
+</channel>
+</rss>

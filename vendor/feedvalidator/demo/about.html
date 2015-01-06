@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>About the Feed Validator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css" media="screen">@import "css/common.css";
+@import "css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+</head>
+<body>
+
+<div id="logo">
+<h1><a href="/"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>About</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+
+<p>On this page:</p>
+
+<ul>
+<li><a href="#what">What is this?</a></li>
+<li><a href="#why">Why a validator?</a></li>
+<li><a href="#how">What does it validate?</a></li>
+<li><a href="#who">Who wrote it?</a></li>
+<li><a href="#where">Can I run it locally?</a></li>
+<li><a href="#when">Can I tell you something?</a></li>
+</ul>
+
+<h2 id="what">What is this?</h2>
+
+<p>This is a validator for syndicated feeds.  It works with RSS 0.90, 0.91, 0.92, 0.93, 0.94, 1.0, 1.1, and 2.0.  It also validates Atom feeds.</p>
+
+<p>To use it, simply enter the address of your feed and click Validate.  If the validator finds any problems in your feed, it will give you messages for each type of problem and highlight where the problem first occurs in your feed.  If you're unsure what a message means, click the "help" link next to the message for a fuller explanation.</p>
+
+<h2 id="why">Why a validator?</h2>
+
+<p>Despite its relatively simple nature, RSS is poorly implemented by many tools.  This validator is an attempt to codify the specification (literally, to translate it into code) to make it easier to know when you're producing RSS correctly, and to help you fix it when you're not.</p>
+
+<p>The validator also supports the IETF standard Atom format for syndicated feeds.  Early adopters who wish to support Atom should use the validator to make sure they generate it properly from day 1.</p>
+
+<p>There are validators for other web technologies, such as <a href="http://validator.w3.org/">HTML</a>, <a href="http://jigsaw.w3.org/css-validator/">CSS</a>, and <a href="http://webxact.watchfire.com/">accessibility guidelines</a>, and these have all proven quite popular.  As personal news syndication is becoming more widespread, we saw a need for a comprehensive but easy-to-use validator for syndicated feeds.</p>
+
+<h2 id="how">What does it validate?</h2>
+
+<p>It validates RSS feeds against the rules defined in the <a href="/docs/rss2.html">RSS 2.0 specification</a>.  It also validates elements of commonly used namespaces:</p>
+
+<ul>
+<li>blogChannel</li>
+<li>Dublin Core</li>
+<li>itunes</li>
+<li>mod_admin</li>
+<li>mod_syndication</li>
+<li>mod_content (<code>content:encoded</code> only)</li>
+</ul>
+
+<p>For Atom feeds, it validates against <a href="http://www.ietf.org/rfc/rfc4287">RFC 4287</a>, which describes version 1.0 of the Atom feed format.</p>
+
+<p>The <a href="/docs/">documentation index</a> lists all the error messages that the validator produces.  You can also download the entire test suite that was used to create the validator (see below).</p>
+
+<h2 id="who">Who wrote it?</h2>
+
+<p>The validator was conceived and designed by <a href="http://diveintomark.org/">Mark Pilgrim</a>, who also wrote most of the test cases and designed the web front end.  Much of the actual back end coding was done by <a href="http://intertwingly.net/blog/">Sam Ruby</a>.</p>
+
+<a name="opensource" id="opensource"></a>
+<h2 id="where">Can I run it locally?</h2>
+
+<p>Yes.  The validator is open source, written in Python, and distributed under the <a href="LICENSE">MIT license</a>.  To run it, you will need <a href="http://python.org/">Python 2.3</a> or later, and an XML parser.  Most Python distributions include a minimal XML parser which will work just fine.  Mac OS X 10.2 users should install <a href="http://sourceforge.net/projects/pyxml/">PyXML</a>.</p>
+
+<p>You can find more information in our convenient <a href="docs/howto/install_and_run.html">HowTo</a>.</p>
+
+<h2 id="when">Can I tell you something?</h2>
+
+<p>Sure! The best way to provide feedback on the validator is on the <a href="http://lists.sourceforge.net/lists/listinfo/feedvalidator-users">Sourceforge mailing list</a>.</p>
+</div><!--main-->
+
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="/images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="/images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="/">Home</a> &middot;
+<a href="about.html">About</a> &middot;
+<a href="news/">News</a> &middot;
+<a href="docs/">Docs</a> &middot;
+<a href="terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="/images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="/images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper --> 
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright © 2002-6
+<a href="http://www.intertwingly.net/blog/">Sam Ruby</a>, 
+<a href="http://diveintomark.org/">Mark Pilgrim</a>,
+<a href="http://www.kafsemo.org/">Joseph Walton</a>, and
+<a href="http://philringnalda.com/">Phil Ringnalda</a>
+</address>
+</div>
+
+</body>
+</html>

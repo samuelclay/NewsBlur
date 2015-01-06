@@ -1,0 +1,37 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Avoid <code>foo:bar</code></p>
+</div>
+<div id='explanation'>
+<p>Avoid using elements in namespaces when there are already core elements
+that do the same thing.</p>
+<p>The item contains an element that duplicates the semantics of the
+description element.  Be advised that clients will behave unpredictably in the
+presence of such an element: some will prefer it over the description element,
+others will ignore it, and the behavior may depend on the order in which such
+elements appear in the item.</p>
+<p>Here are a few links to prior discussions on the topic:</p>
+<ul>
+<li>Dave Winer
+<ul>
+<li><a href="http://backend.userland.com/davesRss2PoliticalFaq#questionWhatDoesFunkyMeanInTheContextOfRss20">RSS 2.0 Political FAQ</a></li>
+<li><a href="http://scripting.wordpress.com/2006/03/08/a-busy-developers-guide-to-rss-20/">A Busy Developer’s Guide to RSS 2.0</a></li>
+</ul>
+</li>
+<li><a href="http://www.cadenhead.org/workbench/news/1598/improving-movable-types-rss-20-feed">Rogers Cadenhead</a></li>
+<li><a href="http://groups.yahoo.com/group/rss-public/message/310">James Holderness</a></li>
+<li><a href="http://www.2020hindsight.org/2006/03/09/learning-feeds/">Susan A. Kitchens</a></li>
+<li><a href="http://blogs.opml.org/amyloo/2006/04/15#justRealizedSomethingAboutMyVerticalTopicFeedCouldUseSomeHelp">Amy Bellinger</a></li>
+</ul>
+</div>
+<div id='solution'>
+<ul>
+<li>Select whether you want your feed to contains summaries (sometimes called excerpts) or full content (a.k.a. body).</li>
+<li>Encode your selection as HTML.</li>
+<li>Place the result in the item <code>description</code> element.</li>
+<li>Remove other elements that provide the same function.</li>
+</ul>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  entry subtitle no longer exists
+  Expect:       UndefinedElement{parent:entry,element:subtitle}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<subtitle>No longer a valid element</subtitle>
+</entry>
+</feed>

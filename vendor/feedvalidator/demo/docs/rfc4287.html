@@ -1,0 +1,914 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>The Atom Syndication Format</title><style type="text/css" title="Xml2Rfc (sans serif)">
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:active {
+  text-decoration: underline;
+}
+address {
+  margin-top: 1em;
+  margin-left: 2em;
+  font-style: normal;
+}
+body {
+  
+  color: #000000;
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 10pt;
+}
+dl {
+  margin-left: 2em;
+}
+h1 {
+  color: #333333;
+  font-size: 14pt;
+  line-height: 21pt;
+  page-break-after: avoid;
+}
+h1.np {
+  page-break-before: always;
+}
+h1 a {
+  color: #333333;
+}
+h2 {
+  color: #000000;
+  font-size: 12pt;
+  line-height: 15pt;
+  page-break-after: avoid;
+}
+h2 a {
+  color: #000000;
+}
+h3 {
+  color: #000000;
+  font-size: 10pt;
+  page-break-after: avoid;
+}
+h3 a {
+  color: #000000;
+}
+h4 {
+  color: #000000;
+  font-size: 10pt;
+  page-break-after: avoid;
+}
+h4 a {
+  color: #000000;
+}
+h5 {
+  color: #000000;
+  font-size: 10pt;
+  page-break-after: avoid;
+}
+h5 a {
+  color: #000000;
+}
+img {
+  margin-left: 3em;
+}
+li {
+  margin-left: 2em;
+  margin-right: 2em;
+}
+ol {
+  margin-left: 2em;
+  margin-right: 2em;
+}
+p {
+  margin-left: 2em;
+  margin-right: 2em;
+}
+pre {
+  margin-left: 3em;
+  background-color: lightyellow;
+}
+table {
+  margin-left: 2em;
+}
+
+table.header {
+  width: 95%;
+  font-size: 10pt;
+  color: white;
+}
+td.top {
+  vertical-align: top;
+}
+td.topnowrap {
+  vertical-align: top;
+  white-space: nowrap; 
+}
+td.right {
+  text-align: right;
+}
+td.header-l {
+  background-color: gray;
+  width: 50%;
+}
+td.header-r {
+  background-color: gray;
+  width: 50%;
+  text-align: right;
+}
+thead {
+  display:table-header-group;
+}
+ul.toc {
+  list-style: none;
+  margin-left: 1.5em;
+  margin-right: 0em;
+  padding-left: 0em;
+}
+li.tocline0 {
+  line-height: 150%;
+  font-weight: bold;
+  font-size: 10pt;
+  margin-left: 0em;
+  margin-right: 0em;
+}
+li.tocline1 {
+  line-height: normal;
+  font-weight: normal;
+  font-size: 9pt;
+  margin-left: 0em;
+  margin-right: 0em;
+}
+li.tocline2 {
+  font-size: 0pt;
+}
+ul.ind {
+  list-style: none;
+  margin-left: 1.5em;
+  margin-right: 0em;
+  padding-left: 0em;
+}
+li.indline0 {
+  font-weight: bold;
+  line-height: 200%;
+  margin-left: 0em;
+  margin-right: 0em;
+}
+li.indline1 {
+  font-weight: normal;
+  line-height: 150%;
+  margin-left: 0em;
+  margin-right: 0em;
+}
+.comment {
+  background-color: yellow;
+}
+
+.error {
+  font-size: 14pt;
+  background-color: red;
+}
+.title {
+  color: #990000;
+  font-size: 18pt;
+  line-height: 18pt;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 36pt;
+}
+.figure {
+  font-weight: bold;
+  text-align: center;
+  font-size: 9pt;
+}
+.filename {
+  color: #333333;
+  font-weight: bold;
+  font-size: 12pt;
+  line-height: 21pt;
+  text-align: center;
+}
+.warning {
+  font-size: 14pt;
+  background-color: yellow;
+}
+
+.fn {
+  font-weight: bold;
+}
+.vcardline {
+  display: block;
+}
+
+
+
+@media print {
+  .noprint {
+    display: none;
+  }
+  
+  table.header {
+    width: 90%;
+  }
+
+  td.header-l {
+    width: 50%;
+    color: black;
+    background-color: white;
+    vertical-align: top;
+    font-size: 10pt;
+  }
+
+  td.header-r {
+    width: 33%;
+    color: black;
+    background-color: white;
+    vertical-align: top;
+    text-align: right;
+    font-size: 10pt;
+  }
+
+  ul.toc a::after {
+    content: leader('.') target-counter(attr(href), page);
+  }
+  
+  a.iref {
+    content: target-counter(attr(href), page);
+  }
+  
+  .print2col {
+    column-count: 2;
+    -moz-column-count: 2;
+  }
+}
+
+@page {
+  @top-left {
+       content: "RFC 4287"; 
+  } 
+  @top-right {
+       content: "December 2005"; 
+  } 
+  @top-center {
+       content: "Atom Format"; 
+  } 
+  @bottom-left {
+       content: "Nottingham & Sayre"; 
+  } 
+  @bottom-center {
+       content: "Standards Track"; 
+  } 
+  @bottom-right {
+       content: "[Page " counter(page) "]"; 
+  } 
+}
+
+@page:first { 
+    @top-left {
+      content: normal;
+    }
+    @top-right {
+      content: normal;
+    }
+    @top-center {
+      content: normal;
+    }
+}
+</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="Copyright" href="#rfc.copyright"><link rel="Index" href="#rfc.index"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 Atom Documents" href="#rfc.section.2"><link rel="Chapter" title="3 Common Atom Constructs" href="#rfc.section.3"><link rel="Chapter" title="4 Atom Element Definitions" href="#rfc.section.4"><link rel="Chapter" title="5 Securing Atom Documents" href="#rfc.section.5"><link rel="Chapter" title="6 Extending Atom" href="#rfc.section.6"><link rel="Chapter" title="7 IANA Considerations" href="#rfc.section.7"><link rel="Chapter" title="8 Security Considerations" href="#rfc.section.8"><link rel="Chapter" href="#rfc.section.9" title="9 References"><link rel="Appendix" title="A Contributors" href="#rfc.section.A"><link rel="Appendix" title="B RELAX NG Compact Schema" href="#rfc.section.B"><link rel="Alternate" title="Authorative ASCII version" href="http://www.ietf.org/rfc/rfc4287"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfc2629.xslt, Revision 1.240, 2006/02/27 17:30:09, XSLT vendor: libxslt http://xmlsoft.org/XSLT/"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.Creator" content="Nottingham, M."><meta name="DC.Creator" content="Sayre, R."><meta name="DC.Identifier" content="urn:ietf:rfc:4287"><meta name="DC.Date.Issued" scheme="ISO8601" content="2005-12"><meta name="DC.Description.Abstract" content="This document specifies Atom, an XML-based Web content and metadata syndication format."></head><body><table summary="header information" class="header" border="0" cellpadding="1" cellspacing="1"><tr><td class="header-l">Network Working Group </td><td class="header-r">M. Nottingham, Editor </td></tr><tr><td class="header-l">Request for Comments: 4287 </td><td class="header-r">R. Sayre, Editor </td></tr><tr><td class="header-l">Category: Standards Track </td><td class="header-r">December 2005 </td></tr></table><p class="title">The Atom Syndication Format</p><h1><a name="rfc.status" href="#rfc.status">Status of this Memo</a></h1><p>This document specifies an Internet standards track protocol for the Internet community, and requests discussion and suggestions for improvements. Please refer to the current edition of the &#8220;Internet Official Protocol Standards&#8221; (STD 1) for the standardization state and status of this protocol. Distribution of this memo is unlimited.</p><h1><a name="rfc.copyrightnotice" href="#rfc.copyrightnotice">Copyright Notice</a></h1><p>Copyright © The Internet Society (2005). All Rights Reserved.</p><h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1> <p>This document specifies Atom, an XML-based Web content and metadata syndication format.</p> <hr class="noprint"><h1 class="np" id="rfc.toc"><a href="#rfc.toc">Table of Contents</a></h1><ul class="toc"><li class="tocline0">1.   <a href="#rfc.section.1">Introduction</a><ul class="toc"><li class="tocline1">1.1   <a href="#rfc.section.1.1">Examples</a></li><li class="tocline1">1.2   <a href="#namespace.and.version">Namespace and Version</a></li><li class="tocline1">1.3   <a href="#rfc.section.1.3">Notational Conventions</a></li></ul></li><li class="tocline0">2.   <a href="#atom.documents">Atom Documents</a></li><li class="tocline0">3.   <a href="#rfc.section.3">Common Atom Constructs</a><ul class="toc"><li class="tocline1">3.1   <a href="#text.constructs">Text Constructs</a><ul class="toc"><li class="tocline1">3.1.1   <a href="#rfc.section.3.1.1">The "type" Attribute</a><ul class="toc"><li class="tocline1">3.1.1.1   <a href="#rfc.section.3.1.1.1">Text</a></li><li class="tocline1">3.1.1.2   <a href="#rfc.section.3.1.1.2">HTML</a></li><li class="tocline1">3.1.1.3   <a href="#rfc.section.3.1.1.3">XHTML</a></li></ul></li></ul></li><li class="tocline1">3.2   <a href="#atomPersonConstruct">Person Constructs</a><ul class="toc"><li class="tocline1">3.2.1   <a href="#element.name">The "atom:name" Element</a></li><li class="tocline1">3.2.2   <a href="#element.uri">The "atom:uri" Element</a></li><li class="tocline1">3.2.3   <a href="#element.email">The "atom:email" Element</a></li></ul></li><li class="tocline1">3.3   <a href="#date.constructs">Date Constructs</a></li></ul></li><li class="tocline0">4.   <a href="#rfc.section.4">Atom Element Definitions</a><ul class="toc"><li class="tocline1">4.1   <a href="#rfc.section.4.1">Container Elements</a><ul class="toc"><li class="tocline1">4.1.1   <a href="#element.feed">The "atom:feed" Element</a><ul class="toc"><li class="tocline2"></ul></li><li class="tocline1">4.1.2   <a href="#element.entry">The "atom:entry" Element</a></li><li class="tocline1">4.1.3   <a href="#element.content">The "atom:content" Element</a><ul class="toc"><li class="tocline1">4.1.3.1   <a href="#rfc.section.4.1.3.1">The "type" Attribute</a></li><li class="tocline1">4.1.3.2   <a href="#rfc.section.4.1.3.2">The "src" Attribute</a></li><li class="tocline1">4.1.3.3   <a href="#rfc.section.4.1.3.3">Processing Model</a></li><li class="tocline1">4.1.3.4   <a href="#rfc.section.4.1.3.4">Examples</a></li></ul></li></ul></li><li class="tocline1">4.2   <a href="#rfc.section.4.2">Metadata Elements</a><ul class="toc"><li class="tocline1">4.2.1   <a href="#element.author">The "atom:author" Element</a></li><li class="tocline1">4.2.2   <a href="#element.category">The "atom:category" Element</a><ul class="toc"><li class="tocline1">4.2.2.1   <a href="#rfc.section.4.2.2.1">The "term" Attribute</a></li><li class="tocline1">4.2.2.2   <a href="#rfc.section.4.2.2.2">The "scheme" Attribute</a></li><li class="tocline1">4.2.2.3   <a href="#rfc.section.4.2.2.3">The "label" Attribute</a></li></ul></li><li class="tocline1">4.2.3   <a href="#element.contributor">The "atom:contributor" Element</a></li><li class="tocline1">4.2.4   <a href="#element.generator">The "atom:generator" Element</a></li><li class="tocline1">4.2.5   <a href="#element.icon">The "atom:icon" Element</a></li><li class="tocline1">4.2.6   <a href="#element.id">The "atom:id" Element</a><ul class="toc"><li class="tocline1">4.2.6.1   <a href="#idCompare">Comparing atom:id</a></li></ul></li><li class="tocline1">4.2.7   <a href="#element.link">The "atom:link" Element</a><ul class="toc"><li class="tocline1">4.2.7.1   <a href="#rfc.section.4.2.7.1">The "href" Attribute</a></li><li class="tocline1">4.2.7.2   <a href="#rel_attribute">The "rel" Attribute</a></li><li class="tocline1">4.2.7.3   <a href="#rfc.section.4.2.7.3">The "type" Attribute</a></li><li class="tocline1">4.2.7.4   <a href="#rfc.section.4.2.7.4">The "hreflang" Attribute</a></li><li class="tocline1">4.2.7.5   <a href="#rfc.section.4.2.7.5">The "title" Attribute</a></li><li class="tocline1">4.2.7.6   <a href="#rfc.section.4.2.7.6">The "length" Attribute</a></li></ul></li><li class="tocline1">4.2.8   <a href="#element.logo">The "atom:logo" Element</a></li><li class="tocline1">4.2.9   <a href="#element.published">The "atom:published" Element</a></li><li class="tocline1">4.2.10   <a href="#element.rights">The "atom:rights" Element</a></li><li class="tocline1">4.2.11   <a href="#element.source">The "atom:source" Element</a></li><li class="tocline1">4.2.12   <a href="#element.subtitle">The "atom:subtitle" Element</a></li><li class="tocline1">4.2.13   <a href="#element.summary">The "atom:summary" Element</a></li><li class="tocline1">4.2.14   <a href="#element.title">The "atom:title" Element</a></li><li class="tocline1">4.2.15   <a href="#element.updated">The "atom:updated" Element</a></li></ul></li></ul></li><li class="tocline0">5.   <a href="#rfc.section.5">Securing Atom Documents</a><ul class="toc"><li class="tocline2"><li class="tocline2"><li class="tocline2"></ul></li><li class="tocline0">6.   <a href="#extending_atom">Extending Atom</a><ul class="toc"><li class="tocline2"><li class="tocline2"><li class="tocline2"><li class="tocline2"><ul class="toc"><li class="tocline2"><li class="tocline2"></ul></li></ul></li><li class="tocline0">7.   <a href="#IANA">IANA Considerations</a><ul class="toc"><li class="tocline2"></ul></li><li class="tocline0">8.   <a href="#rfc.section.8">Security Considerations</a><ul class="toc"><li class="tocline2"><li class="tocline2"><li class="tocline2"><li class="tocline2"><li class="tocline2"></ul></li><li class="tocline0">9.   <a href="#rfc.references">References</a><ul class="toc"><li class="tocline1">9.1   <a href="#rfc.references.1">Normative References</a></li><li class="tocline1">9.2   <a href="#rfc.references.2">Informative References</a></li></ul></li><li class="tocline0"><a href="#rfc.authors">Authors' Addresses</a></li><li class="tocline0">A.   <a href="#rfc.section.A">Contributors</a></li><li class="tocline0">B.   <a href="#schema">RELAX NG Compact Schema</a></li><li class="tocline0"><a href="#rfc.ipr">Intellectual Property and Copyright Statements</a></li><li class="tocline0"><a href="#rfc.index">Index</a></li></ul><h1 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a> Introduction</h1><p id="rfc.section.1.p.1">Atom is an XML-based document format that describes lists of related information known as "feeds". Feeds are composed of a number of items, known as "entries", each with an extensible set of attached metadata. For example, each entry has a title.</p><p id="rfc.section.1.p.2">The primary use case that Atom addresses is the syndication of Web content such as weblogs and news headlines to Web sites as well as directly to user agents.</p><h2 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1</a> Examples</h2><div id="rfc.figure.u.1"></div> <p>A brief, single-entry Atom Feed Document:</p>  <pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+  &lt;title&gt;Example Feed&lt;/title&gt; 
+  &lt;link href="http://example.org/"/&gt;
+  &lt;updated&gt;2003-12-13T18:30:02Z&lt;/updated&gt;
+  &lt;author&gt; 
+    &lt;name&gt;John Doe&lt;/name&gt;
+  &lt;/author&gt; 
+  &lt;id&gt;urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6&lt;/id&gt;
+
+  &lt;entry&gt;
+    &lt;title&gt;Atom-Powered Robots Run Amok&lt;/title&gt;
+    &lt;link href="http://example.org/2003/12/13/atom03"/&gt;
+    &lt;id&gt;urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id&gt;
+    &lt;updated&gt;2003-12-13T18:30:02Z&lt;/updated&gt;
+    &lt;summary&gt;Some text.&lt;/summary&gt;
+  &lt;/entry&gt;
+
+&lt;/feed&gt;</pre><p id="rfc.section.1.1.p.2"> </p><div id="rfc.figure.u.2"></div> <p>A more extensive, single-entry Atom Feed Document:</p>  <pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+  &lt;title type="text"&gt;dive into mark&lt;/title&gt;
+  &lt;subtitle type="html"&gt;
+    A &amp;lt;em&amp;gt;lot&amp;lt;/em&amp;gt; of effort
+    went into making this effortless
+  &lt;/subtitle&gt;
+  &lt;updated&gt;2005-07-31T12:29:29Z&lt;/updated&gt;
+  &lt;id&gt;tag:example.org,2003:3&lt;/id&gt;
+  &lt;link rel="alternate" type="text/html" 
+   hreflang="en" href="http://example.org/"/&gt;
+  &lt;link rel="self" type="application/atom+xml" 
+   href="http://example.org/feed.atom"/&gt;
+  &lt;rights&gt;Copyright (c) 2003, Mark Pilgrim&lt;/rights&gt;
+  &lt;generator uri="http://www.example.com/" version="1.0"&gt;
+    Example Toolkit
+  &lt;/generator&gt;
+  &lt;entry&gt;
+    &lt;title&gt;Atom draft-07 snapshot&lt;/title&gt;
+    &lt;link rel="alternate" type="text/html" 
+     href="http://example.org/2005/04/02/atom"/&gt;
+    &lt;link rel="enclosure" type="audio/mpeg" length="1337"
+     href="http://example.org/audio/ph34r_my_podcast.mp3"/&gt;
+    &lt;id&gt;tag:example.org,2003:3.2397&lt;/id&gt;
+    &lt;updated&gt;2005-07-31T12:29:29Z&lt;/updated&gt;
+    &lt;published&gt;2003-12-13T08:29:29-04:00&lt;/published&gt;
+    &lt;author&gt;
+      &lt;name&gt;Mark Pilgrim&lt;/name&gt;
+      &lt;uri&gt;http://example.org/&lt;/uri&gt;
+      &lt;email&gt;f8dy@example.com&lt;/email&gt;
+    &lt;/author&gt;
+    &lt;contributor&gt;
+      &lt;name&gt;Sam Ruby&lt;/name&gt;
+    &lt;/contributor&gt;
+    &lt;contributor&gt;
+      &lt;name&gt;Joe Gregorio&lt;/name&gt;
+    &lt;/contributor&gt;
+    &lt;content type="xhtml" xml:lang="en" 
+     xml:base="http://diveintomark.org/"&gt;
+      &lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;
+        &lt;p&gt;&lt;i&gt;[Update: The Atom draft is finished.]&lt;/i&gt;&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/content&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;</pre> <h2 id="rfc.section.1.2"><a href="#rfc.section.1.2">1.2</a> <a name="namespace.and.version" href="#namespace.and.version">Namespace and Version</a></h2><p id="rfc.section.1.2.p.1">The XML Namespaces URI <a href="#W3C.REC-xml-names-19990114" title="Namespaces in XML">[W3C.REC-xml-names-19990114]</a> for the XML data format described in this specification is:</p><p id="rfc.section.1.2.p.2">http://www.w3.org/2005/Atom</p><p id="rfc.section.1.2.p.3">For convenience, this data format may be referred to as "Atom 1.0". This specification uses "Atom" internally.</p><h2 id="rfc.section.1.3"><a href="#rfc.section.1.3">1.3</a> Notational Conventions</h2><p id="rfc.section.1.3.p.1">This specification describes conformance in terms of two artifacts: Atom Feed Documents and Atom Entry Documents. Additionally, it places some requirements on Atom Processors.</p><p id="rfc.section.1.3.p.2">This specification uses the namespace prefix "atom:" for the Namespace URI identified in <a href="#namespace.and.version" title="Namespace and Version">Section 1.2</a>, above. Note that the choice of namespace prefix is arbitrary and not semantically significant.</p><p id="rfc.section.1.3.p.3">Atom is specified using terms from the XML Infoset <a href="#W3C.REC-xml-infoset-20040204" title="XML Information Set (Second Edition)">[W3C.REC-xml-infoset-20040204]</a>. However, this specification uses a shorthand for two common terms: the phrase "Information Item" is omitted when naming Element Information Items and Attribute Information Items. Therefore, when this specification uses the term "element," it is referring to an Element Information Item in Infoset terms. Likewise, when it uses the term "attribute," it is referring to an Attribute Information Item.</p><p id="rfc.section.1.3.p.4">Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema <a href="#RELAX-NG" title="RELAX NG Compact Syntax">[RELAX-NG]</a>. However, the text of this specification provides the definition of conformance. A complete schema appears in <a href="#schema" title="RELAX NG Compact Schema">Appendix B</a>.</p><p id="rfc.section.1.3.p.5">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14, <a href="#RFC2119" title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</a>, as scoped to those conformance targets.</p><h1 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a name="atom.documents" href="#atom.documents">Atom Documents</a></h1><p id="rfc.section.2.p.1">This specification describes two kinds of Atom Documents: Atom Feed Documents and Atom Entry Documents.</p><p id="rfc.section.2.p.2">An Atom Feed Document is a representation of an Atom feed, including metadata about the feed, and some or all of the entries associated with it. Its root is the <a href="#element.feed">atom:feed</a> element.</p><p id="rfc.section.2.p.3">An Atom Entry Document represents exactly one Atom entry, outside of the context of an Atom feed. Its root is the <a href="#element.entry">atom:entry</a> element.</p><div id="rfc.figure.u.3"></div> <pre>
+namespace atom = "http://www.w3.org/2005/Atom"	 		
+start = <a href="#element.feed">atomFeed</a> | <a href="#element.entry">atomEntry</a></pre> <p id="rfc.section.2.p.5">Both kinds of Atom Documents are specified in terms of the XML Information Set, serialized as XML 1.0 <a href="#W3C.REC-xml-20040204" title="Extensible Markup Language (XML) 1.0 (Third Edition)">[W3C.REC-xml-20040204]</a> and identified with the "application/atom+xml" media type. Atom Documents MUST be well-formed XML. This specification does not define a DTD for Atom Documents, and hence does not require them to be valid (in the sense used by XML).</p><p id="rfc.section.2.p.6">Atom allows the use of IRIs <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>. Every URI <a href="#RFC3986" title="Uniform Resource Identifier (URI): Generic Syntax">[RFC3986]</a> is also an IRI, so a URI may be used wherever below an IRI is named. There are two special considerations: (1) when an IRI that is not also a URI is given for dereferencing, it MUST be mapped to a URI using the steps in Section 3.1 of <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a> and (2) when an IRI is serving as an <a href="#element.id">atom:id</a> value, it MUST NOT be so mapped, so that the comparison works as described in <a href="#idCompare" title="Comparing atom:id">Section 4.2.6.1</a>.</p><p id="rfc.section.2.p.7">Any element defined by this specification MAY have an xml:base attribute <a href="#W3C.REC-xmlbase-20010627" title="XML Base">[W3C.REC-xmlbase-20010627]</a>. When xml:base is used in an Atom Document, it serves the function described in section 5.1.1 of <a href="#RFC3986" title="Uniform Resource Identifier (URI): Generic Syntax">[RFC3986]</a>, establishing the base URI (or IRI) for resolving any relative references found within the effective scope of the xml:base attribute.</p><p id="rfc.section.2.p.8">Any element defined by this specification MAY have an xml:lang attribute, whose content indicates the natural language for the element and its descendents. The language context is only significant for elements and attributes declared to be "Language-Sensitive" by this specification. Requirements regarding the content and interpretation of xml:lang are specified in <a href="#W3C.REC-xml-20040204">XML 1.0</a> [W3C.REC-xml-20040204], Section 2.12. </p><div id="rfc.figure.u.4"></div> <a name="rfc.iref.1"></a>  <a name="rfc.iref.2"></a>  <pre>
+<a href="#atom.documents">atomCommonAttributes</a> =
+   attribute xml:base { atomUri }?,
+   attribute xml:lang { atomLanguageTag }?,
+   undefinedAttribute*</pre> <p id="rfc.section.2.p.9">Atom is an extensible format. See <a href="#extending_atom" title="Extending Atom">Section 6</a> of this document for a full description of how Atom Documents can be extended.</p><p id="rfc.section.2.p.10">Atom Processors MAY keep state sourced from Atom Feed Documents and combine them with other Atom Feed Documents, in order to facilitate a contiguous view of the contents of a feed. The manner in which Atom Feed Documents are combined in order to reconstruct a feed (e.g., updating entries and metadata, dealing with missing entries) is out of the scope of this specification.</p><h1 id="rfc.section.3"><a href="#rfc.section.3">3.</a> Common Atom Constructs</h1><p id="rfc.section.3.p.1">Many of Atom's elements share a few common structures. This section defines those structures and their requirements for convenient reference by the appropriate element definitions.</p><p id="rfc.section.3.p.2">When an element is identified as being a particular kind of construct, it inherits the corresponding requirements from that construct's definition in this section.</p><p id="rfc.section.3.p.3">Note that there MUST NOT be any white space in a Date construct or in any IRI. Some XML-emitting implementations erroneously insert white space around values by default, and such implementations will emit invalid Atom Documents.</p><h2 id="rfc.section.3.1"><a href="#rfc.section.3.1">3.1</a> <a name="text.constructs" href="#text.constructs">Text Constructs</a></h2><p id="rfc.section.3.1.p.1">A Text construct contains human-readable text, usually in small quantities. The content of Text constructs is Language-Sensitive. </p><div id="rfc.figure.u.5"></div> <a name="rfc.iref.3"></a>  <a name="rfc.iref.4"></a>  <a name="rfc.iref.5"></a>  <a name="rfc.iref.6"></a>  <a name="rfc.iref.7"></a>  <a name="rfc.iref.8"></a>  <pre>
+<a href="#text.constructs">atomPlainTextConstruct</a> =
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   attribute type { "text" | "html" }?,
+   text
+
+<a href="#text.constructs">atomXHTMLTextConstruct</a> =
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   attribute type { "xhtml" },
+   xhtmlDiv
+
+<a href="#text.constructs">atomTextConstruct</a> = <a href="#text.constructs">atomPlainTextConstruct</a> | <a href="#text.constructs">atomXHTMLTextConstruct</a></pre><h3 id="rfc.section.3.1.1"><a href="#rfc.section.3.1.1">3.1.1</a> The "type" Attribute</h3><p id="rfc.section.3.1.1.p.1">Text constructs MAY have a "type" attribute. When present, the value MUST be one of "text", "html", or "xhtml". If the "type" attribute is not provided, Atom Processors MUST behave as though it were present with a value of "text". Unlike the <a href="#element.content">atom:content</a> element defined in <a href="#element.content" title='The "atom:content" Element'>Section 4.1.3</a>, MIME media types <a href="#MIMEREG" title="Media Type Specifications and Registration Procedures">[MIMEREG]</a> MUST NOT be used as values for the "type" attribute on Text constructs.</p><h4 id="rfc.section.3.1.1.1"><a href="#rfc.section.3.1.1.1">3.1.1.1</a> Text</h4><p id="rfc.section.3.1.1.1.p.1">Example <a href="#element.title">atom:title</a> with text content: </p><div id="rfc.figure.u.6"></div> <pre>
+...
+&lt;title type="text"&gt;
+  Less: &amp;lt;
+&lt;/title&gt;
+...	     </pre> <p id="rfc.section.3.1.1.1.p.2">If the value is "text", the content of the Text construct MUST NOT contain child elements. Such text is intended to be presented to humans in a readable fashion. Thus, Atom Processors MAY collapse white space (including line breaks) and display the text using typographic techniques such as justification and proportional fonts.</p><h4 id="rfc.section.3.1.1.2"><a href="#rfc.section.3.1.1.2">3.1.1.2</a> HTML</h4><p id="rfc.section.3.1.1.2.p.1">Example <a href="#element.title">atom:title</a> with HTML content: </p><div id="rfc.figure.u.7"></div> <pre>
+...
+&lt;title type="html"&gt;
+  Less: &amp;lt;em&gt; &amp;amp;lt; &amp;lt;/em&gt;
+&lt;/title&gt;
+...	     </pre> <p id="rfc.section.3.1.1.2.p.2">If the value of "type" is "html", the content of the Text construct MUST NOT contain child elements and SHOULD be suitable for handling as HTML <a href="#HTML" title="HTML 4.01 Specification">[HTML]</a>. Any markup within MUST be escaped; for example, "&lt;br&gt;" as "&amp;lt;br&gt;". HTML markup within SHOULD be such that it could validly appear directly within an HTML &lt;DIV&gt; element, after unescaping. Atom Processors that display such content MAY use that markup to aid in its display.</p><h4 id="rfc.section.3.1.1.3"><a href="#rfc.section.3.1.1.3">3.1.1.3</a> XHTML</h4><p id="rfc.section.3.1.1.3.p.1">Example <a href="#element.title">atom:title</a> with XHTML content: </p><div id="rfc.figure.u.8"></div> <pre>
+...
+&lt;title type="xhtml" xmlns:xhtml="http://www.w3.org/1999/xhtml"&gt;
+  &lt;xhtml:div&gt;
+    Less: &lt;xhtml:em&gt; &amp;lt; &lt;/xhtml:em&gt;
+  &lt;/xhtml:div&gt;
+&lt;/title&gt;
+...	     </pre> <p id="rfc.section.3.1.1.3.p.2">If the value of "type" is "xhtml", the content of the Text construct MUST be a single XHTML div element <a href="#XHTML" title="Modularization of XHTMLâ„¢">[XHTML]</a> and SHOULD be suitable for handling as XHTML. The XHTML div element itself MUST NOT be considered part of the content. Atom Processors that display the content MAY use the markup to aid in displaying it. The escaped versions of characters such as "&amp;" and "&gt;" represent those characters, not markup.<br><br></p><p id="rfc.section.3.1.1.3.p.3">Examples of valid XHTML content: </p><div id="rfc.figure.u.9"></div> <pre>
+...
+&lt;summary type="xhtml"&gt;
+   &lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;
+      This is &lt;b&gt;XHTML&lt;/b&gt; content.
+   &lt;/div&gt;
+&lt;/summary&gt;
+...
+&lt;summary type="xhtml"&gt;
+   &lt;xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml"&gt;
+      This is &lt;xhtml:b&gt;XHTML&lt;/xhtml:b&gt; content.
+   &lt;/xhtml:div&gt;
+&lt;/summary&gt; 
+...</pre> <p id="rfc.section.3.1.1.3.p.4">The following example assumes that the XHTML namespace has been bound to the "xh" prefix earlier in the document: </p><div id="rfc.figure.u.10"></div> <pre>
+...
+&lt;summary type="xhtml"&gt;
+   &lt;xh:div&gt;
+      This is &lt;xh:b&gt;XHTML&lt;/xh:b&gt; content.
+   &lt;/xh:div&gt;
+&lt;/summary&gt;
+...</pre> <h2 id="rfc.section.3.2"><a href="#rfc.section.3.2">3.2</a> <a name="atomPersonConstruct" href="#atomPersonConstruct">Person Constructs</a></h2><p id="rfc.section.3.2.p.1">A Person construct is an element that describes a person, corporation, or similar entity (hereafter, 'person'). </p><div id="rfc.figure.u.11"></div> <a name="rfc.iref.9"></a>  <a name="rfc.iref.10"></a>  <pre>
+<a href="#atomPersonConstruct">atomPersonConstruct</a> =
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (element <a href="#element.name">atom:name</a> { text }
+    &amp; element <a href="#element.uri">atom:uri</a> { atomUri }?
+    &amp; element <a href="#element.email">atom:email</a> { atomEmailAddress }?
+    &amp; extensionElement*)</pre><p id="rfc.section.3.2.p.2">This specification assigns no significance to the order of appearance of the child elements in a Person construct. Person constructs allow extension Metadata elements (see <a href="#extension" title="Extension Elements">Section 6.4</a>).</p><h3 id="rfc.section.3.2.1"><a href="#rfc.section.3.2.1">3.2.1</a> <a name="element.name" href="#element.name">The "atom:name" Element</a></h3><div id="rfc.iref.11"></div><div id="rfc.iref.12"></div><p id="rfc.section.3.2.1.p.1">The "<a href="#element.name">atom:name</a>" element's content conveys a human-readable name for the person. The content of <a href="#element.name">atom:name</a> is Language-Sensitive. Person constructs MUST contain exactly one "<a href="#element.name">atom:name</a>" element.</p><h3 id="rfc.section.3.2.2"><a href="#rfc.section.3.2.2">3.2.2</a> <a name="element.uri" href="#element.uri">The "atom:uri" Element</a></h3><div id="rfc.iref.13"></div><div id="rfc.iref.14"></div><p id="rfc.section.3.2.2.p.1">The "<a href="#element.uri">atom:uri</a>" element's content conveys an IRI associated with the person. Person constructs MAY contain an <a href="#element.uri">atom:uri</a> element, but MUST NOT contain more than one. The content of <a href="#element.uri">atom:uri</a> in a Person construct MUST be an IRI reference <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>.</p><h3 id="rfc.section.3.2.3"><a href="#rfc.section.3.2.3">3.2.3</a> <a name="element.email" href="#element.email">The "atom:email" Element</a></h3><div id="rfc.iref.15"></div><div id="rfc.iref.16"></div><p id="rfc.section.3.2.3.p.1">The "<a href="#element.email">atom:email</a>" element's content conveys an e-mail address associated with the person. Person constructs MAY contain an <a href="#element.email">atom:email</a> element, but MUST NOT contain more than one. Its content MUST conform to the "addr-spec" production in <a href="#RFC2822" title="Internet Message Format">[RFC2822]</a>.</p><h2 id="rfc.section.3.3"><a href="#rfc.section.3.3">3.3</a> <a name="date.constructs" href="#date.constructs">Date Constructs</a></h2><p id="rfc.section.3.3.p.1">A Date construct is an element whose content MUST conform to the "date-time" production in <a href="#RFC3339" title="Date and Time on the Internet: Timestamps">[RFC3339]</a>. In addition, an uppercase "T" character MUST be used to separate date and time, and an uppercase "Z" character MUST be present in the absence of a numeric time zone offset. </p><div id="rfc.figure.u.12"></div> <a name="rfc.iref.17"></a>  <a name="rfc.iref.18"></a>  <pre>
+<a href="#date.constructs">atomDateConstruct</a> =
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   xsd:dateTime</pre><p id="rfc.section.3.3.p.2">Such date values happen to be compatible with the following specifications: <a href="#ISO.8601.1988" title="Data elements and interchange formats - Information interchange - Representation of dates and times">[ISO.8601.1988]</a>, <a href="#W3C.NOTE-datetime-19980827" title="Date and Time Formats">[W3C.NOTE-datetime-19980827]</a>, and <a href="#W3C.REC-xmlschema-2-20041028" title="XML Schema Part 2: Datatypes Second Edition">[W3C.REC-xmlschema-2-20041028]</a>.</p><p id="rfc.section.3.3.p.3">Example Date constructs: </p><div id="rfc.figure.u.13"></div> <pre>
+&lt;updated&gt;2003-12-13T18:30:02Z&lt;/updated&gt;
+&lt;updated&gt;2003-12-13T18:30:02.25Z&lt;/updated&gt;
+&lt;updated&gt;2003-12-13T18:30:02+01:00&lt;/updated&gt;
+&lt;updated&gt;2003-12-13T18:30:02.25+01:00&lt;/updated&gt;
+</pre> <p id="rfc.section.3.3.p.4">Date values SHOULD be as accurate as possible. For example, it would be generally inappropriate for a publishing system to apply the same timestamp to several entries that were published during the course of a single day.</p><h1 id="rfc.section.4"><a href="#rfc.section.4">4.</a> Atom Element Definitions</h1><h2 id="rfc.section.4.1"><a href="#rfc.section.4.1">4.1</a> Container Elements</h2><h3 id="rfc.section.4.1.1"><a href="#rfc.section.4.1.1">4.1.1</a> <a name="element.feed" href="#element.feed">The "atom:feed" Element</a></h3><div id="rfc.iref.19"></div><div id="rfc.iref.20"></div><p id="rfc.section.4.1.1.p.1">The "atom:feed" element is the document (i.e., top-level) element of an Atom Feed Document, acting as a container for metadata and data associated with the feed. Its element children consist of metadata elements followed by zero or more <a href="#element.entry">atom:entry</a> child elements. </p><div id="rfc.figure.u.14"></div> <a name="rfc.iref.21"></a>  <a name="rfc.iref.22"></a>  <pre>
+<a href="#element.feed">atomFeed</a> =
+   element <a href="#element.feed">atom:feed</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      (<a href="#element.author">atomAuthor</a>*
+       &amp; <a href="#element.category">atomCategory</a>*
+       &amp; <a href="#element.contributor">atomContributor</a>*
+       &amp; <a href="#element.generator">atomGenerator</a>?
+       &amp; <a href="#element.icon">atomIcon</a>?
+       &amp; <a href="#element.id">atomId</a>
+       &amp; <a href="#element.link">atomLink</a>*
+       &amp; <a href="#element.logo">atomLogo</a>?
+       &amp; <a href="#element.rights">atomRights</a>?
+       &amp; <a href="#element.subtitle">atomSubtitle</a>?
+       &amp; <a href="#element.title">atomTitle</a>
+       &amp; <a href="#element.updated">atomUpdated</a>
+       &amp; extensionElement*),
+      <a href="#element.entry">atomEntry</a>*
+   }</pre><p id="rfc.section.4.1.1.p.2">This specification assigns no significance to the order of <a href="#element.entry">atom:entry</a> elements within the feed.</p><p id="rfc.section.4.1.1.p.3">The following child elements are defined by this specification (note that the presence of some of these elements is required):</p><p id="rfc.section.4.1.1.p.4"> </p><ul><li><a href="#element.feed">atom:feed</a> elements MUST contain one or more <a href="#element.author">atom:author</a> elements, unless all of the <a href="#element.feed">atom:feed</a> element's child <a href="#element.entry">atom:entry</a> elements contain at least one <a href="#element.author">atom:author</a> element.</li><li><a href="#element.feed">atom:feed</a> elements MAY contain any number of <a href="#element.category">atom:category</a> elements.</li><li><a href="#element.feed">atom:feed</a> elements MAY contain any number of <a href="#element.contributor">atom:contributor</a> elements.</li><li><a href="#element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#element.generator">atom:generator</a> element.</li><li><a href="#element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#element.icon">atom:icon</a> element.</li><li><a href="#element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#element.logo">atom:logo</a> element.</li><li><a href="#element.feed">atom:feed</a> elements MUST contain exactly one <a href="#element.id">atom:id</a> element.</li><li><a href="#element.feed">atom:feed</a> elements SHOULD contain one <a href="#element.link">atom:link</a> element with a rel attribute value of "self". This is the preferred URI for retrieving Atom Feed Documents representing this Atom feed.</li><li><a href="#element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#element.link">atom:link</a> element with a rel attribute value of "alternate" that has the same combination of type and hreflang attribute values.</li><li><a href="#element.feed">atom:feed</a> elements MAY contain additional <a href="#element.link">atom:link</a> elements beyond those described above.</li><li><a href="#element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#element.rights">atom:rights</a> element.</li><li><a href="#element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#element.subtitle">atom:subtitle</a> element.</li><li><a href="#element.feed">atom:feed</a> elements MUST contain exactly one <a href="#element.title">atom:title</a> element.</li><li><a href="#element.feed">atom:feed</a> elements MUST contain exactly one <a href="#element.updated">atom:updated</a> element.</li></ul><p id="rfc.section.4.1.1.p.5">If multiple <a href="#element.entry">atom:entry</a> elements with the same <a href="#element.id">atom:id</a> value appear in an Atom Feed Document, they represent the same entry. Their <a href="#element.updated">atom:updated</a> timestamps SHOULD be different. If an Atom Feed Document contains multiple entries with the same <a href="#element.id">atom:id</a>, Atom Processors MAY choose to display all of them or some subset of them. One typical behavior would be to display only the entry with the latest <a href="#element.updated">atom:updated</a> timestamp.</p><h4 id="rfc.section.4.1.1.1"><a href="#rfc.section.4.1.1.1">4.1.1.1</a> Providing Textual Content</h4><p id="rfc.section.4.1.1.1.p.1">Experience teaches that feeds that contain textual content are in general more useful than those that do not. Some applications (one example is full-text indexers) require a minimum amount of text or (X)HTML to function reliably and predictably. Feed producers should be aware of these issues. It is advisable that each <a href="#element.entry">atom:entry</a> element contain a non-empty <a href="#element.title">atom:title</a> element, a non-empty <a href="#element.content">atom:content</a> element when that element is present, and a non-empty <a href="#element.summary">atom:summary</a> element when the entry contains no <a href="#element.content">atom:content</a> element. However, the absence of <a href="#element.summary">atom:summary</a> is not an error, and Atom Processors MUST NOT fail to function correctly as a consequence of such an absence.</p><h3 id="rfc.section.4.1.2"><a href="#rfc.section.4.1.2">4.1.2</a> <a name="element.entry" href="#element.entry">The "atom:entry" Element</a></h3><div id="rfc.iref.23"></div><div id="rfc.iref.24"></div><p id="rfc.section.4.1.2.p.1">The "<a href="#element.entry">atom:entry</a>" element represents an individual entry, acting as a container for metadata and data associated with the entry. This element can appear as a child of the <a href="#element.feed">atom:feed</a> element, or it can appear as the document (i.e., top-level) element of a stand-alone Atom Entry Document. </p><div id="rfc.figure.u.15"></div> <a name="rfc.iref.25"></a>  <a name="rfc.iref.26"></a>  <pre>
+<a href="#element.entry">atomEntry</a> =
+   element <a href="#element.entry">atom:entry</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      (<a href="#element.author">atomAuthor</a>*
+       &amp; <a href="#element.category">atomCategory</a>*
+       &amp; <a href="#element.content">atomContent</a>?
+       &amp; <a href="#element.contributor">atomContributor</a>*
+       &amp; <a href="#element.id">atomId</a>
+       &amp; <a href="#element.link">atomLink</a>*
+       &amp; <a href="#element.published">atomPublished</a>?
+       &amp; <a href="#element.rights">atomRights</a>?
+       &amp; <a href="#element.source">atomSource</a>?
+       &amp; <a href="#element.summary">atomSummary</a>?
+       &amp; <a href="#element.title">atomTitle</a>
+       &amp; <a href="#element.updated">atomUpdated</a>
+       &amp; extensionElement*)
+   }</pre><p id="rfc.section.4.1.2.p.2">This specification assigns no significance to the order of appearance of the child elements of <a href="#element.entry">atom:entry</a>.</p><p id="rfc.section.4.1.2.p.3">The following child elements are defined by this specification (note that it requires the presence of some of these elements):</p><p id="rfc.section.4.1.2.p.4"> </p><ul><li><a href="#element.entry">atom:entry</a> elements MUST contain one or more <a href="#element.author">atom:author</a> elements, unless the <a href="#element.entry">atom:entry</a> contains an <a href="#element.source">atom:source</a> element that contains an <a href="#element.author">atom:author</a> element or, in an Atom Feed Document, the <a href="#element.feed">atom:feed</a> element contains an <a href="#element.author">atom:author</a> element itself.</li><li><a href="#element.entry">atom:entry</a> elements MAY contain any number of <a href="#element.category">atom:category</a> elements.</li><li><a href="#element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#element.content">atom:content</a> element.</li><li><a href="#element.entry">atom:entry</a> elements MAY contain any number of <a href="#element.contributor">atom:contributor</a> elements.</li><li><a href="#element.entry">atom:entry</a> elements MUST contain exactly one <a href="#element.id">atom:id</a> element.</li><li><a href="#element.entry">atom:entry</a> elements that contain no child <a href="#element.content">atom:content</a> element MUST contain at least one <a href="#element.link">atom:link</a> element with a rel attribute value of "alternate".</li><li><a href="#element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#element.link">atom:link</a> element with a rel attribute value of "alternate" that has the same combination of type and hreflang attribute values.</li><li><a href="#element.entry">atom:entry</a> elements MAY contain additional <a href="#element.link">atom:link</a> elements beyond those described above.</li><li><a href="#element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#element.published">atom:published</a> element.</li><li><a href="#element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#element.rights">atom:rights</a> element.</li><li><a href="#element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#element.source">atom:source</a> element.</li><li><a href="#element.entry">atom:entry</a> elements MUST contain an <a href="#element.summary">atom:summary</a> element in either of the following cases: <ul><li>the <a href="#element.entry">atom:entry</a> contains an <a href="#element.content">atom:content</a> that has a "src" attribute (and is thus empty).</li><li>the <a href="#element.entry">atom:entry</a> contains content that is encoded in Base64; i.e., the "type" attribute of <a href="#element.content">atom:content</a> is a MIME media type <a href="#MIMEREG" title="Media Type Specifications and Registration Procedures">[MIMEREG]</a>, but is not an XML media type <a href="#RFC3023" title="XML Media Types">[RFC3023]</a>, does not begin with "text/", and does not end with "/xml" or "+xml".</li></ul> </li><li><a href="#element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#element.summary">atom:summary</a> element.</li><li><a href="#element.entry">atom:entry</a> elements MUST contain exactly one <a href="#element.title">atom:title</a> element.</li><li><a href="#element.entry">atom:entry</a> elements MUST contain exactly one <a href="#element.updated">atom:updated</a> element.</li></ul><h3 id="rfc.section.4.1.3"><a href="#rfc.section.4.1.3">4.1.3</a> <a name="element.content" href="#element.content">The "atom:content" Element</a></h3><div id="rfc.iref.27"></div><div id="rfc.iref.28"></div><p id="rfc.section.4.1.3.p.1">The "<a href="#element.content">atom:content</a>" element either contains or links to the content of the entry. The content of <a href="#element.content">atom:content</a> is Language-Sensitive. </p><div id="rfc.figure.u.16"></div> <a name="rfc.iref.29"></a>  <a name="rfc.iref.30"></a>  <a name="rfc.iref.31"></a>  <a name="rfc.iref.32"></a>  <a name="rfc.iref.33"></a>  <a name="rfc.iref.34"></a>  <a name="rfc.iref.35"></a>  <a name="rfc.iref.36"></a>  <a name="rfc.iref.37"></a>  <a name="rfc.iref.38"></a>  <pre>
+<a href="#element.content">atomInlineTextContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { "text" | "html" }?,
+      (text)*
+   }
+
+<a href="#element.content">atomInlineXHTMLContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { "xhtml" },
+      xhtmlDiv
+   }
+
+<a href="#element.content">atomInlineOtherContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { atomMediaType }?,
+      (text|anyElement)*
+   }
+
+<a href="#element.content">atomOutOfLineContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { atomMediaType }?,
+      attribute src { atomUri },
+      empty
+   }
+
+<a href="#element.content">atomContent</a> = <a href="#element.content">atomInlineTextContent</a>
+ | <a href="#element.content">atomInlineXHTMLContent</a>
+ | <a href="#element.content">atomInlineOtherContent</a>
+ | <a href="#element.content">atomOutOfLineContent</a></pre><h4 id="rfc.section.4.1.3.1"><a href="#rfc.section.4.1.3.1">4.1.3.1</a> The "type" Attribute</h4><p id="rfc.section.4.1.3.1.p.1">On the <a href="#element.content">atom:content</a> element, the value of the "type" attribute MAY be one of "text", "html", or "xhtml". Failing that, it MUST conform to the syntax of a MIME media type, but MUST NOT be a composite type (see Section 4.2.6 of <a href="#MIMEREG" title="Media Type Specifications and Registration Procedures">[MIMEREG]</a>). If neither the type attribute nor the src attribute is provided, Atom Processors MUST behave as though the type attribute were present with a value of "text".</p><h4 id="rfc.section.4.1.3.2"><a href="#rfc.section.4.1.3.2">4.1.3.2</a> The "src" Attribute</h4><p id="rfc.section.4.1.3.2.p.1"><a href="#element.content">atom:content</a> MAY have a "src" attribute, whose value MUST be an IRI reference <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>. If the "src" attribute is present, <a href="#element.content">atom:content</a> MUST be empty. Atom Processors MAY use the IRI to retrieve the content and MAY choose to ignore remote content or to present it in a different manner than local content.</p><p id="rfc.section.4.1.3.2.p.2">If the "src" attribute is present, the "type" attribute SHOULD be provided and MUST be a MIME media type <a href="#MIMEREG" title="Media Type Specifications and Registration Procedures">[MIMEREG]</a>, rather than "text", "html", or "xhtml". The value is advisory; that is to say, when the corresponding URI (mapped from an IRI, if necessary) is dereferenced, if the server providing that content also provides a media type, the server-provided media type is authoritative.</p><h4 id="rfc.section.4.1.3.3"><a href="#rfc.section.4.1.3.3">4.1.3.3</a> Processing Model</h4><p id="rfc.section.4.1.3.3.p.1">Atom Documents MUST conform to the following rules. Atom Processors MUST interpret <a href="#element.content">atom:content</a> according to the first applicable rule.</p><p id="rfc.section.4.1.3.3.p.2"> </p><ol><li>If the value of "type" is "text", the content of <a href="#element.content">atom:content</a> MUST NOT contain child elements. Such text is intended to be presented to humans in a readable fashion. Thus, Atom Processors MAY collapse white space (including line breaks), and display the text using typographic techniques such as justification and proportional fonts.</li><li>If the value of "type" is "html", the content of <a href="#element.content">atom:content</a> MUST NOT contain child elements and SHOULD be suitable for handling as HTML <a href="#HTML" title="HTML 4.01 Specification">[HTML]</a>. The HTML markup MUST be escaped; for example, "&lt;br&gt;" as "&amp;lt;br&gt;". The HTML markup SHOULD be such that it could validly appear directly within an HTML &lt;DIV&gt; element. Atom Processors that display the content MAY use the markup to aid in displaying it.</li><li>If the value of "type" is "xhtml", the content of <a href="#element.content">atom:content</a> MUST be a single XHTML div element <a href="#XHTML" title="Modularization of XHTMLâ„¢">[XHTML]</a> and SHOULD be suitable for handling as XHTML. The XHTML div element itself MUST NOT be considered part of the content. Atom Processors that display the content MAY use the markup to aid in displaying it. The escaped versions of characters such as "&amp;" and "&gt;" represent those characters, not markup.</li><li>If the value of "type" is an XML media type <a href="#RFC3023" title="XML Media Types">[RFC3023]</a> or ends with "+xml" or "/xml" (case insensitive), the content of <br><a href="#element.content">atom:content</a> MAY include child elements and SHOULD be suitable for handling as the indicated media type. If the "src" attribute is not provided, this would normally mean that the "<a href="#element.content">atom:content</a>" element would contain a single child element that would serve as the root element of the XML document of the indicated type.</li><li>If the value of "type" begins with "text/" (case insensitive), the content of <a href="#element.content">atom:content</a> MUST NOT contain child elements.</li><li>For all other values of "type", the content of <a href="#element.content">atom:content</a> MUST be a valid Base64 encoding, as described in <a href="#RFC3548" title="The Base16, Base32, and Base64 Data Encodings">[RFC3548]</a>, section 3. When decoded, it SHOULD be suitable for handling as the indicated media type. In this case, the characters in the Base64 encoding MAY be preceded and followed in the <a href="#element.content">atom:content</a> element by white space, and lines are separated by a single newline (U+000A) character.</li></ol><h4 id="rfc.section.4.1.3.4"><a href="#rfc.section.4.1.3.4">4.1.3.4</a> Examples</h4><p id="rfc.section.4.1.3.4.p.1">XHTML inline:</p><div id="rfc.figure.u.17"></div> <pre>
+...
+&lt;content type="xhtml"&gt;
+   &lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;
+      This is &lt;b&gt;XHTML&lt;/b&gt; content.
+   &lt;/div&gt;
+&lt;/content&gt;
+...
+&lt;content type="xhtml"&gt;
+   &lt;xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml"&gt;
+      This is &lt;xhtml:b&gt;XHTML&lt;/xhtml:b&gt; content.
+   &lt;/xhtml:div&gt;
+&lt;/content&gt; 
+...</pre> <p id="rfc.section.4.1.3.4.p.3">The following example assumes that the XHTML namespace has been bound to the "xh" prefix earlier in the document: </p><div id="rfc.figure.u.18"></div> <pre>
+...
+&lt;content type="xhtml"&gt;
+   &lt;xh:div&gt;
+      This is &lt;xh:b&gt;XHTML&lt;/xh:b&gt; content.
+   &lt;/xh:div&gt;
+&lt;/content&gt;
+...</pre> <h2 id="rfc.section.4.2"><a href="#rfc.section.4.2">4.2</a> Metadata Elements</h2><h3 id="rfc.section.4.2.1"><a href="#rfc.section.4.2.1">4.2.1</a> <a name="element.author" href="#element.author">The "atom:author" Element</a></h3><div id="rfc.iref.39"></div><div id="rfc.iref.40"></div><p id="rfc.section.4.2.1.p.1">The "<a href="#element.author">atom:author</a>" element is a Person construct that indicates the author of the entry or feed. </p><div id="rfc.figure.u.19"></div> <a name="rfc.iref.41"></a>  <a name="rfc.iref.42"></a>  <pre>
+<a href="#element.author">atomAuthor</a> = element <a href="#element.author">atom:author</a> { <a href="#atomPersonConstruct">atomPersonConstruct</a> }</pre><p id="rfc.section.4.2.1.p.2">If an <a href="#element.entry">atom:entry</a> element does not contain <a href="#element.author">atom:author</a> elements, then the <a href="#element.author">atom:author</a> elements of the contained <a href="#element.source">atom:source</a> element are considered to apply. In an Atom Feed Document, the <a href="#element.author">atom:author</a> elements of the containing <a href="#element.feed">atom:feed</a> element are considered to apply to the entry if there are no <a href="#element.author">atom:author</a> elements in the locations described above.</p><h3 id="rfc.section.4.2.2"><a href="#rfc.section.4.2.2">4.2.2</a> <a name="element.category" href="#element.category">The "atom:category" Element</a></h3><div id="rfc.iref.43"></div><div id="rfc.iref.44"></div><p id="rfc.section.4.2.2.p.1">The "<a href="#element.category">atom:category</a>" element conveys information about a category associated with an entry or feed. This specification assigns no meaning to the content (if any) of this element. </p><div id="rfc.figure.u.20"></div> <a name="rfc.iref.45"></a>  <a name="rfc.iref.46"></a>  <pre>
+<a href="#element.category">atomCategory</a> =
+   element <a href="#element.category">atom:category</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute term { text },
+      attribute scheme { atomUri }?,
+      attribute label { text }?,
+      undefinedContent
+   }</pre><h4 id="rfc.section.4.2.2.1"><a href="#rfc.section.4.2.2.1">4.2.2.1</a> The "term" Attribute</h4><p id="rfc.section.4.2.2.1.p.1">The "term" attribute is a string that identifies the category to which the entry or feed belongs. Category elements MUST have a "term" attribute.</p><h4 id="rfc.section.4.2.2.2"><a href="#rfc.section.4.2.2.2">4.2.2.2</a> The "scheme" Attribute</h4><p id="rfc.section.4.2.2.2.p.1">The "scheme" attribute is an IRI that identifies a categorization scheme. Category elements MAY have a "scheme" attribute.</p><h4 id="rfc.section.4.2.2.3"><a href="#rfc.section.4.2.2.3">4.2.2.3</a> The "label" Attribute</h4><p id="rfc.section.4.2.2.3.p.1">The "label" attribute provides a human-readable label for display in end-user applications. The content of the "label" attribute is Language-Sensitive. Entities such as "&amp;amp;" and "&amp;lt;" represent their corresponding characters ("&amp;" and "&lt;", respectively), not markup. Category elements MAY have a "label" attribute.</p><h3 id="rfc.section.4.2.3"><a href="#rfc.section.4.2.3">4.2.3</a> <a name="element.contributor" href="#element.contributor">The "atom:contributor" Element</a></h3><div id="rfc.iref.47"></div><div id="rfc.iref.48"></div><p id="rfc.section.4.2.3.p.1">The "<a href="#element.contributor">atom:contributor</a>" element is a Person construct that indicates a person or other entity who contributed to the entry or feed. </p><div id="rfc.figure.u.21"></div> <a name="rfc.iref.49"></a>  <a name="rfc.iref.50"></a>  <pre>
+<a href="#element.contributor">atomContributor</a> = element <a href="#element.contributor">atom:contributor</a> { <a href="#atomPersonConstruct">atomPersonConstruct</a> }</pre><h3 id="rfc.section.4.2.4"><a href="#rfc.section.4.2.4">4.2.4</a> <a name="element.generator" href="#element.generator">The "atom:generator" Element</a></h3><div id="rfc.iref.51"></div><div id="rfc.iref.52"></div><p id="rfc.section.4.2.4.p.1">The "<a href="#element.generator">atom:generator</a>" element's content identifies the agent used to generate a feed, for debugging and other purposes. </p><div id="rfc.figure.u.22"></div> <a name="rfc.iref.53"></a>  <a name="rfc.iref.54"></a>  <pre>
+<a href="#element.generator">atomGenerator</a> = element <a href="#element.generator">atom:generator</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   attribute uri { atomUri }?,
+   attribute version { text }?,
+   text
+}</pre><p id="rfc.section.4.2.4.p.2">The content of this element, when present, MUST be a string that is a human-readable name for the generating agent. Entities such as "&amp;amp;" and "&amp;lt;" represent their corresponding characters ("&amp;" and "&lt;" respectively), not markup.</p><p id="rfc.section.4.2.4.p.3">The <a href="#element.generator">atom:generator</a> element MAY have a "uri" attribute whose value MUST be an IRI reference <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>. When dereferenced, the resulting URI (mapped from an IRI, if necessary) SHOULD produce a representation that is relevant to that agent.</p><p id="rfc.section.4.2.4.p.4">The <a href="#element.generator">atom:generator</a> element MAY have a "version" attribute that indicates the version of the generating agent.</p><h3 id="rfc.section.4.2.5"><a href="#rfc.section.4.2.5">4.2.5</a> <a name="element.icon" href="#element.icon">The "atom:icon" Element</a></h3><div id="rfc.iref.55"></div><div id="rfc.iref.56"></div><p id="rfc.section.4.2.5.p.1">The "<a href="#element.icon">atom:icon</a>" element's content is an IRI reference <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a> that identifies an image that provides iconic visual identification for a feed. </p><div id="rfc.figure.u.23"></div> <a name="rfc.iref.57"></a>  <a name="rfc.iref.58"></a>  <pre>
+<a href="#element.icon">atomIcon</a> = element <a href="#element.icon">atom:icon</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (atomUri)
+}</pre> <p id="rfc.section.4.2.5.p.2">The image SHOULD have an aspect ratio of one (horizontal) to one (vertical) and SHOULD be suitable for presentation at a small size.</p><h3 id="rfc.section.4.2.6"><a href="#rfc.section.4.2.6">4.2.6</a> <a name="element.id" href="#element.id">The "atom:id" Element</a></h3><div id="rfc.iref.59"></div><div id="rfc.iref.60"></div><p id="rfc.section.4.2.6.p.1">The "<a href="#element.id">atom:id</a>" element conveys a permanent, universally unique identifier for an entry or feed. </p><div id="rfc.figure.u.24"></div> <a name="rfc.iref.61"></a>  <a name="rfc.iref.62"></a>  <pre>
+<a href="#element.id">atomId</a> = element <a href="#element.id">atom:id</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (atomUri)
+}</pre><p id="rfc.section.4.2.6.p.2">Its content MUST be an IRI, as defined by <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>. Note that the definition of "IRI" excludes relative references. Though the IRI might use a dereferencable scheme, Atom Processors MUST NOT assume it can be dereferenced.</p><p id="rfc.section.4.2.6.p.3">When an Atom Document is relocated, migrated, syndicated, republished, exported, or imported, the content of its <a href="#element.id">atom:id</a> element MUST NOT change. Put another way, an <a href="#element.id">atom:id</a> element pertains to all instantiations of a particular Atom entry or feed; revisions retain the same content in their <a href="#element.id">atom:id</a> elements. It is suggested that the <a href="#element.id">atom:id</a> element be stored along with the associated resource.</p><p id="rfc.section.4.2.6.p.4">The content of an <a href="#element.id">atom:id</a> element MUST be created in a way that assures uniqueness.</p><p id="rfc.section.4.2.6.p.5">Because of the risk of confusion between IRIs that would be equivalent if they were mapped to URIs and dereferenced, the following normalization strategy SHOULD be applied when generating <a href="#element.id">atom:id</a> elements:</p><p id="rfc.section.4.2.6.p.6"> </p><ul><li>Provide the scheme in lowercase characters.</li><li>Provide the host, if any, in lowercase characters.</li><li>Only perform percent-encoding where it is essential.</li><li>Use uppercase A through F characters when percent-encoding.</li><li>Prevent dot-segments from appearing in paths.</li><li>For schemes that define a default authority, use an empty authority if the default is desired.</li><li>For schemes that define an empty path to be equivalent to a path of "/", use "/".</li><li>For schemes that define a port, use an empty port if the default is desired.</li><li>Preserve empty fragment identifiers and queries.</li><li>Ensure that all components of the IRI are appropriately character normalized, e.g., by using NFC or NFKC.</li></ul><h4 id="rfc.section.4.2.6.1"><a href="#rfc.section.4.2.6.1">4.2.6.1</a> <a name="idCompare" href="#idCompare">Comparing atom:id</a></h4><p id="rfc.section.4.2.6.1.p.1">Instances of <a href="#element.id">atom:id</a> elements can be compared to determine whether an entry or feed is the same as one seen before. Processors MUST compare <a href="#element.id">atom:id</a> elements on a character-by-character basis (in a case-sensitive fashion). Comparison operations MUST be based solely on the IRI character strings and MUST NOT rely on dereferencing the IRIs or URIs mapped from them.</p><p id="rfc.section.4.2.6.1.p.2">As a result, two IRIs that resolve to the same resource but are not character-for-character identical will be considered different for the purposes of identifier comparison.</p><p id="rfc.section.4.2.6.1.p.3">For example, these are four distinct identifiers, despite the fact that they differ only in case:</p><p id="rfc.section.4.2.6.1.p.4"> </p><dl><dd style="margin-top: .5em">http://www.example.org/thing</dd><dd style="margin-top: .5em">http://www.example.org/Thing</dd><dd style="margin-top: .5em">http://www.EXAMPLE.org/thing</dd><dd style="margin-top: .5em">HTTP://www.example.org/thing</dd></dl><p id="rfc.section.4.2.6.1.p.5">Likewise, these are three distinct identifiers, because IRI %-escaping is significant for the purposes of comparison:</p><p id="rfc.section.4.2.6.1.p.6"> </p><dl><dd style="margin-top: .5em">http://www.example.com/~bob</dd><dd style="margin-top: .5em">http://www.example.com/%7ebob</dd><dd style="margin-top: .5em">http://www.example.com/%7Ebob</dd></dl><h3 id="rfc.section.4.2.7"><a href="#rfc.section.4.2.7">4.2.7</a> <a name="element.link" href="#element.link">The "atom:link" Element</a></h3><div id="rfc.iref.63"></div><div id="rfc.iref.64"></div><p id="rfc.section.4.2.7.p.1">The "<a href="#element.link">atom:link</a>" element defines a reference from an entry or feed to a Web resource. This specification assigns no meaning to the content (if any) of this element. </p><div id="rfc.figure.u.25"></div> <a name="rfc.iref.65"></a>  <a name="rfc.iref.66"></a>  <pre>
+<a href="#element.link">atomLink</a> =
+   element <a href="#element.link">atom:link</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute href { atomUri },
+      attribute rel { atomNCName | atomUri }?,
+      attribute type { atomMediaType }?,
+      attribute hreflang { atomLanguageTag }?,
+      attribute title { text }?,
+      attribute length { text }?,
+      undefinedContent
+   }</pre><h4 id="rfc.section.4.2.7.1"><a href="#rfc.section.4.2.7.1">4.2.7.1</a> The "href" Attribute</h4><p id="rfc.section.4.2.7.1.p.1">The "href" attribute contains the link's IRI. <a href="#element.link">atom:link</a> elements MUST have an href attribute, whose value MUST be a IRI reference <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>.</p><h4 id="rfc.section.4.2.7.2"><a href="#rfc.section.4.2.7.2">4.2.7.2</a> <a name="rel_attribute" href="#rel_attribute">The "rel" Attribute</a></h4><p id="rfc.section.4.2.7.2.p.1"><a href="#element.link">atom:link</a> elements MAY have a "rel" attribute that indicates the link relation type. If the "rel" attribute is not present, the link element MUST be interpreted as if the link relation type is "alternate".</p><p id="rfc.section.4.2.7.2.p.2">The value of "rel" MUST be a string that is non-empty and matches either the "isegment-nz-nc" or the "IRI" production in <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>. Note that use of a relative reference other than a simple name is not allowed. If a name is given, implementations MUST consider the link relation type equivalent to the same name registered within the IANA Registry of Link Relations (<a href="#IANA" title="IANA Considerations">Section 7</a>), and thus to the IRI that would be obtained by appending the value of the rel attribute to the string "http://www.iana.org/assignments/relation/". The value of "rel" describes the meaning of the link, but does not impose any behavioral requirements on Atom Processors.</p><p id="rfc.section.4.2.7.2.p.3">This document defines five initial values for the Registry of Link Relations: </p><ol><li>The value "alternate" signifies that the IRI in the value of the href attribute identifies an alternate version of the resource described by the containing element.</li><li>The value "related" signifies that the IRI in the value of the href attribute identifies a resource related to the resource described by the containing element. For example, the feed for a site that discusses the performance of the search engine at "http://search.example.com" might contain, as a child of <a href="#element.feed">atom:feed</a>: <div id="rfc.figure.u.26"></div> <pre>
+    &lt;link rel="related" href="http://search.example.com/"/&gt;
+</pre> An identical link might appear as a child of any <a href="#element.entry">atom:entry</a> whose content contains a discussion of that same search engine.</li><li>The value "self" signifies that the IRI in the value of the href attribute identifies a resource equivalent to the containing element.</li><li>The value "enclosure" signifies that the IRI in the value of the href attribute identifies a related resource that is potentially large in size and might require special handling. For <a href="#element.link">atom:link</a> elements with rel="enclosure", the length attribute SHOULD be provided.</li><li>The value "via" signifies that the IRI in the value of the href attribute identifies a resource that is the source of the information provided in the containing element.</li></ol><h4 id="rfc.section.4.2.7.3"><a href="#rfc.section.4.2.7.3">4.2.7.3</a> The "type" Attribute</h4><p id="rfc.section.4.2.7.3.p.1">On the link element, the "type" attribute's value is an advisory media type: it is a hint about the type of the representation that is expected to be returned when the value of the href attribute is dereferenced. Note that the type attribute does not override the actual media type returned with the representation. Link elements MAY have a type attribute, whose value MUST conform to the syntax of a MIME media type <a href="#MIMEREG" title="Media Type Specifications and Registration Procedures">[MIMEREG]</a>.</p><h4 id="rfc.section.4.2.7.4"><a href="#rfc.section.4.2.7.4">4.2.7.4</a> The "hreflang" Attribute</h4><p id="rfc.section.4.2.7.4.p.1">The "hreflang" attribute's content describes the language of the resource pointed to by the href attribute. When used together with the rel="alternate", it implies a translated version of the entry. Link elements MAY have an hreflang attribute, whose value MUST be a language tag <a href="#RFC3066" title="Tags for the Identification of Languages">[RFC3066]</a>.</p><h4 id="rfc.section.4.2.7.5"><a href="#rfc.section.4.2.7.5">4.2.7.5</a> The "title" Attribute</h4><p id="rfc.section.4.2.7.5.p.1">The "title" attribute conveys human-readable information about the link. The content of the "title" attribute is Language-Sensitive. Entities such as "&amp;amp;" and "&amp;lt;" represent their corresponding characters ("&amp;" and "&lt;", respectively), not markup. Link elements MAY have a title attribute.</p><h4 id="rfc.section.4.2.7.6"><a href="#rfc.section.4.2.7.6">4.2.7.6</a> The "length" Attribute</h4><p id="rfc.section.4.2.7.6.p.1">The "length" attribute indicates an advisory length of the linked content in octets; it is a hint about the content length of the representation returned when the IRI in the href attribute is mapped to a URI and dereferenced. Note that the length attribute does not override the actual content length of the representation as reported by the underlying protocol. Link elements MAY have a length attribute.</p><h3 id="rfc.section.4.2.8"><a href="#rfc.section.4.2.8">4.2.8</a> <a name="element.logo" href="#element.logo">The "atom:logo" Element</a></h3><div id="rfc.iref.67"></div><div id="rfc.iref.68"></div><p id="rfc.section.4.2.8.p.1">The "<a href="#element.logo">atom:logo</a>" element's content is an IRI reference <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a> that identifies an image that provides visual identification for a feed. </p><div id="rfc.figure.u.27"></div> <a name="rfc.iref.69"></a>  <a name="rfc.iref.70"></a>  <pre>
+<a href="#element.logo">atomLogo</a> = element <a href="#element.logo">atom:logo</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (atomUri)
+}</pre><p id="rfc.section.4.2.8.p.2">The image SHOULD have an aspect ratio of 2 (horizontal) to 1 (vertical).</p><h3 id="rfc.section.4.2.9"><a href="#rfc.section.4.2.9">4.2.9</a> <a name="element.published" href="#element.published">The "atom:published" Element</a></h3><div id="rfc.iref.71"></div><div id="rfc.iref.72"></div><p id="rfc.section.4.2.9.p.1">The "<a href="#element.published">atom:published</a>" element is a Date construct indicating an instant in time associated with an event early in the life cycle of the entry. </p><div id="rfc.figure.u.28"></div> <a name="rfc.iref.73"></a>  <a name="rfc.iref.74"></a>  <pre>
+<a href="#element.published">atomPublished</a> = element <a href="#element.published">atom:published</a> { <a href="#date.constructs">atomDateConstruct</a>}</pre><p id="rfc.section.4.2.9.p.2">Typically, <a href="#element.published">atom:published</a> will be associated with the initial creation or first availability of the resource.</p><h3 id="rfc.section.4.2.10"><a href="#rfc.section.4.2.10">4.2.10</a> <a name="element.rights" href="#element.rights">The "atom:rights" Element</a></h3><div id="rfc.iref.75"></div><div id="rfc.iref.76"></div><p id="rfc.section.4.2.10.p.1">The "<a href="#element.rights">atom:rights</a>" element is a Text construct that conveys information about rights held in and over an entry or feed. </p><div id="rfc.figure.u.29"></div> <a name="rfc.iref.77"></a>  <a name="rfc.iref.78"></a>  <pre>
+<a href="#element.rights">atomRights</a> = element <a href="#element.rights">atom:rights</a> { <a href="#text.constructs">atomTextConstruct</a> }</pre><p id="rfc.section.4.2.10.p.2">The <a href="#element.rights">atom:rights</a> element SHOULD NOT be used to convey machine-readable licensing information.</p><p id="rfc.section.4.2.10.p.3">If an <a href="#element.entry">atom:entry</a> element does not contain an <a href="#element.rights">atom:rights</a> element, then the <a href="#element.rights">atom:rights</a> element of the containing <a href="#element.feed">atom:feed</a> element, if present, is considered to apply to the entry.</p><h3 id="rfc.section.4.2.11"><a href="#rfc.section.4.2.11">4.2.11</a> <a name="element.source" href="#element.source">The "atom:source" Element</a></h3><div id="rfc.iref.79"></div><div id="rfc.iref.80"></div><p id="rfc.section.4.2.11.p.1">If an <a href="#element.entry">atom:entry</a> is copied from one feed into another feed, then the source <a href="#element.feed">atom:feed</a>'s metadata (all child elements of <a href="#element.feed">atom:feed</a> other than the <a href="#element.entry">atom:entry</a> elements) MAY be preserved within the copied entry by adding an <a href="#element.source">atom:source</a> child element, if it is not already present in the entry, and including some or all of the source feed's Metadata elements as the <a href="#element.source">atom:source</a> element's children. Such metadata SHOULD be preserved if the source <a href="#element.feed">atom:feed</a> contains any of the child elements <a href="#element.author">atom:author</a>, <a href="#element.contributor">atom:contributor</a>, <a href="#element.rights">atom:rights</a>, or <a href="#element.category">atom:category</a> and those child elements are not present in the source <a href="#element.entry">atom:entry</a>. </p><div id="rfc.figure.u.30"></div> <a name="rfc.iref.81"></a>  <a name="rfc.iref.82"></a>  <pre>
+<a href="#element.source">atomSource</a> =
+   element <a href="#element.source">atom:source</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      (<a href="#element.author">atomAuthor</a>*
+       &amp; <a href="#element.category">atomCategory</a>*
+       &amp; <a href="#element.contributor">atomContributor</a>*
+       &amp; <a href="#element.generator">atomGenerator</a>?
+       &amp; <a href="#element.icon">atomIcon</a>?
+       &amp; <a href="#element.id">atomId</a>?
+       &amp; <a href="#element.link">atomLink</a>*
+       &amp; <a href="#element.logo">atomLogo</a>?
+       &amp; <a href="#element.rights">atomRights</a>?
+       &amp; <a href="#element.subtitle">atomSubtitle</a>?
+       &amp; <a href="#element.title">atomTitle</a>?
+       &amp; <a href="#element.updated">atomUpdated</a>?
+       &amp; extensionElement*)
+   }</pre><p id="rfc.section.4.2.11.p.2">The <a href="#element.source">atom:source</a> element is designed to allow the aggregation of entries from different feeds while retaining information about an entry's source feed. For this reason, Atom Processors that are performing such aggregation SHOULD include at least the required feed-level Metadata elements (<a href="#element.id">atom:id</a>, <a href="#element.title">atom:title</a>, and <a href="#element.updated">atom:updated</a>) in the <a href="#element.source">atom:source</a> element.</p><h3 id="rfc.section.4.2.12"><a href="#rfc.section.4.2.12">4.2.12</a> <a name="element.subtitle" href="#element.subtitle">The "atom:subtitle" Element</a></h3><div id="rfc.iref.83"></div><div id="rfc.iref.84"></div><p id="rfc.section.4.2.12.p.1">The "<a href="#element.subtitle">atom:subtitle</a>" element is a Text construct that conveys a human-readable description or subtitle for a feed. </p><div id="rfc.figure.u.31"></div> <a name="rfc.iref.85"></a>  <a name="rfc.iref.86"></a>  <pre>
+<a href="#element.subtitle">atomSubtitle</a> = element <a href="#element.subtitle">atom:subtitle</a> { <a href="#text.constructs">atomTextConstruct</a> }</pre><h3 id="rfc.section.4.2.13"><a href="#rfc.section.4.2.13">4.2.13</a> <a name="element.summary" href="#element.summary">The "atom:summary" Element</a></h3><div id="rfc.iref.87"></div><div id="rfc.iref.88"></div><p id="rfc.section.4.2.13.p.1">The "<a href="#element.summary">atom:summary</a>" element is a Text construct that conveys a short summary, abstract, or excerpt of an entry. </p><div id="rfc.figure.u.32"></div> <pre>
+<a href="#element.summary">atomSummary</a> = element <a href="#element.summary">atom:summary</a> { <a href="#text.constructs">atomTextConstruct</a> }</pre><p id="rfc.section.4.2.13.p.2">It is not advisable for the <a href="#element.summary">atom:summary</a> element to duplicate <a href="#element.title">atom:title</a> or <a href="#element.content">atom:content</a> because Atom Processors might assume there is a useful summary when there is none.</p><h3 id="rfc.section.4.2.14"><a href="#rfc.section.4.2.14">4.2.14</a> <a name="element.title" href="#element.title">The "atom:title" Element</a></h3><div id="rfc.iref.89"></div><div id="rfc.iref.90"></div><p id="rfc.section.4.2.14.p.1">The "<a href="#element.title">atom:title</a>" element is a Text construct that conveys a human-readable title for an entry or feed. </p><div id="rfc.figure.u.33"></div> <a name="rfc.iref.91"></a>  <a name="rfc.iref.92"></a>  <pre>
+<a href="#element.title">atomTitle</a> = element <a href="#element.title">atom:title</a> { <a href="#text.constructs">atomTextConstruct</a> }</pre><h3 id="rfc.section.4.2.15"><a href="#rfc.section.4.2.15">4.2.15</a> <a name="element.updated" href="#element.updated">The "atom:updated" Element</a></h3><div id="rfc.iref.93"></div><div id="rfc.iref.94"></div><p id="rfc.section.4.2.15.p.1">The "<a href="#element.updated">atom:updated</a>" element is a Date construct indicating the most recent instant in time when an entry or feed was modified in a way the publisher considers significant. Therefore, not all modifications necessarily result in a changed <a href="#element.updated">atom:updated</a> value. </p><div id="rfc.figure.u.34"></div> <a name="rfc.iref.95"></a>  <a name="rfc.iref.96"></a>  <pre>
+<a href="#element.updated">atomUpdated</a> = element <a href="#element.updated">atom:updated</a> { <a href="#date.constructs">atomDateConstruct</a>}</pre><p id="rfc.section.4.2.15.p.2">Publishers MAY change the value of this element over time.</p><h1 id="rfc.section.5"><a href="#rfc.section.5">5.</a> Securing Atom Documents</h1><p id="rfc.section.5.p.1">Because Atom is an XML-based format, existing XML security mechanisms can be used to secure its content.</p><p id="rfc.section.5.p.2">Producers of feeds and/or entries, and intermediaries who aggregate feeds and/or entries, may have sound reasons for signing and/or encrypting otherwise-unprotected content. For example, a merchant might digitally sign a message that contains a discount coupon for its products. A bank that uses Atom to deliver customer statements is very likely to want to sign and encrypt those messages to protect their customers' financial information and to assure the customer of their authenticity. Intermediaries may want to encrypt aggregated feeds so that a passive observer cannot tell what topics the recipient is interested in. Of course, many other examples exist as well.</p><p id="rfc.section.5.p.3">The algorithm requirements in this section pertain to the Atom Processor. They require that a recipient, at a minimum, be able to handle messages that use the specified cryptographic algorithms. These requirements do not limit the algorithms that the sender can choose.</p><h2 id="rfc.section.5.1"><a href="#rfc.section.5.1">5.1</a> Digital Signatures</h2><p id="rfc.section.5.1.p.1">The root of an Atom Document (i.e., <a href="#element.feed">atom:feed</a> in an Atom Feed Document, <a href="#element.entry">atom:entry</a> in an Atom Entry Document) or any <a href="#element.entry">atom:entry</a> element MAY have an Enveloped Signature, as described by <a href="#W3C.REC-xmldsig-core-20020212">XML-Signature and Syntax Processing</a> [W3C.REC-xmldsig-core-20020212].</p><p id="rfc.section.5.1.p.2">Atom Processors MUST NOT reject an Atom Document containing such a signature because they are not capable of verifying it; they MUST continue processing and MAY inform the user of their failure to validate the signature.</p><p id="rfc.section.5.1.p.3">In other words, the presence of an element with the namespace URI "http://www.w3.org/2000/09/xmldsig#" and a local name of "Signature" as a child of the document element MUST NOT cause an Atom Processor to fail merely because of its presence.</p><p id="rfc.section.5.1.p.4">Other elements in an Atom Document MUST NOT be signed unless their definitions explicitly specify such a capability.</p><p id="rfc.section.5.1.p.5">Section 6.5.1 of <a href="#W3C.REC-xmldsig-core-20020212" title="XML-Signature Syntax and Processing">[W3C.REC-xmldsig-core-20020212]</a> requires support for Canonical XML <a href="#W3C.REC-xml-c14n-20010315" title="Canonical XML Version 1.0">[W3C.REC-xml-c14n-20010315]</a>. However, many implementers do not use it because signed XML documents enclosed in other XML documents have their signatures broken. Thus, Atom Processors that verify signed Atom Documents MUST be able to canonicalize with the exclusive XML canonicalization method identified by the URI "http://www.w3.org/2001/10/xml-exc-c14n#", as specified in Exclusive XML Canonicalization <a href="#W3C.REC-xml-exc-c14n-20020718" title="Exclusive XML Canonicalization Version 1.0">[W3C.REC-xml-exc-c14n-20020718]</a>.</p><p id="rfc.section.5.1.p.6">Intermediaries such as aggregators may need to add an <a href="#element.source">atom:source</a> element to an entry that does not contain its own <a href="#element.source">atom:source</a> element. If such an entry is signed, the addition will break the signature. Thus, a publisher of individually-signed entries should strongly consider adding an <a href="#element.source">atom:source</a> element to those entries before signing them. Implementers should also be aware of the issues concerning the use of markup in the "xml:" namespace as it interacts with canonicalization.</p><p id="rfc.section.5.1.p.7">Section 4.4.2 of <a href="#W3C.REC-xmldsig-core-20020212" title="XML-Signature Syntax and Processing">[W3C.REC-xmldsig-core-20020212]</a> requires support for DSA signatures and recommends support for RSA signatures. However, because of the much greater popularity in the market of RSA versus DSA, Atom Processors that verify signed Atom Documents MUST be able to verify RSA signatures, but do not need be able to verify DSA signatures. Due to security issues that can arise if the keying material for message authentication code (MAC) authentication is not handled properly, Atom Documents SHOULD NOT use MACs for signatures.</p><h2 id="rfc.section.5.2"><a href="#rfc.section.5.2">5.2</a> Encryption</h2><p id="rfc.section.5.2.p.1">The root of an Atom Document (i.e., <a href="#element.feed">atom:feed</a> in an Atom Feed Document, <a href="#element.entry">atom:entry</a> in an Atom Entry Document) MAY be encrypted, using the mechanisms described by <a href="#W3C.REC-xmlenc-core-20021210">XML Encryption Syntax and Processing</a> [W3C.REC-xmlenc-core-20021210].</p><p id="rfc.section.5.2.p.2">Section 5.1 of <a href="#W3C.REC-xmlenc-core-20021210" title="XML Encryption Syntax and Processing">[W3C.REC-xmlenc-core-20021210]</a> requires support of TripleDES, AES-128, and AES-256. Atom Processors that decrypt Atom Documents MUST be able to decrypt with AES-128 in Cipher Block Chaining (CBC) mode.</p><p id="rfc.section.5.2.p.3">Encryption based on <a href="#W3C.REC-xmlenc-core-20021210" title="XML Encryption Syntax and Processing">[W3C.REC-xmlenc-core-20021210]</a> does not ensure integrity of the original document. There are known cryptographic attacks where someone who cannot decrypt a message can still change bits in a way where part or all the decrypted message makes sense but has a different meaning. Thus, Atom Processors that decrypt Atom Documents SHOULD check the integrity of the decrypted document by verifying the hash in the signature (if any) in the document, or by verifying a hash of the document within the document (if any).</p><h2 id="rfc.section.5.3"><a href="#rfc.section.5.3">5.3</a> Signing and Encrypting</h2><p id="rfc.section.5.3.p.1">When an Atom Document is to be both signed and encrypted, it is generally a good idea to first sign the document, then encrypt the signed document. This provides integrity to the base document while encrypting all the information, including the identity of the entity that signed the document. Note that, if MACs are used for authentication, the order MUST be that the document is signed and then encrypted, and not the other way around.</p><h1 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a name="extending_atom" href="#extending_atom">Extending Atom</a></h1><h2 id="rfc.section.6.1"><a href="#rfc.section.6.1">6.1</a> Extensions from Non-Atom Vocabularies</h2><p id="rfc.section.6.1.p.1">This specification describes Atom's XML markup vocabulary. Markup from other vocabularies ("foreign markup") can be used in an Atom Document. Note that the <a href="#element.content">atom:content</a> element is designed to support the inclusion of arbitrary foreign markup.</p><h2 id="rfc.section.6.2"><a href="#rfc.section.6.2">6.2</a> <a name="extensions.to.the.atom.vocabulary" href="#extensions.to.the.atom.vocabulary">Extensions to the Atom Vocabulary</a></h2><p id="rfc.section.6.2.p.1">The Atom namespace is reserved for future forward-compatible revisions of Atom. Future versions of this specification could add new elements and attributes to the Atom markup vocabulary. Software written to conform to this version of the specification will not be able to process such markup correctly and, in fact, will not be able to distinguish it from markup error. For the purposes of this discussion, unrecognized markup from the Atom vocabulary will be considered "foreign markup".</p><h2 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3</a> <a name="processing.foreign.markup" href="#processing.foreign.markup">Processing Foreign Markup</a></h2><p id="rfc.section.6.3.p.1">Atom Processors that encounter foreign markup in a location that is legal according to this specification MUST NOT stop processing or signal an error. It might be the case that the Atom Processor is able to process the foreign markup correctly and does so. Otherwise, such markup is termed "unknown foreign markup".</p><p id="rfc.section.6.3.p.2">When unknown foreign markup is encountered as a child of <a href="#element.entry">atom:entry</a>, <a href="#element.feed">atom:feed</a>, or a Person construct, Atom Processors MAY bypass the markup and any textual content and MUST NOT change their behavior as a result of the markup's presence.</p><p id="rfc.section.6.3.p.3">When unknown foreign markup is encountered in a Text Construct or <a href="#element.content">atom:content</a> element, software SHOULD ignore the markup and process any text content of foreign elements as though the surrounding markup were not present.</p><h2 id="rfc.section.6.4"><a href="#rfc.section.6.4">6.4</a> <a name="extension" href="#extension">Extension Elements</a></h2><p id="rfc.section.6.4.p.1">Atom allows foreign markup anywhere in an Atom document, except where it is explicitly forbidden. Child elements of <a href="#element.entry">atom:entry</a>, <a href="#element.feed">atom:feed</a>, <a href="#element.source">atom:source</a>, and Person constructs are considered Metadata elements and are described below. Child elements of Person constructs are considered to apply to the construct. The role of other foreign markup is undefined by this specification.</p><h3 id="rfc.section.6.4.1"><a href="#rfc.section.6.4.1">6.4.1</a> <a name="simple.extension.elements" href="#simple.extension.elements">Simple Extension Elements</a></h3><p id="rfc.section.6.4.1.p.1">A Simple Extension element MUST NOT have any attributes or child elements. The element MAY contain character data or be empty. Simple Extension elements are not Language-Sensitive. </p><div id="rfc.figure.u.35"></div> <a name="rfc.iref.97"></a>  <a name="rfc.iref.98"></a>  <pre>
+<a href="#simple.extension.elements">simpleExtensionElement</a> =
+   element * - atom:* {
+      text
+   }</pre><p id="rfc.section.6.4.1.p.2">The element can be interpreted as a simple property (or name/value pair) of the parent element that encloses it. The pair consisting of the namespace-URI of the element and the local name of the element can be interpreted as the name of the property. The character data content of the element can be interpreted as the value of the property. If the element is empty, then the property value can be interpreted as an empty string.</p><h3 id="rfc.section.6.4.2"><a href="#rfc.section.6.4.2">6.4.2</a> <a name="structured.extension.elements" href="#structured.extension.elements">Structured Extension Elements</a></h3><p id="rfc.section.6.4.2.p.1">The root element of a Structured Extension element MUST have at least one attribute or child element. It MAY have attributes, it MAY contain well-formed XML content (including character data), or it MAY be empty. Structured Extension elements are Language-Sensitive. </p><div id="rfc.figure.u.36"></div> <a name="rfc.iref.99"></a>  <a name="rfc.iref.100"></a>  <pre>
+<a href="#structured.extension.elements">structuredExtensionElement</a> =
+   element * - atom:* {
+      (attribute * { text }+,
+         (text|anyElement)*)
+    | (attribute * { text }*,
+       (text?, anyElement+, (text|anyElement)*))
+   }</pre><p id="rfc.section.6.4.2.p.2">The structure of a Structured Extension element, including the order of its child elements, could be significant.</p><p id="rfc.section.6.4.2.p.3">This specification does not provide an interpretation of a Structured Extension element. The syntax of the XML contained in the element (and an interpretation of how the element relates to its containing element) is defined by the specification of the Atom extension.</p><h1 id="rfc.section.7"><a href="#rfc.section.7">7.</a> <a name="IANA" href="#IANA">IANA Considerations</a></h1><p id="rfc.section.7.p.1">An Atom Document, when serialized as XML 1.0, can be identified with the following media type:</p><p id="rfc.section.7.p.2"> </p><dl><dt style="margin-top: .5em">MIME media type name:</dt><dd>application</dd><dt style="margin-top: .5em">MIME subtype name:</dt><dd>atom+xml</dd><dt style="margin-top: .5em">Mandatory parameters:</dt><dd>None.</dd><dt style="margin-top: .5em">Optional parameters:</dt><dd> <dl><dt style="margin-top: .5em">"charset":</dt><dd>This parameter has semantics identical to the charset parameter of the "application/xml" media type as specified in <a href="#RFC3023" title="XML Media Types">[RFC3023]</a>.</dd></dl> </dd><dt style="margin-top: .5em">Encoding considerations:</dt><dd>Identical to those of "application/xml" as described in <a href="#RFC3023" title="XML Media Types">[RFC3023]</a>, Section 3.2.</dd><dt style="margin-top: .5em">Security considerations:</dt><dd>As defined in this specification.</dd><dt style="margin-top: .5em"></dt><dd>In addition, as this media type uses the "+xml" convention, it shares the same security considerations as described in <a href="#RFC3023" title="XML Media Types">[RFC3023]</a>, Section 10.</dd><dt style="margin-top: .5em">Interoperability considerations:</dt><dd>There are no known interoperability issues.</dd><dt style="margin-top: .5em">Published specification:</dt><dd>This specification.</dd><dt style="margin-top: .5em">Applications that use this media type:</dt><dd>No known applications currently use this media type.</dd></dl><p id="rfc.section.7.p.3">Additional information:</p><p id="rfc.section.7.p.4"> </p><dl><dt style="margin-top: .5em">Magic number(s):</dt><dd>As specified for "application/xml" in <a href="#RFC3023" title="XML Media Types">[RFC3023]</a>, Section 3.2.</dd><dt style="margin-top: .5em">File extension:</dt><dd>.atom</dd><dt style="margin-top: .5em">Fragment identifiers:</dt><dd>As specified for "application/xml" in <a href="#RFC3023" title="XML Media Types">[RFC3023]</a>, Section 5.</dd><dt style="margin-top: .5em">Base URI:</dt><dd>As specified in <a href="#RFC3023" title="XML Media Types">[RFC3023]</a>, Section 6.</dd><dt style="margin-top: .5em">Macintosh File Type code:</dt><dd>TEXT</dd><dt style="margin-top: .5em">Person and email address to contact for further information:</dt><dd>Mark Nottingham &lt;mnot@pobox.com&gt;</dd><dt style="margin-top: .5em">Intended usage:</dt><dd>COMMON</dd><dt style="margin-top: .5em">Author/Change controller:</dt><dd>IESG</dd></dl><h2 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1</a> Registry of Link Relations</h2><p id="rfc.section.7.1.p.1">This registry is maintained by IANA and initially contains five values: "alternate", "related", "self", "enclosure", and "via". New assignments are subject to IESG Approval, as outlined in <a href="#RFC2434" title="Guidelines for Writing an IANA Considerations Section in RFCs">[RFC2434]</a>. Requests should be made by email to IANA, which will then forward the request to the IESG, requesting approval. The request should use the following template:</p><p id="rfc.section.7.1.p.2"> </p><ul><li>Attribute Value: (A value for the "rel" attribute that conforms to the syntax rule given in <a href="#rel_attribute" title='The "rel" Attribute'>Section 4.2.7.2</a>)</li><li>Description:</li><li>Expected display characteristics:</li><li>Security considerations:</li></ul><h1 id="rfc.section.8"><a href="#rfc.section.8">8.</a> Security Considerations</h1><h2 id="rfc.section.8.1"><a href="#rfc.section.8.1">8.1</a> HTML and XHTML Content</h2><p id="rfc.section.8.1.p.1">Text constructs and <a href="#element.content">atom:content</a> allow the delivery of HTML and XHTML. Many elements in these languages are considered 'unsafe' in that they open clients to one or more types of attack. Implementers of software that processes Atom should carefully consider their handling of every type of element when processing incoming (X)HTML in Atom Documents. See the security sections of <a href="#RFC2854" title="The 'text/html' Media Type">[RFC2854]</a> and <a href="#HTML" title="HTML 4.01 Specification">[HTML]</a> for guidance.</p><p id="rfc.section.8.1.p.2">Atom Processors should pay particular attention to the security of the IMG, SCRIPT, EMBED, OBJECT, FRAME, FRAMESET, IFRAME, META, and LINK elements, but other elements might also have negative security properties.</p><p id="rfc.section.8.1.p.3">(X)HTML can either directly contain or indirectly reference executable content.</p><h2 id="rfc.section.8.2"><a href="#rfc.section.8.2">8.2</a> URIs</h2><p id="rfc.section.8.2.p.1">Atom Processors handle URIs. See Section 7 of <a href="#RFC3986" title="Uniform Resource Identifier (URI): Generic Syntax">[RFC3986]</a>.</p><h2 id="rfc.section.8.3"><a href="#rfc.section.8.3">8.3</a> IRIs</h2><p id="rfc.section.8.3.p.1">Atom Processors handle IRIs. See Section 8 of <a href="#RFC3987" title="Internationalized Resource Identifiers (IRIs)">[RFC3987]</a>.</p><h2 id="rfc.section.8.4"><a href="#rfc.section.8.4">8.4</a> Spoofing</h2><p id="rfc.section.8.4.p.1">Atom Processors should be aware of the potential for spoofing attacks where the attacker publishes an <a href="#element.entry">atom:entry</a> with the <a href="#element.id">atom:id</a> value of an entry from another feed, perhaps with a falsified <a href="#element.source">atom:source</a> element duplicating the <a href="#element.id">atom:id</a> of the other feed. For example, an Atom Processor could suppress display of duplicate entries by displaying only one entry from a set of entries with identical <a href="#element.id">atom:id</a> values. In that situation, the Atom Processor might also take steps to determine whether the entries originated from the same publisher before considering them duplicates.</p><h2 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5</a> Encryption and Signing</h2><p id="rfc.section.8.5.p.1">Atom Documents can be encrypted and signed using <a href="#W3C.REC-xmlenc-core-20021210" title="XML Encryption Syntax and Processing">[W3C.REC-xmlenc-core-20021210]</a> and <a href="#W3C.REC-xmldsig-core-20020212" title="XML-Signature Syntax and Processing">[W3C.REC-xmldsig-core-20020212]</a>, respectively, and are subject to the security considerations implied by their use.</p><p id="rfc.section.8.5.p.2">Digital signatures provide authentication, message integrity, and non-repudiation with proof of origin. Encryption provides data confidentiality.</p><h1 id="rfc.references"><a name="rfc.section.9" href="#rfc.section.9">9.</a> <a href="#rfc.references">References</a></h1><h2 id="rfc.references.1"><a name="rfc.references.1"></a><a href="#rfc.section.9.1">9.1</a> Normative References</h2><table summary="Normative References" border="0" cellpadding="2">                                        <tr><td class="topnowrap"><b><a name="HTML">[HTML]</a></b></td><td class="top">Raggett, D, Hors, A, and I Jacobs, &#8220;<a href="http://www.w3.org/TR/1999/REC-html401-19991224">HTML 4.01 Specification</a>&#8221;, W3C REC REC-html401-19991224, December 1999.</td></tr><tr><td class="topnowrap"><b><a name="MIMEREG">[MIMEREG]</a></b></td><td class="top">Freed, N. and J. Klensin, &#8220;<a href="http://www.ietf.org/rfc/rfc4288.txt">Media Type Specifications and Registration Procedures</a>&#8221;, BCP 13, RFC 4288, December 2005.</td></tr><tr><td class="topnowrap"><b><a name="RFC2119">[RFC2119]</a></b></td><td class="top"><a href="mailto:sob@harvard.edu" title="Harvard University">Bradner, S.</a>, &#8220;<a href="http://www.ietf.org/rfc/rfc2119.txt">Key words for use in RFCs to Indicate Requirement Levels</a>&#8221;, BCP 14, RFC 2119, March 1997.</td></tr><tr><td class="topnowrap"><b><a name="RFC2822">[RFC2822]</a></b></td><td class="top">Resnick, P., &#8220;<a href="http://www.ietf.org/rfc/rfc2822.txt">Internet Message Format</a>&#8221;, RFC 2822, April 2001.</td></tr><tr><td class="topnowrap"><b><a name="RFC2854">[RFC2854]</a></b></td><td class="top">Connolly, D. and L. Masinter, &#8220;<a href="http://www.ietf.org/rfc/rfc2854.txt">The 'text/html' Media Type</a>&#8221;, RFC 2854, June 2000.</td></tr><tr><td class="topnowrap"><b><a name="RFC3023">[RFC3023]</a></b></td><td class="top">Murata, M., St. Laurent, S., and D. Kohn, &#8220;<a href="http://www.ietf.org/rfc/rfc3023.txt">XML Media Types</a>&#8221;, RFC 3023, January 2001.</td></tr><tr><td class="topnowrap"><b><a name="RFC3066">[RFC3066]</a></b></td><td class="top">Alvestrand, H., &#8220;<a href="http://www.ietf.org/rfc/rfc3066.txt">Tags for the Identification of Languages</a>&#8221;, BCP 47, RFC 3066, January 2001.</td></tr><tr><td class="topnowrap"><b><a name="RFC3339">[RFC3339]</a></b></td><td class="top">Klyne, G. and C. Newman, &#8220;<a href="http://www.ietf.org/rfc/rfc3339.txt">Date and Time on the Internet: Timestamps</a>&#8221;, RFC 3339, July 2002.</td></tr><tr><td class="topnowrap"><b><a name="RFC3548">[RFC3548]</a></b></td><td class="top">Josefsson, S., &#8220;<a href="http://www.ietf.org/rfc/rfc3548.txt">The Base16, Base32, and Base64 Data Encodings</a>&#8221;, RFC 3548, July 2003.</td></tr><tr><td class="topnowrap"><b><a name="RFC3986">[RFC3986]</a></b></td><td class="top">Berners-Lee, T., Fielding, R., and L. Masinter, &#8220;<a href="http://www.ietf.org/rfc/rfc3986.txt">Uniform Resource Identifier (URI): Generic Syntax</a>&#8221;, STD 66, RFC 3986, January 2005.</td></tr><tr><td class="topnowrap"><b><a name="RFC3987">[RFC3987]</a></b></td><td class="top">Duerst, M. and M. Suignard, &#8220;<a href="http://www.ietf.org/rfc/rfc3987.txt">Internationalized Resource Identifiers (IRIs)</a>&#8221;, RFC 3987, January 2005.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xml-20040204">[W3C.REC-xml-20040204]</a></b></td><td class="top">Yergeau, F, Paoli, J, Sperberg-McQueen, C, Bray, T, and E Maler, &#8220;<a href="http://www.w3.org/TR/2004/REC-xml-20040204">Extensible Markup Language (XML) 1.0 (Third Edition)</a>&#8221;, W3C REC REC-xml-20040204, February 2004.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xml-c14n-20010315">[W3C.REC-xml-c14n-20010315]</a></b></td><td class="top">Boyer, J, &#8220;<a href="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">Canonical XML Version 1.0</a>&#8221;, W3C REC REC-xml-c14n-20010315, March 2001.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xml-exc-c14n-20020718">[W3C.REC-xml-exc-c14n-20020718]</a></b></td><td class="top">Eastlake, D, Boyer, J, and J Reagle, &#8220;<a href="http://www.w3.org/TR/2002/REC-xml-exc-c14n-20020718">Exclusive XML Canonicalization Version 1.0</a>&#8221;, W3C REC REC-xml-exc-c14n-20020718, July 2002.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xml-infoset-20040204">[W3C.REC-xml-infoset-20040204]</a></b></td><td class="top">Cowan, J and R Tobin, &#8220;<a href="http://www.w3.org/TR/2004/REC-xml-infoset-20040204">XML Information Set (Second Edition)</a>&#8221;, W3C REC REC-xml-infoset-20040204, February 2004.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xml-names-19990114">[W3C.REC-xml-names-19990114]</a></b></td><td class="top">Hollander, D, Bray, T, and A Layman, &#8220;<a href="http://www.w3.org/TR/1999/REC-xml-names-19990114">Namespaces in XML</a>&#8221;, W3C REC REC-xml-names-19990114, January 1999.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xmlbase-20010627">[W3C.REC-xmlbase-20010627]</a></b></td><td class="top">Marsh, J, &#8220;<a href="http://www.w3.org/TR/2001/REC-xmlbase-20010627">XML Base</a>&#8221;, W3C REC REC-xmlbase-20010627, June 2001.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xmldsig-core-20020212">[W3C.REC-xmldsig-core-20020212]</a></b></td><td class="top">Solo, D, Reagle, J, and D Eastlake, &#8220;<a href="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212">XML-Signature Syntax and Processing</a>&#8221;, W3C REC REC-xmldsig-core-20020212, February 2002.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xmlenc-core-20021210">[W3C.REC-xmlenc-core-20021210]</a></b></td><td class="top">Reagle, J and D Eastlake, &#8220;<a href="http://www.w3.org/TR/2002/REC-xmlenc-core-20021210">XML Encryption Syntax and Processing</a>&#8221;, W3C REC REC-xmlenc-core-20021210, December 2002.</td></tr><tr><td class="topnowrap"><b><a name="XHTML">[XHTML]</a></b></td><td class="top">Altheim, M, Boumphrey, F, McCarron, S, Dooley, S, Schnitzenbaumer, S, and T Wugofski, &#8220;<a href="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410">Modularization of XHTMLâ„¢</a>&#8221;, W3C REC REC-xhtml-modularization-20010410, April 2001.</td></tr></table><h2 id="rfc.references.2"><a name="rfc.references.2"></a><a href="#rfc.section.9.2">9.2</a> Informative References</h2><table summary="Informative References" border="0" cellpadding="2">          <tr><td class="topnowrap"><b><a name="ISO.8601.1988">[ISO.8601.1988]</a></b></td><td class="top">International Organization for Standardization, &#8220;Data elements and interchange formats - Information interchange - Representation of dates and times&#8221;, ISO Standard 8601, June 1988.</td></tr><tr><td class="topnowrap"><b><a name="RELAX-NG">[RELAX-NG]</a></b></td><td class="top">Clark, J, &#8220;<a href="http://www.oasis-open.org/committees/relax-ng/compact-20021121.html">RELAX NG Compact Syntax</a>&#8221;, December 2001.</td></tr><tr><td class="topnowrap"><b><a name="RFC2434">[RFC2434]</a></b></td><td class="top"><a href="mailto:narten@raleigh.ibm.com" title="IBM Corporation">Narten, T.</a> and <a href="mailto:Harald@Alvestrand.no" title="Maxware">H.T. Alvestrand</a>, &#8220;<a href="http://www.ietf.org/rfc/rfc2434.txt">Guidelines for Writing an IANA Considerations Section in RFCs</a>&#8221;, BCP 26, RFC 2434, October 1998.</td></tr><tr><td class="topnowrap"><b><a name="W3C.NOTE-datetime-19980827">[W3C.NOTE-datetime-19980827]</a></b></td><td class="top">Wolf, M and C Wicksteed, &#8220;<a href="http://www.w3.org/TR/1998/NOTE-datetime-19980827">Date and Time Formats</a>&#8221;, W3C NOTE NOTE-datetime-19980827, August 1998.</td></tr><tr><td class="topnowrap"><b><a name="W3C.REC-xmlschema-2-20041028">[W3C.REC-xmlschema-2-20041028]</a></b></td><td class="top">Malhotra, A and P Biron, &#8220;<a href="http://www.w3.org/TR/2004/REC-xmlschema-2-20041028">XML Schema Part 2: Datatypes Second Edition</a>&#8221;, W3C REC REC-xmlschema-2-20041028, October 2004.</td></tr></table><h1 id="rfc.authors">Authors' Addresses</h1><address class="vcard"><span class="vcardline"><span class="fn">Mark Nottingham</span>
+          (editor)
+        <span class="n" style="display: none"><span class="family-name">Nottingham</span><span class="given-name">Mark</span></span></span><span class="org vcardline"></span><span class="adr vcardline"></span><span class="vcardline">EMail: <a href="mailto:mnot@pobox.com"><span class="email">mnot@pobox.com</span></a></span><span class="vcardline">URI: <a href="http://www.mnot.net/" class="url">http://www.mnot.net/</a></span></address><address class="vcard"><span class="vcardline"><span class="fn">Robert Sayre</span>
+          (editor)
+        <span class="n" style="display: none"><span class="family-name">Sayre</span><span class="given-name">Robert</span></span></span><span class="org vcardline"></span><span class="adr vcardline"></span><span class="vcardline">EMail: <a href="mailto:rfsayre@boswijck.com"><span class="email">rfsayre@boswijck.com</span></a></span><span class="vcardline">URI: <a href="http://boswijck.com" class="url">http://boswijck.com</a></span></address><h1 id="rfc.section.A"><a href="#rfc.section.A">A.</a> Contributors</h1><p id="rfc.section.A.p.1">The following people contributed to preliminary versions of this document: Tim Bray, Mark Pilgrim, and Sam Ruby. Norman Walsh provided the Relax NG schema. The content and concepts within are a product of the Atom community and the Atompub Working Group.</p><p id="rfc.section.A.p.2">The Atompub Working Group has dozens of very active contributors who proposed ideas and wording for this document, including:</p><p id="rfc.section.A.p.3">Danny Ayers, James Aylett, Roger Benningfield, Arve Bersvendsen, Tim Bray, Dan Brickley, Thomas Broyer, Robin Cover, Bill de hOra, Martin Duerst, Roy Fielding, Joe Gregorio, Bjoern Hoehrmann, Paul Hoffman, Anne van Kesteren, Brett Lindsley, Dare Obasanjo, David Orchard, Aristotle Pagaltzis, John Panzer, Graham Parks, Dave Pawson, Mark Pilgrim, David Powell, Julian Reschke, Phil Ringnalda, Antone Roundy, Sam Ruby, Eric Scheid, Brent Simmons, Henri Sivonen, Ray Slakinski, James Snell, Henry Story, Asbjorn Ulsberg, Walter Underwood, Norman Walsh, Dave Winer, and Bob Wyman.</p><h1 id="rfc.section.B"><a href="#rfc.section.B">B.</a> <a name="schema" href="#schema">RELAX NG Compact Schema</a></h1><p id="rfc.section.B.p.1">This appendix is informative.</p><p id="rfc.section.B.p.2">The Relax NG schema explicitly excludes elements in the Atom namespace that are not defined in this revision of the specification. Requirements for Atom Processors encountering such markup are given in Sections <a href="#extensions.to.the.atom.vocabulary" title="Extensions to the Atom Vocabulary">6.2</a> and <a href="#processing.foreign.markup" title="Processing Foreign Markup">6.3</a>.</p><div id="rfc.figure.u.37"></div> <pre>
+# -*- rnc -*-
+# RELAX NG Compact Syntax Grammar for the
+# Atom Format Specification Version 11
+
+namespace atom = "http://www.w3.org/2005/Atom"
+namespace xhtml = "http://www.w3.org/1999/xhtml"
+namespace s = "http://www.ascc.net/xml/schematron"
+namespace local = ""
+
+start = <a href="#element.feed">atomFeed</a> | <a href="#element.entry">atomEntry</a>
+
+# Common attributes
+
+<a href="#atom.documents">atomCommonAttributes</a> =
+   attribute xml:base { atomUri }?,
+   attribute xml:lang { atomLanguageTag }?,
+   undefinedAttribute*
+
+# Text Constructs
+
+<a href="#text.constructs">atomPlainTextConstruct</a> =
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   attribute type { "text" | "html" }?,
+   text
+
+<a href="#text.constructs">atomXHTMLTextConstruct</a> =
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   attribute type { "xhtml" },
+   xhtmlDiv
+
+<a href="#text.constructs">atomTextConstruct</a> = <a href="#text.constructs">atomPlainTextConstruct</a> | <a href="#text.constructs">atomXHTMLTextConstruct</a>
+
+# Person Construct
+
+<a href="#atomPersonConstruct">atomPersonConstruct</a> =
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (element <a href="#element.name">atom:name</a> { text }
+    &amp; element <a href="#element.uri">atom:uri</a> { atomUri }?
+    &amp; element <a href="#element.email">atom:email</a> { atomEmailAddress }?
+    &amp; extensionElement*)
+
+# Date Construct
+
+<a href="#date.constructs">atomDateConstruct</a>=
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   xsd:dateTime
+
+# <a href="#element.feed">atom:feed</a>
+
+<a href="#element.feed">atomFeed</a> =
+   [
+      s:rule [
+         context = "<a href="#element.feed">atom:feed</a>"
+         s:assert [
+            test = "<a href="#element.author">atom:author</a> or not(<a href="#element.entry">atom:entry</a>[not(<a href="#element.author">atom:author</a>)])"
+            "An <a href="#element.feed">atom:feed</a> must have an <a href="#element.author">atom:author</a> unless all "
+            ~ "of its <a href="#element.entry">atom:entry</a> children have an <a href="#element.author">atom:author</a>."
+         ]
+      ]
+   ]
+   element <a href="#element.feed">atom:feed</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      (<a href="#element.author">atomAuthor</a>*
+       &amp; <a href="#element.category">atomCategory</a>*
+       &amp; <a href="#element.contributor">atomContributor</a>*
+       &amp; <a href="#element.generator">atomGenerator</a>?
+       &amp; <a href="#element.icon">atomIcon</a>?
+       &amp; <a href="#element.id">atomId</a>
+       &amp; <a href="#element.link">atomLink</a>*
+       &amp; <a href="#element.logo">atomLogo</a>?
+       &amp; <a href="#element.rights">atomRights</a>?
+       &amp; <a href="#element.subtitle">atomSubtitle</a>?
+       &amp; <a href="#element.title">atomTitle</a>
+       &amp; <a href="#element.updated">atomUpdated</a>
+       &amp; extensionElement*),
+      <a href="#element.entry">atomEntry</a>*
+   }
+
+# <a href="#element.entry">atom:entry</a>
+
+<a href="#element.entry">atomEntry</a> =
+   [
+      s:rule [
+         context = "<a href="#element.entry">atom:entry</a>"
+         s:assert [
+            test = "<a href="#element.link">atom:link</a>[@rel='alternate'] "
+            ~ "or <a href="#element.link">atom:link</a>[not(@rel)] "
+            ~ "or <a href="#element.content">atom:content</a>"
+            "An <a href="#element.entry">atom:entry</a> must have at least one <a href="#element.link">atom:link</a> element "
+            ~ "with a rel attribute of 'alternate' "
+            ~ "or an <a href="#element.content">atom:content</a>."
+         ]
+      ]
+      s:rule [
+         context = "<a href="#element.entry">atom:entry</a>"
+         s:assert [
+            test = "<a href="#element.author">atom:author</a> or "
+            ~ "../<a href="#element.author">atom:author</a> or <a href="#element.source">atom:source</a>/<a href="#element.author">atom:author</a>"
+            "An <a href="#element.entry">atom:entry</a> must have an <a href="#element.author">atom:author</a> "
+            ~ "if its feed does not."
+         ]
+      ]
+   ]
+   element <a href="#element.entry">atom:entry</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      (<a href="#element.author">atomAuthor</a>*
+       &amp; <a href="#element.category">atomCategory</a>*
+       &amp; <a href="#element.content">atomContent</a>?
+       &amp; <a href="#element.contributor">atomContributor</a>*
+       &amp; <a href="#element.id">atomId</a>
+       &amp; <a href="#element.link">atomLink</a>*
+       &amp; <a href="#element.published">atomPublished</a>?
+       &amp; <a href="#element.rights">atomRights</a>?
+       &amp; <a href="#element.source">atomSource</a>?
+       &amp; <a href="#element.summary">atomSummary</a>?
+       &amp; <a href="#element.title">atomTitle</a>
+       &amp; <a href="#element.updated">atomUpdated</a>
+       &amp; extensionElement*)
+   }
+
+# <a href="#element.content">atom:content</a>
+
+<a href="#element.content">atomInlineTextContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { "text" | "html" }?,
+      (text)*
+   }
+
+<a href="#element.content">atomInlineXHTMLContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { "xhtml" },
+      xhtmlDiv
+   }
+
+<a href="#element.content">atomInlineOtherContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { atomMediaType }?,
+      (text|anyElement)*
+   }
+
+<a href="#element.content">atomOutOfLineContent</a> =
+   element <a href="#element.content">atom:content</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute type { atomMediaType }?,
+      attribute src { atomUri },
+      empty
+   }
+
+<a href="#element.content">atomContent</a> = <a href="#element.content">atomInlineTextContent</a>
+ | <a href="#element.content">atomInlineXHTMLContent</a>
+ | <a href="#element.content">atomInlineOtherContent</a>
+ | <a href="#element.content">atomOutOfLineContent</a>
+
+# <a href="#element.author">atom:author</a>
+
+<a href="#element.author">atomAuthor</a> = element <a href="#element.author">atom:author</a> { <a href="#atomPersonConstruct">atomPersonConstruct</a> }
+
+# <a href="#element.category">atom:category</a>
+
+<a href="#element.category">atomCategory</a> =
+   element <a href="#element.category">atom:category</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute term { text },
+      attribute scheme { atomUri }?,
+      attribute label { text }?,
+      undefinedContent
+   }
+
+# <a href="#element.contributor">atom:contributor</a>
+
+<a href="#element.contributor">atomContributor</a> = element <a href="#element.contributor">atom:contributor</a> { <a href="#atomPersonConstruct">atomPersonConstruct</a> }
+
+# <a href="#element.generator">atom:generator</a>
+
+<a href="#element.generator">atomGenerator</a> = element <a href="#element.generator">atom:generator</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   attribute uri { atomUri }?,
+   attribute version { text }?,
+   text
+}
+
+# <a href="#element.icon">atom:icon</a>
+
+<a href="#element.icon">atomIcon</a> = element <a href="#element.icon">atom:icon</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (atomUri)
+}
+
+# <a href="#element.id">atom:id</a>
+
+<a href="#element.id">atomId</a> = element <a href="#element.id">atom:id</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (atomUri)
+}
+
+# <a href="#element.logo">atom:logo</a>
+
+<a href="#element.logo">atomLogo</a> = element <a href="#element.logo">atom:logo</a> {
+   <a href="#atom.documents">atomCommonAttributes</a>,
+   (atomUri)
+}
+
+# <a href="#element.link">atom:link</a>
+
+<a href="#element.link">atomLink</a> =
+   element <a href="#element.link">atom:link</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      attribute href { atomUri },
+      attribute rel { atomNCName | atomUri }?,
+      attribute type { atomMediaType }?,
+      attribute hreflang { atomLanguageTag }?,
+      attribute title { text }?,
+      attribute length { text }?,
+      undefinedContent
+   }
+
+# <a href="#element.published">atom:published</a>
+
+<a href="#element.published">atomPublished</a> = element <a href="#element.published">atom:published</a> { <a href="#date.constructs">atomDateConstruct</a>}
+
+# <a href="#element.rights">atom:rights</a>
+
+<a href="#element.rights">atomRights</a> = element <a href="#element.rights">atom:rights</a> { <a href="#text.constructs">atomTextConstruct</a> }
+
+# <a href="#element.source">atom:source</a>
+
+<a href="#element.source">atomSource</a> =
+   element <a href="#element.source">atom:source</a> {
+      <a href="#atom.documents">atomCommonAttributes</a>,
+      (<a href="#element.author">atomAuthor</a>*
+       &amp; <a href="#element.category">atomCategory</a>*
+       &amp; <a href="#element.contributor">atomContributor</a>*
+       &amp; <a href="#element.generator">atomGenerator</a>?
+       &amp; <a href="#element.icon">atomIcon</a>?
+       &amp; <a href="#element.id">atomId</a>?
+       &amp; <a href="#element.link">atomLink</a>*
+       &amp; <a href="#element.logo">atomLogo</a>?
+       &amp; <a href="#element.rights">atomRights</a>?
+       &amp; <a href="#element.subtitle">atomSubtitle</a>?
+       &amp; <a href="#element.title">atomTitle</a>?
+       &amp; <a href="#element.updated">atomUpdated</a>?
+       &amp; extensionElement*)
+   }
+
+# <a href="#element.subtitle">atom:subtitle</a>
+
+<a href="#element.subtitle">atomSubtitle</a> = element <a href="#element.subtitle">atom:subtitle</a> { <a href="#text.constructs">atomTextConstruct</a> }
+
+# <a href="#element.summary">atom:summary</a>
+
+<a href="#element.summary">atomSummary</a> = element <a href="#element.summary">atom:summary</a> { <a href="#text.constructs">atomTextConstruct</a> }
+
+# <a href="#element.title">atom:title</a>
+
+<a href="#element.title">atomTitle</a> = element <a href="#element.title">atom:title</a> { <a href="#text.constructs">atomTextConstruct</a> }
+
+# <a href="#element.updated">atom:updated</a>
+
+<a href="#element.updated">atomUpdated</a> = element <a href="#element.updated">atom:updated</a> { <a href="#date.constructs">atomDateConstruct</a>}
+
+# Low-level simple types
+
+atomNCName = xsd:string { minLength = "1" pattern = "[^:]*" }
+
+# Whatever a media type is, it contains at least one slash
+atomMediaType = xsd:string { pattern = ".+/.+" }
+
+# As defined in RFC 3066
+atomLanguageTag = xsd:string {
+   pattern = "[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*"
+}
+
+# Unconstrained; it's not entirely clear how IRI fit into
+# xsd:anyURI so let's not try to constrain it here
+atomUri = text
+
+# Whatever an email address is, it contains at least one @
+atomEmailAddress = xsd:string { pattern = ".+@.+" }
+
+# Simple Extension
+
+<a href="#simple.extension.elements">simpleExtensionElement</a> =
+   element * - atom:* {
+      text
+   }
+
+# Structured Extension
+
+<a href="#structured.extension.elements">structuredExtensionElement</a> =
+   element * - atom:* {
+      (attribute * { text }+,
+         (text|anyElement)*)
+    | (attribute * { text }*,
+       (text?, anyElement+, (text|anyElement)*))
+   }
+
+# Other Extensibility
+
+extensionElement =
+   <a href="#simple.extension.elements">simpleExtensionElement</a> | <a href="#structured.extension.elements">structuredExtensionElement</a>
+
+undefinedAttribute =
+  attribute * - (xml:base | xml:lang | local:*) { text }
+
+undefinedContent = (text|anyForeignElement)*
+
+anyElement =
+   element * {
+      (attribute * { text }
+       | text
+       | anyElement)*
+   }
+
+anyForeignElement =
+   element * - atom:* {
+      (attribute * { text }
+       | text
+       | anyElement)*
+   }
+
+# XHTML
+
+anyXHTML = element xhtml:* {
+   (attribute * { text }
+    | text
+    | anyXHTML)*
+}
+
+xhtmlDiv = element xhtml:div {
+   (attribute * { text }
+    | text
+    | anyXHTML)*
+}
+
+# EOF</pre> <h1><a name="rfc.ipr" href="#rfc.ipr">Intellectual Property Statement</a></h1><p>The IETF takes no position regarding the validity or scope of any Intellectual Property Rights or other rights that might be claimed to pertain to the implementation or use of the technology described in this document or the extent to which any license under such rights might or might not be available; nor does it represent that it has made any independent effort to identify any such rights. Information on the procedures with respect to rights in RFC documents can be found in BCP 78 and BCP 79.</p><p>Copies of IPR disclosures made to the IETF Secretariat and any assurances of licenses to be made available, or the result of an attempt made to obtain a general license or permission for the use of such proprietary rights by implementers or users of this specification can be obtained from the IETF on-line IPR repository at &lt;<a href="http://www.ietf.org/ipr">http://www.ietf.org/ipr</a>&gt;.</p><p>The IETF invites any interested party to bring to its attention any copyrights, patents or patent applications, or other proprietary rights that may cover technology that may be required to implement this standard. Please address the information to the IETF at <a href="mailto:ietf-ipr@ietf.org">ietf-ipr@ietf.org</a>.</p><h1><a name="rfc.disclaimer" href="#rfc.disclaimer">Disclaimer of Validity</a></h1><p>This document and the information contained herein are provided on an &#8220;AS IS&#8221; basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</p><h1><a name="rfc.copyright" href="#rfc.copyright">Copyright Statement</a></h1><p>Copyright © The Internet Society (2005). This document is subject to the rights, licenses and restrictions contained in BCP 78, and except as set forth therein, the authors retain all their rights.</p><h1>Acknowledgement</h1><p>Funding for the RFC Editor function is currently provided by the Internet Society.</p><h1 id="rfc.index"><a href="#rfc.index">Index</a></h1><p class="noprint"><a href="#rfc.index.A">A </a><a href="#rfc.index.C">C </a><a href="#rfc.index.E">E </a><a href="#rfc.index.F">F </a><a href="#rfc.index.G">G </a><a href="#rfc.index.I">I </a><a href="#rfc.index.L">L </a><a href="#rfc.index.N">N </a><a href="#rfc.index.P">P </a><a href="#rfc.index.R">R </a><a href="#rfc.index.S">S </a><a href="#rfc.index.T">T </a><a href="#rfc.index.U">U </a><a href="#rfc.index.X">X </a></p><div class="print2col"><ul class="ind"><li class="indline0"><a name="rfc.index.A" href="#rfc.index.A"><b>A</b></a><ul class="ind"><li class="indline1">atomAuthor grammar production  <a class="iref" href="#rfc.iref.41"><b>4.2.1</b></a></li><li class="indline1">atomCategory grammar production  <a class="iref" href="#rfc.iref.45"><b>4.2.2</b></a></li><li class="indline1">atomCommonAttributes grammar production  <a class="iref" href="#rfc.iref.1"><b>2</b></a></li><li class="indline1">atomContent grammar production  <a class="iref" href="#rfc.iref.29"><b>4.1.3</b></a></li><li class="indline1">atomContributor grammar production  <a class="iref" href="#rfc.iref.49"><b>4.2.3</b></a></li><li class="indline1">atomDateConstruct grammar production  <a class="iref" href="#rfc.iref.17"><b>3.3</b></a></li><li class="indline1">atomEntry grammar production  <a class="iref" href="#rfc.iref.25"><b>4.1.2</b></a></li><li class="indline1">atomFeed grammar production  <a class="iref" href="#rfc.iref.21"><b>4.1.1</b></a></li><li class="indline1">atomGenerator grammar production  <a class="iref" href="#rfc.iref.53"><b>4.2.4</b></a></li><li class="indline1">atomIcon grammar production  <a class="iref" href="#rfc.iref.57"><b>4.2.5</b></a></li><li class="indline1">atomId grammar production  <a class="iref" href="#rfc.iref.61"><b>4.2.6</b></a></li><li class="indline1">atomInlineOtherContent grammar production  <a class="iref" href="#rfc.iref.35"><b>4.1.3</b></a></li><li class="indline1">atomInlineTextContent grammar production  <a class="iref" href="#rfc.iref.31"><b>4.1.3</b></a></li><li class="indline1">atomInlineXHTMLContent grammar production  <a class="iref" href="#rfc.iref.33"><b>4.1.3</b></a></li><li class="indline1">atomLink grammar production  <a class="iref" href="#rfc.iref.65"><b>4.2.7</b></a></li><li class="indline1">atomLogo grammar production  <a class="iref" href="#rfc.iref.69"><b>4.2.8</b></a></li><li class="indline1">atomOutOfLineContent grammar production  <a class="iref" href="#rfc.iref.37"><b>4.1.3</b></a></li><li class="indline1">atomPersonConstruct grammar production  <a class="iref" href="#rfc.iref.9"><b>3.2</b></a></li><li class="indline1">atomPlainTextConstruct grammar production  <a class="iref" href="#rfc.iref.3"><b>3.1</b></a></li><li class="indline1">atomPublished grammar production  <a class="iref" href="#rfc.iref.73"><b>4.2.9</b></a></li><li class="indline1">atomRights grammar production  <a class="iref" href="#rfc.iref.77"><b>4.2.10</b></a></li><li class="indline1">atomSource grammar production  <a class="iref" href="#rfc.iref.81"><b>4.2.11</b></a></li><li class="indline1">atomSubtitle grammar production  <a class="iref" href="#rfc.iref.85"><b>4.2.12</b></a></li><li class="indline1">atomTextConstruct grammar production  <a class="iref" href="#rfc.iref.7"><b>3.1</b></a></li><li class="indline1">atomTitle grammar production  <a class="iref" href="#rfc.iref.91"><b>4.2.14</b></a></li><li class="indline1">atomUpdated grammar production  <a class="iref" href="#rfc.iref.95"><b>4.2.15</b></a></li><li class="indline1">atomXHTMLTextConstruct grammar production  <a class="iref" href="#rfc.iref.5"><b>3.1</b></a></li><li class="indline1">author XML element  <a class="iref" href="#rfc.iref.40"><b>4.2.1</b></a></li></ul></li><li class="indline0"><a name="rfc.index.C" href="#rfc.index.C"><b>C</b></a><ul class="ind"><li class="indline1">category XML element  <a class="iref" href="#rfc.iref.44"><b>4.2.2</b></a></li><li class="indline1">content XML element  <a class="iref" href="#rfc.iref.28"><b>4.1.3</b></a></li><li class="indline1">contributor XML element  <a class="iref" href="#rfc.iref.48"><b>4.2.3</b></a></li></ul></li><li class="indline0"><a name="rfc.index.E" href="#rfc.index.E"><b>E</b></a><ul class="ind"><li class="indline1">email XML element  <a class="iref" href="#rfc.iref.16"><b>3.2.3</b></a></li><li class="indline1">entry XML element  <a class="iref" href="#rfc.iref.24"><b>4.1.2</b></a></li></ul></li><li class="indline0"><a name="rfc.index.F" href="#rfc.index.F"><b>F</b></a><ul class="ind"><li class="indline1">feed XML element  <a class="iref" href="#rfc.iref.20"><b>4.1.1</b></a></li></ul></li><li class="indline0"><a name="rfc.index.G" href="#rfc.index.G"><b>G</b></a><ul class="ind"><li class="indline1">generator XML element  <a class="iref" href="#rfc.iref.52"><b>4.2.4</b></a></li><li class="indline1">Grammar  <ul class="ind"><li class="indline1">atomAuthor  <a class="iref" href="#rfc.iref.42"><b>4.2.1</b></a></li><li class="indline1">atomCategory  <a class="iref" href="#rfc.iref.46"><b>4.2.2</b></a></li><li class="indline1">atomCommonAttributes  <a class="iref" href="#rfc.iref.2"><b>2</b></a></li><li class="indline1">atomContent  <a class="iref" href="#rfc.iref.30"><b>4.1.3</b></a></li><li class="indline1">atomContributor  <a class="iref" href="#rfc.iref.50"><b>4.2.3</b></a></li><li class="indline1">atomDateConstruct  <a class="iref" href="#rfc.iref.18"><b>3.3</b></a></li><li class="indline1">atomEntry  <a class="iref" href="#rfc.iref.26"><b>4.1.2</b></a></li><li class="indline1">atomFeed  <a class="iref" href="#rfc.iref.22"><b>4.1.1</b></a></li><li class="indline1">atomGenerator  <a class="iref" href="#rfc.iref.54"><b>4.2.4</b></a></li><li class="indline1">atomIcon  <a class="iref" href="#rfc.iref.58"><b>4.2.5</b></a></li><li class="indline1">atomId  <a class="iref" href="#rfc.iref.62"><b>4.2.6</b></a></li><li class="indline1">atomInlineOtherContent  <a class="iref" href="#rfc.iref.36"><b>4.1.3</b></a></li><li class="indline1">atomInlineTextContent  <a class="iref" href="#rfc.iref.32"><b>4.1.3</b></a></li><li class="indline1">atomInlineXHTMLContent  <a class="iref" href="#rfc.iref.34"><b>4.1.3</b></a></li><li class="indline1">atomLink  <a class="iref" href="#rfc.iref.66"><b>4.2.7</b></a></li><li class="indline1">atomLogo  <a class="iref" href="#rfc.iref.70"><b>4.2.8</b></a></li><li class="indline1">atomOutOfLineContent  <a class="iref" href="#rfc.iref.38"><b>4.1.3</b></a></li><li class="indline1">atomPersonConstruct  <a class="iref" href="#rfc.iref.10"><b>3.2</b></a></li><li class="indline1">atomPlainTextConstruct  <a class="iref" href="#rfc.iref.4"><b>3.1</b></a></li><li class="indline1">atomPublished  <a class="iref" href="#rfc.iref.74"><b>4.2.9</b></a></li><li class="indline1">atomRights  <a class="iref" href="#rfc.iref.78"><b>4.2.10</b></a></li><li class="indline1">atomSource  <a class="iref" href="#rfc.iref.82"><b>4.2.11</b></a></li><li class="indline1">atomSubtitle  <a class="iref" href="#rfc.iref.86"><b>4.2.12</b></a></li><li class="indline1">atomTextConstruct  <a class="iref" href="#rfc.iref.8"><b>3.1</b></a></li><li class="indline1">atomTitle  <a class="iref" href="#rfc.iref.92"><b>4.2.14</b></a></li><li class="indline1">atomUpdated  <a class="iref" href="#rfc.iref.96"><b>4.2.15</b></a></li><li class="indline1">atomXHTMLTextConstruct  <a class="iref" href="#rfc.iref.6"><b>3.1</b></a></li><li class="indline1">simpleExtensionElement  <a class="iref" href="#rfc.iref.98"><b>6.4.1</b></a></li><li class="indline1">structuredExtensionElement  <a class="iref" href="#rfc.iref.100"><b>6.4.2</b></a></li></ul></li></ul></li><li class="indline0"><a name="rfc.index.I" href="#rfc.index.I"><b>I</b></a><ul class="ind"><li class="indline1">icon XML element  <a class="iref" href="#rfc.iref.56"><b>4.2.5</b></a></li><li class="indline1">id XML element  <a class="iref" href="#rfc.iref.60"><b>4.2.6</b></a></li></ul></li><li class="indline0"><a name="rfc.index.L" href="#rfc.index.L"><b>L</b></a><ul class="ind"><li class="indline1">link XML element  <a class="iref" href="#rfc.iref.64"><b>4.2.7</b></a></li><li class="indline1">logo XML element  <a class="iref" href="#rfc.iref.68"><b>4.2.8</b></a></li></ul></li><li class="indline0"><a name="rfc.index.N" href="#rfc.index.N"><b>N</b></a><ul class="ind"><li class="indline1">name XML element  <a class="iref" href="#rfc.iref.12"><b>3.2.1</b></a></li></ul></li><li class="indline0"><a name="rfc.index.P" href="#rfc.index.P"><b>P</b></a><ul class="ind"><li class="indline1">published XML element  <a class="iref" href="#rfc.iref.72"><b>4.2.9</b></a></li></ul></li><li class="indline0"><a name="rfc.index.R" href="#rfc.index.R"><b>R</b></a><ul class="ind"><li class="indline1">rights XML element  <a class="iref" href="#rfc.iref.76"><b>4.2.10</b></a></li></ul></li><li class="indline0"><a name="rfc.index.S" href="#rfc.index.S"><b>S</b></a><ul class="ind"><li class="indline1">simpleExtensionElement grammar production  <a class="iref" href="#rfc.iref.97"><b>6.4.1</b></a></li><li class="indline1">source XML element  <a class="iref" href="#rfc.iref.80"><b>4.2.11</b></a></li><li class="indline1">structuredExtensionElement grammar production  <a class="iref" href="#rfc.iref.99"><b>6.4.2</b></a></li><li class="indline1">subtitle XML element  <a class="iref" href="#rfc.iref.84"><b>4.2.12</b></a></li><li class="indline1">summary XML element  <a class="iref" href="#rfc.iref.88"><b>4.2.13</b></a></li></ul></li><li class="indline0"><a name="rfc.index.T" href="#rfc.index.T"><b>T</b></a><ul class="ind"><li class="indline1">title XML element  <a class="iref" href="#rfc.iref.90"><b>4.2.14</b></a></li></ul></li><li class="indline0"><a name="rfc.index.U" href="#rfc.index.U"><b>U</b></a><ul class="ind"><li class="indline1">updated XML element  <a class="iref" href="#rfc.iref.94"><b>4.2.15</b></a></li><li class="indline1">uri XML element  <a class="iref" href="#rfc.iref.14"><b>3.2.2</b></a></li></ul></li><li class="indline0"><a name="rfc.index.X" href="#rfc.index.X"><b>X</b></a><ul class="ind"><li class="indline1">XML Elements  <ul class="ind"><li class="indline1">author  <a class="iref" href="#rfc.iref.39"><b>4.2.1</b></a></li><li class="indline1">category  <a class="iref" href="#rfc.iref.43"><b>4.2.2</b></a></li><li class="indline1">content  <a class="iref" href="#rfc.iref.27"><b>4.1.3</b></a></li><li class="indline1">contributor  <a class="iref" href="#rfc.iref.47"><b>4.2.3</b></a></li><li class="indline1">email  <a class="iref" href="#rfc.iref.15"><b>3.2.3</b></a></li><li class="indline1">entry  <a class="iref" href="#rfc.iref.23"><b>4.1.2</b></a></li><li class="indline1">feed  <a class="iref" href="#rfc.iref.19"><b>4.1.1</b></a></li><li class="indline1">generator  <a class="iref" href="#rfc.iref.51"><b>4.2.4</b></a></li><li class="indline1">icon  <a class="iref" href="#rfc.iref.55"><b>4.2.5</b></a></li><li class="indline1">id  <a class="iref" href="#rfc.iref.59"><b>4.2.6</b></a></li><li class="indline1">link  <a class="iref" href="#rfc.iref.63"><b>4.2.7</b></a></li><li class="indline1">logo  <a class="iref" href="#rfc.iref.67"><b>4.2.8</b></a></li><li class="indline1">name  <a class="iref" href="#rfc.iref.11"><b>3.2.1</b></a></li><li class="indline1">published  <a class="iref" href="#rfc.iref.71"><b>4.2.9</b></a></li><li class="indline1">rights  <a class="iref" href="#rfc.iref.75"><b>4.2.10</b></a></li><li class="indline1">source  <a class="iref" href="#rfc.iref.79"><b>4.2.11</b></a></li><li class="indline1">subtitle  <a class="iref" href="#rfc.iref.83"><b>4.2.12</b></a></li><li class="indline1">summary  <a class="iref" href="#rfc.iref.87"><b>4.2.13</b></a></li><li class="indline1">title  <a class="iref" href="#rfc.iref.89"><b>4.2.14</b></a></li><li class="indline1">updated  <a class="iref" href="#rfc.iref.93"><b>4.2.15</b></a></li><li class="indline1">uri  <a class="iref" href="#rfc.iref.13"><b>3.2.2</b></a></li></ul></li></ul></li></ul></div></body></html>

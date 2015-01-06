@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  course_number
+  Expect:       !Error
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:g="http://base.google.com/ns/1.0">
+
+  <title>course_number test case 1</title>
+  <link href="http://base.google.com/base/attribute_list.html" />
+  <updated>2003-12-13T18:30:02Z</updated>
+  <id>http://feedvalidator.org/gbase</id>
+  <author><name>Google</name></author>
+
+  <entry>
+    <title>course_number test case 1</title>
+    <id>tag:base.google.com,2005:course_number_1</id>
+    <link href="http://base.google.com/base/attribute_list.html#course_number" />
+    <updated>2003-12-13T18:30:02Z</updated>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+      From <a href="http://base.google.com/base/attribute_list.html#course_number">course_number</a>
+      </div>
+    </summary>
+
+    <g:course_number>HIST-90A</g:course_number>
+  </entry>
+</feed>

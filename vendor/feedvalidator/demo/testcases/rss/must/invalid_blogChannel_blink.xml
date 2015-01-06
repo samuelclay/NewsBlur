@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  blogChannel:blink must be full URL
+  Expect:       InvalidLink{parent:channel,element:blogChannel:blink}
+-->
+
+<rss version="2.0" xmlns:blogChannel="http://backend.userland.com/blogChannelModule">
+<channel>
+<blogChannel:blink>example.com</blogChannel:blink>
+</channel>
+</rss>

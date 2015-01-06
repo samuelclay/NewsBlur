@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one item dc:date
+  Expect:       !DuplicateElement{parent:item,element:dc:date}
+-->
+
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<item>
+<dc:date>2002-12-31T01:15:07-05:00</dc:date>
+<dc:date>2002-12-31T01:15:07-05:00</dc:date>
+</item>
+</channel>
+</rss>

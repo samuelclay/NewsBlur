@@ -1,0 +1,24 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Invalid local parameter name: <i>foo</i></p>
+</div>
+<div id='explanation'>
+<p>The specified parameter name is not one of the predefined local parameter names:</p>
+<ul>
+<li>searchTerms</li>
+<li>count</li>
+<li>startIndex</li>
+<li>startPage</li>
+<li>language</li>
+<li>inputEncoding</li>
+<li>outputEncoding</li>
+</ul>
+</div>
+<div id='solution'>
+<p>Either replace the parameter value with one listed in the
+<a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_1.1_parameters">OpenSearch 1.1 specification</a>, or use a
+<a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#Fully_qualified_parameter_names">fully qualified parameter name</a>.</p>
+</div>
+</div>
+</fvdoc>

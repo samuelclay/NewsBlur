@@ -1,0 +1,14 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> attribute of <code>bar</code> must be 'yes', 'no', or 'clean'</p>
+</div>
+<div id='explanation'>
+<p>The specified attribute value is not a valid value for this element.</p>
+<p><b>Note:</b> this value is not case sensitive.</p>
+</div>
+<div id='solution'>
+<p>Change the attribute value to either <code>yes</code>, <code>no</code>, or <code>clean</code>.</p>
+</div>
+</div>
+</fvdoc>

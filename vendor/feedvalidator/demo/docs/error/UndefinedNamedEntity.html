@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Undefined named entity: foo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css" media="screen">@import "../../css/common.css";
+@import "../../css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+<link rel="start" href="http://feedvalidator.org/docs/" title="Home" />
+</head>
+<body>
+<div id="logo">
+<h1><a href="../../"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>Documentation</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+<h2>Message</h2>
+<div class="docbody">
+<p>Undefined named entity: <code>foo</code></p>
+</div>
+<h2>Explanation</h2>
+
+<div class="docbody">
+<p>Your feed is not <a href="http://www.w3.org/TR/REC-xml/#sec-well-formed">well formed</a> according to the <a href="http://www.w3.org/TR/REC-xml">XML specification</a>.  It makes use of a named entity other than one of the ones <a href="http://www.w3.org/TR/REC-xml/#sec-predefined-ent">predefined</a> in the XML specification: <code>&amp;lt;</code> for <code>&lt;</code>, <code>&amp;amp;</code> for <code>&amp;</code>, <code>&amp;gt;</code> for <code>&gt;</code>, <code>&apos;</code> for <code>&amp;apos;</code>, and <code>&amp;quot;</code> for <code>&quot;.</code></p>
+</div>
+<h2>Solution</h2>
+<div class="docbody">
+<p>It is possible to create a <a href="http://www.w3.org/TR/REC-xml/#dt-doctype">DTD</a> which declares additional <a href="http://www.w3.org/TR/REC-xml/#sec-entity-decl">entities</a>, reference this DTD in a <a href="http://www.w3.org/TR/REC-xml/#NT-doctypedecl">DOCTYPE declaration</a>, and then make use of such entities.  XHTML defines a <a href="http://www.w3.org/TR/xhtml1/#normative">set of such doctypes</a> which defines additional <a href="http://www.w3.org/TR/xhtml1/#h-A2">entities</a>.  Support for the HTML and XHTML doctypes in now widespread &mdash; in browsers.  While the Feed Validator will validate feeds which make use of DTDs specifically defined for use with Atom or RSS, the support for such advanced &mdash; and optional &mdash; XML features is not widespread in feed readers.  As such, this approach is <b>not recommended</b>.</p>
+<p>One solution that <b>is</b> widely supported is to replace the use of named entity references with their <a href="http://www.w3.org/TR/REC-xml/#sec-entity-decl">numerical equivalents</a>.  For example, use <code>&amp;#160</code> or <code>&amp;#xa0;</code> instead of <code>&amp;nbsp;</code>.  A complete list of XHTML characters and their numeric equivalents can be found <a href="http://www.w3.org/TR/xhtml1/dtds.html#a_dtd_Latin-1_characters">here</a>.  Many programming languages have libraries that can assist with this task.</p>
+<p>Another approach it to make use of entity-encoded HTML.  For example, use <code>&amp;amp;nbsp</code> instead of <code>&amp;nbsp;</code>.  In Atom, this requires the use of the <code>type="html"</code> attribute on the construct.</p>
+</div>
+<h2>Not clear?  Disagree?</h2>
+<div class="docbody">
+<p>Let us know on the <a href="http://lists.sourceforge.net/lists/listinfo/feedvalidator-users">feedvalidator-users</a> discussion list!</p>
+</div>
+
+</div><!--main-->
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="../../">Home</a> &middot;
+<a href="../../about.html">About</a> &middot;
+<a href="../../news/">News</a> &middot;
+<a href="../../docs/">Docs</a> &middot;
+<a href="../../terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper -->
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-4 <a href="http://diveintomark.org/">Mark Pilgrim</a> and <a href="http://www.intertwingly.net/blog/">Sam Ruby</a></address>
+</div>
+
+</body>
+</html>

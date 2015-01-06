@@ -104,7 +104,7 @@
 {
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    
+        
     [UIView animateWithDuration:0.2f animations:^{
         [self adjustCommentField:kbSize];
     }];

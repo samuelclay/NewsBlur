@@ -1,0 +1,48 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: Taxonomy module elements shouldn't cause error 
+  Expect:      !Error
+-->
+
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"  
+  xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" 
+  xmlns="http://purl.org/rss/1.0/" 
+>
+
+  <channel rdf:about="http://example.org/">
+    <title>mod_taxo</title>
+    <link>http://example.org/</link>
+    <description>Taxonomy module</description>
+    <items>
+      <rdf:Seq>
+        <rdf:li rdf:resource="http://example.org/1"/>
+      </rdf:Seq>
+    </items>
+    <taxo:topics>
+      <rdf:Bag>
+        <rdf:li resource="http://example.org/taxo/?c=cat23"/>
+        <rdf:li resource="http://example.com/Markup_Languages/taxonom/SGML/"/>
+        <rdf:li resource="http://example.net/t/Internet/"/>
+      </rdf:Bag>
+    </taxo:topics>
+  </channel>
+
+  <item rdf:about="http://example.org/1">
+    <title>Foo</title> 
+    <link>http://example.org/1</link>
+    <taxo:topics>
+      <rdf:Bag>
+        <rdf:li rdf:resource="http://example.com/7"/>
+      </rdf:Bag>
+    </taxo:topics>
+  </item> 
+
+  <taxo:topic rdf:about="http://example.com/7">
+    <taxo:link>http://example.com/7</taxo:link>
+  </taxo:topic>
+</rdf:RDF>
+

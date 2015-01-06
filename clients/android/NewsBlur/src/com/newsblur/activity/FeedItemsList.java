@@ -77,7 +77,7 @@ public class FeedItemsList extends ItemsList {
 	}
 
     @Override
-    protected StoryOrder getStoryOrder() {
+    public StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFeed(this, feed.feedId);
     }
 

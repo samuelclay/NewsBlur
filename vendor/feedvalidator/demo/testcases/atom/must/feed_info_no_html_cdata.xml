@@ -1,0 +1,13 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid feed info (CDATA)
+  Expect:       ValidElement{parent:feed,element:info}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<info><![CDATA[Valid info]]></info>
+</feed>

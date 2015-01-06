@@ -1,0 +1,19 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Two entries with the same value for <code>atom:updated</code></p>
+</div>
+<div id='explanation'>
+<p>Date values SHOULD be as accurate as possible.  For example, it would
+be generally inappropriate for a publishing system to apply the same
+timestamp to several entries which were published during the course
+of a single day.</p>
+</div>
+<div id='solution'>
+<p>Ensure that these atom:updated entries are as accurate as possible.
+This check is not something that can be automated.</p>
+<p>If the two atom:entry elements in question were updated at the same
+time, then no action is necessary.</p>
+</div>
+</div>
+</fvdoc>

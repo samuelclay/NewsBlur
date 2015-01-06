@@ -150,6 +150,8 @@ static char const * const UINavigationControllerEmbedInPopoverTagKey = "UINaviga
 {
     Method original, swizzle;
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) return;
+    
     original = class_getInstanceMethod(self, @selector(pushViewController:animated:));
     swizzle = class_getInstanceMethod(self, @selector(sizzled_pushViewController:animated:));
     
@@ -279,6 +281,8 @@ static char const * const UINavigationControllerEmbedInPopoverTagKey = "UINaviga
 {
     Method original, swizzle;
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) return;
+
 #pragma clang diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated"
     original = class_getInstanceMethod(self, @selector(setContentSizeForViewInPopover:));
@@ -313,10 +317,10 @@ static char const * const UINavigationControllerEmbedInPopoverTagKey = "UINaviga
 {
     [self sizzled_setPreferredContentSize:aSize];
     
-    if ([self isKindOfClass:[UINavigationController class]] == NO && self.navigationController != nil)
+    if ([self isKindOfClass:[UINavigationController class]] == NO && self.navigationController && self.navigationController != nil)
     {
 #ifdef WY_BASE_SDK_7_ENABLED
-        if ([self respondsToSelector:@selector(setPreferredContentSize:)]) {
+        if ([self.navigationController respondsToSelector:@selector(setPreferredContentSize:)]) {
             [self.navigationController setPreferredContentSize:aSize];
         }
 #endif

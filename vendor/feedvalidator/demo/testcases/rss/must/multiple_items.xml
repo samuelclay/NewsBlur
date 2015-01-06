@@ -1,0 +1,29 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  Multiple items element
+  Expect:       DuplicateElement{parent:channel,element:items}
+-->
+
+<rdf:RDF
+ xmlns="http://purl.org/rss/1.0/"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:content="http://purl.org/rss/1.0/modules/content/"
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+<channel rdf:about="http://www.example.com/">
+  <items>
+    <rdf:Seq>
+      <rdf:li resource="http://www.example.com/one" />
+    </rdf:Seq>
+  </items>
+  <items>
+    <rdf:Seq>
+      <rdf:li resource="http://www.example.com/two" />
+    </rdf:Seq>
+  </items>
+</channel>
+</rdf:RDF>

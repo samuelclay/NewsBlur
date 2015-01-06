@@ -642,15 +642,19 @@ def setup_app_firewall():
 def setup_app_motd():
     put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
 
+def remove_gunicorn():
+    with cd(env.VENDOR_PATH):
+        sudo('rm -fr gunicorn')
+    
 def setup_gunicorn(supervisor=True):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
-    with cd(env.VENDOR_PATH):
-        sudo('rm -fr gunicorn')
-        run('git clone git://github.com/benoitc/gunicorn.git')
-    with cd(os.path.join(env.VENDOR_PATH, 'gunicorn')):
-        run('git pull')
-        sudo('python setup.py develop')
+    # with cd(env.VENDOR_PATH):
+    #     sudo('rm -fr gunicorn')
+    #     run('git clone git://github.com/benoitc/gunicorn.git')
+    # with cd(os.path.join(env.VENDOR_PATH, 'gunicorn')):
+    #     run('git pull')
+    #     sudo('python setup.py develop')
 
 
 def update_gunicorn():
@@ -1019,7 +1023,7 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "0.90.0"
+    ES_VERSION = "0.90.13"
     sudo('apt-get update')
     sudo('apt-get install openjdk-7-jre -y')
 
@@ -1028,7 +1032,7 @@ def setup_elasticsearch():
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
-        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head' % ES_VERSION)
+        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
 
 def setup_db_search():
     put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
@@ -1214,8 +1218,8 @@ def post_deploy():
     cleanup_assets()
 
 @parallel
-def deploy(fast=False):
-    deploy_code(copy_assets=False, fast=fast)
+def deploy(fast=False, reload=False):
+    deploy_code(copy_assets=False, fast=fast, reload=reload)
 
 @parallel
 def deploy_web(fast=False):
@@ -1231,7 +1235,7 @@ def kill_gunicorn():
         sudo('pkill -9 -u %s -f gunicorn_django' % env.user)
                 
 @parallel
-def deploy_code(copy_assets=False, full=False, fast=False):
+def deploy_code(copy_assets=False, full=False, fast=False, reload=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
@@ -1239,9 +1243,13 @@ def deploy_code(copy_assets=False, full=False, fast=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        sudo('supervisorctl reload')
-        if fast:
+            
+        if reload:
+            sudo('supervisorctl reload')
+        elif fast:
             kill_gunicorn()
+        else:
+            sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
 
 @parallel
 def kill():

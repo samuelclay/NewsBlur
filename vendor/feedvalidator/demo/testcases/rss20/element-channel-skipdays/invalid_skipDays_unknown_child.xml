@@ -1,0 +1,20 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  skipDays must only contain day children
+  Expect:       UndefinedElement{parent:skipDays,element:days}
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS 2.0 test case</title>
+<link>http://www.feedvalidator.org/testcases/rss20/</link>
+<description>skipDays must only contain day children</description>
+<skipDays>
+<days></days>
+</skipDays>
+</channel>
+</rss>

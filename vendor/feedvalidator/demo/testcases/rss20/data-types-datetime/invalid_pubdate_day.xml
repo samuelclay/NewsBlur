@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  Day out of range
+  Expect:       InvalidRFC2822Date{parent:channel,element:pubDate}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Invalid date format</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>pubDate must be RFC 2822 date format</description>
+<pubDate>Sat, 31 Jun 2006 23:08:26 +1000</pubDate>
+</channel>
+</rss>

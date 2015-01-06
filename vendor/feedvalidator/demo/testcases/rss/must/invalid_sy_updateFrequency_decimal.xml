@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  sy:updateFrequency must be a whole integer
+  Expect:       InvalidInteger{parent:channel,element:sy:updateFrequency}
+-->
+
+<rss version="2.0" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/">
+<channel>
+<sy:updateFrequency>1.5</sy:updateFrequency>
+</channel>
+</rss>

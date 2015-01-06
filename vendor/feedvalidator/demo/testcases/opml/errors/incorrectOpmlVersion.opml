@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  Incorrect OPML Version
+  Expect:       InvalidOPMLVersion
+-->
+
+<opml version="0.5">
+	<head/>
+	<body/>
+	</opml>

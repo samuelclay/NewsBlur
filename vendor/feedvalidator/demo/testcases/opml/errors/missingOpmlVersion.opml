@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  missing OPML Version
+  Expect:       MissingAttribute{attr:version,element:opml}
+-->
+
+<opml>
+	<head/>
+	<body/>
+	</opml>

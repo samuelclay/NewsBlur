@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  Sample file
+  Expect:       !Error
+-->
+
+<rss version ="2.0" 
+
+xmlns:g="http://base.google.com/ns/1.0" >
+
+
+ <channel>
+  	<title>The name of the channel</title>
+  	<description>A description of the channels content.</description>
+  	<link>http://www.providers-website.com</link>
+  <item>
+
+   <title>Acme food delivery</title>
+   <description>Food delivery service</description>
+   <link>http://provider-website.com/item1-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image1.jpg</g:image_link>
+   <g:expiration_date>2005-12-20</g:expiration_date>
+   <g:label>Food delivery</g:label>
+   
+   <g:currency>USD</g:currency>
+   <g:price>15</g:price>
+   <g:price_type>starting</g:price_type>
+   <g:payment_accepted>Visa</g:payment_accepted>
+   <g:payment_accepted>MasterCard</g:payment_accepted>
+   <g:payment_notes>minimum payment on credit cards:45</g:payment_notes>
+   <g:service_type>delivery</g:service_type>
+   <g:location>123 Main St, Anytown, CA, 12345, USA</g:location>
+   <g:delivery_radius>20</g:delivery_radius>
+   <g:delivery_notes>will deliver between 9am -5pm</g:delivery_notes>
+   <g:shipping>
+     	<g:country>US</g:country>
+     	<g:service>Standard</g:service>
+     	<g:price>20</g:price>
+   </g:shipping>
+   <g:tax_region>California</g:tax_region>
+   <g:tax_percent>8.25</g:tax_percent>
+  </item>
+
+  <item>
+
+   <title>Acme Pest Control</title>
+   <description>Get rid of those pesky pests</description>
+   <link>http://provider-website.com/item2-info-page.html</link>
+   <g:image_link>http://www.providers-website.com/image2.jpg</g:image_link>
+   <g:expiration_date>2005-12-20</g:expiration_date>
+   <g:label>Pest</g:label>
+   <g:label>Mouse</g:label>
+
+   <g:currency>USD</g:currency>
+   <g:price>20</g:price>
+   <g:price_type>starting</g:price_type>
+   <g:payment_accepted>Check</g:payment_accepted>
+   <g:payment_accepted>Visa</g:payment_accepted>
+   <g:service_type>pest control</g:service_type>
+   <g:location>123 Main St, Anytown, CA, 12345, USA</g:location>
+   <g:delivery_radius>50</g:delivery_radius>
+   
+  </item>
+ </channel>
+</rss>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  quantity
+  Expect:       InvalidValue{element:g:quantity}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:g="http://base.google.com/ns/1.0">
+
+  <title>quantity test case 1</title>
+  <link href="http://base.google.com/base/attribute_list.html" />
+  <updated>2003-12-13T18:30:02Z</updated>
+  <id>http://feedvalidator.org/gbase</id>
+  <author><name>Google</name></author>
+
+  <entry>
+    <title>quantity test case 1</title>
+    <id>tag:base.google.com,2005:quantity_1</id>
+    <link href="http://base.google.com/base/attribute_list.html#quantity" />
+    <updated>2003-12-13T18:30:02Z</updated>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+      From <a href="http://base.google.com/base/attribute_list.html#quantity">quantity</a>
+      </div>
+    </summary>
+
+    <g:quantity>out of stock</g:quantity>
+  </entry>
+</feed>

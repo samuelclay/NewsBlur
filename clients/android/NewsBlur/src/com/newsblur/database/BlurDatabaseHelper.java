@@ -21,6 +21,7 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -138,6 +139,10 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);}
     }
 
+    public void vacuum() {
+        synchronized (RW_MUTEX) {dbRW.execSQL("VACUUM");}
+    }
+
     public void deleteFeed(String feedId) {
         String[] selArgs = new String[] {feedId};
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);}
@@ -204,7 +209,7 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
-    public void insertStories(StoriesResponse apiResponse) {
+    public void insertStories(StoriesResponse apiResponse, NBSyncService.ActivationMode actMode, long modeCutoff) {
         // to insert classifiers, we need to determine the feed ID of the stories in this
         // response, so sniff one out.
         String impliedFeedId = null;
@@ -243,8 +248,35 @@ public class BlurDatabaseHelper {
             }
             impliedFeedId = story.feedId;
         }
-        bulkInsertValues(DatabaseConstants.STORY_TABLE, storyValues);
-        bulkInsertValues(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, socialStoryValues);
+        // we don't use bulkInsertValues for stories, since we need to put markStoriesActive within the transaction
+        if (storyValues.size() > 0) {
+            synchronized (RW_MUTEX) {
+                dbRW.beginTransaction();
+                try {
+                    for(ContentValues values: storyValues) {
+                        dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                    }
+                    markStoriesActive(actMode, modeCutoff);
+                    dbRW.setTransactionSuccessful();
+                } finally {
+                    dbRW.endTransaction();
+                }
+            }
+        }
+        if (socialStoryValues.size() > 0) {
+            synchronized (RW_MUTEX) {
+                dbRW.beginTransaction();
+                try {
+                    for(ContentValues values: socialStoryValues) {
+                        dbRW.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                    }
+                    markStoriesActive(actMode, modeCutoff);
+                    dbRW.setTransactionSuccessful();
+                } finally {
+                    dbRW.endTransaction();
+                }
+            }
+        }
 
         // handle classifiers
         if (apiResponse.classifiers != null) {
@@ -495,6 +527,22 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
     }
 
+    public void markStoriesActive(NBSyncService.ActivationMode actMode, long modeCutoff) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_ACTIVE, true);
+
+        String selection = null;
+        if (actMode == NBSyncService.ActivationMode.ALL) {
+            // leave the selection null to mark all
+        } else if (actMode == NBSyncService.ActivationMode.OLDER) {
+            selection = DatabaseConstants.STORY_TIMESTAMP + " <= " + Long.toString(modeCutoff);
+        } else if (actMode == NBSyncService.ActivationMode.NEWER) {
+            selection = DatabaseConstants.STORY_TIMESTAMP + " >= " + Long.toString(modeCutoff);
+        }
+
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, selection, null);}
+    }
+
     public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getSocialFeedsCursor(stateFilter, cancellationSignal);}
@@ -542,12 +590,14 @@ public class BlurDatabaseHelper {
     }
 
     public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
+        if (fs == null) return null;
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return getStoriesCursor(fs, stateFilter, readFilter, order, cancellationSignal);
     }
 
     private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, StoryOrder order, CancellationSignal cancellationSignal) {
+        if (fs == null) return null;
 
         if (fs.getSingleFeed() != null) {
 

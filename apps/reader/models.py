@@ -2,10 +2,14 @@ import datetime
 import time
 import re
 import redis
+from collections import defaultdict
+from operator import itemgetter
+from pprint import pprint
 from utils import log as logging
 from utils import json_functions as json
 from django.db import models, IntegrityError
-from django.db.models import Q
+from django.db.models import Q, F
+from django.db.models import Count
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -15,6 +19,7 @@ from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from apps.analyzer.tfidf import tfidf
 from utils.feed_functions import add_object_to_folder, chunks
 
 class UserSubscription(models.Model):
@@ -865,7 +870,47 @@ class UserSubscription(models.Model):
             feed = Feed.get_by_id(feed_id)
             feed.set_next_scheduled_update()
 
+    @classmethod
+    def count_subscribers_to_other_subscriptions(cls, feed_id):
+        # feeds = defaultdict(int)
+        subscribing_users = cls.objects.filter(feed=feed_id).values('user', 'feed_opens').order_by('-feed_opens')[:25]
+        print "Got subscribing users"
+        subscribing_user_ids = [sub['user'] for sub in subscribing_users]
+        print "Got subscribing user ids"
+        cofeeds = cls.objects.filter(user__in=subscribing_user_ids).values('feed').annotate(
+                                     user_count=Count('user')).order_by('-user_count')[:200]
+        print "Got cofeeds: %s" % len(cofeeds)
+        # feed_subscribers = Feed.objects.filter(pk__in=[f['feed'] for f in cofeeds]).values('pk', 'num_subscribers')
+        # max_local_subscribers = float(max([f['user_count'] for f in cofeeds]))
+        # max_total_subscribers = float(max([f['num_subscribers'] for f in feed_subscribers]))
+        # feed_subscribers = dict([(s['pk'], float(s['num_subscribers'])) for s in feed_subscribers])
+        # pctfeeds = [(f['feed'],
+        #              f['user_count'],
+        #              feed_subscribers[f['feed']],
+        #              f['user_count']/max_total_subscribers,
+        #              f['user_count']/max_local_subscribers,
+        #              max_local_subscribers,
+        #              max_total_subscribers) for f in cofeeds]
+        # print pctfeeds[:5]
+        # orderedpctfeeds = sorted(pctfeeds, key=lambda f: .5*f[3]+.5*f[4], reverse=True)[:8]
+        # pprint([(Feed.get_by_id(o[0]), o[1], o[2], o[3], o[4]) for o in orderedpctfeeds])
 
+        users_by_feeds = {}
+        for feed in [f['feed'] for f in cofeeds]:
+            users_by_feeds[feed] = [u['user'] for u in cls.objects.filter(feed=feed, user__in=subscribing_user_ids).values('user')]
+        print "Got users_by_feeds"
+        
+        table = tfidf()
+        for feed in users_by_feeds.keys():
+            table.addDocument(feed, users_by_feeds[feed])
+        print "Got table"
+        
+        sorted_table = sorted(table.similarities(subscribing_user_ids), key=itemgetter(1), reverse=True)[:8]
+        pprint([(Feed.get_by_id(o[0]), o[1]) for o in sorted_table])
+        
+        return table
+        # return cofeeds
+        
 class RUserStory:
     
     @classmethod

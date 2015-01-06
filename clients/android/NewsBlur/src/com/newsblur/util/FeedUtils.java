@@ -37,7 +37,7 @@ import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
-    private static BlurDatabaseHelper dbHelper;
+    public static BlurDatabaseHelper dbHelper;
 
     public static void offerDB(BlurDatabaseHelper _dbHelper) {
         if (_dbHelper.isOpen()) {
@@ -96,7 +96,21 @@ public class FeedUtils {
                 }
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public static void activateAllStories() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                try {
+                    dbHelper.markStoriesActive(NBSyncService.ActivationMode.ALL, 0L);
+                } catch (Exception e) {
+                    ; // this call can evade the on-upgrade DB wipe and throw exceptions
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void markStoryUnread(final Story story, final Context context) {

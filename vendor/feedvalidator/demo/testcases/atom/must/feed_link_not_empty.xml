@@ -1,0 +1,13 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  feed link element must be empty
+  Expect:       AtomLinkNotEmpty{parent:feed,element:link}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<link>http://example.com/</link>
+</feed>

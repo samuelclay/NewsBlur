@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>The "version" attribute for the opml element must be <code>1.0</code> or <code>1.1</code>.</p>
+</div>
+<div id='explanation'>
+<p>The version of OPML is not supported by this validator.</p>
+</div>
+<div id='solution'>
+<p>Change the version attribute to either <code>1.0</code> or <code>1.1</code>.</p>
+</div>
+</div>
+</fvdoc>

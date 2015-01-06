@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  entry title is valid HTML
+  Expect:       ValidHtml{parent:entry,element:title}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<title type="text/html" mode="escaped">
+  &lt;b&gt;Bold title&lt;/b&gt;
+</title>
+</entry>
+</feed>

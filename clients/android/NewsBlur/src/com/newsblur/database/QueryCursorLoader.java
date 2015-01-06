@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.os.CancellationSignal;
 import android.os.Build;
 import android.os.OperationCanceledException;
+import android.util.Log;
+
+import com.newsblur.util.AppConstants;
 
 /**
  * A partial copy of android.content.CursorLoader with the bits related to ContentProviders
@@ -34,9 +37,17 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
             }
         }
         try {
+            long startTime = System.nanoTime();
+            int count = -1;
             Cursor c = createCursor();
             if (c != null) {
-                c.getCount();
+                // this call to getCount is *not* just for the instrumentation, it ensures the cursor is fully ready before
+                // being called back.  if the instrumentation is ever removed, do not remove this call.
+                count = c.getCount();
+            }
+            if (AppConstants.VERBOSE_LOG_DB) {
+                long time = System.nanoTime() - startTime;
+                Log.d(this.getClass().getName(), "cursor load: " + (time/1000000L) + "ms to load " + count + " rows");
             }
             return c;
         } finally {

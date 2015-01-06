@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Description:  specification.opml from the OPML specification
+  Expect:       !Error
+-->
+
+<opml version="1.0">
+	<head>
+		<title>specification.xml</title>
+		<dateCreated>Thu, 27 Jul 2000 01:20:06 GMT</dateCreated>
+		<dateModified>Fri, 15 Sep 2000 09:04:03 GMT</dateModified>
+		<ownerName>Dave Winer</ownerName>
+		<ownerEmail>dave@userland.com</ownerEmail>
+		<expansionState></expansionState>
+		<vertScrollState>1</vertScrollState>
+		<windowTop>146</windowTop>
+		<windowLeft>107</windowLeft>
+		<windowBottom>468</windowBottom>
+		<windowRight>560</windowRight>
+		</head>
+	<body>
+		<outline text="It's XML, of course">
+			<outline text="This page documents the file formats used by Radio UserLand."/>
+			<outline text="There are two formats, outlineDocument and songList."/>
+			<outline text="There's a simple XML-RPC interface that allows a user to register with an aggregator. "/>
+			<outline text="All formats are open and public and may be used for any purpose whatsoever."/>
+			</outline>
+		<outline text="outlineDocument">
+			<outline text="All playlists are outlineDocuments. This is the main file format for Radio UserLand. When you create a new file it's saved as an outlineDocument. Because users can save them into the www folder, they can be accessed over the Web, either from a script or a Web browser such as MSIE. (Of course they could be served by any HTTP server, not just the Radio UserLand server.)"/>
+			<outline text="The outlineDocument format is &lt;a href=&quot;http://backend.userland.com/stories/storyReader$53&quot;&gt;documented&lt;/a&gt; on backend.userland.com. There will no doubt be changes and refinements to the format. One area that needs work is the format for the data attribute on a headline. Currently there are bugs in the way Radio UserLand uses this attribute. (Every headline gets a data attribute, whether or not it links to a song. We need to XMLize this and fit in data not as an attribute but as a legal sub-item. Shouldn't be hard to do, and with this caveat, breakage should be expected.)"/>
+			<outline text="Radio UserLand can be used to write any kind of document, not just a music playlist. Outlines are great for all kinds of structured documents, specifications, legal briefs, product plans, presentations and stories."/>
+			<outline text="Several examples of outlineDocuments created with Radio UserLand: play list, specification, presentation."/>
+			</outline>
+		<outline text="songList">
+			<outline text="As you're listening to music, Radio UserLand keeps track of what you listen to. Here's a &lt;a href=&quot;http://static.userland.com/images/radiodiscuss/userPlaylistSongs.gif&quot;&gt;screen shot&lt;/a&gt; of the table, user.playlist.songs, that keeps track of the stuff. "/>
+			<outline text="ctPlays is the number of times the song has been played. ctSeconds is the duration of the song, determined by a heuristic that's pretty accurate. f is the file that contains the MP3, on the local file system. whenFirstPlayed is the time/date the song was played for the first time, whenLastPlayed is the most recent time/date. whenLoaded is when Radio UserLand discovered the file in your MP3 folder."/>
+			<outline text="Every hour on the hour Radio UserLand generates an XMLization of this table and places it in the userland folder of your www folder, making it available over the Web. (There's no way to turn this feature off, there should be.)"/>
+			<outline text="Here's an &lt;a href=&quot;http://static.userland.com/gems/radiodiscuss/songs.xml&quot;&gt;example&lt;/a&gt; of the XML file. The mapping between the table and the XMLization should be fairly clear."/>
+			</outline>
+		<outline text="Rules of the road">
+			<outline text="Rules of the road will be determined later, since many of these files will be on users' machines, we want to provide guidelines for bots, aggregators and content systems; and whatever other kinds of applications people think of. Feel free to use the discussion group here to raise issues. "/>
+			</outline>
+		</body>
+	</opml>

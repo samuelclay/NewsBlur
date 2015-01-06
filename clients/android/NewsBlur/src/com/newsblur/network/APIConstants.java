@@ -13,6 +13,7 @@ public class APIConstants {
     // they are not.
 
 	public static final String URL_LOGIN = NEWSBLUR_URL + "/api/login";
+    public static final String URL_LOGINAS = NEWSBLUR_URL + "/reader/login_as";
 	public static final String URL_FEEDS = NEWSBLUR_URL + "/reader/feeds/";
 	public static final String URL_USER_PROFILE = NEWSBLUR_URL + "/social/profile";
 	public static final String URL_MY_PROFILE = NEWSBLUR_URL + "/social/load_user_profile";
@@ -49,6 +50,7 @@ public class APIConstants {
 	public static final String PARAMETER_H = "h";
 	public static final String PARAMETER_PASSWORD = "password";
 	public static final String PARAMETER_USER_ID = "user_id";
+    public static final String PARAMETER_USER = "user";
 	public static final String PARAMETER_USERNAME = "username";
 	public static final String PARAMETER_EMAIL = "email";
 	public static final String PARAMETER_USERID = "user_id";
@@ -73,6 +75,7 @@ public class APIConstants {
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	public static final String PARAMETER_ORDER = "order";
 	public static final String PARAMETER_READ_FILTER = "read_filter";
+	public static final String PARAMETER_INCLUDE_TIMESTAMPS = "include_timestamps";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

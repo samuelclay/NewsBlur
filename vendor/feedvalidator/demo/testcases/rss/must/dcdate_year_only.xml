@@ -1,0 +1,18 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  valid dc:date (year only)
+  Expect:       ValidW3CDTFDate{parent:channel,element:dc:date}
+-->
+
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<title>Validity test</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>valid dc:date (year only)</description>
+<dc:date>2002</dc:date>
+</channel>
+</rss>

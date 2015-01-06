@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  OPML Specification reference:
+
+  What is a <body>?
+  A <body> contains one or more <outline> elements.
+-->
+
+<!--
+  Description:   A <body> should contain at least one <outline>
+  Expect:        MissingElement{element:outline,parent:body}
+-->
+
+<opml version="1.1">
+	<head>
+		<title>Missing Outline Element</title>
+		</head>
+	<body/>
+	</opml>

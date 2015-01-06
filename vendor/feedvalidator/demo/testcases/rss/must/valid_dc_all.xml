@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description:  All mod_dc elements
+  Expect:       !Error
+-->
+
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns="http://purl.org/rss/1.0/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/" 
+>
+
+  <channel rdf:about="http://example.org/">
+    <title>Foo</title>
+    <link>http://example.org/</link>
+    <description>Bar</description>
+    <image rdf:resource="http://example.org/logo.jpg"/>
+    <textinput rdf:resource="http://example.org/search.cgi"/>
+    <items>
+      <rdf:Seq>
+        <rdf:li resource="http://example.org/1"/>
+      </rdf:Seq>
+    </items>
+    <dc:title>Foo en DC</dc:title>
+    <dc:creator>Bob Jones</dc:creator>
+    <dc:subject>Examples</dc:subject>
+    <dc:description>Bar with extra DCness</dc:description>
+    <dc:publisher>Example Inc.</dc:publisher>
+    <dc:contributor>Bill Smith</dc:contributor>
+    <dc:date>2005-07-04</dc:date>
+    <dc:type>Text</dc:type>
+    <dc:format>text/html</dc:format>
+    <dc:identifier>http://example.org/</dc:identifier>
+    <dc:source>http://example.com</dc:source>
+    <dc:language>en-US</dc:language>
+    <dc:relation>http://example.net/</dc:relation>
+    <dc:coverage>Earth</dc:coverage>
+    <dc:rights>Copyright 2005 Example Inc.</dc:rights>
+  </channel>
+  <image rdf:about="http://example.org/logo.jpg">
+    <title>Foo</title>
+    <link>http://example.org</link>
+    <url>http://example.org/logo.jpg</url>
+    <dc:title>Foo en DC</dc:title>
+    <dc:creator>Bob Jones</dc:creator>
+    <dc:subject>Example Logos</dc:subject>
+    <dc:description>Bar with extra DCness</dc:description>
+    <dc:publisher>Example Inc.</dc:publisher>
+    <dc:contributor>Bill Smith</dc:contributor>
+    <dc:date>2005-07-04</dc:date>
+    <dc:type>Still Image</dc:type>
+    <dc:format>image/jpg</dc:format>
+    <dc:identifier>http://example.org/logo.jpg</dc:identifier>
+    <dc:source>http://example.com/logo.jpg</dc:source>
+    <dc:language>en-US</dc:language>
+    <dc:relation>http://example.net/</dc:relation>
+    <dc:coverage>Earth</dc:coverage>
+    <dc:rights>Copyright 2005 Example Inc.</dc:rights>
+  </image>
+  <textinput rdf:about="http://example.org/search.cgi">
+    <title>Search</title>
+    <description>Search for examples</description>
+    <name>q</name>
+    <link>http://example.org/search.cgi</link>
+    <dc:title>Search en DC</dc:title>
+    <dc:creator>Bob Jones</dc:creator>
+    <dc:subject>Example Searching</dc:subject>
+    <dc:description>Bar with extra DCness</dc:description>
+    <dc:publisher>Example Inc.</dc:publisher>
+    <dc:contributor>Bill Smith</dc:contributor>
+    <dc:date>2005-07-04</dc:date>
+    <dc:type>Text</dc:type>
+    <dc:format>text/html</dc:format>
+    <dc:identifier>http://example.org/search.cgi</dc:identifier>
+    <dc:source>http://example.com/search.cgi</dc:source>
+    <dc:language>en-US</dc:language>
+    <dc:relation>http://example.net/</dc:relation>
+    <dc:coverage>Earth</dc:coverage>
+    <dc:rights>Copyright 2005 Example Inc.</dc:rights>
+  </textinput>
+  <item rdf:about="http://example.org/1">
+    <title>Bar</title>
+    <link>http://example.org/1</link>
+    <description>Foo</description>
+    <dc:title>Bar en DC</dc:title>
+    <dc:creator>Bob Jones</dc:creator>
+    <dc:subject>Example Items</dc:subject>
+    <dc:description>Foo with extra DCness</dc:description>
+    <dc:publisher>Example Inc.</dc:publisher>
+    <dc:contributor>Bill Smith</dc:contributor>
+    <dc:date>2005-07-04</dc:date>
+    <dc:type>Text</dc:type>
+    <dc:format>text/html</dc:format>
+    <dc:identifier>http://example.org/1</dc:identifier>
+    <dc:source>http://example.com/1</dc:source>
+    <dc:language>en-US</dc:language>
+    <dc:relation>http://example.net/</dc:relation>
+    <dc:coverage>Earth</dc:coverage>
+    <dc:rights>Copyright 2005 Example Inc.</dc:rights>
+  </item>
+</rdf:RDF>

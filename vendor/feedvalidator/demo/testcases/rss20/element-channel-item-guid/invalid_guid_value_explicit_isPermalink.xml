@@ -1,0 +1,21 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  guid must be http URL (if isPermaLink="true")
+  Expect:       InvalidHttpGUID{parent:item,element:guid}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Invalid GUID</title>
+<link>http://purl.org/rss/2.0/</link>
+<description>foo</description>
+<item>
+<title>Invalid GUID</title>
+<guid isPermaLink="true">example.com</guid>
+</item>
+</channel>
+</rss>

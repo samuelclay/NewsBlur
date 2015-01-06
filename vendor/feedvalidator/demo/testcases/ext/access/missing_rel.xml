@@ -1,0 +1,23 @@
+<!--
+  Author:       Sam Ruby (http://www.intertwingly.net/blog/)
+  Copyright:    Copyright (c) 2006 Sam Ruby
+-->
+
+<!--
+  Description:  Missing relationship
+  Expect:       MissingAttribute{element:access:restriction,attr:relationship}
+-->
+
+<rss version="2.0" xmlns:access="http://www.bloglines.com/about/specs/fac-1.0">
+  <access:restriction/>
+  <channel>
+    <title>Bloglines | News</title>
+    <link>http://www.bloglines.com</link>
+    <item>
+      <title>Ping Away, Bloggers</title>
+      <description>Hello World</description>
+      <pubDate>Fri, 28 Apr 2006 12:03:11 PDT</pubDate>
+      <guid>http://www.bloglines.com/about/news#103</guid>
+    </item>
+  </channel>
+</rss>

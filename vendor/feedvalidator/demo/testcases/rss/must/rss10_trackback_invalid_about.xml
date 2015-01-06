@@ -1,0 +1,31 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: trackback:about in RSS 1.0 using 2.0 syntax 
+  Expect: MissingAttribute{parent:item,element:trackback:about,attr:rdf:resource}
+-->
+
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/rss/1.0/"
+  xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
+>
+
+  <channel rdf:about="http://example.org">
+    <title>Trackback extension test</title>
+    <link>http://example.org</link>
+    <description>Foo.</description>
+    <items>
+      <rdf:Seq>
+        <rdf:li rdf:resource="http://example.org/1"/>
+      </rdf:Seq>
+    </items>
+  </channel>
+  <item rdf:about="http://example.org/1">
+    <title>Trackback in RSS 1.0</title>
+    <link>http://example.org/1</link>
+    <trackback:about>http://example.com/foo/1</trackback:about>
+  </item>
+</rdf:RDF>

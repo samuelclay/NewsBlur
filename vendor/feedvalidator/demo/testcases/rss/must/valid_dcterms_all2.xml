@@ -1,0 +1,164 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: All dcterms elements 
+  Expect: !Error
+-->
+
+<rss version="2.0"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+>
+  <channel>
+    <title>dcterms Module</title>
+    <link>http://purl.org/rss/1.0/modules/dcterms/</link>
+    <description>Refinements of DC Core elements</description>
+    <dcterms:alternative>Qualified Dublin Core Module</dcterms:alternative>
+    <dcterms:alternative>mod_dcterms</dcterms:alternative>
+    <dcterms:abstract>More precise versions of the Dublin Core elements</dcterms:abstract>
+    <dcterms:tableOfContents>http://example.org/toc.html</dcterms:tableOfContents>
+    <dcterms:created>2005</dcterms:created>
+    <dcterms:valid>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:valid>
+    <dcterms:available>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:available>
+    <dcterms:issued>2005-07-04</dcterms:issued>
+    <dcterms:modified>2005-07-04</dcterms:modified>
+    <dcterms:dateAccepted>2005-07-04</dcterms:dateAccepted>
+    <dcterms:dateCopyrighted>2005-07-04</dcterms:dateCopyrighted>
+    <dcterms:dateSubmitted>2005-07-04</dcterms:dateSubmitted>
+    <dcterms:extent>12345</dcterms:extent>
+    <dcterms:isVersionOf>http://example.org/1</dcterms:isVersionOf>
+    <dcterms:hasVersion>http://example.org/2</dcterms:hasVersion>
+    <dcterms:isReplacedBy>http://example.org/3</dcterms:isReplacedBy>
+    <dcterms:replaces>http://example.org/4</dcterms:replaces>
+    <dcterms:isRequiredBy>http://example.org/5</dcterms:isRequiredBy>
+    <dcterms:requires>http://example.org/6</dcterms:requires>
+    <dcterms:isPartOf>http://example.org/7</dcterms:isPartOf>
+    <dcterms:hasPart>http://example.org/8</dcterms:hasPart>
+    <dcterms:isReferencedBy>http://example.org/9</dcterms:isReferencedBy>
+    <dcterms:references>http://example.org/10</dcterms:references>
+    <dcterms:isFormatOf>http://example.org/11</dcterms:isFormatOf>
+    <dcterms:hasFormat>http://example.org/12</dcterms:hasFormat>
+    <dcterms:conformsTo>http://example.org/13</dcterms:conformsTo>
+    <dcterms:spatial>Earth</dcterms:spatial>
+    <dcterms:temporal>name=Whenever; start=1995-07-04; end=2010-07-04; scheme=W3C-DTF</dcterms:temporal>
+    <dcterms:audience>markup geeks</dcterms:audience>
+    <dcterms:mediator>rdf geeks</dcterms:mediator>
+    <image>
+      <url>http://example.org/logo.jpg</url>
+      <title>An imaginary logo</title>
+      <link>http://purl.org/rss/1.0/modules/dcterms/</link>
+      <description>Refinements of DC Core elements</description>
+      <dcterms:alternative>No logo here, actually</dcterms:alternative>
+      <dcterms:abstract>An image which doesn't exist, but would represent something</dcterms:abstract>
+      <dcterms:tableOfContents>http://example.org/toc.html</dcterms:tableOfContents>
+      <dcterms:created>2005</dcterms:created>
+      <dcterms:valid>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:valid>
+      <dcterms:available>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:available>
+      <dcterms:issued>2005-07-04</dcterms:issued>
+      <dcterms:modified>2005-07-04</dcterms:modified>
+      <dcterms:dateAccepted>2005-07-04</dcterms:dateAccepted>
+      <dcterms:dateCopyrighted>2005-07-04</dcterms:dateCopyrighted>
+      <dcterms:dateSubmitted>2005-07-04</dcterms:dateSubmitted>
+      <dcterms:extent>12345</dcterms:extent>
+      <dcterms:isVersionOf>http://example.org/1</dcterms:isVersionOf>
+      <dcterms:hasVersion>http://example.org/2</dcterms:hasVersion>
+      <dcterms:isReplacedBy>http://example.org/3</dcterms:isReplacedBy>
+      <dcterms:replaces>http://example.org/4</dcterms:replaces>
+      <dcterms:isRequiredBy>http://example.org/5</dcterms:isRequiredBy>
+      <dcterms:requires>http://example.org/6</dcterms:requires>
+      <dcterms:isPartOf>http://example.org/7</dcterms:isPartOf>
+      <dcterms:hasPart>http://example.org/8</dcterms:hasPart>
+      <dcterms:isReferencedBy>http://example.org/9</dcterms:isReferencedBy>
+      <dcterms:references>http://example.org/10</dcterms:references>
+      <dcterms:isFormatOf>http://example.org/11</dcterms:isFormatOf>
+      <dcterms:hasFormat>http://example.org/12</dcterms:hasFormat>
+      <dcterms:conformsTo>http://example.org/13</dcterms:conformsTo>
+      <dcterms:spatial>Earth</dcterms:spatial>
+      <dcterms:temporal>name=Whenever; start=1995-07-04; end=2010-07-04; scheme=W3C-DTF</dcterms:temporal>
+      <dcterms:audience>markup geeks</dcterms:audience>
+      <dcterms:mediator>rdf geeks</dcterms:mediator>
+    </image>
+    <textInput>
+      <title>Search</title>
+      <description>Imaginary search for a term</description>
+      <name>q</name>
+      <link>http://example.org/search.cgi</link>
+      <dcterms:alternative>Find a Qualified Dublin Core element</dcterms:alternative>
+      <dcterms:abstract>More precise versions of the Dublin Core elements</dcterms:abstract>
+      <dcterms:tableOfContents>http://example.org/toc.html</dcterms:tableOfContents>
+      <dcterms:created>2005</dcterms:created>
+      <dcterms:valid>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:valid>
+      <dcterms:available>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:available>
+      <dcterms:issued>2005-07-04</dcterms:issued>
+      <dcterms:modified>2005-07-04</dcterms:modified>
+      <dcterms:dateAccepted>2005-07-04</dcterms:dateAccepted>
+      <dcterms:dateCopyrighted>2005-07-04</dcterms:dateCopyrighted>
+      <dcterms:dateSubmitted>2005-07-04</dcterms:dateSubmitted>
+      <dcterms:extent>12345</dcterms:extent>
+      <dcterms:isVersionOf>http://example.org/1</dcterms:isVersionOf>
+      <dcterms:hasVersion>http://example.org/2</dcterms:hasVersion>
+      <dcterms:isReplacedBy>http://example.org/3</dcterms:isReplacedBy>
+      <dcterms:replaces>http://example.org/4</dcterms:replaces>
+      <dcterms:isRequiredBy>http://example.org/5</dcterms:isRequiredBy>
+      <dcterms:requires>http://example.org/6</dcterms:requires>
+      <dcterms:isPartOf>http://example.org/7</dcterms:isPartOf>
+      <dcterms:hasPart>http://example.org/8</dcterms:hasPart>
+      <dcterms:isReferencedBy>http://example.org/9</dcterms:isReferencedBy>
+      <dcterms:references>http://example.org/10</dcterms:references>
+      <dcterms:isFormatOf>http://example.org/11</dcterms:isFormatOf>
+      <dcterms:hasFormat>http://example.org/12</dcterms:hasFormat>
+      <dcterms:conformsTo>http://example.org/13</dcterms:conformsTo>
+      <dcterms:spatial>Earth</dcterms:spatial>
+      <dcterms:temporal>name=Whenever; start=1995-07-04; end=2010-07-04; scheme=W3C-DTF</dcterms:temporal>
+      <dcterms:audience>markup geeks</dcterms:audience>
+      <dcterms:mediator>rdf geeks</dcterms:mediator>
+    </textInput>
+    <item>
+      <title>One particular element</title>
+      <link>http://example.org/1</link>
+      <description>Some really good element</description>
+      <dcterms:alternative>A particular Qualified Dublin Core element</dcterms:alternative>
+      <dcterms:abstract>Everything about this one dcterm</dcterms:abstract>
+      <dcterms:tableOfContents>http://example.org/toc1.html</dcterms:tableOfContents>
+      <dcterms:created>2005</dcterms:created>
+      <dcterms:valid>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:valid>
+      <dcterms:available>name=Foo; start=2005-07-04T01:00+05:00; end=2005-07-04T23:00+05:00; scheme=W3C-DTF</dcterms:available>
+      <dcterms:issued>2005-07-04</dcterms:issued>
+      <dcterms:modified>2005-07-04</dcterms:modified>
+      <dcterms:dateAccepted>2005-07-04</dcterms:dateAccepted>
+      <dcterms:dateCopyrighted>2005-07-04</dcterms:dateCopyrighted>
+      <dcterms:dateSubmitted>2005-07-04</dcterms:dateSubmitted>
+      <dcterms:extent>12345</dcterms:extent>
+      <dcterms:isVersionOf>http://example.org/1</dcterms:isVersionOf>
+      <dcterms:hasVersion>http://example.org/2</dcterms:hasVersion>
+      <dcterms:isReplacedBy>http://example.org/3</dcterms:isReplacedBy>
+      <dcterms:replaces>http://example.org/4</dcterms:replaces>
+      <dcterms:isRequiredBy>http://example.org/5</dcterms:isRequiredBy>
+      <dcterms:requires>http://example.org/6</dcterms:requires>
+      <dcterms:isPartOf>http://example.org/7</dcterms:isPartOf>
+      <dcterms:hasPart>http://example.org/8</dcterms:hasPart>
+      <dcterms:isReferencedBy>http://example.org/9</dcterms:isReferencedBy>
+      <dcterms:references>http://example.org/10</dcterms:references>
+      <dcterms:isFormatOf>http://example.org/11</dcterms:isFormatOf>
+      <dcterms:hasFormat>http://example.org/12</dcterms:hasFormat>
+      <dcterms:conformsTo>http://example.org/13</dcterms:conformsTo>
+      <dcterms:spatial>Earth</dcterms:spatial>
+      <dcterms:temporal>name=Whenever; start=1995-07-04; end=2010-07-04; scheme=W3C-DTF</dcterms:temporal>
+      <dcterms:audience>markup geeks</dcterms:audience>
+      <dcterms:mediator>rdf geeks</dcterms:mediator>
+
+      <!-- added to DMCI -->
+      <dcterms:accessRights>Public</dcterms:accessRights>
+      <dcterms:accrualMethod/>
+      <dcterms:accrualPeriodicity/>
+      <dcterms:accrualPolicy/>
+      <dcterms:bibliographicCitation/>
+      <dcterms:educationLevel/>
+      <dcterms:instructionalMethod/>
+      <dcterms:license/>
+      <dcterms:provenance/>
+      <dcterms:rightsHolder/>
+    </item>
+  </channel>
+</rss>

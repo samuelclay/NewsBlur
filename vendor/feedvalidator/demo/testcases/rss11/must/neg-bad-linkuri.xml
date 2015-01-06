@@ -1,0 +1,15 @@
+<!-- neg-bad-linkuri.xml -->
+
+<!--
+  Description:  Value of rss:link is not xsd:anyURI.
+  Expect:       InvalidUriChar{element:link}
+-->
+
+<Channel xmlns="http://purl.org/net/rss1.1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   rdf:about="http://www.xml.com/xml/news.rss">
+<title>XML.com</title>
+<link>http://xml.com/   invalid-tab</link>
+<description>XML.com features XML stuff</description>
+<items rdf:parseType="Collection"/>
+</Channel>

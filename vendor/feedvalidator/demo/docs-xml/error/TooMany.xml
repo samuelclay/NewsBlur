@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> contains more than ten <code>bar</code> elements</p>
+</div>
+<div id='explanation'>
+<p>A maximum of ten occurrences of the specified element is allowed in this context.</p>
+</div>
+<div id='solution'>
+<p>Reduce the number of elements.</p>
+</div>
+</div>
+</fvdoc>

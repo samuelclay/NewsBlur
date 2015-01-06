@@ -1,0 +1,18 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>type <code>foo/bar</code> used for a document fragment</p>
+</div>
+<div id='explanation'>
+<p>The Mime type specified is meant to describe a complete document, 
+(i.e., including a beginning <code>&lt;html&gt;</code> tag).</p>
+</div>
+<div id='solution'>
+<p>Change the type to <code>html</code> or <code>xhtml</code> as
+appropriate.  These types are meant to indicate that the content is
+a document fragment, more specifically, content that
+one could validly appear directly inside an html <code>div</code>
+element.</p>
+</div>
+</div>
+</fvdoc>

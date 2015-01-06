@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  entry content should not contain EMBED tag
+  Expect:       SecurityRisk{parent:entry,element:content}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<content type="text/html" mode="escaped">&lt;embed&gt;</content>
+</entry>
+</feed>

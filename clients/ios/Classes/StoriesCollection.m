@@ -624,7 +624,7 @@
     [self toggleStorySaved:appDelegate.activeStory];
 }
 
-- (void)toggleStorySaved:(NSDictionary *)story {
+- (BOOL)toggleStorySaved:(NSDictionary *)story {
     BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
     
     if (isSaved) {
@@ -634,14 +634,18 @@
         story = [self markStory:story asSaved:YES];
         [self syncStoryAsSaved:story];
     }
+    
+    return !isSaved;
 }
 
 - (NSDictionary *)markStory:(NSDictionary *)story asSaved:(BOOL)saved {
+    BOOL firstSaved = NO;
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved && ![newStory objectForKey:@"starred_date"]) {
         [newStory setObject:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
         appDelegate.savedStoriesCount += 1;
+        firstSaved = YES;
     } else if (!saved) {
         [newStory removeObjectForKey:@"starred_date"];
         appDelegate.savedStoriesCount -= 1;
@@ -658,7 +662,15 @@
         NSLog(@"Saving in folders: %@", parentFolders);
         [newStory setObject:parentFolders forKey:@"user_tags"];
     }
-    
+
+    // Fake increased count on saved tags if saving for the first time,
+    // will be recounted when save request returns
+    if (firstSaved) {
+        for (NSString *userTag in [newStory objectForKey:@"user_tags"]) {
+            [appDelegate adjustSavedStoryCount:userTag direction:(saved ? 1 : -1)];
+        }
+    }
+
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];

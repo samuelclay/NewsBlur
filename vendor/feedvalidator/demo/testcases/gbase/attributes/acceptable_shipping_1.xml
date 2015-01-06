@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  shipping
+  Expect:       !Error
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:g="http://base.google.com/ns/1.0">
+
+  <title>shipping test case 1</title>
+  <link href="http://base.google.com/base/attribute_list.html" />
+  <updated>2003-12-13T18:30:02Z</updated>
+  <id>http://feedvalidator.org/gbase</id>
+  <author><name>Google</name></author>
+
+  <entry>
+    <title>shipping test case 1</title>
+    <id>tag:base.google.com,2005:shipping_1</id>
+    <link href="http://base.google.com/base/attribute_list.html#shipping" />
+    <updated>2003-12-13T18:30:02Z</updated>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+      From <a href="http://base.google.com/base/attribute_list.html#shipping">shipping</a>
+      </div>
+    </summary>
+
+    <g:shipping>
+    <g:country>US</g:country>
+    <g:service>UPS</g:service>
+    <g:price>35.95</g:price>
+    </g:shipping>
+  </entry>
+</feed>

@@ -1,0 +1,17 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  title actually is inline code
+  Expect:       !NotInline{parent:entry,element:title}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<title type="text/html" mode="xml">
+  <code>&lt;p&gt;foo&lt;/p&gt;</code>
+</title>
+</entry>
+</feed>

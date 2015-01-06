@@ -222,11 +222,11 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
 
-//    if (!self.feedDetailIsVisible) {
-//        [self layoutDashboardScreen];
-//    } else if (!self.originalViewIsVisible) {
-//        [self layoutFeedDetailScreen];
-//    }
+    if (!self.feedDetailIsVisible) {
+        [self layoutDashboardScreen];
+    } else if (!self.originalViewIsVisible) {
+        [self layoutFeedDetailScreen];
+    }
     if (self.feedDetailIsVisible) {
         [self.storyPageControl reorientPages:fromInterfaceOrientation];
     }
@@ -592,6 +592,7 @@
 }
 - (void)transitionToFeedDetail:(BOOL)resetLayout {
     [self hidePopover];
+    if (self.feedDetailIsVisible) resetLayout = NO;
     self.feedDetailIsVisible = YES;
     
     if (resetLayout) {
@@ -951,13 +952,14 @@
     self.storyPageControl.traverseView.hidden = YES;
     
     // adding shareViewController
+    [self.shareNavigationController removeFromParentViewController];
     [self addChildViewController:self.shareNavigationController];
     [self.view insertSubview:self.shareNavigationController.view
                 aboveSubview:self.storyNavigationController.view];
     [self.shareNavigationController didMoveToParentViewController:self];
 
     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
-                                                           vb.size.height, 
+                                                           vb.size.height,
                                                            self.storyPageControl.view.frame.size.width,
                                                            NB_DEFAULT_SHARE_HEIGHT);
     [self.storyPageControl resizeScrollView];
@@ -969,8 +971,8 @@
     [self.shareNavigationController.view setNeedsDisplay];
     [self.shareViewController.commentField becomeFirstResponder];
 
-    if (!self.keyboardIsShown)
-        [self keyboardWillShowOrHide:nil];
+//    if (!self.keyboardIsShown)
+//        [self keyboardWillShowOrHide:nil];
 }
 
 - (void)transitionFromShareView {
@@ -1112,8 +1114,8 @@
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
         } else {
-            storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width + 44;
-            shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width;
+            storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
+            shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
         }
     } else if (self.isSharingStory) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {

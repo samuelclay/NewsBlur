@@ -1,0 +1,15 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2003 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  entry link invalid rel (blank)
+  Expect:       AttrNotBlank{parent:entry,element:link,attr:rel}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+<entry>
+<link rel=""/>
+</entry>
+</feed>

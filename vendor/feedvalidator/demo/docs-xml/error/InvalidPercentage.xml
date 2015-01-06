@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> must be a percentage</p>
+</div>
+<div id='explanation'>
+<p>This value must be an floating point number greater than or equal to zero and less than or equal to 100.  It can not be negative, or a fraction, or a string, or blank.</p>
+</div>
+<div id='solution'>
+<p>Make the specified value a non-negative floating point number less than 100.0.</p>
+</div>
+</div>
+</fvdoc>

@@ -1,0 +1,17 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Use commas to separate keywords</p>
+</div>
+<div id='explanation'>
+<p>Previous versions of this spec indicated that spaces were to be used
+to separate keywords, but in <a
+href="http://www.apple.com/itunes/podcasts/techspecs.html#_Toc526931686">the
+current spec</a> this has been updated to specify that commas are to be
+used.</p>
+</div>
+<div id='solution'>
+<p>Replace spaces with commas</p>
+</div>
+</div>
+</fvdoc>

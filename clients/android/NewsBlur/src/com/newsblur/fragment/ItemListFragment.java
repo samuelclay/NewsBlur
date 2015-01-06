@@ -26,8 +26,10 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -44,8 +46,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter currentState;
-    private boolean isLoading = true;
     private boolean cursorSeenYet = false;
+    private boolean firstStorySeenYet = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,16 +82,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
     }
 
+    private void triggerRefresh(int desiredStoryCount, int totalSeen) {
+        boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
+        if (gotSome) triggerSync();
+    }
+
     /**
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
         cursorSeenYet = false;
-        setLoading(true);
-    }
-
-    public void setLoading(boolean loading) {
-        isLoading = loading;
+        firstStorySeenYet = false;
     }
 
     private void updateLoadingIndicator() {
@@ -103,6 +106,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         TextView emptyView = (TextView) itemList.getEmptyView();
 
+        boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet());
         if (isLoading || (!cursorSeenYet)) {
             emptyView.setText(R.string.empty_list_view_loading);
         } else {
@@ -125,13 +129,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-        // if we have seen a cursor, this method means the list was updated or scrolled. now is a good
-        // time to see if we need more stories
-        if (cursorSeenYet) {
-            // load an extra page or two worth of stories past the viewport
-            int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
-            activity.triggerRefresh(desiredStoryCount, totalCount);
-        }
+        // load an extra page or two worth of stories past the viewport
+        int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
+        triggerRefresh(desiredStoryCount, totalCount);
 	}
 
 	@Override
@@ -154,17 +154,31 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		return dbHelper.getStoriesLoader(getFeedSet(), currentState);
+		return FeedUtils.dbHelper.getStoriesLoader(getFeedSet(), currentState);
 	}
 
     @Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (cursor != null) {
             cursorSeenYet = true;
-            if (cursor.getCount() == 0) {
-                activity.triggerRefresh(1, 0);
+            if (cursor.getCount() < 1) {
+                triggerRefresh(1, 0);
+            } else {
+                if (!firstStorySeenYet) {
+                    // once we have at least a single story, we can instruct the sync service as to how to safely
+                    // activate new stories we recieve
+                    firstStorySeenYet = true;
+                    cursor.moveToFirst();
+                    long cutoff = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
+                    cursor.moveToPosition(-1);
+                    if (activity.getStoryOrder() == StoryOrder.NEWEST) {
+                        NBSyncService.setActivationMode(NBSyncService.ActivationMode.OLDER, cutoff);
+                    } else {
+                        NBSyncService.setActivationMode(NBSyncService.ActivationMode.NEWER, cutoff);
+                    }
+                }
             }
-			adapter.swapCursor(cursor);
+            adapter.swapCursor(cursor);
 		}
         updateLoadingIndicator();
 	}

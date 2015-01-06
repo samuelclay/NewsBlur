@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Description:  listing_type
+  Expect:       InvalidValue{element:g:listing_type}
+-->
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:g="http://base.google.com/ns/1.0">
+
+  <title>listing_type test case 2</title>
+  <link href="http://base.google.com/base/attribute_list.html" />
+  <updated>2003-12-13T18:30:02Z</updated>
+  <id>http://feedvalidator.org/gbase</id>
+  <author><name>Google</name></author>
+
+  <entry>
+    <title>listing_type test case 2</title>
+    <id>tag:base.google.com,2005:listing_type_2</id>
+    <link href="http://base.google.com/base/attribute_list.html#listing_type" />
+    <updated>2003-12-13T18:30:02Z</updated>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+      From <a href="http://base.google.com/base/attribute_list.html#listing_type">listing_type</a>
+      </div>
+    </summary>
+
+    <g:listing_type>Rent</g:listing_type>
+  </entry>
+</feed>

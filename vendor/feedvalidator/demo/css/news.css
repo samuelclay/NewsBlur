@@ -1,0 +1,27 @@
+#main .newsbody {
+  line-height: 140%;
+}
+
+#main h2 {
+  margin-bottom: 0;
+  font-size: 120%;
+}
+
+#main p.dateheader {
+  font-size: xx-small;
+  background: transparent;
+  color: #333;
+  margin-top: 0;
+}
+
+#main p.dateheader a {
+  text-decoration: none;
+  background: transparent;
+  color: #999;
+  border-bottom: 1px dotted #999;
+}
+
+#main p.dateheader a:hover {
+  background: transparent;
+  color: #333;
+}

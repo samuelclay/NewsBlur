@@ -1,0 +1,21 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  item link must be full URL, including protocol
+  Expect:       InvalidLink{parent:item,element:link}
+-->
+
+<rss version="2.0">
+<channel>
+<title>Invalid link</title>
+<description>item link must be full URL, including protocol</description>
+<link>http://purl.org/rss/2.0/</link>
+<item>
+<title>Invalid link</title>
+<link>purl.org/rss/2.0/#item</link>
+</item>
+</channel>
+</rss>

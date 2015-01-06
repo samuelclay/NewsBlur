@@ -1,0 +1,19 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one channel lastBuildDate
+  Expect:       DuplicateElement{parent:channel,element:lastBuildDate}
+-->
+
+<rss version="2.0">
+<channel>
+<title>RSS 2.0 test case</title>
+<link>http://www.feedvalidator.org/testcases/rss20/</link>
+<description>can only have one channel lastBuildDate</description>
+<lastBuildDate>Mon, 31 Dec 2002 14:20:20 GMT</lastBuildDate>
+<lastBuildDate>Mon, 31 Dec 2002 13:20:20 GMT</lastBuildDate>
+</channel>
+</rss>

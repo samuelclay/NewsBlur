@@ -1,0 +1,15 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Whitespace not permitted here</p>
+</div>
+<div id='explanation'>
+<p>Atom does not permit whitespace in a Date construct or in any IRI.</p>
+<p>This means that elements such as <code>&lt;id&gt;</code> and
+<code>&lt;updated&gt;</code> must be contained on one line.</p>
+</div>
+<div id='solution'>
+<p>Remove extraneous spaces from the attribute or value.</p>
+</div>
+</div>
+</fvdoc>

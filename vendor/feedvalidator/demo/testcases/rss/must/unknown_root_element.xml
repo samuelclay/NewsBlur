@@ -1,0 +1,16 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  'channel' is not a valid root element
+  Expect:       UndefinedElement{parent:root,element:channel}
+-->
+
+<channel>
+  <title>foo</title>
+  <link>http://example.com/</link>
+  <description>bar</description>
+  <language>en</language>
+</channel>

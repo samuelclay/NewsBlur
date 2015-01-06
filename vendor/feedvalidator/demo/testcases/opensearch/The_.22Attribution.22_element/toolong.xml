@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Description:  Attribution value is too long
+  Expect:       TooLong{element:Attribution}
+-->
+
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Web Search</ShortName>
+  <Attribution>1234567 10 234567 20 234567 30 234567 40 234567 50 234567 60 234567 70 234567 80 234567 90 23456 100 23456 110 23456 120 23456 130 23456 140 23456 150 23456 160 23456 170 23456 180 23456 190 23456 200 23456 210 23456 220 23456 230 23456 240 23456 250 234567</Attribution>
+  <Description>Use Example.com to search the Web.</Description>
+  <Tags>example web</Tags>
+  <Contact>admin@example.com</Contact>
+  <Url type="application/rss+xml" 
+       template="http://example.com/?q={searchTerms}&amp;pw={startPage?}&amp;format=rss"/>
+</OpenSearchDescription>

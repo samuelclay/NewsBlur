@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> must be between -90 and 90</p>
+</div>
+<div id='explanation'>
+<p>The value for elements expressing latitude must be a number between -90 and 90.</p>
+</div>
+<div id='solution'>
+<p>Use a number between -90 and 90 for the specified value.</p>
+</div>
+</div>
+</fvdoc>

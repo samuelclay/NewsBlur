@@ -1,0 +1,13 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> must be a positive integer</p>
+</div>
+<div id='explanation'>
+<p>This value must be an integer greater than zero.  It can not be negative, or a decimal, or a fraction, or a string, or blank.</p>
+</div>
+<div id='solution'>
+<p>Make the specified value a positive integer.</p>
+</div>
+</div>
+</fvdoc>

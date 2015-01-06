@@ -52,9 +52,9 @@
     
     // position label to bounds
     labelFrame.origin.x = leftMargin*2 + avatarSize;
-    labelFrame.origin.y = topMargin - 1;
+    labelFrame.origin.y = 0;
     labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
-    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    labelFrame.size.height = contentRect.size.height;
     self.activityLabel.frame = labelFrame;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {

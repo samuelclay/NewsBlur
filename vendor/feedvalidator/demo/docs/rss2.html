@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>RSS 2.0 specification</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css" media="screen">@import "../css/common.css";
+@import "../css/documentation.css";</style>
+<script type="text/javascript"><!-- --></script>
+</head>
+<body>
+
+<div id="logo">
+<h1><a href="/"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>RSS 2.0 specification</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#whatIsRss">What is RSS?</a></li>
+<li><a href="#sampleFiles">Sample files</a></li>
+<li><a href="#aboutThisDocument">About this document</a></li>
+<li><a href="#requiredChannelElements">Required channel elements</a></li>
+<li><a href="#optionalChannelElements">Optional channel elements</a></li>
+<li><a href="#hrelementsOfLtitemgt">Elements of &lt;item&gt;</a></li>
+<li><a href="#comments">Comments</a></li>
+<li><a href="#extendingRss">Extending RSS</a></li>
+<li><a href="#roadmap">Roadmap</a></li>
+<li><a href="#copyrightAndDisclaimer">Copyright and disclaimer</a></li>
+</ul>
+
+<h2>What is RSS?<a id="whatIsRss" name="whatIsRss"></a></h2>
+RSS is a Web content syndication format.<br />
+<br />
+Its name is an acronym for <i><b>R</b>eally <b>S</b>imple <b>S</b>yndication.</i><br />
+<br />
+RSS is dialect of XML. All RSS files must conform to the XML 1.0 <a href="http://www.w3.org/TR/REC-xml">specification</a>, as published on the World Wide Web Consortium (W3C) website.<br />
+<br />
+At the top level, a RSS document is a &lt;rss&gt; element, with a mandatory attribute called version, that specifies the version of RSS that the document conforms to. If it conforms to this specification, the version attribute must be 2.0. <br />
+<br />
+Subordinate to the &lt;rss&gt; element is a single &lt;channel&gt; element, which contains information about the channel (metadata) and its contents. <br />
+<br />
+<h2>Sample files<a id="sampleFiles" name="sampleFiles"> </a></h2>
+Here are sample files for: RSS <a href="http://static.userland.com/gems/backend/sampleRss.xml">0.91</a>, <a href="http://static.userland.com/gems/backend/gratefulDead.xml">0.92</a> and <a href="http://static.userland.com/gems/backend/rssTwoExample2.xml">2.0</a>.<br />
+<br />
+Note that the sample files may point to documents and services that no longer exist. The 0.91 sample was created when the 0.91 docs were written. Maintaining a trail of samples seems like a good idea.<br />
+<br />
+<h2>About this document<a id="aboutThisDocument" name="aboutThisDocument"> </a></h2>
+This document represents the status of RSS as of the Fall of 2002, version 2.0.1. <br />
+<br />
+It incorporates all changes and additions, starting with the basic spec for <a href="http://backend.userland.com/rss091">RSS 0.91</a> (June 2000) and includes new features introduced in <a href="http://backend.userland.com/rss092">RSS 0.92</a> (December 2000) and RSS 0.94 (August 2002). <br />
+<br />
+Change notes are <a href="http://backend.userland.com/rssChangeNotes">here</a>.<br />
+<br />
+First we document the required and optional sub-elements of &lt;channel&gt;; and then document the sub-elements of &lt;item&gt;. The final sections answer frequently asked questions, and provide a roadmap for future evolution, and guidelines for extending RSS.<br />
+<br />
+<h2>Required channel elements<a id="requiredChannelElements" name="requiredChannelElements"> </a></h2>
+Here's a list of the required channel elements, each with a brief description, an example, and where available, a pointer to a more complete description.<br />
+<br />
+<table cellspacing="10">
+<tr>
+<th>Element</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+
+<tr>
+<td valign="top">title</td>
+<td valign="top">The name of the channel. It's how people refer to your service. If you have an HTML website that contains the same information as your RSS file, the title of your channel should be the same as the title of your website.</td>
+<td valign="top">GoUpstate.com News Headlines</td>
+</tr>
+
+<tr>
+<td valign="top">link</td>
+<td valign="top">The URL to the HTML website corresponding to the channel.</td>
+<td valign="top">http://www.goupstate.com/</td>
+</tr>
+
+<tr>
+<td valign="top">description       </td>
+<td valign="top">Phrase or sentence describing the channel.</td>
+<td valign="top">The latest news from GoUpstate.com, a Spartanburg Herald-Journal Web site.</td>
+</tr>
+</table>
+
+<br />
+<br />
+<h2>Optional channel elements<a id="optionalChannelElements" name="optionalChannelElements"> </a></h2>
+Here's a list of optional channel elements.<br />
+<br />
+<table cellspacing="10">
+<tr>
+<th>Element</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+
+<tr>
+<td valign="top">language</td>
+<td valign="top">The language the channel is written in. This allows aggregators to group all Italian language sites, for example, on a single page. A list of allowable values for this element, as provided by Netscape, is <a href="http://backend.userland.com/stories/storyReader$16">here</a>. You may also use <a href="http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes">values defined</a> by the W3C.</td>
+<td valign="top">en-us</td>
+</tr>
+
+<tr>
+<td valign="top">copyright</td>
+<td valign="top">Copyright notice for content in the channel.</td>
+<td valign="top">Copyright 2002, Spartanburg Herald-Journal</td>
+</tr>
+
+<tr>
+<td valign="top">managingEditor</td>
+<td valign="top">Email address for person responsible for editorial content.</td>
+<td valign="top">geo@herald.com (George Matesky)</td>
+</tr>
+
+<tr>
+<td valign="top">webMaster</td>
+<td valign="top">Email address for person responsible for technical issues relating to channel.</td>
+<td valign="top">betty@herald.com (Betty Guernsey)</td>
+</tr>
+
+<tr>
+<td valign="top">pubDate</td>
+<td valign="top">The publication date for the content in the channel. For example, the New York Times publishes on a daily basis, the publication date flips once every 24 hours. That's when the pubDate of the channel changes. All date-times in RSS conform to the Date and Time Specification of <a href="http://asg.web.cmu.edu/rfc/rfc822.html">RFC 822</a>, with the exception that the year may be expressed with two characters or four characters (four preferred).</td>
+<td valign="top">Sat, 07 Sep 2002 0:00:01 GMT</td>
+</tr>
+
+<tr>
+<td valign="top">lastBuildDate</td>
+<td valign="top">The last time the content of the channel changed.</td>
+<td valign="top">Sat, 07 Sep 2002 9:42:31 GMT</td>
+</tr>
+
+<tr>
+<td valign="top">category</td>
+<td valign="top">Specify one or more categories that the channel belongs to. Follows the same rules as the &lt;item&gt;-level <a href="#ltcategorygtSubelementOfLtitemgt">category</a> element. More <a href="#syndic8">info</a>.</td>
+<td valign="top">&lt;category&gt;Newspapers&lt;/category&gt;</td>
+</tr>
+
+<tr>
+<td valign="top">generator</td>
+<td valign="top">A string indicating the program used to generate the channel.</td>
+<td valign="top">MightyInHouse Content System v2.3</td>
+</tr>
+
+<tr>
+<td valign="top">docs</td>
+<td valign="top">A URL that points to the documentation for the format used in the RSS file. It's probably a pointer to this page. It's for people who might stumble across an RSS file on a Web server 25 years from now and wonder what it is.</td>
+<td valign="top">http://backend.userland.com/rss</td>
+</tr>
+
+<tr>
+<td valign="top">cloud</td>
+<td valign="top">Allows processes to register with a cloud to be notified of updates to the channel, implementing a lightweight publish-subscribe protocol for RSS feeds. More info <a href="#ltcloudgtSubelementOfLtchannelgt">here</a>.</td>
+<td valign="top">&lt;cloud domain="rpc.sys.com" port="80" path="/RPC2" registerProcedure="pingMe" protocol="soap"/&gt;</td>
+</tr>
+
+<tr>
+<td valign="top">ttl</td>
+<td valign="top">ttl stands for time to live. It's a number of minutes that indicates how long a channel can be cached before refreshing from the source. More info <a href="#ltttlgtSubelementOfLtchannelgt">here</a>.</td>
+<td valign="top">&lt;ttl&gt;60&lt;/ttl&gt;</td>
+</tr>
+
+<tr>
+<td valign="top">image</td>
+<td valign="top">Specifies a GIF, JPEG or PNG image that can be displayed with the channel. More info <a href="#ltimagegtSubelementOfLtchannelgt">here</a>.</td>
+<td valign="top"></td>
+</tr>
+
+<tr>
+<td valign="top">textInput</td>
+<td valign="top">Specifies a text input box that can be displayed with the channel. More info <a href="#lttextinputgtSubelementOfLtchannelgt">here</a>.</td>
+<td valign="top"></td>
+</tr>
+
+<tr>
+<td valign="top">skipHours</td>
+<td valign="top">A hint for aggregators telling them which hours they can skip. More info <a href="http://backend.userland.com/skipHoursDays#skiphours">here</a>.</td>
+<td valign="top"></td>
+</tr>
+
+<tr>
+<td valign="top">skipDays</td>
+<td valign="top">A hint for aggregators telling them which days they can skip. More info <a href="http://backend.userland.com/skipHoursDays#skipdays">here</a>.</td>
+<td valign="top"></td>
+</tr>
+</table>
+
+<br />
+<br />
+<h3>&lt;image&gt; sub-element of &lt;channel&gt;<a id="ltimagegtSubelementOfLtchannelgt" name="ltimagegtSubelementOfLtchannelgt"> </a></h3>
+&lt;image&gt; is an optional sub-element of &lt;channel&gt;, which contains three required and three optional sub-elements.<br />
+<br />
+&lt;url&gt; is the URL of a GIF, JPEG or PNG image that represents the channel. <br />
+<br />
+&lt;title&gt; describes the image, it's used in the ALT attribute of the HTML &lt;img&gt; tag when the channel is rendered in HTML. <br />
+<br />
+&lt;link&gt; is the URL of the site, when the channel is rendered, the image is a link to the site. (Note, in practice the image &lt;title&gt; and &lt;link&gt; should have the same value as the channel's &lt;title&gt; and &lt;link&gt;. <br />
+<br />
+Optional elements include &lt;width&gt; and &lt;height&gt;, numbers, indicating the width and height of the image in pixels. &lt;description&gt; contains text that is included in the TITLE attribute of the link formed around the image in the HTML rendering.<br />
+<br />
+Maximum value for width is 144, default value is 88. <br />
+<br />
+Maximum value for height is 400, default value is 31.<br />
+<br />
+<h3>&lt;cloud&gt; sub-element of &lt;channel&gt;<a id="ltcloudgtSubelementOfLtchannelgt" name="ltcloudgtSubelementOfLtchannelgt"> </a></h3>
+&lt;cloud&gt; is an optional sub-element of &lt;channel&gt;. <br />
+<br />
+It specifies a web service that supports the rssCloud interface which can be implemented in HTTP-POST, XML-RPC or SOAP 1.1. <br />
+<br />
+Its purpose is to allow processes to register with a cloud to be notified of updates to the channel, implementing a lightweight publish-subscribe protocol for RSS feeds.<br />
+<br />
+<code>&lt;cloud domain="radio.xmlstoragesystem.com" port="80" path="/RPC2" registerProcedure="xmlStorageSystem.rssPleaseNotify" protocol="xml-rpc" /&gt;</code><br />
+<br />
+In this example, to request notification on the channel it appears in, you would send an XML-RPC message to radio.xmlstoragesystem.com on port 80, with a path of /RPC2. The procedure to call is xmlStorageSystem.rssPleaseNotify.<br />
+<br />
+A full explanation of this element and the rssCloud interface is <a href="http://www.thetwowayweb.com/soapmeetsrss#rsscloudInterface">here</a>.<br />
+<br />
+<h3>&lt;ttl&gt; sub-element of &lt;channel&gt;<a id="ltttlgtSubelementOfLtchannelgt" name="ltttlgtSubelementOfLtchannelgt"> </a></h3>
+&lt;ttl&gt; is an optional sub-element of &lt;channel&gt;. <br />
+<br />
+ttl stands for time to live. It's a number of minutes that indicates how long a channel can be cached before refreshing from the source. This makes it possible for RSS sources to be managed by a file-sharing network such as <a href="http://www.gnutellanews.com/information/what_is_gnutella.shtml">Gnutella</a>. <br />
+<br />
+Example: &lt;ttl&gt;60&lt;/ttl&gt;<br />
+<br />
+<h3>&lt;textInput&gt; sub-element of &lt;channel&gt;<a id="lttextinputgtSubelementOfLtchannelgt" name="lttextinputgtSubelementOfLtchannelgt"> </a></h3>
+A channel may optionally contain a &lt;textInput&gt; sub-element, which contains four required sub-elements.<br />
+<br />
+&lt;title&gt; -- The label of the Submit button in the text input area. <br />
+<br />
+&lt;description&gt; -- Explains the text input area. <br />
+<br />
+&lt;name&gt; -- The name of the text object in the text input area. <br />
+<br />
+&lt;link&gt; -- The URL of the CGI script that processes text input requests. <br />
+<br />
+The purpose of the &lt;textInput&gt; element is something of a mystery. You can use it to specify a search engine box. Or to allow a reader to provide feedback. Most aggregators ignore it.<br />
+<br />
+<hr />
+<h2>Elements of &lt;item&gt;<a id="hrelementsOfLtitemgt" name="hrelementsOfLtitemgt"> </a></h2>
+A channel may contain any number of &lt;item&gt;s. An item may represent a "story" -- much like a story in a newspaper or magazine; if so its description is a synopsis of the story, and the link points to the full story. An item may also be complete in itself, if so, the description contains the text (entity-encoded HTML is allowed), and the link and title may be omitted. All elements of an item are optional, however at least one of title or description must be present.<br />
+<br />
+<table cellspacing="10">
+<tr>
+<th>Element</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+
+<tr>
+<td valign="top">title</td>
+<td valign="top">The title of the item.</td>
+<td valign="top">Venice Film Festival Tries to Quit Sinking</td>
+</tr>
+
+<tr>
+<td valign="top">link</td>
+<td valign="top">The URL of the item.</td>
+<td valign="top">http://www.nytimes.com/2002/09/07/movies/07FEST.html</td>
+</tr>
+
+<tr>
+<td valign="top">description     </td>
+<td valign="top">The item synopsis.</td>
+<td valign="top">Some of the most heated chatter at the Venice Film Festival this week was about the way that the arrival of the stars at the Palazzo del Cinema was being staged.</td>
+</tr>
+
+<tr>
+<td valign="top">author</td>
+<td valign="top">Email address of the author of the item. <a href="#ltauthorgtSubelementOfLtitemgt">More</a>.</td>
+<td valign="top">oprah@oxygen.net</td>
+</tr>
+
+<tr>
+<td valign="top">category</td>
+<td valign="top">Includes the item in one or more categories. <a href="#ltcategorygtSubelementOfLtitemgt">More</a>.</td>
+<td valign="top">Simpsons Characters</td>
+</tr>
+
+<tr>
+<td valign="top">comments</td>
+<td valign="top">URL of a page for comments relating to the item. <a href="#ltcommentsgtSubelementOfLtitemgt">More</a>.</td>
+<td valign="top">http://www.myblog.org/cgi-local/mt/mt-comments.cgi?entry_id=290</td>
+</tr>
+
+<tr>
+<td valign="top">enclosure</td>
+<td valign="top">Describes a media object that is attached to the item. <a href="#ltenclosuregtSubelementOfLtitemgt">More</a>.</td>
+<td valign="top">&lt;enclosure url="http://live.curry.com/mp3/celebritySCms.mp3" length="1069871" type="audio/mpeg"/&gt;</td>
+</tr>
+
+<tr>
+<td valign="top">guid</td>
+<td valign="top">A string that uniquely identifies the item. <a href="#ltguidgtSubelementOfLtitemgt">More</a>.</td>
+<td valign="top">&lt;guid isPermaLink="true"&gt;http://inessential.com/2002/09/01.php#a2&lt;/guid&gt;</td>
+</tr>
+
+<tr>
+<td valign="top">pubDate</td>
+<td valign="top">Indicates when the item was published. <a href="#ltpubdategtSubelementOfLtitemgt">More</a>.</td>
+<td valign="top">Sun, 19 May 2002 15:21:36 GMT</td>
+</tr>
+
+<tr>
+<td valign="top">source</td>
+<td valign="top">The RSS channel that the item came from. <a href="#ltsourcegtSubelementOfLtitemgt">More</a>.</td>
+<td valign="top">&lt;source url="http://www.quotationspage.com/data/qotd.rss"&gt;Quotes of the Day&lt;/source&gt;</td>
+</tr>
+</table>
+
+<br />
+<br />
+<h3>&lt;source&gt; sub-element of &lt;item&gt;<a id="ltsourcegtSubelementOfLtitemgt" name="ltsourcegtSubelementOfLtitemgt"> </a></h3>
+&lt;source&gt; is an optional sub-element of &lt;item&gt;.<br />
+<br />
+Its value is the name of the RSS channel that the item came from, derived from its &lt;title&gt;. It has one required attribute, url, which links to the XMLization of the source.<br />
+<br />
+<code>&lt;source url="http://static.userland.com/tomalak/links2.xml"&gt;Tomalak's Realm&lt;/source&gt;</code><br />
+<br />
+The purpose of this element is to propogate credit for links, to publicize the sources of news items. It's used in the post command in the Radio UserLand aggregator. It should be generated automatically when forwarding an item from an aggregator to a weblog authoring tool.<br />
+<br />
+<h3>&lt;enclosure&gt; sub-element of &lt;item&gt;<a id="ltenclosuregtSubelementOfLtitemgt" name="ltenclosuregtSubelementOfLtitemgt"> </a></h3>
+&lt;enclosure&gt; is an optional sub-element of &lt;item&gt;.<br />
+<br />
+It has three required attributes. url says where the enclosure is located, length says how big it is in bytes, and type says what its type is, a standard MIME type.<br />
+<br />
+The url must be an http url.<br />
+<br />
+<code>&lt;enclosure url="http://www.scripting.com/mp3s/weatherReportSuite.mp3" length="12216320" type="audio/mpeg" /&gt;</code><br />
+<br />
+A use-case narrative for this element is <a href="http://www.thetwowayweb.com/payloadsforrss">here</a><br />
+<br />
+<h3>&lt;category&gt; sub-element of &lt;item&gt;<a id="ltcategorygtSubelementOfLtitemgt" name="ltcategorygtSubelementOfLtitemgt"> </a></h3>
+&lt;category&gt; is an optional sub-element of &lt;item&gt;.<br />
+<br />
+It has one optional attribute, domain, a string that identifies a categorization taxonomy. <br />
+<br />
+The value of the element is a forward-slash-separated string that identifies a hierarchic location in the indicated taxonomy. Processors may establish conventions for the interpretation of categories. Two examples are provided below:<br />
+<br />
+<code>&lt;category&gt;Grateful Dead&lt;/category&gt;</code><br />
+<br />
+<code>&lt;category domain="http://www.fool.com/cusips"&gt;MSFT&lt;/category&gt;</code><br />
+<br />
+You may include as many category elements as you need to, for different domains, and to have an item cross-referenced in different parts of the same domain.<br />
+<br />
+<h3>&lt;pubDate&gt; sub-element of &lt;item&gt;<a id="ltpubdategtSubelementOfLtitemgt" name="ltpubdategtSubelementOfLtitemgt"> </a></h3>
+&lt;pubDate&gt; is an optional sub-element of &lt;item&gt;.<br />
+<br />
+Its value is a <a href="http://asg.web.cmu.edu/rfc/rfc822.html">date</a>, indicating when the item was published. If it's a date in the future, aggregators may choose to not display the item until that date. <br />
+<br />
+<code>&lt;pubDate&gt;Sun, 19 May 2002 15:21:36 GMT&lt;/pubDate&gt;</code><br />
+<br />
+<h3>&lt;guid&gt; sub-element of &lt;item&gt;<a id="ltguidgtSubelementOfLtitemgt" name="ltguidgtSubelementOfLtitemgt"> </a></h3>
+&lt;guid&gt; is an optional sub-element of &lt;item&gt;.<br />
+<br />
+guid stands for globally unique identifier. It's a string that uniquely identifies the item. When present, an aggregator may choose to use this string to determine if an item is new.<br />
+<br />
+<code>&lt;guid&gt;http://some.server.com/weblogItem3207&lt;/guid&gt;</code><br />
+<br />
+There are no rules for the syntax of a guid. Aggregators must view them as a string. It's up to the source of the feed to establish the uniqueness of the string. <br />
+<br />
+If the guid element has an attribute named "isPermaLink" with a value of true, the reader may assume that it is a <a href="http://www.userland.com/whatIsPermaLink">permalink</a> to the item, that is, a url that can be opened in a Web browser, that points to the full item described by the &lt;item&gt; element. An example:<br />
+<br />
+<code>&lt;guid isPermaLink="true"&gt;http://inessential.com/2002/09/01.php#a2&lt;/guid&gt;</code><br />
+<br />
+isPermaLink is optional, its default value is true. If its value is false, the guid may not be assumed to be a url, or a url to anything in particular.<br />
+<br />
+<h3>&lt;comments&gt; sub-element of &lt;item&gt;<a id="ltcommentsgtSubelementOfLtitemgt" name="ltcommentsgtSubelementOfLtitemgt"> </a></h3>
+&lt;comments&gt; is an optional sub-element of &lt;item&gt;.<br />
+<br />
+If present, it is the url of the comments page for the item. <br />
+<br />
+<code>&lt;comments&gt;http://rateyourmusic.com/yaccs/commentsn/blogId=705245&amp;itemId=271&lt;/comments&gt;</code><br />
+<br />
+<h3>&lt;author&gt; sub-element of &lt;item&gt;<a id="ltauthorgtSubelementOfLtitemgt" name="ltauthorgtSubelementOfLtitemgt"> </a></h3>
+&lt;author&gt; is an optional sub-element of &lt;item&gt;.<br />
+<br />
+It's the email address of the author of the item. For newspapers and magazines syndicating via RSS, the author is the person who wrote the article that the &lt;item&gt; describes. For collaborative weblogs, the author of the item might be different from the managing editor or webmaster. For a weblog authored by a single individual it would make sense to omit the &lt;author&gt; element.<br />
+<br />
+<code>&lt;author&gt;lawyer@boyer.net (Lawyer Boyer)&lt;/author&gt;</code><br />
+<br />
+<h2>Comments<a id="comments" name="comments"> </a></h2>
+RSS places restrictions on the first non-whitespace characters of the data in &lt;link&gt; and &lt;url&gt; elements. The data in these elements must begin with an <a href="http://www.iana.org/assignments/uri-schemes">IANA-registered</a> URI scheme, such as http://, https://, news://, mailto: and ftp://. Prior to RSS 2.0, the specification only allowed http:// and ftp://, however, in practice other URI schemes were in use by content developers and supported by aggregators. Aggregators may have limits on the URI schemes they support. Content developers should not assume that all aggregators support all schemes.<br />
+<br />
+In RSS 0.91, various elements are restricted to 500 or 100 characters. There can be no more than 15 &lt;items&gt; in a 0.91 &lt;channel&gt;. There are no string-length or XML-level limits in RSS 0.92 and greater. Processors may impose their own limits, and generators may have preferences that say no more than a certain number of &lt;item&gt;s can appear in a channel, or that strings are limited in length.<br />
+<br />
+In RSS 2.0, <a id="syndic8" name="syndic8">a provision</a> is made for linking a channel to its identifier in a cataloging system, using the channel-level category feature, described above. For example, to link a channel to its Syndic8 identifier, include a category element as a sub-element of &lt;channel&gt;, with domain "Syndic8", and value the identifier for your channel in the Syndic8 database. The appropriate category element for Scripting News would be &lt;category domain="Syndic8"&gt;1765&lt;/category&gt;.<br />
+<br />
+A frequently asked question about &lt;guid&gt;s is how do they compare to &lt;link&gt;s. Aren't they the same thing? Yes, in some content systems, and no in others. In some systems, &lt;link&gt; is a permalink to a weblog item. However, in other systems, each &lt;item&gt; is a synopsis of a longer article, &lt;link&gt; points to the article, and &lt;guid&gt; is the permalink to the weblog entry. In all cases, it's recommended that you provide the guid, and if possible make it a permalink. This enables aggregators to not repeat items, even if there have been editing changes.<br />
+<br />
+If you have questions about the RSS 2.0 format, please post them on the <a href="http://groups.yahoo.com/group/RSS2-Support/">RSS2-Support</a> mail list, hosted by Sjoerd Visscher. This is not a debating list, but serves as a support resource for users, authors and developers who are creating and using content in RSS 2.0 format.<br />
+<br />
+<h2>Extending RSS<a id="extendingRss" name="extendingRss"> </a></h2>
+RSS originated in 1999, and has strived to be a simple, easy to understand format, with relatively modest goals. After it became a popular format, developers wanted to extend it using modules defined in namespaces, as <a href="http://www.w3.org/TR/REC-xml-names/">specified</a> by the W3C. <br />
+<br />
+RSS 2.0 adds that capability, following a simple rule. A RSS feed may contain elements not described on this page, only if those elements are defined in a namespace. <br />
+<br />
+The elements defined in this document are not themselves members of a namespace, so that RSS 2.0 can remain compatible with previous versions in the following sense -- a version 0.91 or 0.92 file is also a valid 2.0 file. If the elements of RSS 2.0 were in a namespace, this constraint would break, a version 0.9x file <i>would not</i> be a valid 2.0 file. <br />
+<br />
+Here's an <a href="http://static.userland.com/gems/backend/rssMarkPilgrimExample.xml">example</a> of a file that makes use of elements in namespaces, authored by Mark Pilgrim.<br />
+<br />
+<h2>Roadmap<a id="roadmap" name="roadmap"> </a></h2>
+RSS is by no means a perfect format, but it is very popular and widely supported. Having a settled spec is something RSS has needed for a long time. The purpose of this work is to help it become a unchanging thing, to foster growth in the market that is developing around it, and to clear the path for innovation in new syndication formats. Therefore, the RSS spec is, for all practical purposes, frozen at version 2.0.1. We anticipate possible 2.0.2 or 2.0.3 versions, etc. only for the purpose of clarifying the specification, not for adding new features to the format. Subsequent work should happen in modules, using namespaces, and in completely new syndication formats, with new names. <br />
+<br />
+<h2>Copyright and disclaimer<a id="copyrightAndDisclaimer" name="copyrightAndDisclaimer"> </a></h2>
+<a id="copyright" name="copyright">&copy; Copyright 1997-2002 UserLand Software. All Rights Reserved.</a><br />
+<br />
+This document and translations of it may be copied and furnished to others, and derivative works that comment on or otherwise explain it or assist in its implementation may be prepared, copied, published and distributed, in whole or in part, without restriction of any kind, provided that the above copyright notice and these paragraphs are included on all such copies and derivative works. <br />
+<br />
+This document may not be modified in any way, such as by removing the copyright notice or references to UserLand or other organizations. Further, while these copyright restrictions apply to the written RSS specification, no claim of ownership is made by UserLand to the format it describes. Any party may, for commercial or non-commercial purposes, implement this format without royalty or license fee to UserLand. The limited permissions granted herein are perpetual and will not be revoked by UserLand or its successors or assigns.<br />
+<br />
+This document and the information contained herein is provided on an "AS IS" basis and USERLAND DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.<br />
+<br />
+</div><!--main-->
+
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="../images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="../images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="/">Home</a> &middot;
+<a href="/about.html">About</a> &middot;
+<a href="/news/">News</a> &middot;
+<a href="/docs/">Docs</a> &middot;
+<a href="/terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="../images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="../images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper --> 
+</div><!-- .centered -->
+
+</body>
+</html>

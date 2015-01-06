@@ -1,0 +1,15 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p><code>foo</code> is not a valid mode</p>
+</div>
+<div id='explanation'>
+<p>The <code>mode</code> attribute of a <code>content</code> element must be either <samp>"xml"</samp>, <samp>"escaped"</samp>, or <samp>"base64"</samp>.</p>
+</div>
+<div id='solution'>
+<p>Use one of the acceptable values, or take out the attribute (it defaults to <samp>"xml"</samp>).</p>
+
+<p>Like all attributes in XML, this attribute value is case sensitive.</p>
+</div>
+</div>
+</fvdoc>

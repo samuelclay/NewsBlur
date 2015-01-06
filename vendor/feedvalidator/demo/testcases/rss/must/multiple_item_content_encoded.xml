@@ -1,0 +1,21 @@
+<!--
+  Author:       Sam Ruby (http://intertwingly.net/) and Mark Pilgrim (http://diveintomark.org/)
+  Copyright:    Copyright (c) 2002 Sam Ruby and Mark Pilgrim
+-->
+
+<!--
+  Description:  can only have one item content:encoded
+  Expect:       DuplicateElement{parent:item,element:content:encoded}
+-->
+
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+<title>RSS</title>
+<link>http://example.com/</link>
+<description>various duplicate item elements that can't be duplicated</description>
+<item>
+<content:encoded>&lt;b&gt;Hello world&lt;/b&gt;</content:encoded>
+<content:encoded>&lt;b&gt;Hello world&lt;/b&gt;</content:encoded>
+</item>
+</channel>
+</rss>

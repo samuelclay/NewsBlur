@@ -1,0 +1,18 @@
+<fvdoc>
+<div xmlns='http://www.w3.org/1999/xhtml'>
+<div id='message'>
+<p>Non-boolean value for <code>AdultContent</code>: <code>foo</code></p>
+</div>
+<div id='explanation'>
+<p>The values "false", "FALSE", "0", "no", and "NO" will be considered
+boolean FALSE; all other strings will be considered boolean TRUE.</p>
+</div>
+<div id='solution'>
+<p>If you intended to specify a FALSE value, pick one of the values
+above (case sensitive).</p>
+<p>Otherwise, for consistency, and in order to prevent misinterpretations, use
+of one of the following values is suggested:
+"true", "TRUE", "1", "yes", and "YES"</p>
+</div>
+</div>
+</fvdoc>

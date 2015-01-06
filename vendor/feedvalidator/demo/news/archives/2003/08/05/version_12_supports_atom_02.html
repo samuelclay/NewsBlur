@@ -1,0 +1,1056 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Version 1.2 supports Atom 0.2 - Feed Validator News</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css" media="screen">@import "/css/common.css";
+@import "/css/news.css";</style>
+<script type="text/javascript"><!-- --></script>
+<link rel="start" href="http://feedvalidator.org/news/" title="Home" />
+<link rel="prev" href="http://feedvalidator.org/news/archives/2003/07/28/version_111_bugfixes.html" title="Version 1.11, bugfixes" />
+<link rel="next" href="http://feedvalidator.org/news/archives/2003/08/05/version_121.html" title="Version 1.2.1" />
+</head>
+<body>
+<div id="logo">
+<h1><a href="/"><span id="feed"><span id="f">F</span><span id="e1">E</span><span id="e2">E</span></span><span id="d">D</span> Validator</a></h1>
+<p>News</p>
+<a class="skip" href="#startnavigation">Jump to navigation</a>
+</div> <!--logo-->
+
+<div id="main">
+<div class="pageturn">
+<a href="http://feedvalidator.org/news/archives/2003/07/28/version_111_bugfixes.html">&lt;&lt; Version 1.11, bugfixes</a> |
+<a href="http://feedvalidator.org/news/">Home</a>
+| <a href="http://feedvalidator.org/news/archives/2003/08/05/version_121.html">Version 1.2.1 &gt;&gt;</a>
+</div><!--pageturn-->
+<h2>Version 1.2 supports Atom 0.2</h2>
+<p class="dateheader">04:26 PM on Tuesday, August  5, 2003</p>
+<div class="newsbody">
+<p><a href="http://feeds.archive.org/validator/download/feedvalidator-1.2.zip">Version 1.2</a> supports the <a href="http://diveintomark.org/archives/2003/08/05/atom02">Atom 0.2 snapshot</a>.  It no longer supports the 0.1 snapshot; 0.1 feeds will fail with an "ObsoleteVersion" or "ObsoleteNamespace" error.</p>
+
+<p>In addition, many many changes were made to the existing test cases to check for particular instances of success, rather than the absence of particular failures.  This did not change the behavior of the existing validation in any way, nor did it affect the output of the web-based validator.  In particular, there were no behavioral changes to the RSS validation in this release.</p>
+
+<p>Here is the complete CVS changelog:</p>
+
+<pre>2003-08-05 14:51  f8dy
+
+	* src/rssvalid/__init__.py: added hack to work around bug in
+	built-in SAX parser (doesn't recognize xml: namespace)
+
+2003-08-05 14:15  f8dy
+
+	* make.bat: added to cvs, dunno why it wasn't there already
+
+2003-08-05 14:15  f8dy
+
+	* web/check.cgi: the continuing saga of the path
+
+2003-08-05 14:04  f8dy
+
+	* src/rssvalid/i18n/en.py: added Atom 0.2-specific messages
+
+2003-08-05 14:01  f8dy
+
+	* src/rssvalid/logging.py, testcases/pie/must/unicode_error.xml,
+	testcases/rss/must/unicode_error.xml, web/check.cgi: [no log
+	message]
+
+2003-08-05 13:38  f8dy
+
+	* testcases/pie/must/entry_author_missing.xml: 0.2 snapshot
+
+2003-08-05 13:36  f8dy
+
+	* build.xml, web/check.cgi: fixed python path (again), revved
+	version to 1.2
+
+2003-08-05 13:25  f8dy
+
+	* web/: check.cgi, vote.cgi: use /usr/local/bin/python installation
+	now
+
+2003-08-05 11:03  rubys
+
+	* src/rssvalid/: content.py, feed.py: Handle complex (nested)
+	content.  Remove copy/paste error in handing of copyright.
+
+2003-08-05 10:28  rubys
+
+	* src/rssvalid/entry.py: Allow author to be omitted from entries
+	when present on the feed
+
+2003-08-05 10:25  f8dy
+
+	* testcases/pie/must/: entry_author_inherit_from_feed.xml,
+	entry_author_name_missing.xml: 0.2 snapshot
+
+2003-08-05 10:08  f8dy
+
+	* testcases/pie/must/: feed_contributor_email.xml,
+	feed_contributor_email_contains_plus.xml,
+	feed_contributor_email_invalid.xml,
+	feed_contributor_email_overloaded.xml, feed_contributor_name.xml,
+	feed_contributor_name_blank.xml, feed_contributor_name_cdata.xml,
+	feed_contributor_name_contains_html.xml,
+	feed_contributor_name_contains_html_cdata.xml,
+	feed_contributor_name_missing.xml,
+	feed_contributor_name_multiple.xml,
+	feed_contributor_unknown_element.xml,
+	feed_contributor_url_contains_comma.xml,
+	feed_contributor_url_ftp.xml, feed_contributor_url_http.xml,
+	feed_contributor_url_multiple.xml,
+	feed_contributor_url_not_full_uri.xml: 0.2 snapshot
+
+2003-08-05 10:03  rubys
+
+	* src/rssvalid/feed.py: Tagline is optional
+
+2003-08-05 09:51  f8dy
+
+	* testcases/pie/must/feed_tagline_missing.xml: feed/tagline is not
+	required, removing feed_tagline_missing.xml test case
+
+2003-08-05 03:59  rubys
+
+	* src/rssvalid/entry.py, src/rssvalid/feed.py,
+	src/rssvalid/logging.py, src/rssvalid/root.py,
+	testcases/pie/must/feed_namespace_01.xml,
+	testcases/pie/must/feed_namespace_invalid.xml,
+	testcases/pie/must/feed_subtitle_invalid.xml,
+	testcases/pie/must/feed_version_01.xml: Add
+	feed(id,tagline,contributor) Drop feed(subtitle), entry(subtitle)
+	Check for obsolete version, namespace Check for incorrect namespace
+	on feed element
+
+2003-08-05 01:37  f8dy
+
+	* src/rssvalid/logging.py, testcases/pie/must/feed_version_01.xml:
+	0.2 snapshot - add test for obsolete 0.1 version
+
+2003-08-05 01:32  f8dy
+
+	* src/rssvalid/base.py, src/rssvalid/root.py,
+	testcases/pie/must/entry_author_email.xml,
+	testcases/pie/must/entry_author_email_contains_plus.xml,
+	testcases/pie/must/entry_author_email_invalid.xml,
+	testcases/pie/must/entry_author_email_overloaded.xml,
+	testcases/pie/must/entry_author_name.xml,
+	testcases/pie/must/entry_author_name_blank.xml,
+	testcases/pie/must/entry_author_name_cdata.xml,
+	testcases/pie/must/entry_author_name_contains_html.xml,
+	testcases/pie/must/entry_author_name_contains_html_cdata.xml,
+	testcases/pie/must/entry_author_name_missing.xml,
+	testcases/pie/must/entry_author_name_multiple.xml,
+	testcases/pie/must/entry_author_unknown_element.xml,
+	testcases/pie/must/entry_author_url_contains_comma.xml,
+	testcases/pie/must/entry_author_url_ftp.xml,
+	testcases/pie/must/entry_author_url_http.xml,
+	testcases/pie/must/entry_author_url_multiple.xml,
+	testcases/pie/must/entry_author_url_not_full_uri.xml,
+	testcases/pie/must/entry_content_is_inline.xml,
+	testcases/pie/must/entry_content_mode.xml,
+	testcases/pie/must/entry_content_mode2.xml,
+	testcases/pie/must/entry_content_mode3.xml,
+	testcases/pie/must/entry_content_mode_blank.xml,
+	testcases/pie/must/entry_content_mode_invalid.xml,
+	testcases/pie/must/entry_content_not_base64.xml,
+	testcases/pie/must/entry_content_not_escaped.xml,
+	testcases/pie/must/entry_content_not_inline.xml,
+	testcases/pie/must/entry_content_not_inline_cdata.xml,
+	testcases/pie/must/entry_content_type.xml,
+	testcases/pie/must/entry_content_type2.xml,
+	testcases/pie/must/entry_content_type3.xml,
+	testcases/pie/must/entry_content_type4.xml,
+	testcases/pie/must/entry_content_type_blank.xml,
+	testcases/pie/must/entry_content_type_missing.xml,
+	testcases/pie/must/entry_content_type_not_mime.xml,
+	testcases/pie/must/entry_contributor_email.xml,
+	testcases/pie/must/entry_contributor_email_contains_plus.xml,
+	testcases/pie/must/entry_contributor_email_invalid.xml,
+	testcases/pie/must/entry_contributor_email_overloaded.xml,
+	testcases/pie/must/entry_contributor_name.xml,
+	testcases/pie/must/entry_contributor_name_blank.xml,
+	testcases/pie/must/entry_contributor_name_cdata.xml,
+	testcases/pie/must/entry_contributor_name_contains_html.xml,
+	testcases/pie/must/entry_contributor_name_contains_html_cdata.xml,
+	testcases/pie/must/entry_contributor_name_missing.xml,
+	testcases/pie/must/entry_contributor_name_multiple.xml,
+	testcases/pie/must/entry_contributor_unknown_element.xml,
+	testcases/pie/must/entry_contributor_url_contains_comma.xml,
+	testcases/pie/must/entry_contributor_url_ftp.xml,
+	testcases/pie/must/entry_contributor_url_http.xml,
+	testcases/pie/must/entry_contributor_url_multiple.xml,
+	testcases/pie/must/entry_contributor_url_not_full_uri.xml,
+	testcases/pie/must/entry_created.xml,
+	testcases/pie/must/entry_created_bad_day.xml,
+	testcases/pie/must/entry_created_bad_day2.xml,
+	testcases/pie/must/entry_created_bad_hours.xml,
+	testcases/pie/must/entry_created_bad_minutes.xml,
+	testcases/pie/must/entry_created_bad_month.xml,
+	testcases/pie/must/entry_created_bad_seconds.xml,
+	testcases/pie/must/entry_created_date_only.xml,
+	testcases/pie/must/entry_created_extra_spaces.xml,
+	testcases/pie/must/entry_created_extra_spaces2.xml,
+	testcases/pie/must/entry_created_extra_spaces3.xml,
+	testcases/pie/must/entry_created_extra_spaces4.xml,
+	testcases/pie/must/entry_created_extra_spaces5.xml,
+	testcases/pie/must/entry_created_fractional_second.xml,
+	testcases/pie/must/entry_created_hours_minutes.xml,
+	testcases/pie/must/entry_created_multiple.xml,
+	testcases/pie/must/entry_created_no_colons.xml,
+	testcases/pie/must/entry_created_no_hyphens.xml,
+	testcases/pie/must/entry_created_no_t.xml,
+	testcases/pie/must/entry_created_no_timezone_colon.xml,
+	testcases/pie/must/entry_created_no_year.xml,
+	testcases/pie/must/entry_created_seconds.xml,
+	testcases/pie/must/entry_created_utc.xml,
+	testcases/pie/must/entry_created_wrong_format.xml,
+	testcases/pie/must/entry_created_year_and_month.xml,
+	testcases/pie/must/entry_created_year_only.xml,
+	testcases/pie/must/entry_id_blank.xml,
+	testcases/pie/must/entry_id_contains_comma.xml,
+	testcases/pie/must/entry_id_duplicate_value.xml,
+	testcases/pie/must/entry_id_full_uri.xml,
+	testcases/pie/must/entry_id_missing.xml,
+	testcases/pie/must/entry_id_multiple.xml,
+	testcases/pie/must/entry_id_not_full_uri.xml,
+	testcases/pie/must/entry_id_not_urn.xml,
+	testcases/pie/must/entry_id_not_urn2.xml,
+	testcases/pie/must/entry_id_urn.xml,
+	testcases/pie/must/entry_id_urn_multiple_colons.xml,
+	testcases/pie/must/entry_id_urn_nis_contains_period.xml,
+	testcases/pie/must/entry_id_urn_nis_contains_plus.xml,
+	testcases/pie/must/entry_id_urn_nis_contains_slash.xml,
+	testcases/pie/must/entry_id_urn_nis_starts_with_hyphen.xml,
+	testcases/pie/must/entry_issued.xml,
+	testcases/pie/must/entry_issued_bad_day.xml,
+	testcases/pie/must/entry_issued_bad_day2.xml,
+	testcases/pie/must/entry_issued_bad_hours.xml,
+	testcases/pie/must/entry_issued_bad_minutes.xml,
+	testcases/pie/must/entry_issued_bad_month.xml,
+	testcases/pie/must/entry_issued_bad_seconds.xml,
+	testcases/pie/must/entry_issued_date_only.xml,
+	testcases/pie/must/entry_issued_extra_spaces.xml,
+	testcases/pie/must/entry_issued_extra_spaces2.xml,
+	testcases/pie/must/entry_issued_extra_spaces3.xml,
+	testcases/pie/must/entry_issued_extra_spaces4.xml,
+	testcases/pie/must/entry_issued_extra_spaces5.xml,
+	testcases/pie/must/entry_issued_fractional_second.xml,
+	testcases/pie/must/entry_issued_hours_minutes.xml,
+	testcases/pie/must/entry_issued_missing.xml,
+	testcases/pie/must/entry_issued_multiple.xml,
+	testcases/pie/must/entry_issued_no_colons.xml,
+	testcases/pie/must/entry_issued_no_hyphens.xml,
+	testcases/pie/must/entry_issued_no_t.xml,
+	testcases/pie/must/entry_issued_no_timezone_colon.xml,
+	testcases/pie/must/entry_issued_no_year.xml,
+	testcases/pie/must/entry_issued_seconds.xml,
+	testcases/pie/must/entry_issued_utc.xml,
+	testcases/pie/must/entry_issued_wrong_format.xml,
+	testcases/pie/must/entry_issued_year_and_month.xml,
+	testcases/pie/must/entry_issued_year_only.xml,
+	testcases/pie/must/entry_link_contains_comma.xml,
+	testcases/pie/must/entry_link_ftp.xml,
+	testcases/pie/must/entry_link_http.xml,
+	testcases/pie/must/entry_link_missing.xml,
+	testcases/pie/must/entry_link_multiple.xml,
+	testcases/pie/must/entry_link_not_full_uri.xml,
+	testcases/pie/must/entry_modified.xml,
+	testcases/pie/must/entry_modified_bad_day.xml,
+	testcases/pie/must/entry_modified_bad_day2.xml,
+	testcases/pie/must/entry_modified_bad_hours.xml,
+	testcases/pie/must/entry_modified_bad_minutes.xml,
+	testcases/pie/must/entry_modified_bad_month.xml,
+	testcases/pie/must/entry_modified_bad_seconds.xml,
+	testcases/pie/must/entry_modified_date_only.xml,
+	testcases/pie/must/entry_modified_extra_spaces.xml,
+	testcases/pie/must/entry_modified_extra_spaces2.xml,
+	testcases/pie/must/entry_modified_extra_spaces3.xml,
+	testcases/pie/must/entry_modified_extra_spaces4.xml,
+	testcases/pie/must/entry_modified_extra_spaces5.xml,
+	testcases/pie/must/entry_modified_fractional_second.xml,
+	testcases/pie/must/entry_modified_hours_minutes.xml,
+	testcases/pie/must/entry_modified_missing.xml,
+	testcases/pie/must/entry_modified_multiple.xml,
+	testcases/pie/must/entry_modified_no_colons.xml,
+	testcases/pie/must/entry_modified_no_hyphens.xml,
+	testcases/pie/must/entry_modified_no_t.xml,
+	testcases/pie/must/entry_modified_no_timezone_colon.xml,
+	testcases/pie/must/entry_modified_no_year.xml,
+	testcases/pie/must/entry_modified_seconds.xml,
+	testcases/pie/must/entry_modified_utc.xml,
+	testcases/pie/must/entry_modified_wrong_format.xml,
+	testcases/pie/must/entry_modified_year_and_month.xml,
+	testcases/pie/must/entry_modified_year_only.xml,
+	testcases/pie/must/entry_subtitle_invalid.xml,
+	testcases/pie/must/entry_summary.xml,
+	testcases/pie/must/entry_summary_blank.xml,
+	testcases/pie/must/entry_summary_cdata.xml,
+	testcases/pie/must/entry_summary_contains_html.xml,
+	testcases/pie/must/entry_summary_contains_html_cdata.xml,
+	testcases/pie/must/entry_summary_multiple.xml,
+	testcases/pie/must/entry_title.xml,
+	testcases/pie/must/entry_title_blank.xml,
+	testcases/pie/must/entry_title_cdata.xml,
+	testcases/pie/must/entry_title_contains_html.xml,
+	testcases/pie/must/entry_title_contains_html_cdata.xml,
+	testcases/pie/must/entry_title_missing.xml,
+	testcases/pie/must/entry_title_multiple.xml,
+	testcases/pie/must/entry_unknown_element.xml,
+	testcases/pie/must/feed_author_email.xml,
+	testcases/pie/must/feed_author_email_contains_plus.xml,
+	testcases/pie/must/feed_author_email_invalid.xml,
+	testcases/pie/must/feed_author_email_overloaded.xml,
+	testcases/pie/must/feed_author_name.xml,
+	testcases/pie/must/feed_author_name_cdata.xml,
+	testcases/pie/must/feed_author_name_contains_html.xml,
+	testcases/pie/must/feed_author_name_contains_html_cdata.xml,
+	testcases/pie/must/feed_author_name_multiple.xml,
+	testcases/pie/must/feed_author_unknown_element.xml,
+	testcases/pie/must/feed_author_url_contains_comma.xml,
+	testcases/pie/must/feed_author_url_ftp.xml,
+	testcases/pie/must/feed_author_url_http.xml,
+	testcases/pie/must/feed_author_url_not_full_uri.xml,
+	testcases/pie/must/feed_copyright.xml,
+	testcases/pie/must/feed_copyright_blank.xml,
+	testcases/pie/must/feed_generator_contains_comma.xml,
+	testcases/pie/must/feed_generator_name.xml,
+	testcases/pie/must/feed_generator_name_missing.xml,
+	testcases/pie/must/feed_generator_not_full_uri.xml,
+	testcases/pie/must/feed_generator_not_really_uri.xml,
+	testcases/pie/must/feed_id_blank.xml,
+	testcases/pie/must/feed_id_contains_comma.xml,
+	testcases/pie/must/feed_id_full_uri.xml,
+	testcases/pie/must/feed_id_multiple.xml,
+	testcases/pie/must/feed_id_not_full_uri.xml,
+	testcases/pie/must/feed_id_not_urn.xml,
+	testcases/pie/must/feed_id_not_urn2.xml,
+	testcases/pie/must/feed_id_urn.xml,
+	testcases/pie/must/feed_id_urn_multiple_colons.xml,
+	testcases/pie/must/feed_id_urn_nis_contains_period.xml,
+	testcases/pie/must/feed_id_urn_nis_contains_plus.xml,
+	testcases/pie/must/feed_id_urn_nis_contains_slash.xml,
+	testcases/pie/must/feed_id_urn_nis_starts_with_hyphen.xml,
+	testcases/pie/must/feed_link_contains_comma.xml,
+	testcases/pie/must/feed_link_ftp.xml,
+	testcases/pie/must/feed_link_http.xml,
+	testcases/pie/must/feed_link_mailto.xml,
+	testcases/pie/must/feed_link_missing.xml,
+	testcases/pie/must/feed_link_multiple.xml,
+	testcases/pie/must/feed_link_not_full_uri.xml,
+	testcases/pie/must/feed_modified.xml,
+	testcases/pie/must/feed_modified_bad_day.xml,
+	testcases/pie/must/feed_modified_bad_day2.xml,
+	testcases/pie/must/feed_modified_bad_hours.xml,
+	testcases/pie/must/feed_modified_bad_minutes.xml,
+	testcases/pie/must/feed_modified_bad_month.xml,
+	testcases/pie/must/feed_modified_bad_seconds.xml,
+	testcases/pie/must/feed_modified_date_only.xml,
+	testcases/pie/must/feed_modified_extra_spaces.xml,
+	testcases/pie/must/feed_modified_extra_spaces2.xml,
+	testcases/pie/must/feed_modified_extra_spaces3.xml,
+	testcases/pie/must/feed_modified_extra_spaces4.xml,
+	testcases/pie/must/feed_modified_extra_spaces5.xml,
+	testcases/pie/must/feed_modified_fractional_second.xml,
+	testcases/pie/must/feed_modified_hours_minutes.xml,
+	testcases/pie/must/feed_modified_multiple.xml,
+	testcases/pie/must/feed_modified_no_colons.xml,
+	testcases/pie/must/feed_modified_no_hyphens.xml,
+	testcases/pie/must/feed_modified_no_t.xml,
+	testcases/pie/must/feed_modified_no_timezone_colon.xml,
+	testcases/pie/must/feed_modified_no_year.xml,
+	testcases/pie/must/feed_modified_seconds.xml,
+	testcases/pie/must/feed_modified_utc.xml,
+	testcases/pie/must/feed_modified_wrong_format.xml,
+	testcases/pie/must/feed_modified_year_and_month.xml,
+	testcases/pie/must/feed_modified_year_only.xml,
+	testcases/pie/must/feed_namespace_missing.xml,
+	testcases/pie/must/feed_namespace_missing_dc.xml,
+	testcases/pie/must/feed_subtitle_invalid.xml,
+	testcases/pie/must/feed_tagline.xml,
+	testcases/pie/must/feed_tagline_blank.xml,
+	testcases/pie/must/feed_tagline_cdata.xml,
+	testcases/pie/must/feed_tagline_contains_html.xml,
+	testcases/pie/must/feed_tagline_contains_html_cdata.xml,
+	testcases/pie/must/feed_tagline_missing.xml,
+	testcases/pie/must/feed_tagline_multiple.xml,
+	testcases/pie/must/feed_title_blank.xml,
+	testcases/pie/must/feed_title_contains_html.xml,
+	testcases/pie/must/feed_title_contains_html_cdata.xml,
+	testcases/pie/must/feed_title_missing.xml,
+	testcases/pie/must/feed_title_multiple.xml,
+	testcases/pie/must/feed_title_no_html.xml,
+	testcases/pie/must/feed_title_no_html_cdata.xml,
+	testcases/pie/must/feed_unknown_element.xml,
+	testcases/pie/must/feed_unknown_element_core_namespace.xml,
+	testcases/pie/must/feed_unknown_element_pubdate.xml,
+	testcases/pie/must/feed_version_blank.xml,
+	testcases/pie/must/feed_version_missing.xml,
+	testcases/pie/must/ignorable_whitespace.xml,
+	testcases/pie/must/invalid_xml.xml,
+	testcases/pie/must/unicode_error.xml,
+	testcases/pie/must/unknown_element_in_known_namespace.xml,
+	testcases/pie/must/unknown_namespace.xml,
+	testcases/pie/should/entry_created_no_timezone.xml,
+	testcases/pie/should/entry_issued_utc.xml,
+	testcases/pie/should/entry_modified_no_timezone.xml,
+	testcases/pie/should/feed_modified_no_timezone.xml: 0.2 snapshot -
+	change version number and default namespace
+
+2003-08-05 01:21  f8dy
+
+	* testcases/pie/must/: entry_id_missing.xml, entry_id_multiple.xml,
+	feed_id_blank.xml, feed_id_contains_comma.xml,
+	feed_id_full_uri.xml, feed_id_multiple.xml,
+	feed_id_not_full_uri.xml, feed_id_not_urn.xml,
+	feed_id_not_urn2.xml, feed_id_urn.xml,
+	feed_id_urn_multiple_colons.xml,
+	feed_id_urn_nis_contains_period.xml,
+	feed_id_urn_nis_contains_plus.xml,
+	feed_id_urn_nis_contains_slash.xml,
+	feed_id_urn_nis_starts_with_hyphen.xml: 0.2 snapshot
+
+2003-08-05 01:15  f8dy
+
+	* testcases/pie/must/feed_subtitle_invalid.xml: 0.2 snapshot
+
+2003-08-05 01:12  f8dy
+
+	* testcases/pie/must/: entry_subtitle.xml,
+	entry_subtitle_blank.xml, entry_subtitle_cdata.xml,
+	entry_subtitle_contains_html.xml,
+	entry_subtitle_contains_html_cdata.xml,
+	entry_subtitle_multiple.xml, feed_subtitle.xml,
+	feed_subtitle_blank.xml, feed_subtitle_cdata.xml,
+	feed_subtitle_contains_html.xml,
+	feed_subtitle_contains_html_cdata.xml, feed_subtitle_missing.xml,
+	feed_subtitle_multiple.xml, feed_tagline.xml,
+	feed_tagline_blank.xml, feed_tagline_cdata.xml,
+	feed_tagline_contains_html.xml,
+	feed_tagline_contains_html_cdata.xml, feed_tagline_missing.xml,
+	feed_tagline_multiple.xml, entry_subtitle_invalid.xml: 0.2 snapshot
+
+2003-08-05 01:07  f8dy
+
+	* testcases/pie/must/: entry_contributor_email.xml,
+	entry_contributor_email_contains_plus.xml,
+	entry_contributor_email_invalid.xml,
+	entry_contributor_email_overloaded.xml,
+	entry_contributor_url_contains_comma.xml,
+	entry_contributor_url_ftp.xml, entry_contributor_url_http.xml,
+	entry_contributor_url_multiple.xml,
+	entry_contributor_url_not_full_uri.xml: 0.2 snapshot
+
+2003-08-03 21:59  rubys
+
+	* src/rssvalid/validators.py, src/rssvalid/i18n/en.py,
+	testcases/pie/must/feed_generator_not_really_uri.xml: Full http and
+	ftp URIs require two slashes
+
+2003-08-03 21:05  rubys
+
+	* src/rssvalid/logging.py,
+	testcases/pie/must/feed_title_contains_html.xml,
+	testcases/pie/must/feed_title_contains_html_cdata.xml,
+	testcases/pie/must/feed_title_no_html.xml,
+	testcases/pie/must/feed_title_no_html_cdata.xml: Check for HTML in
+	titles
+
+2003-08-03 20:54  rubys
+
+	* src/rssvalid/base.py, src/rssvalid/logging.py,
+	src/rssvalid/root.py, src/rssvalid/validators.py,
+	src/rssvalid/i18n/en.py, testcases/pie/must/feed_copyright.xml: Log
+	every valid element (for better self validation in test cases)
+
+2003-08-03 20:03  rubys
+
+	* src/rssvalid/: channel.py, item.py, validators.py: Implement more
+	strict email check for pie
+
+2003-08-03 18:39  rubys
+
+	* src/rssvalid/generator.py: Add generator element
+
+2003-08-03 14:46  rubys
+
+	* src/rssvalid/author.py, src/rssvalid/compatibility.py,
+	src/rssvalid/feed.py, src/rssvalid/logging.py,
+	testcases/pie/must/feed_author_url_not_full_uri.xml,
+	testcases/pie/must/feed_generator_name.xml,
+	testcases/pie/must/feed_generator_name_missing.xml,
+	testcases/pie/must/feed_generator_not_full_uri.xml: support
+	author(url,email) and feed(author,copyright,generator)
+
+2003-08-03 09:01  f8dy
+
+	* testcases/pie/must/: entry_contributor_weblog_contains_comma.xml,
+	entry_contributor_weblog_ftp.xml,
+	entry_contributor_weblog_http.xml,
+	entry_contributor_weblog_multiple.xml,
+	entry_contributor_weblog_not_full_uri.xml, feed_copyright.xml,
+	feed_copyright_blank.xml, feed_generator_contains_comma.xml,
+	feed_generator_name.xml, feed_generator_name_missing.xml,
+	feed_generator_not_full_uri.xml, feed_generator_not_really_uri.xml:
+	0.2 snapshot
+
+2003-08-03 08:58  f8dy
+
+	* testcases/pie/must/: entry_author_email.xml,
+	entry_author_email_contains_plus.xml,
+	entry_author_email_invalid.xml, entry_author_email_overloaded.xml,
+	entry_author_homepage_contains_comma.xml,
+	entry_author_homepage_ftp.xml, entry_author_homepage_http.xml,
+	entry_author_homepage_multiple.xml,
+	entry_author_homepage_not_full_uri.xml, entry_author_missing.xml,
+	entry_author_name_blank.xml, entry_author_name_missing.xml,
+	entry_author_url_contains_comma.xml, entry_author_url_ftp.xml,
+	entry_author_url_http.xml, entry_author_url_multiple.xml,
+	entry_author_url_not_full_uri.xml,
+	entry_author_weblog_contains_comma.xml,
+	entry_author_weblog_ftp.xml, entry_author_weblog_http.xml,
+	entry_author_weblog_multiple.xml,
+	entry_author_weblog_not_full_uri.xml,
+	entry_contributor_homepage_contains_comma.xml,
+	entry_contributor_homepage_ftp.xml,
+	entry_contributor_homepage_http.xml,
+	entry_contributor_homepage_multiple.xml,
+	entry_contributor_homepage_not_full_uri.xml,
+	entry_contributor_weblog_contains_comma.xml,
+	entry_contributor_weblog_ftp.xml,
+	entry_contributor_weblog_http.xml,
+	entry_contributor_weblog_multiple.xml,
+	entry_contributor_weblog_not_full_uri.xml, feed_author_email.xml,
+	feed_author_email_contains_plus.xml, feed_author_email_invalid.xml,
+	feed_author_email_overloaded.xml, feed_author_name.xml,
+	feed_author_name_cdata.xml, feed_author_name_contains_html.xml,
+	feed_author_name_contains_html_cdata.xml,
+	feed_author_name_multiple.xml, feed_author_unknown_element.xml,
+	feed_author_url_contains_comma.xml, feed_author_url_ftp.xml,
+	feed_author_url_http.xml, feed_author_url_not_full_uri.xml,
+	feed_title_contains_html.xml, feed_title_contains_html_cdata.xml,
+	feed_title_no_html.xml, feed_title_no_html_cdata.xml: 0.2 snapshot
+
+2003-07-29 21:54  f8dy
+
+	* src/rssvalid/channel.py, src/rssvalid/item.py,
+	src/rssvalid/skipDays.py, src/rssvalid/skipHours.py,
+	testcases/pie/should/entry_created_no_timezone.xml,
+	testcases/pie/should/entry_issued_utc.xml,
+	testcases/pie/should/entry_modified_no_timezone.xml,
+	testcases/pie/should/feed_modified_no_timezone.xml,
+	testcases/rss/should/description_contains_absref.xml,
+	testcases/rss/should/description_contains_embed.xml,
+	testcases/rss/should/description_contains_meta.xml,
+	testcases/rss/should/description_contains_object.xml,
+	testcases/rss/should/description_contains_relref.xml,
+	testcases/rss/should/description_contains_relref2.xml,
+	testcases/rss/should/description_contains_script.xml,
+	testcases/rss/should/description_non_script.xml,
+	testcases/rss/should/duplicate_admingeneratorAgent.xml,
+	testcases/rss/should/duplicate_copyright.xml,
+	testcases/rss/should/duplicate_dccreator.xml,
+	testcases/rss/should/duplicate_dcdate.xml,
+	testcases/rss/should/duplicate_dclanguage.xml,
+	testcases/rss/should/duplicate_dcpublisher.xml,
+	testcases/rss/should/duplicate_dcrights.xml,
+	testcases/rss/should/duplicate_dctermsmodified.xml,
+	testcases/rss/should/duplicate_generator.xml,
+	testcases/rss/should/duplicate_item_author.xml,
+	testcases/rss/should/duplicate_item_category.xml,
+	testcases/rss/should/duplicate_item_dccreator.xml,
+	testcases/rss/should/duplicate_item_dcdate.xml,
+	testcases/rss/should/duplicate_item_dcsource.xml,
+	testcases/rss/should/duplicate_item_dcsubject.xml,
+	testcases/rss/should/duplicate_item_pubDate.xml,
+	testcases/rss/should/duplicate_item_source.xml,
+	testcases/rss/should/duplicate_language.xml,
+	testcases/rss/should/duplicate_lastBuildDate.xml,
+	testcases/rss/should/duplicate_license.xml,
+	testcases/rss/should/duplicate_managingEditor.xml,
+	testcases/rss/should/duplicate_pubDate.xml,
+	testcases/rss/should/duplicate_title.xml,
+	testcases/rss/should/duplicate_webmaster.xml: tighten test cases,
+	add explicit params
+
+2003-07-29 21:33  f8dy
+
+	* src/rssvalid/validators.py,
+	testcases/pie/must/entry_id_blank.xml,
+	testcases/pie/must/entry_id_contains_comma.xml,
+	testcases/pie/must/entry_id_duplicate_value.xml,
+	testcases/pie/must/entry_id_full_uri.xml,
+	testcases/pie/must/entry_id_not_full_uri.xml,
+	testcases/pie/must/entry_id_urn.xml,
+	testcases/pie/must/entry_id_urn_multiple_colons.xml,
+	testcases/pie/must/entry_issued.xml,
+	testcases/pie/must/entry_issued_bad_day.xml,
+	testcases/pie/must/entry_issued_bad_day2.xml,
+	testcases/pie/must/entry_issued_bad_hours.xml,
+	testcases/pie/must/entry_issued_bad_minutes.xml,
+	testcases/pie/must/entry_issued_bad_month.xml,
+	testcases/pie/must/entry_issued_bad_seconds.xml,
+	testcases/pie/must/entry_issued_date_only.xml,
+	testcases/pie/must/entry_issued_extra_spaces.xml,
+	testcases/pie/must/entry_issued_extra_spaces2.xml,
+	testcases/pie/must/entry_issued_extra_spaces3.xml,
+	testcases/pie/must/entry_issued_extra_spaces4.xml,
+	testcases/pie/must/entry_issued_extra_spaces5.xml,
+	testcases/pie/must/entry_issued_fractional_second.xml,
+	testcases/pie/must/entry_issued_hours_minutes.xml,
+	testcases/pie/must/entry_issued_no_colons.xml,
+	testcases/pie/must/entry_issued_no_hyphens.xml,
+	testcases/pie/must/entry_issued_no_t.xml,
+	testcases/pie/must/entry_issued_no_timezone_colon.xml,
+	testcases/pie/must/entry_issued_no_year.xml,
+	testcases/pie/must/entry_issued_seconds.xml,
+	testcases/pie/must/entry_issued_utc.xml,
+	testcases/pie/must/entry_issued_wrong_format.xml,
+	testcases/pie/must/entry_issued_year_and_month.xml,
+	testcases/pie/must/entry_issued_year_only.xml,
+	testcases/pie/must/entry_link_contains_comma.xml,
+	testcases/pie/must/entry_link_ftp.xml,
+	testcases/pie/must/entry_link_http.xml,
+	testcases/pie/must/entry_link_not_full_uri.xml,
+	testcases/pie/must/entry_modified.xml,
+	testcases/pie/must/entry_modified_bad_day.xml,
+	testcases/pie/must/entry_modified_bad_day2.xml,
+	testcases/pie/must/entry_modified_bad_hours.xml,
+	testcases/pie/must/entry_modified_bad_minutes.xml,
+	testcases/pie/must/entry_modified_bad_month.xml,
+	testcases/pie/must/entry_modified_bad_seconds.xml,
+	testcases/pie/must/entry_modified_date_only.xml,
+	testcases/pie/must/entry_modified_extra_spaces.xml,
+	testcases/pie/must/entry_modified_extra_spaces2.xml,
+	testcases/pie/must/entry_modified_extra_spaces3.xml,
+	testcases/pie/must/entry_modified_extra_spaces4.xml,
+	testcases/pie/must/entry_modified_extra_spaces5.xml,
+	testcases/pie/must/entry_modified_fractional_second.xml,
+	testcases/pie/must/entry_modified_hours_minutes.xml,
+	testcases/pie/must/entry_modified_no_colons.xml,
+	testcases/pie/must/entry_modified_no_hyphens.xml,
+	testcases/pie/must/entry_modified_no_t.xml,
+	testcases/pie/must/entry_modified_no_timezone_colon.xml,
+	testcases/pie/must/entry_modified_no_year.xml,
+	testcases/pie/must/entry_modified_seconds.xml,
+	testcases/pie/must/entry_modified_utc.xml,
+	testcases/pie/must/entry_modified_wrong_format.xml,
+	testcases/pie/must/entry_modified_year_and_month.xml,
+	testcases/pie/must/entry_modified_year_only.xml,
+	testcases/pie/must/entry_subtitle.xml,
+	testcases/pie/must/entry_subtitle_blank.xml,
+	testcases/pie/must/entry_subtitle_cdata.xml,
+	testcases/pie/must/entry_subtitle_contains_html.xml,
+	testcases/pie/must/entry_subtitle_contains_html_cdata.xml,
+	testcases/pie/must/entry_summary.xml,
+	testcases/pie/must/entry_summary_blank.xml,
+	testcases/pie/must/entry_summary_cdata.xml,
+	testcases/pie/must/entry_summary_contains_html.xml,
+	testcases/pie/must/entry_summary_contains_html_cdata.xml,
+	testcases/pie/must/entry_title.xml,
+	testcases/pie/must/entry_title_blank.xml,
+	testcases/pie/must/entry_title_cdata.xml,
+	testcases/pie/must/entry_title_contains_html.xml,
+	testcases/pie/must/entry_title_contains_html_cdata.xml,
+	testcases/pie/must/entry_unknown_element.xml,
+	testcases/pie/must/feed_link_contains_comma.xml,
+	testcases/pie/must/feed_link_ftp.xml,
+	testcases/pie/must/feed_link_http.xml,
+	testcases/pie/must/feed_link_mailto.xml,
+	testcases/pie/must/feed_link_not_full_uri.xml,
+	testcases/pie/must/feed_modified.xml,
+	testcases/pie/must/feed_modified_bad_day.xml,
+	testcases/pie/must/feed_modified_bad_day2.xml,
+	testcases/pie/must/feed_modified_bad_hours.xml,
+	testcases/pie/must/feed_modified_bad_minutes.xml,
+	testcases/pie/must/feed_modified_bad_month.xml,
+	testcases/pie/must/feed_modified_bad_seconds.xml,
+	testcases/pie/must/feed_modified_date_only.xml,
+	testcases/pie/must/feed_modified_extra_spaces.xml,
+	testcases/pie/must/feed_modified_extra_spaces2.xml,
+	testcases/pie/must/feed_modified_extra_spaces3.xml,
+	testcases/pie/must/feed_modified_extra_spaces4.xml,
+	testcases/pie/must/feed_modified_extra_spaces5.xml,
+	testcases/pie/must/feed_modified_fractional_second.xml,
+	testcases/pie/must/feed_modified_hours_minutes.xml,
+	testcases/pie/must/feed_modified_no_colons.xml,
+	testcases/pie/must/feed_modified_no_hyphens.xml,
+	testcases/pie/must/feed_modified_no_t.xml,
+	testcases/pie/must/feed_modified_no_timezone_colon.xml,
+	testcases/pie/must/feed_modified_no_year.xml,
+	testcases/pie/must/feed_modified_seconds.xml,
+	testcases/pie/must/feed_modified_utc.xml,
+	testcases/pie/must/feed_modified_wrong_format.xml,
+	testcases/pie/must/feed_modified_year_and_month.xml,
+	testcases/pie/must/feed_modified_year_only.xml,
+	testcases/pie/must/feed_namespace_missing.xml,
+	testcases/pie/must/feed_namespace_missing_dc.xml,
+	testcases/pie/must/feed_subtitle.xml,
+	testcases/pie/must/feed_subtitle_blank.xml,
+	testcases/pie/must/feed_subtitle_cdata.xml,
+	testcases/pie/must/feed_subtitle_contains_html.xml,
+	testcases/pie/must/feed_subtitle_contains_html_cdata.xml,
+	testcases/pie/must/feed_subtitle_missing.xml,
+	testcases/pie/must/feed_title_blank.xml,
+	testcases/pie/must/feed_title_contains_html.xml,
+	testcases/pie/must/feed_title_contains_html_cdata.xml,
+	testcases/pie/must/feed_title_missing.xml,
+	testcases/pie/must/feed_title_no_html.xml,
+	testcases/pie/must/feed_title_no_html_cdata.xml,
+	testcases/pie/must/feed_unknown_element.xml,
+	testcases/pie/must/feed_unknown_element_core_namespace.xml,
+	testcases/pie/must/feed_unknown_element_pubdate.xml,
+	testcases/pie/must/feed_version_blank.xml,
+	testcases/pie/must/feed_version_missing.xml,
+	testcases/pie/must/ignorable_whitespace.xml,
+	testcases/pie/must/unknown_element_in_known_namespace.xml:
+	tightened up test cases, added explicit parent checks, changed
+	negative tests to positive
+
+2003-07-29 17:48  f8dy
+
+	* src/rssvalid/content.py, src/rssvalid/logging.py,
+	testcases/pie/must/entry_author_weblog_ftp.xml,
+	testcases/pie/must/entry_author_weblog_http.xml,
+	testcases/pie/must/entry_author_weblog_not_full_uri.xml,
+	testcases/pie/must/entry_content_mode.xml,
+	testcases/pie/must/entry_content_mode2.xml,
+	testcases/pie/must/entry_content_mode3.xml,
+	testcases/pie/must/entry_content_mode_blank.xml,
+	testcases/pie/must/entry_content_mode_invalid.xml,
+	testcases/pie/must/entry_content_not_base64.xml,
+	testcases/pie/must/entry_content_not_escaped.xml,
+	testcases/pie/must/entry_content_not_inline.xml,
+	testcases/pie/must/entry_content_not_inline_cdata.xml,
+	testcases/pie/must/entry_content_type.xml,
+	testcases/pie/must/entry_content_type2.xml,
+	testcases/pie/must/entry_content_type3.xml,
+	testcases/pie/must/entry_content_type4.xml,
+	testcases/pie/must/entry_content_type_blank.xml,
+	testcases/pie/must/entry_content_type_missing.xml,
+	testcases/pie/must/entry_content_type_not_mime.xml,
+	testcases/pie/must/entry_contributor_homepage_contains_comma.xml,
+	testcases/pie/must/entry_contributor_homepage_ftp.xml,
+	testcases/pie/must/entry_contributor_homepage_http.xml,
+	testcases/pie/must/entry_contributor_homepage_not_full_uri.xml,
+	testcases/pie/must/entry_contributor_name.xml,
+	testcases/pie/must/entry_contributor_name_blank.xml,
+	testcases/pie/must/entry_contributor_name_cdata.xml,
+	testcases/pie/must/entry_contributor_name_contains_html.xml,
+	testcases/pie/must/entry_contributor_name_contains_html_cdata.xml,
+	testcases/pie/must/entry_contributor_unknown_element.xml,
+	testcases/pie/must/entry_contributor_weblog_contains_comma.xml,
+	testcases/pie/must/entry_contributor_weblog_ftp.xml,
+	testcases/pie/must/entry_contributor_weblog_http.xml,
+	testcases/pie/must/entry_contributor_weblog_not_full_uri.xml,
+	testcases/pie/must/entry_created.xml,
+	testcases/pie/must/entry_created_bad_day.xml,
+	testcases/pie/must/entry_created_bad_day2.xml,
+	testcases/pie/must/entry_created_bad_hours.xml,
+	testcases/pie/must/entry_created_bad_minutes.xml,
+	testcases/pie/must/entry_created_bad_month.xml,
+	testcases/pie/must/entry_created_bad_seconds.xml,
+	testcases/pie/must/entry_created_date_only.xml,
+	testcases/pie/must/entry_created_extra_spaces.xml,
+	testcases/pie/must/entry_created_extra_spaces2.xml,
+	testcases/pie/must/entry_created_extra_spaces3.xml,
+	testcases/pie/must/entry_created_extra_spaces4.xml,
+	testcases/pie/must/entry_created_extra_spaces5.xml,
+	testcases/pie/must/entry_created_fractional_second.xml,
+	testcases/pie/must/entry_created_hours_minutes.xml,
+	testcases/pie/must/entry_created_no_colons.xml,
+	testcases/pie/must/entry_created_no_hyphens.xml,
+	testcases/pie/must/entry_created_no_t.xml,
+	testcases/pie/must/entry_created_no_timezone_colon.xml,
+	testcases/pie/must/entry_created_no_year.xml,
+	testcases/pie/must/entry_created_seconds.xml,
+	testcases/pie/must/entry_created_utc.xml,
+	testcases/pie/must/entry_created_wrong_format.xml,
+	testcases/pie/must/entry_created_year_and_month.xml,
+	testcases/pie/must/entry_created_year_only.xml: tightened up test
+	cases, added parent element check, changed negative test cases to
+	positive
+
+2003-07-29 16:57  f8dy
+
+	* src/rssvalid/channel.py, src/rssvalid/item.py,
+	src/rssvalid/logging.py, src/rssvalid/skipDays.py,
+	src/rssvalid/skipHours.py, src/rssvalid/validators.py,
+	testcases/rss/must/invalid_language.xml,
+	testcases/rss/must/invalid_language_blank.xml,
+	testcases/rss/must/invalid_lastBuildDate.xml,
+	testcases/rss/must/invalid_link.xml,
+	testcases/rss/must/invalid_managingEditor.xml,
+	testcases/rss/must/invalid_pubdate.xml,
+	testcases/rss/must/invalid_pubdate_differential.xml,
+	testcases/rss/must/invalid_skipDays_bad_day.xml,
+	testcases/rss/must/invalid_skipHours_bad_hour.xml,
+	testcases/rss/must/invalid_skipHours_fractional_hour.xml,
+	testcases/rss/must/invalid_skipHours_invalid_hour.xml,
+	testcases/rss/must/invalid_skipHours_neg_hour.xml,
+	testcases/rss/must/invalid_skipHours_negative_hour.xml,
+	testcases/rss/must/invalid_sy_updateBase.xml,
+	testcases/rss/must/invalid_sy_updateBase_blank.xml,
+	testcases/rss/must/invalid_sy_updateFrequency_blank.xml,
+	testcases/rss/must/invalid_sy_updateFrequency_decimal.xml,
+	testcases/rss/must/invalid_sy_updateFrequency_negative.xml,
+	testcases/rss/must/invalid_sy_updateFrequency_zero.xml,
+	testcases/rss/must/invalid_sy_updatePeriod.xml,
+	testcases/rss/must/invalid_sy_updatePeriod_blank.xml,
+	testcases/rss/must/invalid_textInput_invalid_link.xml,
+	testcases/rss/must/invalid_title.xml,
+	testcases/rss/must/invalid_title2.xml,
+	testcases/rss/must/invalid_ttl_blank.xml,
+	testcases/rss/must/invalid_ttl_fractional.xml,
+	testcases/rss/must/invalid_ttl_negative.xml,
+	testcases/rss/must/invalid_ttl_nonnumeric.xml,
+	testcases/rss/must/invalid_ttl_zero.xml,
+	testcases/rss/must/invalid_webMaster.xml,
+	testcases/rss/must/item_author.xml,
+	testcases/rss/must/item_comments.xml,
+	testcases/rss/must/item_enclosure_length.xml,
+	testcases/rss/must/item_enclosure_type.xml,
+	testcases/rss/must/item_enclosure_url.xml,
+	testcases/rss/must/item_link.xml,
+	testcases/rss/must/item_link_ftp.xml,
+	testcases/rss/must/item_source_link.xml,
+	testcases/rss/must/language.xml,
+	testcases/rss/must/language_country_code.xml,
+	testcases/rss/must/link.xml,
+	testcases/rss/must/link_contains_comma.xml,
+	testcases/rss/must/link_ftp.xml,
+	testcases/rss/must/link_mailto.xml,
+	testcases/rss/must/missing_channel_description.xml,
+	testcases/rss/must/missing_channel_link.xml,
+	testcases/rss/must/missing_channel_title.xml,
+	testcases/rss/must/missing_namespace.xml,
+	testcases/rss/must/missing_namespace2.xml,
+	testcases/rss/must/missing_namespace_attr_only.xml,
+	testcases/rss/must/missing_version_attribute.xml,
+	testcases/rss/must/multiple_item_category.xml,
+	testcases/rss/must/pubdate.xml, testcases/rss/must/pubdate_a.xml,
+	testcases/rss/must/pubdate_april.xml,
+	testcases/rss/must/pubdate_august.xml,
+	testcases/rss/must/pubdate_cst.xml,
+	testcases/rss/must/pubdate_edt.xml,
+	testcases/rss/must/pubdate_est.xml,
+	testcases/rss/must/pubdate_february.xml,
+	testcases/rss/must/pubdate_friday.xml,
+	testcases/rss/must/pubdate_january.xml,
+	testcases/rss/must/pubdate_july.xml,
+	testcases/rss/must/pubdate_june.xml,
+	testcases/rss/must/pubdate_march.xml,
+	testcases/rss/must/pubdate_may.xml,
+	testcases/rss/must/pubdate_mdt.xml,
+	testcases/rss/must/pubdate_mst.xml,
+	testcases/rss/must/pubdate_no_seconds.xml,
+	testcases/rss/must/pubdate_no_weekday.xml,
+	testcases/rss/must/pubdate_november.xml,
+	testcases/rss/must/pubdate_october.xml,
+	testcases/rss/must/pubdate_one_digit_day.xml,
+	testcases/rss/must/pubdate_pdt.xml,
+	testcases/rss/must/pubdate_pst.xml,
+	testcases/rss/must/pubdate_september.xml,
+	testcases/rss/must/pubdate_thursday.xml,
+	testcases/rss/must/pubdate_tuesday.xml,
+	testcases/rss/must/pubdate_ut.xml,
+	testcases/rss/must/pubdate_wednesday.xml,
+	testcases/rss/must/pubdate_with_differential.xml,
+	testcases/rss/must/pubdate_with_differential2.xml,
+	testcases/rss/must/pubdate_z.xml,
+	testcases/rss/must/rss10_image.xml,
+	testcases/rss/must/rss10_textinput.xml,
+	testcases/rss/must/rss20_textinput.xml,
+	testcases/rss/must/skipDays.xml,
+	testcases/rss/must/skipDays_friday.xml,
+	testcases/rss/must/skipDays_monday.xml,
+	testcases/rss/must/skipDays_saturday.xml,
+	testcases/rss/must/skipDays_sunday.xml,
+	testcases/rss/must/skipDays_thursday.xml,
+	testcases/rss/must/skipDays_tuesday.xml,
+	testcases/rss/must/skipDays_wednesday.xml,
+	testcases/rss/must/skipHours.xml,
+	testcases/rss/must/skipHours_valid_hour.xml,
+	testcases/rss/must/skipHours_valid_hour_high.xml,
+	testcases/rss/must/sy_updateBase.xml,
+	testcases/rss/must/sy_updateFrequency.xml,
+	testcases/rss/must/sy_updatePeriod_daily.xml,
+	testcases/rss/must/sy_updatePeriod_hourly.xml,
+	testcases/rss/must/sy_updatePeriod_monthly.xml,
+	testcases/rss/must/sy_updatePeriod_weekly.xml,
+	testcases/rss/must/sy_updatePeriod_yearly.xml,
+	testcases/rss/must/textInput_valid_link.xml,
+	testcases/rss/must/ttl.xml,
+	testcases/rss/must/ulcc_channel_url.xml,
+	testcases/rss/must/ulcc_item_url.xml,
+	testcases/rss/must/unicode_in_html.xml,
+	testcases/rss/must/unknown_element.xml,
+	testcases/rss/must/unknown_element_in_known_namespace.xml,
+	testcases/rss/must/unknown_namespace.xml,
+	testcases/rss/must/valid_item_title.xml,
+	testcases/rss/must/valid_item_title2.xml,
+	testcases/rss/must/valid_lastBuildDate.xml,
+	testcases/rss/must/valid_managingEditor.xml,
+	testcases/rss/must/valid_title.xml,
+	testcases/rss/must/valid_title2.xml,
+	testcases/rss/must/valid_webMaster.xml,
+	testcases/rss/must/webMaster_name_and_email.xml,
+	testcases/rss/must/webMaster_plus_in_email.xml: tightened up test
+	cases, check for parent element, explicitly test for success
+
+2003-07-29 15:38  f8dy
+
+	* src/rssvalid/channel.py, src/rssvalid/image.py,
+	src/rssvalid/item.py, src/rssvalid/logging.py, src/rssvalid/rdf.py,
+	src/rssvalid/rss.py, src/rssvalid/validators.py,
+	testcases/rss/must/image_height.xml,
+	testcases/rss/must/image_height2.xml,
+	testcases/rss/must/image_link.xml,
+	testcases/rss/must/image_title.xml,
+	testcases/rss/must/image_url2.xml,
+	testcases/rss/must/image_width.xml,
+	testcases/rss/must/image_width2.xml,
+	testcases/rss/must/invalid_blogChannel_blink.xml,
+	testcases/rss/must/invalid_blogChannel_blogRoll.xml,
+	testcases/rss/must/invalid_blogChannel_mySubscriptions.xml,
+	testcases/rss/must/invalid_dcdate.xml,
+	testcases/rss/must/invalid_dclanguage.xml,
+	testcases/rss/must/invalid_dclanguage_blank.xml,
+	testcases/rss/must/invalid_docs.xml,
+	testcases/rss/must/invalid_guid_blank.xml,
+	testcases/rss/must/invalid_guid_value.xml,
+	testcases/rss/must/invalid_guid_value_explicit_isPermalink.xml,
+	testcases/rss/must/invalid_image_bad_height.xml,
+	testcases/rss/must/invalid_image_bad_width.xml,
+	testcases/rss/must/invalid_image_blank_title.xml,
+	testcases/rss/must/invalid_image_link.xml,
+	testcases/rss/must/invalid_image_negative_height.xml,
+	testcases/rss/must/invalid_image_negative_width.xml,
+	testcases/rss/must/invalid_image_too_high.xml,
+	testcases/rss/must/invalid_image_too_wide.xml,
+	testcases/rss/must/invalid_image_url.xml,
+	testcases/rss/must/invalid_image_zero_height.xml,
+	testcases/rss/must/invalid_image_zero_width.xml,
+	testcases/rss/must/invalid_item_annotate_reference.xml,
+	testcases/rss/must/invalid_item_author.xml,
+	testcases/rss/must/invalid_item_comments.xml,
+	testcases/rss/must/invalid_item_element.xml,
+	testcases/rss/must/invalid_item_enclosure_blank_length.xml,
+	testcases/rss/must/invalid_item_enclosure_decimal_length.xml,
+	testcases/rss/must/invalid_item_enclosure_invalid_length.xml,
+	testcases/rss/must/invalid_item_enclosure_invalid_type.xml,
+	testcases/rss/must/invalid_item_enclosure_invalid_url.xml,
+	testcases/rss/must/invalid_item_enclosure_negative_length.xml,
+	testcases/rss/must/invalid_item_enclosure_no_length.xml,
+	testcases/rss/must/invalid_item_enclosure_no_type.xml,
+	testcases/rss/must/invalid_item_enclosure_no_url.xml,
+	testcases/rss/must/invalid_item_enclosure_zero_length.xml,
+	testcases/rss/must/invalid_item_link.xml,
+	testcases/rss/must/invalid_item_source.xml,
+	testcases/rss/must/invalid_item_source_url.xml,
+	testcases/rss/must/invalid_item_title.xml,
+	testcases/rss/must/invalid_item_title2.xml: changed test cases to
+	explicitly test for success (rather than the absence of failure)
+
+2003-07-29 13:13  f8dy
+
+	* src/rssvalid/logging.py, testcases/pie/must/entry_id_not_urn.xml,
+	testcases/pie/must/entry_id_not_urn2.xml: more urn tests
+
+2003-07-29 12:44  f8dy
+
+	* src/rssvalid/channel.py, src/rssvalid/logging.py,
+	src/rssvalid/validators.py,
+	testcases/rss/must/admin_errorReportsTo.xml,
+	testcases/rss/must/admin_generatorAgent.xml,
+	testcases/rss/must/blogChannel_blink.xml,
+	testcases/rss/must/blogChannel_blogRoll.xml,
+	testcases/rss/must/blogChannel_mySubscriptions.xml,
+	testcases/rss/must/cloud_domain.xml,
+	testcases/rss/must/cloud_path.xml,
+	testcases/rss/must/cloud_port.xml,
+	testcases/rss/must/cloud_port_integer.xml,
+	testcases/rss/must/cloud_protocol.xml,
+	testcases/rss/must/cloud_registerprocedure.xml,
+	testcases/rss/must/dcdate.xml,
+	testcases/rss/must/dcdate_complete_date.xml,
+	testcases/rss/must/dcdate_fractional_second.xml,
+	testcases/rss/must/dcdate_hours_minutes.xml,
+	testcases/rss/must/dcdate_seconds.xml,
+	testcases/rss/must/dcdate_year_and_month.xml,
+	testcases/rss/must/dcdate_year_only.xml,
+	testcases/rss/must/dclanguage.xml,
+	testcases/rss/must/dclanguage_country_code.xml,
+	testcases/rss/must/docs.xml, testcases/rss/must/guid.xml,
+	testcases/rss/must/guid_isPermalink_false.xml,
+	testcases/rss/must/guid_isPermalink_true.xml,
+	testcases/rss/must/guid_value_isPermalink_false.xml,
+	testcases/rss/must/guid_value_isPermalink_true.xml,
+	testcases/rss/must/ignorable_whitespace.xml: changed test cases to
+	explicitly test for success (rather than the absence of failure)
+
+2003-07-29 12:14  rubys
+
+	* src/rssvalid/: validators.py, i18n/en.py: Validate urns
+
+2003-07-29 11:46  f8dy
+
+	* src/rssvalid/logging.py, src/rssvalid/validators.py,
+	testcases/pie/must/entry_author_homepage_contains_comma.xml,
+	testcases/pie/must/entry_author_homepage_ftp.xml,
+	testcases/pie/must/entry_author_homepage_http.xml,
+	testcases/pie/must/entry_author_homepage_not_full_uri.xml,
+	testcases/pie/must/entry_author_name.xml,
+	testcases/pie/must/entry_author_name_blank.xml,
+	testcases/pie/must/entry_author_name_cdata.xml,
+	testcases/pie/must/entry_author_name_contains_html.xml,
+	testcases/pie/must/entry_author_name_contains_html_cdata.xml,
+	testcases/pie/must/entry_author_unknown_element.xml,
+	testcases/pie/must/entry_author_weblog_contains_comma.xml: changed
+	test cases to explicitly test for success (rather than the absence
+	of failure)
+
+2003-07-29 11:15  f8dy
+
+	* build.xml, src/rssvalid/logging.py, src/rssvalid/i18n/en.py,
+	testcases/pie/must/entry_id_urn.xml,
+	testcases/pie/must/entry_id_urn_multiple_colons.xml,
+	testcases/pie/must/entry_id_urn_nis_contains_period.xml,
+	testcases/pie/must/entry_id_urn_nis_contains_plus.xml,
+	testcases/pie/must/entry_id_urn_nis_contains_slash.xml,
+	testcases/pie/must/entry_id_urn_nis_starts_with_hyphen.xml: added
+	tests for invalid URNs (may be used in entry/id of Atom feeds)
+</pre>
+</div>
+</div><!--main-->
+<div class="centered">
+<a name="startnavigation" id="startnavigation"></a>
+<div class="navbarWrapper">
+    <div class="navbarContent">
+        <img class="borderTL" src="/images/borderTL.gif" alt="" width="14" height="14" />
+        <img class="borderTR" src="/images/borderTR.gif" alt="" width="14" height="14" />
+
+<p>
+<a href="/">Home</a> &middot;
+<a href="/about.html">About</a> &middot;
+<a href="/news/">News</a> &middot;
+<a href="/docs/">Docs</a> &middot;
+<a href="/terms.html">Terms</a>
+</p>
+
+        <div class="roundedCornerSpacer">&nbsp;</div>
+    </div><!-- .content -->
+    <div class="bottomCorners">
+        <img class="borderBL" src="/images/borderBL.gif" alt="" width="14" height="14" />
+        <img class="borderBR" src="/images/borderBR.gif" alt="" width="14" height="14" />
+    </div><!-- .bottomCorners -->
+</div><!-- .contentWrapper --> 
+</div><!-- .centered -->
+
+<div class="centered">
+<address>Copyright &copy; 2002-3 <a href="http://diveintomark.org/">Mark Pilgrim</a> and <a href="http://www.intertwingly.net/blog/">Sam Ruby</a></address>
+</div>
+
+</body>
+</html>

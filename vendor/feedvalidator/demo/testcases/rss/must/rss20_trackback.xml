@@ -1,0 +1,25 @@
+<!--
+  Author:       Phil Ringnalda (http://philringnalda.com)
+-->
+
+<!--
+  Description: Trackback extension in RSS 2.0 
+  Expect: !Error
+-->
+
+<rss version="2.0"
+  xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
+>
+  <channel>
+    <title>Trackback extension test</title>
+    <link>http://example.org</link>
+    <description>Foo.</description>
+    <item>
+      <title>Trackback in RSS 2.0</title>
+      <link>http://example.org/1</link>
+      <trackback:ping>http://example.org/tb.cgi?tb_id=1</trackback:ping>
+      <trackback:about>http://example.org/foo/1</trackback:about>
+      <trackback:about>http://example.org/bar/7</trackback:about>
+    </item>
+  </channel>
+</rss>
