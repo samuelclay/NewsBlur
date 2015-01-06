@@ -596,7 +596,7 @@ def load_single_feed(request, feed_id):
                                                       usersubs=[usersub],
                                                       group_by_feed=False,
                                                       cutoff_date=user.profile.unread_cutoff)
-        story_hashes = [story['story_hash'] for story in stories]
+        story_hashes = [story['story_hash'] for story in stories if story['story_hash']]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
@@ -1610,7 +1610,7 @@ def add_url(request):
 def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST.get('parent_folder', '')
-
+    folders = None
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     
     if folder:
@@ -1618,13 +1618,14 @@ def add_folder(request):
         message = ""
         user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
         user_sub_folders_object.add_folder(parent_folder, folder)
+        folders = json.decode(user_sub_folders_object.folders)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(request.user.username, 'reload:feeds')
     else:
         code = -1
         message = "Gotta write in a folder name."
         
-    return dict(code=code, message=message)
+    return dict(code=code, message=message, folders=folders)
 
 @ajax_login_required
 @json.json_view
@@ -1677,18 +1678,39 @@ def delete_folder(request):
     in_folder = request.POST.get('in_folder', None)
     feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
 
-    request.user.profile.send_opml_export_email()
+    request.user.profile.send_opml_export_email(reason="You have deleted an entire folder of feeds, so here's a backup just in case.")
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
+    folders = json.decode(user_sub_folders.folders)
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
     
-    return dict(code=1)
+    return dict(code=1, folders=folders)
+
+
+@required_params('feeds_by_folder')
+@ajax_login_required
+@json.json_view
+def delete_feeds_by_folder(request):
+    feeds_by_folder = json.decode(request.POST['feeds_by_folder'])
+
+    request.user.profile.send_opml_export_email(reason="You have deleted a number of feeds at once, so here's a backup just in case.")
     
+    # Works piss poor with duplicate folder titles, if they are both in the same folder.
+    # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders.delete_feeds_by_folder(feeds_by_folder)
+    folders = json.decode(user_sub_folders.folders)
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
+    return dict(code=1, folders=folders)
+
 @ajax_login_required
 @json.json_view
 def rename_feed(request):
@@ -1725,13 +1747,30 @@ def rename_folder(request):
     
 @ajax_login_required
 @json.json_view
+def move_feed_to_folders(request):
+    feed_id = int(request.POST['feed_id'])
+    in_folders = request.POST.getlist('in_folders', '')
+    to_folders = request.POST.getlist('to_folders', '')
+
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders = user_sub_folders.move_feed_to_folders(feed_id, in_folders=in_folders,
+                                                             to_folders=to_folders)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+    
+@ajax_login_required
+@json.json_view
 def move_feed_to_folder(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', '')
     to_folder = request.POST.get('to_folder', '')
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
-    user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
+    user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder,
+                                                            to_folder=to_folder)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
@@ -1747,6 +1786,29 @@ def move_folder_to_folder(request):
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_folder_to_folder(folder_name, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+
+@required_params('feeds_by_folder', 'to_folder')
+@ajax_login_required
+@json.json_view
+def move_feeds_by_folder_to_folder(request):
+    feeds_by_folder = json.decode(request.POST['feeds_by_folder'])
+    to_folder = request.POST['to_folder']
+    new_folder = request.POST.get('new_folder', None)
+
+    request.user.profile.send_opml_export_email(reason="You have moved a number of feeds at once, so here's a backup just in case.")
+    
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+
+    if new_folder:
+        user_sub_folders.add_folder(to_folder, new_folder)
+        to_folder = new_folder
+
+    user_sub_folders = user_sub_folders.move_feeds_by_folder_to_folder(feeds_by_folder, to_folder)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
@@ -1974,7 +2036,7 @@ def _mark_story_as_starred(request):
     MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
     starred_counts, starred_count = MStarredStoryCounts.user_counts(request.user.pk, include_total=True)
     if not starred_count and len(starred_counts):
-        starred_count = MStarredStory.objects(user_id=user.pk).count()    
+        starred_count = MStarredStory.objects(user_id=request.user.pk).count()    
     
     if created:
         logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        

@@ -19,6 +19,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-options"                 : "open_options_popover",
         "click .NB-story-title-indicator"           : "show_hidden_story_titles",
         "click"                                     : "open",
+        "mousedown"                                 : "highlight_event",
         "mouseenter"                                : "add_hover_inverse",
         "mouseleave"                                : "remove_hover_inverse"
     },
@@ -28,6 +29,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (!this.options.feed_chooser) {
             this.listenTo(this.model, 'change', this.changed);
             this.listenTo(this.model, 'change:updated', this.render_updated_time);
+        } else {
+            this.listenTo(this.model, 'change:highlighted', this.render);
         }
         
         if (this.model.is_social() && !this.model.get('feed_title')) {
@@ -49,7 +52,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         var only_selected_changed = !_.any(changes, function(key) { 
             return key != 'selected';
         });
-        
+
         if (only_counts_changed) {
             this.add_extra_classes();
             if (!options.instant) this.flash_changes();
@@ -76,7 +79,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     render: function() {
         var feed = this.model;
         var extra_classes = this.extra_classes();
-        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %> <% if (disable_hover) { %>NB-no-hover<% } %>" data-id="<%= feed.id %>">\
+        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (highlighted) { %>NB-highlighted<% } %> <% if (toplevel) { %>NB-toplevel<% } %> <% if (disable_hover) { %>NB-no-hover<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
           <% if (type == "story") { %>\
@@ -110,6 +113,20 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <div class="NB-feed-unfetched-icon"></div>\
           <div class="NB-feedlist-manage-icon"></div>\
           <div class="NB-feed-highlight"></div>\
+          <% if (organizer) { %>\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-subscribers">\
+                <%= pluralize("subscriber", feed.get("num_subscribers"), true) %>\
+              </div>\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-laststory">\
+                <%= feed.relative_last_story_date() %>\
+              </div>\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-monthlycount">\
+                <%= pluralize("story", feed.get("average_stories_per_month"), true) %>/month\
+              </div>\
+              <div class="NB-feed-organizer-sort NB-feed-organizer-opens">\
+                <%= pluralize("open", feed.get("feed_opens"), true) %>\
+              </div>\
+          <% } %>\
         </<%= list_type %>>\
         ', {
           feed                : feed,
@@ -118,7 +135,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           extra_classes       : extra_classes,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
-          selected            : this.model.get('selected')
+          selected            : this.model.get('selected'),
+          highlighted         : this.options.feed_chooser &&
+                                this.model.highlighted_in_folder(this.options.folder_title),
+          organizer           : this.options.organizer,
+          pluralize           : Inflector.pluralize
         }));
         
         if (this.options.type == 'story') {
@@ -127,7 +148,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             }).render();
             $(".NB-search-container", $feed).html(this.search_view.$el);
         }
-        
+
         this.$el.replaceWith($feed);
         this.setElement($feed);
         this.render_counts();
@@ -194,7 +215,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
         this.counts_view = new NEWSBLUR.Views.UnreadCount({
             model: this.model,
-            include_starred: true
+            include_starred: true,
+            feed_chooser: this.options.feed_chooser
         }).render();
         this.$('.feed_counts').html(this.counts_view.el);
         if (this.options.type == 'story') {
@@ -263,8 +285,18 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     // = Events =
     // ==========
     
+    click: function(e) {
+        this.highlight();
+        this.open(e);
+    },
+    
     open: function(e, options) {
         options = options || {};
+        if (this.options.feed_chooser) return;
+        if (this.options.type != 'feed') return;
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
+
         if (!options.ignore_double_click && $(e.target).closest('.feed_counts').length) {
             _.delay(_.bind(function() {
                 if (!this.flags.double_click) {
@@ -273,12 +305,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             }, this), 250);
             return;
         }
+
         e.preventDefault();
         e.stopPropagation();
-        if (this.options.feed_chooser) return;
-        if (this.options.type != 'feed') return;
-        if (e.which >= 2) return;
-        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
         
         if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
@@ -295,6 +324,25 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
     },
     
+    highlight_event: function(e) {
+        return this.highlight();
+    },
+    
+    highlight: function(on, off) {
+        if (!this.options.feed_chooser) return;
+        var model = this.model;
+        
+        if (this.options.organizer && this.options.hierarchy != 'flat') {
+            model.highlight_in_folder(this.options.folder_title, on, off);
+        } else {
+            // Highlight all folders
+            model.highlight_in_all_folders(on, off);
+        }
+        
+        // Feed chooser disables binding to changes, so need to manually render.
+        this.render();
+    },
+    
     open_feed_link: function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -302,6 +350,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (dblclick_pref == "ignore") return;
         if (this.options.type == "story") return;
         if (this.options.starred_tag) return;
+        if (this.options.feed_chooser) return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
         this.flags.double_click = true;
@@ -322,6 +371,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     dblclick_mark_feed_as_read: function(e) {
+        if (this.options.feed_chooser) return;
         if (NEWSBLUR.assets.preference('doubleclick_unread') == "ignore") return;
         
         return this.mark_feed_as_read(e);

@@ -1013,6 +1013,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
+    delete_feeds_by_folder: function(feeds_by_folder, callback, error_callback) {
+        var pre_callback = _.bind(function(data) {
+            _.each(feeds_by_folder, _.bind(function(feed_in_folder) {
+                this.feeds.remove(feed_in_folder[0]);
+            }, this));
+            this.folders.reset(_.compact(data.folders), {parse: true});
+            return callback();
+        }, this);
+
+        this.make_request('/reader/delete_feeds_by_folder', {
+            'feeds_by_folder': $.toJSON(feeds_by_folder)
+        }, pre_callback, error_callback);
+    },
+    
     delete_feed_by_url: function(url, in_folder, callback) {
         this.make_request('/reader/delete_feed_by_url/', {
             'url': url,
@@ -1023,12 +1037,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     delete_folder: function(folder_name, in_folder, feeds, callback) {
+        var self = this;
+        var pre_callback = function(data) {
+            self.folders.reset(_.compact(data.folders), {parse: true});
+            self.feeds.trigger('reset');
+
+            callback(data);
+        };
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/delete_folder', {
                 'folder_name': folder_name,
                 'in_folder': in_folder,
                 'feed_id': feeds
-            }, callback, null);
+            }, pre_callback, null);
         } else {
             if ($.isFunction(callback)) callback();
         }
@@ -1090,6 +1111,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback);
     },
     
+    move_feed_to_folders: function(feed_id, in_folders, to_folders, callback) {
+        var pre_callback = _.bind(function(data) {
+            this.folders.reset(_.compact(data.folders), {parse: true});
+            return callback();
+        }, this);
+
+        this.make_request('/reader/move_feed_to_folders', {
+            'feed_id': feed_id,
+            'in_folders': in_folders,
+            'to_folders': to_folders
+        }, pre_callback);
+    },
+    
     move_folder_to_folder: function(folder_name, in_folder, to_folder, callback) {
         var pre_callback = _.bind(function(data) {
             this.folders.reset(_.compact(data.folders), {parse: true});
@@ -1101,6 +1135,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'in_folder': in_folder,
             'to_folder': to_folder
         }, pre_callback);
+    },
+    
+    move_feeds_by_folder: function(feeds_by_folder, to_folder, new_folder, callback, error_callback) {
+        var pre_callback = _.bind(function(data) {
+            this.folders.reset(_.compact(data.folders), {parse: true});
+            return callback();
+        }, this);
+
+        this.make_request('/reader/move_feeds_by_folder_to_folder', {
+            'feeds_by_folder': $.toJSON(feeds_by_folder),
+            'to_folder': to_folder,
+            'new_folder': new_folder
+        }, pre_callback, error_callback);
     },
     
     preference: function(preference, value, callback) {

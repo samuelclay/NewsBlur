@@ -63,7 +63,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                     ]),
                     $.make('div', { className: 'NB-group NB-add-site' }, [
                         NEWSBLUR.utils.make_folders(this.options.folder_title),
-                        $.make('div', { className: 'NB-add-folder-icon' }),
+                        $.make('div', { className: 'NB-add-folder-icon', title: "Add folder" }),
                         $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-url-submit' }, 'Add site'),
                         $.make('div', { className: 'NB-loading' })
                     ]),

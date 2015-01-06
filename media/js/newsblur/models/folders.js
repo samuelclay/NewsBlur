@@ -52,11 +52,11 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         return view;
     },
     
-    feed_ids_in_folder: function() {
-        if (this.is_feed() && this.feed.get('active')) {
+    feed_ids_in_folder: function(include_inactive) {
+        if (this.is_feed() && (include_inactive || (!include_inactive && this.feed.get('active')))) {
             return this.feed.id;
         } else if (this.is_folder()) {
-            return this.folders.feed_ids_in_folder();
+            return this.folders.feed_ids_in_folder(include_inactive);
         }
     },
     
@@ -138,7 +138,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     
     initialize: function(models, options) {
         _.bindAll(this, 'propagate_feed_selected');
-        this.options = options || {};
+        this.options = _.extend({}, this.options, options);
         this.parent_folder = options && options.parent_folder;
         this.comparator = NEWSBLUR.Collections.Folders.comparator;
         this.bind('change:feed_selected', this.propagate_feed_selected);
@@ -215,9 +215,9 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return names;
     },
     
-    feed_ids_in_folder: function() {
+    feed_ids_in_folder: function(include_inactive) {
         return _.compact(_.flatten(this.map(function(item) {
-            return item.feed_ids_in_folder();
+            return item.feed_ids_in_folder(include_inactive);
         })));
     },
     
@@ -322,8 +322,19 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
 }, {
 
     comparator: function(modelA, modelB) {
-        var sort_order = NEWSBLUR.assets.preference('feed_order');
-
+        // toUpperCase for historical reasons
+        var sort_order = NEWSBLUR.assets.preference('feed_order').toUpperCase();
+        
+        if (NEWSBLUR.Collections.Folders.organizer_sortorder) {
+            sort_order = NEWSBLUR.Collections.Folders.organizer_sortorder.toUpperCase();
+        }
+        var high = 1;
+        var low = -1;
+        if (NEWSBLUR.Collections.Folders.organizer_inversesort) {
+            high = -1;
+            low = 1;
+        }
+        
         if (modelA.is_feed() != modelB.is_feed()) {
             // Feeds above folders
             return modelA.is_feed() ? -1 : 1;
@@ -341,11 +352,23 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         }
         
         if (sort_order == 'ALPHABETICAL' || !sort_order) {
-            return feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1;
+            return feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low;
         } else if (sort_order == 'MOSTUSED') {
-            return feedA.get('feed_opens') < feedB.get('feed_opens') ? 1 : 
-                (feedA.get('feed_opens') > feedB.get('feed_opens') ? -1 : 
-                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1));
+            return feedA.get('feed_opens') < feedB.get('feed_opens') ? high : 
+                (feedA.get('feed_opens') > feedB.get('feed_opens') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low));
+        } else if (sort_order == 'RECENCY') {
+            return feedA.get('last_story_seconds_ago') < feedB.get('last_story_seconds_ago') ? high : 
+                (feedA.get('last_story_seconds_ago') > feedB.get('last_story_seconds_ago') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low));            
+        } else if (sort_order == 'FREQUENCY') {
+            return feedA.get('average_stories_per_month') < feedB.get('average_stories_per_month') ? high : 
+                (feedA.get('average_stories_per_month') > feedB.get('average_stories_per_month') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low)); 
+        } else if (sort_order == 'SUBSCRIBERS') {
+            return feedA.get('num_subscribers') < feedB.get('num_subscribers') ? high : 
+                (feedA.get('num_subscribers') > feedB.get('num_subscribers') ? low : 
+                (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low)); 
         }
     }
 
