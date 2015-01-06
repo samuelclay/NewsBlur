@@ -700,7 +700,21 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             'secret': self.secret_token
         }) + ('?' + next + '=1' if next else '')
         
-
+    
+    @classmethod
+    def doublecheck_paypal_payments(cls, days=14):
+        payments = PayPalIPN.objects.filter(txn_type='subscr_payment', 
+                                            updated_at__gte=datetime.datetime.now()
+                                                            - datetime.timedelta(days)
+                                            ).order_by('-created_at')
+        for payment in payments:
+            try:
+                profile = Profile.objects.get(user__username=payment.custom)
+            except Profile.DoesNotExist:
+                logging.debug(" ---> ~FRCouldn't find user: ~SB~FC%s" % payment.custom)
+                continue
+            profile.setup_premium_history(check_premium=True)
+        
             
 def create_profile(sender, instance, created, **kwargs):
     if created:
