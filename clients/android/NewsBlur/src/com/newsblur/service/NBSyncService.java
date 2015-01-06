@@ -128,14 +128,22 @@ public class NBSyncService extends Service {
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
         wl.setReferenceCounted(true);
 
-		apiManager = new APIManager(this);
-        dbHelper = new BlurDatabaseHelper(this);
-
         primaryExecutor = Executors.newFixedThreadPool(1);
-        originalTextService = new OriginalTextService(this);
-        unreadsService = new UnreadsService(this);
-        imagePrefetchService = new ImagePrefetchService(this);
 	}
+
+    /**
+     * Services can be constructed synchrnously by the Main thread, so don't do expensive
+     * parts of construction in onCreate, but save them for when we are in our own thread.
+     */
+    private void finishConstruction() {
+        if (apiManager == null) {
+            apiManager = new APIManager(this);
+            dbHelper = new BlurDatabaseHelper(this);
+            originalTextService = new OriginalTextService(this);
+            unreadsService = new UnreadsService(this);
+            imagePrefetchService = new ImagePrefetchService(this);
+        }
+    }
 
     /**
      * Called serially, once per "start" of the service.  This serves as a wakeup call
@@ -171,6 +179,8 @@ public class NBSyncService extends Service {
             if (HaltNow) return;
 
             incrementRunningChild();
+            finishConstruction();
+
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting primary sync");
 
             if (NbActivity.getActiveActivityCount() < 1) {
@@ -689,22 +699,25 @@ public class NBSyncService extends Service {
 
     @Override
     public void onDestroy() {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
-        HaltNow = true;
-        unreadsService.shutdown();
-        originalTextService.shutdown();
-        imagePrefetchService.shutdown();
-        primaryExecutor.shutdown();
         try {
-            primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            primaryExecutor.shutdownNow();
-            Thread.currentThread().interrupt();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
+            HaltNow = true;
+            unreadsService.shutdown();
+            originalTextService.shutdown();
+            imagePrefetchService.shutdown();
+            primaryExecutor.shutdown();
+            try {
+                primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                primaryExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+            dbHelper.close();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
+            super.onDestroy();
+        } catch (Exception ex) {
+            Log.e(this.getClass().getName(), "unclean shutdown", ex);
         }
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
-
-        super.onDestroy();
-        dbHelper.close();
     }
 
     @Override
