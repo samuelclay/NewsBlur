@@ -227,6 +227,7 @@ public class NBSyncService extends Service {
                 NbActivity.updateAllActivities(false);
                 // wipe the local DB
                 dbHelper.dropAndRecreateTables();
+                NbActivity.updateAllActivities(true);
                 // in case this is the first time we have run since moving the cache to the new location,
                 // blow away the old version entirely. This line can be removed some time well after
                 // v61+ is widely deployed
