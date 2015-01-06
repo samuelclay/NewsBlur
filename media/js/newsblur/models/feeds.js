@@ -203,7 +203,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         var lasthour = 60*60;
         var lastday = 24*60*60;
 
-        if (diff > 1000*60*60*24*365*10 || diff <= 0) {
+        if (diff > 1000*60*60*24*365*20 || diff <= 0) {
             return "Never";
         } else if (diff < lasthour) {
             return Inflector.pluralize("minute", Math.floor(diff/60), true) + " ago";

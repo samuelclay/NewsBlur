@@ -200,7 +200,6 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     
     change_sort: function(sorting) {
         var inverse = this.options.inverse_sorting;
-        // this.options.inverse_sorting = (this.options.sorting == sorting);
         if (this.options.sorting == sorting) {
             this.options.inverse_sorting = !inverse;
         } else {

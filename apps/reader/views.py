@@ -596,7 +596,7 @@ def load_single_feed(request, feed_id):
                                                       usersubs=[usersub],
                                                       group_by_feed=False,
                                                       cutoff_date=user.profile.unread_cutoff)
-        story_hashes = [story['story_hash'] for story in stories]
+        story_hashes = [story['story_hash'] for story in stories if story['story_hash']]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
@@ -2036,7 +2036,7 @@ def _mark_story_as_starred(request):
     MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
     starred_counts, starred_count = MStarredStoryCounts.user_counts(request.user.pk, include_total=True)
     if not starred_count and len(starred_counts):
-        starred_count = MStarredStory.objects(user_id=user.pk).count()    
+        starred_count = MStarredStory.objects(user_id=request.user.pk).count()    
     
     if created:
         logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        

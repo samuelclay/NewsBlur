@@ -358,8 +358,8 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
                 (feedA.get('feed_opens') > feedB.get('feed_opens') ? low : 
                 (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low));
         } else if (sort_order == 'RECENCY') {
-            return feedA.get('last_story_date') < feedB.get('last_story_date') ? high : 
-                (feedA.get('last_story_date') > feedB.get('last_story_date') ? low : 
+            return feedA.get('last_story_seconds_ago') < feedB.get('last_story_seconds_ago') ? high : 
+                (feedA.get('last_story_seconds_ago') > feedB.get('last_story_seconds_ago') ? low : 
                 (feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? high : low));            
         } else if (sort_order == 'FREQUENCY') {
             return feedA.get('average_stories_per_month') < feedB.get('average_stories_per_month') ? high : 
