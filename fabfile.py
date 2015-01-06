@@ -1023,7 +1023,7 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "0.90.0"
+    ES_VERSION = "0.90.13"
     sudo('apt-get update')
     sudo('apt-get install openjdk-7-jre -y')
 
@@ -1032,7 +1032,7 @@ def setup_elasticsearch():
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
-        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head' % ES_VERSION)
+        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
 
 def setup_db_search():
     put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)

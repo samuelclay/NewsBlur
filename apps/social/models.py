@@ -2613,7 +2613,7 @@ class MSocialServices(mongo.Document):
         try:
             api = self.twitter_api()
             me = api.me()
-        except tweepy.TweepError, e:
+        except (tweepy.TweepError, TypeError), e:
             logging.user(user, "~FRException (%s): ~FCsetting to blank profile photo" % e)
             self.twitter_picture_url = None
             self.set_photo("nothing")
