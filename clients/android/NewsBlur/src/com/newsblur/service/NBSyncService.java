@@ -26,6 +26,7 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FileCache;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
@@ -73,7 +74,7 @@ public class NBSyncService extends Service {
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
-    private volatile static boolean VacuumRunning = false;
+    private volatile static boolean HousekeepingRunning = false;
 
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean DoUnreads = false;
@@ -180,10 +181,9 @@ public class NBSyncService extends Service {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
             }
 
-            // do these even if background syncs aren't enabled, because it absolutely must happen
-            // in the background on all devices
-            boolean upgraded = PrefsUtils.checkForUpgrade(this);
-            doVacuum(upgraded);
+            // do this even if background syncs aren't enabled, because it absolutely must happen
+            // on all devices
+            housekeeping();
 
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
@@ -216,20 +216,41 @@ public class NBSyncService extends Service {
         }
     }
 
-    private void doVacuum(boolean upgraded) {
-        boolean autoVac = PrefsUtils.isTimeToVacuum(this);
-        // this will lock up the DB for a few seconds, only do it if the UI is hidden
-        if (NbActivity.getActiveActivityCount() > 0) autoVac = false;
-        
-        if (upgraded || autoVac) {
-            VacuumRunning = true;
-            NbActivity.updateAllActivities(false);
-            PrefsUtils.updateLastVacuumTime(this);
-            Log.i(this.getClass().getName(), "rebuilding DB . . .");
-            dbHelper.vacuum();
-            Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
-            VacuumRunning = false;
-            NbActivity.updateAllActivities(false);
+    /**
+     * Check for upgrades and wipe the DB if necessary, and do DB maintenance
+     */
+    private void housekeeping() {
+        try {
+            boolean upgraded = PrefsUtils.checkForUpgrade(this);
+            if (upgraded) {
+                HousekeepingRunning = true;
+                NbActivity.updateAllActivities(false);
+                // wipe the local DB
+                dbHelper.dropAndRecreateTables();
+                // in case this is the first time we have run since moving the cache to the new location,
+                // blow away the old version entirely. This line can be removed some time well after
+                // v61+ is widely deployed
+                FileCache.cleanUpOldCache(this);
+                PrefsUtils.updateVersion(this);
+            }
+
+            boolean autoVac = PrefsUtils.isTimeToVacuum(this);
+            // this will lock up the DB for a few seconds, only do it if the UI is hidden
+            if (NbActivity.getActiveActivityCount() > 0) autoVac = false;
+            
+            if (upgraded || autoVac) {
+                HousekeepingRunning = true;
+                NbActivity.updateAllActivities(false);
+                PrefsUtils.updateLastVacuumTime(this);
+                Log.i(this.getClass().getName(), "rebuilding DB . . .");
+                dbHelper.vacuum();
+                Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
+            }
+        } finally {
+            if (HousekeepingRunning) {
+                HousekeepingRunning = false;
+                NbActivity.updateAllActivities(true);
+            }
         }
     }
 
@@ -557,7 +578,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (VacuumRunning || ActionsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
+        return (HousekeepingRunning || ActionsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
     }
 
     /**
@@ -568,7 +589,7 @@ public class NBSyncService extends Service {
     }
 
     public static String getSyncStatusMessage() {
-        if (VacuumRunning) return "Tidying up . . .";
+        if (HousekeepingRunning) return "Tidying up . . .";
         if (ActionsRunning) return "Catching up reading actions . . .";
         if (FFSyncRunning) return "Syncing feeds . . .";
         if (CleanupRunning) return "Cleaning up storage . . .";
