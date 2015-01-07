@@ -5,7 +5,7 @@
         init: function(options) {
             
             var defaults = {};
-            console && console.clear();
+            if (console && console.clear && _.isFunction(console.clear)) console.clear();
             
             // ===========
             // = Globals =
