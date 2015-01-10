@@ -195,7 +195,7 @@ def setup_common():
     setup_psql_client()
     setup_libxml()
     setup_python()
-    # setup_psycopg()
+    setup_psycopg()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -1097,8 +1097,9 @@ def setup_do(name, size=2, image=None):
     ssh_key_ids = [str(k.id) for k in doapi.all_ssh_keys()]
     region_id = doapi.regions()[0].id
     if not image:
-        IMAGE_NAME = "Ubuntu 13.10 x64"
+        IMAGE_NAME = "14.04 x64"
         images = dict((s.name, s.id) for s in doapi.images())
+        print images
         image_id = images[IMAGE_NAME]
     else:
         IMAGE_NAME = image
