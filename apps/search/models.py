@@ -144,7 +144,10 @@ class MUserSearch(mongo.Document):
         user_searches = cls.objects.all()
         logging.info(" ---> ~SN~FRRemoving ~SB%s~SN user searches..." % user_searches.count())
         for user_search in user_searches:
-            user_search.remove()
+            try:
+                user_search.remove()
+            except Exception, e:
+                print " ****> Error on search removal: %s" % e
         
         if drop_index:
             logging.info(" ---> ~FRRemoving stories search index...")
