@@ -401,7 +401,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     truncate_story_height: function() {
         if (this._truncated) return;
-        // if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        if (!this.is_truncatable()) return;
+        
+        if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
 
         // console.log(["Checking truncate", this.$el, this.images_to_load, this.truncate_delay / 1000 + " sec delay"]);
         var $expander = this.$(".NB-story-content-expander");
@@ -443,7 +445,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }, this));
         var is_truncatable = this.is_truncatable();
         
-        if (!is_truncatable && !this.model.get('starred')) return;
+        console.log(['truncatable', is_truncatable, this.images_to_load]);
+        if (!is_truncatable) return;
         
         this.truncate_delay = 100;
         this.images_to_load = this.$('img').length;
