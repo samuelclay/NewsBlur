@@ -1559,7 +1559,10 @@ def mark_feed_as_read(request):
     if multiple:
         logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % len(feed_ids))
         r.publish(request.user.username, 'refresh:%s' % ','.join(feed_ids))
-        
+    
+    if errors:
+        logging.user(request, "~FMMarking read had errors: ~FR%s" % errors)
+    
     return dict(code=code, errors=errors, cutoff_date=cutoff_date, direction=direction)
 
 def _parse_user_info(user):
