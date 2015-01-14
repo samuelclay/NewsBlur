@@ -596,7 +596,7 @@ public class NBSyncService extends Service {
      * Is there a sync for a given FeedSet running?
      */
     public static boolean isFeedSetSyncing(FeedSet fs) {
-        return (fs.equals(PendingFeed) && StorySyncRunning);
+        return (fs.equals(PendingFeed));
     }
 
     public static String getSyncStatusMessage() {
