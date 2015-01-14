@@ -661,6 +661,15 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void clearClassifiersForFeed(String feedId) {
+        String[] selArgs = new String[] {feedId};
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs);}
+    }
+
+    public void insertClassifier(Classifier classifier) {
+        bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifier.getContentValues());
+    }
+
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {;}

@@ -188,17 +188,9 @@ public class FeedUtils {
 
         // next, update the local DB
         classifier.getMapForType(classifierType).put(key, classifierAction);
-        Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
-        try {
-            // TODO: for feeds with many classifiers, this could be much faster by targeting just the row that changed
-			context.getContentResolver().delete(classifierUri, null, null);
-			for (ContentValues classifierValues : classifier.getContentValues()) {
-                context.getContentResolver().insert(classifierUri, classifierValues);
-            }
-        } catch (Exception e) {
-            Log.w(FeedUtils.class.getName(), "Could not update classifier in local storage.", e);
-        }
-
+        classifier.feedId = feedId;
+        dbHelper.clearClassifiersForFeed(feedId);
+        dbHelper.insertClassifier(classifier);
     }
 
     public static void shareStory(Story story, Context context) {

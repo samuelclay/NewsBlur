@@ -53,9 +53,6 @@ public class FeedProvider extends ContentProvider {
         synchronized (BlurDatabaseHelper.RW_MUTEX) {
 		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		switch (uriMatcher.match(uri)) {
-			case CLASSIFIERS_FOR_FEED:
-				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });
-				
 			default:
 				return 0;
 		}
@@ -77,12 +74,6 @@ public class FeedProvider extends ContentProvider {
 		case USERS:
 			db.insertWithOnConflict(DatabaseConstants.USER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.USER_USERID)).build();
-			break;
-			
-			// Inserting a classifier for a feed
-		case CLASSIFIERS_FOR_FEED:
-			values.put(DatabaseConstants.CLASSIFIER_ID, uri.getLastPathSegment());
-			db.insertWithOnConflict(DatabaseConstants.CLASSIFIER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			break;
 
 			// Inserting a comment
