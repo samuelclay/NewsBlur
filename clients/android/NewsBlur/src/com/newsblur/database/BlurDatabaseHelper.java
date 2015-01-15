@@ -670,6 +670,14 @@ public class BlurDatabaseHelper {
         bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifier.getContentValues());
     }
 
+    public Classifier getClassifierForFeed(String feedId) {
+        String[] selArgs = new String[] {feedId};
+        Cursor c = dbRO.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs, null, null, null);
+        Classifier classifier = Classifier.fromCursor(c);
+        closeQuietly(c);
+        return classifier;
+    }
+
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {;}
