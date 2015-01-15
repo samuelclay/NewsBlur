@@ -190,7 +190,7 @@ class PayPalEncryptedPaymentsForm(PayPalPaymentsForm):
         s = SMIME.SMIME()
         s.load_key_bio(BIO.openfile(CERT), BIO.openfile(PUB_CERT))
         p7 = s.sign(BIO.MemoryBuffer(plaintext), flags=SMIME.PKCS7_BINARY)
-        x509 = X509.load_cert_bio(BIO.openfile(settings.PAYPAL_CERT))
+        x509 = X509.load_cert_bio(BIO.openfile(PAYPAL_CERT))
         sk = X509.X509_Stack()
         sk.push(x509)
         s.set_x509_stack(sk)

@@ -9,7 +9,6 @@ from six.moves.urllib.parse import unquote_plus
 
 from paypal.standard.models import PayPalStandardBase
 from paypal.standard.conf import POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
-from paypal.standard.pdt.signals import pdt_successful, pdt_failed
 
 # ### Todo: Move this logic to conf.py:
 # if paypal.standard.pdt is in installed apps
@@ -59,16 +58,12 @@ class PayPalPDT(PayPalStandardBase):
         # ### Now we don't really care what result was, just whether a flag was set or not.
         from paypal.standard.pdt.forms import PayPalPDTForm
 
-        # TODO: this needs testing and probably fixing under Python 3
-        result = False
         response_list = self.response.split('\n')
         response_dict = {}
         for i, line in enumerate(response_list):
             unquoted_line = unquote_plus(line).strip()
             if i == 0:
                 self.st = unquoted_line
-                if self.st == "SUCCESS":
-                    result = True
             else:
                 if self.st != "SUCCESS":
                     self.set_flag(line)
@@ -86,10 +81,3 @@ class PayPalPDT(PayPalStandardBase):
                        flag_code=self.flag_code))
         pdt_form = PayPalPDTForm(qd, instance=self)
         pdt_form.save(commit=False)
-
-    def send_signals(self):
-        # Send the PDT signals...
-        if self.flag:
-            pdt_failed.send(sender=self)
-        else:
-            pdt_successful.send(sender=self)

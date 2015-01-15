@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import warnings
+
 from django.conf import settings
-from django.template import RequestContext
-from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
+from django.template.response import TemplateResponse
 from django.utils.http import urlencode
 
 from paypal.pro.forms import PaymentForm, ConfirmForm
@@ -79,7 +80,7 @@ class PayPalPro(object):
     def __init__(self, item=None, payment_form_cls=PaymentForm,
                  payment_template="pro/payment.html", confirm_form_cls=ConfirmForm,
                  confirm_template="pro/confirm.html", success_url="?success",
-                 fail_url=None, context=None, form_context_name="form"):
+                 fail_url=None, context=None, form_context_name="form", nvp_handler=None):
         self.item = item
         self.payment_form_cls = payment_form_cls
         self.payment_template = payment_template
@@ -89,6 +90,13 @@ class PayPalPro(object):
         self.fail_url = fail_url
         self.context = context or {}
         self.form_context_name = form_context_name
+        self.nvp_handler = nvp_handler
+
+        if nvp_handler is None:
+            warnings.warn(
+                "You didn't pass `nvp_handler` to PayPalPro. You should pass a callback "
+                "here instead of using the `payment_was_successful` "
+                "signal", DeprecationWarning)
 
     def __call__(self, request):
         """Return the appropriate response for the state of the transaction."""
@@ -130,7 +138,7 @@ class PayPalPro(object):
     def render_payment_form(self):
         """Display the DirectPayment for entering payment information."""
         self.context[self.form_context_name] = self.payment_form_cls()
-        return render_to_response(self.payment_template, self.context, RequestContext(self.request))
+        return TemplateResponse(self.request, self.payment_template, self.context)
 
     def validate_payment_form(self):
         """Try to validate and then process the DirectPayment form."""
@@ -144,7 +152,7 @@ class PayPalPro(object):
 
         self.context[self.form_context_name] = form
         self.context.setdefault("errors", self.errors['form'])
-        return render_to_response(self.payment_template, self.context, RequestContext(self.request))
+        return TemplateResponse(self.request, self.payment_template, self.context)
 
     def get_endpoint(self):
         if getattr(settings, 'PAYPAL_TEST', True):
@@ -175,7 +183,7 @@ class PayPalPro(object):
         """
         initial = dict(token=self.request.GET['token'], PayerID=self.request.GET['PayerID'])
         self.context[self.form_context_name] = self.confirm_form_cls(initial=initial)
-        return render_to_response(self.confirm_template, self.context, RequestContext(self.request))
+        return TemplateResponse(self.request, self.confirm_template, self.context)
 
     def validate_confirm_form(self):
         """
@@ -189,11 +197,16 @@ class PayPalPro(object):
         # @@@ This check and call could be moved into PayPalWPP.
         try:
             if self.is_recurring():
-                wpp.createRecurringPaymentsProfile(self.item)
+                nvp = wpp.createRecurringPaymentsProfile(self.item)
             else:
-                wpp.doExpressCheckoutPayment(self.item)
+                nvp = wpp.doExpressCheckoutPayment(self.item)
+            self.handle_nvp(nvp)
         except PayPalFailure:
             self.context['errors'] = self.errors['processing']
             return self.render_payment_form()
         else:
             return HttpResponseRedirect(self.success_url)
+
+    def handle_nvp(self, nvp):
+        if self.nvp_handler is not None:
+            self.nvp_handler(nvp)

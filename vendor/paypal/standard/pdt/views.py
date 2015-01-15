@@ -22,9 +22,12 @@ def pdt(request, item_check_callable=None, template="pdt/pdt.html", context=None
 def process_pdt(request, item_check_callable=None):
     """
     Payment data transfer implementation: http://tinyurl.com/c9jjmw
-    This function returns a tuple of pdt_obj and failed
+    This function returns a tuple of (pdt_obj, failed)
     pdt_obj is an object of type PayPalPDT
-    failed is a flag that indeicates whether the transaction was processed successfully
+    failed is a flag that is True if the input data didn't pass basic validation.
+
+    Note: even for failed=False You must still check the pdt_obj is not flagged i.e.
+    pdt_obj.flag == False
     """
 
     pdt_obj = None

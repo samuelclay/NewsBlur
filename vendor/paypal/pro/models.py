@@ -71,7 +71,7 @@ class PayPalNVP(Model):
     flag = models.BooleanField(default=False, blank=True)
     flag_code = models.CharField(max_length=32, blank=True)
     flag_info = models.TextField(blank=True)
-    ipaddress = models.IPAddressField(blank=True)
+    ipaddress = models.GenericIPAddressField(blank=True, null=True)
     query = models.TextField(blank=True)
     response = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

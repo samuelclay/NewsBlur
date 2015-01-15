@@ -1,5 +1,8 @@
+import warnings
+
 from django.conf import settings
 from django.test import TestCase
+from django.test.utils import override_settings
 from six import b
 from six.moves.urllib.parse import urlencode
 
@@ -8,7 +11,8 @@ from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import (payment_was_successful,
                                          payment_was_flagged, payment_was_refunded, payment_was_reversed,
                                          recurring_skipped, recurring_failed,
-                                         recurring_create, recurring_payment, recurring_cancel)
+                                         recurring_create, recurring_payment, recurring_cancel,
+                                         valid_ipn_received, invalid_ipn_received)
 
 
 # Parameters are all bytestrings, so we can construct a bytestring
@@ -50,10 +54,12 @@ IPN_POST_PARAMS = {
 }
 
 
+@override_settings(ROOT_URLCONF='paypal.standard.ipn.tests.test_urls')
 class IPNTestBase(TestCase):
-    urls = 'paypal.standard.ipn.tests.test_urls'
-
     def setUp(self):
+        self.valid_ipn_received_receivers = valid_ipn_received.receivers
+        self.invalid_ipn_received_receivers = invalid_ipn_received.receivers
+        # Deprecated:
         self.payment_was_successful_receivers = payment_was_successful.receivers
         self.payment_was_flagged_receivers = payment_was_flagged.receivers
         self.payment_was_refunded_receivers = payment_was_refunded.receivers
@@ -64,6 +70,9 @@ class IPNTestBase(TestCase):
         self.recurring_payment_receivers = recurring_payment.receivers
         self.recurring_cancel_receivers = recurring_cancel.receivers
 
+        valid_ipn_received.receivers = []
+        invalid_ipn_received.receivers = []
+        # Deprecated:
         payment_was_successful.receivers = []
         payment_was_flagged.receivers = []
         payment_was_refunded.receivers = []
@@ -75,6 +84,9 @@ class IPNTestBase(TestCase):
         recurring_cancel.receivers = []
 
     def tearDown(self):
+        valid_ipn_received.receivers = self.valid_ipn_received_receivers
+        invalid_ipn_received.receivers = self.invalid_ipn_received_receivers
+
         payment_was_successful.receivers = self.payment_was_successful_receivers
         payment_was_flagged.receivers = self.payment_was_flagged_receivers
         payment_was_refunded.receivers = self.payment_was_refunded_receivers
@@ -94,7 +106,7 @@ class IPNTestBase(TestCase):
         post_data = urlencode(params)
         return self.client.post("/ipn/", post_data, content_type='application/x-www-form-urlencoded')
 
-    def assertGotSignal(self, signal, flagged, params=IPN_POST_PARAMS):
+    def assertGotSignal(self, signal, flagged, params=IPN_POST_PARAMS, deprecated=False):
         # Check the signal was sent. These get lost if they don't reference self.
         self.got_signal = False
         self.signal_obj = None
@@ -103,7 +115,13 @@ class IPNTestBase(TestCase):
             self.got_signal = True
             self.signal_obj = sender
 
-        signal.connect(handle_signal)
+        if deprecated:
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                signal.connect(handle_signal)
+        else:
+            signal.connect(handle_signal)
+
         response = self.paypal_post(params)
         self.assertEqual(response.status_code, 200)
         ipns = PayPalIPN.objects.all()
@@ -113,6 +131,8 @@ class IPNTestBase(TestCase):
 
         self.assertTrue(self.got_signal)
         self.assertEqual(self.signal_obj, ipn_obj)
+        if deprecated:
+            self.assertEqual(len([r for r in w if r.category == DeprecationWarning]), 1)
         return ipn_obj
 
     def assertFlagged(self, updates, flag_info):
@@ -136,19 +156,26 @@ class IPNTest(IPNTestBase):
     def tearDown(self):
         PayPalIPN._postback = self.old_postback
 
-    def test_correct_ipn(self):
-        ipn_obj = self.assertGotSignal(payment_was_successful, False)
+    def test_valid_ipn_received(self):
+        ipn_obj = self.assertGotSignal(valid_ipn_received, False)
         # Check some encoding issues:
         self.assertEqual(ipn_obj.first_name, u"J\u00f6rg")
 
-    def test_failed_ipn(self):
+    def test_invalid_ipn_received(self):
         PayPalIPN._postback = lambda self: b("INVALID")
-        self.assertGotSignal(payment_was_flagged, True)
+        self.assertGotSignal(invalid_ipn_received, True)
+
+    def test_payment_was_successful(self):
+        self.assertGotSignal(payment_was_successful, False, deprecated=True)
+
+    def test_payment_was_flagged(self):
+        PayPalIPN._postback = lambda self: b("INVALID")
+        self.assertGotSignal(payment_was_flagged, True, deprecated=True)
 
     def test_ipn_missing_charset(self):
         params = IPN_POST_PARAMS.copy()
         del params['charset']
-        self.assertGotSignal(payment_was_flagged, True, params=params)
+        self.assertGotSignal(payment_was_flagged, True, params=params, deprecated=True)
 
     def test_refunded_ipn(self):
         update = {
@@ -157,7 +184,7 @@ class IPNTest(IPNTestBase):
         params = IPN_POST_PARAMS.copy()
         params.update(update)
 
-        self.assertGotSignal(payment_was_refunded, False, params)
+        self.assertGotSignal(payment_was_refunded, False, params, deprecated=True)
 
     def test_with_na_date(self):
         update = {
@@ -167,7 +194,7 @@ class IPNTest(IPNTestBase):
         params = IPN_POST_PARAMS.copy()
         params.update(update)
 
-        self.assertGotSignal(payment_was_refunded, False, params)
+        self.assertGotSignal(payment_was_refunded, False, params, deprecated=True)
 
     def test_reversed_ipn(self):
         update = {
@@ -176,7 +203,7 @@ class IPNTest(IPNTestBase):
         params = IPN_POST_PARAMS.copy()
         params.update(update)
 
-        self.assertGotSignal(payment_was_reversed, False, params)
+        self.assertGotSignal(payment_was_reversed, False, params, deprecated=True)
 
     def test_incorrect_receiver_email(self):
         update = {"receiver_email": "incorrect_email@someotherbusiness.com"}
@@ -214,7 +241,7 @@ class IPNTest(IPNTestBase):
         params = IPN_POST_PARAMS.copy()
         params.update(update)
 
-        self.assertGotSignal(recurring_skipped, False, params)
+        self.assertGotSignal(recurring_skipped, False, params, deprecated=True)
 
     def test_recurring_payment_failed_ipn(self):
         update = {
@@ -225,7 +252,7 @@ class IPNTest(IPNTestBase):
         params = IPN_POST_PARAMS.copy()
         params.update(update)
 
-        self.assertGotSignal(recurring_failed, False, params)
+        self.assertGotSignal(recurring_failed, False, params, deprecated=True)
 
     def test_recurring_payment_create_ipn(self):
         update = {
@@ -236,7 +263,7 @@ class IPNTest(IPNTestBase):
         params = IPN_POST_PARAMS.copy()
         params.update(update)
 
-        self.assertGotSignal(recurring_create, False, params)
+        self.assertGotSignal(recurring_create, False, params, deprecated=True)
 
     def test_recurring_payment_cancel_ipn(self):
         update = {
@@ -247,7 +274,7 @@ class IPNTest(IPNTestBase):
         params = IPN_POST_PARAMS.copy()
         params.update(update)
 
-        self.assertGotSignal(recurring_cancel, False, params)
+        self.assertGotSignal(recurring_cancel, False, params, deprecated=True)
 
     def test_recurring_payment_ipn(self):
         """
@@ -271,7 +298,8 @@ class IPNTest(IPNTestBase):
             self.got_signal = True
             self.signal_obj = sender
 
-        recurring_payment.connect(handle_signal)
+        with warnings.catch_warnings(record=True):
+            recurring_payment.connect(handle_signal)
         response = self.paypal_post(params)
         self.assertEqual(response.status_code, 200)
         ipns = PayPalIPN.objects.all()

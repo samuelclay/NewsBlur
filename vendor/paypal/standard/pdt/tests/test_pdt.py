@@ -6,8 +6,9 @@ import os
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.test import TestCase
+from django.test.utils import override_settings
+
 from paypal.standard.pdt.models import PayPalPDT
-from paypal.standard.pdt.signals import pdt_successful, pdt_failed
 
 
 class DummyPayPalPDT(object):
@@ -20,21 +21,20 @@ class DummyPayPalPDT(object):
         self.response = ''
 
     def update_with_get_params(self, get_params):
-        if get_params.has_key('tx'):
+        if 'tx' in get_params:
             self.context_dict['txn_id'] = get_params.get('tx')
-        if get_params.has_key('amt'):
+        if 'amt' in get_params:
             self.context_dict['mc_gross'] = get_params.get('amt')
-        if get_params.has_key('cm'):
+        if 'cm' in get_params:
             self.context_dict['custom'] = get_params.get('cm')
 
     def _postback(self, test=True):
         """Perform a Fake PayPal PDT Postback request."""
-        # @@@ would be cool if this could live in the test templates dir...
         return render_to_response("pdt/test_pdt_response.html", self.context_dict).content
 
 
+@override_settings(ROOT_URLCONF="paypal.standard.pdt.tests.test_urls")
 class PDTTest(TestCase):
-    urls = "paypal.standard.pdt.tests.test_urls"
     template_dirs = [os.path.join(os.path.dirname(__file__), 'templates'), ]
 
     def setUp(self):
@@ -47,10 +47,15 @@ class PDTTest(TestCase):
         self.dpppdt = DummyPayPalPDT()
         self.dpppdt.update_with_get_params(self.get_params)
         PayPalPDT._postback = self.dpppdt._postback
+        self.old_template_dirs = settings.TEMPLATE_DIRS
+        settings.TEMPLATE_DIRS = self.template_dirs
+
+    def tearDown(self):
+        settings.TEMPLATE_DIRS = self.old_template_dirs
 
     def test_verify_postback(self):
         dpppdt = DummyPayPalPDT()
-        paypal_response = dpppdt._postback()
+        paypal_response = dpppdt._postback().decode('ascii')
         assert ('SUCCESS' in paypal_response)
         self.assertEqual(len(PayPalPDT.objects.all()), 0)
         pdt_obj = PayPalPDT()
@@ -66,29 +71,6 @@ class PDTTest(TestCase):
         paypal_response = self.client.get("/pdt/", self.get_params)
         self.assertContains(paypal_response, 'Transaction complete', status_code=200)
         self.assertEqual(len(PayPalPDT.objects.all()), 1)
-
-    def test_pdt_signals(self):
-        self.successful_pdt_fired = False
-        self.failed_pdt_fired = False
-
-        def successful_pdt(sender, **kwargs):
-            self.successful_pdt_fired = True
-
-        pdt_successful.connect(successful_pdt)
-
-        def failed_pdt(sender, **kwargs):
-            self.failed_pdt_fired = True
-
-        pdt_failed.connect(failed_pdt)
-
-        self.assertEqual(len(PayPalPDT.objects.all()), 0)
-        paypal_response = self.client.get("/pdt/", self.get_params)
-        self.assertContains(paypal_response, 'Transaction complete', status_code=200)
-        self.assertEqual(len(PayPalPDT.objects.all()), 1)
-        self.assertTrue(self.successful_pdt_fired)
-        self.assertFalse(self.failed_pdt_fired)
-        pdt_obj = PayPalPDT.objects.all()[0]
-        self.assertEqual(pdt_obj.flag, False)
 
     def test_double_pdt_get(self):
         self.assertEqual(len(PayPalPDT.objects.all()), 0)
