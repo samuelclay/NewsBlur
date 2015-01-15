@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -89,7 +88,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected Button overlayText, overlaySend;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
-    protected ContentResolver contentResolver;
     private boolean stopLoading;
     protected FeedSet fs;
 
@@ -141,8 +139,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        contentResolver = getContentResolver();
 
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
