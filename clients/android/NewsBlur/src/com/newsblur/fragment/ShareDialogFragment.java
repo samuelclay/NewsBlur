@@ -5,9 +5,7 @@ import java.io.Serializable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.DialogFragment;
@@ -19,11 +17,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -37,9 +35,7 @@ public class ShareDialogFragment extends DialogFragment {
 	private SharedCallbackDialog callback;
 	private Story story;
 	private UserDetails user;
-	private ContentResolver resolver;
 	private boolean hasBeenShared = false;
-	private Cursor commentCursor;
 	private Comment previousComment;
 	private String previouslySavedShareText;
 	private boolean hasShared = false;
@@ -68,7 +64,6 @@ public class ShareDialogFragment extends DialogFragment {
         sourceUserId = getArguments().getString(SOURCE_USER_ID);
 
         apiManager = new APIManager(getActivity());
-        resolver = getActivity().getContentResolver();
 
         for (String sharedUserId : story.sharedUserIds) {
             if (TextUtils.equals(user.id, sharedUserId)) {
@@ -78,9 +73,7 @@ public class ShareDialogFragment extends DialogFragment {
         }
 
         if (hasBeenShared) {
-            commentCursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id, user.id }, null);
-            commentCursor.moveToFirst();
-            previousComment = Comment.fromCursor(commentCursor);
+            previousComment = FeedUtils.dbHelper.getComment(story.id, user.id);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -95,7 +88,9 @@ public class ShareDialogFragment extends DialogFragment {
         int positiveButtonText = R.string.share_this_story;
         if (hasBeenShared) {
             positiveButtonText = R.string.edit;
-            commentEditText.setText(previousComment.commentText);
+            if (previousComment != null ) {
+                commentEditText.setText(previousComment.commentText);
+            }
         } else if (!TextUtils.isEmpty(previouslySavedShareText)) {
             commentEditText.setText(previouslySavedShareText);
         }
@@ -144,10 +139,6 @@ public class ShareDialogFragment extends DialogFragment {
 	
 	@Override
 	public void onDestroy() {
-		if (commentCursor != null && !commentCursor.isClosed()) {
-			commentCursor.close();
-		}
-		
 		if (!hasShared && commentEditText.length() > 0) {
 			previouslySavedShareText = commentEditText.getText().toString();
 			callback.setPreviouslySavedShareText(previouslySavedShareText);

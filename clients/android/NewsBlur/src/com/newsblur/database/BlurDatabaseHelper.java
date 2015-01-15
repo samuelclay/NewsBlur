@@ -678,6 +678,17 @@ public class BlurDatabaseHelper {
         return classifier;
     }
 
+    public Comment getComment(String storyId, String userId) {
+        String selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
+        String[] selArgs = new String[] {storyId, userId};
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selArgs, null, null, null);
+        if (c.getCount() < 1) return null;
+        c.moveToFirst();
+        Comment comment = Comment.fromCursor(c);
+        closeQuietly(c);
+        return comment;
+    }
+
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {;}
