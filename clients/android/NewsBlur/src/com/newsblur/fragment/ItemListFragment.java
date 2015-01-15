@@ -185,7 +185,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.notifyDataSetInvalidated();
+        if (adapter != null) adapter.notifyDataSetInvalidated();
 	}
 
     public void setDefaultFeedView(DefaultFeedView value) {
