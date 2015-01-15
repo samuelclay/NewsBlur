@@ -159,9 +159,6 @@ class PayPalStandardBase(Model):
     subscr_id = models.CharField(max_length=19, blank=True)
     username = models.CharField(max_length=64, blank=True)
 
-    # Billing Agreement Variables
-    mp_id = models.CharField(max_length=128, blank=True, null=True) # B-0G433009BJ555711U
-
     # Dispute Resolution Variables
     case_creation_date = models.DateTimeField(blank=True, null=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
     case_id = models.CharField(max_length=14, blank=True)
@@ -190,7 +187,7 @@ class PayPalStandardBase(Model):
     # unique_id_x = models.CharField(max_length=13, blank=True)
 
     # Non-PayPal Variables - full IPN/PDT query and time fields.
-    ipaddress = models.GenericIPAddressField(blank=True, null=True)
+    ipaddress = models.IPAddressField(blank=True)
     flag = models.BooleanField(default=False, blank=True)
     flag_code = models.CharField(max_length=16, blank=True)
     flag_info = models.TextField(blank=True)
@@ -200,11 +197,10 @@ class PayPalStandardBase(Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     # Where did it come from?
-    from_view = models.CharField(max_length=6, null=True, blank=True)
+    # from_view = models.CharField(max_length=6, null=True, blank=True)
 
     class Meta:
         abstract = True
-        app_label = 'paypal_standard_base' # Keep Django 1.7 quiet
 
     def __unicode__(self):
         if self.is_transaction():
@@ -266,21 +262,6 @@ class PayPalStandardBase(Model):
 
     def is_recurring_failed(self):
         return self.txn_type == "recurring_payment_failed"
-
-    def is_recurring_suspended(self):
-        return self.txn_type == "recurring_payment_suspended"
-
-    def is_recurring_suspended_due_to_max_failed_payment(self):
-        return self.txn_type == "recurring_payment_suspended_due_to_max_failed_payment"
-
-    def is_billing_agreement(self):
-        return len(self.mp_id) > 0
-
-    def is_billing_agreement_create(self):
-        return self.txn_type == "mp_signup"
-
-    def is_billing_agreement_cancel(self):
-        return self.txn_type == "mp_cancel"
 
     def set_flag(self, info, code=None):
         """Sets a flag on the transaction and also sets a reason."""

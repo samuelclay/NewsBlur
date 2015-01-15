@@ -1,4 +1,4 @@
-from paypal.standard.signals import DeprecatedSignal
+from django.dispatch import Signal
 
 """
 These signals are different from IPN signals in that they are sent the second
@@ -10,15 +10,16 @@ PayPalPro rather than an IPN object.
 """
 
 # Sent when a recurring payments profile is created.
-payment_profile_created = DeprecatedSignal("payment_profile_created is deprecated. Use the return value from createRecurringPaymentsProfile directly, or pass nvp_handler to PayPalPro")
+payment_profile_created = Signal()
 
 # Sent when a payment is successfully processed.
-payment_was_successful = DeprecatedSignal("payment_was_successful is deprecated. Use the return value from doDirectPayment, doExpressCheckoutPayment, or pass nvp_handler to PayPalPro")
+payment_was_successful = Signal() #providing_args=["item"])
 
-payment_was_flagged = DeprecatedSignal("payment_was_flagged is deprecated. It has never done anything useful")
+# Sent when a payment is flagged.
+payment_was_flagged = Signal() #providing_args=["item"])
 
-recurring_cancel = DeprecatedSignal("recurring_cancel is deprecated. Use the return value from manangeRecurringPaymentsProfileStatus directly")
+recurring_cancel = Signal()
 
-recurring_suspend = DeprecatedSignal("recurring_suspend is deprecated. Use the return value from manangeRecurringPaymentsProfileStatus directly")
+recurring_suspend = Signal()
 
-recurring_reactivate = DeprecatedSignal("recurring_reactivate is deprecated. Use the return value from manangeRecurringPaymentsProfileStatus directly")
+recurring_reactivate = Signal()

@@ -26,8 +26,8 @@ from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup, valid_ipn_received
-from vendor.paypal.standard.ipn.signals import invalid_ipn_received
+from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
+from vendor.paypal.standard.ipn.signals import payment_was_flagged
 from vendor.paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -167,35 +167,32 @@ class Profile(models.Model):
         from apps.profile.tasks import EmailNewPremium
         EmailNewPremium.delay(user_id=self.user.pk)
         
-        new_premium = not self.is_premium
         self.is_premium = True
         self.save()
         self.user.is_active = True
         self.user.save()
         
-        if new_premium:
-            subs = UserSubscription.objects.filter(user=self.user)
-            for sub in subs:
-                if sub.active: continue
-                sub.active = True
-                try:
-                    sub.save()
-                except (IntegrityError, Feed.DoesNotExist):
-                    pass
-        
+        subs = UserSubscription.objects.filter(user=self.user)
+        for sub in subs:
+            if sub.active: continue
+            sub.active = True
             try:
-                scheduled_feeds = [sub.feed.pk for sub in subs]
-            except Feed.DoesNotExist:
-                scheduled_feeds = []
-            logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
-                         len(scheduled_feeds))
-            SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+                sub.save()
+            except (IntegrityError, Feed.DoesNotExist):
+                pass
+        
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
+        logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
         
         self.queue_new_feeds()
         self.setup_premium_history()
         
-        if new_premium:
-            logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+        logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
         
         return True
     
@@ -727,6 +724,23 @@ def create_profile(sender, instance, created, **kwargs):
         Profile.objects.get_or_create(user=instance)
 post_save.connect(create_profile, sender=User)
 
+
+def paypal_signup(sender, **kwargs):
+    ipn_obj = sender
+    try:
+        user = User.objects.get(username__iexact=ipn_obj.custom)
+    except User.DoesNotExist:
+        user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    logging.user(user, "~BC~SB~FBPaypal subscription signup")
+    try:
+        if not user.email:
+            user.email = ipn_obj.payer_email
+            user.save()
+    except:
+        pass
+    user.profile.activate_premium()
+subscription_signup.connect(paypal_signup)
+
 def paypal_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
     try:
@@ -735,16 +749,13 @@ def paypal_payment_history_sync(sender, **kwargs):
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
-        if not user.email:
-            user.email = ipn_obj.payer_email
-            user.save()
         user.profile.setup_premium_history(check_premium=True)
     except:
         return {"code": -1, "message": "User doesn't exist."}
-valid_ipn_received.connect(paypal_payment_history_sync)
-logging.debug(" ---> ~SN~FBHooking up signal for valid_ipn_received: ~SB%s" % valid_ipn_received.receivers)
+payment_was_successful.connect(paypal_payment_history_sync)
+logging.debug(" ---> ~SN~FBHooking up signal ~SB%s~SN." % payment_was_successful.receivers)
 
-def paypal_invalid_ipn_received(sender, **kwargs):
+def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
@@ -755,7 +766,20 @@ def paypal_invalid_ipn_received(sender, **kwargs):
         user.profile.setup_premium_history(check_premium=True)
     except:
         return {"code": -1, "message": "User doesn't exist."}
-invalid_ipn_received.connect(paypal_invalid_ipn_received)
+payment_was_flagged.connect(paypal_payment_was_flagged)
+
+def paypal_recurring_payment_history_sync(sender, **kwargs):
+    ipn_obj = sender
+    try:
+        user = User.objects.get(username__iexact=ipn_obj.custom)
+    except User.DoesNotExist:
+        user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    logging.user(user, "~BC~SB~FBPaypal subscription recurring payment")
+    try:
+        user.profile.setup_premium_history(check_premium=True)
+    except:
+        return {"code": -1, "message": "User doesn't exist."}
+recurring_payment.connect(paypal_recurring_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']

@@ -6,48 +6,38 @@ http://code.djangoproject.com/wiki/Signals#Helppost_saveseemstobeemittedtwicefor
 """
 from django.dispatch import Signal
 
-from paypal.standard.signals import DeprecatedSignal
-
-# Sent when a validated, non-duplicated IPN is received.
-valid_ipn_received = Signal()
-
-# Sent when a flagged IPN (e.g. duplicate, invalid) is received.
-invalid_ipn_received = Signal()
-
-## Deprecated signals:
-
 # Sent when a payment is successfully processed.
-payment_was_successful = DeprecatedSignal("payment_was_successful is deprecated, please migrate to valid_ipn_received instead")
+payment_was_successful = Signal()
 
 # Sent when a payment is flagged.
-payment_was_flagged = DeprecatedSignal("payment_was_flagged is deprecated, please migrate to invalid_ipn_received instead")
+payment_was_flagged = Signal()
 
 # Sent when a payment was refunded by the seller.
-payment_was_refunded = DeprecatedSignal("payment_was_refunded is deprecated, please migrate to valid_ipn_received instead")
+payment_was_refunded = Signal()
 
 # Sent when a payment was reversed by the buyer.
-payment_was_reversed = DeprecatedSignal("payment_was_reversed is deprecated, please migrate to valid_ipn_received instead")
+payment_was_reversed = Signal()
 
 # Sent when a subscription was cancelled.
-subscription_cancel = DeprecatedSignal("subscription_cancel is deprecated, please migrate to valid_ipn_received instead")
+subscription_cancel = Signal()
 
 # Sent when a subscription expires.
-subscription_eot = DeprecatedSignal("subscription_eot is deprecated, please migrate to valid_ipn_received instead")
+subscription_eot = Signal()
 
 # Sent when a subscription was modified.
-subscription_modify = DeprecatedSignal("subscription_modify is deprecated, please migrate to valid_ipn_received instead")
+subscription_modify = Signal()
 
 # Sent when a subscription is created.
-subscription_signup = DeprecatedSignal("subscription_signup is deprecated, please migrate to valid_ipn_received instead")
+subscription_signup = Signal()
 
 # recurring_payment_profile_created
-recurring_create = DeprecatedSignal("recurring_create is deprecated, please migrate to valid_ipn_received instead")
+recurring_create = Signal()
 
 # recurring_payment
-recurring_payment = DeprecatedSignal("recurring_payment is deprecated, please migrate to valid_ipn_received instead")
+recurring_payment = Signal()
 
-recurring_cancel = DeprecatedSignal("recurring_cancel is deprecated, please migrate to valid_ipn_received instead")
+recurring_cancel = Signal()
 
-recurring_skipped = DeprecatedSignal("recurring_skipped is deprecated, please migrate to valid_ipn_received instead")
+recurring_skipped = Signal()
 
-recurring_failed = DeprecatedSignal("recurring_failed is deprecated, please migrate to valid_ipn_received instead")
+recurring_failed = Signal()

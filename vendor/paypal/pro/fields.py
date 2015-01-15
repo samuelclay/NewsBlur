@@ -4,9 +4,8 @@ from calendar import monthrange
 from datetime import date
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from six.moves import range
-import six
 
 from paypal.pro.creditcard import verify_credit_card
 
@@ -36,7 +35,7 @@ class CreditCardExpiryWidget(forms.MultiWidget):
     def decompress(self, value):
         if isinstance(value, date):
             return [value.month, value.year]
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, basestring):
             return [value[0:2], value[2:]]
         else:
             return [None, None]
