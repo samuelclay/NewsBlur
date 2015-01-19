@@ -3,6 +3,9 @@ package com.newsblur.network;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -31,6 +34,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ReplyDialogFragment;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ViewUtils;
@@ -53,7 +57,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private final Context context;
 	private UserDetails user;
 	private final FragmentManager manager;
-	private Cursor commentCursor;
+	private List<Comment> comments;
 
 	public SetupCommentSectionTask(final Context context, final View view, final FragmentManager manager, LayoutInflater inflater, final ContentResolver resolver, final APIManager apiManager, final Story story, final ImageLoader imageLoader) {
 		this.context = context;
@@ -69,15 +73,12 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected Void doInBackground(Void... arg0) {
-
-		commentCursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id }, null);
+        comments = FeedUtils.dbHelper.getComments(story.id);
 
 		publicCommentViews = new ArrayList<View>();
 		friendCommentViews = new ArrayList<View>();
 
-		while (commentCursor.moveToNext()) {
-			final Comment comment = Comment.fromCursor(commentCursor);
-			
+		for (final Comment comment : comments) {
 			// skip public comments if they are disabled
 			if (!comment.byFriend && !PrefsUtils.showPublicComments(context)) {
 			    continue;
@@ -252,17 +253,15 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			TextView friendCommentTotal = ((TextView) viewHolder.get().findViewById(R.id.reading_friend_comment_total));
 			TextView publicCommentTotal = ((TextView) viewHolder.get().findViewById(R.id.reading_public_comment_total));
 			
-			ViewUtils.setupCommentCount(context, viewHolder.get(), commentCursor.getCount());
+			ViewUtils.setupCommentCount(context, viewHolder.get(), comments.size());
 			ViewUtils.setupShareCount(context, viewHolder.get(), story.sharedUserIds.length);
 
-			ArrayList<String> commentIds = new ArrayList<String>();
-			commentCursor.moveToFirst();
-			for (int i = 0; i < commentCursor.getCount(); i++) {
-				commentIds.add(commentCursor.getString(commentCursor.getColumnIndex(DatabaseConstants.COMMENT_USERID)));
-				commentCursor.moveToNext();
+			Set<String> commentIds = new HashSet<String>();
+			for (Comment comment : comments) {
+				commentIds.add(comment.userId);
 			}
 
-            for (final String userId : story.sharedUserIds) {
+            for (String userId : story.sharedUserIds) {
                 if (!commentIds.contains(userId)) {
                     Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { userId }, null);
                     if (userCursor.getCount() > 0) {
@@ -276,18 +275,13 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 }
             }
 
-			commentCursor.moveToFirst();
-
-			for (int i = 0; i < commentCursor.getCount(); i++) {
-				final Comment comment = Comment.fromCursor(commentCursor);
-
+			for (Comment comment : comments) {
 				Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
 				UserProfile user = UserProfile.fromCursor(userCursor);
 				userCursor.close();
 
 				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
 				commentGrid.addView(image);
-				commentCursor.moveToNext();
 			}
 			
 			if (publicCommentViews.size() > 0) {
@@ -323,7 +317,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			}
 			
 		}
-		commentCursor.close();
 	}
 }
 
