@@ -686,7 +686,7 @@ public class BlurDatabaseHelper {
         while (c.moveToNext()) {
             comments.add(Comment.fromCursor(c));
         }
-        c.close();
+        closeQuietly(c);
         return comments;
     }
 
@@ -699,6 +699,15 @@ public class BlurDatabaseHelper {
         Comment comment = Comment.fromCursor(c);
         closeQuietly(c);
         return comment;
+    }
+
+    public UserProfile getUserProfile(String userId) {
+        String[] selArgs = new String[] {userId};
+        String selection = DatabaseConstants.USER_USERID + " = ?";
+        Cursor c = dbRO.query(DatabaseConstants.USER_TABLE, null, selection, selArgs, null, null, null);
+        UserProfile profile = UserProfile.fromCursor(c);
+        closeQuietly(c);
+        return profile;
     }
 
     public static void closeQuietly(Cursor c) {

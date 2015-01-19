@@ -84,9 +84,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			    continue;
 			}
 
-			Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
-			UserProfile commentUser = UserProfile.fromCursor(userCursor);
-            userCursor.close();
+			UserProfile commentUser = FeedUtils.dbHelper.getUserProfile(comment.userId);
             // rarely, we get a comment but never got the user's profile, so we can't display it
             if (commentUser == null) {
                 Log.w(this.getClass().getName(), "cannot display comment from missing user ID: " + comment.userId);
@@ -119,9 +117,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				for (String id : comment.likingUsers) {
 					ImageView favouriteImage = new ImageView(context);
 
-					Cursor likingUserCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { id }, null);
-					UserProfile user = UserProfile.fromCursor(likingUserCursor);
-                    likingUserCursor.close();
+					UserProfile user = FeedUtils.dbHelper.getUserProfile(id);
 
 					imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
 					favouriteImage.setTag(id);
@@ -145,9 +141,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				@Override
 				public void onClick(View v) {
 					if (story != null) {
-						Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
-						UserProfile user = UserProfile.fromCursor(userCursor);
-                        userCursor.close();
+						UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
 
 						DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
 						newFragment.show(manager, "dialog");
@@ -164,10 +158,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				replyText.setText(Html.fromHtml(reply.text));
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
-				// occasionally there was no reply user and this caused a force close 
-				Cursor replyCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { reply.userId }, null);
-				if (replyCursor.getCount() > 0) {
-					final UserProfile replyUser = UserProfile.fromCursor(replyCursor);
+                final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);
+				if (replyUser != null) {
 					imageLoader.displayImage(replyUser.photoUrl, replyImage);
 					replyImage.setOnClickListener(new OnClickListener() {
 						@Override
@@ -184,7 +176,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					TextView replyUsername = (TextView) replyView.findViewById(R.id.reply_username);
 					replyUsername.setText(R.string.unknown_user);
 				}
-                replyCursor.close();
 				
 				TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
 				replySharedDate.setText(reply.shortDate + " ago");
@@ -213,15 +204,11 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				commentImage.setVisibility(View.INVISIBLE);
 
 
-				Cursor sourceUserCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.sourceUserId }, null);
-				if (sourceUserCursor.getCount() > 0) {
-					UserProfile sourceUser = UserProfile.fromCursor(sourceUserCursor);
-					sourceUserCursor.close();
-
+                UserProfile sourceUser = FeedUtils.dbHelper.getUserProfile(comment.sourceUserId);
+				if (sourceUser != null) {
 					imageLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f);
 					imageLoader.displayImage(userPhoto, usershareImage, 10f);
 				}
-                sourceUserCursor.close();
 			} else {
 				imageLoader.displayImage(userPhoto, commentImage, 10f);
 			}
@@ -263,23 +250,16 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
             for (String userId : story.sharedUserIds) {
                 if (!commentIds.contains(userId)) {
-                    Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { userId }, null);
-                    if (userCursor.getCount() > 0) {
-                        UserProfile user = UserProfile.fromCursor(userCursor);
-                        userCursor.close();
-
+                    UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
+                    if (user != null) {
                         ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
                         sharedGrid.addView(image);
                     }
-                    userCursor.close();
                 }
             }
 
 			for (Comment comment : comments) {
-				Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
-				UserProfile user = UserProfile.fromCursor(userCursor);
-				userCursor.close();
-
+				UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
 				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
 				commentGrid.addView(image);
 			}
