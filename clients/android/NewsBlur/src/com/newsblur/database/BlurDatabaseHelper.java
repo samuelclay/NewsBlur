@@ -710,6 +710,18 @@ public class BlurDatabaseHelper {
         return profile;
     }
 
+    public List<Reply> getCommentReplies(String commentId) {
+        String[] selArgs = new String[] {commentId};
+        String selection = DatabaseConstants.REPLY_COMMENTID+ " = ?";
+        Cursor c = dbRO.query(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COLUMNS, selection, selArgs, null, null, DatabaseConstants.REPLY_DATE + " DESC");
+        List<Reply> replies = new ArrayList<Reply>(c.getCount());
+        while (c.moveToNext()) {
+            replies.add(Reply.fromCursor(c));
+        }
+        closeQuietly(c);
+        return replies;
+    }
+
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {;}

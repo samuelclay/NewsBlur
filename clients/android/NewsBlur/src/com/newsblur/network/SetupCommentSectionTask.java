@@ -7,10 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -26,8 +24,6 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.Profile;
-import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.Story;
@@ -47,7 +43,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	private ArrayList<View> publicCommentViews;
 	private ArrayList<View> friendCommentViews;
-	private final ContentResolver resolver;
 	private final APIManager apiManager;
 
 	private final Story story;
@@ -59,11 +54,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private final FragmentManager manager;
 	private List<Comment> comments;
 
-	public SetupCommentSectionTask(final Context context, final View view, final FragmentManager manager, LayoutInflater inflater, final ContentResolver resolver, final APIManager apiManager, final Story story, final ImageLoader imageLoader) {
+	public SetupCommentSectionTask(final Context context, final View view, final FragmentManager manager, LayoutInflater inflater, final APIManager apiManager, final Story story, final ImageLoader imageLoader) {
 		this.context = context;
 		this.manager = manager;
 		this.inflater = inflater;
-		this.resolver = resolver;
 		this.apiManager = apiManager;
 		this.story = story;
 		this.imageLoader = imageLoader;
@@ -149,10 +143,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				}
 			});
 
-			Cursor replies = resolver.query(FeedProvider.REPLIES_URI, null, null, new String[] { comment.id }, DatabaseConstants.REPLY_DATE + " DESC");
-			while (replies.moveToNext()) {
-				Reply reply = Reply.fromCursor(replies);
-				
+            List<Reply> replies = FeedUtils.dbHelper.getCommentReplies(comment.id);
+			for (Reply reply : replies) {
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
 				replyText.setText(Html.fromHtml(reply.text));
@@ -182,7 +174,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}
-            replies.close();
 
 			TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
 			commentUsername.setText(commentUser.username);
