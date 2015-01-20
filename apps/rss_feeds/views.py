@@ -23,6 +23,14 @@ from utils.view_functions import get_argument_or_404
 from utils.view_functions import required_params
 from vendor.timezones.utilities import localtime_for_timezone
 
+
+IGNORE_AUTOCOMPLETE = [
+    "facebook.com/feeds/notifications.php",
+    "inbox",
+    "secret",
+    "password",
+]
+
 @json.json_view
 def search_feed(request):
     address = request.REQUEST.get('address')
@@ -106,7 +114,8 @@ def feed_autocomplete(request):
     
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
     feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
-    feeds = [feed for feed in feeds if 'facebook.com/feeds/notifications.php' not in feed.feed_address]
+    feeds = [feed for feed in feeds if all([x not in feed.feed_address for x in IGNORE_AUTOCOMPLETE])]
+    
     if format == 'autocomplete':
         feeds = [{
             'id': feed.pk,
