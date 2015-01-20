@@ -120,12 +120,6 @@
 
         <receiver android:name=".service.ServiceScheduleReceiver" />
 
-        <provider
-            android:name=".database.FeedProvider"
-            android:authorities="com.newsblur"
-            android:exported="true"
-            android:multiprocess="true" />
-
     </application>
 
 </manifest>
