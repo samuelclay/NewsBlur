@@ -103,7 +103,6 @@ public class ImageCache {
             long timestamp = f.lastModified();
             if ((System.currentTimeMillis() > (timestamp + MAX_FILE_AGE_MILLIS)) ||
                 (!currentFiles.contains(f.getName()))) {
-                Log.d(this.getClass().getName(), "deleting " + f.getName());
                 f.delete();
             }
         }
