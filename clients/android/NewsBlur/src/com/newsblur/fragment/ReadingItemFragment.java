@@ -3,7 +3,6 @@ package com.newsblur.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -70,7 +69,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private ImageLoader imageLoader;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	private ContentResolver resolver;
 	private NewsblurWebview web;
 	private BroadcastReceiver receiver;
 	private TextView itemAuthors;
@@ -126,7 +124,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		apiManager = new APIManager(getActivity());
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
 
-		resolver = getActivity().getContentResolver();
 		inflater = getActivity().getLayoutInflater();
 		
 		displayFeedDetails = getArguments().getBoolean("displayFeedDetails");
@@ -240,7 +237,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(finalURL);
-                builder.setMessage(altText);
+                builder.setMessage(Html.fromHtml(altText).toString());
                 builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
@@ -303,7 +300,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
 	private void setupItemCommentsAndShares(final View view) {
-		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, resolver, apiManager, story, imageLoader).execute();
+		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, apiManager, story, imageLoader).execute();
 	}
 
 	private void setupItemMetadata() {

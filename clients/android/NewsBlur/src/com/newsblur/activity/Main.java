@@ -175,7 +175,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
 
         if (overlayStatusText != null) {
-            String syncStatus = NBSyncService.getSyncStatusMessage();
+            String syncStatus = NBSyncService.getSyncStatusMessage(this);
             if (syncStatus != null)  {
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);

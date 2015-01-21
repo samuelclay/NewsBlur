@@ -3,6 +3,7 @@ package com.newsblur.service;
 import android.app.Service;
 import android.content.ComponentCallbacks2;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
@@ -26,6 +27,7 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FileCache;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
@@ -73,7 +75,7 @@ public class NBSyncService extends Service {
     private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
-    private volatile static boolean VacuumRunning = false;
+    private volatile static boolean HousekeepingRunning = false;
 
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean DoUnreads = false;
@@ -127,14 +129,22 @@ public class NBSyncService extends Service {
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
         wl.setReferenceCounted(true);
 
-		apiManager = new APIManager(this);
-        dbHelper = new BlurDatabaseHelper(this);
-
         primaryExecutor = Executors.newFixedThreadPool(1);
-        originalTextService = new OriginalTextService(this);
-        unreadsService = new UnreadsService(this);
-        imagePrefetchService = new ImagePrefetchService(this);
 	}
+
+    /**
+     * Services can be constructed synchrnously by the Main thread, so don't do expensive
+     * parts of construction in onCreate, but save them for when we are in our own thread.
+     */
+    private void finishConstruction() {
+        if (apiManager == null) {
+            apiManager = new APIManager(this);
+            dbHelper = new BlurDatabaseHelper(this);
+            originalTextService = new OriginalTextService(this);
+            unreadsService = new UnreadsService(this);
+            imagePrefetchService = new ImagePrefetchService(this);
+        }
+    }
 
     /**
      * Called serially, once per "start" of the service.  This serves as a wakeup call
@@ -170,6 +180,8 @@ public class NBSyncService extends Service {
             if (HaltNow) return;
 
             incrementRunningChild();
+            finishConstruction();
+
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting primary sync");
 
             if (NbActivity.getActiveActivityCount() < 1) {
@@ -180,10 +192,9 @@ public class NBSyncService extends Service {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
             }
 
-            // do these even if background syncs aren't enabled, because it absolutely must happen
-            // in the background on all devices
-            boolean upgraded = PrefsUtils.checkForUpgrade(this);
-            doVacuum(upgraded);
+            // do this even if background syncs aren't enabled, because it absolutely must happen
+            // on all devices
+            housekeeping();
 
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
@@ -216,20 +227,42 @@ public class NBSyncService extends Service {
         }
     }
 
-    private void doVacuum(boolean upgraded) {
-        boolean autoVac = PrefsUtils.isTimeToVacuum(this);
-        // this will lock up the DB for a few seconds, only do it if the UI is hidden
-        if (NbActivity.getActiveActivityCount() > 0) autoVac = false;
-        
-        if (upgraded || autoVac) {
-            VacuumRunning = true;
-            NbActivity.updateAllActivities(false);
-            PrefsUtils.updateLastVacuumTime(this);
-            Log.i(this.getClass().getName(), "rebuilding DB . . .");
-            dbHelper.vacuum();
-            Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
-            VacuumRunning = false;
-            NbActivity.updateAllActivities(false);
+    /**
+     * Check for upgrades and wipe the DB if necessary, and do DB maintenance
+     */
+    private void housekeeping() {
+        try {
+            boolean upgraded = PrefsUtils.checkForUpgrade(this);
+            if (upgraded) {
+                HousekeepingRunning = true;
+                NbActivity.updateAllActivities(false);
+                // wipe the local DB
+                dbHelper.dropAndRecreateTables();
+                NbActivity.updateAllActivities(true);
+                // in case this is the first time we have run since moving the cache to the new location,
+                // blow away the old version entirely. This line can be removed some time well after
+                // v61+ is widely deployed
+                FileCache.cleanUpOldCache(this);
+                PrefsUtils.updateVersion(this);
+            }
+
+            boolean autoVac = PrefsUtils.isTimeToVacuum(this);
+            // this will lock up the DB for a few seconds, only do it if the UI is hidden
+            if (NbActivity.getActiveActivityCount() > 0) autoVac = false;
+            
+            if (upgraded || autoVac) {
+                HousekeepingRunning = true;
+                NbActivity.updateAllActivities(false);
+                PrefsUtils.updateLastVacuumTime(this);
+                Log.i(this.getClass().getName(), "rebuilding DB . . .");
+                dbHelper.vacuum();
+                Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
+            }
+        } finally {
+            if (HousekeepingRunning) {
+                HousekeepingRunning = false;
+                NbActivity.updateAllActivities(true);
+            }
         }
     }
 
@@ -314,6 +347,7 @@ public class NBSyncService extends Service {
         NbActivity.updateAllActivities(false);
         dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
         dbHelper.cleanupStoryText();
+        imagePrefetchService.imageCache.cleanup(dbHelper.getAllStoryImages());
         CleanupRunning = false;
         NbActivity.updateAllActivities(false);
 
@@ -532,13 +566,18 @@ public class NBSyncService extends Service {
         }
     }
 
-    boolean stopSync() {
+    static boolean stopSync(Context context) {
         if (HaltNow) {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "stopping sync, soft interrupt set.");
+            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "stopping sync, soft interrupt set.");
             return true;
         }
-        if (!NetworkUtils.isOnline(this)) return true;
+        if (context == null) return false;
+        if (!NetworkUtils.isOnline(context)) return true;
         return false;
+    }
+
+    boolean stopSync() {
+        return stopSync(this);
     }
 
     public void onTrimMemory (int level) {
@@ -557,25 +596,25 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (VacuumRunning || ActionsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
+        return (HousekeepingRunning || ActionsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
     }
 
     /**
      * Is there a sync for a given FeedSet running?
      */
-    public static boolean isFeedSetSyncing(FeedSet fs) {
-        return (fs.equals(PendingFeed) && StorySyncRunning);
+    public static boolean isFeedSetSyncing(FeedSet fs, Context context) {
+        return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
-    public static String getSyncStatusMessage() {
-        if (VacuumRunning) return "Tidying up . . .";
-        if (ActionsRunning) return "Syncing read stories...";
-        if (FFSyncRunning) return "On its way...";
-        if (CleanupRunning) return "Cleaning up...";
-        if (StorySyncRunning) return "Fetching recent stories...";
-        if (UnreadsService.running()) return "Storing" + UnreadsService.getPendingCount() + "unread stories...";
-        if (OriginalTextService.running()) return "Storing text for " + OriginalTextService.getPendingCount() + " stories...";
-        if (ImagePrefetchService.running()) return "Storing " + ImagePrefetchService.getPendingCount() + " images...";
+    public static String getSyncStatusMessage(Context context) {
+        if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
+        if (ActionsRunning) return context.getResources().getString(R.string.sync_status_actions);
+        if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
+        if (CleanupRunning) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
+        if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
+        if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
+        if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
         return null;
     }
 
@@ -667,22 +706,25 @@ public class NBSyncService extends Service {
 
     @Override
     public void onDestroy() {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
-        HaltNow = true;
-        unreadsService.shutdown();
-        originalTextService.shutdown();
-        imagePrefetchService.shutdown();
-        primaryExecutor.shutdown();
         try {
-            primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            primaryExecutor.shutdownNow();
-            Thread.currentThread().interrupt();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
+            HaltNow = true;
+            unreadsService.shutdown();
+            originalTextService.shutdown();
+            imagePrefetchService.shutdown();
+            primaryExecutor.shutdown();
+            try {
+                primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                primaryExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+            dbHelper.close();
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
+            super.onDestroy();
+        } catch (Exception ex) {
+            Log.e(this.getClass().getName(), "unclean shutdown", ex);
         }
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
-
-        super.onDestroy();
-        dbHelper.close();
     }
 
     @Override

@@ -121,6 +121,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_STARRED_DATE, starredTimestamp);
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
         values.put(DatabaseConstants.STORY_HASH, storyHash);
+        values.put(DatabaseConstants.STORY_IMAGE_URLS, TextUtils.join(",", imageUrls));
 		return values;
 	}
 
@@ -155,6 +156,7 @@ public class Story implements Serializable {
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
         story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
+		story.imageUrls = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_IMAGE_URLS)), ",");
 		return story;
 	}
 

@@ -8,12 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import android.content.ContentProviderOperation;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.text.TextUtils;
@@ -23,13 +19,10 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
-import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
-import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.service.NBSyncService;
@@ -188,17 +181,9 @@ public class FeedUtils {
 
         // next, update the local DB
         classifier.getMapForType(classifierType).put(key, classifierAction);
-        Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
-        try {
-            // TODO: for feeds with many classifiers, this could be much faster by targeting just the row that changed
-			context.getContentResolver().delete(classifierUri, null, null);
-			for (ContentValues classifierValues : classifier.getContentValues()) {
-                context.getContentResolver().insert(classifierUri, classifierValues);
-            }
-        } catch (Exception e) {
-            Log.w(FeedUtils.class.getName(), "Could not update classifier in local storage.", e);
-        }
-
+        classifier.feedId = feedId;
+        dbHelper.clearClassifiersForFeed(feedId);
+        dbHelper.insertClassifier(classifier);
     }
 
     public static void shareStory(Story story, Context context) {

@@ -40,39 +40,30 @@ public class PrefsUtils {
 		edit.commit();
 	}
 
-    /**
-     * Check to see if this is the first launch of the app after an upgrade, in which case
-     * we clear the DB to prevent bugs associated with non-forward-compatibility.
-     * @return true if an upgrade was detected.
-     */
     public static boolean checkForUpgrade(Context context) {
-
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-
         String version = getVersion(context);
         if (version == null) {
-            Log.w(PrefsUtils.class.getName(), "could not determine app version");
+            Log.wtf(PrefsUtils.class.getName(), "could not determine app version");
             return false;
         }
         if (AppConstants.VERBOSE_LOG) Log.i(PrefsUtils.class.getName(), "launching version: " + version);
 
         String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
-            Log.i(PrefsUtils.class.getName(), "detected new version of app, clearing local data");
-            // wipe the local DB
-            FeedUtils.dropAndRecreateTables();
-            // in case this is the first time we have run since moving the cache to the new location,
-            // blow away the old version entirely. This line can be removed some time well after
-            // v61+ is widely deployed
-            FileCache.cleanUpOldCache(context);
-            // store the current version
-            prefs.edit().putString(AppConstants.LAST_APP_VERSION, version).commit();
-            // also make sure we auto-trigger an update, since all data are now gone
-            prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
+            Log.i(PrefsUtils.class.getName(), "detected new version of app");
             return true;
         }
         return false;
 
+    }
+
+    public static void updateVersion(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        // store the current version
+        prefs.edit().putString(AppConstants.LAST_APP_VERSION, getVersion(context)).commit();
+        // also make sure we auto-trigger an update, since all data are now gone
+        prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
     }
 
     public static String getVersion(Context context) {

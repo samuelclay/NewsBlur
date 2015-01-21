@@ -209,6 +209,18 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
+    public Set<String> getAllStoryImages() {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS}, null, null, null, null, null);
+        Set<String> urls = new HashSet<String>(c.getCount());
+        while (c.moveToNext()) {
+            for (String url : TextUtils.split(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_IMAGE_URLS)), ",")) {
+                urls.add(url);
+            }
+        }
+        c.close();
+        return urls;
+    }
+
     public void insertStories(StoriesResponse apiResponse, NBSyncService.ActivationMode actMode, long modeCutoff) {
         // to insert classifiers, we need to determine the feed ID of the stories in this
         // response, so sniff one out.
@@ -659,6 +671,67 @@ public class BlurDatabaseHelper {
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
         }
+    }
+
+    public void clearClassifiersForFeed(String feedId) {
+        String[] selArgs = new String[] {feedId};
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs);}
+    }
+
+    public void insertClassifier(Classifier classifier) {
+        bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifier.getContentValues());
+    }
+
+    public Classifier getClassifierForFeed(String feedId) {
+        String[] selArgs = new String[] {feedId};
+        Cursor c = dbRO.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs, null, null, null);
+        Classifier classifier = Classifier.fromCursor(c);
+        closeQuietly(c);
+        return classifier;
+    }
+
+    public List<Comment> getComments(String storyId) {
+        String[] selArgs = new String[] {storyId};
+        String selection = DatabaseConstants.COMMENT_STORYID + " = ?"; 
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selArgs, null, null, null);
+        List<Comment> comments = new ArrayList<Comment>(c.getCount());
+        while (c.moveToNext()) {
+            comments.add(Comment.fromCursor(c));
+        }
+        closeQuietly(c);
+        return comments;
+    }
+
+    public Comment getComment(String storyId, String userId) {
+        String selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
+        String[] selArgs = new String[] {storyId, userId};
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selArgs, null, null, null);
+        if (c.getCount() < 1) return null;
+        c.moveToFirst();
+        Comment comment = Comment.fromCursor(c);
+        closeQuietly(c);
+        return comment;
+    }
+
+    public UserProfile getUserProfile(String userId) {
+        String[] selArgs = new String[] {userId};
+        String selection = DatabaseConstants.USER_USERID + " = ?";
+        Cursor c = dbRO.query(DatabaseConstants.USER_TABLE, null, selection, selArgs, null, null, null);
+        UserProfile profile = UserProfile.fromCursor(c);
+        closeQuietly(c);
+        return profile;
+    }
+
+    public List<Reply> getCommentReplies(String commentId) {
+        String[] selArgs = new String[] {commentId};
+        String selection = DatabaseConstants.REPLY_COMMENTID+ " = ?";
+        Cursor c = dbRO.query(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COLUMNS, selection, selArgs, null, null, DatabaseConstants.REPLY_DATE + " DESC");
+        List<Reply> replies = new ArrayList<Reply>(c.getCount());
+        while (c.moveToNext()) {
+            replies.add(Reply.fromCursor(c));
+        }
+        closeQuietly(c);
+        return replies;
     }
 
     public static void closeQuietly(Cursor c) {
