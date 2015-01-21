@@ -136,7 +136,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         setProgressBarIndeterminateVisibility(isLoading);
 
         if (overlayStatusText != null) {
-            String syncStatus = NBSyncService.getSyncStatusMessage();
+            String syncStatus = NBSyncService.getSyncStatusMessage(this);
             if (syncStatus != null)  {
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);

@@ -605,15 +605,15 @@ public class NBSyncService extends Service {
         return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
-    public static String getSyncStatusMessage() {
-        if (HousekeepingRunning) return "Tidying up...";
-        if (ActionsRunning) return "Syncing reading actions...";
-        if (FFSyncRunning) return "On its way...";
-        if (CleanupRunning) return "Cleaning up...";
-        if (StorySyncRunning) return "Fetching fresh stories...";
-        if (UnreadsService.running()) return "Storing" + UnreadsService.getPendingCount() + "unread stories...";
-        if (OriginalTextService.running()) return "Storing text for " + OriginalTextService.getPendingCount() + " stories...";
-        if (ImagePrefetchService.running()) return "Storing " + ImagePrefetchService.getPendingCount() + " images...";
+    public static String getSyncStatusMessage(Context context) {
+        if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
+        if (ActionsRunning) return context.getResources().getString(R.string.sync_status_actions);
+        if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
+        if (CleanupRunning) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
+        if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
+        if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
+        if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
         return null;
     }
 
