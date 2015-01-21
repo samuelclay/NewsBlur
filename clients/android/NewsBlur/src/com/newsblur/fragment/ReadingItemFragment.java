@@ -237,7 +237,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(finalURL);
-                builder.setMessage(altText);
+                builder.setMessage(Html.fromHtml(altText).toString());
                 builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
