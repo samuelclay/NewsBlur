@@ -372,6 +372,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     public void scrollChanged(int hPos, int vPos, int currentWidth, int currentHeight) {
+        // only update overlay alpha about half the time. modern screens are so dense that it
+        // is way overkill to do it on every pixel
+        if (vPos % 2 == 1) return;
+
         int scrollMax = currentHeight - contentView.getMeasuredHeight();
         int posFromBot = (scrollMax - vPos);
 
