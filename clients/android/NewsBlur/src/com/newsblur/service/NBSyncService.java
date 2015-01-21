@@ -3,6 +3,7 @@ package com.newsblur.service;
 import android.app.Service;
 import android.content.ComponentCallbacks2;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
@@ -564,13 +565,18 @@ public class NBSyncService extends Service {
         }
     }
 
-    boolean stopSync() {
+    static boolean stopSync(Context context) {
         if (HaltNow) {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "stopping sync, soft interrupt set.");
+            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "stopping sync, soft interrupt set.");
             return true;
         }
-        if (!NetworkUtils.isOnline(this)) return true;
+        if (context == null) return false;
+        if (!NetworkUtils.isOnline(context)) return true;
         return false;
+    }
+
+    boolean stopSync() {
+        return stopSync(this);
     }
 
     public void onTrimMemory (int level) {
@@ -595,8 +601,8 @@ public class NBSyncService extends Service {
     /**
      * Is there a sync for a given FeedSet running?
      */
-    public static boolean isFeedSetSyncing(FeedSet fs) {
-        return (fs.equals(PendingFeed));
+    public static boolean isFeedSetSyncing(FeedSet fs, Context context) {
+        return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
     public static String getSyncStatusMessage() {

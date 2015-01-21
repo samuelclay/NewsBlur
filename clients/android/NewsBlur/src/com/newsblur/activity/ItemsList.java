@@ -132,7 +132,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     }
 
     private void updateStatusIndicators() {
-        boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs);
+        boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs, this);
         setProgressBarIndeterminateVisibility(isLoading);
 
         if (overlayStatusText != null) {

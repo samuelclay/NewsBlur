@@ -106,7 +106,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         TextView emptyView = (TextView) itemList.getEmptyView();
 
-        boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet());
+        boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
         if (isLoading || (!cursorSeenYet)) {
             emptyView.setText(R.string.empty_list_view_loading);
         } else {
