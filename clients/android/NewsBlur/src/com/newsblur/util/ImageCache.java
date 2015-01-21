@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,12 +90,20 @@ public class ImageCache {
         return fileName;
     }
 
-    public void cleanup() {
+    public void cleanup(Set<String> currentImages) {
+        // if there appear to be zero images in the system, a DB rebuild probably just
+        // occured, so don't trust that data for cleanup
+        if (currentImages.size() == 0) return;
+
+        Set<String> currentFiles = new HashSet<String>(currentImages.size());
+        for (String url : currentImages) currentFiles.add(getFileName(url));
         File[] files = cacheDir.listFiles();
         if (files == null) return;
         for (File f : files) {
             long timestamp = f.lastModified();
-            if (System.currentTimeMillis() > (timestamp + MAX_FILE_AGE_MILLIS)) {
+            if ((System.currentTimeMillis() > (timestamp + MAX_FILE_AGE_MILLIS)) ||
+                (!currentFiles.contains(f.getName()))) {
+                Log.d(this.getClass().getName(), "deleting " + f.getName());
                 f.delete();
             }
         }

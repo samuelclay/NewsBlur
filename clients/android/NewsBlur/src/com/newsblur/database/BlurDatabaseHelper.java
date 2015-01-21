@@ -209,6 +209,18 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
+    public Set<String> getAllStoryImages() {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS}, null, null, null, null, null);
+        Set<String> urls = new HashSet<String>(c.getCount());
+        while (c.moveToNext()) {
+            for (String url : TextUtils.split(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_IMAGE_URLS)), ",")) {
+                urls.add(url);
+            }
+        }
+        c.close();
+        return urls;
+    }
+
     public void insertStories(StoriesResponse apiResponse, NBSyncService.ActivationMode actMode, long modeCutoff) {
         // to insert classifiers, we need to determine the feed ID of the stories in this
         // response, so sniff one out.

@@ -21,7 +21,7 @@ public class ImagePrefetchService extends SubService {
 
     private static volatile boolean Running = false;
 
-    private ImageCache imageCache;
+    ImageCache imageCache;
 
     /** URLs of images contained in recently fetched stories that are candidates for prefetch. */
     static Set<String> ImageQueue;
@@ -61,8 +61,7 @@ public class ImagePrefetchService extends SubService {
                 gotWork();
             }
         }
-        // TODO: do this in a cleanup thread
-        imageCache.cleanup();
+        
     }
 
     public void addUrl(String url) {
