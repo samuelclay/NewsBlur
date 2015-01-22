@@ -502,7 +502,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     feed_address: this.feeds.get(feed_id).get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
                     read_filter: this.view_setting(feed_id, 'read_filter'),
-                    query: NEWSBLUR.reader.flags.search
+                    query: NEWSBLUR.reader.flags.search,
+                    include_hidden: true
                 }, pre_callback,
                 error_callback,
                 {
@@ -662,7 +663,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
-            query: NEWSBLUR.reader.flags.search
+            query: NEWSBLUR.reader.flags.search,
+            include_hidden: true
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'

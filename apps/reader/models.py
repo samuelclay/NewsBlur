@@ -752,6 +752,18 @@ class UserSubscription(models.Model):
         
         return self
     
+    @staticmethod
+    def score_story(scores):
+        max_score = max(scores['author'], scores['tags'], scores['title'])
+        min_score = min(scores['author'], scores['tags'], scores['title'])
+
+        if max_score > 0:
+            return 1
+        elif min_score < 0:
+            return -1
+
+        return scores['feed']
+        
     def switch_feed(self, new_feed, old_feed):
         # Rewrite feed in subscription folders
         try:

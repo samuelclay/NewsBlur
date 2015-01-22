@@ -445,7 +445,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }, this));
         var is_truncatable = this.is_truncatable();
         
-        console.log(['truncatable', is_truncatable, this.images_to_load]);
+        // console.log(['truncatable', is_truncatable, this.images_to_load]);
         if (!is_truncatable) return;
         
         this.truncate_delay = 100;

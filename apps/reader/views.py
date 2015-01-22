@@ -522,6 +522,7 @@ def load_single_feed(request, feed_id):
     read_filter             = request.REQUEST.get('read_filter', 'all')
     query                   = request.REQUEST.get('query')
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
+    include_hidden          = is_true(request.REQUEST.get('include_hidden', False))
     message                 = None
     user_search             = None
     
@@ -650,7 +651,8 @@ def load_single_feed(request, feed_id):
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
         }
-    
+        story['score'] = UserSubscription.score_story(story['intelligence'])
+        
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
     feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
@@ -674,6 +676,16 @@ def load_single_feed(request, feed_id):
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s%s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, search_log, time_breakdown))
+
+    if not include_hidden:
+        hidden_stories_removed = 0
+        new_stories = []
+        for story in stories:
+            if story['score'] >= 0:
+                new_stories.append(story)
+            else:
+                hidden_stories_removed += 1
+        stories = new_stories
     
     data = dict(stories=stories, 
                 user_profiles=user_profiles,
@@ -686,6 +698,7 @@ def load_single_feed(request, feed_id):
                 elapsed_time=round(float(timediff), 2),
                 message=message)
     
+    if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
@@ -1023,6 +1036,7 @@ def load_river_stories__redis(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     query             = request.REQUEST.get('query')
+    include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1157,6 +1171,8 @@ def load_river_stories__redis(request):
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
         }
+        story['score'] = UserSubscription.score_story(story['intelligence'])
+        
     
     if not user.profile.is_premium:
         message = "The full River of News is a premium feature."
@@ -1171,17 +1187,33 @@ def load_river_stories__redis(request):
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), order, read_filter))
+
+
+    if not include_hidden:
+        hidden_stories_removed = 0
+        new_stories = []
+        for story in stories:
+            if story['score'] >= 0:
+                new_stories.append(story)
+            else:
+                hidden_stories_removed += 1
+        stories = new_stories
+    
     # if page <= 1:
     #     import random
     #     time.sleep(random.randint(0, 6))
     
-    return dict(code=code,
+    data = dict(code=code,
                 message=message,
                 stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
                 user_search=user_search, 
                 user_profiles=user_profiles)
+                
+    if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
+    
+    return data
     
 
 @json.json_view
