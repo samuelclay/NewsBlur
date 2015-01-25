@@ -156,9 +156,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == RESULT_OK) {
-			folderFeedList.hasUpdated();
-		}
+        handleUpdate(true);
 	}
 
     @Override
