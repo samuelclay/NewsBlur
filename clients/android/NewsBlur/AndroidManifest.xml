@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="82"
-    android:versionName="4.1.0b1" >
+    android:versionCode="83"
+    android:versionName="4.1.0b3" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -55,8 +55,9 @@
         
         <activity
             android:name=".activity.Main"
-            android:label="@string/newsblur" />
-       	
+            android:label="@string/newsblur"
+            android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true" />
         
         <activity
             android:name=".activity.Profile"
