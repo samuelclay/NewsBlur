@@ -485,4 +485,9 @@ public class PrefsUtils {
         editor.putString(PrefConstants.STATE_FILTER, newValue.toString());
         editor.commit();
     }
+
+    public static VolumeKeyNavigation getVolumeKeyNavigation(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return VolumeKeyNavigation.valueOf(prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString()));
+    }
 }

@@ -60,4 +60,6 @@ public class PrefConstants {
     public static final String STATE_FILTER = "state_filter";
 
     public static final String LAST_VACUUM_TIME = "last_vacuum_time";
+
+    public static final String VOLUME_KEY_NAVIGATION = "volume_key_navigation";
 }
