@@ -741,18 +741,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     private void processVolumeKeyNavigationEvent(int keyCode) {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            if (volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT) {
-                overlayRight(overlayRight);
-            } else {
-                overlayLeft(overlayLeft);
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT) {
-                overlayRight(overlayRight);
-            } else {
-                overlayLeft(overlayLeft);
-            }
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT) ||
+            (keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT)) {
+            overlayRight(overlayRight);
+        } else {
+            overlayLeft(overlayLeft);
         }
     }
 
