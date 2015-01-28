@@ -656,7 +656,7 @@
                             NEWSBLUR_URL,
                             storiesCollection.feedPage];
     } else {
-        theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
+        theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?include_hidden=true&page=%d",
                             NEWSBLUR_URL,
                             [storiesCollection.activeFeed objectForKey:@"id"],
                             storiesCollection.feedPage];
@@ -867,7 +867,7 @@
                             storiesCollection.feedPage];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/river_stories/?f=%@&page=%d", 
+                            @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
                             NEWSBLUR_URL,
                             [storiesCollection.activeFolderFeeds componentsJoinedByString:@"&f="],
                             storiesCollection.feedPage];

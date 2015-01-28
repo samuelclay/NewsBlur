@@ -68,7 +68,7 @@
     __weak __typeof(&*self)weakSelf = self;
 
     [lock lock];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?page=0&h=%@",
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?include_hidden=true&page=0&h=%@",
                                        NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
     if (request) request = nil;
     request = [AFJSONRequestOperation
