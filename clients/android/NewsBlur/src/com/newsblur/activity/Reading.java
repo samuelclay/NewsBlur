@@ -18,6 +18,7 @@ import android.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
+import com.newsblur.util.VolumeKeyNavigation;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -100,8 +102,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private List<Story> pageHistory;
 
     protected DefaultFeedView defaultFeedView;
+    private VolumeKeyNavigation volumeKeyNavigation;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		super.onCreate(savedInstanceBundle);
 
@@ -131,6 +134,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
+        volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
 
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_SELECTED_FEED_VIEW)) {
             defaultFeedView = (DefaultFeedView)savedInstanceBundle.getSerializable(BUNDLE_SELECTED_FEED_VIEW);
@@ -721,4 +725,37 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         return readingAdapter.getExistingItem(pager.getCurrentItem());
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (isVolumeKeyNavigationEvent(keyCode)) {
+            processVolumeKeyNavigationEvent(keyCode);
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    private boolean isVolumeKeyNavigationEvent(int keyCode) {
+        return volumeKeyNavigation != VolumeKeyNavigation.OFF &&
+               (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP);
+    }
+
+    private void processVolumeKeyNavigationEvent(int keyCode) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT) ||
+            (keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT)) {
+            overlayRight(overlayRight);
+        } else {
+            overlayLeft(overlayLeft);
+        }
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // Required to prevent the default sound playing when the volume key is pressed
+        if (isVolumeKeyNavigationEvent(keyCode)) {
+            return true;
+        } else {
+            return super.onKeyUp(keyCode, event);
+        }
+    }
 }
