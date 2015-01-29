@@ -128,7 +128,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			if (convertView == null) {
 				v = inflater.inflate((isExpanded) ? R.layout.row_folder_collapsed : R.layout.row_folder_collapsed, parent, false);
 			}
-            final String folderName = activeFolderNames.get(groupPosition-1);
+            final String folderName = activeFolderNames.get(groupPosition-2);
 			TextView folderTitle = ((TextView) v.findViewById(R.id.row_foldername));
 		    folderTitle.setText(folderName.toUpperCase());
 			folderTitle.setOnClickListener(new OnClickListener() {
@@ -140,7 +140,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 					((Activity) context).startActivity(i);
 				}
 			});
-            bindCountViews(v, neutCounts.get(groupPosition-1), posCounts.get(groupPosition-1), false);
+            bindCountViews(v, neutCounts.get(groupPosition-2), posCounts.get(groupPosition-2), false);
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
             ImageView folderIconView = ((ImageView) v.findViewById(R.id.row_folder_icon));
             if ( folderIconView != null ) {
@@ -182,7 +182,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 posCounter.setVisibility(View.GONE);
             }
 		} else {
-            Feed f = activeFolderChildren.get(groupPosition-1).get(childPosition);
+            Feed f = activeFolderChildren.get(groupPosition-2).get(childPosition);
 			if (convertView == null) {
 				v = inflater.inflate(R.layout.row_feed, parent, false);
 			} else {
@@ -210,7 +210,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public String getGroup(int groupPosition) {
-		return activeFolderNames.get(groupPosition - 1);
+		return activeFolderNames.get(groupPosition - 2);
 	}
 
 	@Override
@@ -232,7 +232,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowSavedStories(groupPosition)) {
             return Long.MAX_VALUE-2;
         } else {
-		    return activeFolderNames.get(groupPosition-1).hashCode();
+		    return activeFolderNames.get(groupPosition-2).hashCode();
 		}
 	}
 	
@@ -244,7 +244,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowSavedStories(groupPosition) || groupPosition == GLOBAL_SHARED_STORIES_GROUP_POSITION) {
             return 0; // these rows never have children
 		} else {
-            return activeFolderChildren.get(groupPosition-1).size();
+            return activeFolderChildren.get(groupPosition-2).size();
 		}
 	}
 
@@ -254,7 +254,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			socialFeedCursor.moveToPosition(childPosition);
 			return getStr(socialFeedCursor, DatabaseConstants.SOCIAL_FEED_ID);
         } else {
-			return activeFolderChildren.get(groupPosition-1).get(childPosition).feedId;
+			return activeFolderChildren.get(groupPosition-2).get(childPosition).feedId;
 		}
 	}
 
@@ -273,7 +273,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowSavedStories(groupPosition)) {
             return "[SAVED_STORIES]";
         } else {
-			return activeFolderNames.get(groupPosition-1);
+			return activeFolderNames.get(groupPosition-2);
 		}
 	}
 
@@ -292,7 +292,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      * it is located at the bottom of the set rather than the top.
      */
     public boolean isRowSavedStories(int groupPosition) {
-        return ( groupPosition > activeFolderNames.size() );
+        return ( groupPosition > (activeFolderNames.size() + 1) );
     }
 
 	public void setSocialFeedCursor(Cursor cursor) {
