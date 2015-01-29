@@ -39,6 +39,8 @@ import com.newsblur.util.StateFilter;
  */
 public class FolderListAdapter extends BaseExpandableListAdapter {
 
+    public static final int ALL_SHARED_STORIES_GROUP_POSITION = 0;
+
     private enum GroupType { ALL_SHARED_STORIES, ALL_STORIES, FOLDER, SAVED_STORIES }
     private enum ChildType { SOCIAL_FEED, FEED }
 
@@ -69,7 +71,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public synchronized View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 		View v = convertView;
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
 			((TextView) v.findViewById(R.id.row_everythingtext)).setOnClickListener(new OnClickListener() {
 				@Override
@@ -144,7 +146,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public synchronized View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		View v;
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			socialFeedCursor.moveToPosition(childPosition);
 			if (convertView == null) {
                 v = inflater.inflate(R.layout.row_socialfeed, parent, false);
@@ -210,7 +212,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public long getGroupId(int groupPosition) {
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             // the social folder doesn't have an ID, so just give it a really huge one
             return Long.MAX_VALUE;
         } else if (isRowSavedStories(groupPosition)) {
@@ -223,7 +225,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             if (socialFeedCursor == null) return 0;
 			return socialFeedCursor.getCount();
         } else if (isRowSavedStories(groupPosition)) {
@@ -235,7 +237,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public String getChild(int groupPosition, int childPosition) {
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			socialFeedCursor.moveToPosition(childPosition);
 			return getStr(socialFeedCursor, DatabaseConstants.SOCIAL_FEED_ID);
         } else {
@@ -251,7 +253,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	public String getGroupName(int groupPosition) {
         // these "names" aren't actually what is used to render the row, but are used
         // by the fragment for tracking row identity to save open/close preferences
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			return "[ALL_SHARED_STORIES]";
 		} else if (isRowSavedStories(groupPosition)) {
             return "[SAVED_STORIES]";
@@ -384,7 +386,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getGroupType(int groupPosition) {
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			return GroupType.ALL_SHARED_STORIES.ordinal();
 		} else if (isFolderRoot(groupPosition)) {
             return GroupType.ALL_STORIES.ordinal();
@@ -397,7 +399,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     @Override
 	public int getChildType(int groupPosition, int childPosition) {
-		if (groupPosition == 0) {
+		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			return ChildType.SOCIAL_FEED.ordinal();
 		} else {
 			return ChildType.FEED.ordinal();
