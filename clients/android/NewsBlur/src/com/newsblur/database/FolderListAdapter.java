@@ -210,8 +210,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public String getGroup(int groupPosition) {
-		return activeFolderNames.get(groupPosition - 2);
+		return activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition));
 	}
+
+    private int convertGroupPositionToActiveFolderIndex(int groupPosition) {
+        // Global and social feeds are shown above the named folders so the groupPosition
+        // needs to be adjusted to index into the active folders lists.
+        return groupPosition - 2;
+    }
 
 	@Override
 	public int getGroupCount() {
@@ -232,7 +238,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowSavedStories(groupPosition)) {
             return Long.MAX_VALUE-2;
         } else {
-		    return activeFolderNames.get(groupPosition-2).hashCode();
+		    return activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition)).hashCode();
 		}
 	}
 	
@@ -244,7 +250,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowSavedStories(groupPosition) || groupPosition == GLOBAL_SHARED_STORIES_GROUP_POSITION) {
             return 0; // these rows never have children
 		} else {
-            return activeFolderChildren.get(groupPosition-2).size();
+            return activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).size();
 		}
 	}
 
@@ -254,7 +260,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			socialFeedCursor.moveToPosition(childPosition);
 			return getStr(socialFeedCursor, DatabaseConstants.SOCIAL_FEED_ID);
         } else {
-			return activeFolderChildren.get(groupPosition-2).get(childPosition).feedId;
+			return activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition).feedId;
 		}
 	}
 
@@ -273,7 +279,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowSavedStories(groupPosition)) {
             return "[SAVED_STORIES]";
         } else {
-			return activeFolderNames.get(groupPosition-2);
+			return activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition));
 		}
 	}
 
