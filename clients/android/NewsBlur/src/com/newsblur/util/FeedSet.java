@@ -1,8 +1,6 @@
 package com.newsblur.util;
 
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -10,10 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-
-import com.newsblur.network.APIConstants;
 
 /**
  * A subset of one, several, or all NewsBlur feeds or social feeds.  Used to encapsulate the
@@ -31,6 +26,7 @@ public class FeedSet implements Serializable {
     private boolean isAllNormal;
     private boolean isAllSocial;
     private boolean isAllSaved;
+    private boolean isGlobalShared;
 
     private String folderName;
 
@@ -38,9 +34,9 @@ public class FeedSet implements Serializable {
      * Construct a new set of feeds. Only one of the arguments may be non-null or true. Specify an empty
      * set to request all of a given type.
      */
-    private FeedSet(Set<String> feeds, Map<String,String> socialFeeds, boolean allSaved) {
+    private FeedSet(Set<String> feeds, Map<String,String> socialFeeds, boolean allSaved, boolean globalShared) {
 
-        if ( booleanCardinality( (feeds != null), (socialFeeds != null), allSaved ) > 1 ) {
+        if ( booleanCardinality( (feeds != null), (socialFeeds != null), allSaved, globalShared ) > 1 ) {
             throw new IllegalArgumentException("at most one type of feed may be specified");
         }
 
@@ -71,6 +67,11 @@ public class FeedSet implements Serializable {
             return;
         }
 
+        if (globalShared) {
+            isGlobalShared = true;
+            return;
+        }
+
         throw new IllegalArgumentException("no type of feed specified");
     }
 
@@ -80,7 +81,7 @@ public class FeedSet implements Serializable {
     public static FeedSet singleFeed(String feedId) {
         Set<String> feedIds = new HashSet<String>(1);
         feedIds.add(feedId);
-        return new FeedSet(feedIds, null, false);
+        return new FeedSet(feedIds, null, false, false);
     }
 
     /**
@@ -89,7 +90,7 @@ public class FeedSet implements Serializable {
     public static FeedSet singleSocialFeed(String userId, String username) {
         Map<String,String> socialFeedIds = new HashMap<String,String>(1);
         socialFeedIds.put(userId, username);
-        return new FeedSet(null, socialFeedIds, false);
+        return new FeedSet(null, socialFeedIds, false, false);
     }
 
     /**
@@ -101,35 +102,42 @@ public class FeedSet implements Serializable {
         for (String id : userIds) {
             socialFeedIds.put(id, "");
         }
-        return new FeedSet(null, socialFeedIds, false);
+        return new FeedSet(null, socialFeedIds, false, false);
     }
 
     /** 
      * Convenience constructor for all (non-social) feeds.
      */
     public static FeedSet allFeeds() {
-        return new FeedSet(Collections.EMPTY_SET, null, false);
+        return new FeedSet(Collections.EMPTY_SET, null, false, false);
     }
 
     /**
      * Convenience constructor for saved stories feed.
      */
     public static FeedSet allSaved() {
-        return new FeedSet(null, null, true);
+        return new FeedSet(null, null, true, false);
+    }
+
+    /**
+     * Convenience constructor for global shared stories feed.
+     */
+    public static FeedSet globalShared() {
+        return new FeedSet(null, null, false, true);
     }
 
     /** 
      * Convenience constructor for all shared/social feeds.
      */
     public static FeedSet allSocialFeeds() {
-        return new FeedSet(null, Collections.EMPTY_MAP, false);
+        return new FeedSet(null, Collections.EMPTY_MAP, false, false);
     }
 
     /** 
      * Convenience constructor for a folder.
      */
     public static FeedSet folder(String folderName, Set<String> feedIds) {
-        FeedSet fs = new FeedSet(feedIds, null, false);
+        FeedSet fs = new FeedSet(feedIds, null, false, false);
         fs.setFolderName(folderName);
         return fs;
     }
@@ -175,6 +183,10 @@ public class FeedSet implements Serializable {
         return this.isAllSaved;
     }
 
+    public boolean isGlobalShared() {
+        return this.isGlobalShared;
+    }
+
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
@@ -213,7 +225,7 @@ public class FeedSet implements Serializable {
         if (! fields[1].equals(COM_SER_NUL)) {
             HashSet<String> feeds = new HashSet<String>();
             for (String id : TextUtils.split(fields[1], ",")) feeds.add(id);
-            return new FeedSet(feeds, null, false);
+            return new FeedSet(feeds, null, false, false);
         }
         if (! fields[2].equals(COM_SER_NUL)) {
             HashMap<String,String> socialFeeds = new HashMap<String,String>();
@@ -222,10 +234,10 @@ public class FeedSet implements Serializable {
                 if (kv.length != 2) throw new IllegalArgumentException("invalid compact form");
                 socialFeeds.put(kv[0], kv[1]);
             }
-            return new FeedSet(null, socialFeeds, false);
+            return new FeedSet(null, socialFeeds, false, false);
         }
         if (fields[3].equals(Boolean.TRUE.toString())) {
-            return new FeedSet(null, null, true);
+            return new FeedSet(null, null, true, false);
         }
         throw new IllegalArgumentException("invalid compact form");
     }
@@ -247,6 +259,7 @@ public class FeedSet implements Serializable {
             if ( isAllNormal && s.isAllNormal ) return true;
             if ( isAllSocial && s.isAllSocial ) return true;
             if ( isAllSaved && s.isAllSaved ) return true;
+            if ( isGlobalShared && s.isGlobalShared ) return true;
         }
         return false;
     }
@@ -256,6 +269,7 @@ public class FeedSet implements Serializable {
         if (isAllNormal) return 11;
         if (isAllSocial) return 12;
         if (isAllSaved) return 13;
+        if (isGlobalShared) return 14;
 
         int result = 17;
         if (feeds != null) result = 31 * result + feeds.hashCode();

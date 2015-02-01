@@ -26,6 +26,7 @@ import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FolderItemsList;
+import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.activity.NewsBlurApplication;
 import static com.newsblur.database.DatabaseConstants.getStr;
 import com.newsblur.domain.Feed;
@@ -77,9 +78,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             ((TextView) v.findViewById(R.id.row_everythingtext)).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent i = new Intent(context, AllSharedStoriesItemsList.class);
+                    Intent i = new Intent(context, GlobalSharedStoriesItemsList.class);
                     i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
-                    ((Activity) context).startActivityForResult(i, Activity.RESULT_OK);*/
+                    ((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
                 }
             });
         } else if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
