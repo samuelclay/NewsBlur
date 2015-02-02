@@ -77,6 +77,9 @@
          
         <activity
             android:name=".activity.AllSharedStoriesItemsList" />
+
+        <activity
+            android:name=".activity.GlobalSharedStoriesItemsList" />
         
         <activity
             android:name=".activity.FolderItemsList" />
@@ -95,6 +98,9 @@
         
         <activity
             android:name=".activity.AllSharedStoriesReading"/>
+
+        <activity
+            android:name=".activity.GlobalSharedStoriesReading"/>
         
         <activity
             android:name=".activity.FolderReading"/>

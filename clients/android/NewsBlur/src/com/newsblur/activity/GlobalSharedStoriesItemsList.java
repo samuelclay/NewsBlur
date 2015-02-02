@@ -67,27 +67,26 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
         }
     }
 
-    // Note: the following four methods are required by our parent spec but are not
-    // relevant since saved stories have no read/unread status nor ordering.
+    // Story order and read filter are fixed for global shared stories
 
     @Override
     public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
+        return StoryOrder.NEWEST;
     }
 
     @Override
     public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newValue);
+        // Not supported for global shared stories
     }
     
     @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.setReadFilterForFolder(this, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newValue);
+        // Not supported for global shared stories
     }
     
     @Override
     protected ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilterForFolder(this, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
+        return ReadFilter.UNREAD;
     }
 
 

@@ -216,12 +216,14 @@ public class FeedSet implements Serializable {
             s.append("|");
         }
         s.append(isAllSaved);
+        s.append("|");
+        s.append(isGlobalShared);
         return s.toString();
     }
 
     public static FeedSet fromCompactSerial(String s) {
         String[] fields = TextUtils.split(s, "\\|");
-        if ((fields.length != 4) || (!fields[0].equals("FS"))) throw new IllegalArgumentException("invalid compact form");
+        if ((fields.length != 5) || (!fields[0].equals("FS"))) throw new IllegalArgumentException("invalid compact form");
         if (! fields[1].equals(COM_SER_NUL)) {
             HashSet<String> feeds = new HashSet<String>();
             for (String id : TextUtils.split(fields[1], ",")) feeds.add(id);
@@ -238,6 +240,9 @@ public class FeedSet implements Serializable {
         }
         if (fields[3].equals(Boolean.TRUE.toString())) {
             return new FeedSet(null, null, true, false);
+        }
+        if (fields[4].equals(Boolean.TRUE.toString())) {
+            return new FeedSet(null, null, false, true);
         }
         throw new IllegalArgumentException("invalid compact form");
     }

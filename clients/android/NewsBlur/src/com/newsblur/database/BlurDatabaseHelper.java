@@ -655,6 +655,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(DatabaseConstants.JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP);
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
             return rawQuery(q.toString(), null, cancellationSignal);
 
@@ -668,6 +669,14 @@ public class BlurDatabaseHelper {
             q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
             return rawQuery(q.toString(), null, cancellationSignal);
 
+        } else if (fs.isGlobalShared()) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
+            q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
+            return rawQuery(q.toString(), null, cancellationSignal);
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
         }
