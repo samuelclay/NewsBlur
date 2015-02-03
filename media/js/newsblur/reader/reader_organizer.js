@@ -395,6 +395,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     },
     
     jump_to_folder: function(folder_title) {
+        if (this.options.hierarchy != 'nested') this.toggle_hierarchy('nested');
         var $feedlist = $('.NB-feedchooser', this.$modal);
         var $folder_title = $(".folder_title_text", $feedlist).filter(function(i) {
             console.log(["folder", this, _.string.trim($(this).text()), folder_title]);
