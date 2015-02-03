@@ -184,7 +184,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
             // Sideoptions too big, embiggen left side
             console.log(["Sideoption too big, embiggening", content_height, sideoptions_height, new_sideoptions_height]);
             $story_content.stop(true, true).animate({
-                'height': new_sideoptions_height
+                'min-height': new_sideoptions_height
             }, {
                 'duration': 350,
                 'easing': 'easeInOutQuint',

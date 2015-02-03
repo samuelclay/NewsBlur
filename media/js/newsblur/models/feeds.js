@@ -78,12 +78,41 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         return true;
     },
     
+    move_to_folders: function(to_folders, options) {
+        options = options || {};
+        var view = options.view || this.get_view();
+        var in_folders = this.in_folders();
+        
+        if (_.isEqual(in_folders, to_folders)) return false;
+
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
+        NEWSBLUR.assets.move_feed_to_folders(this.id, in_folders, to_folders, function() {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
+            _.delay(function() {
+                NEWSBLUR.reader.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
+                    'duration': 100, 
+                    'complete': function() {
+                        NEWSBLUR.app.feed_list.make_feeds();
+                    }
+                });
+            }, 250);
+        });
+        
+        return true;
+    },
+    
     parent_folder_names: function() {
         var names = _.compact(_.flatten(_.map(this.folders, function(folder) {
             return folder.parent_folder_names();
         })));
         
         return names;
+    },
+    
+    in_folders: function() {
+        var in_folders = _.pluck(_.pluck(this.folders, 'options'), 'title');
+
+        return in_folders;
     },
     
     rename: function(new_title) {
@@ -167,6 +196,65 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         } else if (unread_view > 0) {
             return !!(this.get('ps'));
         }
+    },
+    
+    relative_last_story_date: function() {
+        var diff = this.get('last_story_seconds_ago');
+        var lasthour = 60*60;
+        var lastday = 24*60*60;
+
+        if (diff > 1000*60*60*24*365*20 || diff <= 0) {
+            return "Never";
+        } else if (diff < lasthour) {
+            return Inflector.pluralize("minute", Math.floor(diff/60), true) + " ago";
+        } else if (diff < lastday) {
+            return Inflector.pluralize("hour", Math.floor(diff/60/60), true) + " ago";
+        } else {
+            return Inflector.pluralize("day", Math.floor(diff/60/60/24), true) + " ago";
+        }
+    },
+    
+    highlighted_in_folder: function(folder_title) {
+        return !!(this.get('highlighted') && 
+                  this.get('highlighted_in_folders') &&
+                  _.contains(this.get('highlighted_in_folders'), folder_title));
+    },
+    
+    highlight_in_folder: function(folder_title, on, off, options) {
+        options = options || {};
+        
+        if (!this.get('highlighted_in_folders')) {
+            this.set('highlighted_in_folders', [], {silent: true});
+        }
+        
+        if (!off && (on || !_.contains(this.get('highlighted_in_folders'), folder_title))) {
+            this.set('highlighted_in_folders', 
+                      this.get('highlighted_in_folders').concat(folder_title), {silent: true});
+        } else {
+            this.set('highlighted_in_folders', 
+                     _.without(this.get('highlighted_in_folders'), folder_title), {silent: true});
+        }
+        this.set('highlighted', !!this.get('highlighted_in_folders').length, {silent: true});
+
+        if (!options.silent) this.trigger('change:highlighted');
+    },
+    
+    highlight_in_all_folders: function(on, off, options) {
+        options = options || {};
+        
+        if (!this.get('highlighted_in_folders')) {
+            this.set('highlighted_in_folders', [], {silent: true});
+        }
+        var folders = _.unique(this.in_folders()) || [];
+        
+        if (!off && (on || !this.get('highlighted_in_folders').length)) {
+            this.set('highlighted_in_folders', folders, {silent: true});
+        } else {
+            this.set('highlighted_in_folders', [], {silent: true});
+        }
+        this.set('highlighted', !!this.get('highlighted_in_folders').length, {silent: true});
+
+        if (!options.silent) this.trigger('change:highlighted');
     }
     
 });

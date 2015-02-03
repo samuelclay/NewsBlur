@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefsUtils;
@@ -20,8 +19,6 @@ public class NbActivity extends Activity {
 
 	private final static String UNIQUE_LOGIN_KEY = "uniqueLoginKey";
 	private String uniqueLoginKey;
-
-    protected BlurDatabaseHelper dbHelper;
 
     /**
      * Keep track of all activie activities so they can be notified when the sync service
@@ -45,21 +42,8 @@ public class NbActivity extends Activity {
 			uniqueLoginKey = PrefsUtils.getUniqueLoginKey(this);
 		}
 		finishIfNotLoggedIn();
-
-        dbHelper = new BlurDatabaseHelper(this);
 	}
 
-    @Override
-    public void onDestroy() {
-        try {
-            dbHelper.close();
-        } catch (Exception e) {
-            ; // Activity is already dead
-        }
-
-        super.onDestroy();
-    }
-	
 	@Override
 	protected void onResume() {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onResume");
@@ -108,14 +92,14 @@ public class NbActivity extends Activity {
      * Called on each NB activity after the DB has been updated by the sync service. This method
      * should return as quickly as possible.
      */
-    protected void handleUpdate() {
+    protected void handleUpdate(boolean freshData) {
         Log.w(this.getClass().getName(), "activity doesn't implement handleUpdate");
     }
 
-    private void _handleUpdate() {
+    private void _handleUpdate(final boolean freshData) {
         runOnUiThread(new Runnable() {
             public void run() {
-                handleUpdate();
+                handleUpdate(freshData);
             }
         });
     }
@@ -124,12 +108,17 @@ public class NbActivity extends Activity {
      * Notify all activities in the app that the DB has been updated. Should only be called
      * by the sync service, which owns updating the DB.
      */
-    public static void updateAllActivities() {
+    public static void updateAllActivities(boolean freshData) {
         synchronized (AllActivities) {
             for (NbActivity activity : AllActivities) {
-                activity._handleUpdate();
+                activity._handleUpdate(freshData);
             }
         }
+    }
+
+    public static void updateAllActivities() {
+        Log.w(NbActivity.class.getName(), "legacy handleUpdate used");
+        NbActivity.updateAllActivities(true);
     }
 
     /**

@@ -73,12 +73,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     protected void onResume() {
         super.onResume();
 
-        // clear the read-this-session flag from stories so they don't show up in the wrong place
+        NBSyncService.clearPendingStoryRequest();
+        NBSyncService.setActivationMode(NBSyncService.ActivationMode.ALL);
+        FeedUtils.activateAllStories();
         FeedUtils.clearReadingSession();
 
         updateStatusIndicators();
-        // this view doesn't show stories, it is safe to perform cleanup
-        NBSyncService.holdStories(false);
         triggerSync();
 
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
@@ -162,9 +162,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 
     @Override
-	public void handleUpdate() {
-		folderFeedList.hasUpdated();
+	public void handleUpdate(boolean freshData) {
         updateStatusIndicators();
+		if (freshData) folderFeedList.hasUpdated();
 	}
 
     private void updateStatusIndicators() {
@@ -175,7 +175,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
 
         if (overlayStatusText != null) {
-            String syncStatus = NBSyncService.getSyncStatusMessage();
+            String syncStatus = NBSyncService.getSyncStatusMessage(this);
             if (syncStatus != null)  {
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);

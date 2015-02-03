@@ -90,6 +90,7 @@ window.Inflector = {
             else if (s == 'is') s = 'are';
             else if (s == 'has') s = 'have';
             else if (s == 'following') s = s;
+            else if (s == 'day') s = 'days';
             else if (s.match(/y$/i)) s = s.replace(/y$/i, 'ies');
             else s = s + 's';
         }

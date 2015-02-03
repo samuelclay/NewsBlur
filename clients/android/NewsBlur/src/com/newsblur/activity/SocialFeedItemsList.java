@@ -56,7 +56,7 @@ public class SocialFeedItemsList extends ItemsList {
 	}
 	
     @Override
-    protected StoryOrder getStoryOrder() {
+    public StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFeed(this, socialFeed.userId);
     }
 

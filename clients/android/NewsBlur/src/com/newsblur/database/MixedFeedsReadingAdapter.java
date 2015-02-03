@@ -1,8 +1,5 @@
 package com.newsblur.database;
 
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.net.Uri;
 import android.app.Fragment;
 import android.app.FragmentManager;
 
@@ -11,14 +8,12 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedUtils;
 
 public class MixedFeedsReadingAdapter extends ReadingAdapter {
 
-	private final ContentResolver resolver; 
-
-	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final ContentResolver resolver, DefaultFeedView defaultFeedView, String sourceUserId) {
+	public MixedFeedsReadingAdapter(FragmentManager fragmentManager, DefaultFeedView defaultFeedView, String sourceUserId) {
 		super(fragmentManager, defaultFeedView, sourceUserId);
-		this.resolver = resolver;
 	}
 
 	@Override
@@ -30,9 +25,9 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
         String feedFaviconText = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
         String feedFaviconUrl = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
         
-        Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(story.feedId).build();
-        Cursor feedClassifierCursor = resolver.query(classifierUri, null, null, null, null);
-        Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
+        // TODO: does the pager generate new fragments in the UI thread? If so, classifiers should
+        // be loaded async by the fragment itself
+        Classifier classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
         
         return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true, defaultFeedView, sourceUserId);
 	}

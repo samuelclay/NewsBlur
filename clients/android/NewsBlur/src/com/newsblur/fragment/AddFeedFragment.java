@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.network.APIManager;
+import com.newsblur.service.NBSyncService;
 
 public class AddFeedFragment extends DialogFragment {
 
@@ -50,6 +51,8 @@ public class AddFeedFragment extends DialogFragment {
                     protected void onPostExecute(Boolean result) {
                         if (result) {
                             activity.finish();
+                            // trigger a sync when we return to Main so that the new feed will show up
+                            NBSyncService.forceFeedsFolders();
                             AddFeedFragment.this.dismiss();
                         } else {
                             AddFeedFragment.this.dismiss();

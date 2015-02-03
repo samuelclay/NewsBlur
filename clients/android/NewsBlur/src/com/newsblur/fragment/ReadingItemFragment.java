@@ -3,7 +3,6 @@ package com.newsblur.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -70,7 +69,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private ImageLoader imageLoader;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	private ContentResolver resolver;
 	private NewsblurWebview web;
 	private BroadcastReceiver receiver;
 	private TextView itemAuthors;
@@ -126,7 +124,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		apiManager = new APIManager(getActivity());
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
 
-		resolver = getActivity().getContentResolver();
 		inflater = getActivity().getLayoutInflater();
 		
 		displayFeedDetails = getArguments().getBoolean("displayFeedDetails");
@@ -240,7 +237,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(finalURL);
-                builder.setMessage(altText);
+                builder.setMessage(Html.fromHtml(altText).toString());
                 builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
@@ -303,7 +300,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
 	private void setupItemCommentsAndShares(final View view) {
-		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, resolver, apiManager, story, imageLoader).execute();
+		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, apiManager, story, imageLoader).execute();
 	}
 
 	private void setupItemMetadata() {
@@ -381,8 +378,14 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse(story.permalink));
-				startActivity(i);
+                try {
+                    i.setData(Uri.parse(story.permalink));
+                    startActivity(i);
+                } catch (Throwable t) {
+                    // we don't actually know if the user will successfully be able to open whatever string
+                    // was in the permalink or if the Intent could throw errors
+                    Log.e(this.getClass().getName(), "Error opening story by permalink URL.", t);
+                }
 			}
 		});
 
@@ -596,57 +599,63 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 	@Override
 	public void sharedCallback(String sharedText, boolean hasAlreadyBeenShared) {
-		view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
-		view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
-		
-		if (!hasAlreadyBeenShared) {
-			
-			if (!TextUtils.isEmpty(sharedText)) {
-				View commentView = inflater.inflate(R.layout.include_comment, null);
-				commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
+        try {
+            view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
+            
+            if (!hasAlreadyBeenShared) {
+                
+                if (!TextUtils.isEmpty(sharedText)) {
+                    View commentView = inflater.inflate(R.layout.include_comment, null);
+                    commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
 
-                TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-                commentText.setTag("commentBy" + user.id);
+                    TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
+                    commentText.setTag("commentBy" + user.id);
+                    commentText.setText(sharedText);
+
+                    TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
+                    if (!TextUtils.isEmpty(user.location)) {
+                        commentLocation.setText(user.location.toUpperCase());
+                    } else {
+                        commentLocation.setVisibility(View.GONE);
+                    }
+
+                    if (PrefsUtils.getUserImage(getActivity()) != null) {
+                        ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+                        commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
+                    }
+
+                    TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
+                    commentSharedDate.setText(R.string.now);
+
+                    TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
+                    commentUsername.setText(user.username);
+
+                    ((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
+
+                    ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
+                    
+                    final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
+                    ((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
+                    
+                } else {
+                    ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
+                    final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
+                    ((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
+                }
+            } else {
+                View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
+                TextView commentText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_BY + user.id);
                 commentText.setText(sharedText);
 
-                TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
-                if (!TextUtils.isEmpty(user.location)) {
-                    commentLocation.setText(user.location.toUpperCase());
-                } else {
-                    commentLocation.setVisibility(View.GONE);
-                }
-
-                if (PrefsUtils.getUserImage(getActivity()) != null) {
-					ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
-					commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
-				}
-
-				TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-				commentSharedDate.setText(R.string.now);
-
-				TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
-				commentUsername.setText(user.username);
-
-				((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
-
-				ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
-				
-				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
-				((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
-				
-			} else {
-				ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
-				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
-				((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
-			}
-		} else {
-			View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
-			TextView commentText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_BY + user.id);
-			commentText.setText(sharedText);
-
-			TextView commentDateText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_DATE_BY + user.id);
-			commentDateText.setText(R.string.now);
-		}
+                TextView commentDateText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_DATE_BY + user.id);
+                commentDateText.setText(R.string.now);
+            }
+        } catch (Exception e) {
+            // this entire method does not respect context state and can be triggered on stale fragments. it should
+            // be replaced with a proper Loader, or it will always risk crashing the application
+            Log.w(this.getClass().getName(), "async error in callback", e);
+        }
 	}
 
 

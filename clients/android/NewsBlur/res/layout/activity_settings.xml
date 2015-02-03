@@ -58,6 +58,13 @@
             android:key="immersive_enter_single_tap"
             android:title="@string/settings_immersive_enter_single_tap" >
         </CheckBoxPreference>
+        <ListPreference
+            android:key="volume_key_navigation"
+            android:title="@string/volume_key_navigation"
+            android:dialogTitle="@string/volume_key_navigation"
+            android:entries="@array/volume_key_navigation_entries"
+            android:entryValues="@array/volume_key_navigation_values"
+            android:defaultValue="@string/default_volume_key_navigation_value" />
     </PreferenceCategory>
 
     <PreferenceCategory 

@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +18,7 @@ import android.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,6 +45,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
+import com.newsblur.util.VolumeKeyNavigation;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -89,7 +90,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected Button overlayText, overlaySend;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
-    protected ContentResolver contentResolver;
     private boolean stopLoading;
     protected FeedSet fs;
 
@@ -102,8 +102,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private List<Story> pageHistory;
 
     protected DefaultFeedView defaultFeedView;
+    private VolumeKeyNavigation volumeKeyNavigation;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		super.onCreate(savedInstanceBundle);
 
@@ -133,6 +134,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
+        volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
 
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_SELECTED_FEED_VIEW)) {
             defaultFeedView = (DefaultFeedView)savedInstanceBundle.getSerializable(BUNDLE_SELECTED_FEED_VIEW);
@@ -141,8 +143,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        contentResolver = getContentResolver();
 
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
@@ -174,7 +174,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected void onResume() {
         super.onResume();
         // this view shows stories, it is not safe to perform cleanup
-        NBSyncService.holdStories(true);
         this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.
@@ -183,7 +182,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     protected void onPause() {
-        NBSyncService.holdStories(false);
         this.stopLoading = true;
         if (this.unreadSearchLatch != null) {
             this.unreadSearchLatch.countDown();
@@ -193,7 +191,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        return dbHelper.getStoriesLoader(fs, currentState);
+        return FeedUtils.dbHelper.getStoriesLoader(fs, currentState);
     }
 
 	@Override
@@ -211,11 +209,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
-                int currentUnreadCount = getUnreadCount();
-                if (currentUnreadCount > this.startingUnreadCount ) {
-                    this.startingUnreadCount = currentUnreadCount;
-                }
-                // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
                 setupPager();
             }
 
@@ -261,7 +254,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private int getUnreadCount() {
         if (fs.isAllSaved()) return 0; // saved stories doesn't have unreads
-        return dbHelper.getUnreadCount(fs, currentState);
+        return FeedUtils.dbHelper.getUnreadCount(fs, currentState);
     }
 
 	@Override
@@ -328,9 +321,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
-	protected void handleUpdate() {
-        enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs));
-        updateCursor();
+	protected void handleUpdate(boolean freshData) {
+        enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
+        updateOverlayNav();
+        if (freshData) updateCursor();
     }
 
     private void updateCursor() {
@@ -382,6 +376,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     public void scrollChanged(int hPos, int vPos, int currentWidth, int currentHeight) {
+        // only update overlay alpha about half the time. modern screens are so dense that it
+        // is way overkill to do it on every pixel
+        if (vPos % 2 == 1) return;
+
         int scrollMax = currentHeight - contentView.getMeasuredHeight();
         int posFromBot = (scrollMax - vPos);
 
@@ -432,19 +430,23 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     /**
-     * Update the left/right overlay UI after the read-state of a story changes or we navigate in any way.
+     * Update the next/back overlay UI after the read-state of a story changes or we navigate in any way.
      */
     private void updateOverlayNav() {
+        int currentUnreadCount = getUnreadCount();
+        if (currentUnreadCount > this.startingUnreadCount ) {
+            this.startingUnreadCount = currentUnreadCount;
+        }
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
-        this.overlayRight.setText((getUnreadCount() > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((getUnreadCount() > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
+        this.overlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
+        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
             this.overlayProgress.setMax(1);
             this.overlayProgress.setProgress(1);
         } else {
-            int unreadProgress = this.startingUnreadCount - getUnreadCount();
+            int unreadProgress = this.startingUnreadCount - currentUnreadCount;
             this.overlayProgress.setMax(this.startingUnreadCount);
             this.overlayProgress.setProgress(unreadProgress);
         }
@@ -490,13 +492,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * load is not needed and all latches are tripped.
      */
     private void checkStoryCount(int position) {
-        if (AppConstants.VERBOSE_LOG) {
-            Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
-        }
-        // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if ((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) {
+        if (stories == null ) {
 			triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
-		}
+        } else {
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(this.getClass().getName(), String.format("story %d of %d selected, stopLoad: %b", position, stories.getCount(), stopLoading));
+            }
+            // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
+            if ((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) {
+                triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
+            }
+        }
         
         if (stopLoading) {
             // if we terminated because we are well and truly done, break any search loops and stop progress indication
@@ -719,4 +725,37 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         return readingAdapter.getExistingItem(pager.getCurrentItem());
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (isVolumeKeyNavigationEvent(keyCode)) {
+            processVolumeKeyNavigationEvent(keyCode);
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    private boolean isVolumeKeyNavigationEvent(int keyCode) {
+        return volumeKeyNavigation != VolumeKeyNavigation.OFF &&
+               (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP);
+    }
+
+    private void processVolumeKeyNavigationEvent(int keyCode) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT) ||
+            (keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT)) {
+            overlayRight(overlayRight);
+        } else {
+            overlayLeft(overlayLeft);
+        }
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // Required to prevent the default sound playing when the volume key is pressed
+        if (isVolumeKeyNavigationEvent(keyCode)) {
+            return true;
+        } else {
+            return super.onKeyUp(keyCode, event);
+        }
+    }
 }

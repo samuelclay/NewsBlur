@@ -219,7 +219,7 @@ class Profile(models.Model):
         self.user.save()
         self.send_new_user_queue_email()
         
-    def setup_premium_history(self, alt_email=None):
+    def setup_premium_history(self, alt_email=None, check_premium=False):
         paypal_payments = []
         stripe_payments = []
         existing_history = PaymentHistory.objects.filter(user=self.user, 
@@ -281,6 +281,10 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BY~SN~FWFound ~SB%s paypal~SN and ~SB%s stripe~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
                      len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
+
+        if (check_premium and not self.is_premium and
+            (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
+            self.activate_premium()
 
     def refund_premium(self, partial=False):
         refunded = False
@@ -412,18 +416,26 @@ class Profile(models.Model):
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
-    def send_opml_export_email(self):
+    def send_opml_export_email(self, reason=None, force=False):
         if not self.user.email:
             return
         
-        MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                         email_type='opml_export')
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
+                                                email_type='opml_export')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+        for email in emails_sent:
+            if email.date_sent > day_ago and not force:
+                logging.user(self.user, "~SN~FMNot sending opml export email, already sent today.")
+                return
+
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type='opml_export')
         
         exporter = OPMLExporter(self.user)
         opml     = exporter.process()
 
         params = {
             'feed_count': UserSubscription.objects.filter(user=self.user).count(),
+            'reason': reason,
         }
         user    = self.user
         text    = render_to_string('mail/email_opml_export.txt', params)
@@ -689,7 +701,21 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             'secret': self.secret_token
         }) + ('?' + next + '=1' if next else '')
         
-
+    
+    @classmethod
+    def doublecheck_paypal_payments(cls, days=14):
+        payments = PayPalIPN.objects.filter(txn_type='subscr_payment', 
+                                            updated_at__gte=datetime.datetime.now()
+                                                            - datetime.timedelta(days)
+                                            ).order_by('-created_at')
+        for payment in payments:
+            try:
+                profile = Profile.objects.get(user__username=payment.custom)
+            except Profile.DoesNotExist:
+                logging.debug(" ---> ~FRCouldn't find user: ~SB~FC%s" % payment.custom)
+                continue
+            profile.setup_premium_history(check_premium=True)
+        
             
 def create_profile(sender, instance, created, **kwargs):
     if created:
@@ -723,11 +749,10 @@ def paypal_payment_history_sync(sender, **kwargs):
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
-        user.profile.setup_premium_history()
+        user.profile.setup_premium_history(check_premium=True)
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_successful.connect(paypal_payment_history_sync)
-logging.debug(" ---> ~SN~FBHooking up signal ~SB%s~SN." % payment_was_successful.receivers)
 
 def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
@@ -737,7 +762,7 @@ def paypal_payment_was_flagged(sender, **kwargs):
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
     logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     try:
-        user.profile.setup_premium_history()
+        user.profile.setup_premium_history(check_premium=True)
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_flagged.connect(paypal_payment_was_flagged)
@@ -750,7 +775,7 @@ def paypal_recurring_payment_history_sync(sender, **kwargs):
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
     logging.user(user, "~BC~SB~FBPaypal subscription recurring payment")
     try:
-        user.profile.setup_premium_history()
+        user.profile.setup_premium_history(check_premium=True)
     except:
         return {"code": -1, "message": "User doesn't exist."}
 recurring_payment.connect(paypal_recurring_payment_history_sync)
@@ -770,7 +795,7 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription payment")
-        profile.setup_premium_history()
+        profile.setup_premium_history(check_premium=True)
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}    
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
