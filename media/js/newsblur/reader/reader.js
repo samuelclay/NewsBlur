@@ -221,15 +221,20 @@
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
             if (center) {
-                var narrow = center.width() < 780;
+                var center_width = center.width();
+                var narrow = center_width < 780;
                 if (NEWSBLUR.assets.preference('story_button_placement') == "bottom") {
                     narrow = true;
                 }
                 $windows.toggleClass('NB-narrow-content', narrow);
-                var extranarrow = center.width() < 580;
+                var extranarrow = center_width < 580;
                 $windows.toggleClass('NB-extra-narrow-content', extranarrow);
+                var wide = center_width > 860;
+                $windows.toggleClass('NB-wide-content', wide);
+                var extrawide = center_width > 1180;
+                $windows.toggleClass('NB-extra-wide-content', extrawide);
                 this.flags.narrow_content = !!narrow;
-                content_width = center.width() + (west ? west.width() : 0);
+                content_width = center_width + (west ? west.width() : 0);
             }
             
             if ((north && north.width() < 640) ||
