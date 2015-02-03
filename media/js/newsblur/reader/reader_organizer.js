@@ -221,10 +221,14 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             this.options.inverse_sorting = false;
         }
         this.options.sorting = sorting;
+        var $feedlist = $('.NB-feedchooser', this.$modal);
+        var old_position = $feedlist.scrollTop();
         
         $(".NB-action-"+sorting, this.$modal).addClass('NB-active').siblings().removeClass('NB-active');
 
-        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());
+        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());        
+        var $feedlist = $('.NB-feedchooser', this.$modal);
+        $feedlist.scrollTop(old_position);
     },
     
     // =============
