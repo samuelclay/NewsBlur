@@ -466,10 +466,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     add_hover_inverse: function() {
-        if (NEWSBLUR.app.feed_list.is_sorting()) {
-            return;
-        }
-
         if (this.$el.offset().top > $(window).height() - 334) {
             this.$el.addClass('NB-hover-inverse');
         } 
