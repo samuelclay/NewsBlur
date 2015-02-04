@@ -11,7 +11,7 @@ public class GlobalSharedStoriesReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        setTitle(getResources().getString(R.string.all_shared_stories));
+        setTitle(getResources().getString(R.string.global_shared_stories));
         readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, null);
 
         getLoaderManager().initLoader(0, null, this);

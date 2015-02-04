@@ -79,7 +79,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(context, GlobalSharedStoriesItemsList.class);
-                    i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
+                    i.putExtra(GlobalSharedStoriesItemsList.EXTRA_STATE, currentState);
                     ((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
                 }
             });
@@ -183,7 +183,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 posCounter.setVisibility(View.GONE);
             }
 		} else {
-            Feed f = activeFolderChildren.get(groupPosition-2).get(childPosition);
+            Feed f = activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
 			if (convertView == null) {
 				v = inflater.inflate(R.layout.row_feed, parent, false);
 			} else {
