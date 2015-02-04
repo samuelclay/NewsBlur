@@ -2061,18 +2061,27 @@ a img {
 #story_titles.NB-layout-grid {
     background-color: #F7F8F5;
 }
+#story_titles.NB-layout-grid .NB-story-titles {
+    overflow: hidden;
+}
 #story_titles.NB-layout-grid .NB-story-content-container {
     background-color: white;
 }
 #story_titles.NB-layout-grid .NB-end-line {
     margin-top: 24px;
+    float: left;
+    width: 100%;
 }
 #story_titles.NB-layout-grid .NB-story-title-container {
 }
 #story_titles.NB-layout-grid .NB-story-title-container.NB-selected {
     clear: both;
+    overflow: hidden;
+}
+#story_titles.NB-layout-grid .NB-story-title-container.NB-selected .NB-story-title {
     margin-top: 24px;
 }
+
 #story_titles .NB-story-grid {
     margin: 3% 0 0 3%;
     border: 1px solid rgba(0, 0, 0, .2);

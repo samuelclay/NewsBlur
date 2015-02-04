@@ -1534,6 +1534,7 @@
             
             if (story_layout == NEWSBLUR.assets.preference('story_layout')) return;
             
+            var original_layout = NEWSBLUR.assets.preference('story_layout');
             NEWSBLUR.assets.preference('story_layout', story_layout);
             
             this.set_correct_story_view_for_feed();
@@ -1559,6 +1560,9 @@
                 if (this.active_story) {
                     this.active_story.story_title_view.destroy_inline_story_detail();
                 }
+            }
+            if (original_layout == 'grid' || story_layout == 'grid') {
+                NEWSBLUR.app.story_titles.render();
             }
             
             this.switch_to_correct_view();

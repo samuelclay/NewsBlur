@@ -25,7 +25,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render: function() {
         var template_name = !this.model.get('selected') && this.options.is_grid ? 
                             'grid_template' : 'template';
-        console.log(["render template", template_name]);
         this.$el.html(this[template_name]({
             story    : this.model,
             feed     : (NEWSBLUR.reader.flags.river_view || NEWSBLUR.reader.flags.social_view) &&

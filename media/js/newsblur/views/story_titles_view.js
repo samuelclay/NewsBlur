@@ -41,6 +41,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$el.html($stories);
         this.end_loading();
         this.fill_out();
+        
+        this.scroll_to_selected_story();
     },
     
     add: function(options) {
@@ -249,6 +251,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         options = options || {};
         var story_title_view = (story && story.story_title_view) ||
                                 (this.collection.active_story && this.collection.active_story.story_title_view);
+        console.log(["scroll_to_selected_story", story, options, story_title_view]);
         if (!story_title_view) return;
         
         var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
@@ -286,7 +289,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var scroll_y = $story_titles.scrollTop();
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
         
-        // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height]);
+        // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height, this.$el]);
         if (visible_height + scroll_y >= total_height) {
             NEWSBLUR.reader.load_page_of_feed_stories({scroll_to_loadbar: false});
         }
