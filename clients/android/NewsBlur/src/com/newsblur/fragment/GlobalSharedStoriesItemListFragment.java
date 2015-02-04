@@ -12,18 +12,21 @@ import android.widget.AdapterView;
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.GlobalSharedStoriesReading;
+import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.StateFilter;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class GlobalSharedStoriesItemListFragment extends ItemListFragment {
 
-	public static ItemListFragment newInstance(DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance(DefaultFeedView defaultFeedView, StateFilter currentState) {
 		ItemListFragment fragment = new GlobalSharedStoriesItemListFragment();
         Bundle args = new Bundle();
         args.putSerializable("defaultFeedView", defaultFeedView);
+        args.putSerializable("currentState", currentState);
         fragment.setArguments(args);
 		return fragment;
 	}
@@ -47,6 +50,7 @@ public class GlobalSharedStoriesItemListFragment extends ItemListFragment {
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
+        i.putExtra(ItemsList.EXTRA_STATE, currentState);
 		startActivity(i);
 	}
 

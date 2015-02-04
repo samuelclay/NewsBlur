@@ -675,7 +675,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
-            q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
             return rawQuery(q.toString(), null, cancellationSignal);
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");

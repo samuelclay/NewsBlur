@@ -29,7 +29,7 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
 		
 		itemListFragment = (GlobalSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(GlobalSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = GlobalSharedStoriesItemListFragment.newInstance(getDefaultFeedView());
+			itemListFragment = GlobalSharedStoriesItemListFragment.newInstance(getDefaultFeedView(), currentState);
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, GlobalSharedStoriesItemListFragment.class.getName());
