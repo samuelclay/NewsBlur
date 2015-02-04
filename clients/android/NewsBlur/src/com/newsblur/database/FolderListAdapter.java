@@ -129,7 +129,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			if (convertView == null) {
 				v = inflater.inflate((isExpanded) ? R.layout.row_folder_collapsed : R.layout.row_folder_collapsed, parent, false);
 			}
-            final String folderName = activeFolderNames.get(groupPosition-2);
+            final String folderName = activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition));
 			TextView folderTitle = ((TextView) v.findViewById(R.id.row_foldername));
 		    folderTitle.setText(folderName.toUpperCase());
 			folderTitle.setOnClickListener(new OnClickListener() {
@@ -141,7 +141,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 					((Activity) context).startActivity(i);
 				}
 			});
-            bindCountViews(v, neutCounts.get(groupPosition-2), posCounts.get(groupPosition-2), false);
+            int countPosition = convertGroupPositionToActiveFolderIndex(groupPosition);
+            bindCountViews(v, neutCounts.get(countPosition), posCounts.get(countPosition), false);
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
             ImageView folderIconView = ((ImageView) v.findViewById(R.id.row_folder_icon));
             if ( folderIconView != null ) {
