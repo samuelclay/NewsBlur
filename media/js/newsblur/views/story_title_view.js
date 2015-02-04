@@ -283,7 +283,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
                 this.render_inline_story_detail();
             }
-            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, options);
+            // NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, options);
         } else {
             this.destroy_inline_story_detail();
         }

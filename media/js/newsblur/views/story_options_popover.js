@@ -73,6 +73,27 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
+                $.make('div', { className: 'NB-popover-section-title' }, 'Grid Columns'),
+                $.make('ul', { className: 'segmented-control NB-options-grid-override' }, [
+                    $.make('li', { className: 'NB-grid-override-option NB-options-grid-override-auto' }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Auto'
+                    ]),
+                    $.make('li', { className: 'NB-grid-override-option NB-options-grid-override-1' }, [
+                        '1'
+                    ]),
+                    $.make('li', { className: 'NB-grid-override-option NB-options-grid-override-2' }, [
+                        '2'
+                    ]),
+                    $.make('li', { className: 'NB-grid-override-option NB-options-grid-override-3' }, [
+                        '3'
+                    ]),
+                    $.make('li', { className: 'NB-grid-override-option NB-options-grid-override-4' }, [
+                        '4'
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Font Family'),
                 $.make('ul', { className: 'segmented-control-vertical NB-options-font-family' }, [
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active' }, 'Helvetica'),

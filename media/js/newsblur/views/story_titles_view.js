@@ -15,6 +15,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.collection.bind('add', this.add, this);
         this.collection.bind('no_more_stories', this.check_premium_river, this);
         this.collection.bind('no_more_stories', this.check_premium_search, this);
+        this.collection.bind('change:selected', this.scroll_to_selected_story, this);
         NEWSBLUR.reader.$s.$story_titles.scroll(this.scroll);
         this.stories = [];
     },
@@ -251,22 +252,30 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         options = options || {};
         var story_title_view = (story && story.story_title_view) ||
                                 (this.collection.active_story && this.collection.active_story.story_title_view);
-        console.log(["scroll_to_selected_story", story, options, story_title_view]);
         if (!story_title_view) return;
-        
+        if (story && 
+            !story.get('selected') && 
+            !options.force && 
+            NEWSBLUR.assets.preference('story_layout') != 'grid') return;
+            
+        // console.log(["scroll_to_selected_story 1", story, options]);
         var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble || options.force || 
             _.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;
-            var scroll = story_title_view.$el.position().top;
+            var scroll = story_title_view.$el.find('.NB-story-title').position().top;
             var container = NEWSBLUR.reader.$s.$story_titles.scrollTop();
             var height = NEWSBLUR.reader.$s.$story_titles.outerHeight();
             var position = scroll+container-height/5;
-            
+            // console.log(["scroll_to_selected_story 2", container_offset, scroll, container, height, position]);
             if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
                 position = scroll+container;
             }
-
+            if (NEWSBLUR.assets.preference('story_layout') == 'grid') {
+                position += 21;
+            }
+            
+            // console.log(["scroll_to_selected_story 3", position]);
             NEWSBLUR.reader.$s.$story_titles.stop().scrollTo(position, {
                 duration: NEWSBLUR.assets.preference('animations') ? 260 : 0,
                 queue: false
