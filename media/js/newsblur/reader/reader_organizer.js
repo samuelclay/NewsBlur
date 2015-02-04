@@ -221,10 +221,14 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             this.options.inverse_sorting = false;
         }
         this.options.sorting = sorting;
+        var $feedlist = $('.NB-feedchooser', this.$modal);
+        var old_position = $feedlist.scrollTop();
         
         $(".NB-action-"+sorting, this.$modal).addClass('NB-active').siblings().removeClass('NB-active');
 
-        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());
+        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());        
+        var $feedlist = $('.NB-feedchooser', this.$modal);
+        $feedlist.scrollTop(old_position);
     },
     
     // =============
@@ -395,6 +399,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     },
     
     jump_to_folder: function(folder_title) {
+        if (this.options.hierarchy != 'nested') this.toggle_hierarchy('nested');
         var $feedlist = $('.NB-feedchooser', this.$modal);
         var $folder_title = $(".folder_title_text", $feedlist).filter(function(i) {
             console.log(["folder", this, _.string.trim($(this).text()), folder_title]);
