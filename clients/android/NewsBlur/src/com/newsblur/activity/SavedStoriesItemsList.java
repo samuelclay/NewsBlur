@@ -27,16 +27,12 @@ import com.newsblur.util.StoryOrder;
 
 public class SavedStoriesItemsList extends ItemsList {
 
-	private ContentResolver resolver;
-
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
 		setTitle(getResources().getString(R.string.saved_stories_title));
 
-		resolver = getContentResolver();
-		
 		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = SavedStoriesItemListFragment.newInstance(getDefaultFeedView());
