@@ -294,6 +294,9 @@ public class APIManager {
             uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
         } else if (fs.isAllSaved()) {
             uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
+        } else if (fs.isGlobalShared()) {
+            uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
+            values.put(APIConstants.PARAMETER_GLOBAL_FEED, Boolean.TRUE.toString());
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
         }

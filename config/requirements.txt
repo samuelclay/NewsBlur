@@ -41,7 +41,7 @@ requests==2.3.0
 seacucumber==1.5
 South==0.7.6
 stripe==1.12.2
-django-oauth-toolkit==0.5.0
+django-oauth-toolkit==0.7.2
 django-cors-headers==0.12
 pyOpenSSL==0.14
 pyasn1==0.1.7

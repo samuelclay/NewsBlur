@@ -373,6 +373,10 @@ public class PrefsUtils {
             return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
         }
 
+        if (fs.isGlobalShared()) {
+            return StoryOrder.NEWEST;
+        }
+
         throw new IllegalArgumentException( "unknown type of feed set" );
     }
 
@@ -399,6 +403,10 @@ public class PrefsUtils {
 
         if (fs.isAllSaved()) {
             return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        }
+
+        if (fs.isGlobalShared()) {
+            return ReadFilter.UNREAD;
         }
 
         throw new IllegalArgumentException( "unknown type of feed set" );
@@ -484,5 +492,10 @@ public class PrefsUtils {
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.STATE_FILTER, newValue.toString());
         editor.commit();
+    }
+
+    public static VolumeKeyNavigation getVolumeKeyNavigation(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return VolumeKeyNavigation.valueOf(prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString()));
     }
 }

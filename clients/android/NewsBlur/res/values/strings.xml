@@ -40,6 +40,7 @@
 	
 	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_shared_stories">ALL SHARED STORIES</string>
+    <string name="global_shared_stories">GLOBAL SHARED STORIES</string>
 	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="saved_stories_title">Saved Stories</string>
 	
@@ -259,4 +260,20 @@
     <string name="sync_status_unreads">Storing%sunread stories...</string>
     <string name="sync_status_text">Storing text for %s stories...</string>
     <string name="sync_status_images">Storing %s images...</string>
+
+    <string name="volume_key_navigation">Volume Key Navigation</string>
+    <string name="off">Off</string>
+    <string name="volume_up_next">Up = Next Story</string>
+    <string name="volume_down_next">Down = Next Story</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string-array name="volume_key_navigation_values">
+        <item>OFF</item>
+        <item>UP_NEXT</item>
+        <item>DOWN_NEXT</item>
+    </string-array>
+    <string name="default_volume_key_navigation_value">OFF</string>
 </resources>

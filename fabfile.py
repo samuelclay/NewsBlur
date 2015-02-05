@@ -195,7 +195,7 @@ def setup_common():
     setup_psql_client()
     setup_libxml()
     setup_python()
-    # setup_psycopg()
+    setup_psycopg()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -600,7 +600,7 @@ def setup_sudoers(user=None):
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
 
 def setup_nginx():
-    NGINX_VERSION = '1.4.1'
+    NGINX_VERSION = '1.6.2'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
@@ -918,7 +918,7 @@ def setup_mongo_mms():
         sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
-    redis_version = '2.6.16'
+    redis_version = '2.8.19'
     with cd(env.VENDOR_PATH):
         run('wget http://download.redis.io/releases/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -1097,8 +1097,9 @@ def setup_do(name, size=2, image=None):
     ssh_key_ids = [str(k.id) for k in doapi.all_ssh_keys()]
     region_id = doapi.regions()[0].id
     if not image:
-        IMAGE_NAME = "Ubuntu 13.10 x64"
+        IMAGE_NAME = "14.04 x64"
         images = dict((s.name, s.id) for s in doapi.images())
+        print images
         image_id = images[IMAGE_NAME]
     else:
         IMAGE_NAME = image

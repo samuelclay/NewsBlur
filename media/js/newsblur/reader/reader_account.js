@@ -5,6 +5,7 @@ NEWSBLUR.ReaderAccount = function(options) {
         'change_password': false,
         'onOpen': _.bind(function() {
             this.animate_fields();
+            $(window).trigger('resize.simplemodal');
         }, this)
     };
         

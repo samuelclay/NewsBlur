@@ -6,8 +6,7 @@ from six import b
 from six.moves.urllib.request import urlopen
 
 from paypal.standard.models import PayPalStandardBase
-from paypal.standard.ipn.signals import payment_was_flagged, payment_was_refunded, payment_was_reversed, payment_was_successful, recurring_create, recurring_payment, recurring_cancel, recurring_skipped, recurring_failed, subscription_cancel, subscription_signup, subscription_eot, subscription_modify
-from utils import log as logging
+from vendor.paypal.standard.ipn.signals import payment_was_flagged, payment_was_refunded, payment_was_reversed, payment_was_successful, recurring_create, recurring_payment, recurring_cancel, recurring_skipped, recurring_failed, subscription_cancel, subscription_signup, subscription_eot, subscription_modify
 
 
 class PayPalIPN(PayPalStandardBase):
@@ -30,7 +29,6 @@ class PayPalIPN(PayPalStandardBase):
         """Shout for the world to hear whether a txn was successful."""
         if self.flag:
             payment_was_flagged.send(sender=self)
-            return
 
         # Transaction signals:
         if self.is_transaction():
@@ -46,7 +44,6 @@ class PayPalIPN(PayPalStandardBase):
             if self.is_recurring_create():
                 recurring_create.send(sender=self)
             elif self.is_recurring_payment():
-                logging.debug(" ---> ~SN~FBSending signal for recurring_payment: ~SB%s~SN." % recurring_payment.receivers)
                 recurring_payment.send(sender=self)
             elif self.is_recurring_cancel():
                 recurring_cancel.send(sender=self)

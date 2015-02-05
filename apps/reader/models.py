@@ -752,6 +752,18 @@ class UserSubscription(models.Model):
         
         return self
     
+    @staticmethod
+    def score_story(scores):
+        max_score = max(scores['author'], scores['tags'], scores['title'])
+        min_score = min(scores['author'], scores['tags'], scores['title'])
+
+        if max_score > 0:
+            return 1
+        elif min_score < 0:
+            return -1
+
+        return scores['feed']
+        
     def switch_feed(self, new_feed, old_feed):
         # Rewrite feed in subscription folders
         try:
@@ -1298,7 +1310,15 @@ class UserSubscriptionFolders(models.Model):
             UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
           
         return deleted_folder
+
+    def delete_feeds_by_folder(self, feeds_by_folder):
+        logging.user(self.user, "~FBDeleting ~FR~SB%s~SN feeds~FB: ~SB%s" % (
+                     len(feeds_by_folder), feeds_by_folder))
+        for feed_id, in_folder in feeds_by_folder:
+            self.delete_feed(feed_id, in_folder)
         
+        return self
+
     def rename_folder(self, folder_to_rename, new_folder_name, in_folder):
         def _find_folder_in_folders(old_folders, folder_name):
             new_folders = []
@@ -1321,6 +1341,20 @@ class UserSubscriptionFolders(models.Model):
         self.folders = json.encode(user_sub_folders)
         self.save()
         
+    def move_feed_to_folders(self, feed_id, in_folders=None, to_folders=None):
+        logging.user(self.user, "~FBMoving feed '~SB%s~SN' in '%s' to: ~SB%s" % (
+                     feed_id, in_folders, to_folders))
+        user_sub_folders = json.decode(self.folders)
+        for in_folder in in_folders:
+            self.delete_feed(feed_id, in_folder, commit_delete=False)
+        user_sub_folders = json.decode(self.folders)
+        for to_folder in to_folders:
+            user_sub_folders = add_object_to_folder(int(feed_id), to_folder, user_sub_folders)
+        self.folders = json.encode(user_sub_folders)
+        self.save()
+        
+        return self
+
     def move_feed_to_folder(self, feed_id, in_folder=None, to_folder=None):
         logging.user(self.user, "~FBMoving feed '~SB%s~SN' in '%s' to: ~SB%s" % (
                      feed_id, in_folder, to_folder))
@@ -1342,6 +1376,14 @@ class UserSubscriptionFolders(models.Model):
         user_sub_folders = add_object_to_folder(deleted_folder, to_folder, user_sub_folders)
         self.folders = json.encode(user_sub_folders)
         self.save()
+        
+        return self
+    
+    def move_feeds_by_folder_to_folder(self, feeds_by_folder, to_folder):
+        logging.user(self.user, "~FBMoving ~SB%s~SN feeds to folder: ~SB%s" % (
+                     len(feeds_by_folder), to_folder))
+        for feed_id, in_folder in feeds_by_folder:
+            self.move_feed_to_folder(feed_id, in_folder, to_folder)
         
         return self
     

@@ -188,6 +188,13 @@
           optional: true
           default: all
           example: unread
+        - key: include_hidden
+          desc: >
+            Use this if you want to show hidden stories (provided you have a "Show Hidden 
+            Stories" button). All native NewsBlur apps (web, ios, android) use this.
+          optional: true
+          default: "false"
+          example: "true"
         - key: include_story_content
           desc: >
             If you're just checking for story ids and meta-data, you don't
@@ -198,7 +205,7 @@
       tips:
         - >
           The story score (red, neutral, green) can be computed by following 
-          the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> `compute_story_score` in reader_utils.js on GitHub</a>.
+          the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> <code>compute_story_score</code> in reader_utils.js on GitHub</a>. Alternatively, you can use the <code>score</code> parameter.
         - > 
             Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
             <ul>
@@ -206,6 +213,8 @@
             <li> <code>nt</code>: neutral/unread count</li>
             <li> <code>ng</code>: negative/hidden count</li>
             </ul>
+        - >
+            If you aren't including hidden stories and a user has many stories that are hidden (which happens quite often as they might thumbs down the publisher but thumbs up a title or tag), then make sure to keep paging if the <code>hidden_stories_count</code> is non-zero. Don't rely on the <code>stories</code> list being empty to assume that's when to stop paging.
   
     - url: /reader/starred_stories
       method: GET
@@ -234,7 +243,7 @@
           optional: true
           default: false
       tips:
-        - "Use with /reader/starred_stories and pass up to 100 story_hashes as the `h` param."
+        - "Use with /reader/starred_stories and pass up to 100 story_hashes as the <code>h</code> param."
   
     - url: /reader/river_stories
       method: GET
@@ -262,6 +271,13 @@
           optional: true
           default: unread
           example: all
+        - key: include_hidden
+          desc: >
+            Use this if you want to show hidden stories (provided you have a "Show Hidden 
+            Stories" button). All native NewsBlur apps (web, ios, android) use this.
+          optional: true
+          default: "false"
+          example: "true"
       tips:
         - > 
             Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
@@ -270,6 +286,8 @@
             <li> <code>nt</code>: neutral/unread count</li>
             <li> <code>ng</code>: negative/hidden count</li>
             </ul>
+        - >
+            If you aren't including hidden stories and a user has many stories that are hidden (which happens quite often as they might thumbs down the publisher but thumbs up a title or tag), then make sure to keep paging if the <code>hidden_stories_count</code> is non-zero. Don't rely on the <code>stories</code> list being empty to assume that's when to stop paging.
 
 
     - url: /reader/river_stories
@@ -277,7 +295,7 @@
       short_desc: "Stories by story_hash."
       long_desc: 
         - "Retrieve up to 100 stories when specifying by story_hash."
-        - "Used this in conjunction with `unread_story_hashes` to store stories for offline use."
+        - "Used this in conjunction with <code>unread_story_hashes</code> to store stories for offline use."
       params:
         - key: h
           desc: "Pass up to 100 story_hashes. Use with unread_story_hashes."
@@ -325,7 +343,7 @@
       method: POST
       short_desc: "Mark a story as read (deprecated)."
       long_desc: 
-        - "<b>Deprecated! Just send the `story_hash` to `mark_story_hashes_as_read`.</b>"
+        - "<b>Deprecated! Just send the <code>story_hash</code> to <code>mark_story_hashes_as_read</code>.</b>"
         - "Mark stories as read (deprecated)."
         - "Multiple story ids can be sent at once."
         - "Each story must be from the same feed."
@@ -347,7 +365,7 @@
       method: POST
       short_desc: "Mark stories from multiple feeds as read (deprecated)."
       long_desc: 
-        - "<b>Deprecated! Just send the `story_hash` to `mark_story_hashes_as_read`.</b>"
+        - "<b>Deprecated! Just send the <code>story_hash</code> to <code>mark_story_hashes_as_read</code>.</b>"
         - "Marks multiple stories as read."
         - "Multiple story ids can be sent at once."
         - "Multiple feeds can be sent."
@@ -364,7 +382,7 @@
       method: POST
       short_desc: "Mark stories from a blurblog as read (deprecated)."
       long_desc: 
-        - "<b>Deprecated! Just send the `story_hash` to `mark_story_hashes_as_read`.</b>"
+        - "<b>Deprecated! Just send the <code>story_hash</code> to <code>mark_story_hashes_as_read</code>.</b>"
         - "Marks multiple stories as read."
         - "Multiple story ids can be sent at once."
         - "Multiple feeds can be sent."
@@ -400,7 +418,7 @@
         - "Premium users can mark up to 30 days as unread. Free users only have 15 days."
         - >
             If a story is too old to mark as read, look for (and display to the user) the 
-            `message` parameter returned back to you.
+            <code>message</code> parameter returned back to you.
       tips:
         - >
             This endpoint is newer than all of the other mark as read endpoints, so use this one.
@@ -479,7 +497,7 @@
           optional: true
           example: "1400777921"
         - key: direction
-          desc: "Older or newer stories should be marked as read. Use with `cutoff_timestamp`"
+          desc: "Older or newer stories should be marked as read. Use with <code>cutoff_timestamp</code>"
           optional: true
           example: "older"
       tips:
