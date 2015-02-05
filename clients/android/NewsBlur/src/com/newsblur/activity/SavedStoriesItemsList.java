@@ -1,12 +1,5 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
-
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.view.Menu;
@@ -14,7 +7,6 @@ import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.database.DatabaseConstants;
 import com.newsblur.fragment.SavedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;

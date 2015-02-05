@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -58,12 +57,10 @@ public class APIManager {
 
 	private Context context;
 	private Gson gson;
-	private ContentResolver contentResolver;
     private String customUserAgent;
 
 	public APIManager(final Context context) {
 		this.context = context;
-		this.contentResolver = context.getContentResolver();
 
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateStringTypeAdapter())
