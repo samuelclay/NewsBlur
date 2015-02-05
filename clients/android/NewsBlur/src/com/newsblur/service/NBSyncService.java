@@ -709,17 +709,19 @@ public class NBSyncService extends Service {
         try {
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
             HaltNow = true;
-            unreadsService.shutdown();
-            originalTextService.shutdown();
-            imagePrefetchService.shutdown();
-            primaryExecutor.shutdown();
-            try {
-                primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                primaryExecutor.shutdownNow();
-                Thread.currentThread().interrupt();
+            if (unreadsService != null) unreadsService.shutdown();
+            if (originalTextService != null) originalTextService.shutdown();
+            if (imagePrefetchService != null) imagePrefetchService.shutdown();
+            if (primaryExecutor != null) {
+                primaryExecutor.shutdown();
+                try {
+                    primaryExecutor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    primaryExecutor.shutdownNow();
+                    Thread.currentThread().interrupt();
+                }
             }
-            dbHelper.close();
+            if (dbHelper != null) dbHelper.close();
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
             super.onDestroy();
         } catch (Exception ex) {
