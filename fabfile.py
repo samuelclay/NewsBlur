@@ -317,7 +317,7 @@ def setup_installs():
         'libssl-dev',
         'libffi-dev',
         'make',
-        'pgbouncer',
+        # 'pgbouncer',
         'python-setuptools',
         'python-psycopg2',
         'libyaml-0-2',

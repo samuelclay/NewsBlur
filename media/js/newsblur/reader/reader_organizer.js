@@ -302,6 +302,13 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
         console.log(["Deleting feeds by folder", highlighted_feeds]);
         
+        if (this.options.hierarchy == 'flat') {
+            // Ignore folder when flat, which will delte feed out of all folders
+            highlighted_feeds = _.map(highlighted_feeds, function(feed_folder) {
+                return [feed_folder[0], null];
+            });
+        }
+        
         NEWSBLUR.assets.delete_feeds_by_folder(highlighted_feeds, function() {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
