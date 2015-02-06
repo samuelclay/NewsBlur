@@ -325,6 +325,9 @@ public class DatabaseConstants {
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
 
+    public static final String JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP =
+        " INNER JOIN " + SOCIALFEED_TABLE + " ON " + SOCIALFEED_TABLE + "." + SOCIAL_FEED_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_USER_ID;
+
     public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " DESC";
 
     /**

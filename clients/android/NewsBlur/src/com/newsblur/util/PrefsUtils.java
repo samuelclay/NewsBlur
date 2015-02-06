@@ -373,6 +373,10 @@ public class PrefsUtils {
             return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
         }
 
+        if (fs.isGlobalShared()) {
+            return StoryOrder.NEWEST;
+        }
+
         throw new IllegalArgumentException( "unknown type of feed set" );
     }
 
@@ -399,6 +403,10 @@ public class PrefsUtils {
 
         if (fs.isAllSaved()) {
             return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        }
+
+        if (fs.isGlobalShared()) {
+            return ReadFilter.UNREAD;
         }
 
         throw new IllegalArgumentException( "unknown type of feed set" );

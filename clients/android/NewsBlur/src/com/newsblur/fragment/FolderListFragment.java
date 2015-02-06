@@ -196,7 +196,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 		if (item.getItemId() == R.id.menu_delete_feed) {
 			String folderName = adapter.getGroup(groupPosition);
 			DialogFragment deleteFeedFragment;
-            if (groupPosition == 0) {
+            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getSocialFeed(adapter.getChild(groupPosition, childPosition)), folderName);
             } else {
                 deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getFeed(adapter.getChild(groupPosition, childPosition)), folderName);
@@ -205,7 +205,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_feed_as_read) {
             String feedId = adapter.getChild(groupPosition, childPosition);
-            if (groupPosition == 0) {
+            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 SocialFeed socialFeed = adapter.getSocialFeed(feedId);
                 FeedUtils.markFeedsRead(FeedSet.singleSocialFeed(socialFeed.userId, socialFeed.username), null, null, getActivity());
             } else {
@@ -261,7 +261,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	@Override
 	public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
         String childName = adapter.getChild(groupPosition, childPosition);
-		if (groupPosition == 0) {
+		if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
             SocialFeed socialFeed = adapter.getSocialFeed(childName);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
 			intent.putExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED, socialFeed);
