@@ -32,7 +32,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
                 collection: collection,
-                is_grid: NEWSBLUR.assets.preference('story_layout') == 'grid'
+                is_grid: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid'
             }).render();
         });
         this.stories = stories;
@@ -54,7 +54,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection,
-                    is_grid: NEWSBLUR.assets.preference('story_layout') == 'grid'
+                    is_grid: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid'
                 }).render();
             }));
             this.stories = this.stories.concat(stories);
@@ -211,7 +211,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-fleuron' })
         ]);
         
-        if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
+        if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
             var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
             var endbar_height = 20;
             var last_story_height = 280;
@@ -256,22 +256,22 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (story && 
             !story.get('selected') && 
             !options.force && 
-            NEWSBLUR.assets.preference('story_layout') != 'grid') return;
+            NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') != 'grid') return;
             
         // console.log(["scroll_to_selected_story 1", story, options]);
         var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble || options.force || 
-            _.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
+            _.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;
             var scroll = story_title_view.$el.find('.NB-story-title').position().top;
             var container = NEWSBLUR.reader.$s.$story_titles.scrollTop();
             var height = NEWSBLUR.reader.$s.$story_titles.outerHeight();
             var position = scroll+container-height/5;
             // console.log(["scroll_to_selected_story 2", container_offset, scroll, container, height, position]);
-            if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
+            if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
                 position = scroll+container;
             }
-            if (NEWSBLUR.assets.preference('story_layout') == 'grid') {
+            if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
                 position += 21;
             }
             

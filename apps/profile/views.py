@@ -175,6 +175,7 @@ def set_view_setting(request):
     feed_view_setting = request.POST.get('feed_view_setting')
     feed_order_setting = request.POST.get('feed_order_setting')
     feed_read_filter_setting = request.POST.get('feed_read_filter_setting')
+    feed_layout_setting = request.POST.get('feed_layout_setting')
     view_settings = json.decode(request.user.profile.view_settings)
     
     setting = view_settings.get(feed_id, {})
@@ -182,13 +183,14 @@ def set_view_setting(request):
     if feed_view_setting: setting['v'] = feed_view_setting
     if feed_order_setting: setting['o'] = feed_order_setting
     if feed_read_filter_setting: setting['r'] = feed_read_filter_setting
+    if feed_layout_setting: setting['l'] = feed_layout_setting
     
     view_settings[feed_id] = setting
     request.user.profile.view_settings = json.encode(view_settings)
     request.user.profile.save()
     
-    logging.user(request, "~FMView settings: %s/%s/%s" % (feed_view_setting, 
-                 feed_order_setting, feed_read_filter_setting))
+    logging.user(request, "~FMView settings: %s/%s/%s/%s" % (feed_view_setting, 
+                 feed_order_setting, feed_read_filter_setting, feed_layout_setting))
     response = dict(code=code)
     return response
 

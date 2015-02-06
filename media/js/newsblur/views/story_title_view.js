@@ -177,7 +177,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     show_content_preview: function() {
-        if (NEWSBLUR.assets.preference('story_layout') == 'grid') {
+        if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
             var pruned_description = this.model.content_preview('story_content', 500);
         } else {
             var preference = NEWSBLUR.assets.preference('show_content_preview');
@@ -280,7 +280,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         
         if (selected) {
-            if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
+            if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
                 this.render_inline_story_detail();
             }
             // NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, options);
@@ -290,7 +290,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_starred: function() {
-        var story_titles_visible = _.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'));
+        var story_titles_visible = _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'));
         var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
         var $star = this.$('.NB-storytitles-star');
         
@@ -361,7 +361,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         e.stopPropagation();
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
         
-        if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout')) &&
+        if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) &&
             this.model.get('selected')) {
             this.collapse_story();
         } else {

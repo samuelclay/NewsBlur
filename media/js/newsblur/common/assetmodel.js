@@ -1200,6 +1200,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             var s = setting.substr(0, 1);
             var feed = NEWSBLUR.Preferences.view_settings[feed_id+''];
             var default_setting = NEWSBLUR.Preferences['default_' + setting];
+            if (setting == 'layout') default_setting = NEWSBLUR.Preferences['story_layout'];
             if (setting == 'read_filter' && _.string.contains(feed_id, 'river:')) {
                 default_setting = 'unread';
             }
@@ -1211,7 +1212,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             view_settings = {'view': view_settings};
         }
         var params = {'feed_id': feed_id+''};
-        _.each(['view', 'order', 'read_filter'], function(facet) {
+        _.each(['view', 'order', 'read_filter', 'layout'], function(facet) {
             if (setting[facet]) {
                 view_settings[facet.substr(0, 1)] = setting[facet];
                 params['feed_'+facet+'_setting'] = setting[facet];
