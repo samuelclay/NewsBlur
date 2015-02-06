@@ -2095,19 +2095,19 @@ a img {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-#story_titles.NB-layout-grid.NB-grid-override-2 .NB-story-grid,
+#story_titles.NB-layout-grid.NB-grid-columns-2 .NB-story-grid,
 .NB-narrow-content #story_titles .NB-story-grid {
     width: 44%;
 }
-#story_titles.NB-layout-grid.NB-grid-override-1 .NB-story-grid,
+#story_titles.NB-layout-grid.NB-grid-columns-1 .NB-story-grid,
 .NB-extra-narrow-content #story_titles .NB-story-grid {
     width: 94%;
 }
-#story_titles.NB-layout-grid.NB-grid-override-3 .NB-story-grid,
+#story_titles.NB-layout-grid.NB-grid-columns-3 .NB-story-grid,
 .NB-wide-content #story_titles .NB-story-grid {
     width: 29%;
 }
-#story_titles.NB-layout-grid.NB-grid-override-4 .NB-story-grid,
+#story_titles.NB-layout-grid.NB-grid-columns-4 .NB-story-grid,
 .NB-extra-wide-content #story_titles .NB-story-grid {
     width: 21%;
 }
@@ -4760,15 +4760,15 @@ background: transparent;
     background: transparent url("/media/embed/icons/silk/text_horizontalrule.png") no-repeat center center;
 }
 
-.NB-style-popover .NB-options-grid-override {
+.NB-style-popover .NB-options-grid-columns {
     margin-top: 6px;
 }
-.NB-style-popover .NB-grid-override-option {
+.NB-style-popover .NB-grid-columns-option {
     min-width: 23px;
     font-size: 12px;
     padding: 4px 8px;
 }
-.NB-style-popover .NB-grid-override-option .NB-icon {
+.NB-style-popover .NB-grid-columns-option .NB-icon {
     width: 16px;
     height: 16px;
     display: inline-block;
