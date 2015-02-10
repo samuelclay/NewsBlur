@@ -36,6 +36,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.toggle_classes();
         this.toggle_read_status();
         this.color_feedbar();
+        if (this.options.is_grid) this.watch_grid_image();
         
         return this;
     },
@@ -79,7 +80,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <div class="NB-storytitles-feed-border-outer"></div>\
             <% if (story.image_url()) { %>\
                 <div class="NB-storytitles-story-image-container">\
-                    <div class="NB-storytitles-story-image" style="background-image: url(<%= story.image_url() %>);"></div>\
+                    <div class="NB-storytitles-story-image"></div>\
                 </div>\
             <% } %>\
             <div class="NB-storytitles-content">\
@@ -207,6 +208,22 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         
         $inner.css('background-color', '#' + feed.get('favicon_fade'));
         $outer.css('background-color', '#' + feed.get('favicon_color'));
+    },
+
+    watch_grid_image: function() {
+        var self = this;
+        $('<img>').load(function() {
+            // console.log(['Loaded', this, this.width, self.model.image_url(), self.$(".NB-storytitles-story-image")]);
+            if (this.width > 100) {
+                self.$(".NB-storytitles-story-image").css({
+                    'display': 'block',
+                    'background-image': "url(" + self.model.image_url() + ")"
+                });
+            }
+        }).attr('src', this.model.image_url()).each(function() {
+            // fail-safe for cached images which sometimes don't trigger "load" events
+            if (this.complete) $(this).load();
+        });
     },
     
     toggle_classes: function() {

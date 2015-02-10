@@ -2147,6 +2147,7 @@ a img {
     margin-left: 8px;
 }
 #story_titles .NB-story-grid .NB-storytitles-story-image {
+    display: none;
     width: 100%;
     height: 186px;
     background-size: cover;
