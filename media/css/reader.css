@@ -9289,6 +9289,10 @@ form.opml_import_form input {
   color: #808080;
   margin: 4px 30px 0px 0px;
 }
+.NB-modal-preferences .NB-preference .NB-preference-sublabel-link {
+  font-size: 11px;
+  margin: 4px 30px 0px 0px;
+}
 
 .NB-modal-preferences .NB-preference .NB-preference-options input {
   clear: both;
@@ -9481,7 +9485,7 @@ form.opml_import_form input {
 
 .NB-modal-preferences .segmented-control {
     display: block;
-    margin: 4px 0 12px 24px;
+    margin: 4px 0 12px 0;
     float: left;
 /*    height: 14px;*/
     width: auto;
@@ -9502,7 +9506,7 @@ form.opml_import_form input {
     max-width: 240px;
 }
 .NB-modal-preferences .NB-preference .NB-preference-options.NB-view-settings input[type=radio] {
-    margin: 3px 6px 0 2px;
+    margin: 2px 6px 0 2px;
 }
 
 

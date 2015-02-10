@@ -1226,6 +1226,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
+    clear_view_settings: function(view_setting_type, callback) {
+        var pre_callback = _.bind(function(data) {
+            if (data.view_settings) {
+                NEWSBLUR.Preferences.view_settings = data.view_settings;
+            }
+            callback(data);
+        }, this);
+        
+        this.make_request('/profile/clear_view_setting', {
+            view_setting_type: view_setting_type
+        }, pre_callback, null);
+        
+    },
+    
     collapsed_folders: function(folder_title, is_collapsed, callback) {
         var folders = NEWSBLUR.Preferences.collapsed_folders;
         var changed = false;

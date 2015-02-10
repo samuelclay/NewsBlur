@@ -195,6 +195,31 @@ def set_view_setting(request):
     return response
 
 @ajax_login_required
+@require_POST
+@json.json_view
+def clear_view_setting(request):
+    code = 1
+    view_setting_type = request.POST.get('view_setting_type')
+    view_settings = json.decode(request.user.profile.view_settings)
+    new_view_settings = {}
+    removed = 0
+    for feed_id, view_setting in view_settings.items():
+        if view_setting_type == 'layout' and 'l' in view_setting:
+            del view_setting['l']
+            removed += 1
+        if view_setting_type == 'view' and 'v' in view_setting:
+            del view_setting['v']
+            removed += 1
+        new_view_settings[feed_id] = view_setting
+
+    request.user.profile.view_settings = json.encode(new_view_settings)
+    request.user.profile.save()
+    
+    logging.user(request, "~FMClearing view settings: %s (found %s)" % (view_setting_type, removed))
+    response = dict(code=code, view_settings=view_settings, removed=removed)
+    return response
+        
+@ajax_login_required
 @json.json_view
 def get_view_setting(request):
     code = 1
