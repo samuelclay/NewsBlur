@@ -81,6 +81,8 @@ public class Story implements Serializable {
 	@SerializedName("intelligence")
 	public Intelligence intelligence = new Intelligence();
 
+    public int intelTotal;
+
 	@SerializedName("short_parsed_date")
 	public String shortDate;
 
@@ -149,6 +151,7 @@ public class Story implements Serializable {
 		story.intelligence.intelligenceFeed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
 		story.intelligence.intelligenceTags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
 		story.intelligence.intelligenceTitle = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
+        story.intelTotal = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.SUM_STORY_TOTAL));
 		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ)) > 0;
 		story.starred = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED)) > 0;
 		story.starredTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE));
