@@ -1757,16 +1757,16 @@ a img {
 
 }
 
-#story_titles .NB-story-title .story_title .NB-storytitles-author {
+#story_titles .NB-story-title .NB-storytitles-author {
     padding-left: 12px;
     color: #808080;
     font-size: 10px;
 }
-#story_titles .NB-story-title.read .story_title .NB-storytitles-author {
+#story_titles .NB-story-title.read .NB-storytitles-author {
     color: #B6B6B6;
 }
 
-#story_titles .NB-story-title.NB-selected .story_title .NB-storytitles-author {
+#story_titles .NB-story-title.NB-selected .NB-storytitles-author {
 /*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
 }
 
@@ -2088,7 +2088,7 @@ a img {
     position: relative;
     float: left;
     width: 42%;
-    height: 340px;
+    height: 360px;
     padding: 0;
     border-radius: 2px;
     -webkit-box-sizing: border-box;
@@ -2143,7 +2143,6 @@ a img {
 #story_titles .NB-story-grid .NB-storytitles-content-preview {
     margin: 12px 0 0 0;
 }
-
 #story_titles .NB-story-grid .NB-storytitles-story-image-container {
     margin-left: 8px;
 }
@@ -2182,19 +2181,34 @@ a img {
 #story_titles .NB-story-grid.read .NB-storytitles-content-preview {
     color: #D6D6DE;
 }
-#story_titles .NB-story-grid .story_date {
+#story_titles .NB-story-grid.NB-story-title .NB-storytitles-grid-bottom {
     position: absolute;
     bottom: 0;
     top: inherit;
     left: 0;
-    right: 0;
-    width: 100%;
     background-color: #FDFCFA;
-    margin-left: 30px;
-    padding: 12px 0 8px;
+    width: 100%;    
+    padding: 12px 6px 6px;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
-#story_titles .NB-story-grid:not(.read):hover .story_date {
+#story_titles .NB-story-grid:not(.read):hover .NB-storytitles-grid-bottom {
     background-color: #F7F7F6;
+}
+#story_titles .NB-story-grid.NB-story-title .NB-storytitles-author {
+    float: left;
+    display: block;
+    padding: 0 4px 2px 24px;
+    line-height: 16px;
+}
+#story_titles .NB-story-grid .story_date {
+    position: static;
+    width: auto;
+    float: right;
+    display: block;
+    padding: 0 4px 0 0;
 }
 #story_titles .NB-story-grid .NB-storytitles-sentiment,
 #story_titles .NB-story-grid .NB-story-manage-icon {
