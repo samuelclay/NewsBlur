@@ -42,6 +42,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$el.html($stories);
         this.end_loading();
         this.fill_out();
+        this.override_grid();
         
         this.scroll_to_selected_story();
     },
@@ -71,7 +72,22 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         _.invoke(this.stories, 'destroy');
         this.cache = {};
     },
+    
+    override_grid: function() {
+        if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') != 'grid') return;
+        console.log(['override_grid', NEWSBLUR.assets.preference('grid_columns')]);
+        var columns = NEWSBLUR.assets.preference('grid_columns');
+        var $layout = NEWSBLUR.reader.$s.$story_titles;
+        $layout.removeClass('NB-grid-columns-1')
+               .removeClass('NB-grid-columns-2')
+               .removeClass('NB-grid-columns-3')
+               .removeClass('NB-grid-columns-4')
 
+        if (columns > 0) {
+            $layout.addClass('NB-grid-columns-' + columns);
+        }
+    },
+    
     append_river_premium_only_notification: function() {
         var message = [
             'The full River of News is a ',

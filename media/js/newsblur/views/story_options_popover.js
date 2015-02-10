@@ -361,10 +361,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.assets.preference('grid_columns', setting);
         NEWSBLUR.app.story_list.render();
         _.defer(function() {
+            NEWSBLUR.app.story_titles.override_grid();
             NEWSBLUR.reader.resize_window();
-            if (NEWSBLUR.reader.active_story) {
-                NEWSBLUR.reader.active_story.set('selected', false).set('selected', true);
-            }
         });
     },
     
