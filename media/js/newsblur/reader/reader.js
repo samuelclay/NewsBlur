@@ -256,15 +256,16 @@
             this.apply_tipsy_titles();
         },
         
-        apply_resizable_layout: function(refresh) {
+        apply_resizable_layout: function(options) {
+            options = options || {};
             var story_anchor = this.model.preference('story_pane_anchor');
             
-            if (refresh) {
+            if (options.right_side) {
                 this.layout.contentLayout && this.layout.contentLayout.destroy();
                 this.layout.rightLayout && this.layout.rightLayout.destroy();
-                this.layout.leftCenterLayout && this.layout.leftCenterLayout.destroy();
-                this.layout.leftLayout && this.layout.leftLayout.destroy();
-                this.layout.outerLayout && this.layout.outerLayout.destroy();
+                // this.layout.leftCenterLayout && this.layout.leftCenterLayout.destroy();
+                // this.layout.leftLayout && this.layout.leftLayout.destroy();
+                // this.layout.outerLayout && this.layout.outerLayout.destroy();
 
                 var feed_stories_bin = $.make('div').append(this.$s.$feed_stories.children());
                 var story_titles_bin = $.make('div').append(this.$s.$story_titles.children());
@@ -276,69 +277,70 @@
                             .removeClass('NB-story-pane-hidden')
                             .toggleClass('NB-story-pane-'+story_anchor,
                                          NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'split');
-                            
-            this.layout.outerLayout = this.$s.$layout.layout({ 
-                zIndex:                 2,
-                fxName:                 "slideOffscreen",
-                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
-                center__paneSelector:   ".right-pane",
-                west__paneSelector:     ".left-pane",
-                west__size:             this.model.preference('feed_pane_size'),
-                west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
-                west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
-                // west__initHidden:       this.options.hide_sidebar,
-                west__spacing_open:     this.options.hide_sidebar ? 1 : 1,
-                resizerDragOpacity:     0.6,
-                resizeWhileDragging:    true,
-                enableCursorHotkey:     false,
-                togglerLength_open:     0
-            }); 
+            if (!options.right_side) {
+                this.layout.outerLayout = this.$s.$layout.layout({ 
+                    zIndex:                 2,
+                    fxName:                 "slideOffscreen",
+                    fxSettings:             { duration: 560, easing: "easeInOutQuint" },
+                    center__paneSelector:   ".right-pane",
+                    west__paneSelector:     ".left-pane",
+                    west__size:             this.model.preference('feed_pane_size'),
+                    west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
+                    west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
+                    // west__initHidden:       this.options.hide_sidebar,
+                    west__spacing_open:     this.options.hide_sidebar ? 1 : 1,
+                    resizerDragOpacity:     0.6,
+                    resizeWhileDragging:    true,
+                    enableCursorHotkey:     false,
+                    togglerLength_open:     0
+                }); 
             
-            if (this.model.preference('feed_pane_size') < 242) {
-                this.layout.outerLayout.resizeAll();
+                if (this.model.preference('feed_pane_size') < 242) {
+                    this.layout.outerLayout.resizeAll();
+                }
+
+                this.layout.leftLayout = $('.left-pane').layout({
+                    closable:               false,
+                    resizeWhileDragging:    true,
+                    fxName:                 "slideOffscreen",
+                    fxSettings:             { duration: 560, easing: "easeInOutQuint" },
+                    animatePaneSizing:      true,
+                    north__paneSelector:    ".left-north",
+                    north__size:            37,
+                    north__resizeable:      false,
+                    north__spacing_open:    0,
+                    center__paneSelector:   ".left-center",
+                    center__resizable:      false,
+                    south__paneSelector:    ".left-south",
+                    south__size:            31,
+                    south__resizable:       false,
+                    enableCursorHotkey:     false,
+                    togglerLength_open:     0,
+                    south__spacing_open:    0
+                });
+            
+                this.layout.leftCenterLayout = $('.left-center').layout({
+                    closable:               false,
+                    slidable:               false, 
+                    resizeWhileDragging:    true,
+                    center__paneSelector:   ".left-center-content",
+                    center__resizable:      false,
+                    south__paneSelector:    ".left-center-footer",
+                    south__size:            'auto',
+                    south__resizable:       false,
+                    south__slidable:        true,
+                    south__spacing_open:    0,
+                    south__spacing_closed:  0,
+                    south__closable:        true,
+                    south__initClosed:      true,
+                    fxName:                 "slideOffscreen",
+                    fxSettings_close:       { duration: 560, easing: "easeInOutQuint" },
+                    fxSettings_open:        { duration: 0 },
+                    enableCursorHotkey:     false,
+                    togglerLength_open:     0
+                });
             }
-            
-            this.layout.leftLayout = $('.left-pane').layout({
-                closable:               false,
-                resizeWhileDragging:    true,
-                fxName:                 "slideOffscreen",
-                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
-                animatePaneSizing:      true,
-                north__paneSelector:    ".left-north",
-                north__size:            37,
-                north__resizeable:      false,
-                north__spacing_open:    0,
-                center__paneSelector:   ".left-center",
-                center__resizable:      false,
-                south__paneSelector:    ".left-south",
-                south__size:            31,
-                south__resizable:       false,
-                enableCursorHotkey:     false,
-                togglerLength_open:     0,
-                south__spacing_open:    0
-            });
-            
-            this.layout.leftCenterLayout = $('.left-center').layout({
-                closable:               false,
-                slidable:               false, 
-                resizeWhileDragging:    true,
-                center__paneSelector:   ".left-center-content",
-                center__resizable:      false,
-                south__paneSelector:    ".left-center-footer",
-                south__size:            'auto',
-                south__resizable:       false,
-                south__slidable:        true,
-                south__spacing_open:    0,
-                south__spacing_closed:  0,
-                south__closable:        true,
-                south__initClosed:      true,
-                fxName:                 "slideOffscreen",
-                fxSettings_close:       { duration: 560, easing: "easeInOutQuint" },
-                fxSettings_open:        { duration: 0 },
-                enableCursorHotkey:     false,
-                togglerLength_open:     0
-            });
-            
+
             if (_.contains(['split', 'full'], 
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
                 var rightLayoutOptions = { 
@@ -414,7 +416,7 @@
                 this.flags['story_titles_closed'] = false;
             }
 
-            if (refresh) {
+            if (options.right_side) {
                 this.$s.$feed_stories.append(feed_stories_bin.children());
                 this.$s.$story_titles.append(story_titles_bin.children());
                 this.resize_window();
@@ -1550,7 +1552,7 @@
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, {'layout': story_layout});
 
             this.set_correct_story_view_for_feed();
-            this.apply_resizable_layout(true);
+            this.apply_resizable_layout({right_side: true});
             
             if (story_layout == 'list') {
                 if (this.active_story) {

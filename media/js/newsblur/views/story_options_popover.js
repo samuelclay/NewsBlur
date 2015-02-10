@@ -313,7 +313,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         }
         NEWSBLUR.assets.preference('story_pane_anchor', setting);
         NEWSBLUR.assets.preference('story_titles_pane_size', pane_size);
-        NEWSBLUR.reader.apply_resizable_layout(true);
+        NEWSBLUR.reader.apply_resizable_layout({right_side: true});
     },
     
     change_single_story: function(e) {
