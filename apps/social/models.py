@@ -1094,8 +1094,21 @@ class MSocialSubscription(mongo.Document):
         rt.expire(unread_ranked_stories_keys, 60*60)
         
         return story_hashes, story_dates, unread_feed_story_hashes
+
+    def mark_newer_stories_read(self, cutoff_date):
+        if (self.unread_count_negative == 0
+            and self.unread_count_neutral == 0
+            and self.unread_count_positive == 0
+            and not self.needs_unread_recalc):
+            return
         
-    def mark_story_ids_as_read(self, story_hashes, feed_id=None, mark_all_read=False, request=None):
+        cutoff_date = cutoff_date - datetime.timedelta(seconds=1)
+        story_hashes = self.get_stories(limit=500, order="newest", cutoff_date=cutoff_date,
+                                        read_filter="unread", hashes_only=True)
+        data = self.mark_story_ids_as_read(story_hashes, aggregated=True)
+        return data
+    
+    def mark_story_ids_as_read(self, story_hashes, feed_id=None, mark_all_read=False, request=None, aggregated=False):
         data = dict(code=0, payload=story_hashes)
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
@@ -1125,7 +1138,7 @@ class MSocialSubscription(mongo.Document):
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
             
             RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares,
-                                 aggregated=mark_all_read)
+                                 aggregated=(mark_all_read or aggregated))
             
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
@@ -1495,11 +1508,12 @@ class MSharedStory(mongo.Document):
         self.delete()
     
     @classmethod
-    def feed_quota(cls, user_id, feed_id, days=1, quota=1):
+    def feed_quota(cls, user_id, feed_id, story_hash, days=1, quota=1):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
         shared_count = cls.objects.filter(user_id=user_id,
                                           shared_date__gte=day_ago, 
-                                          story_feed_id=feed_id).count()
+                                          story_feed_id=feed_id,
+                                          story_hash__nin=[story_hash]).count()
 
         return shared_count >= quota
     

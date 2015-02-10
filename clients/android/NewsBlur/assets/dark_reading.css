@@ -18,3 +18,7 @@ code {
 pre, blockquote {
     background-color: #4C4C4C;
 }
+
+.NB-story > table {
+    background-color: #4C4C4C !important;
+}
