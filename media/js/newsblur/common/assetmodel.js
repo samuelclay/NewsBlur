@@ -1192,6 +1192,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     view_setting: function(feed_id, setting, callback) {
+        if (_.isUndefined(feed_id)) {
+            console.log(['view_setting', feed_id, setting]);
+        }
         if (NEWSBLUR.reader.flags['feed_list_showing_starred'] && 
             setting == 'read_filter') return "starred";
         if (feed_id == "river:global" && setting == "order") return "newest";
