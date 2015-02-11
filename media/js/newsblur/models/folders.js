@@ -317,6 +317,10 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
                 item.folders.update_all_folder_visibility();
             }
         });
+    },
+    
+    view_setting: function(setting) {
+        return NEWSBLUR.assets.view_setting('river:' + (this.get('folder_title') || ''), setting);
     }
 
 }, {

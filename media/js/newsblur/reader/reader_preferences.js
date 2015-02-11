@@ -506,6 +506,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Double-clicking an unread count'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-markreadriverconfirm' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadriverconfirmation-1', type: 'radio', name: 'mark_read_river_confirm', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-markreadriverconfirmation-1' }, [
+                                    'Show confirmation when marking everything read'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadriverconfirm-0', type: 'radio', name: 'mark_read_river_confirm', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-markreadriverconfirm-0' }, [
+                                    'Mark everything as read without confirmation'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Marking All Site Stories as read'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -935,6 +954,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=doubleclick_unread]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.doubleclick_unread) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=mark_read_river_confirm]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.mark_read_river_confirm) {
                 $(this).attr('checked', true);
                 return false;
             }
