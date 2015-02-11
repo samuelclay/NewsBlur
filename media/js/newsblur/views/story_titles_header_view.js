@@ -251,7 +251,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
     mark_folder_as_read: function(e, days_back) {
         if (!this.showing_fake_folder) return;
-        NEWSBLUR.reader.open_mark_read_modal({days: days_back || 0});
+        if (NEWSBLUR.assets.preference('mark_read_river_confirm')) {
+            NEWSBLUR.reader.open_mark_read_modal({days: days_back || 0});
+        } else {
+            NEWSBLUR.reader.mark_folder_as_read();
+        }
         this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
     },
     
