@@ -2196,6 +2196,10 @@ class MStarredStory(mongo.Document):
                                                           stat['stories'])
             if not dryrun and stat['_id']:
                 cls.objects.filter(user_id=stat['_id']).delete()
+            elif not dryrun and stat['_id'] == 0:
+                print " ---> Deleting unstarred stories (user_id = 0)"
+                cls.objects.filter(user_id=stat['_id']).delete()
+                    
         
         print " ---> Deleted %s stories in total." % total
 
