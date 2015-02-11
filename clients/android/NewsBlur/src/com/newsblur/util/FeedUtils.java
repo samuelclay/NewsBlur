@@ -144,6 +144,7 @@ public class FeedUtils {
 
     public static void markFeedsRead(final FeedSet fs, final Long olderThan, final Long newerThan, final Context context) {
         dbHelper.markStoriesRead(fs, olderThan, newerThan);
+        dbHelper.updateLocalFeedCounts(fs);
         NbActivity.updateAllActivities();
         new AsyncTask<Void, Void, Void>() {
             @Override
