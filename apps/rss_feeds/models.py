@@ -1159,7 +1159,7 @@ class Feed(models.Model):
         total = 0
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
-                print "\n\n -------------------------- %s --------------------------\n\n" % feed_id
+                print "\n\n -------------------------- %s (%s deleted so far) --------------------------\n\n" % (feed_id, total)
             try:
                 feed = Feed.objects.get(pk=feed_id)
             except Feed.DoesNotExist:
