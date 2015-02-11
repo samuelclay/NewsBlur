@@ -1435,7 +1435,8 @@
         },
         
         set_correct_story_view_for_feed: function(feed_id, view) {
-            var feed = NEWSBLUR.assets.get_feed(feed_id || this.active_feed);
+            feed_id = feed_id || this.active_feed;
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
             var $original_tabs = $('.task_view_page, .task_view_story');
             var $page_tab = $('.task_view_page');
             view = view || NEWSBLUR.assets.view_setting(feed_id);
