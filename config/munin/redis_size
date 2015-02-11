@@ -30,10 +30,11 @@ class NBMuninGraph(MuninGraph):
     def stats(self):
         r = redis.Redis(self.host)
         info = r.info()
-        dbs = dict([(k, v) for k, v in info.items() if k.startswith('db') and not 'ttl' in k])
+        dbs = dict([(k, v) for k, v in info.items() if k.startswith('db')])
         sizes = {}
         for db, values in dbs.items():
             for key, value in values.items():
+                if key == 'ttl': continue
                 sizes[db+"_"+key] = value
         return sizes
         
