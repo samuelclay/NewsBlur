@@ -304,7 +304,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
     
     scroll: function() {
-        if (NEWSBLUR.assets.flags['no_more_stories'] || NEWSBLUR.reader.flags['opening_feed']) {
+        if (NEWSBLUR.reader.flags['opening_feed']) {
+            return;
+        }
+        if (true ||  NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
+            this.mark_read_stories_above_scroll(scroll_y);
+        }
+        if (NEWSBLUR.assets.flags['no_more_stories']) {
             return;
         }
         
@@ -318,13 +324,29 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (visible_height + scroll_y >= total_height) {
             NEWSBLUR.reader.load_page_of_feed_stories({scroll_to_loadbar: false});
         }
-        if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
-            this.mark_read_stories_above_scroll(scroll_y);
-        }
     },
     
     mark_read_stories_above_scroll: function(scroll_y) {
-        
+        var score = NEWSBLUR.reader.get_unread_view_score();
+        var unread_stories = [];
+        var grid = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid';
+        var point = NEWSBLUR.reader.$s.$story_titles.offset();
+        var offset = grid ? {top: 100, left: 100} : {top: 30, left: 30};
+        var $story_title = $(document.elementFromPoint(point.left + offset.left, 
+                                                       point.top + offset.top
+                           )).closest('.'+NEWSBLUR.Views.StoryTitleView.prototype.className);
+        var topstory = _.detect(this.stories, function(view) {
+            if (view.el == $story_title[0]) return true;
+            if (view.model.get('read_status') == 0 && view.model.score() >= score) {
+                unread_stories.push(view.model);
+            }
+        });
+        if (!topstory) {
+            console.log(['no closest', topstory, $story_title[0], document.elementFromPoint(offset.left + 20, offset.top + 20)]);
+            return;
+        }
+        console.log(['closest', $story_title[0], topstory.model.get('story_title'), unread_stories]);
+        _.invoke(unread_stories, 'mark_read');
     }
     
 });
