@@ -1891,22 +1891,26 @@ a img {
     position: absolute;
     left: 20px;
     top: 0;
-    height: 12px;
+    height: 14px;
     overflow: hidden;
     width: 100px;
     line-height: 1.3em;
 }
 .NB-theme-feed-size-xs #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 9px;
+    height: 12px;
 }
 .NB-theme-feed-size-m #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 11px;
+    height: 15px;
 }
 .NB-theme-feed-size-l #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 12px;    
+    height: 15px;
 }
 .NB-theme-feed-size-xl #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 12px;
+    height: 15px;
 }
 
 #story_titles .NB-story-title.NB-selected .NB-story-feed .feed_title {

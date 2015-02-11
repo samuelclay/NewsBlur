@@ -25,6 +25,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render: function() {
         var template_name = !this.model.get('selected') && this.options.is_grid ? 
                             'grid_template' : 'template';
+        // console.log(['render story title', template_name, this.$el[0]]);
         this.$el.html(this[template_name]({
             story    : this.model,
             feed     : (NEWSBLUR.reader.flags.river_view || NEWSBLUR.reader.flags.social_view) &&
@@ -133,6 +134,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 tagName: 'div',
                 inline_story_title: true
             }).render();
+            // console.log(['render_inline_story_detail', this.$(".NB-story-detail")]);
             this.$(".NB-story-detail").html(this.story_detail.$el);
             this.story_detail.attach_handlers();
         }
@@ -298,7 +300,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$st.toggleClass('NB-selected', !!this.model.get('selected'));
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         
-        if (selected) {
+        if (!!this.model.get('selected')) {
             if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
                 this.render_inline_story_detail();
             }

@@ -75,7 +75,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     override_grid: function() {
         if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') != 'grid') return;
-        console.log(['override_grid', NEWSBLUR.assets.preference('grid_columns')]);
         var columns = NEWSBLUR.assets.preference('grid_columns');
         var $layout = NEWSBLUR.reader.$s.$story_titles;
         $layout.removeClass('NB-grid-columns-1')

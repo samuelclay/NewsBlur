@@ -419,7 +419,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         this.$(".NB-end-line").append($notice);
-        console.log(["append_search_premium_only_notification", this.$(".NB-end-line")]);
+        // console.log(["append_search_premium_only_notification", this.$(".NB-end-line")]);
     },
     
     append_search_premium_only_notification: function() {
