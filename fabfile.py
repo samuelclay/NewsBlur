@@ -1043,10 +1043,10 @@ def setup_db_search():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
+@parallel
 def setup_usage_monitor():
     sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
-    with settings(warn_only=True):
-        sudo('/etc/cron.daily/monitor_disk_usage')
+    sudo('/etc/cron.daily/monitor_disk_usage')
     
 # ================
 # = Setup - Task =
