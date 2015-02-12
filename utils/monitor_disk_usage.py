@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-
-if '/srv/newsblur' not in ' '.join(sys.path):
-    sys.path.append('/srv/newsblur')
+sys.path.append('/srv/newsblur')
 
 import psutil
 import requests
