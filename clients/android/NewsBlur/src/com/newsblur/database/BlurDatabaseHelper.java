@@ -529,6 +529,14 @@ public class BlurDatabaseHelper {
         return result;
     }
 
+    public void updateFeedCounts(String feedId, ContentValues values) {
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
+    }
+
+    public void updateSocialFeedCounts(String feedId, ContentValues values) {
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{feedId});}
+    }
+
     /**
      * Refreshes the counts in the feeds/socialfeeds tables by counting stories in the story table.
      */

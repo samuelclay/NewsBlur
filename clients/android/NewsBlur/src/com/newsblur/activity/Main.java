@@ -74,6 +74,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         super.onResume();
 
         NBSyncService.clearPendingStoryRequest();
+        NBSyncService.flushRecounts();
         NBSyncService.setActivationMode(NBSyncService.ActivationMode.ALL);
         FeedUtils.activateAllStories();
         FeedUtils.clearReadingSession();

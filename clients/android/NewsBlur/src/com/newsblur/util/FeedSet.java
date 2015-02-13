@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.newsblur.network.APIConstants;
+
 /**
  * A subset of one, several, or all NewsBlur feeds or social feeds.  Used to encapsulate the
  * complexity of the fact that social feeds are special and requesting a river of feeds is not
@@ -193,6 +195,26 @@ public class FeedSet implements Serializable {
 
     public String getFolderName() {
         return this.folderName;
+    }
+
+    /**
+     * Gets a flat set of feed IDs that can be passed to API calls that take raw numeric IDs or
+     * social IDs prefixed with "social:". Returns an empty set for feed sets that don't track
+     * unread counts or that are essentially "everything".
+     */
+    public Set<String> getFlatFeedIds() {
+        Set<String> result = new HashSet<String>();
+        if (feeds != null) {
+            for (String id : feeds) {
+                result.add(id);
+            }
+        }
+        if (socialFeeds != null) {
+            for (Map.Entry<String,String> e : socialFeeds.entrySet()) {
+                result.add(APIConstants.VALUE_PREFIX_SOCIAL + e.getKey());
+            }
+        }
+        return result;
     }
 
     private static final String COM_SER_NUL = "NUL";

@@ -20,10 +20,12 @@ import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
+import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
@@ -76,6 +78,7 @@ public class NBSyncService extends Service {
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
     private volatile static boolean HousekeepingRunning = false;
+    private volatile static boolean RecountsRunning = false;
 
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean DoUnreads = false;
@@ -107,6 +110,11 @@ public class NBSyncService extends Service {
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
+
+    /** Feed IDs (API stype) that have been acted upon and need a double-check for counts. */
+    private static Set<FeedSet> RecountCandidates;
+    static { RecountCandidates = new HashSet<FeedSet>(); }
+    private volatile static boolean FlushRecounts = false;
 
     Set<String> orphanFeedIds;
 
@@ -211,6 +219,8 @@ public class NBSyncService extends Service {
             syncPendingFeedStories();
 
             syncMetadata(startId);
+
+            checkRecounts();
 
             unreadsService.start(startId);
 
@@ -368,6 +378,7 @@ public class NBSyncService extends Service {
             FeedPagesSeen.clear();
             FeedStoriesSeen.clear();
             UnreadsService.clearHashes();
+            RecountCandidates.clear();
 
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
 
@@ -452,6 +463,58 @@ public class NBSyncService extends Service {
             NbActivity.updateAllActivities(true);
         }
 
+    }
+
+    /**
+     * See if any feeds have been touched in a way that require us to double-check unread counts;
+     */
+    private void checkRecounts() {
+        if (stopSync()) return;
+        if (!FlushRecounts) return;
+
+        try {
+            if (RecountCandidates.size() < 1) return;
+
+            RecountsRunning = true;
+            NbActivity.updateAllActivities(false);
+
+            // if we are offline, the best we can do is perform a local unread recount and
+            // save the true one for when we go back online.
+            if (!NetworkUtils.isOnline(this)) {
+                for (FeedSet fs : RecountCandidates) {
+                    dbHelper.updateLocalFeedCounts(fs);
+                }
+            } else {
+                Set<String> apiIds = new HashSet<String>();
+                for (FeedSet fs : RecountCandidates) {
+                    apiIds.addAll(fs.getFlatFeedIds());
+                }
+                Log.d(this.getClass().getName(), "IDs to check: " + apiIds);
+                UnreadCountResponse apiResponse = apiManager.getFeedUnreadCounts(apiIds);
+                if ((apiResponse == null) || (apiResponse.isError())) {
+                    Log.w(this.getClass().getName(), "Bad response to feed_unread_count");
+                    return;
+                }
+                if (apiResponse.feeds != null ) {
+                    for (Map.Entry<String,UnreadCountResponse.UnreadMD> entry : apiResponse.feeds.entrySet()) {
+                        dbHelper.updateFeedCounts(entry.getKey(), entry.getValue().getValues());
+                    }
+                }
+                if (apiResponse.socialFeeds != null ) {
+                    for (Map.Entry<String,UnreadCountResponse.UnreadMD> entry : apiResponse.socialFeeds.entrySet()) {
+                        String feedId = entry.getKey().replaceAll(APIConstants.VALUE_PREFIX_SOCIAL, "");
+                        dbHelper.updateSocialFeedCounts(feedId, entry.getValue().getValues());
+                    }
+                }
+                RecountCandidates.clear();
+            }
+        } finally {
+            if (RecountsRunning) {
+                RecountsRunning = false;
+                NbActivity.updateAllActivities(false);
+            }
+            FlushRecounts = false;
+        }
     }
 
     /**
@@ -626,6 +689,10 @@ public class NBSyncService extends Service {
         DoFeedsFolders = true;
     }
 
+    public static void flushRecounts() {
+        FlushRecounts = true;
+    }
+
     /**
      * Tell the service which stories can be activated if received. See ActivationMode.
      */
@@ -693,6 +760,10 @@ public class NBSyncService extends Service {
 
     public static void getOriginalText(String hash) {
         OriginalTextService.addHash(hash);
+    }
+
+    public static void addRecountCandidates(Set<FeedSet> fs) {
+        RecountCandidates.addAll(fs);
     }
 
     public static void softInterrupt() {
