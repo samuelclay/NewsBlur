@@ -517,7 +517,7 @@ public class NBSyncService extends Service {
         } finally {
             if (RecountsRunning) {
                 RecountsRunning = false;
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(true);
             }
             FlushRecounts = false;
         }
