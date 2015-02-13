@@ -307,7 +307,11 @@ public class NBSyncService extends Service {
                 // if we attempted a call and it failed, do not mark the action as done
                 if (response != null) {
                     if (response.isError()) {
-                        continue actionsloop;
+                        if (response.isUserError()) {
+                            Log.d(this.getClass().getName(), "Discarding reading action with user error.");
+                        } else {
+                            continue actionsloop;
+                        }
                     }
                 }
 
