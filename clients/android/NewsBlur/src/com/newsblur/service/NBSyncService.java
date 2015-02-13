@@ -83,9 +83,11 @@ public class NBSyncService extends Service {
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean DoUnreads = false;
     private volatile static boolean HaltNow = false;
-    public volatile static boolean OfflineNow = false;
     private volatile static ActivationMode ActMode = ActivationMode.ALL;
     private volatile static long ModeCutoff = 0L;
+
+    /** Informational flag only, as to whether we were offline last time we cycled. */
+    public volatile static boolean OfflineNow = false;
 
     public volatile static Boolean isPremium = null;
     public volatile static Boolean isStaff = null;
