@@ -83,6 +83,7 @@ public class NBSyncService extends Service {
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean DoUnreads = false;
     private volatile static boolean HaltNow = false;
+    public volatile static boolean OfflineNow = false;
     private volatile static ActivationMode ActMode = ActivationMode.ALL;
     private volatile static long ModeCutoff = 0L;
 
@@ -188,6 +189,7 @@ public class NBSyncService extends Service {
         try {
             if (HaltNow) return;
 
+            OfflineNow = false;
             incrementRunningChild();
             finishConstruction();
 
@@ -475,7 +477,6 @@ public class NBSyncService extends Service {
      * See if any feeds have been touched in a way that require us to double-check unread counts;
      */
     private void checkRecounts() {
-        if (stopSync()) return;
         if (!FlushRecounts) return;
 
         try {
@@ -491,6 +492,7 @@ public class NBSyncService extends Service {
                     dbHelper.updateLocalFeedCounts(fs);
                 }
             } else {
+                if (stopSync()) return;
                 Set<String> apiIds = new HashSet<String>();
                 for (FeedSet fs : RecountCandidates) {
                     apiIds.addAll(fs.getFlatFeedIds());
@@ -641,7 +643,10 @@ public class NBSyncService extends Service {
             return true;
         }
         if (context == null) return false;
-        if (!NetworkUtils.isOnline(context)) return true;
+        if (!NetworkUtils.isOnline(context)) {
+            OfflineNow = true;
+            return true;
+        }
         return false;
     }
 
@@ -684,6 +689,7 @@ public class NBSyncService extends Service {
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
         if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
+        if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
         return null;
     }
 
