@@ -189,7 +189,6 @@ public class NBSyncService extends Service {
         try {
             if (HaltNow) return;
 
-            OfflineNow = false;
             incrementRunningChild();
             finishConstruction();
 
@@ -202,6 +201,11 @@ public class NBSyncService extends Service {
                 // if the UI is running, run just one step below normal priority so we don't step on async tasks that are updating the UI
                 Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
             }
+
+            if (OfflineNow) {
+                NbActivity.updateAllActivities(false);
+            }
+            OfflineNow = false;   
 
             // do this even if background syncs aren't enabled, because it absolutely must happen
             // on all devices
