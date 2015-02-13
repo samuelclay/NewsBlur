@@ -91,6 +91,7 @@ public class NBSyncService extends Service {
 
     private volatile static boolean isMemoryLow = false;
     private static long lastFeedCount = 0L;
+    private static long lastFFReadMillis = 0L;
     private static long lastFFWriteMillis = 0L;
 
     /** Feed set that we need to sync immediately for the UI. */
@@ -393,6 +394,7 @@ public class NBSyncService extends Service {
                 return;
             }
 
+            lastFFReadMillis = feedResponse.readTime;
             long startTime = System.currentTimeMillis();
 
             isPremium = feedResponse.isPremium;
@@ -811,7 +813,7 @@ public class NBSyncService extends Service {
 
     public static String getSpeedInfo() {
         StringBuilder s = new StringBuilder();
-        s.append(lastFeedCount).append(" in ").append(lastFFWriteMillis);
+        s.append(lastFeedCount).append(" in ").append(lastFFReadMillis).append(" and ").append(lastFFWriteMillis);
         return s.toString();
     }
 

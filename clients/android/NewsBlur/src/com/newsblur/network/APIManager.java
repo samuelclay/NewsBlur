@@ -378,7 +378,9 @@ public class APIManager {
         }
 
 		// note: this response is complex enough, we have to do a custom parse in the FFR
-        return new FeedFolderResponse(response.getResponseBody(), gson);
+        FeedFolderResponse result = new FeedFolderResponse(response.getResponseBody(), gson);
+        result.readTime = response.readTime;
+        return result;
 	}
 
 	public NewsBlurResponse trainClassifier(String feedId, String key, int type, int action) {

@@ -29,6 +29,7 @@ public class APIResponse {
     private String errorMessage;
 	private String cookie;
     private String responseBody;
+    public long readTime;
 
     /**
      * Construct an online response.  Will test the response for errors and extract all the
@@ -75,9 +76,11 @@ public class APIResponse {
             Reader reader = new InputStreamReader(connection.getInputStream());
             char[] chunk = new char[1024];
             int len;
+            long startTime = System.currentTimeMillis();
             while ( (len = reader.read(chunk)) > 0) {
                 builder.append(chunk, 0, len);
             }
+            readTime = System.currentTimeMillis() - startTime;
             this.responseBody = builder.toString();
         } catch (Exception e) {
             Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + originalUrl, e);
@@ -143,7 +146,9 @@ public class APIResponse {
         } else {
             // otherwise, parse the response as the expected class and defer error detection
             // to the NewsBlurResponse parent class
-            return gson.fromJson(this.responseBody, classOfT);
+            T response = gson.fromJson(this.responseBody, classOfT);
+            response.readTime = readTime;
+            return response;
         }
     }
 
