@@ -203,9 +203,9 @@ public class NBSyncService extends Service {
             }
 
             if (OfflineNow) {
+                OfflineNow = false;   
                 NbActivity.updateAllActivities(false);
             }
-            OfflineNow = false;   
 
             // do this even if background syncs aren't enabled, because it absolutely must happen
             // on all devices
