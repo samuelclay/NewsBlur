@@ -99,6 +99,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private float overlayRangeTopPx;
     private float overlayRangeBotPx;
 
+    private int lastVScrollPos = 0;
+
     private List<Story> pageHistory;
 
     protected DefaultFeedView defaultFeedView;
@@ -377,9 +379,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     public void scrollChanged(int hPos, int vPos, int currentWidth, int currentHeight) {
-        // only update overlay alpha about half the time. modern screens are so dense that it
+        // only update overlay alpha every few pixels. modern screens are so dense that it
         // is way overkill to do it on every pixel
-        if (vPos % 2 == 1) return;
+        if (Math.abs(lastVScrollPos-vPos) < 2) return;
+        lastVScrollPos = vPos;
 
         int scrollMax = currentHeight - contentView.getMeasuredHeight();
         int posFromBot = (scrollMax - vPos);
