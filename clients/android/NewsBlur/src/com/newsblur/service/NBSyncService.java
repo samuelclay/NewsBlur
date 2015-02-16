@@ -34,6 +34,7 @@ import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
@@ -491,6 +492,19 @@ public class NBSyncService extends Service {
             RecountsRunning = true;
             NbActivity.updateAllActivities(false);
 
+            // of all candidate feeds that were touched, now check to see if
+            // any of them have mismatched local and remote counts we need to reconcile
+            Set<FeedSet> dirtySets = new HashSet<FeedSet>();
+            for (FeedSet fs : RecountCandidates) {
+                if (dbHelper.getUnreadCount(fs, StateFilter.SOME) != dbHelper.getLocalUnreadCount(fs, StateFilter.SOME)) {
+                    dirtySets.add(fs);
+                }
+            }
+            if (dirtySets.size() < 1) {
+                RecountCandidates.clear();
+                return;
+            }
+
             // if we are offline, the best we can do is perform a local unread recount and
             // save the true one for when we go back online.
             if (!NetworkUtils.isOnline(this)) {
@@ -503,7 +517,6 @@ public class NBSyncService extends Service {
                 for (FeedSet fs : RecountCandidates) {
                     apiIds.addAll(fs.getFlatFeedIds());
                 }
-                Log.d(this.getClass().getName(), "IDs to check: " + apiIds);
 
                 // if any reading activities are pending, it makes no sense to recount yet
                 if (dbHelper.getActions(false).getCount() > 0) return;
@@ -782,6 +795,12 @@ public class NBSyncService extends Service {
 
     public static void getOriginalText(String hash) {
         OriginalTextService.addHash(hash);
+    }
+
+    public static void addRecountCandidates(FeedSet fs) {
+        if (fs != null) {
+            RecountCandidates.add(fs);
+        }
     }
 
     public static void addRecountCandidates(Set<FeedSet> fs) {
