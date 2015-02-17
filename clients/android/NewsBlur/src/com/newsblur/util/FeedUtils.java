@@ -133,16 +133,20 @@ public class FeedUtils {
         story.read = read;
         
         // update unread state and unread counts in the local DB
-        dbHelper.setStoryReadState(story, read);
+        Set<FeedSet> impactedFeeds = dbHelper.setStoryReadState(story, read);
         NbActivity.updateAllActivities();
 
         // tell the sync service we need to mark read
         ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
         dbHelper.enqueueAction(ra);
         triggerSync(context);
+        NBSyncService.addRecountCandidates(impactedFeeds);
     }
 
     public static void markFeedsRead(final FeedSet fs, final Long olderThan, final Long newerThan, final Context context) {
+        dbHelper.markStoriesRead(fs, olderThan, newerThan);
+        dbHelper.updateLocalFeedCounts(fs);
+        NbActivity.updateAllActivities();
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
@@ -153,8 +157,6 @@ public class FeedUtils {
                     FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllFeeds());
                     ra = ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan);
                 }
-                dbHelper.markStoriesRead(fs, olderThan, newerThan);
-                NbActivity.updateAllActivities();
                 dbHelper.enqueueAction(ra);
                 triggerSync(context);
                 return null;

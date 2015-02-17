@@ -19,6 +19,9 @@ public class LogoutDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 PrefsUtils.logout(getActivity());
+                // make sure the instance of Main that called us is killed now, or else the system
+                // might try to recycle it with a stale login ID, which will cause it to self-destruct
+                getActivity().finish();
             }
         });
         builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {

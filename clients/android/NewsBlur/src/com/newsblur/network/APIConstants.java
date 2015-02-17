@@ -25,6 +25,7 @@ public class APIConstants {
 	public static final String URL_SHARED_RIVER_STORIES = NEWSBLUR_URL + "/social/river_stories";
 	
 	public static final String URL_FEED_STORIES = NEWSBLUR_URL + "/reader/feed";
+	public static final String URL_FEED_UNREAD_COUNT = NEWSBLUR_URL + "/reader/feed_unread_count";
 	public static final String URL_SOCIALFEED_STORIES = NEWSBLUR_URL + "/social/stories";
 	public static final String URL_SIGNUP = NEWSBLUR_URL + "/api/signup";
 	public static final String URL_MARK_FEED_AS_READ = NEWSBLUR_URL + "/reader/mark_feed_as_read/";

@@ -74,6 +74,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         super.onResume();
 
         NBSyncService.clearPendingStoryRequest();
+        NBSyncService.flushRecounts();
         NBSyncService.setActivationMode(NBSyncService.ActivationMode.ALL);
         FeedUtils.activateAllStories();
         FeedUtils.clearReadingSession();
@@ -155,12 +156,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		folderFeedList.changeState(state);
 	}
 	
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == RESULT_OK) {
-			folderFeedList.hasUpdated();
-		}
-	}
-
     @Override
 	public void handleUpdate(boolean freshData) {
         updateStatusIndicators();

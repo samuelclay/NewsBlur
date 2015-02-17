@@ -21,6 +21,8 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 
 public class FeedFolderResponse {
+    
+    public long readTime;
 	
 	@SerializedName("starred_count")
 	public int starredCount;

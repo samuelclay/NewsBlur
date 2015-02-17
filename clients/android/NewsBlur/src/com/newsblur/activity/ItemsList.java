@@ -81,6 +81,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         itemListFragment.hasUpdated();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        NBSyncService.addRecountCandidates(fs);
+    }
+
 	public void markItemListAsRead() {
         FeedUtils.markFeedsRead(fs, null, null, this);
         Toast.makeText(this, R.string.toast_marked_stories_as_read, Toast.LENGTH_SHORT).show();
