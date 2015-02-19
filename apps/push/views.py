@@ -39,7 +39,7 @@ def push_callback(request, push_id):
         return HttpResponse(challenge, content_type='text/plain')
     elif request.method == 'POST':
         subscription = get_object_or_404(PushSubscription, pk=push_id)
-        fetch_history = MFetchHistory.feed(push_id)
+        fetch_history = MFetchHistory.feed(subscription.feed_id)
         latest_push_date_delta = None
         if fetch_history and fetch_history.get('push_history'):
             latest_push = fetch_history['push_history'][0]['push_date']
