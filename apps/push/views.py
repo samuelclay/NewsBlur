@@ -41,9 +41,10 @@ def push_callback(request, push_id):
         subscription = get_object_or_404(PushSubscription, pk=push_id)
         fetch_history = MFetchHistory.feed(push_id)
         if fetch_history and fetch_history.get('push_history'):
-            last_push_date = fetch_history['push_history'][0]['push_date']
-            if last_push_date > datetime.datetime.now() - datetime.timedelta(minutes=1):
-                delta = datetime.datetime.now() - last_push_date
+            latest_push = fetch_history['push_history'][0]['push_date']
+            latest_push_date = datetime.datetime.strptime(latest_push, '%Y-%m-%d %H:%M:%S')
+            if latest_push > datetime.datetime.now() - datetime.timedelta(minutes=1):
+                delta = datetime.datetime.now() - latest_push
                 logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], delta.seconds))
                 
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
