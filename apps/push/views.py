@@ -44,8 +44,8 @@ def push_callback(request, push_id):
         if fetch_history and fetch_history.get('push_history'):
             latest_push = fetch_history['push_history'][0]['push_date']
             latest_push_date = datetime.datetime.strptime(latest_push, '%Y-%m-%d %H:%M:%S')
+            latest_push_date_delta = datetime.datetime.now() - latest_push_date
             if latest_push_date > datetime.datetime.now() - datetime.timedelta(minutes=1):
-                latest_push_date_delta = datetime.datetime.now() - latest_push_date
                 logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], latest_push_date_delta.seconds))
                 return HttpResponse('Slow down, you just pushed %s seconds ago...' % latest_push_date_delta.seconds)
                 
