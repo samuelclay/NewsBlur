@@ -1574,6 +1574,9 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         queue_size = r.llen("push_feeds")
         
+        if latest_push_date_delta:
+            latest_push_date_delta = "%s" % str(latest_push_date_delta).split('.', 2))[0]
+
         if queue_size > 1000:
             self.schedule_feed_fetch_immediately()
         else:
