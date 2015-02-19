@@ -1333,7 +1333,8 @@ class Feed(models.Model):
         fcat = [strip_tags(t)[:250] for t in fcat[:12]]
         return fcat
     
-    def get_permalink(self, entry):
+    @classmethod
+    def get_permalink(cls, entry):
         link = entry.get('link')
         if not link:
             links = entry.get('links')
