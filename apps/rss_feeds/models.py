@@ -1575,7 +1575,7 @@ class Feed(models.Model):
         queue_size = r.llen("push_feeds")
         
         if latest_push_date_delta:
-            latest_push_date_delta = "%s" % str(latest_push_date_delta).split('.', 2))[0]
+            latest_push_date_delta = "%s" % str(latest_push_date_delta).split('.', 2)[0]
 
         if queue_size > 1000:
             self.schedule_feed_fetch_immediately()
