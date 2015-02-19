@@ -2,6 +2,7 @@
 
 import feedparser
 import random
+import datetime
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
@@ -38,6 +39,13 @@ def push_callback(request, push_id):
         return HttpResponse(challenge, content_type='text/plain')
     elif request.method == 'POST':
         subscription = get_object_or_404(PushSubscription, pk=push_id)
+        fetch_history = MFetchHistory.feed(push_id)
+        if fetch_history and fetch_history.get('push_history'):
+            last_push_date = fetch_history['push_history'][0]['push_date']
+            if last_push_date > datetime.datetime.now() - datetime.timedelta(minutes=1):
+                delta = datetime.datetime.now() - last_push_date
+                logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], delta.seconds))
+                
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
         # the hub_url or topic has changed. ElementTree could do it.
         if random.random() < 0.1:
@@ -53,5 +61,5 @@ def push_callback(request, push_id):
         else:
             logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, no actives: %s' % (unicode(subscription.feed)[:30], subscription.feed))
         
-        return HttpResponse('')
+        return HttpResponse('OK')
     return Http404
