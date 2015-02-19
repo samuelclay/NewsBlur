@@ -1570,14 +1570,14 @@ class Feed(models.Model):
             self.is_push = push.verified
         self.save()
     
-    def queue_pushed_feed_xml(self, xml):
+    def queue_pushed_feed_xml(self, xml, latest_push_date_delta=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         queue_size = r.llen("push_feeds")
         
         if queue_size > 1000:
             self.schedule_feed_fetch_immediately()
         else:
-            logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
+            logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories, last fetched %s...' % (unicode(self)[:30], self.pk, latest_push_date_delta))
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     

@@ -40,12 +40,13 @@ def push_callback(request, push_id):
     elif request.method == 'POST':
         subscription = get_object_or_404(PushSubscription, pk=push_id)
         fetch_history = MFetchHistory.feed(push_id)
+        latest_push_date_delta = None
         if fetch_history and fetch_history.get('push_history'):
             latest_push = fetch_history['push_history'][0]['push_date']
             latest_push_date = datetime.datetime.strptime(latest_push, '%Y-%m-%d %H:%M:%S')
             if latest_push_date > datetime.datetime.now() - datetime.timedelta(minutes=1):
-                delta = datetime.datetime.now() - latest_push_date
-                logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], delta.seconds))
+                latest_push_date_delta = datetime.datetime.now() - latest_push_date
+                logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], latest_push_date_delta.seconds))
                 
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
         # the hub_url or topic has changed. ElementTree could do it.
@@ -56,7 +57,7 @@ def push_callback(request, push_id):
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
         if subscription.feed.active_premium_subscribers >= 1:
-            subscription.feed.queue_pushed_feed_xml("Fetch me")
+            subscription.feed.queue_pushed_feed_xml("Fetch me", latest_push_date_delta=latest_push_date_delta)
             MFetchHistory.add(feed_id=subscription.feed_id, 
                               fetch_type='push')
         else:
