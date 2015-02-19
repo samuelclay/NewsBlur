@@ -47,6 +47,7 @@ def push_callback(request, push_id):
             if latest_push_date > datetime.datetime.now() - datetime.timedelta(minutes=1):
                 latest_push_date_delta = datetime.datetime.now() - latest_push_date
                 logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], latest_push_date_delta.seconds))
+                return HttpResponse('Slow down, you just pushed %s seconds ago...' % latest_push_date_delta.seconds)
                 
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
         # the hub_url or topic has changed. ElementTree could do it.
