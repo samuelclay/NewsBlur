@@ -1159,7 +1159,7 @@ class Feed(models.Model):
         total = 0
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
-                print "\n\n -------------------------- %s --------------------------\n\n" % feed_id
+                print "\n\n -------------------------- %s (%s deleted so far) --------------------------\n\n" % (feed_id, total)
             try:
                 feed = Feed.objects.get(pk=feed_id)
             except Feed.DoesNotExist:
@@ -1333,7 +1333,8 @@ class Feed(models.Model):
         fcat = [strip_tags(t)[:250] for t in fcat[:12]]
         return fcat
     
-    def get_permalink(self, entry):
+    @classmethod
+    def get_permalink(cls, entry):
         link = entry.get('link')
         if not link:
             links = entry.get('links')
@@ -2196,6 +2197,10 @@ class MStarredStory(mongo.Document):
                                                           stat['stories'])
             if not dryrun and stat['_id']:
                 cls.objects.filter(user_id=stat['_id']).delete()
+            elif not dryrun and stat['_id'] == 0:
+                print " ---> Deleting unstarred stories (user_id = 0)"
+                cls.objects.filter(user_id=stat['_id']).delete()
+                    
         
         print " ---> Deleted %s stories in total." % total
 

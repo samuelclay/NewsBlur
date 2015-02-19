@@ -110,26 +110,14 @@
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_fullscreen">Full screen</string>
-
-    <string name="toast_error_loading_stories">Error loading stories</string>
     
     <string name="toast_marked_stories_as_read">Stories marked as read</string>
-    
-    <string name="toast_error_marking_feed_as_read">Error marking feed as read. Check your internet connection.</string>
-
-    <string name="toast_story_saved">Story saved</string>
-    <string name="toast_story_save_error">Error marking story as saved.</string>
-    <string name="toast_story_unsaved">Story unsaved</string>
-    <string name="toast_story_unsave_error">Error marking story as unsaved.</string>
 
     <string name="toast_story_unread">Story marked as unread</string>
-    <string name="toast_story_unread_error">Error marking story as unread</string>
-    <string name="toast_story_read_error">Error marking story as unread</string>
 
     <string name="toast_unread_search_error">Could not load next unread story</string>
 
     <string name="toast_feed_deleted">Feed deleted</string>
-    <string name="toast_feed_delete_error">There was an error deleting the feed.</string>
     
     <string name="logout_warning">Are you sure you want to log out?</string>
     
@@ -148,7 +136,6 @@
     <string name="empty_list_view_no_stories">No stories to read</string>
     
     <string name="login_registration_register">Register</string>
-    <string name="add_sites">Add some sites</string>
     <string name="get_started">Let\'s get started</string>
     <string name="add_friends">Add your friends</string>
     <string name="connect_with_your_friends">Connect with your friends to easily follow the stories that matter to them</string>
@@ -159,11 +146,6 @@
     <string name="add_facebook">Add Facebook friends</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
-    <string name="wonderful_things">Wonderful things are happening at NewsBlur. Add our blog for the latest news.</string>
-    <string name="addfollow_add_newsblur">Follow the NewsBlur blog</string>
-    <string name="addfollow_add_popular">Follow Popular Stories</string>
-    <string name="add_follow">All Done!</string>
-    <string name="share_with_comments">Share with comments</string>
     <string name="share_this_story">Share this story</string>
     <string name="comment_favourited">Comment favorited</string>
     <string name="error_liking_comment">Error favoriting comment</string>
@@ -260,6 +242,7 @@
     <string name="sync_status_unreads">Storing%sunread stories...</string>
     <string name="sync_status_text">Storing text for %s stories...</string>
     <string name="sync_status_images">Storing %s images...</string>
+    <string name="sync_status_offline">Offline</string>
 
     <string name="volume_key_navigation">Volume Key Navigation</string>
     <string name="off">Off</string>

@@ -1,21 +1,12 @@
 package com.newsblur.activity;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.database.DatabaseConstants;
 import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;

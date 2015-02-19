@@ -91,6 +91,7 @@ public class PrefsUtils {
         } else {
             s.append("unknown");
         }
+        s.append("%0Aprefetch: ").append(isOfflineEnabled(context) ? "yes" : "no");
         return s.toString();
     }
 

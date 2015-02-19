@@ -1,9 +1,10 @@
 package com.newsblur.network;
 
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -28,6 +29,7 @@ public class APIResponse {
     private String errorMessage;
 	private String cookie;
     private String responseBody;
+    public long readTime;
 
     /**
      * Construct an online response.  Will test the response for errors and extract all the
@@ -71,8 +73,14 @@ public class APIResponse {
 
         try {
             StringBuilder builder = new StringBuilder();
-            Scanner scanner = new Scanner(connection.getInputStream(), "UTF-8");
-            while (scanner.hasNextLine()) { builder.append(scanner.nextLine()); }
+            Reader reader = new InputStreamReader(connection.getInputStream());
+            char[] chunk = new char[1024];
+            int len;
+            long startTime = System.currentTimeMillis();
+            while ( (len = reader.read(chunk)) > 0) {
+                builder.append(chunk, 0, len);
+            }
+            readTime = System.currentTimeMillis() - startTime;
             this.responseBody = builder.toString();
         } catch (Exception e) {
             Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + originalUrl, e);
@@ -81,16 +89,23 @@ public class APIResponse {
             return;
         }
 
-        if (AppConstants.VERBOSE_LOG_NET) {
-            Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
-        }
-
         try {
             connection.disconnect();
         } catch (Exception e) {
             Log.e(this.getClass().getName(), e.getClass().getName() + " caught closing connection: " + e.getMessage(), e);
         }
-        
+
+        if (AppConstants.VERBOSE_LOG_NET) {
+            // the default kernel truncates log lines. split by something we probably have, like a json delim
+            if (responseBody.length() < 2048) {
+                Log.d(this.getClass().getName(), "API response: \n" + this.responseBody);
+            } else {
+                Log.d(this.getClass().getName(), "API response: ");
+                for (String s : TextUtils.split(responseBody, "\\}")) {
+                    Log.d(this.getClass().getName(), s + "}");
+                }
+            }
+        }
     }
 
     /**
@@ -131,7 +146,9 @@ public class APIResponse {
         } else {
             // otherwise, parse the response as the expected class and defer error detection
             // to the NewsBlurResponse parent class
-            return gson.fromJson(this.responseBody, classOfT);
+            T response = gson.fromJson(this.responseBody, classOfT);
+            response.readTime = readTime;
+            return response;
         }
     }
 

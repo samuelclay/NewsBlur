@@ -15,7 +15,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="3dp"
+        android:padding="2dp"
         android:textSize="14sp"
         android:gravity="center"
         android:textColor="@color/status_overlay_text"

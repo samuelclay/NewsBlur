@@ -583,7 +583,7 @@ def setup_ulimit():
     sudo('sysctl -p')
     sudo('ulimit -n 100000')
     connections.connect(env.host_string)
-
+    
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
 
@@ -881,6 +881,9 @@ def setup_mongo():
     sudo('/etc/init.d/mongodb restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
+    # Reclaim 5% disk space used for root logs. Set to 1%.
+    sudo('tune2fs -m 1 /dev/vda')
+
 def setup_mongo_configsvr():
     sudo('mkdir -p /var/lib/mongodb_configsvr')
     sudo('chown mongodb.mongodb /var/lib/mongodb_configsvr')
@@ -1039,6 +1042,11 @@ def setup_db_search():
     put('config/supervisor_celeryd_search_indexer_tasker.conf', '/etc/supervisor/conf.d/celeryd_search_indexer_tasker.conf', use_sudo=True)
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
+
+@parallel
+def setup_usage_monitor():
+    sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.daily/monitor_disk_usage')
     
 # ================
 # = Setup - Task =

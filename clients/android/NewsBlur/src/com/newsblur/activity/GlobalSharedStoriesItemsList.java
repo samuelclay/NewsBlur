@@ -1,7 +1,6 @@
 package com.newsblur.activity;
 
 import android.app.FragmentTransaction;
-import android.content.ContentResolver;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,16 +16,12 @@ import com.newsblur.util.StoryOrder;
 
 public class GlobalSharedStoriesItemsList extends ItemsList {
 
-	private ContentResolver resolver;
-
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
 		setTitle(getResources().getString(R.string.global_shared_stories));
 
-		resolver = getContentResolver();
-		
 		itemListFragment = (GlobalSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(GlobalSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = GlobalSharedStoriesItemListFragment.newInstance(getDefaultFeedView(), currentState);

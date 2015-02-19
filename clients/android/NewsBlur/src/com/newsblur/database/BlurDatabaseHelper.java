@@ -355,33 +355,25 @@ public class BlurDatabaseHelper {
         }
     }
 
+    /**
+     * Marks a story (un)read but does not adjust counts.
+     */
     public void setStoryReadState(String hash, boolean read) {
-        Cursor c = getStory(hash);
-        if (c.getCount() < 1) {
-            Log.w(this.getClass().getName(), "story removed before finishing mark-read");
-            return;
-        }
-        Story story = Story.fromCursor(c);
-        if (story == null) {
-            Log.w(this.getClass().getName(), "story removed before finishing mark-read");
-            return;
-        }
-        setStoryReadState(story, read);
-        
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_READ, read);
+        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
     /**
      * Marks a story (un)read and also adjusts unread counts for it.
+     *
+     * @return the set of feed IDs that potentially have counts impacted by the mark.
      */
-    public void setStoryReadState(Story story, boolean read) {
-        // read flag
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_READ, read);
-        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{story.storyHash});}
-        // non-social feed count
-        refreshFeedCounts(FeedSet.singleFeed(story.feedId));
-        // social feed counts
+    public Set<FeedSet> setStoryReadState(Story story, boolean read) {
+        // calculate the impact surface so the caller can re-check counts if needed
+        Set<FeedSet> impactedFeeds = new HashSet<FeedSet>();
+        impactedFeeds.add(FeedSet.singleFeed(story.feedId));
         Set<String> socialIds = new HashSet<String>();
         if (!TextUtils.isEmpty(story.socialUserId)) {
             socialIds.add(story.socialUserId);
@@ -392,10 +384,73 @@ public class BlurDatabaseHelper {
             }
         }
         if (socialIds.size() > 0) {
-            refreshFeedCounts(FeedSet.multipleSocialFeeds(socialIds));
+            impactedFeeds.add(FeedSet.multipleSocialFeeds(socialIds));
         }
+        // check the story's starting state and the desired state and adjust it as an atom so we
+        // know if it truly changed or not
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                // get a fresh copy of the story from the DB so we know if it changed
+                Cursor c = dbRW.query(DatabaseConstants.STORY_TABLE, 
+                                      new String[]{DatabaseConstants.STORY_READ}, 
+                                      DatabaseConstants.STORY_HASH + " = ?", 
+                                      new String[]{story.storyHash}, 
+                                      null, null, null);
+                if (c.getCount() < 1) {
+                    Log.w(this.getClass().getName(), "story removed before finishing mark-read");
+                    return impactedFeeds;
+                }
+                c.moveToFirst();
+                boolean origState = (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.STORY_READ)) > 0);
+                c.close();
+                // if there is nothing to be done, halt
+                if (origState == read) {
+                    dbRW.setTransactionSuccessful();
+                    return impactedFeeds;
+                }
+                // update the story's read state
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.STORY_READ, read);
+                values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
+                dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{story.storyHash});
+                // which column to inc/dec depends on story intel
+                String impactedCol;
+                String impactedSocialCol;
+                if (story.intelTotal < 0) {
+                    // negative stories don't affect counts
+                    dbRW.setTransactionSuccessful();
+                    return impactedFeeds;
+                } else if (story.intelTotal == 0 ) {
+                    impactedCol = DatabaseConstants.FEED_NEUTRAL_COUNT;
+                    impactedSocialCol = DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT;
+                } else {
+                    impactedCol = DatabaseConstants.FEED_POSITIVE_COUNT;
+                    impactedSocialCol = DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT;
+                }
+                String operator = (read ? " - 1" : " + 1");
+                StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.FEED_TABLE);
+                q.append(" SET ").append(impactedCol).append(" = ").append(impactedCol).append(operator);
+                q.append(" WHERE " + DatabaseConstants.FEED_ID + " = ").append(story.feedId);
+                dbRW.execSQL(q.toString());
+                for (String socialId : socialIds) {
+                    q = new StringBuilder("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE);
+                    q.append(" SET ").append(impactedSocialCol).append(" = ").append(impactedSocialCol).append(operator);
+                    q.append(" WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = ").append(socialId);
+                    dbRW.execSQL(q.toString());
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+        return impactedFeeds;
     }
 
+    /**
+     * Marks a range of stories in a subset of feeds as read. Does not update unread counts;
+     * the caller must use updateLocalFeedCounts() or the /reader/feed_unread_count API.
+     */
     public void markStoriesRead(FeedSet fs, Long olderThan, Long newerThan) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, true);
@@ -419,14 +474,73 @@ public class BlurDatabaseHelper {
             throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
         }
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);}
+    }
 
-        refreshFeedCounts(fs);
+    /**
+     * Get the unread count for the given feedset based on the totals in the feeds table.
+     */
+    public int getUnreadCount(FeedSet fs, StateFilter stateFilter) {
+        if (fs.isAllNormal()) {
+            return getFeedsUnreadCount(stateFilter, null, null);
+        } else if (fs.isAllSocial()) {
+            //return getSocialFeedsUnreadCount(stateFilter, null, null);
+            // even though we can count up and total the unreads in social feeds, the API doesn't vend
+            // unread status for stories viewed when reading All Shared Stories, so force this to 0.
+            return 0;
+        } else if (fs.getMultipleFeeds() != null) { 
+            StringBuilder selection = new StringBuilder(DatabaseConstants.FEED_ID + " IN ( ");
+            selection.append(TextUtils.join(",", fs.getMultipleFeeds())).append(")");
+            return getFeedsUnreadCount(stateFilter, selection.toString(), null);
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            StringBuilder selection = new StringBuilder(DatabaseConstants.SOCIAL_FEED_ID + " IN ( ");
+            selection.append(TextUtils.join(",", fs.getMultipleFeeds())).append(")");
+            return getSocialFeedsUnreadCount(stateFilter, selection.toString(), null);
+        } else if (fs.getSingleFeed() != null) {
+            return getFeedsUnreadCount(stateFilter, DatabaseConstants.FEED_ID + " = ?", new String[]{fs.getSingleFeed()});
+        } else if (fs.getSingleSocialFeed() != null) {
+            return getSocialFeedsUnreadCount(stateFilter, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{fs.getSingleSocialFeed().getKey()});
+        } else {
+            // all other types of view don't track unreads correctly
+            return 0;
+        }
+    }
+
+    private int getFeedsUnreadCount(StateFilter stateFilter, String selection, String[] selArgs) {
+        int result = 0;
+        Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null, selection, selArgs, null, null, null);
+        while (c.moveToNext()) {
+            Feed f = Feed.fromCursor(c);
+            result += f.positiveCount;
+            if ((stateFilter == StateFilter.SOME) || (stateFilter == StateFilter.ALL)) result += f.neutralCount;
+            if (stateFilter == StateFilter.ALL) result += f.negativeCount;
+        }
+        return result;
+    }
+
+    private int getSocialFeedsUnreadCount(StateFilter stateFilter, String selection, String[] selArgs) {
+        int result = 0;
+        Cursor c = dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, selArgs, null, null, null);
+        while (c.moveToNext()) {
+            SocialFeed f = SocialFeed.fromCursor(c);
+            result += f.positiveCount;
+            if ((stateFilter == StateFilter.SOME) || (stateFilter == StateFilter.ALL)) result += f.neutralCount;
+            if (stateFilter == StateFilter.ALL) result += f.negativeCount;
+        }
+        return result;
+    }
+
+    public void updateFeedCounts(String feedId, ContentValues values) {
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
+    }
+
+    public void updateSocialFeedCounts(String feedId, ContentValues values) {
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{feedId});}
     }
 
     /**
      * Refreshes the counts in the feeds/socialfeeds tables by counting stories in the story table.
      */
-    public void refreshFeedCounts(FeedSet fs) {
+    public void updateLocalFeedCounts(FeedSet fs) {
         // decompose the FeedSet into a list of single feeds that need to be recounted
         List<String> feedIds = new ArrayList<String>();
         List<String> socialFeedIds = new ArrayList<String>();
@@ -450,23 +564,26 @@ public class BlurDatabaseHelper {
         for (String feedId : feedIds) {
             FeedSet singleFs = FeedSet.singleFeed(feedId);
             ContentValues values = new ContentValues();
-            values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
-            values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
-            values.put(DatabaseConstants.FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
+            values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, getLocalUnreadCount(singleFs, StateFilter.NEG));
+            values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, getLocalUnreadCount(singleFs, StateFilter.NEUT));
+            values.put(DatabaseConstants.FEED_POSITIVE_COUNT, getLocalUnreadCount(singleFs, StateFilter.BEST));
             synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
         }
 
         for (String socialId : socialFeedIds) {
             FeedSet singleFs = FeedSet.singleSocialFeed(socialId, "");
             ContentValues values = new ContentValues();
-            values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, getUnreadCount(singleFs, StateFilter.NEG));
-            values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, getUnreadCount(singleFs, StateFilter.NEUT));
-            values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, getUnreadCount(singleFs, StateFilter.BEST));
+            values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, getLocalUnreadCount(singleFs, StateFilter.NEG));
+            values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, getLocalUnreadCount(singleFs, StateFilter.NEUT));
+            values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, getLocalUnreadCount(singleFs, StateFilter.BEST));
             synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{socialId});}
         }
     }
 
-    public int getUnreadCount(FeedSet fs, StateFilter stateFilter) {
+    /**
+     * Get the unread count for the given feedset based on local story state.
+     */
+    public int getLocalUnreadCount(FeedSet fs, StateFilter stateFilter) {
         Cursor c = getStoriesCursor(fs, stateFilter, ReadFilter.PURE_UNREAD, null, null);
         int count = c.getCount();
         c.close();
@@ -484,12 +601,6 @@ public class BlurDatabaseHelper {
 
     public void clearAction(String actionId) {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});}
-    }
-
-    public Cursor getStory(String hash) {
-        String q = "SELECT * FROM " + DatabaseConstants.STORY_TABLE +
-                   " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
-        return dbRO.rawQuery(q, new String[]{hash});
     }
 
     public void setStoryStarred(String hash, boolean starred) {

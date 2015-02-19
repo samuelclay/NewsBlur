@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -38,6 +38,7 @@ import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
+import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.ClassifierMapTypeAdapter;
@@ -58,12 +59,10 @@ public class APIManager {
 
 	private Context context;
 	private Gson gson;
-	private ContentResolver contentResolver;
     private String customUserAgent;
 
 	public APIManager(final Context context) {
 		this.context = context;
-		this.contentResolver = context.getContentResolver();
 
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateStringTypeAdapter())
@@ -246,6 +245,15 @@ public class APIManager {
 		}
 	}
 
+    public UnreadCountResponse getFeedUnreadCounts(Set<String> apiIds) {
+        ValueMultimap values = new ValueMultimap();
+        for (String id : apiIds) {
+            values.put(APIConstants.PARAMETER_FEEDID, id);
+        }
+        APIResponse response = get(APIConstants.URL_FEED_UNREAD_COUNT, values);
+        return (UnreadCountResponse) response.getResponse(gson, UnreadCountResponse.class);
+    }
+
     public UnreadStoryHashesResponse getUnreadStoryHashes() {
 		ValueMultimap values = new ValueMultimap();
         values.put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1");
@@ -370,7 +378,9 @@ public class APIManager {
         }
 
 		// note: this response is complex enough, we have to do a custom parse in the FFR
-        return new FeedFolderResponse(response.getResponseBody(), gson);
+        FeedFolderResponse result = new FeedFolderResponse(response.getResponseBody(), gson);
+        result.readTime = response.readTime;
+        return result;
 	}
 
 	public NewsBlurResponse trainClassifier(String feedId, String key, int type, int action) {
