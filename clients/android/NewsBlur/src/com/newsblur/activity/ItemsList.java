@@ -27,6 +27,7 @@ import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
+import com.newsblur.view.ProgressThrobber;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public abstract class ItemsList extends NbActivity implements StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
@@ -38,6 +39,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     public static final String BUNDLE_FEED_IDS = "feedIds";
 
 	protected ItemListFragment itemListFragment;
+    protected ProgressThrobber progressView;
 	protected FragmentManager fragmentManager;
     private TextView overlayStatusText;
 	protected StateFilter currentState;
@@ -55,7 +57,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         this.fs = createFeedSet();
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_itemslist);
@@ -64,6 +65,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
+        this.progressView = (ProgressThrobber) findViewById(R.id.itemlist_topthrob);
 	}
 
     protected abstract FeedSet createFeedSet();
@@ -139,7 +141,13 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
     private void updateStatusIndicators() {
         boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs, this);
-        setProgressBarIndeterminateVisibility(isLoading);
+        if (progressView != null ) {
+            if (isLoading) {
+                progressView.setVisibility(View.VISIBLE);
+            } else {
+                progressView.setVisibility(View.GONE);
+            }
+        }
 
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this);
