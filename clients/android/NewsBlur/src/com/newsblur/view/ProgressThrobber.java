@@ -1,24 +1,31 @@
 package com.newsblur.view;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+import android.animation.*;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.animation.*;
 import android.view.View;
 
 import com.newsblur.R;
 
 /**
- * A indeterminate loading indicator that pulses between two colours.
+ * A indeterminate loading indicator that pulses between colours.  Inspired by the
+ * 4.X-series impl of MaterialProgressDrawable (but platform-stable, public access,
+ * and without the support lib deps) and the NewsBlur.com pulsing load indicator.
  */
 public class ProgressThrobber extends View {
 
-    ObjectAnimator animator;
-    int color = Color.BLUE;
-    float saturation = 1f;
+    private TimeInterpolator acdcInterp = new AccelerateDecelerateInterpolator();
+    private TimeInterpolator lineInterp = new LinearInterpolator();
+
+    private AnimatorSet animator;
+    private int[] colors = {Color.CYAN, Color.BLUE, Color.GREEN, Color.LTGRAY};
+    private float h;
+    private float s;
+    private float v;
 
     public ProgressThrobber(Context context) {
         super(context);
@@ -30,35 +37,63 @@ public class ProgressThrobber extends View {
         setupAnimator();
     }
 
-    public void setColor(int color) {
-        this.color = color;
+    public void setColors(int... colors) {
+        this.colors = colors;
+        setupAnimator();
     }
 
     private void setupAnimator() {
-        animator = ObjectAnimator.ofFloat(this, "saturation", 0f, 1f);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
-        animator.setDuration(1500L);
+        float[] Hs = new float[colors.length];
+        float[] Ss = new float[colors.length];
+        float[] Vs = new float[colors.length];
+        for (int i=0; i<colors.length; i++) {
+            int c = colors[i];
+            float[] hsv = new float[3];
+            Color.colorToHSV(c, hsv);
+            Hs[i] = hsv[0];
+            Ss[i] = hsv[1];
+            Vs[i] = hsv[2];
+        }
+        ObjectAnimator animatorH = ObjectAnimator.ofFloat(this, "h", Hs);
+        animatorH.setRepeatCount(ValueAnimator.INFINITE);
+        animatorH.setRepeatMode(ValueAnimator.REVERSE);
+        animatorH.setInterpolator(acdcInterp);
+        ObjectAnimator animatorS = ObjectAnimator.ofFloat(this, "s", Ss);
+        animatorS.setRepeatCount(ValueAnimator.INFINITE);
+        animatorS.setRepeatMode(ValueAnimator.REVERSE);
+        animatorS.setInterpolator(lineInterp);
+        ObjectAnimator animatorV = ObjectAnimator.ofFloat(this, "v", Vs);
+        animatorV.setRepeatCount(ValueAnimator.INFINITE);
+        animatorV.setRepeatMode(ValueAnimator.REVERSE);
+        animatorV.setInterpolator(lineInterp);
+        
+        animator = new AnimatorSet();
+        animator.playTogether(animatorH, animatorS, animatorV);
+        animator.setDuration(500L * colors.length);
         animator.start();
     }
 
-    public void setSaturation(float sat) {
-        this.saturation = sat;
+    public void setH(float h) {
+        this.h = h;
+    }
+    public void setS(float s) {
+        this.s = s;
+    }
+    public void setV(float v) {
+        this.v = v;
         this.invalidate();
     }
 
     protected void onDraw(Canvas canvas) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
-        hsv[1] = saturation;
+        float[] hsv = {h,s,v};
         canvas.drawColor(Color.HSVToColor(hsv));
     }
 
     @Override
-    public void setVisibility(int visibility) {
+    public synchronized void setVisibility(int visibility) {
         super.setVisibility(visibility);
         if (visibility == View.VISIBLE) {
-            animator.start();
+            if (! animator.isRunning()) animator.start();
         } else {
             animator.end();
         }

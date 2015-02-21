@@ -65,7 +65,10 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         progressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
-        progressView.setColor(getResources().getColor(R.color.refresh_3));
+        progressView.setColors(getResources().getColor(R.color.refresh_1),
+                               getResources().getColor(R.color.refresh_2),
+                               getResources().getColor(R.color.refresh_3),
+                               getResources().getColor(R.color.refresh_4));
         setupBezelSwipeDetector(itemList);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
         itemList.addFooterView(footerView, null, false);
