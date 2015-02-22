@@ -69,7 +69,7 @@ public class ProgressThrobber extends View {
         
         animator = new AnimatorSet();
         animator.playTogether(animatorH, animatorS, animatorV);
-        animator.setDuration(500L * colors.length);
+        animator.setDuration(400L * colors.length);
         animator.start();
     }
 
