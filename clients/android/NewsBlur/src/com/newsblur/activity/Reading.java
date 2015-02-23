@@ -1,7 +1,5 @@
 package com.newsblur.activity;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,13 +66,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /** The minimum screen width (in DP) needed to show all the overlay controls. */
     private static final int OVERLAY_MIN_WIDTH_DP = 355;
 
-    /** The longest time (in seconds) the UI will wait for API pages to load while
-        searching for the next unread story. */
-    private static final long UNREAD_SEARCH_LOAD_WAIT_SECONDS = 30;
-
-    private final Object UNREAD_SEARCH_MUTEX = new Object();
-    private CountDownLatch unreadSearchLatch;
-
 	protected int passedPosition;
 	protected StateFilter currentState;
     protected StoryOrder storyOrder;
@@ -100,6 +91,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private float overlayRangeBotPx;
 
     private int lastVScrollPos = 0;
+
+    private boolean unreadSearchActive = false;
+    private boolean unreadSearchStarted = false;
 
     private List<Story> pageHistory;
 
@@ -185,9 +179,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     protected void onPause() {
         this.stopLoading = true;
-        if (this.unreadSearchLatch != null) {
-            this.unreadSearchLatch.countDown();
-        }
         super.onPause();
     }
 
@@ -221,10 +212,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 finish();
             }
 
-            checkStoryCount(pager.getCurrentItem());
-            if (this.unreadSearchLatch != null) {
-                this.unreadSearchLatch.countDown();
+            if (unreadSearchActive) {
+                // if we left this flag high, we were looking for an unread, but didn't find one;
+                // now that we have more stories, look again.
+                nextUnread();
             }
+            checkStoryCount(pager.getCurrentItem());
             updateOverlayNav();
             updateOverlayText();
         }
@@ -507,13 +500,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 triggerRefresh(position + AppConstants.READING_STORY_PRELOAD);
             }
         }
-        
-        if (stopLoading) {
-            // if we terminated because we are well and truly done, break any search loops and stop progress indication
-            if (this.unreadSearchLatch != null) {
-                this.unreadSearchLatch.countDown();
-            }
-        }
 	}
 
 	protected void enableMainProgress(boolean enabled) {
@@ -597,76 +583,60 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     /**
-     * Search our set of stories for the next unread one.  This requires some heavy
-     * cooperation with the way stories are automatically loaded in the background
-     * as we walk through the list.
+     * Search our set of stories for the next unread one. 
      */
     private void nextUnread() {
-        synchronized (UNREAD_SEARCH_MUTEX) {
-            int candidate = 0;
-            boolean unreadFound = false;
-            boolean error = false;
-            unreadSearch:while (!unreadFound) {
-                Story story = readingAdapter.getStory(candidate);
+        unreadSearchActive = true;
 
-                if (this.stopLoading) {
-                    // this activity was ended before we finished. just stop.
-                    break unreadSearch;
-                } 
+        // the first time an unread search is triggered, also trigger an activation of unreads, so
+        // we don't search for a story that doesn't exist in the cursor
+        if (!unreadSearchStarted) {
+            FeedUtils.activateAllStories();
+            unreadSearchStarted = true;
+        }
 
-                if (story != null) {
-                    if ((candidate == pager.getCurrentItem()) || (story.read) ) {
-                        candidate++;
-                        continue unreadSearch;
-                    } else {
-                        unreadFound = true;
-                        break unreadSearch;
-                    }
+        int candidate = 0;
+        boolean unreadFound = false;
+        unreadSearch:while (!unreadFound) {
+            Story story = readingAdapter.getStory(candidate);
+            if (this.stopLoading) {
+                // this activity was ended before we finished. just stop.
+                unreadSearchActive = false;
+                return;
+            } 
+            // iterate through the stories in our cursor until we find an unread one
+            if (story != null) {
+                if ((candidate == pager.getCurrentItem()) || (story.read) ) {
+                    candidate++;
+                    continue unreadSearch;
+                } else {
+                    unreadFound = true;
                 }
+            }
+            break unreadSearch;
+        }
 
-                // we didn't find a story, so now we need to get more stories. First, though,
-                // double check that there are even any left
-                if (getUnreadCount() <= 0) {
-                    break unreadSearch;
+        if (unreadFound) {
+            // jump to the story we found
+            final int page = candidate;
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    pager.setCurrentItem(page, true);
                 }
-
-                // if we didn't find a story trigger a check to see if there are any more to search before proceeding
-                this.unreadSearchLatch = new CountDownLatch(1);
+            });
+            // disable the search flag, as we are done
+            unreadSearchActive = false;
+        } else {
+            // We didn't find a story, so we should trigger a check to see if the API can load any more.
+            // First, though, double check that there are even any left, as there may have been a delay
+            // between marking an earlier one and double-checking counts.
+            if (getUnreadCount() <= 0) {
+                unreadSearchActive = false;
+            } else {
+                // trigger a check to see if there are any more to search before proceeding. By leaving the
+                // unreadSearchActive flag high, this method will be called again when a new cursor is loaded
                 this.checkStoryCount(candidate+1);
-                try {
-                    boolean unlatched = this.unreadSearchLatch.await(UNREAD_SEARCH_LOAD_WAIT_SECONDS, TimeUnit.SECONDS);
-                    if (unlatched) {
-                        continue unreadSearch;
-                    } else {
-                        Log.e(this.getClass().getName(), "Timed out waiting for next API page while looking for unreads.");
-                        error = true;
-                        break unreadSearch;
-                    }
-                } catch (InterruptedException ie) {
-                    Log.e(this.getClass().getName(), "Interrupted waiting for next API page while looking for unreads.");
-                    error = true;
-                    break unreadSearch;
-                }
-
             }
-            if (error) {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(Reading.this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
-                    }
-                });
-                return;
-            }
-            if (unreadFound) {
-                final int page = candidate;
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        pager.setCurrentItem(page, true);
-                    }
-                });
-                return;
-            }
-            Log.w(this.getClass().getName(), "got neither errors nor unreads nor null response looking for unreads");
         }
     }
 
