@@ -576,7 +576,7 @@ public class NBSyncService extends Service {
             
             while (totalStoriesSeen < PendingFeedTarget) {
                 if (stopSync()) return;
-
+                if (FlushRecounts) return;
                 if (!fs.equals(PendingFeed)) {
                     // the active view has changed
                     if (fs == null) finished = true;
