@@ -347,7 +347,9 @@ public class NBSyncService extends Service {
         for (ReadingAction ra : FollowupActions) {
             ra.doLocal(dbHelper);
         }
-        FollowupActions.clear();
+        if (PendingFeed == null) {
+            FollowupActions.clear();
+        }
         NbActivity.updateAllActivities(false);
     }
 
