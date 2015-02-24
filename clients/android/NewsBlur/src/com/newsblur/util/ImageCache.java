@@ -51,8 +51,19 @@ public class ImageCache {
 
             File f = new File(cacheDir, fileName);
             if (f.exists()) return;
-            URL u = new URL(url);
-            NetworkUtils.loadURL(u, new FileOutputStream(f));
+            FileOutputStream outStream = new FileOutputStream(f);
+            try {
+                URL u = new URL(url);
+                String redir = NetworkUtils.loadURL(u, outStream);
+                if (redir != null) {
+                    // redir will only be set if the original load encountered an un-followable
+                    // redirect. Try once and only once to follow it manually.
+                    u = new URL(u, redir);
+                    NetworkUtils.loadURL(u, outStream);
+                }
+            } finally {
+                outStream.close();
+            }
         } catch (IOException e) {
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
         }
