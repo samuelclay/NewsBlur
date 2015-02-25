@@ -97,7 +97,7 @@ public class ImageCache {
         if (! m.find()) {
             return null;
         }
-        String fileName = Integer.toString(url.hashCode()) + m.group(1);
+        String fileName = Integer.toString(Math.abs(url.hashCode())) + m.group(1);
         return fileName;
     }
 
