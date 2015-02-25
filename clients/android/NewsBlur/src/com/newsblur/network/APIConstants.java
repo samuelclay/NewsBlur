@@ -78,11 +78,13 @@ public class APIConstants {
 	public static final String PARAMETER_READ_FILTER = "read_filter";
 	public static final String PARAMETER_INCLUDE_TIMESTAMPS = "include_timestamps";
     public static final String PARAMETER_GLOBAL_FEED = "global_feed";
+	public static final String PARAMETER_INCLUDE_HIDDEN = "include_hidden";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
     public static final String VALUE_OLDER = "older";
     public static final String VALUE_NEWER = "newer";
+    public static final String VALUE_TRUE = "true";
 	
     public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
     public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";
