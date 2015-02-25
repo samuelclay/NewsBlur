@@ -19,13 +19,9 @@ public class NetworkUtils {
 		return (netInfo != null && netInfo.isConnected());
 	}
 
-    /**
-     * Attempt to load the given image URL into the (probably file-backed) output stream.
-     * 
-     * @return a new URL if a non-followable redirect was encountered or null if successful.
-     */
-    public static String loadURL(URL url, OutputStream outputStream) throws IOException {
+    public static UrlLoadResult loadURL(URL url, OutputStream outputStream) throws IOException {
         HttpURLConnection conn = null;
+        UrlLoadResult result = new UrlLoadResult();
         try {
             conn = (HttpURLConnection)url.openConnection();
             conn.setConnectTimeout(10000);
@@ -36,21 +32,22 @@ public class NetworkUtils {
             // change. inform the caller by returning the new URL
             if ((code == HttpURLConnection.HTTP_MOVED_TEMP) || (code == HttpURLConnection.HTTP_MOVED_PERM)) {
                 String loc = conn.getHeaderField("Location");
-                return loc;
+                result.redirUrl = loc;
+                return result;
             }
             InputStream inputStream = conn.getInputStream();
             byte[] b = new byte[1024];
             int read;
             while ((read = inputStream.read(b)) != -1) {
                 outputStream.write(b, 0, read);
+                result.bytesRead += read;
             }
-            return null;
         } catch (Throwable t) {
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
-            return null;
         } finally {
             closeQuietly(conn);
         }
+        return result;
     }
 
     public static void closeQuietly(HttpURLConnection conn) {
@@ -59,6 +56,11 @@ public class NetworkUtils {
             conn.disconnect();
         } catch (Throwable t) {
         }
+    }
+
+    public static class UrlLoadResult extends Object {
+        public int bytesRead;
+        public String redirUrl;
     }
 
 }

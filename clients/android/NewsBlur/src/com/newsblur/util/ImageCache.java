@@ -22,6 +22,7 @@ public class ImageCache {
     private static final String CACHE_SUBDIR = "olimages";
     private static final long MAX_FILE_AGE_MILLIS = 30L * 24L * 60L * 60L * 1000L;
     private static final long MIN_FREE_SPACE_BYTES = 100L * 1024L * 1024L;
+    private static final int MIN_VALID_CACHE_BYTES = 64;
 
     private File cacheDir;
     private Pattern postfixPattern;
@@ -52,17 +53,23 @@ public class ImageCache {
             File f = new File(cacheDir, fileName);
             if (f.exists()) return;
             FileOutputStream outStream = new FileOutputStream(f);
+            int size = 0;
             try {
                 URL u = new URL(url);
-                String redir = NetworkUtils.loadURL(u, outStream);
-                if (redir != null) {
+                NetworkUtils.UrlLoadResult result = NetworkUtils.loadURL(u, outStream);
+                if (result.redirUrl != null) {
                     // redir will only be set if the original load encountered an un-followable
                     // redirect. Try once and only once to follow it manually.
-                    u = new URL(u, redir);
-                    NetworkUtils.loadURL(u, outStream);
+                    u = new URL(u, result.redirUrl);
+                    result = NetworkUtils.loadURL(u, outStream);
                 }
+                size = result.bytesRead;
             } finally {
                 outStream.close();
+            }
+            // images that are super-small tend to be errors or invisible. don't waste file handles on them
+            if (size < MIN_VALID_CACHE_BYTES) {
+                f.delete();
             }
         } catch (IOException e) {
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
