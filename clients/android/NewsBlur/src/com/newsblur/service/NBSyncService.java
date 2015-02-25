@@ -347,7 +347,9 @@ public class NBSyncService extends Service {
         for (ReadingAction ra : FollowupActions) {
             ra.doLocal(dbHelper);
         }
-        FollowupActions.clear();
+        if (PendingFeed == null) {
+            FollowupActions.clear();
+        }
         NbActivity.updateAllActivities(false);
     }
 
@@ -576,7 +578,7 @@ public class NBSyncService extends Service {
             
             while (totalStoriesSeen < PendingFeedTarget) {
                 if (stopSync()) return;
-
+                if (FlushRecounts) return;
                 if (!fs.equals(PendingFeed)) {
                     // the active view has changed
                     if (fs == null) finished = true;
