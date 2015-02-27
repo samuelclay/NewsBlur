@@ -2790,6 +2790,9 @@ body {
     max-width: 700px;
     min-height: 12px;
 }
+.NB-pref-full-width-story .NB-feed-story .NB-feed-story-content {
+    max-width: none;
+}
 .NB-feed-story .NB-narrow-content .NB-feed-story-content {
     margin-right: 28px;
 }
