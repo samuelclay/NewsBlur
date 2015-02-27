@@ -1,6 +1,8 @@
 package com.newsblur.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.util.Log;
@@ -19,6 +21,7 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 
 public class SocialFeedItemsList extends ItemsList {
 
@@ -32,6 +35,13 @@ public class SocialFeedItemsList extends ItemsList {
 		super.onCreate(bundle);
 				
 		setTitle(socialFeed.feedTitle);
+        Bitmap icon = ((NewsBlurApplication) getApplicationContext()).getImageLoader().tryGetImage(socialFeed.photoUrl);
+        if (icon != null) {
+            int iconSize = UIUtils.getActionBarHeight(this);
+            Bitmap scaledIcon = Bitmap.createScaledBitmap(icon, iconSize, iconSize, false);
+            BitmapDrawable draw = new BitmapDrawable(getResources(), scaledIcon);
+            getActionBar().setLogo(draw);
+        }
 		
 		if (itemListFragment == null) {
 			itemListFragment = SocialFeedItemListFragment.newInstance(socialFeed, currentState, getDefaultFeedView());

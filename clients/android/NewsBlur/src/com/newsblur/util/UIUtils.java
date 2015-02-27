@@ -7,6 +7,7 @@ import static android.graphics.PorterDuff.Mode.DST_IN;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -73,6 +74,13 @@ public class UIUtils {
         } else {
             v.setVisibility(View.VISIBLE);
         }
+    }
+
+    public static int getActionBarHeight(Context context) {    
+        TypedArray atts = context.getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
+        int h = (int) atts.getDimension(0, 0);
+        atts.recycle();
+        return h;
     }
 
     /**
