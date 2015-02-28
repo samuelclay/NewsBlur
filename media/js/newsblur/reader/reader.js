@@ -493,6 +493,7 @@
             this.$s.$body.toggleClass('NB-is-anonymous',      NEWSBLUR.Globals.is_anonymous);
             this.$s.$body.toggleClass('NB-is-authenticated',  NEWSBLUR.Globals.is_authenticated);
             this.$s.$body.toggleClass('NB-pref-hide-changes', !!this.model.preference('hide_story_changes'));
+            this.$s.$body.toggleClass('NB-pref-full-width-story', !!this.model.preference('full_width_story'));
             this.$s.$body.removeClass('NB-story-layout-full')
                          .removeClass('NB-story-layout-split')
                          .removeClass('NB-story-layout-list')
@@ -2110,6 +2111,22 @@
                 NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
             } else if (this.active_story && this.active_story.get('read_status')) {
                 NEWSBLUR.assets.stories.mark_unread(story);
+            }
+        },
+        
+        maybe_mark_all_as_read: function() {
+            if (_.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
+                return;
+            } else if (this.flags.social_view) {
+                this.mark_feed_as_read();
+            } else if (this.flags.river_view) {
+                if (this.active_feed == 'river:' && NEWSBLUR.assets.preference('mark_read_river_confirm')) {
+                    this.open_mark_read_modal({days: 0});
+                } else {
+                    this.mark_folder_as_read();
+                }
+            } else if (!this.flags.river_view && !this.flags.social_view) {
+                this.mark_feed_as_read();
             }
         },
         
@@ -6312,19 +6329,7 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                if (_.contains(['river:blurblogs', 'river:global'], self.active_feed)) {
-                    return;
-                } else if (self.flags.social_view) {
-                    self.mark_feed_as_read();
-                } else if (self.flags.river_view) {
-                    if (self.active_feed == 'river:') {
-                        self.open_mark_read_modal({days: 0});
-                    } else {
-                        self.mark_folder_as_read();
-                    }
-                } else if (!self.flags.river_view && !self.flags.social_view) {
-                    self.mark_feed_as_read();
-                }
+                self.maybe_mark_all_as_read();
             });
             $document.bind('keydown', 'shift+e', function(e) {
                 e.preventDefault();

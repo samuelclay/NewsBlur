@@ -195,7 +195,6 @@ def setup_common():
     setup_psql_client()
     setup_libxml()
     setup_python()
-    setup_psycopg()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -401,7 +400,8 @@ def setup_local_files():
 def setup_psql_client():
     sudo('apt-get -y --force-yes install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
-    sudo('chown postgres.postgres /var/run/postgresql')
+    with settings(warn_only=True):
+        sudo('chown postgres.postgres /var/run/postgresql')
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
@@ -465,9 +465,10 @@ def setup_hosts():
     sudo('echo "\n\n127.0.0.1   `hostname`" >> /etc/hosts')
 
 def config_pgbouncer():
-    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    put(os.path.join(env.SECRETS_PATH, 'configs/pgbouncer_auth.conf'), 
-        '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put('config/pgbouncer.conf', 'pgbouncer.conf')
+    sudo('mv pgbouncer.conf /etc/pgbouncer/pgbouncer.ini')
+    put(os.path.join(env.SECRETS_PATH, 'configs/pgbouncer_auth.conf'), 'userlist.txt')
+    sudo('mv userlist.txt /etc/pgbouncer/userlist.txt')
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
@@ -583,7 +584,7 @@ def setup_ulimit():
     sudo('sysctl -p')
     sudo('ulimit -n 100000')
     connections.connect(env.host_string)
-
+    
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
 
@@ -881,6 +882,9 @@ def setup_mongo():
     sudo('/etc/init.d/mongodb restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
+    # Reclaim 5% disk space used for root logs. Set to 1%.
+    sudo('tune2fs -m 1 /dev/vda')
+
 def setup_mongo_configsvr():
     sudo('mkdir -p /var/lib/mongodb_configsvr')
     sudo('chown mongodb.mongodb /var/lib/mongodb_configsvr')
@@ -1039,6 +1043,11 @@ def setup_db_search():
     put('config/supervisor_celeryd_search_indexer_tasker.conf', '/etc/supervisor/conf.d/celeryd_search_indexer_tasker.conf', use_sudo=True)
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
+
+@parallel
+def setup_usage_monitor():
+    sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.daily/monitor_disk_usage')
     
 # ================
 # = Setup - Task =
@@ -1135,7 +1144,7 @@ def setup_do(name, size=2, image=None):
 
     host = instance.ip_address
     env.host_string = host
-    time.sleep(10)
+    time.sleep(20)
     add_user_to_do()
     do()
 

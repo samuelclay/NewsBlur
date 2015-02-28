@@ -229,7 +229,7 @@ SOUTH_TESTS_MIGRATE     = False
 SESSION_ENGINE          = 'redis_sessions.session'
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
-SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
+SESSION_COOKIE_AGE      = 60*60*24*365 # 1 year
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 

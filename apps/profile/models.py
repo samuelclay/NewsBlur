@@ -759,10 +759,11 @@ def paypal_payment_was_flagged(sender, **kwargs):
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
-        user = User.objects.get(email__iexact=ipn_obj.payer_email)
-    logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
+        if ipn_obj.payer_email:
+            user = User.objects.get(email__iexact=ipn_obj.payer_email)
     try:
         user.profile.setup_premium_history(check_premium=True)
+        logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:
         return {"code": -1, "message": "User doesn't exist."}
 payment_was_flagged.connect(paypal_payment_was_flagged)

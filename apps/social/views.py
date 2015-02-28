@@ -543,7 +543,7 @@ def mark_story_as_shared(request):
             'message': 'Could not find the original story and no copies could be found.'
         })
     
-    if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, feed_id):
+    if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, feed_id, story.story_hash):
         return json.json_response(request, {
             'code': -1, 
             'message': 'Only premium users can share multiple stories per day from the same site.'

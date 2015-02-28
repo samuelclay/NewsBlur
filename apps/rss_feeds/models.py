@@ -1159,7 +1159,7 @@ class Feed(models.Model):
         total = 0
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
-                print "\n\n -------------------------- %s --------------------------\n\n" % feed_id
+                print "\n\n -------------------------- %s (%s deleted so far) --------------------------\n\n" % (feed_id, total)
             try:
                 feed = Feed.objects.get(pk=feed_id)
             except Feed.DoesNotExist:
@@ -1333,7 +1333,8 @@ class Feed(models.Model):
         fcat = [strip_tags(t)[:250] for t in fcat[:12]]
         return fcat
     
-    def get_permalink(self, entry):
+    @classmethod
+    def get_permalink(cls, entry):
         link = entry.get('link')
         if not link:
             links = entry.get('links')
@@ -1569,14 +1570,17 @@ class Feed(models.Model):
             self.is_push = push.verified
         self.save()
     
-    def queue_pushed_feed_xml(self, xml):
+    def queue_pushed_feed_xml(self, xml, latest_push_date_delta=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         queue_size = r.llen("push_feeds")
         
+        if latest_push_date_delta:
+            latest_push_date_delta = "%s" % str(latest_push_date_delta).split('.', 2)[0]
+
         if queue_size > 1000:
             self.schedule_feed_fetch_immediately()
         else:
-            logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
+            logging.debug('   ---> [%-30s] [%s] ~FB~SBQueuing pushed stories, last pushed %s...' % (unicode(self)[:30], self.pk, latest_push_date_delta))
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     
@@ -2196,6 +2200,10 @@ class MStarredStory(mongo.Document):
                                                           stat['stories'])
             if not dryrun and stat['_id']:
                 cls.objects.filter(user_id=stat['_id']).delete()
+            elif not dryrun and stat['_id'] == 0:
+                print " ---> Deleting unstarred stories (user_id = 0)"
+                cls.objects.filter(user_id=stat['_id']).delete()
+                    
         
         print " ---> Deleted %s stories in total." % total
 

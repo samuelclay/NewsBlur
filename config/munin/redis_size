@@ -34,6 +34,7 @@ class NBMuninGraph(MuninGraph):
         sizes = {}
         for db, values in dbs.items():
             for key, value in values.items():
+                if key == 'avg_ttl': continue
                 sizes[db+"_"+key] = value
         return sizes
         

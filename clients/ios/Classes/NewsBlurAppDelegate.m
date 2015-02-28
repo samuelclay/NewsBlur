@@ -694,6 +694,8 @@
                 _completedString = @"Copied";
             } else if ([activityType isEqualToString:UIActivityTypeAirDrop]) {
                 _completedString = @"Airdropped";
+            } else if ([activityType isEqualToString:@"com.ideashower.ReadItLaterPro.AddToPocketExtension"]) {
+                return;
             } else if ([activityType isEqualToString:@"TUSafariActivity"]) {
                 return;
             } else if ([activityType isEqualToString:@"ARChromeActivity"]) {

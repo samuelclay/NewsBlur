@@ -468,6 +468,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Double-clicking an unread count'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-markreadriverconfirm' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadriverconfirmation-1', type: 'radio', name: 'mark_read_river_confirm', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-markreadriverconfirmation-1' }, [
+                                    'Show confirmation when marking everything read'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadriverconfirm-0', type: 'radio', name: 'mark_read_river_confirm', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-markreadriverconfirm-0' }, [
+                                    'Mark everything as read without confirmation'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Marking All Site Stories as read'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -633,6 +652,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Story changes'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-fullwidthdstory' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-fullwidthdstory-1', type: 'radio', name: 'full_width_story', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-fullwidthdstory-1' }, [
+                                    'Wrap story content at 700px to ease reading.'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-fullwidthdstory-2', type: 'radio', name: 'full_width_story', value: "true" }),
+                                $.make('label', { 'for': 'NB-preference-fullwidthdstory-2' }, [
+                                    'Wrap story content at the edge of the screen.'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Story width'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-truncatestory' }, [
@@ -891,6 +929,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=mark_read_river_confirm]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.mark_read_river_confirm) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=markread_nextfeed]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.markread_nextfeed) {
                 $(this).attr('checked', true);
@@ -905,6 +949,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=hide_story_changes]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=full_width_story]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.full_width_story) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -1089,6 +1139,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
             NEWSBLUR.reader.adjust_for_narrow_window();
+            NEWSBLUR.reader.add_body_classes();
             NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.sidebar_header.count();
             if (self.original_preferences['feed_order'] != form['feed_order'] ||

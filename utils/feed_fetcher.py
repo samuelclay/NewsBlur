@@ -223,7 +223,20 @@ class ProcessFeed:
             self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
         
         self.feed = self.feed.save()
-
+        
+        # Determine if stories aren't valid and replace broken guids
+        guids_seen = set()
+        permalinks_seen = set()
+        for entry in self.fpf.entries:
+            guids_seen.add(entry.get('guid'))
+            permalinks_seen.add(Feed.get_permalink(entry))
+        guid_difference = len(guids_seen) != len(self.fpf.entries)
+        single_guid = len(guids_seen) == 1
+        replace_guids = single_guid and guid_difference
+        permalink_difference = len(permalinks_seen) != len(self.fpf.entries)
+        single_permalink = len(permalinks_seen) == 1
+        replace_permalinks = single_permalink and permalink_difference
+        
         # Compare new stories to existing stories, adding and updating
         start_date = datetime.datetime.utcnow()
         story_hashes = []
@@ -232,6 +245,21 @@ class ProcessFeed:
             story = pre_process_story(entry)
             if story.get('published') < start_date:
                 start_date = story.get('published')
+            if replace_guids:
+                if replace_permalinks:
+                    new_story_guid = unicode(story.get('published'))
+                    if self.options['verbose']:
+                        logging.debug(u'   ---> [%-30s] ~FBReplacing guid (%s) with timestamp: %s' % (
+                                      self.feed.title[:30],
+                                      story.get('guid'), new_story_guid))
+                    story['guid'] = new_story_guid
+                else:
+                    new_story_guid = Feed.get_permalink(story)
+                    if self.options['verbose']:
+                        logging.debug(u'   ---> [%-30s] ~FBReplacing guid (%s) with permalink: %s' % (
+                                      self.feed.title[:30],
+                                      story.get('guid'), new_story_guid))
+                    story['guid'] = new_story_guid
             story['story_hash'] = MStory.feed_guid_hash_unsaved(self.feed.pk, story.get('guid'))
             stories.append(story)
             story_hashes.append(story.get('story_hash'))
