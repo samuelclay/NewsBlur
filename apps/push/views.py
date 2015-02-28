@@ -2,6 +2,7 @@
 
 import feedparser
 import random
+import datetime
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
@@ -38,6 +39,16 @@ def push_callback(request, push_id):
         return HttpResponse(challenge, content_type='text/plain')
     elif request.method == 'POST':
         subscription = get_object_or_404(PushSubscription, pk=push_id)
+        fetch_history = MFetchHistory.feed(subscription.feed_id)
+        latest_push_date_delta = None
+        if fetch_history and fetch_history.get('push_history'):
+            latest_push = fetch_history['push_history'][0]['push_date']
+            latest_push_date = datetime.datetime.strptime(latest_push, '%Y-%m-%d %H:%M:%S')
+            latest_push_date_delta = datetime.datetime.now() - latest_push_date
+            if latest_push_date > datetime.datetime.now() - datetime.timedelta(minutes=1):
+                logging.debug('   ---> [%-30s] ~SN~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], latest_push_date_delta.seconds))
+                return HttpResponse('Slow down, you just pushed %s seconds ago...' % latest_push_date_delta.seconds, status=429)
+                
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
         # the hub_url or topic has changed. ElementTree could do it.
         if random.random() < 0.1:
@@ -47,11 +58,11 @@ def push_callback(request, push_id):
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
         if subscription.feed.active_premium_subscribers >= 1:
-            subscription.feed.queue_pushed_feed_xml("Fetch me")
+            subscription.feed.queue_pushed_feed_xml("Fetch me", latest_push_date_delta=latest_push_date_delta)
             MFetchHistory.add(feed_id=subscription.feed_id, 
                               fetch_type='push')
         else:
             logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, no actives: %s' % (unicode(subscription.feed)[:30], subscription.feed))
         
-        return HttpResponse('')
+        return HttpResponse('OK')
     return Http404

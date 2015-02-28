@@ -105,13 +105,21 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Privacy options for your blurblog'
+                  'Search sites and folders'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Text view conveniently extracts the story'
+                  'Save stories with searchable tags'
                 ]),
                 $.make('li', { className: 'NB-6' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'Privacy options for your blurblog'
+                ]),
+                $.make('li', { className: 'NB-7' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'Text view conveniently extracts the story'
+                ]),
+                $.make('li', { className: 'NB-8' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                   'You feed Shiloh, my poor, hungry dog, for ',
                   $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),

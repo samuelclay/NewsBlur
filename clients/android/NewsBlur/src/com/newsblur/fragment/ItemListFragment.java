@@ -36,6 +36,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.view.ProgressThrobber;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
@@ -48,6 +49,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StateFilter currentState;
     private boolean cursorSeenYet = false;
     private boolean firstStorySeenYet = false;
+    protected ProgressThrobber progressView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,8 +63,16 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
+        progressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
+        progressView.setColors(getResources().getColor(R.color.refresh_1),
+                               getResources().getColor(R.color.refresh_2),
+                               getResources().getColor(R.color.refresh_3),
+                               getResources().getColor(R.color.refresh_4));
         setupBezelSwipeDetector(itemList);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
+        itemList.addFooterView(footerView, null, false);
+        itemList.setFooterDividersEnabled(false);
         itemList.setOnScrollListener(this);
 		itemList.setOnItemClickListener(this);
         itemList.setOnCreateContextMenuListener(this);
@@ -95,7 +105,21 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         firstStorySeenYet = false;
     }
 
-    private void updateLoadingIndicator() {
+    /**
+     * Turns on/off the loading indicator. Note that the text component of the
+     * loading indicator requires a cursor and is handled below.
+     */
+    public void setLoading(boolean isLoading) {
+        if (progressView != null ) {
+            if (isLoading) {
+                progressView.setVisibility(View.VISIBLE);
+            } else {
+                progressView.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void updateLoadingMessage() {
         View v = this.getView();
         if (v == null) return; // we might have beat construction?
 
@@ -180,7 +204,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             }
             adapter.swapCursor(cursor);
 		}
-        updateLoadingIndicator();
+        updateLoadingMessage();
 	}
 
 	@Override

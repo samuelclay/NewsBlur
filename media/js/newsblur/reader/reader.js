@@ -504,6 +504,7 @@
             this.$s.$body.toggleClass('NB-is-anonymous',      NEWSBLUR.Globals.is_anonymous);
             this.$s.$body.toggleClass('NB-is-authenticated',  NEWSBLUR.Globals.is_authenticated);
             this.$s.$body.toggleClass('NB-pref-hide-changes', !!this.model.preference('hide_story_changes'));
+            this.$s.$body.toggleClass('NB-pref-full-width-story', !!this.model.preference('full_width_story'));
             this.$s.$body.removeClass('NB-story-layout-full')
                          .removeClass('NB-story-layout-split')
                          .removeClass('NB-story-layout-list')

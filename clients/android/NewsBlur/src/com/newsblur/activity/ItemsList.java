@@ -55,7 +55,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         this.fs = createFeedSet();
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_itemslist);
@@ -139,7 +138,9 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
     private void updateStatusIndicators() {
         boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs, this);
-        setProgressBarIndeterminateVisibility(isLoading);
+        if (itemListFragment != null) {
+            itemListFragment.setLoading(isLoading);
+        }
 
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this);

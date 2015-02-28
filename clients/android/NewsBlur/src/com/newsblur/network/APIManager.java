@@ -266,6 +266,7 @@ public class APIManager {
         for (String hash : storyHashes) {
             values.put(APIConstants.PARAMETER_H, hash);
         }
+        values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         APIResponse response = get(APIConstants.URL_RIVER_STORIES, values);
         return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
     }
@@ -282,9 +283,11 @@ public class APIManager {
         if (fs.getSingleFeed() != null) {
             uri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(fs.getSingleFeed()).build();
             values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed());
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         } else if (fs.getMultipleFeeds() != null) {
             uri = Uri.parse(APIConstants.URL_RIVER_STORIES);
             for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDS, feedId);
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         } else if (fs.getSingleSocialFeed() != null) {
             String feedId = fs.getSingleSocialFeed().getKey();
             String username = fs.getSingleSocialFeed().getValue();
@@ -298,6 +301,7 @@ public class APIManager {
             }
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(APIConstants.URL_RIVER_STORIES);
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         } else if (fs.isAllSocial()) {
             uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
         } else if (fs.isAllSaved()) {
