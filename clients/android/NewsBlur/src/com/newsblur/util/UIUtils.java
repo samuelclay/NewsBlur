@@ -93,6 +93,10 @@ public class UIUtils {
             protected Void doInBackground(Void... arg) {
                 Bitmap icon = ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().tryGetImage(url);
                 if (icon != null) {
+                    // If setLogo() is called with a raw image, it isn't scaled up or down, but drawn raw. Wrapping
+                    // the icon in a BitmapDrawable lets it scale up.  Note, though, that the iconSize is actually
+                    // ignored on virtually all platforms and the actionbar re-resizes it up to full height, so 
+                    // attempting to add padding will silently fail.
                     int iconSize = getActionBarHeight(activity);
                     Bitmap scaledIcon = Bitmap.createScaledBitmap(icon, iconSize, iconSize, false);
                     BitmapDrawable draw = new BitmapDrawable(activity.getResources(), scaledIcon);
