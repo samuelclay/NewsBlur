@@ -3,8 +3,6 @@ package com.newsblur.activity;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,7 +14,6 @@ import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -37,13 +34,7 @@ public class FeedItemsList extends ItemsList {
 		super.onCreate(bundle);
 
         setTitle(feed.title);
-        Bitmap icon = ((NewsBlurApplication) getApplicationContext()).getImageLoader().tryGetImage(feed.faviconUrl);
-        if (icon != null) {
-            int iconSize = UIUtils.getActionBarHeight(this);
-            Bitmap scaledIcon = Bitmap.createScaledBitmap(icon, iconSize, iconSize, false);
-            BitmapDrawable draw = new BitmapDrawable(getResources(), scaledIcon);
-            getActionBar().setLogo(draw);
-        }
+        UIUtils.setActionBarImage(this, feed.faviconUrl);
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {

@@ -13,10 +13,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
+
+import com.newsblur.activity.NewsBlurApplication;
 
 public class UIUtils {
 	
@@ -81,6 +85,22 @@ public class UIUtils {
         int h = (int) atts.getDimension(0, 0);
         atts.recycle();
         return h;
+    }
+
+    public static void setActionBarImage(final Activity activity, final String url) { 
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                Bitmap icon = ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().tryGetImage(url);
+                if (icon != null) {
+                    int iconSize = getActionBarHeight(activity);
+                    Bitmap scaledIcon = Bitmap.createScaledBitmap(icon, iconSize, iconSize, false);
+                    BitmapDrawable draw = new BitmapDrawable(activity.getResources(), scaledIcon);
+                    activity.getActionBar().setLogo(draw);
+                }
+                return null;
+            }
+        }.execute();
     }
 
     /**
