@@ -49,7 +49,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StateFilter currentState;
     private boolean cursorSeenYet = false;
     private boolean firstStorySeenYet = false;
-    protected ProgressThrobber progressView;
+    protected ProgressThrobber footerProgressView;
+    protected ProgressThrobber emptyProgressView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,12 +64,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        emptyProgressView = (ProgressThrobber) v.findViewById(R.id.empty_view_loading_throb);
+        emptyProgressView.setColors(getResources().getColor(R.color.refresh_1),
+                                    getResources().getColor(R.color.refresh_2),
+                                    getResources().getColor(R.color.refresh_3),
+                                    getResources().getColor(R.color.refresh_4));
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
-        progressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
-        progressView.setColors(getResources().getColor(R.color.refresh_1),
-                               getResources().getColor(R.color.refresh_2),
-                               getResources().getColor(R.color.refresh_3),
-                               getResources().getColor(R.color.refresh_4));
+        footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
+        footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
+                                     getResources().getColor(R.color.refresh_2),
+                                     getResources().getColor(R.color.refresh_3),
+                                     getResources().getColor(R.color.refresh_4));
         setupBezelSwipeDetector(itemList);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
         itemList.addFooterView(footerView, null, false);
@@ -110,11 +116,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * loading indicator requires a cursor and is handled below.
      */
     public void setLoading(boolean isLoading) {
-        if (progressView != null ) {
+        if (footerProgressView != null ) {
             if (isLoading) {
-                progressView.setVisibility(View.VISIBLE);
+                footerProgressView.setVisibility(View.VISIBLE);
+                emptyProgressView.setVisibility(View.VISIBLE);
             } else {
-                progressView.setVisibility(View.GONE);
+                footerProgressView.setVisibility(View.GONE);
+                emptyProgressView.setVisibility(View.GONE);
             }
         }
     }
@@ -128,13 +136,14 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
             return;
         }
-        TextView emptyView = (TextView) itemList.getEmptyView();
+        View emptyView = itemList.getEmptyView();
+        TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
 
         boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
         if (isLoading || (!cursorSeenYet)) {
-            emptyView.setText(R.string.empty_list_view_loading);
+            textView.setText(R.string.empty_list_view_loading);
         } else {
-            emptyView.setText(R.string.empty_list_view_no_stories);
+            textView.setText(R.string.empty_list_view_no_stories);
         }
     }
 
