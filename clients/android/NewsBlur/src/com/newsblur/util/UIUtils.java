@@ -99,8 +99,12 @@ public class UIUtils {
                     // attempting to add padding will silently fail.
                     int iconSize = getActionBarHeight(activity);
                     Bitmap scaledIcon = Bitmap.createScaledBitmap(icon, iconSize, iconSize, false);
-                    BitmapDrawable draw = new BitmapDrawable(activity.getResources(), scaledIcon);
-                    activity.getActionBar().setLogo(draw);
+                    final BitmapDrawable draw = new BitmapDrawable(activity.getResources(), scaledIcon);
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            activity.getActionBar().setLogo(draw);
+                        }
+                    });
                 }
                 return null;
             }
