@@ -23,7 +23,7 @@ import com.newsblur.util.UIUtils;
 
 public class SocialFeedItemsList extends ItemsList {
 
-	public static final String EXTRA_SOCIAL_FEED = "blurblogTitle";
+	public static final String EXTRA_SOCIAL_FEED = "social_feed";
 
 	private SocialFeed socialFeed;
 
