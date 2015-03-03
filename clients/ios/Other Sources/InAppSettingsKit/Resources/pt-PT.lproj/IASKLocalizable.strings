@@ -1,0 +1,11 @@
+/*
+ IASKLocalizable.strings
+ Where To
+ 
+ Created by Ortwin Gentz on 20.10.14.
+ Copyright (c) 2014 FutureTap. All rights reserved.
+ */
+
+
+"Privacy" = "Privacidade"; // iOS 8+ Privacy cell: title
+"Open in Settings app" = ""; // iOS 8+ Privacy cell: subtitle (TODO)
