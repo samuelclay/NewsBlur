@@ -10,6 +10,7 @@
 #import "FeedTableCell.h"
 #import "UnreadCountView.h"
 #import "ABTableViewCell.h"
+#import "MCSwipeTableViewCell.h"
 
 static UIFont *textFont = nil;
 
