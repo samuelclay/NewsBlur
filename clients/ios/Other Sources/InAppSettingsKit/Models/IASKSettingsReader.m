@@ -51,7 +51,21 @@
                 self.localizationTable = @"Root";
             }
         }
-        
+		
+		self.showPrivacySettings = NO;
+		IASK_IF_IOS8_OR_GREATER
+		(
+		 NSArray *privacyRelatedInfoPlistKeys = @[@"NSBluetoothPeripheralUsageDescription", @"NSCalendarsUsageDescription", @"NSCameraUsageDescription", @"NSContactsUsageDescription", @"NSLocationAlwaysUsageDescription", @"NSLocationUsageDescription", @"NSLocationWhenInUseUsageDescription", @"NSMicrophoneUsageDescription", @"NSMotionUsageDescription", @"NSPhotoLibraryUsageDescription", @"NSRemindersUsageDescription", @"NSHealthShareUsageDescription", @"NSHealthUpdateUsageDescription"];
+		 NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+		 if ([fileName isEqualToString:@"Root"]) {
+			 for (NSString* key in privacyRelatedInfoPlistKeys) {
+				 if (infoDictionary[key]) {
+					 self.showPrivacySettings = YES;
+					 break;
+				 }
+			 }
+		 }
+		 );
         if (self.settingsDictionary) {
             [self _reinterpretBundle:self.settingsDictionary];
         }
@@ -77,43 +91,92 @@
     }
 }
 
+- (void)setShowPrivacySettings:(BOOL)showPrivacySettings {
+	if (_showPrivacySettings != showPrivacySettings) {
+		_showPrivacySettings = showPrivacySettings;
+		[self _reinterpretBundle:self.settingsDictionary];
+	}
+}
+
+- (NSArray*)privacySettingsSpecifiers {
+	NSMutableDictionary *dict = [@{kIASKTitle: NSLocalizedStringFromTable(@"Privacy", @"IASKLocalizable", @"iOS 8+ Privacy cell: title"),
+								   kIASKKey: @"IASKPrivacySettingsCellKey",
+								   kIASKType: kIASKOpenURLSpecifier,
+								   kIASKFile: UIApplicationOpenSettingsURLString,
+								   } mutableCopy];
+	NSString *subtitle = NSLocalizedStringWithDefaultValue(@"Open in Settings app", @"IASKLocalizable", [NSBundle mainBundle], @"", @"iOS 8+ Privacy cell: subtitle");
+	if (subtitle.length) {
+		dict [kIASKSubtitle] = subtitle;
+	}
+	
+	return @[@[[[IASKSpecifier alloc] initWithSpecifier:@{kIASKKey: @"IASKPrivacySettingsHeaderKey", kIASKType: kIASKPSGroupSpecifier}],
+			   [[IASKSpecifier alloc] initWithSpecifier:dict]]];
+}
 
 - (void)_reinterpretBundle:(NSDictionary*)settingsBundle {
     NSArray *preferenceSpecifiers	= [settingsBundle objectForKey:kIASKPreferenceSpecifiers];
-    NSInteger sectionCount			= -1;
-    NSMutableArray *dataSource		= [NSMutableArray new];
-    
-    for (NSDictionary *specifier in preferenceSpecifiers) {
-        if ([self.hiddenKeys containsObject:[specifier objectForKey:kIASKKey]]) {
+    NSMutableArray *dataSource		= [NSMutableArray array];
+	
+	if (self.showPrivacySettings) {
+		IASK_IF_IOS8_OR_GREATER
+		(
+		 [dataSource addObjectsFromArray:self.privacySettingsSpecifiers];
+		 );
+	}
+
+    for (NSDictionary *specifierDictionary in preferenceSpecifiers) {
+        IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary];
+        newSpecifier.settingsReader = self;
+
+        if ([self.hiddenKeys containsObject:newSpecifier.key]) {
             continue;
         }
-        if ([(NSString*)[specifier objectForKey:kIASKType] isEqualToString:kIASKPSGroupSpecifier]) {
-            NSMutableArray *newArray = [[NSMutableArray alloc] init];
-            
-            [newArray addObject:specifier];
+        NSString *type = newSpecifier.type;
+        if ([type isEqualToString:kIASKPSGroupSpecifier]
+            || [type isEqualToString:kIASKPSRadioGroupSpecifier]) {
+
+            NSMutableArray *newArray = [NSMutableArray array];
+            [newArray addObject:newSpecifier];
             [dataSource addObject:newArray];
-            sectionCount++;
+
+            if ([type isEqualToString:kIASKPSRadioGroupSpecifier]) {
+                for (NSString *value in newSpecifier.multipleValues) {
+                    IASKSpecifier *valueSpecifier =
+                        [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary radioGroupValue:value];
+                    valueSpecifier.settingsReader = self;
+                    [newArray addObject:valueSpecifier];
+                }
+            }
         }
         else {
-            if (sectionCount == -1) {
-                NSMutableArray *newArray = [[NSMutableArray alloc] init];
-                [dataSource addObject:newArray];
-                sectionCount++;
+            if (dataSource.count == 0 || (dataSource.count == 1 && self.showPrivacySettings)) {
+                [dataSource addObject:[NSMutableArray array]];
             }
             
-            IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifier];
-            [(NSMutableArray*)[dataSource objectAtIndex:sectionCount] addObject:newSpecifier];
+            if ([newSpecifier.userInterfaceIdioms containsObject:@(UI_USER_INTERFACE_IDIOM())]) {
+                [(NSMutableArray*)dataSource.lastObject addObject:newSpecifier];
+            }
         }
     }
     [self setDataSource:dataSource];
 }
 
 - (BOOL)_sectionHasHeading:(NSInteger)section {
-    return [[[[self dataSource] objectAtIndex:section] objectAtIndex:0] isKindOfClass:[NSDictionary class]];
+    return [self headerSpecifierForSection:section] != nil;
+}
+
+/// Returns the specifier describing the section's header, or nil if there is no header.
+- (IASKSpecifier *)headerSpecifierForSection:(NSInteger)section {
+    IASKSpecifier *specifier = self.dataSource[section][kIASKSectionHeaderIndex];
+    if ([specifier.type isEqualToString:kIASKPSGroupSpecifier]
+        || [specifier.type isEqualToString:kIASKPSRadioGroupSpecifier]) {
+        return specifier;
+    }
+    return nil;
 }
 
 - (NSInteger)numberOfSections {
-    return [[self dataSource] count];
+    return self.dataSource.count;
 }
 
 - (NSInteger)numberOfRowsForSection:(NSInteger)section {
@@ -157,26 +220,15 @@
 }
 
 - (NSString*)titleForSection:(NSInteger)section {
-    if ([self _sectionHasHeading:section]) {
-        NSDictionary *dict = [[[self dataSource] objectAtIndex:section] objectAtIndex:kIASKSectionHeaderIndex];
-        return [self titleForStringId:[dict objectForKey:kIASKTitle]];
-    }
-    return nil;
+    return [self titleForStringId:[self headerSpecifierForSection:section].title];
 }
 
 - (NSString*)keyForSection:(NSInteger)section {
-    if ([self _sectionHasHeading:section]) {
-        return [[[[self dataSource] objectAtIndex:section] objectAtIndex:kIASKSectionHeaderIndex] objectForKey:kIASKKey];
-    }
-    return nil;
+    return [self headerSpecifierForSection:section].key;
 }
 
 - (NSString*)footerTextForSection:(NSInteger)section {
-    if ([self _sectionHasHeading:section]) {
-        NSDictionary *dict = [[[self dataSource] objectAtIndex:section] objectAtIndex:kIASKSectionHeaderIndex];
-        return [self titleForStringId:[dict objectForKey:kIASKFooterText]];
-    }
-    return nil;
+    return [self titleForStringId:[self headerSpecifierForSection:section].footerText];
 }
 
 - (NSString*)titleForStringId:(NSString*)stringId {
@@ -200,11 +252,9 @@
             suffix:(NSString *)suffix
          extension:(NSString *)extension {
     
-    NSString *appBundlePath = [self.applicationBundle bundlePath];
-    bundle = [appBundlePath stringByAppendingPathComponent:bundle];
+	bundle = [self.applicationBundle pathForResource:bundle ofType:nil];
     file = [file stringByAppendingFormat:@"%@%@", suffix, extension];
     return [bundle stringByAppendingPathComponent:file];
-    
 }
 
 - (NSString *)locateSettingsFile: (NSString *)file {
@@ -242,8 +292,10 @@
     NSArray *plattformSuffixes = @[[self platformSuffixForInterfaceIdiom:UI_USER_INTERFACE_IDIOM()],
                                    @""];
     
-    NSArray *languageFolders = @[[[[NSLocale preferredLanguages] objectAtIndex:0] stringByAppendingString:kIASKBundleLocaleFolderExtension],
+    NSArray *preferredLanguages = [NSLocale preferredLanguages];
+    NSArray *languageFolders = @[[ (preferredLanguages.count ? [preferredLanguages objectAtIndex:0] : @"en") stringByAppendingString:kIASKBundleLocaleFolderExtension],
                                  @""];
+
     
     NSString *path = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];
