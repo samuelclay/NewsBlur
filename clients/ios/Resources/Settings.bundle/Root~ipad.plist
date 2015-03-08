@@ -272,7 +272,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Swiping feed and story titles</string>
+			<string>Swipe feed and story titles</string>
 			<key>Key</key>
 			<string>enable_feed_cell_swipe</string>
 			<key>DefaultValue</key>
