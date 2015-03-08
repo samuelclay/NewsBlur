@@ -264,7 +264,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (options.error_marking_unread) {
             var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
             var $star = this.$('.NB-storytitles-sentiment');
-
+            $star.stop().css('opacity', null);
             $star.attr({'title': options.message || 'Failed to mark as unread'});
             $star.tipsy({
                 gravity: pane_alignment == 'north' ? 'nw' : 'sw',
@@ -276,21 +276,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             _.defer(function() {
                 tipsy.enable();
                 tipsy.show();
-            });
-
-            $star.animate({
-                'opacity': 1
-            }, {
-                'duration': 1850,
-                'queue': false,
-                'complete': function() {
+                _.delay(function() {
                     if (tipsy.enabled) {
                         tipsy.hide();
                         tipsy.disable();
                     }
-                }
+                }, 1800);
             });
-
         }
     },
     
