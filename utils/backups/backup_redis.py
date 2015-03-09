@@ -10,7 +10,7 @@ import time
 import s3
 from django.conf import settings
 
-filename = 'backup_redis_%s.rdb.gz' % time.strftime('%Y-%m-%d-%H-%M')
+filename = 'backup_redis/backup_redis_%s.rdb.gz' % time.strftime('%Y-%m-%d-%H-%M')
 path = '/var/lib/redis/dump.rdb'
 print 'Uploading %s (from %s) to S3...' % (filename, path)
 s3.save_file_in_s3(path, name=filename)
