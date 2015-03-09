@@ -7,6 +7,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.UIUtils;
 
 public class FeedReading extends Reading {
 
@@ -20,6 +21,7 @@ public class FeedReading extends Reading {
         Classifier classifier = FeedUtils.dbHelper.getClassifierForFeed(feed.feedId);
 
         setTitle(feed.title);
+        UIUtils.setActionBarImage(this, feed.faviconUrl);
 
         readingAdapter = new FeedReadingAdapter(fragmentManager, feed, classifier, defaultFeedView);
 

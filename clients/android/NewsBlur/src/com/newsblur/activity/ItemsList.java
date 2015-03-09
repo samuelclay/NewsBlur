@@ -143,7 +143,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         }
 
         if (overlayStatusText != null) {
-            String syncStatus = NBSyncService.getSyncStatusMessage(this);
+            String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
             if (syncStatus != null)  {
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);

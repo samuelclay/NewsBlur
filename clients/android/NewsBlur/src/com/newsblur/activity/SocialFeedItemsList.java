@@ -19,10 +19,11 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 
 public class SocialFeedItemsList extends ItemsList {
 
-	public static final String EXTRA_SOCIAL_FEED = "blurblogTitle";
+	public static final String EXTRA_SOCIAL_FEED = "social_feed";
 
 	private SocialFeed socialFeed;
 
@@ -32,6 +33,7 @@ public class SocialFeedItemsList extends ItemsList {
 		super.onCreate(bundle);
 				
 		setTitle(socialFeed.feedTitle);
+        UIUtils.setActionBarImage(this, socialFeed.photoUrl);
 		
 		if (itemListFragment == null) {
 			itemListFragment = SocialFeedItemListFragment.newInstance(socialFeed, currentState, getDefaultFeedView());

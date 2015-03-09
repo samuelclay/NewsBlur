@@ -7,15 +7,20 @@ import static android.graphics.PorterDuff.Mode.DST_IN;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
+
+import com.newsblur.activity.NewsBlurApplication;
 
 public class UIUtils {
 	
@@ -73,6 +78,37 @@ public class UIUtils {
         } else {
             v.setVisibility(View.VISIBLE);
         }
+    }
+
+    public static int getActionBarHeight(Context context) {    
+        TypedArray atts = context.getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
+        int h = (int) atts.getDimension(0, 0);
+        atts.recycle();
+        return h;
+    }
+
+    public static void setActionBarImage(final Activity activity, final String url) { 
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                Bitmap icon = ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().tryGetImage(url);
+                if (icon != null) {
+                    // If setLogo() is called with a raw image, it isn't scaled up or down, but drawn raw. Wrapping
+                    // the icon in a BitmapDrawable lets it scale up.  Note, though, that the iconSize is actually
+                    // ignored on virtually all platforms and the actionbar re-resizes it up to full height, so 
+                    // attempting to add padding will silently fail.
+                    int iconSize = getActionBarHeight(activity);
+                    Bitmap scaledIcon = Bitmap.createScaledBitmap(icon, iconSize, iconSize, false);
+                    final BitmapDrawable draw = new BitmapDrawable(activity.getResources(), scaledIcon);
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            activity.getActionBar().setLogo(draw);
+                        }
+                    });
+                }
+                return null;
+            }
+        }.execute();
     }
 
     /**

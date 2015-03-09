@@ -26,7 +26,6 @@ public class ImageLoader {
 	private final FileCache fileCache;
 	private final ExecutorService executorService;
 	private final Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-	private String TAG = "ImageLoader";
 
 	public ImageLoader(Context context) {
 		fileCache = new FileCache(context);
@@ -36,14 +35,19 @@ public class ImageLoader {
 	public void displayImage(String url, ImageView imageView) {
 		displayImage(url, imageView, true);
 	}
-	
-	public void displayImage(String url, ImageView imageView, boolean doRound) {
-		imageViews.put(imageView, url);
+
+    public Bitmap tryGetImage(String url) {
 		Bitmap bitmap = memoryCache.get(url);
 		if ((bitmap == null) && (url != null)) {
 			File f = fileCache.getFile(url);
 			bitmap = decodeBitmap(f);
 		}
+        return bitmap;
+    }
+	
+	public void displayImage(String url, ImageView imageView, boolean doRound) {
+		imageViews.put(imageView, url);
+		Bitmap bitmap = tryGetImage(url);
 		if (bitmap != null) {
 			if (doRound) { 
 				bitmap = UIUtils.roundCorners(bitmap, 5);
@@ -58,11 +62,7 @@ public class ImageLoader {
 
 	public void displayImage(String url, ImageView imageView, float roundRadius) {
 		imageViews.put(imageView, url);
-		Bitmap bitmap = memoryCache.get(url);
-		if ((bitmap == null) && (url != null)) {
-			File f = fileCache.getFile(url);
-		    bitmap = decodeBitmap(f);
-		}
+		Bitmap bitmap = tryGetImage(url);
 		if (bitmap != null) {
             if (roundRadius > 0) {
 			    bitmap = UIUtils.roundCorners(bitmap, roundRadius);
@@ -163,11 +163,6 @@ public class ImageLoader {
 				photoToLoad.imageView.setImageResource(R.drawable.world);
 			}
 		}
-	}
-	
-	public void clearCache() {
-		memoryCache.clear();
-		fileCache.clear();
 	}
 
     private Bitmap decodeBitmap(File f) {

@@ -705,7 +705,9 @@ public class NBSyncService extends Service {
         return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
-    public static String getSyncStatusMessage(Context context) {
+    public static String getSyncStatusMessage(Context context, boolean brief) {
+        if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
+        if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
         if (ActionsRunning||RecountsRunning) return context.getResources().getString(R.string.sync_status_actions);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
@@ -714,7 +716,6 @@ public class NBSyncService extends Service {
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
         if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
-        if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
         return null;
     }
 

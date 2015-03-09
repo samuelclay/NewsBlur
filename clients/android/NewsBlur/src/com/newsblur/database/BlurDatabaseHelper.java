@@ -137,6 +137,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);}
     }
 
     public void vacuum() {
