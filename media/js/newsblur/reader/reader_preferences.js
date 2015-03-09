@@ -443,6 +443,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'When opening a site'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-markreadstoryscroll' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadstoryscroll-1', type: 'radio', name: 'mark_read_on_scroll_titles', value: "true" }),
+                                $.make('label', { 'for': 'NB-preference-markreadstoryscroll-1' }, [
+                                    'Mark stories as read when scrolled past.'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadstoryscroll-0', type: 'radio', name: 'mark_read_on_scroll_titles', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-markreadstoryscroll-0' }, [
+                                    'Don\'t automatically mark stories as read.'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Mark stories read on scroll'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-showcontentpreview' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -955,6 +974,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=open_feed_action]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=mark_read_on_scroll_titles]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.mark_read_on_scroll_titles) {
                 $(this).attr('checked', true);
                 return false;
             }
