@@ -100,6 +100,7 @@
 
 - (void)setNextPreviousButtons;
 - (void)setTextButton;
+- (void)setTextButton:(StoryDetailViewController *)storyViewController;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (BOOL)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;

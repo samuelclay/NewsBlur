@@ -1927,10 +1927,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Text view
 
 - (void)fetchTextView {
-    if (!self.activeStoryId || !appDelegate.activeStory) return;
+    if (!self.activeStoryId || !self.activeStory) return;
     if (self.inTextView) {
         self.inTextView = NO;
-        [appDelegate.storyPageControl setTextButton];
+        [appDelegate.storyPageControl setTextButton:self];
         [self drawStory];
         return;
     }
@@ -1942,9 +1942,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
                            NEWSBLUR_URL];
     ASIFormDataRequest *request = [self formRequestWithURL:urlString];
-    [request addPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"];
-    [request addPostValue:[appDelegate.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
-    [request setUserInfo:@{@"storyId": [appDelegate.activeStory objectForKey:@"id"]}];
+    [request addPostValue:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
+    [request addPostValue:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
+    [request setUserInfo:@{@"storyId": [self.activeStory objectForKey:@"id"]}];
     [request setDidFinishSelector:@selector(finishFetchTextView:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
@@ -1970,7 +1970,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     if (![[request.userInfo objectForKey:@"storyId"]
-          isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
+          isEqualToString:[self.activeStory objectForKey:@"id"]]) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
         [appDelegate.storyPageControl setTextButton];

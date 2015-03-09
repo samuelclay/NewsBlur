@@ -882,7 +882,11 @@
 }
 
 - (void)setTextButton {
-    if (currentPage.pageIndex >= 0) {
+    [self setTextButton:currentPage];
+}
+
+- (void)setTextButton:(StoryDetailViewController *)storyViewController {
+    if (storyViewController.pageIndex >= 0) {
         [buttonText setEnabled:YES];
         [buttonText setAlpha:1];
         [buttonSend setEnabled:YES];
@@ -894,7 +898,7 @@
         [buttonSend setAlpha:.4];
     }
     
-    if (currentPage.inTextView) {
+    if (storyViewController.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text_on.png"]
                               forState:nil];
