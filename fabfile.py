@@ -197,6 +197,7 @@ def setup_common():
     setup_python()
     setup_supervisor()
     setup_hosts()
+    setup_usage_monitor()
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
@@ -247,13 +248,16 @@ def setup_db(engine=None, skip_common=False):
     #     setup_memcached()
     if engine == "postgres":
         setup_postgres(standby=False)
+        setup_postgres_backups()
     elif engine == "postgres_slave":
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
         setup_mongo_mms()
+        setup_mongo_backups()
     elif engine == "redis":
         setup_redis()
+        setup_redis_backups()
     elif engine == "redis_slave":
         setup_redis(slave=True)
     elif engine == "elasticsearch":
@@ -947,7 +951,7 @@ def setup_redis(slave=False):
     sudo('/etc/init.d/redis start')
     setup_syncookies()
     config_monit_redis()
-
+    
 def setup_munin():
     # sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
@@ -1383,16 +1387,38 @@ def cleanup_assets():
 # = Backups =
 # ===========
 
+def setup_redis_backups(name=None):
+    # crontab for redis backups
+    crontab = ("0 4 * * * python /srv/newsblur/utils/backups/backup_redis%s.py" % 
+                (("_%s"%name) if name else ""))
+    run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
+    run('crontab -l')
+
+def setup_mongo_backups():
+    # crontab for mongo backups
+    crontab = "0 4 * * * python /srv/newsblur/utils/backups/backup_mongo.py"
+    run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
+    run('crontab -l')
+    
+def setup_postgres_backups():
+    # crontab for postgres backups
+    crontab = """
+0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
+0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
+0 * * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +180 -delete"""
+
+    run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
+    run('crontab -l')
+    
+def backup_redis(name=None):
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
+        run('python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
+    
 def backup_mongo():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        # run('./mongo_backup.sh')
         run('python backup_mongo.py')
 
 def backup_postgresql():
-    # crontab for postgres master server
-    # 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-    # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
-    # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('python backup_psql.py')
 
