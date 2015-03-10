@@ -1413,16 +1413,13 @@ def setup_postgres_backups():
     run('crontab -l')
     
 def backup_redis(name=None):
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
+    run('python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
     
 def backup_mongo():
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('python backup_mongo.py')
+    run('python /srv/newsblur/utils/backups/backup_mongo.py')
 
 def backup_postgresql():
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('python backup_psql.py')
+    run('python /srv/newsblur/utils/backups/backup_psql.py')
 
 # ===============
 # = Calibration =
