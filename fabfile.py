@@ -38,6 +38,7 @@ env.SECRETS_PATH = "/srv/secrets-newsblur"
 env.VENDOR_PATH   = "/srv/code"
 env.user = 'sclay'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
+env.connection_attempts = 10
 
 # =========
 # = Roles =
@@ -197,11 +198,10 @@ def setup_common():
     setup_python()
     setup_supervisor()
     setup_hosts()
-    setup_usage_monitor()
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
-    setup_pymongo_repo()
+    # setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
     # setup_imaging()
@@ -226,6 +226,7 @@ def setup_app(skip_common=False):
     # config_node()
     deploy_web()
     config_monit_app()
+    setup_usage_monitor()
     done()
 
 def setup_app_image():
@@ -243,7 +244,7 @@ def setup_db(engine=None, skip_common=False):
         setup_common()
     setup_db_firewall()
     setup_db_motd()
-    copy_task_settings()
+    copy_db_settings()
     # if engine == "memcached":
     #     setup_memcached()
     if engine == "postgres":
@@ -265,6 +266,7 @@ def setup_db(engine=None, skip_common=False):
         setup_db_search()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
+    setup_usage_monitor()
     done()
 
     # if env.user == 'ubuntu':
@@ -280,6 +282,7 @@ def setup_task(queue=None, skip_common=False):
     setup_gunicorn(supervisor=False)
     update_gunicorn()
     config_monit_task()
+    setup_usage_monitor()
     done()
 
 def setup_task_image():
@@ -390,10 +393,6 @@ def setup_repo_local_settings():
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
-
-def copy_local_settings():
-    with cd(env.NEWSBLUR_PATH):
-        put('local_settings.py.server', 'local_settings.py')
 
 def setup_local_files():
     put("config/toprc", "./.toprc")
@@ -533,14 +532,17 @@ def setup_mongoengine_repo():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')), settings(warn_only=True):
         run('git co v0.8.2')
 
+def clear_pymongo_repo():
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridfs*')
+    
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
     # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
     #     sudo('python setup.py install')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridfs*')
+    clear_pymongo_repo()
     sudo('ln -sfn %s /usr/local/lib/python2.7/dist-packages/' %
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
 
