@@ -246,6 +246,17 @@
     }
 }
 
+- (NSString *)activeStoryView {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *storyViewPref = [userPreferences stringForKey:[self storyViewKey]];
+    NSLog(@"Story pref: %@ (%d)", storyViewPref, self.isRiverView);
+    if (storyViewPref) {
+        return storyViewPref;
+    } else {
+        return @"story";
+    }
+}
+
 - (NSString *)orderKey {
     if (self.isRiverView) {
         return [NSString stringWithFormat:@"folder:%@:order", self.activeFolder];
@@ -259,6 +270,14 @@
         return [NSString stringWithFormat:@"folder:%@:read_filter", self.activeFolder];
     } else {
         return [NSString stringWithFormat:@"%@:read_filter", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
+- (NSString *)storyViewKey {
+    if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:story_view", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:story_view", [self.activeFeed objectForKey:@"id"]];
     }
 }
 

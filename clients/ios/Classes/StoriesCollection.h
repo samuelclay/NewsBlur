@@ -75,8 +75,10 @@
 - (NSInteger)locationOfStoryId:(id)storyId;
 - (NSString *)activeOrder;
 - (NSString *)activeReadFilter;
+- (NSString *)activeStoryView;
 - (NSString *)orderKey;
 - (NSString *)readFilterKey;
+- (NSString *)storyViewKey;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;

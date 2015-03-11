@@ -239,6 +239,7 @@
     appDelegate.inStoryDetail = YES;
     self.noStoryMessage.hidden = YES;
     self.webView.hidden = NO;
+    self.inTextView = appDelegate.inTextView;
 
     [appDelegate hideShareView:NO];
 }
@@ -257,7 +258,7 @@
         NSLog(@"Already drawn story.");
 //        return;
     }
-    
+
     [self drawFeedGradient];
     
     NSString *shareBarString = [self getShareBar];
@@ -269,6 +270,9 @@
     NSString *fontSizeClass = @"NB-";
     NSString *lineSpacingClass = @"NB-line-spacing-";
     NSString *storyContent = [self.activeStory objectForKey:@"story_content"];
+    if (self.inTextView && [self.activeStory objectForKey:@"original_text"]) {
+        storyContent = [self.activeStory objectForKey:@"original_text"];
+    }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([userPreferences stringForKey:@"fontStyle"]){
@@ -376,9 +380,11 @@
     
     [self.webView setMediaPlaybackRequiresUserAction:NO];
     [self.webView loadHTMLString:htmlString baseURL:baseURL];
-    
+    [appDelegate.storyPageControl setTextButton:self];
+
+    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
+
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
-    self.inTextView = NO;
 }
 
 - (void)drawFeedGradient {
@@ -1926,15 +1932,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark -
 #pragma mark Text view
 
+- (void)showStoryView {
+    self.inTextView = NO;
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    [appDelegate.storyPageControl setTextButton:self];
+    [self drawStory];
+}
+
 - (void)fetchTextView {
     if (!self.activeStoryId || !self.activeStory) return;
-    if (self.inTextView) {
-        self.inTextView = NO;
-        [appDelegate.storyPageControl setTextButton:self];
-        [self drawStory];
-        return;
-    }
-    
+    self.inTextView = YES;
+    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"Fetching text...";
@@ -1946,11 +1954,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [request addPostValue:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
     [request setUserInfo:@{@"storyId": [self.activeStory objectForKey:@"id"]}];
     [request setDidFinishSelector:@selector(finishFetchTextView:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDidFailSelector:@selector(failedFetchText::)];
     [request setDelegate:self];
     [request startAsynchronous];
 }
 
+- (void)failedFetchText:(ASIHTTPRequest *)request {
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    [self informError:@"Could not fetch text"];
+    self.inTextView = NO;
+    [appDelegate.storyPageControl setTextButton:self];
+}
 
 - (void)finishFetchTextView:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
@@ -1962,10 +1976,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                              error:&error];
     
     if ([[results objectForKey:@"failed"] boolValue]) {
-        [MBProgressHUD hideHUDForView:self.webView animated:YES];
-        [self informError:@"Could not fetch text"];
-        self.inTextView = NO;
-        [appDelegate.storyPageControl setTextButton];
+        [self failedFetchText:request];
         return;
     }
     
@@ -1973,25 +1984,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
           isEqualToString:[self.activeStory objectForKey:@"id"]]) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
-        [appDelegate.storyPageControl setTextButton];
+        [appDelegate.storyPageControl setTextButton:self];
         return;
     }
     
-    NSString *originalText = [[[results objectForKey:@"original_text"]
-                               stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
-                              stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-story').innerHTML = '%@'; loadImages();",
-                          originalText];
-    NSMutableDictionary *newActiveStory = [appDelegate.activeStory mutableCopy];
+    NSMutableDictionary *newActiveStory = [self.activeStory mutableCopy];
     [newActiveStory setObject:[results objectForKey:@"original_text"] forKey:@"original_text"];
-    appDelegate.activeStory = newActiveStory;
-    
-    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    self.activeStory = newActiveStory;
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     
     self.inTextView = YES;
-    [appDelegate.storyPageControl setTextButton];
+    
+    [self drawStory];
+    
+    NSLog(@"Fetched Text: %@", [self.activeStory objectForKey:@"story_title"]);
 }
 
 

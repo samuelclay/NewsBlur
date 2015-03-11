@@ -268,6 +268,7 @@
     previousPage.view.hidden = YES;
     self.traverseView.alpha = 1;
     self.isAnimatedIntoPlace = NO;
+    currentPage.view.hidden = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
@@ -290,7 +291,7 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
-    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
+//    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
 }
 
@@ -568,8 +569,12 @@
             ABS(newIndex - self.scrollingToPage) <= 1) {
             [pageController initStory];
             [pageController drawStory];
+            NSLog(@"In text view render? %d", appDelegate.inTextView);
+            if (appDelegate.inTextView) {
+                [pageController fetchTextView];
+            }
         } else {
-            [pageController clearStory];
+//            [pageController clearStory];
 //            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
         }
     } else if (outOfBounds) {
@@ -886,6 +891,7 @@
 }
 
 - (void)setTextButton:(StoryDetailViewController *)storyViewController {
+    if (storyViewController != currentPage) return;
     if (storyViewController.pageIndex >= 0) {
         [buttonText setEnabled:YES];
         [buttonText setAlpha:1];
@@ -1001,8 +1007,21 @@
 
 - (IBAction)toggleView:(id)sender {
     [self endTouchDown:sender];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+
+    if ([appDelegate.storiesCollection.activeStoryView isEqualToString:@"story"]) {
+        [userPreferences setObject:@"text" forKey:[appDelegate.storiesCollection storyViewKey]];
+        [self.currentPage fetchTextView];
+        [self.nextPage fetchTextView];
+        [self.previousPage fetchTextView];
+    } else {
+        [userPreferences setObject:@"story" forKey:[appDelegate.storiesCollection storyViewKey]];
+        [self.currentPage showStoryView];
+        [self.nextPage showStoryView];
+        [self.previousPage showStoryView];
+    }
     
-    [self.currentPage fetchTextView];
+    [userPreferences synchronize];
 }
 
 #pragma mark -
