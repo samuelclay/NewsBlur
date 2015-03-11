@@ -16,8 +16,7 @@ public class SocialFeedReading extends Reading {
 
 	    socialFeed = (SocialFeed) getIntent().getSerializableExtra(EXTRA_SOCIAL_FEED);
 
-        setTitle(socialFeed.feedTitle);
-        UIUtils.setActionBarImage(this, socialFeed.photoUrl);
+        UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
 
         readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, socialFeed.userId);
 

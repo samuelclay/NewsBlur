@@ -54,13 +54,10 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
         this.fs = createFeedSet();
 
-		requestWindowFeature(Window.FEATURE_PROGRESS);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getFragmentManager();
-
-		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
 	}

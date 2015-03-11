@@ -32,8 +32,7 @@ public class SocialFeedItemsList extends ItemsList {
 	    socialFeed = (SocialFeed) getIntent().getSerializableExtra(EXTRA_SOCIAL_FEED);
 		super.onCreate(bundle);
 				
-		setTitle(socialFeed.feedTitle);
-        UIUtils.setActionBarImage(this, socialFeed.photoUrl);
+        UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
 		
 		if (itemListFragment == null) {
 			itemListFragment = SocialFeedItemListFragment.newInstance(socialFeed, currentState, getDefaultFeedView());

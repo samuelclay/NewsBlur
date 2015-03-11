@@ -5,6 +5,7 @@ import static android.graphics.Color.WHITE;
 import static android.graphics.PorterDuff.Mode.DST_IN;
 
 import android.app.Activity;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -17,9 +18,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 
 public class UIUtils {
@@ -80,35 +87,28 @@ public class UIUtils {
         }
     }
 
-    public static int getActionBarHeight(Context context) {    
-        TypedArray atts = context.getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
-        int h = (int) atts.getDimension(0, 0);
-        atts.recycle();
-        return h;
-    }
-
-    public static void setActionBarImage(final Activity activity, final String url) { 
-        new AsyncTask<Void, Void, Void>() {
+    public static void setCustomActionBar(final Activity activity, String url, String title) { 
+        activity.getActionBar().setDisplayShowCustomEnabled(true);
+        activity.getActionBar().setDisplayShowTitleEnabled(false);
+        activity.getActionBar().setDisplayShowHomeEnabled(false);
+        View v = LayoutInflater.from(activity).inflate(R.layout.actionbar_custom_icon, null);
+        TextView titleView = ((TextView) v.findViewById(R.id.actionbar_text));
+        titleView.setText(title);
+        titleView.setOnClickListener(new OnClickListener() {
             @Override
-            protected Void doInBackground(Void... arg) {
-                Bitmap icon = ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().tryGetImage(url);
-                if (icon != null) {
-                    // If setLogo() is called with a raw image, it isn't scaled up or down, but drawn raw. Wrapping
-                    // the icon in a BitmapDrawable lets it scale up.  Note, though, that the iconSize is actually
-                    // ignored on virtually all platforms and the actionbar re-resizes it up to full height, so 
-                    // attempting to add padding will silently fail.
-                    int iconSize = getActionBarHeight(activity);
-                    Bitmap scaledIcon = Bitmap.createScaledBitmap(icon, iconSize, iconSize, false);
-                    final BitmapDrawable draw = new BitmapDrawable(activity.getResources(), scaledIcon);
-                    activity.runOnUiThread(new Runnable() {
-                        public void run() {
-                            activity.getActionBar().setLogo(draw);
-                        }
-                    });
-                }
-                return null;
+            public void onClick(View v) {
+                activity.finish();
             }
-        }.execute();
+        });
+        ImageView iconView = ((ImageView) v.findViewById(R.id.actionbar_icon));
+        ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().displayImage(url, iconView, false);
+        iconView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.finish();
+            }
+        });
+        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
     }
 
     /**
