@@ -173,7 +173,7 @@ class PageImporter(object):
             response.connection.close()
         except requests.exceptions.TooManyRedirects:
             response = requests.get(story_permalink)
-        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error), e:
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError), e:
             logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed, e))
             return
         try:
