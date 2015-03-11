@@ -111,6 +111,8 @@ def extract_user_agent(request):
     elif 'blar' in user_agent:
         platform = 'Blar'
     elif 'android' in user_agent:
+        platform = 'androd'
+    elif 'Android app' in user_agent:
         platform = 'Androd'
     elif 'pluggio' in user_agent:
         platform = 'Plugio'
