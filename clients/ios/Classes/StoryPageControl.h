@@ -122,6 +122,6 @@
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
 - (IBAction)tapProgressBar:(id)sender;
-- (IBAction)toggleView:(id)sender;
+- (IBAction)toggleTextView:(id)sender;
 
 @end

@@ -1005,17 +1005,19 @@
     [self.currentPage subscribeToBlurblog];
 }
 
-- (IBAction)toggleView:(id)sender {
+- (IBAction)toggleTextView:(id)sender {
     [self endTouchDown:sender];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
     if ([appDelegate.storiesCollection.activeStoryView isEqualToString:@"story"]) {
         [userPreferences setObject:@"text" forKey:[appDelegate.storiesCollection storyViewKey]];
+        appDelegate.inTextView = YES;
         [self.currentPage fetchTextView];
         [self.nextPage fetchTextView];
         [self.previousPage fetchTextView];
     } else {
         [userPreferences setObject:@"story" forKey:[appDelegate.storiesCollection storyViewKey]];
+        appDelegate.inTextView = NO;
         [self.currentPage showStoryView];
         [self.nextPage showStoryView];
         [self.previousPage showStoryView];
