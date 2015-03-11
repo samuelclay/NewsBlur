@@ -839,16 +839,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         return $folders;
     },
     
-    resize_modal: function() {
+    resize_modal: function(last_height) {
         var $scroll = $('.NB-tab.NB-active', this.$modal);
         var $modal = this.$modal;
         var $modal_container = $modal.closest('.simplemodal-container');
         
         if ($modal.height() > $modal_container.height() - 24) {
             $scroll.height($scroll.height() - 5);
-            this.resize_modal();
+            if (last_height && $scroll.height() == last_height) {
+                console.log(['Too many resizes!', last_height]);
+                return;
+            }
+            if (!$scroll.height()) return;
+            this.resize_modal($scroll.height());
         }
-        
     },
     
     select_preferences: function() {
