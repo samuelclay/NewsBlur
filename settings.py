@@ -489,6 +489,9 @@ REDIS_PUBSUB = {
 REDIS_STORY = {
     'host': 'db_redis_story',
 }
+REDIS_SESSIONS = {
+    'host': 'db_redis_sessions',
+}
 
 CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
@@ -612,7 +615,7 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 BROKER_BACKEND = "redis"
 BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
 CELERY_RESULT_BACKEND = BROKER_URL
-SESSION_REDIS_HOST = REDIS['host']
+SESSION_REDIS_HOST = REDIS_SESSIONS['host']
 
 CACHES = {
     'default': {
