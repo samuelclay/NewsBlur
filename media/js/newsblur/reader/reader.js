@@ -895,7 +895,7 @@
             
             this.scroll_in_story(scroll_height, direction);
             
-            if (!this.active_story) {
+            if (!this.active_story || !this.active_story.get('selected')) {
                 this.open_next_unread_story_across_feeds();                
             } else if (_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) {
                 if (direction > 0) {
@@ -922,7 +922,7 @@
                 }
             } else if (_.contains(['list', 'grid'], NEWSBLUR.assets.preference('story_layout'))) {
                 var scroll_top = this.$s.$story_titles.scrollTop();
-                var $story = this.$s.$story_titles.find('.NB-story-title.NB-selected').closest('.NB-story-title-container');
+                var $story = this.active_story.story_title_view.$el;
                 var story_height = $story.height();
                 var story_offset = $story.position().top;
                  console.log(['space list', $story[0], scroll_top, story_height, story_offset, story_height+story_offset-scroll_height, page_height]);
