@@ -897,7 +897,7 @@
             
             if (!this.active_story) {
                 this.open_next_unread_story_across_feeds();                
-            } else if (NEWSBLUR.assets.preference('story_layout') == 'split') {
+            } else if (_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) {
                 if (direction > 0) {
                     if (feed_view) {
                         var scroll_top = this.$s.$feed_scroll.scrollTop();
