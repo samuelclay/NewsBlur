@@ -19,6 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/actionbar_icon"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textSize="18sp" />
 
 </RelativeLayout>
