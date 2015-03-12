@@ -569,7 +569,7 @@
             ABS(newIndex - self.scrollingToPage) <= 1) {
             [pageController initStory];
             [pageController drawStory];
-            NSLog(@"In text view render? %d", appDelegate.inTextView);
+//            NSLog(@"In text view render? %d", appDelegate.inTextView);
             if (appDelegate.inTextView) {
                 [pageController fetchTextView];
             }
@@ -1008,9 +1008,14 @@
 - (IBAction)toggleTextView:(id)sender {
     [self endTouchDown:sender];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-
-    if ([appDelegate.storiesCollection.activeStoryView isEqualToString:@"story"]) {
-        [userPreferences setObject:@"text" forKey:[appDelegate.storiesCollection storyViewKey]];
+    BOOL failedText = [appDelegate.storiesCollection.activeStoryView isEqualToString:@"text"] &&
+                      !currentPage.inTextView;
+    
+    if (!currentPage.inTextView) {
+        if (!failedText) {
+            // Only lock in Text view if not a failed text fetch
+            [userPreferences setObject:@"text" forKey:[appDelegate.storiesCollection storyViewKey]];
+        }
         appDelegate.inTextView = YES;
         [self.currentPage fetchTextView];
         [self.nextPage fetchTextView];
