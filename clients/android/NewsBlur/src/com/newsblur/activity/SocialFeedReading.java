@@ -3,22 +3,23 @@ package com.newsblur.activity;
 import android.os.Bundle;
 
 import com.newsblur.database.MixedFeedsReadingAdapter;
+import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.UIUtils;
 
 public class SocialFeedReading extends Reading {
 
-    private String userId;
-    private String username;
+    private SocialFeed socialFeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
-        username = getIntent().getStringExtra(Reading.EXTRA_USERNAME);
+	    socialFeed = (SocialFeed) getIntent().getSerializableExtra(EXTRA_SOCIAL_FEED);
 
-        setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
+        setTitle(socialFeed.feedTitle);
+        UIUtils.setActionBarImage(this, socialFeed.photoUrl);
 
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, userId);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, socialFeed.userId);
 
         getLoaderManager().initLoader(0, null, this);
     }

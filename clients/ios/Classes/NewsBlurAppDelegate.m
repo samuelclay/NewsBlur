@@ -118,6 +118,7 @@
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize inStoryDetail;
+@synthesize inTextView;
 @synthesize isPresentingActivities;
 @synthesize activeComment;
 @synthesize activeShareType;
@@ -1008,7 +1009,7 @@
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
-    self.inFeedDetail = YES;    
+    self.inFeedDetail = YES;
     popoverHasFeedView = YES;
 
     [feedDetailViewController resetFeedDetail];

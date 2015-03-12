@@ -268,6 +268,7 @@
     previousPage.view.hidden = YES;
     self.traverseView.alpha = 1;
     self.isAnimatedIntoPlace = NO;
+    currentPage.view.hidden = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
@@ -290,7 +291,7 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
-    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
+//    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
 }
 
@@ -568,8 +569,12 @@
             ABS(newIndex - self.scrollingToPage) <= 1) {
             [pageController initStory];
             [pageController drawStory];
+//            NSLog(@"In text view render? %d", appDelegate.inTextView);
+            if (appDelegate.inTextView) {
+                [pageController fetchTextView];
+            }
         } else {
-            [pageController clearStory];
+//            [pageController clearStory];
 //            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
         }
     } else if (outOfBounds) {
@@ -882,7 +887,12 @@
 }
 
 - (void)setTextButton {
-    if (currentPage.pageIndex >= 0) {
+    [self setTextButton:currentPage];
+}
+
+- (void)setTextButton:(StoryDetailViewController *)storyViewController {
+    if (storyViewController != currentPage) return;
+    if (storyViewController.pageIndex >= 0) {
         [buttonText setEnabled:YES];
         [buttonText setAlpha:1];
         [buttonSend setEnabled:YES];
@@ -894,7 +904,7 @@
         [buttonSend setAlpha:.4];
     }
     
-    if (currentPage.inTextView) {
+    if (storyViewController.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text_on.png"]
                               forState:nil];
@@ -995,10 +1005,30 @@
     [self.currentPage subscribeToBlurblog];
 }
 
-- (IBAction)toggleView:(id)sender {
+- (IBAction)toggleTextView:(id)sender {
     [self endTouchDown:sender];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL failedText = [appDelegate.storiesCollection.activeStoryView isEqualToString:@"text"] &&
+                      !currentPage.inTextView;
     
-    [self.currentPage fetchTextView];
+    if (!currentPage.inTextView) {
+        if (!failedText) {
+            // Only lock in Text view if not a failed text fetch
+            [userPreferences setObject:@"text" forKey:[appDelegate.storiesCollection storyViewKey]];
+        }
+        appDelegate.inTextView = YES;
+        [self.currentPage fetchTextView];
+        [self.nextPage fetchTextView];
+        [self.previousPage fetchTextView];
+    } else {
+        [userPreferences setObject:@"story" forKey:[appDelegate.storiesCollection storyViewKey]];
+        appDelegate.inTextView = NO;
+        [self.currentPage showStoryView];
+        [self.nextPage showStoryView];
+        [self.previousPage showStoryView];
+    }
+    
+    [userPreferences synchronize];
 }
 
 #pragma mark -

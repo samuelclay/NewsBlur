@@ -372,6 +372,8 @@
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
 
+    appDelegate.inTextView = [appDelegate.storiesCollection.activeStoryView isEqualToString:@"text"];
+
 //    [self testForTryFeed];
 }
 
@@ -379,7 +381,7 @@
     [super viewDidAppear:animated];
     if (appDelegate.inStoryDetail && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
-        [appDelegate.storyPageControl resetPages];
+//        [appDelegate.storyPageControl resetPages];
         [self checkScroll];
     }
     

@@ -12,7 +12,7 @@ import hashlib
 from apps.push import signals
 from apps.rss_feeds.models import Feed
 from utils import log as logging
-from utils.feed_functions import timelimit
+from utils.feed_functions import timelimit, TimeoutError
 
 DEFAULT_LEASE_SECONDS = (10 * 24 * 60 * 60)  # 10 days
 
@@ -155,9 +155,14 @@ class PushSubscription(models.Model):
                               unicode(self.feed)[:30], hub_url, self_url))
                 expiration_time = self.lease_expires - datetime.now()
                 seconds = expiration_time.days*86400 + expiration_time.seconds
-                PushSubscription.objects.subscribe(
-                    self_url, feed=self.feed, hub=hub_url,
-                    lease_seconds=seconds)
+                try:
+                    PushSubscription.objects.subscribe(
+                        self_url, feed=self.feed, hub=hub_url,
+                        lease_seconds=seconds)
+                except TimeoutError, e:
+                    logging.debug(u'   ---> [%-30s] ~FR~BKTimed out updating PuSH hub/topic: %s / %s' % (
+                                  unicode(self.feed)[:30], hub_url, self_url))
+                    
                     
     def __unicode__(self):
         if self.verified:

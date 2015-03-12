@@ -23,6 +23,7 @@ from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifier
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.text_importer import TextImporter
+from apps.rss_feeds.page_importer import PageImporter
 from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
 from vendor import tweepy
@@ -1401,6 +1402,7 @@ class MSharedStory(mongo.Document):
     story_original_content   = mongo.StringField()
     story_original_content_z = mongo.BinaryField()
     original_text_z          = mongo.BinaryField()
+    original_page_z          = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -2218,6 +2220,17 @@ class MSharedStory(mongo.Document):
             original_text = zlib.decompress(original_text_z)
         
         return original_text
+
+    def fetch_original_page(self, force=False, request=None, debug=False):
+        if not self.original_page_z or force:
+            feed = Feed.get_by_id(self.story_feed_id)
+            importer = PageImporter(request=request, feed=feed, story=self)
+            original_page = importer.fetch_story()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story page, ~SBfound.")
+            original_page = zlib.decompress(self.original_page_z)
+        
+        return original_page
 
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()

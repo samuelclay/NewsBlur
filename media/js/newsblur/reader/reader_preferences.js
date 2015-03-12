@@ -907,9 +907,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         }
         if ($modal.height() > $modal_container.height() - 24) {
             $scroll.height($scroll.height() - 5);
+            if (!$scroll.height()) return;
             this.resize_modal($modal.height());
         }
-        
     },
     
     select_preferences: function() {

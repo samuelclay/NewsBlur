@@ -95,6 +95,7 @@
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
     BOOL inStoryDetail;
+    BOOL inTextView;
     BOOL inFindingStoryMode;
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
@@ -198,6 +199,7 @@
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
+@property (nonatomic, readwrite) BOOL inTextView;
 @property (nonatomic, readwrite) BOOL isPresentingActivities;
 @property (readwrite) NSDictionary * activeStory;
 @property (readwrite) NSURL * activeOriginalStoryURL;

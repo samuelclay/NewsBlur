@@ -20,5 +20,5 @@ print 'Backing up PostgreSQL: %s' % cmd
 os.system(cmd)
 
 print 'Uploading %s to S3...' % filename
-s3.save_file_in_s3(filename)
+s3.save_file_in_s3(filename, name="postgres/%s" % filename)
 os.remove(filename)
