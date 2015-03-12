@@ -83,6 +83,9 @@ public class APIManager {
 	}
 
 	public NewsBlurResponse login(final String username, final String password) {
+        // This call should be pretty rare, but is expensive on the server side.  Log it
+        // at an above-debug level so it will be noticed if it ever gets called too often.
+        Log.i(this.getClass().getName(), "calling login API");
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
