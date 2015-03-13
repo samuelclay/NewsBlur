@@ -197,7 +197,7 @@ static UIFont *userLabelFont;
         [appDelegate setSelectedIntelligence:0];
     }
     
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+//    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {

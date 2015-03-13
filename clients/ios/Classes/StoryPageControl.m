@@ -84,6 +84,8 @@
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;
     
+    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
+    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));
 	[self.scrollView addSubview:currentPage.view];
 	[self.scrollView addSubview:nextPage.view];
     [self.scrollView addSubview:previousPage.view];
@@ -94,6 +96,10 @@
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
+    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
+    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
+    [self.scrollView sizeToFit];
+    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
     
     popoverClass = [WYPopoverController class];
     
@@ -291,7 +297,7 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
-//    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
+    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
 }
 
@@ -403,7 +409,7 @@
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
     
-//    NSLog(@"Pages are at: %f / %f / %f", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x);
+    NSLog(@"Pages are at: %f / %f / %f (%@)", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x, NSStringFromCGRect(frame));
     currentPage.view.frame = self.scrollView.frame;
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;
@@ -541,7 +547,7 @@
     
     NSInteger wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
-    NSLog(@"Applied Index: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d]", (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds);
+    NSLog(@"Applied Index: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d] %@", (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds, NSStringFromCGRect(self.scrollView.frame));
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
