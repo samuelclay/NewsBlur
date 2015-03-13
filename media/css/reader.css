@@ -1757,16 +1757,29 @@ a img {
 
 }
 
-#story_titles .NB-story-title .story_title .NB-storytitles-author {
+#story_titles .NB-story-title .NB-storytitles-author {
     padding-left: 12px;
     color: #808080;
+    font-size: 11px;
+}
+.NB-theme-feed-size-xs #story_titles .NB-story-title .NB-storytitles-author {
+    font-size: 9px;
+}
+.NB-theme-feed-size-s #story_titles .NB-story-title .NB-storytitles-author {
     font-size: 10px;
 }
-#story_titles .NB-story-title.read .story_title .NB-storytitles-author {
+.NB-theme-feed-size-l #story_titles .NB-story-title .NB-storytitles-author {
+    font-size: 12px;
+}
+.NB-theme-feed-size-xl #story_titles .NB-story-title .NB-storytitles-author {
+    font-size: 13px;
+}
+
+#story_titles .NB-story-title.read .NB-storytitles-author {
     color: #B6B6B6;
 }
 
-#story_titles .NB-story-title.NB-selected .story_title .NB-storytitles-author {
+#story_titles .NB-story-title.NB-selected .NB-storytitles-author {
 /*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
 }
 
@@ -1878,22 +1891,26 @@ a img {
     position: absolute;
     left: 20px;
     top: 0;
-    height: 12px;
+    height: 14px;
     overflow: hidden;
     width: 100px;
     line-height: 1.3em;
 }
 .NB-theme-feed-size-xs #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 9px;
+    height: 12px;
 }
 .NB-theme-feed-size-m #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 11px;
+    height: 15px;
 }
 .NB-theme-feed-size-l #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 12px;    
+    height: 15px;
 }
 .NB-theme-feed-size-xl #story_titles .NB-story-title .NB-story-feed .feed_title {
     font-size: 12px;
+    height: 15px;
 }
 
 #story_titles .NB-story-title.NB-selected .NB-story-feed .feed_title {
@@ -2029,6 +2046,7 @@ a img {
     background: -moz-linear-gradient(center top, #F8F8F8 0%, #F1F6F0 100%);
     background-image:  no-repeat center center;
     overflow: hidden;
+    clear: both;
 }
 .NB-end-line.NB-short {
     height: 8px;
@@ -2047,11 +2065,226 @@ a img {
     display: none;
 }
 /* ============================= */
-/* = Story Detial in List View = */
+/* = Story Detail in List View = */
 /* ============================= */
 
 .NB-story-title-container .NB-feed-story {
 }
+
+/* ============================= */
+/* = Story Detail in Grid View = */
+/* ============================= */
+
+#story_titles.NB-layout-grid {
+    background-color: #F7F8F5;
+}
+#story_titles.NB-layout-grid .NB-story-titles {
+    overflow: hidden;
+}
+#story_titles.NB-layout-grid .NB-story-content-container {
+    background-color: white;
+}
+#story_titles.NB-layout-grid .NB-end-line {
+    margin-top: 24px;
+    float: left;
+    width: 100%;
+}
+#story_titles.NB-layout-grid .NB-story-title-container {
+}
+#story_titles.NB-layout-grid .NB-story-title-container.NB-selected {
+    clear: both;
+    overflow: hidden;
+}
+#story_titles.NB-layout-grid .NB-story-title-container.NB-selected .NB-story-title {
+    margin-top: 24px;
+}
+
+#story_titles .NB-story-grid {
+    margin: 3% 0 0 3%;
+    border: 1px solid rgba(0, 0, 0, .2);
+    position: relative;
+    float: left;
+    width: 42%;
+    height: 360px;
+    padding: 0;
+    border-radius: 2px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+#story_titles.NB-layout-grid.NB-grid-columns-1 .NB-story-grid,
+#story_titles.NB-extra-narrow-content .NB-story-grid {
+    width: 94%;
+}
+#story_titles.NB-layout-grid.NB-grid-columns-2 .NB-story-grid,
+#story_titles.NB-narrow-content .NB-story-grid {
+    width: 44%;
+}
+#story_titles.NB-layout-grid.NB-grid-columns-3 .NB-story-grid,
+#story_titles.NB-wide-content .NB-story-grid {
+    width: 29%;
+}
+#story_titles.NB-layout-grid.NB-grid-columns-4 .NB-story-grid,
+#story_titles.NB-extra-wide-content .NB-story-grid {
+    width: 21%;
+}
+.NB-view-river #story_titles .NB-story-grid {
+    padding-left: 0;
+    border: 1px solid rgba(0, 0, 0, .2);
+}
+#story_titles .NB-story-grid,
+#story_titles .NB-story-title.NB-story-grid:hover {
+    border: 1px solid rgba(0, 0, 0, .2);
+}
+
+#story_titles .NB-story-grid.NB-selected {
+    clear: both;
+}
+
+#story_titles .NB-story-grid .NB-storytitles-content {
+    position: relative;
+    margin: 12px 24px 8px 30px;
+    height: 100%;
+    z-index: 0;
+}
+#story_titles .NB-story-grid a.story_title {
+    padding: 2px 0 0 0;
+    margin: 0;
+}
+
+#story_titles .NB-story-grid .NB-storytitles-title {
+    font-size: 16px;
+    line-height: 1.3em;
+    padding: 0;
+}
+.NB-theme-feed-size-xs #story_titles .NB-story-grid .NB-storytitles-title {
+    font-size: 14px;
+}
+.NB-theme-feed-size-s #story_titles .NB-story-grid .NB-storytitles-title {
+    font-size: 15px;
+}
+.NB-theme-feed-size-l #story_titles .NB-story-grid .NB-storytitles-title {
+    font-size: 17px;
+}
+.NB-theme-feed-size-xl #story_titles .NB-story-grid .NB-storytitles-title {
+    font-size: 18px;
+}
+
+#story_titles .NB-story-grid .NB-storytitles-content-preview {
+    margin: 12px 0 0 0;
+}
+#story_titles .NB-story-grid .NB-storytitles-story-image-container {
+    margin-left: 8px;
+}
+#story_titles .NB-story-grid .NB-storytitles-story-image {
+    display: none;
+    width: 100%;
+    height: 186px;
+    background-size: cover;
+    background-position: 50% 50%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+#story_titles .NB-story-grid.read .NB-storytitles-story-image {
+    opacity: .5;
+}
+#story_titles .NB-story-grid.NB-selected .NB-storytitles-story-image {
+    display: none;
+}
+#story_titles .NB-story-grid .NB-storytitles-feed-border-inner,
+#story_titles .NB-story-grid .NB-storytitles-feed-border-outer {
+/*    height: 4px;*/
+/*    width: 100%;*/
+/*    position: static;*/
+    z-index: 1;
+}
+#story_titles .NB-story-grid.read .NB-storytitles-feed-border-inner,
+#story_titles .NB-story-grid.read .NB-storytitles-feed-border-outer {
+    opacity: .2;
+}
+#story_titles .NB-story-grid .NB-storytitles-content-preview {
+    height: auto;
+    -webkit-line-clamp: inherit;
+    font-size: 13px;
+    line-height: 1.44em;
+}
+.NB-theme-feed-size-xs #story_titles .NB-story-grid .NB-storytitles-content-preview {
+    font-size: 11px;
+}
+.NB-theme-feed-size-s #story_titles .NB-story-grid .NB-storytitles-content-preview {
+    font-size: 12px;
+}
+.NB-theme-feed-size-l #story_titles .NB-story-grid .NB-storytitles-content-preview {
+    font-size: 14px;
+}
+.NB-theme-feed-size-xl #story_titles .NB-story-grid .NB-storytitles-content-preview {
+    font-size: 15px;
+}
+
+#story_titles .NB-story-grid.read .NB-storytitles-content-preview {
+    color: #D6D6DE;
+}
+#story_titles .NB-story-grid.NB-story-title .NB-storytitles-grid-bottom {
+    position: absolute;
+    bottom: 0;
+    top: inherit;
+    left: 0;
+    background-color: #FDFCFA;
+    width: 100%;    
+    padding: 12px 6px 6px;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+#story_titles .NB-story-grid:not(.read):hover .NB-storytitles-grid-bottom {
+    background-color: #F7F7F6;
+}
+#story_titles .NB-story-grid.NB-story-title .NB-storytitles-author {
+    float: left;
+    display: block;
+    padding: 0 4px 2px 24px;
+    line-height: 16px;
+}
+#story_titles .NB-story-grid .story_date {
+    position: static;
+    width: auto;
+    float: right;
+    display: block;
+    padding: 0 4px 0 0;
+}
+#story_titles .NB-story-grid .NB-storytitles-sentiment,
+#story_titles .NB-story-grid .NB-story-manage-icon {
+    left: -28px;
+}
+#story_titles .NB-story-grid .NB-story-feed {
+    position: static;
+    margin: 10px 0;
+    height: auto;
+    overflow: hidden;
+}
+#story_titles .NB-story-grid .story_title {
+    position: relative;
+}
+#story_titles .NB-story-grid .NB-story-feed .feed_favicon {
+    margin: 0 4px 0 0;
+    float: left;
+    position: static;
+}
+#story_titles .NB-story-grid .NB-story-feed .feed_title {
+    width: auto;
+    -webkit-line-clamp: 1;
+    height: 16px;
+    margin: 2px 0 0 0;
+    line-height: 16px;
+    text-overflow: ellipsis;
+}
+#story_titles .NB-story-grid .feed_favicon,
+#story_titles .NB-story-grid .feed_title {
+    position: static;
+}
+
 
 /* =================== */
 /* = Story Navigator = */
@@ -4341,6 +4574,16 @@ background: transparent;
     background: transparent url('/media/img/icons/circular/nav_story_list_active.png') no-repeat 0 0;
     background-size: 18px 14px;
 }
+.NB-taskbar .NB-task-layout-grid .NB-task-image {
+    left: 12px;
+    background: transparent url('/media/img/icons/circular/nav_story_grid.png') no-repeat 0 0;
+    background-size: 18px 14px;
+}
+.NB-taskbar .NB-task-layout-grid.NB-active .NB-task-image {
+    left: 12px;
+    background: transparent url('/media/img/icons/circular/nav_story_grid_active.png') no-repeat 0 0;
+    background-size: 18px 14px;
+}
 
 .NB-taskbar .NB-task-return .NB-task-image {
     background: transparent url('/media/embed/icons/silk/arrow_undo.png') no-repeat 0 0;
@@ -4576,6 +4819,24 @@ background: transparent;
 }
 .NB-options-single-story-on .NB-icon {
     background: transparent url("/media/embed/icons/silk/text_horizontalrule.png") no-repeat center center;
+}
+
+.NB-style-popover .NB-options-grid-columns {
+    margin-top: 6px;
+}
+.NB-style-popover .NB-grid-columns-option {
+    min-width: 23px;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+.NB-style-popover .NB-grid-columns-option .NB-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin: 1px 6px -2px 0;
+    vertical-align: bottom;
+    background: transparent url('/media/img/icons/circular/nav_story_grid_active.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 /* ======================= */
@@ -9083,16 +9344,20 @@ form.opml_import_form input {
   color: #808080;
   margin: 4px 30px 0px 0px;
 }
+.NB-modal-preferences .NB-preference .NB-preference-sublabel-link {
+  font-size: 11px;
+  margin: 4px 30px 0px 0px;
+}
 
 .NB-modal-preferences .NB-preference .NB-preference-options input {
   clear: both;
   float: left;
 }
 .NB-modal-preferences .NB-preference .NB-preference-options input[type=radio] {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 .NB-modal-preferences .NB-preference .NB-preference-options input[type=checkbox] {
-  margin-top: 5px;
+  margin-top: 2px;
 }
 .NB-modal-preferences .NB-preference .NB-preference-options label {
   padding-left: 4px;
@@ -9275,7 +9540,7 @@ form.opml_import_form input {
 
 .NB-modal-preferences .segmented-control {
     display: block;
-    margin: 4px 0 12px 24px;
+    margin: 4px 0 12px 0;
     float: left;
 /*    height: 14px;*/
     width: auto;
@@ -9296,7 +9561,7 @@ form.opml_import_form input {
     max-width: 240px;
 }
 .NB-modal-preferences .NB-preference .NB-preference-options.NB-view-settings input[type=radio] {
-    margin: 3px 6px 0 2px;
+    margin: 2px 6px 0 2px;
 }
 
 

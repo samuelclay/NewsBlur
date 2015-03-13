@@ -33,11 +33,17 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return score_name;
     },
     
-    content_preview: function(attribute) {
+    content_preview: function(attribute, length) {
         var content = this.get(attribute || 'story_content');
         content = content && Inflector.stripTags(content);
         
-        return _.string.prune(_.string.trim(content), 150, "...");
+        return _.string.prune(_.string.trim(content), length || 150, "...");
+    },
+    
+    image_url: function() {
+        if (this.get('image_urls').length) {
+            return this.get('image_urls')[0];
+        }
     },
     
     formatted_short_date: function() {

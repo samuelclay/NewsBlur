@@ -1156,7 +1156,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (typeof value == 'undefined') {
             var pref = NEWSBLUR.Preferences[preference];
             if ((/\d+/).test(pref)) return parseInt(pref, 10);
-            if (preference == 'story_layout' && pref == 'grid') pref = 'list';
             return pref;
         }
         
@@ -1201,6 +1200,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             var s = setting.substr(0, 1);
             var feed = NEWSBLUR.Preferences.view_settings[feed_id+''];
             var default_setting = NEWSBLUR.Preferences['default_' + setting];
+            if (setting == 'layout') default_setting = NEWSBLUR.Preferences['story_layout'];
             if (setting == 'read_filter' && _.string.contains(feed_id, 'river:')) {
                 default_setting = 'unread';
             }
@@ -1212,7 +1212,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             view_settings = {'view': view_settings};
         }
         var params = {'feed_id': feed_id+''};
-        _.each(['view', 'order', 'read_filter'], function(facet) {
+        _.each(['view', 'order', 'read_filter', 'layout'], function(facet) {
             if (setting[facet]) {
                 view_settings[facet.substr(0, 1)] = setting[facet];
                 params['feed_'+facet+'_setting'] = setting[facet];
@@ -1224,6 +1224,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/profile/set_view_setting', params, callback, null);
             return true;
         }
+    },
+    
+    clear_view_settings: function(view_setting_type, callback) {
+        var pre_callback = _.bind(function(data) {
+            if (data.view_settings) {
+                NEWSBLUR.Preferences.view_settings = data.view_settings;
+            }
+            callback(data);
+        }, this);
+        
+        this.make_request('/profile/clear_view_setting', {
+            view_setting_type: view_setting_type
+        }, pre_callback, null);
+        
     },
     
     collapsed_folders: function(folder_title, is_collapsed, callback) {

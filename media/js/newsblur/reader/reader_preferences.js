@@ -334,6 +334,43 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-feeds' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-layout' }, [
+                        $.make('div', { className: 'NB-preference-options NB-view-settings' }, [
+                            $.make('div', { className: "" }, [
+                                $.make('label', { 'for': 'NB-preference-layout-1' }, [
+                                    $.make('input', { id: 'NB-preference-layout-1', type: 'radio', name: 'story_layout', value: 'full' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_full_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Full")
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-2' }, [
+                                    $.make('input', { id: 'NB-preference-layout-2', type: 'radio', name: 'story_layout', value: 'split' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_split_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Split")
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-3' }, [
+                                    $.make('input', { id: 'NB-preference-layout-3', type: 'radio', name: 'story_layout', value: 'list' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_list_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "List")
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-4' }, [
+                                    $.make('input', { id: 'NB-preference-layout-4', type: 'radio', name: 'story_layout', value: 'grid' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_grid_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Grid")
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Default layout',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.'),
+                            $.make('div', { className: 'NB-clear-overrides-layout NB-preference-sublabel-link NB-splash-link' }, "Clear all overrides")
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-view' }, [
                         $.make('div', { className: 'NB-preference-options NB-view-settings' }, [
                             $.make('div', { className: "NB-view-setting-original" }, [
@@ -367,7 +404,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Default view',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.')
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.'),
+                            $.make('div', { className: 'NB-clear-overrides-view NB-preference-sublabel-link NB-splash-link' }, "Clear all overrides")
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-view-setting' }, [
@@ -403,6 +441,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'When opening a site'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-markreadstoryscroll' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadstoryscroll-1', type: 'radio', name: 'mark_read_on_scroll_titles', value: "true" }),
+                                $.make('label', { 'for': 'NB-preference-markreadstoryscroll-1' }, [
+                                    'Mark stories as read when scrolled past.'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadstoryscroll-0', type: 'radio', name: 'mark_read_on_scroll_titles', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-markreadstoryscroll-0' }, [
+                                    'Don\'t automatically mark stories as read.'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Mark stories read on scroll'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-showcontentpreview' }, [
@@ -839,19 +896,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         return $folders;
     },
     
-    resize_modal: function(last_height) {
+    resize_modal: function(old_height) {
         var $scroll = $('.NB-tab.NB-active', this.$modal);
         var $modal = this.$modal;
         var $modal_container = $modal.closest('.simplemodal-container');
         
+        if ($modal.height() == old_height) {
+            console.log(['Modal resize doing nothing, escaping']);
+            return;
+        }
         if ($modal.height() > $modal_container.height() - 24) {
             $scroll.height($scroll.height() - 5);
-            if (last_height && $scroll.height() == last_height) {
-                console.log(['Too many resizes!', last_height]);
-                return;
-            }
             if (!$scroll.height()) return;
-            this.resize_modal($scroll.height());
+            this.resize_modal($modal.height());
         }
     },
     
@@ -870,6 +927,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('select[name=default_folder] option', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.default_folder) {
                 $(this).attr('selected', true);
+                return false;
+            }
+        });
+        $('input[name=story_layout]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.story_layout) {
+                $(this).attr('checked', true);
                 return false;
             }
         });
@@ -911,6 +974,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=open_feed_action]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=mark_read_on_scroll_titles]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.mark_read_on_scroll_titles) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -1182,7 +1251,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.enable_save();
     },
     
-    
+    clear_overrides: function(type) {
+        var $sublabel = $('.NB-clear-overrides-' + type, this.$modal);
+        $sublabel.text('Resetting...').removeClass('NB-splash-link');
+        NEWSBLUR.assets.clear_view_settings(type, _.bind(function(data) {
+            $sublabel.text('Cleared ' + Inflector.pluralize('override', data.removed, true) + '.');
+        }, this));
+    },
     
     // ===========
     // = Actions =
@@ -1240,6 +1315,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             e.preventDefault();
             var read_filter = $t.hasClass('NB-preference-view-setting-read-filter-unread') ? 'unread' : 'all';
             self.change_view_setting('read_filter', read_filter);
+        });
+        $.targetIs(e, { tagSelector: '.NB-clear-overrides-view' }, function($t, $p) {
+            e.preventDefault();
+            self.clear_overrides('view');
+        });
+        $.targetIs(e, { tagSelector: '.NB-clear-overrides-layout' }, function($t, $p) {
+            e.preventDefault();
+            self.clear_overrides('layout');
         });
     },
     
