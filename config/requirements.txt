@@ -42,7 +42,7 @@ seacucumber==1.5
 South==0.7.6
 stripe==1.12.2
 django-oauth-toolkit==0.7.2
-django-cors-headers==0.12
+django-cors-headers==1.0.0
 pyOpenSSL==0.14
 pyasn1==0.1.7
 ndg-httpsclient==0.3.2
