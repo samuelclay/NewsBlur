@@ -77,7 +77,7 @@ DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
-AUTO_ENABLE_NEW_USERS = False
+AUTO_ENABLE_NEW_USERS = True
 PAYPAL_TEST           = False
 
 # ===============
@@ -109,9 +109,9 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.UserAgentBanMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
     'apps.profile.middleware.ServerHostnameMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'apps.profile.middleware.DBProfilerMiddleware',
@@ -126,6 +126,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://)?(\w+\.)?newsblur\.com$', )
+CORS_ALLOW_CREDENTIALS = True
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
