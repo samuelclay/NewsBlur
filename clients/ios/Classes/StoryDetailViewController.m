@@ -382,7 +382,7 @@
     [self.webView loadHTMLString:htmlString baseURL:baseURL];
     [appDelegate.storyPageControl setTextButton:self];
 
-    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
+//    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
 }
@@ -1942,7 +1942,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)fetchTextView {
     if (!self.activeStoryId || !self.activeStory) return;
     self.inTextView = YES;
-    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
+//    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"Fetching text...";
@@ -1998,7 +1998,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     [self drawStory];
     
-    NSLog(@"Fetched Text: %@", [self.activeStory objectForKey:@"story_title"]);
+//    NSLog(@"Fetched Text: %@", [self.activeStory objectForKey:@"story_title"]);
 }
 
 
