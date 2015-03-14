@@ -448,13 +448,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadstoryscroll-1', type: 'radio', name: 'mark_read_on_scroll_titles', value: "true" }),
                                 $.make('label', { 'for': 'NB-preference-markreadstoryscroll-1' }, [
-                                    'Mark stories as read when scrolled past.'
+                                    'Mark stories as read when scrolled past'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadstoryscroll-0', type: 'radio', name: 'mark_read_on_scroll_titles', value: "false" }),
                                 $.make('label', { 'for': 'NB-preference-markreadstoryscroll-0' }, [
-                                    'Don\'t automatically mark stories as read.'
+                                    'Don\'t automatically mark stories as read'
                                 ])
                             ])
                         ]),
@@ -473,7 +473,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showcontentpreview-0', type: 'radio', name: 'show_content_preview', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showcontentpreview-0' }, [
-                                    'Don\'t show a preview, only show the story title.'
+                                    'Don\'t show a preview, only show the story title'
                                 ])
                             ])
                         ]),
@@ -557,7 +557,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-2' }, [
                                     'After ',
                                     $.make('span', { className: 'NB-tangle-readstorydelay', 'data-var': 'delay' }),
-                                    $.make('span', { className: 'NB-tangle-seconds' }, ' second.')
+                                    $.make('span', { className: 'NB-tangle-seconds' }, ' second')
                                 ])
                             ]),
                             $.make('div', [
@@ -716,13 +716,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-fullwidthdstory-1', type: 'radio', name: 'full_width_story', value: "false" }),
                                 $.make('label', { 'for': 'NB-preference-fullwidthdstory-1' }, [
-                                    'Wrap story content at 700px to ease reading.'
+                                    'Wrap story content at 700px to ease reading'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-fullwidthdstory-2', type: 'radio', name: 'full_width_story', value: "true" }),
                                 $.make('label', { 'for': 'NB-preference-fullwidthdstory-2' }, [
-                                    'Wrap story content at the edge of the screen.'
+                                    'Wrap story content at the edge of the screen'
                                 ])
                             ])
                         ]),

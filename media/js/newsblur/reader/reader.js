@@ -5312,7 +5312,9 @@
                           $('.NB-module-recommended.NB-recommended-unmoderated') :
                           $('.NB-module-recommended:not(.NB-recommended-unmoderated)');
             
-            $module.addClass('NB-loading');
+            if (!refresh) {
+                $module.addClass('NB-loading');
+            }
             direction = direction || 0;
             
             this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, 
