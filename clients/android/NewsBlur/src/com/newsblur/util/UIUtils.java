@@ -87,21 +87,28 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Set up our customised ActionBar view that features the specified icon and title, sized
+     * away from system standard to meet the NewsBlur visual style.
+     */
     public static void setCustomActionBar(final Activity activity, String url, String title) { 
+        // we completely replace the existing title and 'home' icon with a custom view
         activity.getActionBar().setDisplayShowCustomEnabled(true);
         activity.getActionBar().setDisplayShowTitleEnabled(false);
         activity.getActionBar().setDisplayShowHomeEnabled(false);
         View v = LayoutInflater.from(activity).inflate(R.layout.actionbar_custom_icon, null);
         TextView titleView = ((TextView) v.findViewById(R.id.actionbar_text));
         titleView.setText(title);
+        ImageView iconView = ((ImageView) v.findViewById(R.id.actionbar_icon));
+        ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().displayImage(url, iconView, false);
+        // using a custom view breaks the system-standard ability to tap the icon or title to return
+        // to the previous activity. Re-implement that here.
         titleView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 activity.finish();
             }
         });
-        ImageView iconView = ((ImageView) v.findViewById(R.id.actionbar_icon));
-        ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().displayImage(url, iconView, false);
         iconView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
