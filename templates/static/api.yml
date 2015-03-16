@@ -318,7 +318,24 @@
           desc: "Including timestamps for story_date"
           optional: true
           default: false
-    
+          
+    - url: /reader/read_stories
+      method: GET
+      short_desc: "Feed of previously read stories."
+      long_desc: 
+        - "Feed of previously read stories."
+      params:
+        - key: page
+          desc: "Page of stories, starting from 1."
+          optional: true
+          default: 1
+          example: 2
+        - key: order
+          desc: "Story order by oldest or newest first"
+          optional: true
+          default: newest
+          example: oldest
+          
     - url: /reader/mark_story_hashes_as_read
       method: POST
       short_desc: "Mark a story as read."
