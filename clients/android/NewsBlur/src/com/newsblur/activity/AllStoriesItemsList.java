@@ -20,6 +20,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.UIUtils;
 
 public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogListener {
 
@@ -27,7 +28,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-		setTitle(getResources().getString(R.string.all_stories));
+        UIUtils.setCustomActionBar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.all_stories));
 
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(AllStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {

@@ -2,7 +2,9 @@ package com.newsblur.activity;
 
 import android.os.Bundle;
 
+import com.newsblur.R;
 import com.newsblur.database.MixedFeedsReadingAdapter;
+import com.newsblur.util.UIUtils;
 
 public class FolderReading extends Reading {
 
@@ -13,7 +15,7 @@ public class FolderReading extends Reading {
         super.onCreate(savedInstanceBundle);
 
         folderName = getIntent().getStringExtra(Reading.EXTRA_FOLDERNAME);
-        setTitle(folderName);       
+        UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, folderName);
 
         readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, null);
 
