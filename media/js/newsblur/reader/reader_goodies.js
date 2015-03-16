@@ -150,6 +150,24 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register NewsBlur as an RSS reader')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('div', { className: 'NB-goodies-firefox' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Open links to background tab'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, [
+                  $.make('ul', [
+                      $.make('li', [
+                          'Open a new tab, enter ',
+                          $.make('a', { href: 'about:config', target: '_blank' }, 'about:config')
+                      ]),
+                      $.make('li', [
+                          'Search for ',
+                          $.make('b', 'browser.tabs.loadDivertedInBackground')
+                      ]),
+                      $.make('li', 'Double click on \'false\' to set \'Value\' to \'true\''),
+                      $.make('li', 'Go to NewsBlur and open a story with \'o\' and see it load in the background')
+                  ])
+              ])
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
@@ -166,6 +184,17 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: Register NewsBlur as an RSS reader'),
               $.make('div', { className: 'NB-goodies-subtitle' }, [
                 'To use this extension, use the custom add site URL below.'
+              ])
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/ieeimmkgocgaaabphkgjdkophaejfnlk/'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: Open links in background tab'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, [
+                'This extension allows you to open a link in a background tab by pressing a customizable hotkey (default \'o\' or \'v\').  This feature used to work without an extension, but it broke starting with Chrome 41.'
               ])
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
