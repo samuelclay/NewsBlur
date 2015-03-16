@@ -33,8 +33,7 @@ public class FeedItemsList extends ItemsList {
         
 		super.onCreate(bundle);
 
-        setTitle(feed.title);
-        UIUtils.setActionBarImage(this, feed.faviconUrl);
+        UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {

@@ -16,6 +16,7 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 
 public class SavedStoriesItemsList extends ItemsList {
 
@@ -23,7 +24,7 @@ public class SavedStoriesItemsList extends ItemsList {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-		setTitle(getResources().getString(R.string.saved_stories_title));
+        UIUtils.setCustomActionBar(this, R.drawable.clock, getResources().getString(R.string.saved_stories_title));
 
 		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {

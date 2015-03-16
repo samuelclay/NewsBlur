@@ -82,6 +82,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 	}
 
     public synchronized int getPosition(Story story) {
+        if (stories == null) return -1;
         int pos = 0;
         while (pos < stories.getCount()) {
 			stories.moveToPosition(pos);

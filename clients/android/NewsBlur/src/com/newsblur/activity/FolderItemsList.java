@@ -26,6 +26,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 
 public class FolderItemsList extends ItemsList implements MarkAllReadDialogListener {
 
@@ -39,7 +40,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
         // note: onCreate triggers createFeedSet() so it has to wait until we have the folder name
 		super.onCreate(bundle);
 
-		setTitle(folderName);
+        UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, folderName);
 
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {

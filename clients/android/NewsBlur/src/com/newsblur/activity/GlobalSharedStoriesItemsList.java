@@ -13,6 +13,7 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 
 public class GlobalSharedStoriesItemsList extends ItemsList {
 
@@ -20,7 +21,7 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-		setTitle(getResources().getString(R.string.global_shared_stories));
+        UIUtils.setCustomActionBar(this, R.drawable.ak_icon_global, getResources().getString(R.string.global_shared_stories));
 
 		itemListFragment = (GlobalSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(GlobalSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {

@@ -20,8 +20,7 @@ public class FeedReading extends Reading {
 
         Classifier classifier = FeedUtils.dbHelper.getClassifierForFeed(feed.feedId);
 
-        setTitle(feed.title);
-        UIUtils.setActionBarImage(this, feed.faviconUrl);
+        UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);
 
         readingAdapter = new FeedReadingAdapter(fragmentManager, feed, classifier, defaultFeedView);
 
