@@ -227,10 +227,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-fleuron' })
         ]);
         
-        if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
+        if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
             var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
             var endbar_height = 20;
-            var last_story_height = 280;
+            var last_story_height = 80;
             endbar_height = pane_height - last_story_height;
             if (endbar_height <= 20) endbar_height = 20;
 
@@ -304,20 +304,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
     
     scroll: function() {
-        if (NEWSBLUR.reader.flags['opening_feed']) {
-            return;
-        }
+        var $story_titles = NEWSBLUR.reader.$s.$story_titles;
+        var scroll_y = $story_titles.scrollTop();
+
+        if (NEWSBLUR.reader.flags['opening_feed']) return;
         if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
             this.mark_read_stories_above_scroll(scroll_y);
         }
-        if (NEWSBLUR.assets.flags['no_more_stories']) {
-            return;
-        }
+        if (NEWSBLUR.assets.flags['no_more_stories']) return;
         
-        var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         var container_offset = $story_titles.position().top;
         var visible_height = $story_titles.height() * 2;
-        var scroll_y = $story_titles.scrollTop();
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
         
         // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height, this.$el]);
@@ -327,6 +324,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
     
     mark_read_stories_above_scroll: function(scroll_y) {
+        var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         var score = NEWSBLUR.reader.get_unread_view_score();
         var unread_stories = [];
         var grid = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid';
@@ -335,17 +333,19 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_title = $(document.elementFromPoint(point.left + offset.left, 
                                                        point.top + offset.top
                            )).closest('.'+NEWSBLUR.Views.StoryTitleView.prototype.className);
+        var reached_bottom = NEWSBLUR.assets.flags['no_more_stories'] && 
+                             this.$el.height() - $story_titles.height() - scroll_y <= 0;
         var topstory = _.detect(this.stories, function(view) {
-            if (view.el == $story_title[0]) return true;
+            if (!reached_bottom && view.el == $story_title[0]) return true;
             if (view.model.get('read_status') == 0 && view.model.score() >= score) {
                 unread_stories.push(view.model);
             }
         });
-        if (!topstory) {
-            console.log(['no closest', topstory, $story_title[0], document.elementFromPoint(offset.left + 20, offset.top + 20)]);
+        if (!topstory && !reached_bottom) {
+            // console.log(['no closest', topstory, $story_title[0], document.elementFromPoint(offset.left + 20, offset.top + 20)]);
             return;
         }
-        console.log(['closest', $story_title[0], topstory.model.get('story_title'), unread_stories]);
+        // console.log(['closest', $story_title[0], topstory && topstory.model.get('story_title'), unread_stories]);
         _.invoke(unread_stories, 'mark_read');
     }
     
