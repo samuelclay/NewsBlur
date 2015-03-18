@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.RequestBody;
 
 /**
  * A String-to-String multimap that serializes to JSON or HTTP request params.
@@ -65,4 +66,13 @@ public class ValueMultimap implements Serializable {
 		return builder.toString();
 	}
 
+	public RequestBody asFormEncodedRequestBody() {
+		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
+		for (String key : multimap.keySet()) {
+			for (String value : multimap.get(key)) {
+				formEncodingBuilder.add(key, value);
+			}
+		}
+		return formEncodingBuilder.build();
+	}
 }
