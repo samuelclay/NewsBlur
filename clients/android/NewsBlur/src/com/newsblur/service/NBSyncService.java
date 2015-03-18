@@ -273,10 +273,10 @@ public class NBSyncService extends Service {
             if (upgraded || autoVac) {
                 HousekeepingRunning = true;
                 NbActivity.updateAllActivities(false);
-                PrefsUtils.updateLastVacuumTime(this);
                 Log.i(this.getClass().getName(), "rebuilding DB . . .");
                 dbHelper.vacuum();
                 Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
+                PrefsUtils.updateLastVacuumTime(this);
             }
         } finally {
             if (HousekeepingRunning) {
