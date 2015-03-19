@@ -59,14 +59,6 @@ public class APIResponse {
                     return;
                 }
 
-                /*if (!TextUtils.equals(originalUrl.getHost(), connection.getURL().getHost())) {
-                    // TODO: the existing code rejects redirects as errors.  Is this correct?
-                    Log.e(this.getClass().getName(), "API redirected calling " + originalUrl);
-                    this.isError = true;
-                    this.errorMessage = context.getResources().getString(R.string.error_http_connection);
-                    return;
-                }*/
-
                 this.cookie = response.header("Set-Cookie");
 
                 try {
