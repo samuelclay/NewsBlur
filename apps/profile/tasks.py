@@ -58,7 +58,11 @@ class CleanupUser(Task):
     def run(self, user_id):
         UserSubscription.trim_user_read_stories(user_id)
         UserSubscription.verify_feeds_scheduled(user_id)
-
-        ss = MSocialServices.objects.get(user_id=user_id)
+        
+        try:
+            ss = MSocialServices.objects.get(user_id=user_id)
+        except MSocialServices.DoesNotExist:
+            logging.debug(" ---> ~FRCleaning up user, can't find social_services for user_id: ~SB%s" % user_id)
+            return
         ss.sync_twitter_photo()
 
