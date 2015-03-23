@@ -21,6 +21,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-line-spacing-option": "change_line_spacing",
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
         "click .NB-single-story-option": "change_single_story",
+        "click .NB-grid-columns-option": "change_grid_columns",
         "click .NB-premium-link": "open_premium_modal"
     },
     
@@ -45,7 +46,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout'),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Split'),
                 $.make('ul', { className: 'segmented-control NB-options-story-titles-pane' }, [
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-north' }, [
                         $.make('div', { className: 'NB-icon' }),
@@ -71,6 +72,27 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     ])
                 ])
 
+            ]),
+            $.make('div', { className: 'NB-popover-section' }, [
+                $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Grid Columns'),
+                $.make('ul', { className: 'segmented-control NB-options-grid-columns' }, [
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-0' }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Auto'
+                    ]),
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-1' }, [
+                        '1'
+                    ]),
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-2' }, [
+                        '2'
+                    ]),
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-3' }, [
+                        '3'
+                    ]),
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-4' }, [
+                        '4'
+                    ])
+                ])
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Font Family'),
@@ -136,6 +158,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var line_spacing = NEWSBLUR.assets.preference('story_line_spacing');
         var titles_layout_pane = NEWSBLUR.assets.preference('story_pane_anchor');
         var single_story = NEWSBLUR.assets.preference('feed_view_single_story');
+        var grid_columns = NEWSBLUR.assets.preference('grid_columns');
         
         this.$('.NB-font-family-option').removeClass('NB-active');
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
@@ -151,6 +174,9 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-options-story-titles-pane-'+titles_layout_pane).addClass('NB-active');
         this.$('.NB-single-story-option').removeClass('NB-active');
         this.$('.NB-options-single-story-'+(single_story?'on':'off')).addClass('NB-active');
+
+        this.$('.NB-grid-columns-option').removeClass('NB-active');
+        this.$('.NB-options-grid-columns-'+grid_columns).addClass('NB-active');
 
         NEWSBLUR.reader.$s.$taskbar_options.addClass('NB-active');
         
@@ -287,7 +313,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         }
         NEWSBLUR.assets.preference('story_pane_anchor', setting);
         NEWSBLUR.assets.preference('story_titles_pane_size', pane_size);
-        NEWSBLUR.reader.apply_resizable_layout(true);
+        NEWSBLUR.reader.apply_resizable_layout({right_side: true});
     },
     
     change_single_story: function(e) {
@@ -310,6 +336,33 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             if (NEWSBLUR.reader.active_story) {
                 NEWSBLUR.reader.active_story.set('selected', false).set('selected', true);
             }
+        });
+    },
+    
+    change_grid_columns: function(e) {
+        var $target = $(e.currentTarget);
+        
+        if ($target.hasClass("NB-options-grid-columns-0")) {
+            this.update_grid_columns(0);
+        } else if ($target.hasClass("NB-options-grid-columns-1")) {
+            this.update_grid_columns(1);
+        } else if ($target.hasClass("NB-options-grid-columns-2")) {
+            this.update_grid_columns(2);
+        } else if ($target.hasClass("NB-options-grid-columns-3")) {
+            this.update_grid_columns(3);
+        } else if ($target.hasClass("NB-options-grid-columns-4")) {
+            this.update_grid_columns(4);
+        }
+        
+        this.show_correct_options();
+    },
+    
+    update_grid_columns: function(setting) {
+        NEWSBLUR.assets.preference('grid_columns', setting);
+        NEWSBLUR.app.story_list.render();
+        _.defer(function() {
+            NEWSBLUR.app.story_titles.override_grid();
+            NEWSBLUR.reader.resize_window();
         });
     },
     

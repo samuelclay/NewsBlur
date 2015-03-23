@@ -175,6 +175,7 @@ def set_view_setting(request):
     feed_view_setting = request.POST.get('feed_view_setting')
     feed_order_setting = request.POST.get('feed_order_setting')
     feed_read_filter_setting = request.POST.get('feed_read_filter_setting')
+    feed_layout_setting = request.POST.get('feed_layout_setting')
     view_settings = json.decode(request.user.profile.view_settings)
     
     setting = view_settings.get(feed_id, {})
@@ -182,16 +183,42 @@ def set_view_setting(request):
     if feed_view_setting: setting['v'] = feed_view_setting
     if feed_order_setting: setting['o'] = feed_order_setting
     if feed_read_filter_setting: setting['r'] = feed_read_filter_setting
+    if feed_layout_setting: setting['l'] = feed_layout_setting
     
     view_settings[feed_id] = setting
     request.user.profile.view_settings = json.encode(view_settings)
     request.user.profile.save()
     
-    logging.user(request, "~FMView settings: %s/%s/%s" % (feed_view_setting, 
-                 feed_order_setting, feed_read_filter_setting))
+    logging.user(request, "~FMView settings: %s/%s/%s/%s" % (feed_view_setting, 
+                 feed_order_setting, feed_read_filter_setting, feed_layout_setting))
     response = dict(code=code)
     return response
 
+@ajax_login_required
+@require_POST
+@json.json_view
+def clear_view_setting(request):
+    code = 1
+    view_setting_type = request.POST.get('view_setting_type')
+    view_settings = json.decode(request.user.profile.view_settings)
+    new_view_settings = {}
+    removed = 0
+    for feed_id, view_setting in view_settings.items():
+        if view_setting_type == 'layout' and 'l' in view_setting:
+            del view_setting['l']
+            removed += 1
+        if view_setting_type == 'view' and 'v' in view_setting:
+            del view_setting['v']
+            removed += 1
+        new_view_settings[feed_id] = view_setting
+
+    request.user.profile.view_settings = json.encode(new_view_settings)
+    request.user.profile.save()
+    
+    logging.user(request, "~FMClearing view settings: %s (found %s)" % (view_setting_type, removed))
+    response = dict(code=code, view_settings=view_settings, removed=removed)
+    return response
+        
 @ajax_login_required
 @json.json_view
 def get_view_setting(request):

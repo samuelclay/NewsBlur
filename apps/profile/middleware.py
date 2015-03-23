@@ -16,7 +16,8 @@ class LastSeenMiddleware(object):
     def process_response(self, request, response):
         if ((request.path == '/' or
              request.path.startswith('/reader/refresh_feeds') or
-             request.path.startswith('/reader/load_feeds'))
+             request.path.startswith('/reader/load_feeds') or
+             request.path.startswith('/reader/feeds'))
             and hasattr(request, 'user')
             and request.user.is_authenticated()): 
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)

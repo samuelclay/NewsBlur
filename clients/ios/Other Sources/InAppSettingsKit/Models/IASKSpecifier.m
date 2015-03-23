@@ -21,6 +21,7 @@
 @interface IASKSpecifier ()
 
 @property (nonatomic, retain) NSDictionary  *multipleValuesDict;
+@property (nonatomic, copy) NSString *radioGroupValue;
 
 @end
 
@@ -29,16 +30,32 @@
 - (id)initWithSpecifier:(NSDictionary*)specifier {
     if ((self = [super init])) {
         [self setSpecifierDict:specifier];
-        
-        if ([[self type] isEqualToString:kIASKPSMultiValueSpecifier] ||
-			[[self type] isEqualToString:kIASKPSTitleValueSpecifier]) {
-            [self _reinterpretValues:[self specifierDict]];
+
+        if ([self isMultiValueSpecifierType]) {
+            [self updateMultiValuesDict];
         }
     }
     return self;
 }
 
-- (void)_reinterpretValues:(NSDictionary*)specifierDict {
+- (BOOL)isMultiValueSpecifierType {
+    static NSArray *types = nil;
+    if (!types) {
+        types = @[kIASKPSMultiValueSpecifier, kIASKPSTitleValueSpecifier, kIASKPSRadioGroupSpecifier];
+    }
+    return [types containsObject:[self type]];
+}
+
+- (id)initWithSpecifier:(NSDictionary *)specifier
+        radioGroupValue:(NSString *)radioGroupValue {
+
+    self = [self initWithSpecifier:specifier];
+    if (self) {
+        self.radioGroupValue = radioGroupValue;
+    }
+    return self;
+}
+- (void)updateMultiValuesDict {
     NSArray *values = [_specifierDict objectForKey:kIASKValues];
     NSArray *titles = [_specifierDict objectForKey:kIASKTitles];
     NSArray *shortTitles = [_specifierDict objectForKey:kIASKShortTitles];
@@ -67,13 +84,28 @@
     return [self localizedObjectForKey:kIASKTitle];
 }
 
+- (NSString*)subtitle {
+	return [self localizedObjectForKey:kIASKSubtitle];
+}
+
 - (NSString*)footerText {
     return [self localizedObjectForKey:kIASKFooterText];
 }
 
 - (Class)viewControllerClass {
-	[IASKAppSettingsWebViewController class]; // make sure this is linked into the binary/library
-    return NSClassFromString([_specifierDict objectForKey:kIASKViewControllerClass]);
+    [IASKAppSettingsWebViewController class]; // make sure this is linked into the binary/library
+    return [self classFromString:([_specifierDict objectForKey:kIASKViewControllerClass])];
+}
+
+- (Class)classFromString:(NSString *)className {
+    Class class = NSClassFromString(className);
+    if (!class) {
+        // if the class doesn't exist as a pure Obj-C class then try to retrieve it as a Swift class.
+        NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+        NSString *classStringName = [NSString stringWithFormat:@"_TtC%lu%@%lu%@", (unsigned long)appName.length, appName, (unsigned long)className.length, className];
+        class = NSClassFromString(classStringName);
+    }
+    return class;
 }
 
 - (SEL)viewControllerSelector {
@@ -277,7 +309,7 @@
 
 - (NSTextAlignment)textAlignment
 {
-    if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentLeft]) {
+    if (self.subtitle.length || [[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentLeft]) {
         return NSTextAlignmentLeft;
     } else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentCenter]) {
         return NSTextAlignmentCenter;
@@ -290,6 +322,22 @@
 		return NSTextAlignmentRight;
 	}
 	return NSTextAlignmentLeft;
+}
+
+- (NSArray *)userInterfaceIdioms {
+    NSArray *idiomStrings = _specifierDict[kIASKSupportedUserInterfaceIdioms];
+    if (idiomStrings.count == 0) {
+        return @[@(UIUserInterfaceIdiomPhone), @(UIUserInterfaceIdiomPad)];
+    }
+    NSMutableArray *idioms = [NSMutableArray new];
+    for (NSString *idiomString in idiomStrings) {
+        if ([idiomString isEqualToString:@"Phone"]) {
+            [idioms addObject:@(UIUserInterfaceIdiomPhone)];
+        } else if ([idiomString isEqualToString:@"Pad"]) {
+            [idioms addObject:@(UIUserInterfaceIdiomPad)];
+        }
+    }
+    return idioms;
 }
 
 - (id)valueForKey:(NSString *)key {

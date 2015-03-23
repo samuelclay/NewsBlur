@@ -110,8 +110,10 @@ def extract_user_agent(request):
         platform = 'iPhone'
     elif 'blar' in user_agent:
         platform = 'Blar'
-    elif 'android' in user_agent:
+    elif 'Android app' in user_agent:
         platform = 'Androd'
+    elif 'android' in user_agent:
+        platform = 'androd'
     elif 'pluggio' in user_agent:
         platform = 'Plugio'
     elif 'msie' in user_agent:
@@ -122,6 +124,8 @@ def extract_user_agent(request):
             platform += '10'
         elif 'msie 8' in user_agent:
             platform += '8'
+    elif 'trident/7' in user_agent:
+        platform = 'IE11'
     elif 'chrome' in user_agent:
         platform = 'Chrome'
     elif 'safari' in user_agent:
@@ -140,10 +144,18 @@ def extract_user_agent(request):
         platform = 'Tafiti'
     elif 'readkit' in user_agent:
         platform = 'ReadKt'
+    elif 'reeder' in user_agent:
+        platform = 'Reeder'
     elif 'metroblur' in user_agent:
         platform = 'Metrob'
     elif 'feedme' in user_agent:
         platform = 'FeedMe'
+    elif 'theoldreader' in user_agent:
+        platform = 'OldRdr'
+    elif 'fever' in user_agent:
+        platform = 'Fever'
+    elif 'superfeedr' in user_agent:
+        platform = 'Suprfd'
     elif 'feed reader-window' in user_agent:
         platform = 'FeedRe'
     elif 'feed reader-background' in user_agent:

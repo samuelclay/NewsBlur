@@ -118,6 +118,7 @@
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize inStoryDetail;
+@synthesize inTextView;
 @synthesize isPresentingActivities;
 @synthesize activeComment;
 @synthesize activeShareType;
@@ -178,7 +179,7 @@
     self.navigationController.delegate = self;
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
     self.storiesCollection = [StoriesCollection new];
-
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPad App v%@",
                                                    currentiPhoneVersion]];
@@ -1008,7 +1009,7 @@
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
-    self.inFeedDetail = YES;    
+    self.inFeedDetail = YES;
     popoverHasFeedView = YES;
 
     [feedDetailViewController resetFeedDetail];
@@ -1464,11 +1465,10 @@
 
 - (void)loadStoryDetailView {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UINavigationController *navController = self.navigationController;
-        [navController pushViewController:storyPageControl animated:YES];
-        navController.navigationItem.hidesBackButton = YES;
+        [navigationController pushViewController:storyPageControl animated:YES];
+        navigationController.navigationItem.hidesBackButton = YES;
     }
-    
+
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
@@ -1476,7 +1476,7 @@
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
         [self.storyPageControl animateIntoPlace:YES];
     }
-        
+
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
 }
 
@@ -1928,6 +1928,7 @@
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
+    if (!storyPageControl.previousPage || !storyPageControl.currentPage || !storyPageControl.nextPage) return;
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {

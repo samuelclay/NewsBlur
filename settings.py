@@ -77,7 +77,7 @@ DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
-AUTO_ENABLE_NEW_USERS = False
+AUTO_ENABLE_NEW_USERS = True
 PAYPAL_TEST           = False
 
 # ===============
@@ -109,9 +109,9 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.UserAgentBanMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
     'apps.profile.middleware.ServerHostnameMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'apps.profile.middleware.DBProfilerMiddleware',
@@ -126,6 +126,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://)?(\w+\.)?newsblur\.com$', )
+CORS_ALLOW_CREDENTIALS = True
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
@@ -489,6 +491,9 @@ REDIS_PUBSUB = {
 REDIS_STORY = {
     'host': 'db_redis_story',
 }
+REDIS_SESSIONS = {
+    'host': 'db_redis_sessions',
+}
 
 CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
@@ -578,26 +583,6 @@ else:
     )
 
 # =========
-# = Redis =
-# =========
-
-BROKER_BACKEND = "redis"
-BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
-CELERY_RESULT_BACKEND = BROKER_URL
-SESSION_REDIS_HOST = REDIS['host']
-
-CACHES = {
-    'default': {
-        'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '%s:6379' % REDIS['host'],
-        'OPTIONS': {
-            'DB': 6,
-            'PARSER_CLASS': 'redis.connection.HiredisParser'
-        },
-    },
-}
-
-# =========
 # = Mongo =
 # =========
 
@@ -629,11 +614,27 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 # = Redis =
 # =========
 
+BROKER_BACKEND = "redis"
+BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
+CELERY_RESULT_BACKEND = BROKER_URL
+SESSION_REDIS_HOST = REDIS_SESSIONS['host']
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '%s:6379' % REDIS['host'],
+        'OPTIONS': {
+            'DB': 6,
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
+        },
+    },
+}
+
 REDIS_POOL                 = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
 REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
 REDIS_FEED_POOL            = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
-REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
+REDIS_SESSION_POOL         = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=5)
 # REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
 REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)

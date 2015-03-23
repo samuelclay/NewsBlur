@@ -38,6 +38,7 @@ env.SECRETS_PATH = "/srv/secrets-newsblur"
 env.VENDOR_PATH   = "/srv/code"
 env.user = 'sclay'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
+env.connection_attempts = 10
 
 # =========
 # = Roles =
@@ -200,7 +201,7 @@ def setup_common():
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
-    setup_pymongo_repo()
+    # setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
     # setup_imaging()
@@ -225,6 +226,7 @@ def setup_app(skip_common=False):
     # config_node()
     deploy_web()
     config_monit_app()
+    setup_usage_monitor()
     done()
 
 def setup_app_image():
@@ -242,18 +244,21 @@ def setup_db(engine=None, skip_common=False):
         setup_common()
     setup_db_firewall()
     setup_db_motd()
-    copy_task_settings()
+    copy_db_settings()
     # if engine == "memcached":
     #     setup_memcached()
     if engine == "postgres":
         setup_postgres(standby=False)
+        setup_postgres_backups()
     elif engine == "postgres_slave":
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
         setup_mongo_mms()
+        setup_mongo_backups()
     elif engine == "redis":
         setup_redis()
+        setup_redis_backups()
     elif engine == "redis_slave":
         setup_redis(slave=True)
     elif engine == "elasticsearch":
@@ -261,6 +266,7 @@ def setup_db(engine=None, skip_common=False):
         setup_db_search()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
+    setup_usage_monitor()
     done()
 
     # if env.user == 'ubuntu':
@@ -276,6 +282,7 @@ def setup_task(queue=None, skip_common=False):
     setup_gunicorn(supervisor=False)
     update_gunicorn()
     config_monit_task()
+    setup_usage_monitor()
     done()
 
 def setup_task_image():
@@ -386,10 +393,6 @@ def setup_repo_local_settings():
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
-
-def copy_local_settings():
-    with cd(env.NEWSBLUR_PATH):
-        put('local_settings.py.server', 'local_settings.py')
 
 def setup_local_files():
     put("config/toprc", "./.toprc")
@@ -529,14 +532,17 @@ def setup_mongoengine_repo():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')), settings(warn_only=True):
         run('git co v0.8.2')
 
+def clear_pymongo_repo():
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridfs*')
+    
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
     # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
     #     sudo('python setup.py install')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridfs*')
+    clear_pymongo_repo()
     sudo('ln -sfn %s /usr/local/lib/python2.7/dist-packages/' %
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
 
@@ -940,14 +946,19 @@ def setup_redis(slave=False):
     # run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
     # sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
     sudo("su root -c \"echo \\\"1\\\" > /proc/sys/vm/overcommit_memory\"")
+    sudo('chmod 666 /etc/sysctl.conf', pty=False)
+    run('echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf', pty=False)
+    sudo('chmod 644 /etc/sysctl.conf', pty=False)
     sudo("sysctl vm.overcommit_memory=1")
+    put('config/redis_rclocal.txt', '/etc/rc.local', use_sudo=True)
+    sudo("su root -c \"echo \\\"never\\\" > /sys/kernel/mm/transparent_hugepage/enabled\"")
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')
     sudo('/etc/init.d/redis start')
     setup_syncookies()
     config_monit_redis()
-
+    
 def setup_munin():
     # sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
@@ -1383,18 +1394,37 @@ def cleanup_assets():
 # = Backups =
 # ===========
 
+def setup_redis_backups(name=None):
+    # crontab for redis backups
+    crontab = ("0 4 * * * python /srv/newsblur/utils/backups/backup_redis%s.py" % 
+                (("_%s"%name) if name else ""))
+    run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
+    run('crontab -l')
+
+def setup_mongo_backups():
+    # crontab for mongo backups
+    crontab = "0 4 * * * python /srv/newsblur/utils/backups/backup_mongo.py"
+    run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
+    run('crontab -l')
+    
+def setup_postgres_backups():
+    # crontab for postgres backups
+    crontab = """
+0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
+0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
+0 * * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +180 -delete"""
+
+    run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
+    run('crontab -l')
+    
+def backup_redis(name=None):
+    run('python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
+    
 def backup_mongo():
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        # run('./mongo_backup.sh')
-        run('python backup_mongo.py')
+    run('python /srv/newsblur/utils/backups/backup_mongo.py')
 
 def backup_postgresql():
-    # crontab for postgres master server
-    # 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-    # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
-    # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('python backup_psql.py')
+    run('python /srv/newsblur/utils/backups/backup_psql.py')
 
 # ===============
 # = Calibration =

@@ -51,13 +51,18 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
+    UIEdgeInsets padding = (UIEdgeInsets) { 0, kIASKPaddingLeft, 0, kIASKPaddingRight };
+    if ([self respondsToSelector:@selector(layoutMargins)]) {
+        padding = [self layoutMargins];
+    }
 	CGRect  sliderBounds    = _slider.bounds;
     CGPoint sliderCenter    = _slider.center;
     const CGFloat superViewWidth = _slider.superview.frame.size.width;
     
-    sliderCenter.x = superViewWidth / 2;
+    sliderBounds.size.width = superViewWidth - (padding.left + padding.right);
+    sliderCenter.x = padding.left + sliderBounds.size.width / 2;
     sliderCenter.y = self.contentView.center.y;
-    sliderBounds.size.width = superViewWidth - kIASKSliderNoImagesPadding * 2;
 	_minImage.hidden = YES;
 	_maxImage.hidden = YES;
 
@@ -65,18 +70,17 @@
 	if (_minImage.image) {
 		// Min image
 		_minImage.hidden = NO;
-		sliderCenter.x    += (kIASKSliderImagesPadding - kIASKSliderNoImagesPadding) / 2;
-		sliderBounds.size.width  -= (kIASKSliderImagesPadding - kIASKSliderNoImagesPadding);
-        _minImage.center = CGPointMake(_minImage.frame.size.width / 2 + kIASKPaddingLeft,
+        sliderBounds.size.width -= _minImage.frame.size.width + kIASKSliderImageGap;
+        sliderCenter.x += (_minImage.frame.size.width + kIASKSliderImageGap) / 2;
+        _minImage.center = CGPointMake(_minImage.frame.size.width / 2 + padding.left,
                                        self.contentView.center.y);
     }
 	if (_maxImage.image) {
 		// Max image
 		_maxImage.hidden = NO;
-		sliderCenter.x    -= (kIASKSliderImagesPadding - kIASKSliderNoImagesPadding) / 2;
-		sliderBounds.size.width  -= (kIASKSliderImagesPadding - kIASKSliderNoImagesPadding);
-        _maxImage.center = CGPointMake(self.contentView.bounds.size.width - _maxImage.frame.size.width / 2 - kIASKPaddingRight,
-                                       self.contentView.center.y);
+        sliderBounds.size.width  -= kIASKSliderImageGap + _maxImage.frame.size.width;
+		sliderCenter.x    -= (kIASKSliderImageGap + _maxImage.frame.size.width) / 2;
+        _maxImage.center = CGPointMake(superViewWidth - padding.right - _maxImage.frame.size.width /2, self.contentView.center.y );
 	}
 	
 	_slider.bounds = sliderBounds;

@@ -100,6 +100,7 @@
 
 - (void)setNextPreviousButtons;
 - (void)setTextButton;
+- (void)setTextButton:(StoryDetailViewController *)storyViewController;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (BOOL)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
@@ -121,6 +122,6 @@
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
 - (IBAction)tapProgressBar:(id)sender;
-- (IBAction)toggleView:(id)sender;
+- (IBAction)toggleTextView:(id)sender;
 
 @end

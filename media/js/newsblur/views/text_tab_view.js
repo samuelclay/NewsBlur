@@ -31,7 +31,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         }
         if (!story) return;
 
-        if (is_temporary && _.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) {
+        if (is_temporary && _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
             NEWSBLUR.reader.switch_taskbar_view('text', {
                 skip_save_type: is_temporary ? 'text' : false
             });
@@ -160,7 +160,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     select_story: function(story, selected) {
         if (!selected) return;
         if ((NEWSBLUR.reader.story_view == 'text' &&
-             _.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout')))) {
+             _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')))) {
             if (NEWSBLUR.reader.flags['temporary_story_view']) {
                 NEWSBLUR.reader.switch_to_correct_view();
             }

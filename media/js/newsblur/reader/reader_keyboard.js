@@ -267,9 +267,12 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                   ]),
                   $.make('div', { className: 'NB-keyboard-shortcut' }, [
                     $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Toggle read/unread'),
-                    $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                        'u'
-                    ])
+                      $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                          'u'
+                      ]),
+                      $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                          'm'
+                      ])
                   ])
                 ]),
                 $.make('div', { className: 'NB-keyboard-group' }, [

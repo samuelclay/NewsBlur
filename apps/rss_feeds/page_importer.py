@@ -57,14 +57,20 @@ class PageImporter(object):
             ),
         }
     
-    @timelimit(10)
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
+        try:
+            self.fetch_page_timeout(urllib_fallback=urllib_fallback, requests_exception=requests_exception)
+        except TimeoutError:
+            logging.user(self.request, '   ***> [%-30s] ~FBPage fetch ~SN~FRfailed~FB due to timeout' % (self.feed))
+            
+    @timelimit(10)
+    def fetch_page_timeout(self, urllib_fallback=False, requests_exception=None):
         html = None
         feed_link = self.feed.feed_link
         if not feed_link:
             self.save_no_page()
             return
-            
+
         if feed_link.startswith('www'):
             self.feed.feed_link = 'http://' + feed_link
         try:
@@ -173,7 +179,7 @@ class PageImporter(object):
             response.connection.close()
         except requests.exceptions.TooManyRedirects:
             response = requests.get(story_permalink)
-        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error), e:
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError), e:
             logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed, e))
             return
         try:

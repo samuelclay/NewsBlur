@@ -927,7 +927,7 @@ class RNewUserQueue:
         user_id = cls.pop_user()
         try:
             user = User.objects.get(pk=user_id)
-        except user.DoesNotExist:
+        except User.DoesNotExist:
             logging.debug("~FRCan't activate free account, can't find user ~SB%s~SN. ~FB%s still in queue." % (user_id, count-1))
             return
             

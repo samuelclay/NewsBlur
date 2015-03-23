@@ -705,9 +705,9 @@ def load_single_feed(request, feed_id):
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
     
-    # if page <= 1:
+    # if page <= 3:
     #     import random
-    #     time.sleep(random.randint(0, 3))
+    #     time.sleep(random.randint(2, 4))
     
     # if page == 2:
     #     assert False
@@ -2046,7 +2046,6 @@ def _mark_story_as_starred(request):
     removed_user_tags = []
     if not starred_story:
         params.update(story_values)
-        logging.user(request, "Starred story params: %s" % params)
         starred_story = MStarredStory.objects.create(**params)
         created = True
         MActivity.new_starred_story(user_id=request.user.pk, 
