@@ -90,6 +90,7 @@ public class ImageLoader {
 			return bitmap;
 		}
 
+		// TODO in and out stream might not be closed. Does BitmapFactory close stream?
         try {
 			if (url.startsWith("/")) {
 				url = APIConstants.NEWSBLUR_URL + url;

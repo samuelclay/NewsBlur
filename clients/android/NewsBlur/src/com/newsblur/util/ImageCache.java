@@ -55,15 +55,7 @@ public class ImageCache {
             FileOutputStream outStream = new FileOutputStream(f);
             int size = 0;
             try {
-                URL u = new URL(url);
-                NetworkUtils.UrlLoadResult result = NetworkUtils.loadURL(u, outStream);
-                if (result.redirUrl != null) {
-                    // redir will only be set if the original load encountered an un-followable
-                    // redirect. Try once and only once to follow it manually.
-                    u = new URL(u, result.redirUrl);
-                    result = NetworkUtils.loadURL(u, outStream);
-                }
-                size = result.bytesRead;
+                size = NetworkUtils.loadURL(new URL(url), outStream);
             } finally {
                 outStream.close();
             }
