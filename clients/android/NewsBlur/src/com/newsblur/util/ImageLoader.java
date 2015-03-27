@@ -2,7 +2,7 @@ package com.newsblur.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -90,14 +90,15 @@ public class ImageLoader {
 			return bitmap;
 		}
 
-		// TODO in and out stream might not be closed. Does BitmapFactory close stream?
+		FileInputStream fis = null;
         try {
 			if (url.startsWith("/")) {
 				url = APIConstants.NEWSBLUR_URL + url;
 			}
-			NetworkUtils.loadURL(new URL(url), new FileOutputStream(f));
+			NetworkUtils.loadURL(new URL(url), f);
 
-			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
+			fis = new FileInputStream(f);
+			bitmap = BitmapFactory.decodeStream(fis);
 			memoryCache.put(url, bitmap);
             if (bitmap == null) return null;
 			bitmap = UIUtils.roundCorners(bitmap, 5);
@@ -105,6 +106,14 @@ public class ImageLoader {
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), "Error loading image from network: " + url, e);
 			return null;
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
 		}
 	}
 

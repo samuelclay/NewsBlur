@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
@@ -52,13 +51,7 @@ public class ImageCache {
 
             File f = new File(cacheDir, fileName);
             if (f.exists()) return;
-            FileOutputStream outStream = new FileOutputStream(f);
-            int size = 0;
-            try {
-                size = NetworkUtils.loadURL(new URL(url), outStream);
-            } finally {
-                outStream.close();
-            }
+            long size = NetworkUtils.loadURL(new URL(url), f);
             // images that are super-small tend to be errors or invisible. don't waste file handles on them
             if (size < MIN_VALID_CACHE_BYTES) {
                 f.delete();
