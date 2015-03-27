@@ -26,7 +26,6 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
-import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
@@ -118,15 +117,6 @@ public class APIManager {
 		return (!response.isError());
 	}
 
-	public boolean addCategories(ArrayList<String> categories) {
-		final ValueMultimap values = new ValueMultimap();
-		for (String category : categories) {
-			values.put(APIConstants.PARAMETER_CATEGORY, URLEncoder.encode(category));
-		}
-		final APIResponse response = post(APIConstants.URL_ADD_CATEGORIES, values);
-		return (!response.isError());
-	}
-
 	public NewsBlurResponse markFeedsAsRead(FeedSet fs, Long includeOlder, Long includeNewer) {
 		ValueMultimap values = new ValueMultimap();
 
@@ -208,16 +198,6 @@ public class APIManager {
         APIResponse response = post(APIConstants.URL_MARK_STORY_HASH_UNREAD, values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
-
-	public CategoriesResponse getCategories() {
-		final APIResponse response = get(APIConstants.URL_CATEGORIES);
-		if (!response.isError()) {
-			CategoriesResponse categoriesResponse = (CategoriesResponse) response.getResponse(gson, CategoriesResponse.class);
-            return categoriesResponse;
-		} else {
-			return null;
-		}
-	}
 
 	public RegisterResponse signup(final String username, final String password, final String email) {
 		final ContentValues values = new ContentValues();
