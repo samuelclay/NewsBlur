@@ -30,6 +30,7 @@ import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.activity.NewsBlurApplication;
 import static com.newsblur.database.DatabaseConstants.getStr;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
@@ -48,7 +49,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private Cursor socialFeedCursor;
 
-    private Map<String,List<String>> folderFeedMap = Collections.emptyMap();
+    private Map<String,Folder> folders = Collections.emptyMap();
     private List<String> activeFolderNames;
     private List<List<Feed>> activeFolderChildren;
     private List<Integer> neutCounts;
@@ -308,18 +309,23 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
 	}
 
-    public synchronized void setFolderFeedMapCursor(Cursor cursor) {
+    public synchronized void setFoldersCursor(Cursor cursor) {
         if ((cursor.getCount() < 1) || (!cursor.isBeforeFirst())) return;
-        folderFeedMap = newCustomSortedMap();
+        folders = new LinkedHashMap<String,Folder>(cursor.getCount());
         while (cursor.moveToNext()) {
-            String folderName = getStr(cursor, DatabaseConstants.FEED_FOLDER_FOLDER_NAME);
-            String feedId = getStr(cursor, DatabaseConstants.FEED_FOLDER_FEED_ID);
-            if (! folderFeedMap.containsKey(folderName)) folderFeedMap.put(folderName, new ArrayList<String>());
-            folderFeedMap.get(folderName).add(feedId);
+            Folder folder = Folder.fromCursor(cursor);
+            folders.put(folder.flatName(), folder);
         }
-        if (!folderFeedMap.containsKey(AppConstants.ROOT_FOLDER)) {
-            folderFeedMap.put(AppConstants.ROOT_FOLDER, new ArrayList<String>());
+        /*
+        if (!folders.containsKey(AppConstants.ROOT_FOLDER)) {
+            Folder fakeRoot = new Folder();
+            fakeRoot.name = AppConstants.ROOT_FOLDER;
+            fakeRoot.parents = Collections.emptyList();
+            fakeRoot.children = Collections.emptyList();
+            fakeRoot.feedIds = Collections.emptyList();
+            folders.put(AppConstants.ROOT_FOLDER, fakeRoot);
         }
+        */
         recountFeeds();
         notifyDataSetChanged();
     }
@@ -344,18 +350,22 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	}
     
     private void recountFeeds() {
-        if ((folderFeedMap == null) || (feeds == null)) return;
-        int c = folderFeedMap.keySet().size();
-        activeFolderNames = new ArrayList<String>(c);
-        activeFolderChildren = new ArrayList<List<Feed>>(c);
-        neutCounts = new ArrayList<Integer>(c);
-        posCounts = new ArrayList<Integer>(c);
-        for (String folderName : folderFeedMap.keySet()) {
+        if ((folders == null) || (feeds == null)) return;
+        // re-init our local vars
+        activeFolderNames = new ArrayList<String>();
+        activeFolderChildren = new ArrayList<List<Feed>>();
+        neutCounts = new ArrayList<Integer>();
+        posCounts = new ArrayList<Integer>();
+        // create a sorted list of folder display names
+        List<String> sortedFolderNames = new ArrayList<String>(folders.keySet());
+        customSortList(sortedFolderNames);
+        // inspect folders to see if the are active for display
+        for (String folderName : sortedFolderNames) {
             List<Feed> activeFeeds = new ArrayList<Feed>();
             int neutCount = 0;
             int posCount = 0;
-            for (String feedId : folderFeedMap.get(folderName)) {
-                Feed f = feeds.get(feedId);
+            for (Long feedId : folders.get(folderName).feedIds) {
+                Feed f = feeds.get(feedId.toString());
                 if (f != null) {
                     if (((currentState == StateFilter.BEST) && (f.positiveCount > 0)) ||
                         ((currentState == StateFilter.SOME) && ((f.positiveCount + f.neutralCount > 0))) ||
@@ -492,18 +502,20 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      * folder on top, and also the expectation that *despite locale*, folders
      * starting with an underscore should show up on top.
      */
-    private Map<String,List<String>> newCustomSortedMap() {
-        Comparator<String> c = new Comparator<String>() {
-            @Override
-            public int compare(String s1, String s2) {
-                if (TextUtils.equals(s1, s2)) return 0;
-                if (s1.equals(AppConstants.ROOT_FOLDER)) return -1;
-                if (s2.equals(AppConstants.ROOT_FOLDER)) return 1;
-                if (s1.startsWith("_")) return -1;
-                if (s2.startsWith("_")) return 1;
-                return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
-            }
-        };
-        return new TreeMap<String,List<String>>(c);
+    private void customSortList(List<String> list) {
+        Collections.sort(list, CustomComparator);
     }
+
+    private static Comparator<String> CustomComparator = new Comparator<String>() {
+        @Override
+        public int compare(String s1, String s2) {
+            if (TextUtils.equals(s1, s2)) return 0;
+            if (s1.equals(AppConstants.ROOT_FOLDER)) return -1;
+            if (s2.equals(AppConstants.ROOT_FOLDER)) return 1;
+            if (s1.startsWith("_")) return -1;
+            if (s2.startsWith("_")) return 1;
+            return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
+        }
+    };
+
 }

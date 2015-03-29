@@ -54,7 +54,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
     @Override
     protected FeedSet createFeedSet() {
-        return FeedSet.folder(this.folderName, FeedUtils.dbHelper.getFeedsForFolder(folderName));
+        return FeedUtils.feedSetFromFolderName(this.folderName);
     }
 
 	@Override

@@ -1,12 +1,11 @@
 package com.newsblur.network.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import android.util.Log;
 import com.google.gson.Gson;
@@ -17,32 +16,26 @@ import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 
 public class FeedFolderResponse {
     
+    /** Helper variable so users of the parser can pass along how long it took to read the JSON stream, for instrumentation. */
     public long readTime;
 	
-	@SerializedName("starred_count")
-	public int starredCount;
+    public Set<Folder> folders;
+	public Set<Feed> feeds;
+	public Set<SocialFeed> socialFeeds;
 	
-	@SerializedName("feeds")
-	public Map<String, Feed> feeds;
-	
-	@SerializedName("flat_folders")
-	public Map<String, List<Long>> folders;
-	
-	@SerializedName("social_feeds")
-	public SocialFeed[] socialFeeds;
-
 	public boolean isAuthenticated;
     public boolean isPremium;
     public boolean isStaff;
+	public int starredCount;
 	
 	public FeedFolderResponse(String json, Gson gson) {
 
-        // TODO: is there really any good reason the default GSON parser doesn't work here?
 		JsonParser parser = new JsonParser();
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
 
@@ -55,23 +48,19 @@ public class FeedFolderResponse {
             this.isPremium = profile.get("is_premium").getAsBoolean();
         }
 
-		JsonArray jsonFoldersArray = (JsonArray) asJsonObject.get("folders");
-		ArrayList<String> nestedFolderList = new ArrayList<String>();
-		folders = new HashMap<String, List<Long>>();
-		parseFeedArray(nestedFolderList, folders, null, jsonFoldersArray);
-		
 		JsonElement starredCountElement = asJsonObject.get("starred_count");
 		if(starredCountElement != null) {
 			starredCount = gson.fromJson(starredCountElement, int.class);
 		}
+
+        folders = new HashSet<Folder>();
+        JsonArray jsonFoldersArray = (JsonArray) asJsonObject.get("folders");
+        // recursively parse folders
+		parseFolderArray(new ArrayList<String>(0), null, jsonFoldersArray);
 		
-		// Inconsistent server response here. When user has no feeds we get
-		// 		"feeds": []
-		// and other times we get
-		// 		"feeds": {"309667": {
-		// So support both I guess
+		// Inconsistent server response here. When user has no feeds we get an empty array, otherwise an object
 		JsonElement feedsElement = asJsonObject.get("feeds");
-		feeds = new HashMap<String, Feed>();
+		feeds = new HashSet<Feed>();
 		if(feedsElement instanceof JsonObject) {
 			JsonObject feedsObject = (JsonObject) asJsonObject.get("feeds");
 			if(feedsObject != null) {
@@ -80,48 +69,43 @@ public class FeedFolderResponse {
 				while(iterator.hasNext()) {
 					Entry<String, JsonElement> feedElement = iterator.next();
 					Feed feed = gson.fromJson(feedElement.getValue(), Feed.class);
-					feeds.put(feedElement.getKey(), feed);
+					feeds.add(feed);
 				}
 			}
 		} // else server sent back '"feeds": []' 
 		
-		socialFeeds = new SocialFeed[0];
+		socialFeeds = new HashSet<SocialFeed>();
 		JsonArray socialFeedsArray = (JsonArray) asJsonObject.get("social_feeds");
 		if(socialFeedsArray != null) {
-			List<SocialFeed> socialFeedsList = new ArrayList<SocialFeed>();
 			for(int i=0;i<socialFeedsArray.size();i++) {
 				JsonElement jsonElement = socialFeedsArray.get(i);
 				SocialFeed socialFeed = gson.fromJson(jsonElement, SocialFeed.class);
-				socialFeedsList.add(socialFeed);
+				socialFeeds.add(socialFeed);
 			}
-			socialFeeds = socialFeedsList.toArray(new SocialFeed[socialFeedsArray.size()]);
 		}
         
         // sometimes the API won't declare the top-level/root folder, but most of the
         // codebase expects it to exist.  Declare it as empty if missing.
-        if (!folders.containsKey(AppConstants.ROOT_FOLDER)) {
-            folders.put(AppConstants.ROOT_FOLDER, new ArrayList<Long>());
+        Folder emptyRootFolder = new Folder();
+        emptyRootFolder.name = AppConstants.ROOT_FOLDER;
+        // equality is based on folder name, so contains() will work
+        if (!folders.contains(emptyRootFolder)) {
+            folders.add(emptyRootFolder);
             Log.d( this.getClass().getName(), "root folder was missing.  added it.");
         } 
 	}
 	
 	/**
-     * Parses a folder, which is a list of feeds and/or more folders.  Nested folders
-     * are flattened into a single list, with names that are heirarchical.
+     * Parses a folder, which is a list of feeds and/or more folders.
      *
-     * @param nestedFolderList a list of any parent folders that surrounded this folder.
-     * @param folders the sink
-     * @param name the name of this folder.
-     * @param arrayValue the actual contents to be parsed.
+     * @param parentName folder that surrounded this folder.
+     * @param name the name of this folder or null if root.
+     * @param arrayValue the contents to be parsed.
      */
-    private void parseFeedArray(List<String> nestedFolderList,
-			Map<String, List<Long>> folders, String name, JsonArray arrayValue) {
-
-        // determine our text name, like "grandparent - parent - me"    
-		String fullFolderName = getFolderName(name, nestedFolderList);
-        // sink for any feeds found in this folder
-		ArrayList<Long> feedIds = new ArrayList<Long>();
-
+    private void parseFolderArray(List<String> parentNames, String name, JsonArray arrayValue) {
+        if (name == null) name = AppConstants.ROOT_FOLDER;
+        List<String> children = new ArrayList<String>();
+		List<Long> feedIds = new ArrayList<Long>();
 		for (JsonElement jsonElement : arrayValue) {
             // a folder array contains either feed IDs or nested folder objects
 			if(jsonElement.isJsonPrimitive()) {
@@ -129,35 +113,23 @@ public class FeedFolderResponse {
 			} else {
                 // if it wasn't a feed ID, it is a nested folder object
                 Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();
-				List<String> nestedFolderListCopy = new ArrayList<String>(nestedFolderList);
-				if(name != null) {
-					nestedFolderListCopy.add(name);
-				}
                 // recurse - nested folders are just objects with (usually one) field named for the folder
                 // that is a list of contained feeds or additional folders
                 for (Entry<String, JsonElement> next : entrySet) {
-                    parseFeedArray( nestedFolderListCopy, folders, next.getKey(), (JsonArray) next.getValue() );
+                    children.add(next.getKey());
+                    List<String> appendedParentList = new ArrayList<String>(parentNames);
+                    appendedParentList.add(name);
+                    parseFolderArray(appendedParentList, next.getKey(), (JsonArray) next.getValue());
                 }
 			}
 		}
-		folders.put(fullFolderName, feedIds);
-        //Log.d( this.getClass().getName(), "parsed folder '" + fullFolderName + "' with " + feedIds.size() + " feeds" );
+        Folder folder = new Folder();
+        folder.name = name;
+        folder.parents = parentNames;
+        folder.children = children;
+        folder.feedIds = feedIds;
+        folders.add(folder);
+        Log.d(this.getClass().getName(), String.format("folder %s has parents %s and children %s and %d feeds", name, parentNames.toString(), children.toString(), feedIds.size()));
 	}
 
-	private String getFolderName(String key, List<String> parentFeedNames) {
-		StringBuilder builder = new StringBuilder();
-		for(String parentFolder: parentFeedNames) {
-			builder.append(parentFolder);
-			builder.append(" - ");
-		}
-		if(key != null) {
-			builder.append(key);
-		} else {
-            // a null key means we are at the root.  give these a pseudo-folder name, since the DB and many
-            // classes would be very unhappy with a null foldername.
-            builder.append(AppConstants.ROOT_FOLDER);
-        }
-		return builder.toString();
-	}
-	
 }

@@ -21,6 +21,7 @@ import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
@@ -200,8 +201,10 @@ public class FeedUtils {
         context.startActivity(Intent.createChooser(intent, "Share using"));
     }
 
-    public static FeedSet feedSetFromFolderName(String folderName, Context context) {
-        Set<String> feedIds = dbHelper.getFeedsForFolder(folderName);
+    public static FeedSet feedSetFromFolderName(String folderName) {
+        Folder folder = dbHelper.getFolder(folderName);
+        Set<String> feedIds = new HashSet<String>(folder.feedIds.size());
+        for (Long id : folder.feedIds) feedIds.add(Long.toString(id));
         return FeedSet.folder(folderName, feedIds);
     }
 

@@ -44,7 +44,7 @@ import com.newsblur.util.UIUtils;
 public class FolderListFragment extends NbFragment implements OnGroupClickListener, OnChildClickListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int SOCIALFEEDS_LOADER = 1;
-    private static final int FOLDERFEEDMAP_LOADER = 2;
+    private static final int FOLDERS_LOADER = 2;
     private static final int FEEDS_LOADER = 3;
     private static final int SAVEDCOUNT_LOADER = 4;
 
@@ -64,9 +64,9 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
     public synchronized void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 		sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        if (getLoaderManager().getLoader(FOLDERFEEDMAP_LOADER) == null) {
+        if (getLoaderManager().getLoader(FOLDERS_LOADER) == null) {
             getLoaderManager().initLoader(SOCIALFEEDS_LOADER, null, this);
-            getLoaderManager().initLoader(FOLDERFEEDMAP_LOADER, null, this);
+            getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
             getLoaderManager().initLoader(FEEDS_LOADER, null, this);
             getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
         }
@@ -77,8 +77,8 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         switch (id) {
             case SOCIALFEEDS_LOADER:
                 return FeedUtils.dbHelper.getSocialFeedsLoader(currentState);
-            case FOLDERFEEDMAP_LOADER:
-                return FeedUtils.dbHelper.getFolderFeedMapLoader();
+            case FOLDERS_LOADER:
+                return FeedUtils.dbHelper.getFoldersLoader();
             case FEEDS_LOADER:
                 return FeedUtils.dbHelper.getFeedsLoader(currentState);
             case SAVEDCOUNT_LOADER:
@@ -96,8 +96,8 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
                 case SOCIALFEEDS_LOADER:
                     adapter.setSocialFeedCursor(cursor);
                     break;
-                case FOLDERFEEDMAP_LOADER:
-                    adapter.setFolderFeedMapCursor(cursor);
+                case FOLDERS_LOADER:
+                    adapter.setFoldersCursor(cursor);
                     break;
                 case FEEDS_LOADER:
                     adapter.setFeedCursor(cursor);
@@ -124,7 +124,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	public void hasUpdated() {
         if (isAdded()) {
 		    getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
-		    getLoaderManager().restartLoader(FOLDERFEEDMAP_LOADER, null, this);
+		    getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
 		    getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
 		    getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
         }
@@ -215,7 +215,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
 			if (!adapter.isFolderRoot(groupPosition)) {
 				String folderName = adapter.getGroup(groupPosition);
-                FeedUtils.markFeedsRead(FeedUtils.feedSetFromFolderName(folderName, getActivity()), null, null, getActivity());
+                FeedUtils.markFeedsRead(FeedUtils.feedSetFromFolderName(folderName), null, null, getActivity());
 			} else {
                 FeedUtils.markFeedsRead(FeedSet.allFeeds(), null, null, getActivity());
 			}

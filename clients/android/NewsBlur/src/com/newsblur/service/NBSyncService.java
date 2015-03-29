@@ -18,6 +18,8 @@ import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
@@ -385,7 +387,7 @@ public class NBSyncService extends Service {
         NbActivity.updateAllActivities(false);
 
         // there is a rare issue with feeds that have no folder.  capture them for workarounds.
-        Set<String> debugFeedIds = new HashSet<String>();
+        Set<Long> debugFeedIds = new HashSet<Long>();
         orphanFeedIds = new HashSet<String>();
 
         try {
@@ -420,42 +422,27 @@ public class NBSyncService extends Service {
 
             // data for the folder and folder-feed-mapping tables
             List<ContentValues> folderValues = new ArrayList<ContentValues>();
-            List<ContentValues> ffmValues = new ArrayList<ContentValues>();
-            for (Entry<String, List<Long>> entry : feedResponse.folders.entrySet()) {
-                if (!TextUtils.isEmpty(entry.getKey())) {
-                    String folderName = entry.getKey().trim();
-                    if (!TextUtils.isEmpty(folderName)) {
-                        ContentValues values = new ContentValues();
-                        values.put(DatabaseConstants.FOLDER_NAME, folderName);
-                        folderValues.add(values);
-                    }
-
-                    for (Long feedId : entry.getValue()) {
-                        ContentValues values = new ContentValues(); 
-                        values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-                        values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
-                        ffmValues.add(values);
-                        // note all feeds that belong to some folder
-                        debugFeedIds.add(Long.toString(feedId));
-                    }
-                }
+            for (Folder folder : feedResponse.folders) {
+                folderValues.add(folder.getValues());
+                // note all feeds that belong to some folder
+                debugFeedIds.addAll(folder.feedIds);
             }
 
             // data for the feeds table
             List<ContentValues> feedValues = new ArrayList<ContentValues>();
-            feedaddloop: for (String feedId : feedResponse.feeds.keySet()) {
+            feedaddloop: for (Feed feed : feedResponse.feeds) {
                 // sanity-check that the returned feeds actually exist in a folder or at the root
                 // if they do not, they should neither display nor count towards unread numbers
-                if (! debugFeedIds.contains(feedId)) {
-                    Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feedId );
-                    orphanFeedIds.add(feedId);
+                if (! debugFeedIds.contains(feed.feedId)) {
+                    Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feed.feedId );
+                    orphanFeedIds.add(feed.feedId);
                     continue feedaddloop;
                 }
-                if (! feedResponse.feeds.get(feedId).active) {
+                if (! feed.active) {
                     // the feed is disabled/hidden, pretend it doesn't exist
                     continue feedaddloop;
                 }
-                feedValues.add(feedResponse.feeds.get(feedId).getValues());
+                feedValues.add(feed.getValues());
             }
             
             // data for the the social feeds table
@@ -464,7 +451,7 @@ public class NBSyncService extends Service {
                 socialFeedValues.add(feed.getValues());
             }
             
-            dbHelper.insertFeedsFolders(feedValues, folderValues, ffmValues, socialFeedValues);
+            dbHelper.insertFeedsFolders(folderValues, feedValues, socialFeedValues);
 
             // populate the starred stories count table
             dbHelper.updateStarredStoriesCount(feedResponse.starredCount);

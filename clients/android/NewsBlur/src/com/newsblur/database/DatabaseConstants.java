@@ -15,8 +15,10 @@ public class DatabaseConstants {
 	private static final String INTEGER = " INTEGER";
 
 	public static final String FOLDER_TABLE = "folders";
-	public static final String FOLDER_ID = BaseColumns._ID;
 	public static final String FOLDER_NAME = "folder_name";
+	public static final String FOLDER_PARENT_NAMES = "folder_parent_names";
+	public static final String FOLDER_CHILDREN_NAMES = "folder_children_names";
+	public static final String FOLDER_FEED_IDS = "folder_feedids";
 
 	public static final String FEED_TABLE = "feeds";
 	public static final String FEED_ID = BaseColumns._ID;
@@ -44,10 +46,6 @@ public class DatabaseConstants {
 	public static final String SOCIAL_FEED_POSITIVE_COUNT = "ps";
 	public static final String SOCIAL_FEED_NEUTRAL_COUNT = "nt";
 	public static final String SOCIAL_FEED_NEGATIVE_COUNT = "ng";
-
-	public static final String FEED_FOLDER_MAP_TABLE = "feed_folder_map";
-	public static final String FEED_FOLDER_FEED_ID = "feed_feed_id";
-	public static final String FEED_FOLDER_FOLDER_NAME = "feed_folder_name";
 
 	public static final String SOCIALFEED_STORY_MAP_TABLE = "socialfeed_story_map";
 	public static final String SOCIALFEED_STORY_USER_ID = "socialfeed_story_user_id";
@@ -139,8 +137,10 @@ public class DatabaseConstants {
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
-		FOLDER_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
-		FOLDER_NAME + TEXT + " UNIQUE " +  
+		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
+        FOLDER_PARENT_NAMES + TEXT + ", " +
+        FOLDER_CHILDREN_NAMES + TEXT + ", " +
+        FOLDER_FEED_IDS + TEXT +
 		")";
 
 	static final String FEED_SQL = "CREATE TABLE " + FEED_TABLE + " (" +
@@ -245,12 +245,6 @@ public class DatabaseConstants {
 		CLASSIFIER_VALUE + TEXT +
 		")";
 
-	static final String FEED_FOLDER_SQL = "CREATE TABLE " + FEED_FOLDER_MAP_TABLE + " (" +
-		FEED_FOLDER_FOLDER_NAME + TEXT + " NOT NULL, " +
-		FEED_FOLDER_FEED_ID + INTEGER + " NOT NULL, " +
-		"PRIMARY KEY (" + FEED_FOLDER_FOLDER_NAME + ", " + FEED_FOLDER_FEED_ID + ") " + 
-		")";
-	
 	static final String SOCIALFEED_STORIES_SQL = "CREATE TABLE " + SOCIALFEED_STORY_MAP_TABLE + " (" +
 		SOCIALFEED_STORY_STORYID  + TEXT + " NOT NULL, " +
 		SOCIALFEED_STORY_USER_ID  + INTEGER + " NOT NULL, " +
