@@ -387,7 +387,7 @@ public class NBSyncService extends Service {
         NbActivity.updateAllActivities(false);
 
         // there is a rare issue with feeds that have no folder.  capture them for workarounds.
-        Set<Long> debugFeedIds = new HashSet<Long>();
+        Set<String> debugFeedIds = new HashSet<String>();
         orphanFeedIds = new HashSet<String>();
 
         try {

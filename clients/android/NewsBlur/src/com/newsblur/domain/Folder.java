@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.util.AppConstants;
 
 public class Folder {
 	
@@ -18,7 +19,7 @@ public class Folder {
     /** Set of any children folders contained in this folder. NOTE: this is a one-to-many set! */
     public List<String> children;
     /** Set of any feeds contained in this folder. */
-    public List<Long> feedIds;
+    public List<String> feedIds;
 
 	public static Folder fromCursor(Cursor c) {
 		if (c.isBeforeFirst()) {
@@ -33,8 +34,8 @@ public class Folder {
 		folder.children = new ArrayList<String>();
         for (String name : TextUtils.split(children, ",")) { folder.children.add(name);}
         String feeds = c.getString(c.getColumnIndex(DatabaseConstants.FOLDER_FEED_IDS));
-        folder.feedIds = new ArrayList<Long>();
-        for (String id : TextUtils.split(feeds, ",")) { folder.feedIds.add(Long.valueOf(id));}
+        folder.feedIds = new ArrayList<String>();
+        for (String id : TextUtils.split(feeds, ",")) { folder.feedIds.add(id);}
 		return folder;
 	}
 
@@ -50,6 +51,7 @@ public class Folder {
     public String flatName() {
         StringBuilder builder = new StringBuilder();
         for (String parentName : parents) {
+            if (parentName.equals(AppConstants.ROOT_FOLDER)) continue;
             builder.append(parentName);
             builder.append(" - ");
         }

@@ -204,7 +204,7 @@ public class FeedUtils {
     public static FeedSet feedSetFromFolderName(String folderName) {
         Folder folder = dbHelper.getFolder(folderName);
         Set<String> feedIds = new HashSet<String>(folder.feedIds.size());
-        for (Long id : folder.feedIds) feedIds.add(Long.toString(id));
+        for (String id : folder.feedIds) feedIds.add(id);
         return FeedSet.folder(folderName, feedIds);
     }
 

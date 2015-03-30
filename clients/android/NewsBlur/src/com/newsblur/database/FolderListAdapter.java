@@ -364,8 +364,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             List<Feed> activeFeeds = new ArrayList<Feed>();
             int neutCount = 0;
             int posCount = 0;
-            for (Long feedId : folders.get(folderName).feedIds) {
-                Feed f = feeds.get(feedId.toString());
+            for (String feedId : folders.get(folderName).feedIds) {
+                Feed f = feeds.get(feedId);
                 if (f != null) {
                     if (((currentState == StateFilter.BEST) && (f.positiveCount > 0)) ||
                         ((currentState == StateFilter.SOME) && ((f.positiveCount + f.neutralCount > 0))) ||

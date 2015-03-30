@@ -105,11 +105,11 @@ public class FeedFolderResponse {
     private void parseFolderArray(List<String> parentNames, String name, JsonArray arrayValue) {
         if (name == null) name = AppConstants.ROOT_FOLDER;
         List<String> children = new ArrayList<String>();
-		List<Long> feedIds = new ArrayList<Long>();
+		List<String> feedIds = new ArrayList<String>();
 		for (JsonElement jsonElement : arrayValue) {
             // a folder array contains either feed IDs or nested folder objects
 			if(jsonElement.isJsonPrimitive()) {
-				feedIds.add(jsonElement.getAsLong());
+				feedIds.add(jsonElement.getAsString());
 			} else {
                 // if it wasn't a feed ID, it is a nested folder object
                 Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();
