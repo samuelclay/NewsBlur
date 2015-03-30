@@ -202,10 +202,15 @@ public class FeedUtils {
     }
 
     public static FeedSet feedSetFromFolderName(String folderName) {
+        return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));
+    }
+
+    private static Set<String> getFeedIdsRecursive(String folderName) {
         Folder folder = dbHelper.getFolder(folderName);
         Set<String> feedIds = new HashSet<String>(folder.feedIds.size());
         for (String id : folder.feedIds) feedIds.add(id);
-        return FeedSet.folder(folderName, feedIds);
+        for (String child : folder.children) feedIds.addAll(getFeedIdsRecursive(child));
+        return feedIds;
     }
 
     public static String getStoryText(String hash) {

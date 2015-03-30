@@ -211,9 +211,16 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 		return v;
 	}
 
-	@Override
+    /*
+     * Gets the name of a folder, provided it isn't a special folder. Returns only the
+     * canonical name of the folder, not the flattened heirachial name.
+     */
+    @Override
 	public String getGroup(int groupPosition) {
-		return activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition));
+        int activeFolderIndex = convertGroupPositionToActiveFolderIndex(groupPosition);
+		String flatFolderName = activeFolderNames.get(activeFolderIndex);
+        Folder folder = folders.get(flatFolderName);
+        return folder.name;
 	}
 
     private int convertGroupPositionToActiveFolderIndex(int groupPosition) {
@@ -316,16 +323,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             Folder folder = Folder.fromCursor(cursor);
             folders.put(folder.flatName(), folder);
         }
-        /*
-        if (!folders.containsKey(AppConstants.ROOT_FOLDER)) {
-            Folder fakeRoot = new Folder();
-            fakeRoot.name = AppConstants.ROOT_FOLDER;
-            fakeRoot.parents = Collections.emptyList();
-            fakeRoot.children = Collections.emptyList();
-            fakeRoot.feedIds = Collections.emptyList();
-            folders.put(AppConstants.ROOT_FOLDER, fakeRoot);
-        }
-        */
         recountFeeds();
         notifyDataSetChanged();
     }
