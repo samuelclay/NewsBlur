@@ -41,7 +41,12 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
-public class FolderListFragment extends NbFragment implements OnGroupClickListener, OnChildClickListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class FolderListFragment extends NbFragment implements OnGroupClickListener,
+                                                              OnChildClickListener, 
+                                                              OnCreateContextMenuListener, 
+                                                              LoaderManager.LoaderCallbacks<Cursor>,
+                                                              ExpandableListView.OnGroupCollapseListener,
+                                                              ExpandableListView.OnGroupExpandListener {
 
     private static final int SOCIALFEEDS_LOADER = 1;
     private static final int FOLDERS_LOADER = 2;
@@ -146,6 +151,8 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         list.setAdapter(adapter);
         list.setOnGroupClickListener(this);
         list.setOnChildClickListener(this);
+        list.setOnGroupCollapseListener(this);
+        list.setOnGroupExpandListener(this);
 
         // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
         list.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
@@ -153,18 +160,27 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         return v;
     }
 
-	public void checkOpenFolderPreferences() {
+    /**
+     * Check the open/closed status of folders against what we have stored in the prefs
+     * database.  The list widget likes to default all folders to closed, so open them up
+     * unless expressly collapsed at some point.
+     */
+	private void checkOpenFolderPreferences() {
         // make sure we didn't beat construction
         if ((this.list == null) || (this.sharedPreferences == null)) return;
 
 		for (int i = 0; i < adapter.getGroupCount(); i++) {
-			String groupName = adapter.getGroupName(i);
-			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true)) {
-				this.list.expandGroup(i);
+			String flatGroupName = adapter.getGroupUniqueName(i);
+			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true)) {
+				if (list.isGroupExpanded(i) == false) list.expandGroup(i);
+                adapter.setFolderClosed(flatGroupName, false);
 			} else {
-				this.list.collapseGroup(i);
+				if (list.isGroupExpanded(i) == true) list.collapseGroup(i);
+                adapter.setFolderClosed(flatGroupName, true);
 			}
 		}
+        // we might have just initialised the closed set of folders in the adapter
+        adapter.forceRecount();
 	}
 
 	@Override
@@ -244,19 +260,49 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
             startActivity(i);
             return true;
         } else {
+            // the intents started by clicking on folder group names are handled in the Adapter, this
+            // just handles clicks on the expandos
             if ((group != null) && (group.findViewById(R.id.row_foldersums) != null)) {
-                String groupName = adapter.getGroupName(groupPosition);
+                // the isGroupExpanded() call reflects the state of the group before this click
                 if (list.isGroupExpanded(groupPosition)) {
                     group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
-                    sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, false).commit();
                 } else {
                     group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
-                    sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true).commit();
                 }
             }
 			return false;
 		}
 	}
+
+    @Override
+    public void onGroupExpand(int groupPosition) {
+        // these shouldn't ever be collapsible
+        if (adapter.isFolderRoot(groupPosition)) return;
+        if (adapter.isRowSavedStories(groupPosition)) return;
+
+        String flatGroupName = adapter.getGroupUniqueName(groupPosition);
+        // save the expanded preference, since the widget likes to forget it
+        sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true).commit();
+        // trigger display/hide of sub-folders
+        adapter.setFolderClosed(flatGroupName, false);
+        adapter.forceRecount();
+        // re-check open/closed state of sub folders, since the list will have forgot them
+        checkOpenFolderPreferences();
+    }
+
+    @Override
+    public void onGroupCollapse(int groupPosition) {
+        // these shouldn't ever be collapsible
+        if (adapter.isFolderRoot(groupPosition)) return;
+        if (adapter.isRowSavedStories(groupPosition)) return;
+
+        String flatGroupName = adapter.getGroupUniqueName(groupPosition);
+        // save the collapsed preference, since the widget likes to forget it
+        sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, false).commit();
+        // trigger display/hide of sub-folders
+        adapter.setFolderClosed(flatGroupName, true);
+        adapter.forceRecount();
+    }
 
 	@Override
 	public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
