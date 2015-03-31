@@ -3,6 +3,7 @@ package com.newsblur.database;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,15 +52,34 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private Cursor socialFeedCursor;
 
-    private Map<String,Folder> folders = Collections.emptyMap();
-    private Map<String,Folder> flatFolders = Collections.emptyMap();
-    private List<String> activeFolderNames;
-    private List<List<Feed>> activeFolderChildren;
-    private List<Integer> neutCounts;
-    private List<Integer> posCounts;
+    /** Feeds, indexed by feed ID. */
     private Map<String,Feed> feeds = Collections.emptyMap();
-    private int savedStoriesCount;
+    /** Neutral counts for active feeds, indexed by feed ID. */
+    private Map<String,Integer> feedNeutCounts;
+    /** Positive counts for active feeds, indexed by feed ID. */
+    private Map<String,Integer> feedPosCounts;
+    /** Total neutral unreads for all feeds. */
+    private int totalNeutCount = 0;
+    /** Total positive unreads for all feeds. */
+    private int totalPosCount = 0;
+
+    /** Folders, indexed by canonical name. */
+    private Map<String,Folder> folders = Collections.emptyMap();
+    /** Folders, indexed by flat name. */
+    private Map<String,Folder> flatFolders = Collections.emptyMap();
+    /** Flat names of currently displayed folders in display order. */
+    private List<String> activeFolderNames;
+    /** List of currently displayed feeds for a folder, ordered the same as activeFolderNames. */
+    private List<List<Feed>> activeFolderChildren;
+    /** List of folder neutral counts, ordered the same as activeFolderNames. */
+    private List<Integer> folderNeutCounts;
+    /** List of foler positive counts, ordered the same as activeFolderNames. */
+    private List<Integer> folderPosCounts;
+
+    /** Flat names of folders explicity closed by the user. */
     private Set<String> closedFolders = new HashSet<String>();
+
+    private int savedStoriesCount;
 
 	private Context context;
 
@@ -120,11 +140,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			((ImageView) v.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
 		} else if (isFolderRoot(groupPosition)) {
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
-            int posCount = 0;
-            for (int i : posCounts) posCount += i;
-            int neutCount = 0;
-            for (int i : neutCounts) neutCount += i;
-            bindCountViews(v, neutCount, posCount, true);
+            bindCountViews(v, totalNeutCount, totalPosCount, true);
         } else if (isRowSavedStories(groupPosition)) {
             if (convertView == null) {
                 v = inflater.inflate(R.layout.row_saved_stories, null, false);
@@ -148,7 +164,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				}
 			});
             int countPosition = convertGroupPositionToActiveFolderIndex(groupPosition);
-            bindCountViews(v, neutCounts.get(countPosition), posCounts.get(countPosition), false);
+            bindCountViews(v, folderNeutCounts.get(countPosition), folderPosCounts.get(countPosition), false);
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
             ImageView folderIconView = ((ImageView) v.findViewById(R.id.row_folder_icon));
             if ( folderIconView != null ) {
@@ -358,8 +374,25 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         // re-init our local vars
         activeFolderNames = new ArrayList<String>();
         activeFolderChildren = new ArrayList<List<Feed>>();
-        neutCounts = new ArrayList<Integer>();
-        posCounts = new ArrayList<Integer>();
+        feedNeutCounts = new HashMap<String,Integer>();
+        feedPosCounts = new HashMap<String,Integer>();
+        folderNeutCounts = new ArrayList<Integer>();
+        folderPosCounts = new ArrayList<Integer>();
+        totalNeutCount = 0;
+        totalPosCount = 0;
+        // count feed unreads for the current state
+        for (Feed f : feeds.values()) {
+            if (((currentState == StateFilter.BEST) && (f.positiveCount > 0)) ||
+                ((currentState == StateFilter.SOME) && ((f.positiveCount + f.neutralCount > 0))) ||
+                (currentState == StateFilter.ALL)) {
+                int neut = checkNegativeUnreads(f.neutralCount);
+                int pos = checkNegativeUnreads(f.positiveCount);
+                feedNeutCounts.put(f.feedId, neut);
+                feedPosCounts.put(f.feedId, pos);
+                totalNeutCount += neut;
+                totalPosCount += pos;
+            }
+        }
         // create a sorted list of folder display names
         List<String> sortedFolderNames = new ArrayList<String>(flatFolders.keySet());
         customSortList(sortedFolderNames);
@@ -370,28 +403,24 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         // inspect folders to see if the are active for display
         for (String folderName : sortedFolderNames) {
             if (hiddenSubFoldersFlat.contains(folderName)) continue;
+            Folder folder = flatFolders.get(folderName);
             List<Feed> activeFeeds = new ArrayList<Feed>();
-            int neutCount = 0;
-            int posCount = 0;
-            for (String feedId : flatFolders.get(folderName).feedIds) {
+            for (String feedId : folder.feedIds) {
                 Feed f = feeds.get(feedId);
                 // activeFeeds is a list, so it doesn't handle duplication (which the API allows) gracefully
                 if ((f != null) &&(!activeFeeds.contains(f))) {
-                    if (((currentState == StateFilter.BEST) && (f.positiveCount > 0)) ||
-                        ((currentState == StateFilter.SOME) && ((f.positiveCount + f.neutralCount > 0))) ||
-                        (currentState == StateFilter.ALL)) {
+                    // the code to count feeds will only have added an entry if it was nonzero
+                    if (feedNeutCounts.containsKey(feedId) || feedPosCounts.containsKey(feedId)) {
                         activeFeeds.add(f);
                     }
-                    neutCount += checkNegativeUnreads(f.neutralCount);
-                    posCount += checkNegativeUnreads(f.positiveCount);
                 }
             }
             if ((activeFeeds.size() > 0) || (folderName.equals(AppConstants.ROOT_FOLDER))) {
                 activeFolderNames.add(folderName);
                 Collections.sort(activeFeeds);
                 activeFolderChildren.add(activeFeeds);
-                neutCounts.add(neutCount);
-                posCounts.add(posCount);
+                folderNeutCounts.add(getFolderNeutralCountRecursive(folder, null));
+                folderPosCounts.add(getFolderPositiveCountRecursive(folder, null));
             }
         }
     }
@@ -412,6 +441,38 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             subFolders.addAll(getSubFoldersRecursive(subFolders));
         }
         return subFolders;
+    }
+
+    private int getFolderNeutralCountRecursive(Folder folder, Set<String> visitedParents) {
+        int count = 0;
+        if (visitedParents == null) visitedParents = new HashSet<String>();
+        visitedParents.add(folder.name);
+        for (String feedId : folder.feedIds) {
+            Integer feedCount = feedNeutCounts.get(feedId);
+            if (feedCount != null) count += feedCount;
+        }
+        for (String childName : folder.children) {
+            if (!visitedParents.contains(childName)) {
+                count += getFolderNeutralCountRecursive(folders.get(childName), visitedParents);
+            }
+        }
+        return count;
+    }
+
+    private int getFolderPositiveCountRecursive(Folder folder, Set<String> visitedParents) {
+        int count = 0;
+        if (visitedParents == null) visitedParents = new HashSet<String>();
+        visitedParents.add(folder.name);
+        for (String feedId : folder.feedIds) {
+            Integer feedCount = feedPosCounts.get(feedId);
+            if (feedCount != null) count += feedCount;
+        }
+        for (String childName : folder.children) {
+            if (!visitedParents.contains(childName)) {
+                count += getFolderPositiveCountRecursive(folders.get(childName), visitedParents);
+            }
+        }
+        return count;
     }
 
     public synchronized void forceRecount() {
