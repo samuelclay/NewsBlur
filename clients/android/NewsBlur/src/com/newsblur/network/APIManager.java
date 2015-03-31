@@ -513,13 +513,9 @@ public class APIManager {
         int tryCount = 0;
         do {
             backoffSleep(tryCount++);
-            response = get_single(urlString);
+            response = get_single(urlString, HttpStatus.SC_OK);
         } while ((response.isError()) && (tryCount < AppConstants.MAX_API_TRIES));
         return response;
-    }
-
-    private APIResponse get_single(final String urlString) {
-        return get_single(urlString, HttpStatus.SC_OK);
     }
 
 	private APIResponse get_single(final String urlString, int expectedReturnCode) {
@@ -532,16 +528,20 @@ public class APIManager {
 		}
 
 		Request.Builder requestBuilder = new Request.Builder().url(urlString);
+		addCookieHeader(requestBuilder);
+		requestBuilder.header("User-Agent", this.customUserAgent);
+
+		return new APIResponse(context, httpClient, requestBuilder.build(), expectedReturnCode);
+	}
+
+	private void addCookieHeader(Request.Builder requestBuilder) {
 		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 		if (cookie != null) {
 			requestBuilder.header("Cookie", cookie);
 		}
-		requestBuilder.header("User-Agent", this.customUserAgent);
-
-		return new APIResponse(context, httpClient, requestBuilder.build(), expectedReturnCode);
 	}
-	
+
 	private APIResponse get(final String urlString, final ContentValues values) {
         return this.get(urlString + "?" + builderGetParametersString(values));
 	}
@@ -583,11 +583,7 @@ public class APIManager {
 		}
 
 		Request.Builder requestBuilder = new Request.Builder().url(urlString);
-		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-		String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
-		if (cookie != null) {
-			requestBuilder.header("Cookie", cookie);
-		}
+		addCookieHeader(requestBuilder);
 		requestBuilder.post(formBody);
 
 		return new APIResponse(context, httpClient, requestBuilder.build());
