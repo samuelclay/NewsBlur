@@ -129,7 +129,6 @@ public class FeedFolderResponse {
         folder.children = children;
         folder.feedIds = feedIds;
         folders.add(folder);
-        Log.d(this.getClass().getName(), String.format("folder %s has parents %s and children %s and %d feeds", name, parentNames.toString(), children.toString(), feedIds.size()));
 	}
 
 }
