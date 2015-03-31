@@ -1,8 +1,6 @@
 package com.newsblur.network;
 
-import java.io.InputStreamReader;
 import java.io.IOException;
-import java.io.Reader;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -62,16 +60,9 @@ public class APIResponse {
                 this.cookie = response.header("Set-Cookie");
 
                 try {
-                    StringBuilder builder = new StringBuilder();
-                    Reader reader = new InputStreamReader(response.body().byteStream());
-                    char[] chunk = new char[1024];
-                    int len;
                     long startTime = System.currentTimeMillis();
-                    while ( (len = reader.read(chunk)) > 0) {
-                        builder.append(chunk, 0, len);
-                    }
+                    this.responseBody = response.body().string();
                     readTime = System.currentTimeMillis() - startTime;
-                    this.responseBody = builder.toString();
                 } catch (Exception e) {
                     Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.urlString(), e);
                     this.isError = true;
