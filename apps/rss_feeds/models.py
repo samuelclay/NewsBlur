@@ -1452,6 +1452,7 @@ class Feed(models.Model):
         
         if premium_speed:
             self.active_premium_subscribers += 1
+            self.active_subscribers -= 1
         
         upd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 
