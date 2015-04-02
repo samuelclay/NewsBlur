@@ -871,6 +871,33 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('span', { className: 'NB-tangle-spacescrollspacing' }, '40%'),
                                 ' of the screen',
                                 $.make('input', { name: 'space_scroll_spacing', value: NEWSBLUR.Preferences.space_scroll_spacing, type: 'hidden' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-keyboard-spacebaraction' }, [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-spacebaraction-1', 
+                                    type: 'radio', 
+                                    name: 'space_bar_action', 
+                                    value: 'next_unread'
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-1' }, 'Open next unread story when bottom of story is visible')
+                            ]),
+                            $.make('div', { className: 'NB-preference-keyboard-spacebaraction' }, [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-spacebaraction-2', 
+                                    type: 'radio', 
+                                    name: 'space_bar_action', 
+                                    value: 'next_unread_50'
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-2' }, 'Open next unread story when story is half-way up')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-spacebaraction-3', 
+                                    type: 'radio', 
+                                    name: 'space_bar_action', 
+                                    value: 'scroll_only'
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-3' }, 'Only page down in story, do not open next unread story')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -1088,6 +1115,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=keyboard_horizontalarrows]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.keyboard_horizontalarrows) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=space_bar_action]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.space_bar_action) {
                 $(this).attr('checked', true);
                 return false;
             }

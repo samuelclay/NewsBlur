@@ -1155,7 +1155,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     preference: function(preference, value, callback) {
         if (typeof value == 'undefined') {
             var pref = NEWSBLUR.Preferences[preference];
-            if ((/\d+/).test(pref)) return parseInt(pref, 10);
+            if ((/^\d+$/).test(pref)) return parseInt(pref, 10);
             return pref;
         }
         
