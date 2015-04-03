@@ -588,6 +588,12 @@ public class NBSyncService extends Service {
                 totalStoriesSeen += apiResponse.stories.length;
                 FeedStoriesSeen.put(fs, totalStoriesSeen);
 
+                // lock in the activation cutoff based upon the timestamp of the first
+                // story received for a given pagination session. it will be the newest
+                // or oldest story for the feedset, as dictated by order.
+                if ((pageNumber == 1) && (apiResponse.stories.length > 0)) {
+                    ModeCutoff = apiResponse.stories[0].timestamp;
+                }
                 insertStories(apiResponse);
                 NbActivity.updateAllActivities(true);
             
