@@ -116,10 +116,13 @@ public class FeedFolderResponse {
                 // recurse - nested folders are just objects with (usually one) field named for the folder
                 // that is a list of contained feeds or additional folders
                 for (Entry<String, JsonElement> next : entrySet) {
-                    children.add(next.getKey());
+                    String nextName = next.getKey();
+                    // our DB uses a woraround that requires exclusive use of a delimiter char
+                    nextName = nextName.replaceAll(Folder.SPLIT_DELIM, "").trim();
+                    children.add(nextName);
                     List<String> appendedParentList = new ArrayList<String>(parentNames);
                     appendedParentList.add(name);
-                    parseFolderArray(appendedParentList, next.getKey(), (JsonArray) next.getValue());
+                    parseFolderArray(appendedParentList, nextName, (JsonArray) next.getValue());
                 }
 			}
 		}
