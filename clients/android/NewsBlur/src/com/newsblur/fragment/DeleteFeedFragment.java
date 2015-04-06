@@ -31,7 +31,7 @@ public class DeleteFeedFragment extends DialogFragment {
 		Bundle args = new Bundle();
 		args.putString(FEED_ID, feed.feedId);
 		args.putString(FEED_NAME, feed.title);
-		args.putString(FOLDER_NAME, parseFolderName(folderName));
+		args.putString(FOLDER_NAME, folderName);
 		frag.setArguments(args);
 		return frag;
 	}
@@ -41,24 +41,10 @@ public class DeleteFeedFragment extends DialogFragment {
 		Bundle args = new Bundle();
 		args.putString(FEED_ID, feed.userId);
 		args.putString(FEED_NAME, feed.feedTitle);
-		args.putString(FOLDER_NAME, parseFolderName(folderName));
+		args.putString(FOLDER_NAME, folderName);
 		frag.setArguments(args);
 		return frag;
 	}
-
-    /**
-     * Nested folders are named "parent" - "child" so we need to find the last "-"
-     * and pull out the child folder name for the delete to succeed.
-     */
-    private static String parseFolderName(String folderName) {
-        int index = folderName.lastIndexOf("-");
-        if (index == -1) {
-            return folderName;
-        } else {
-            // + 2 to ignore - and the first whitespace
-            return folderName.substring(index + 2);
-        }
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

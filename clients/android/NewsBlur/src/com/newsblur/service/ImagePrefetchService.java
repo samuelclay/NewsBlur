@@ -41,6 +41,9 @@ public class ImagePrefetchService extends SubService {
 
         while ((ImageQueue.size() > 0) && PrefsUtils.isImagePrefetchEnabled(parent)) {
             startExpensiveCycle();
+            // on each batch, re-query the DB for images associated with yet-unread stories
+            // this is a bit expensive, but we are running totally async at a really low priority
+            Set<String> unreadImages = parent.dbHelper.getAllStoryImages();
             Set<String> fetchedImages = new HashSet<String>();
             Set<String> batch = new HashSet<String>(AppConstants.IMAGE_PREFETCH_BATCH_SIZE);
             batchloop: for (String url : ImageQueue) {
@@ -50,10 +53,11 @@ public class ImagePrefetchService extends SubService {
             try {
                 for (String url : batch) {
                     if (parent.stopSync()) return;
-                    
-                    if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetching image: " + url);
-                    imageCache.cacheImage(url);
-
+                    // dont fetch the image if the associated story was marked read before we got to it
+                    if (unreadImages.contains(url)) {
+                        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetching image: " + url);
+                        imageCache.cacheImage(url);
+                    }
                     fetchedImages.add(url);
                 }
             } finally {

@@ -15,7 +15,7 @@ import android.util.Log;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.FeedResult;
+import com.newsblur.domain.Folder;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
@@ -136,7 +136,6 @@ public class BlurDatabaseHelper {
     public void cleanupFeedsFolders() {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);}
     }
 
@@ -147,7 +146,6 @@ public class BlurDatabaseHelper {
     public void deleteFeed(String feedId) {
         String[] selArgs = new String[] {feedId};
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, DatabaseConstants.FEED_FOLDER_FEED_ID + " = ?", selArgs);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
     }
 
@@ -166,13 +164,11 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void insertFeedsFolders(List<ContentValues> feedValues,
-                                   List<ContentValues> folderValues,
-                                   List<ContentValues> ffmValues,
+    public void insertFeedsFolders(List<ContentValues> folderValues,
+                                   List<ContentValues> feedValues,
                                    List<ContentValues> socialFeedValues) {
-        bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
         bulkInsertValues(DatabaseConstants.FOLDER_TABLE, folderValues);
-        bulkInsertValues(DatabaseConstants.FEED_FOLDER_MAP_TABLE, ffmValues);
+        bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
         bulkInsertValues(DatabaseConstants.SOCIALFEED_TABLE, socialFeedValues);
     }
 
@@ -336,17 +332,13 @@ public class BlurDatabaseHelper {
         bulkInsertValues(DatabaseConstants.REPLY_TABLE, replyValues);
     }
 
-    public Set<String> getFeedsForFolder(String folderName) {
-        Set<String> feedIds = new HashSet<String>();
-        String q = "SELECT " + DatabaseConstants.FEED_FOLDER_FEED_ID + 
-                   " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE +
-                   " WHERE " + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ?" ;
-        Cursor c = dbRO.rawQuery(q, new String[]{folderName});
-        while (c.moveToNext()) {
-           feedIds.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_FOLDER_FEED_ID)));
-        }
-        c.close();
-        return feedIds;
+    public Folder getFolder(String folderName) {
+        String[] selArgs = new String[] {folderName};
+        String selection = DatabaseConstants.FOLDER_NAME + " = ?";
+        Cursor c = dbRO.query(DatabaseConstants.FOLDER_TABLE, null, selection, selArgs, null, null, null);
+        Folder folder = Folder.fromCursor(c);
+        closeQuietly(c);
+        return folder;
     }
 
     public void markStoryHashesRead(List<String> hashes) {
@@ -677,14 +669,14 @@ public class BlurDatabaseHelper {
         return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
-    public Loader<Cursor> getFolderFeedMapLoader() {
+    public Loader<Cursor> getFoldersLoader() {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getFolderFeedMapCursor(cancellationSignal);}
+            protected Cursor createCursor() {return getFoldersCursor(cancellationSignal);}
         };
     }
 
-    public Cursor getFolderFeedMapCursor(CancellationSignal cancellationSignal) {
-        return query(false, DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null, null, null, null, null, null, cancellationSignal);
+    public Cursor getFoldersCursor(CancellationSignal cancellationSignal) {
+        return query(false, DatabaseConstants.FOLDER_TABLE, null, null, null, null, null, null, null, cancellationSignal);
     }
 
     public Loader<Cursor> getFeedsLoader(final StateFilter stateFilter) {
