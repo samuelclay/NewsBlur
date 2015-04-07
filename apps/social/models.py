@@ -33,6 +33,7 @@ from utils import log as logging
 from utils import json_functions as json
 from utils.feed_functions import relative_timesince, chunks
 from utils.story_functions import truncate_chars, strip_tags, linkify, image_size
+from utils.image_functions import ImageOps
 from utils.scrubber import SelectiveScriptScrubber
 from utils import s3_utils
 from StringIO import StringIO
@@ -1478,7 +1479,7 @@ class MSharedStory(mongo.Document):
 
         self.shared_date = self.shared_date or datetime.datetime.utcnow()
         self.has_replies = bool(len(self.replies))
-
+        
         super(MSharedStory, self).save(*args, **kwargs)
         
         author = MSocialProfile.get_user(self.user_id)
@@ -2191,8 +2192,13 @@ class MSharedStory(mongo.Document):
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
             req = requests.get(image_source, headers=headers, stream=True)
-            datastream = StringIO(req.content[:30])
-            _, width, height = image_size(datastream)
+            try:
+                datastream = StringIO(req.content)
+                width, height = ImageOps.image_size(datastream)
+            except IOError, e:
+                logging.debug(" ***> Couldn't read image: %s / %s" % (e, image_source))
+                datastream = StringIO(req.content[:100])
+                _, width, height = image_size(datastream)
             if width <= 16 or height <= 16:
                 continue
             image_sizes.append({'src': image_source, 'size': (width, height)})
@@ -2204,7 +2210,8 @@ class MSharedStory(mongo.Document):
         self.image_count = len(image_sizes)
         self.save()
         
-        logging.debug(" ---> ~SN~FGFetched image sizes on shared story: ~SB%s images" % self.image_count)
+        logging.debug(" ---> ~SN~FGFetched image sizes on shared story: ~SB%s/%s images" % 
+                      (self.image_count, len(image_sources)))
         
         return image_sizes
     
@@ -2652,6 +2659,7 @@ class MSocialServices(mongo.Document):
         
     def post_to_twitter(self, shared_story):
         message = shared_story.generate_post_to_service_message(truncate=140)
+        shared_story.calculate_image_sizes()
         
         try:
             api = self.twitter_api()
