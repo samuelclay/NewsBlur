@@ -41,7 +41,9 @@
         <meta name="twitter:card" content="summary">
         {% endif %}
         <meta name="twitter:site" content="@newsblur">
-        <meta name="twitter:creator" content="@{{ user_social_services.twitter_username }}">
+        {% if social_services.twitter_username %}
+        <meta name="twitter:creator" content="@{{ social_services.twitter_username }}">
+        {% endif %}
         <meta name="twitter:title" content="{{ active_story.story_title }}">
         <meta name="twitter:description" content="{{ active_story.story_content|striptags|slice:":300"|addslashes|safe }}">
     {% endif %}
