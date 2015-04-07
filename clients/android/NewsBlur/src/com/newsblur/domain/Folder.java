@@ -11,6 +11,8 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.AppConstants;
 
 public class Folder {
+
+    public static final String SPLIT_DELIM = ",";
 	
     /** Actual unique name of the folder. */
 	public String name;
@@ -21,6 +23,10 @@ public class Folder {
     /** Set of any feeds contained in this folder. */
     public List<String> feedIds;
 
+    // TODO: the use of non-normalised fields with the delimeter scheme can cause minor
+    // bugs for folders with certain names. When we switch to an object store, that scheme
+    // should be removed asap.
+
 	public static Folder fromCursor(Cursor c) {
 		if (c.isBeforeFirst()) {
 			c.moveToFirst();
@@ -29,22 +35,22 @@ public class Folder {
 		folder.name = c.getString(c.getColumnIndex(DatabaseConstants.FOLDER_NAME));
         String parents = c.getString(c.getColumnIndex(DatabaseConstants.FOLDER_PARENT_NAMES));
 		folder.parents = new ArrayList<String>();
-        for (String name : TextUtils.split(parents, ",")) { folder.parents.add(name);}
+        for (String name : TextUtils.split(parents, SPLIT_DELIM)) { folder.parents.add(name);}
         String children = c.getString(c.getColumnIndex(DatabaseConstants.FOLDER_CHILDREN_NAMES));
 		folder.children = new ArrayList<String>();
-        for (String name : TextUtils.split(children, ",")) { folder.children.add(name);}
+        for (String name : TextUtils.split(children, SPLIT_DELIM)) { folder.children.add(name);}
         String feeds = c.getString(c.getColumnIndex(DatabaseConstants.FOLDER_FEED_IDS));
         folder.feedIds = new ArrayList<String>();
-        for (String id : TextUtils.split(feeds, ",")) { folder.feedIds.add(id);}
+        for (String id : TextUtils.split(feeds, SPLIT_DELIM)) { folder.feedIds.add(id);}
 		return folder;
 	}
 
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.FOLDER_NAME, name);
-		values.put(DatabaseConstants.FOLDER_PARENT_NAMES, TextUtils.join(",", parents));
-		values.put(DatabaseConstants.FOLDER_CHILDREN_NAMES, TextUtils.join(",", children));
-        values.put(DatabaseConstants.FOLDER_FEED_IDS, TextUtils.join(",", feedIds));
+		values.put(DatabaseConstants.FOLDER_PARENT_NAMES, TextUtils.join(SPLIT_DELIM, parents));
+		values.put(DatabaseConstants.FOLDER_CHILDREN_NAMES, TextUtils.join(SPLIT_DELIM, children));
+        values.put(DatabaseConstants.FOLDER_FEED_IDS, TextUtils.join(SPLIT_DELIM, feedIds));
 		return values;
 	}
 
