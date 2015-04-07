@@ -23,6 +23,10 @@ public class Folder {
     /** Set of any feeds contained in this folder. */
     public List<String> feedIds;
 
+    // TODO: the use of non-normalised fields with the delimeter scheme can cause minor
+    // bugs for folders with certain names. When we switch to an object store, that scheme
+    // should be removed asap.
+
 	public static Folder fromCursor(Cursor c) {
 		if (c.isBeforeFirst()) {
 			c.moveToFirst();
