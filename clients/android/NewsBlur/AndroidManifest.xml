@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="89"
+    android:versionCode="90"
     android:versionName="4.2.3b4" >
 
     <uses-sdk
