@@ -660,8 +660,8 @@ def load_single_feed(request, feed_id):
     if usersub:
         usersub.feed_opens += 1
         usersub.needs_unread_recalc = True
-        usersub.save()
-        
+        usersub.save(update_fields=['feed_opens', 'needs_unread_recalc'])
+    
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
     diff3 = checkpoint3-start
@@ -1358,7 +1358,7 @@ def mark_story_hashes_as_read(request):
             usersub = usersubs[0]
             if not usersub.needs_unread_recalc:
                 usersub.needs_unread_recalc = True
-                usersub.save()
+                usersub.save(update_fields=['needs_unread_recalc'])
             r.publish(request.user.username, 'feed:%s' % feed_id)
     
     hash_count = len(story_hashes)
@@ -1461,7 +1461,7 @@ def mark_story_as_unread(request):
         
     if usersub and not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
-        usersub.save()
+        usersub.save(update_fields=['needs_unread_recalc'])
         
     data = dict(code=0, payload=dict(story_id=story_id))
     
@@ -1516,7 +1516,7 @@ def mark_story_hash_as_unread(request):
         usersub = usersubs[0]
         if not usersub.needs_unread_recalc:
             usersub.needs_unread_recalc = True
-            usersub.save()
+            usersub.save(update_fields=['needs_unread_recalc'])
         data = usersub.invert_read_stories_after_unread_story(story, request)
         r.publish(request.user.username, 'feed:%s' % feed_id)
 
