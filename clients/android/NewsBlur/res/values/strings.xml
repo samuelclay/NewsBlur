@@ -71,7 +71,6 @@
 	
 	<string name="alert_dialog_ok">Okay</string>
 	<string name="alert_dialog_cancel">Cancel</string>
-	<string name="alert_dialog_close">Close</string>
 	<string name="alert_dialog_done">Done</string>
 	<string name="alert_dialog_openimage">Open image</string>
 	
@@ -114,8 +113,6 @@
     <string name="toast_marked_stories_as_read">Stories marked as read</string>
 
     <string name="toast_story_unread">Story marked as unread</string>
-
-    <string name="toast_unread_search_error">Could not load next unread story</string>
 
     <string name="toast_feed_deleted">Feed deleted</string>
     
