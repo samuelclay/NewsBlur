@@ -42,6 +42,7 @@ public abstract class SubService {
                 } else {
                     Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE + Process.THREAD_PRIORITY_LESS_FAVORABLE );
                 }
+                Thread.currentThread().setName(this.getClass().getName());
                 exec_();
                 parent.decrementRunningChild(startId);
             }

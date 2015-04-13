@@ -207,6 +207,8 @@ public class NBSyncService extends Service {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
             }
 
+            Thread.currentThread().setName(this.getClass().getName());
+
             if (OfflineNow) {
                 OfflineNow = false;   
                 NbActivity.updateAllActivities(false);
