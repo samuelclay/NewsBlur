@@ -2,19 +2,11 @@ package com.newsblur.service;
 
 import android.util.Log;
 
-import com.newsblur.domain.Story;
-import com.newsblur.network.domain.StoriesResponse;
-import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageCache;
 import com.newsblur.util.PrefsUtils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 public class ImagePrefetchService extends SubService {
