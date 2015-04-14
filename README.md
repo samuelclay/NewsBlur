@@ -160,7 +160,7 @@ these after the installation below.
  4. Run the development server. At this point, all dependencies should be installed and no
     additional configuration is needed. If you find that something is not working at this
     point, please email the resulting output to Samuel Clay at 
-    [samuel@newsblur.com](samuel@newsblur.com).
+    [samuel@newsblur.com](mailto:samuel@newsblur.com).
  
         ./manage.py runserver
  
