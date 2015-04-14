@@ -77,7 +77,6 @@ public class NBSyncService extends Service {
     private static final Object PENDING_FEED_MUTEX = new Object();
 
     private volatile static boolean ActionsRunning = false;
-    private volatile static boolean CleanupRunning = false;
     private volatile static boolean FFSyncRunning = false;
     private volatile static boolean StorySyncRunning = false;
     private volatile static boolean HousekeepingRunning = false;
@@ -126,6 +125,7 @@ public class NBSyncService extends Service {
     Set<String> orphanFeedIds;
 
     private ExecutorService primaryExecutor;
+    CleanupService cleanupService;
     OriginalTextService originalTextService;
     UnreadsService unreadsService;
     ImagePrefetchService imagePrefetchService;
@@ -155,6 +155,7 @@ public class NBSyncService extends Service {
         if (apiManager == null) {
             apiManager = new APIManager(this);
             dbHelper = new BlurDatabaseHelper(this);
+            cleanupService = new CleanupService(this);
             originalTextService = new OriginalTextService(this);
             unreadsService = new UnreadsService(this);
             imagePrefetchService = new ImagePrefetchService(this);
@@ -362,9 +363,6 @@ public class NBSyncService extends Service {
      * unread hashes. Doing this resets pagination on the server!
      */
     private void syncMetadata(int startId) {
-        if (stopSync()) return;
-        if (ActMode != ActivationMode.ALL) return;
-
         if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
             PrefsUtils.updateLastSyncTime(this);
             DoFeedsFolders = false;
@@ -372,16 +370,6 @@ public class NBSyncService extends Service {
             return;
         }
 
-        // cleanup is expensive, so do it as part of the metadata sync
-        CleanupRunning = true;
-        NbActivity.updateAllActivities(false);
-        dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(this));
-        dbHelper.cleanupStoryText();
-        imagePrefetchService.imageCache.cleanup(dbHelper.getAllStoryImages());
-        CleanupRunning = false;
-        NbActivity.updateAllActivities(false);
-
-        // cleanup may have taken a while, so re-check our running status
         if (stopSync()) return;
         if (ActMode != ActivationMode.ALL) return;
 
@@ -461,6 +449,7 @@ public class NBSyncService extends Service {
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();
 
+            cleanupService.start(startId);
             unreadsService.start(startId);
             UnreadsService.doMetadata();
 
@@ -690,7 +679,7 @@ public class NBSyncService extends Service {
      * Is the main feed/folder list sync running?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (HousekeepingRunning || ActionsRunning || RecountsRunning || FFSyncRunning || CleanupRunning || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
+        return (HousekeepingRunning || ActionsRunning || RecountsRunning || FFSyncRunning || CleanupService.running() || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
     }
 
     /**
@@ -706,7 +695,7 @@ public class NBSyncService extends Service {
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
         if (ActionsRunning||RecountsRunning) return context.getResources().getString(R.string.sync_status_actions);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
-        if (CleanupRunning) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
         if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
@@ -819,6 +808,7 @@ public class NBSyncService extends Service {
         try {
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
             HaltNow = true;
+            if (cleanupService != null) cleanupService.shutdown();
             if (unreadsService != null) unreadsService.shutdown();
             if (originalTextService != null) originalTextService.shutdown();
             if (imagePrefetchService != null) imagePrefetchService.shutdown();

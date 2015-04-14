@@ -108,11 +108,13 @@ public class BlurDatabaseHelper {
     }
 
     public void cleanupStories(boolean keepOldStories) {
+        // story cleanup happens at a low priority in the background. the goal here is to lock
+        // the DB for as short a time as possible, not absolute efficiency.
         for (String feedId : getAllFeeds()) {
             String q = "DELETE FROM " + DatabaseConstants.STORY_TABLE + 
                        " WHERE " + DatabaseConstants.STORY_ID + " IN " +
                        "( SELECT " + DatabaseConstants.STORY_ID + " FROM " + DatabaseConstants.STORY_TABLE +
-                       " WHERE " + DatabaseConstants.STORY_READ + " = 1" +
+                       " WHERE " + DatabaseConstants.STORY_READ + " = 1" + // don't cleanup unreads
                        " AND " + DatabaseConstants.STORY_FEED_ID + " = " + feedId +
                        " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
                        " LIMIT -1 OFFSET " + (keepOldStories ? AppConstants.MAX_READ_STORIES_STORED : 0) +
