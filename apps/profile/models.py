@@ -490,7 +490,7 @@ Feeds: %(feeds)s
 
 Sincerely,
 NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
-        mail_admins('New premium account', message, fail_silently=True)
+        # mail_admins('New premium account', message, fail_silently=True)
         
         if not self.user.email or not self.send_emails:
             return
