@@ -173,7 +173,7 @@ LOGGING = {
             'formatter': 'verbose'
         },
         'mail_admins': {
-            'level': 'ERROR',
+            'level': 'CRITICAL',
             'class': 'django.utils.log.AdminEmailHandler',
             'filters': ['require_debug_false'],
             'include_html': True,
@@ -190,12 +190,16 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'django.security.DisallowedHost': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
         'newsblur': {
             'handlers': ['console', 'log_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
-    'apps': {
+        'apps': {
             'handlers': ['log_file'],
             'level': 'INFO',
             'propagate': True,
