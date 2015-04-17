@@ -919,7 +919,7 @@
         - >
           The <code>username</code> url parameter is optional. It's just recommended 
           if you have it.
-    - url: /social/statistics/:user_id/:name
+    - url: /social/statistics/:user_id/:username
       method: GET
       short_desc: "Get statistics and history for a blurblog."
       long_desc: 
