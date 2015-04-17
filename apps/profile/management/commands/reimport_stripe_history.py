@@ -21,7 +21,8 @@ class Command(BaseCommand):
         week = (datetime.datetime.now() - datetime.timedelta(days=int(options.get('days', 365)))).strftime('%s')
         failed = []
         limit = 100
-        offset = offset
+        offset = options.get('offset')
+        
         while True:
             logging.debug(" ---> At %s" % offset)
             try:
