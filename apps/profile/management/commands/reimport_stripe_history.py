@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from optparse import make_option
 
 from utils import log as logging
-from apps.profile.models import Profile
+from apps.profile.models import Profile, PaymentHistory
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
