@@ -312,15 +312,25 @@ class Profile(models.Model):
                 'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
             }
             paypal = PayPalInterface(**paypal_opts)
-            transaction = PayPalIPN.objects.filter(custom=self.user.username,
-                                                   txn_type='subscr_payment'
-                                                   ).order_by('-payment_date')[0]
-            refund = paypal.refund_transaction(transaction.txn_id)
-            try:
-                refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
-            except KeyError:
-                refunded = int(transaction.payment_gross)
-            logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
+            transactions = PayPalIPN.objects.filter(custom=self.user.username,
+                                                    txn_type='subscr_payment'
+                                                    ).order_by('-payment_date')
+            if not transactions:
+                transactions = PayPalIPN.objects.filter(payer_email=self.user.email,
+                                                        txn_type='subscr_payment'
+                                                        ).order_by('-payment_date')
+            if transactions:
+                transaction = transactions[0]
+                refund = paypal.refund_transaction(transaction.txn_id)
+                try:
+                    refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
+                except KeyError:
+                    refunded = int(transaction.payment_gross)
+                logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
+            else:
+                logging.user(self.user, "~FRCouldn't refund paypal payment: not found by username or email")
+                refunded = 0
+                    
         
         return refunded
             
