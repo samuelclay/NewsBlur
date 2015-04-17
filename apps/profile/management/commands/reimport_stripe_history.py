@@ -9,7 +9,7 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         # make_option("-u", "--username", dest="username", nargs=1, help="Specify user id or username"),
         # make_option("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist"),
-        make_option("-d", "--days", dest="days", nargs=1, help="Number of days to go back"),
+        make_option("-d", "--days", dest="days", nargs=1, type='int', default=365, help="Number of days to go back"),
     )
 
     def handle(self, *args, **options):
@@ -21,22 +21,23 @@ class Command(BaseCommand):
         while True:
             print " ---> At %s" % offset
             try:
-                data = stripe.Customer.all(created={'gt': week}, count=limit, offset=offset)
+                data = stripe.Charge.all(created={'gt': week}, count=limit, offset=offset)
             except stripe.APIConnectionError:
                 time.sleep(10)
                 continue
-            customers = data['data']
-            if not len(customers):
+            charges = data['data']
+            if not len(charges):
                 print "At %s, finished" % offset
                 break
             offset += limit
-            usernames = [c['description'] for c in customers]
-            for username in usernames:
+            customers = [c['customer'] for c in charges]
+            for customer in customers:
                 try:
-                    user = User.objects.get(username=username)
-                except User.DoesNotExist:
-                    print " ***> Couldn't find %s" % username
-                    failed.append(username)
+                    profile = Profile.objects.get(stripe_id=customer)
+                    user = profile.user
+                except Profile.DoesNotExist:
+                    print " ***> Couldn't find stripe_id=%s" % customer
+                    failed.append(customer)
                 try:
                     if not user.profile.is_premium:
                         user.profile.activate_premium()
@@ -47,12 +48,12 @@ class Command(BaseCommand):
                     elif user.profile.premium_expire > datetime.datetime.now() + datetime.timedelta(days=365):
                         user.profile.setup_premium_history()
                     else:
-                        print " ---> %s is fine" % username
+                        print " ---> %s is fine" % user.username
                 except stripe.APIConnectionError:
-                    print " ***> Failed: %s" % username
+                    print " ***> Failed: %s" % user.username
                     failed.append(username)
                     time.sleep(2)
                     continue
 
-
+        return failed
 
