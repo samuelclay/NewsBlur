@@ -19,7 +19,7 @@ class Command(BaseCommand):
         limit = 100
         offset = 0
         while True:
-            print " ---> At %s" % offset
+            logging.debug(" ---> At %s" % offset)
             try:
                 data = stripe.Charge.all(created={'gt': week}, count=limit, offset=offset)
             except stripe.APIConnectionError:
@@ -27,16 +27,16 @@ class Command(BaseCommand):
                 continue
             charges = data['data']
             if not len(charges):
-                print "At %s, finished" % offset
+                logging.debug("At %s, finished" % offset)
                 break
             offset += limit
-            customers = [c['customer'] for c in charges]
+            customers = [c['customer'] for c in charges if 'customer' in c]
             for customer in customers:
                 try:
                     profile = Profile.objects.get(stripe_id=customer)
                     user = profile.user
                 except Profile.DoesNotExist:
-                    print " ***> Couldn't find stripe_id=%s" % customer
+                    logging.debug(" ***> Couldn't find stripe_id=%s" % customer)
                     failed.append(customer)
                 try:
                     if not user.profile.is_premium:
@@ -48,9 +48,9 @@ class Command(BaseCommand):
                     elif user.profile.premium_expire > datetime.datetime.now() + datetime.timedelta(days=365):
                         user.profile.setup_premium_history()
                     else:
-                        print " ---> %s is fine" % user.username
+                        logging.debug(" ---> %s is fine" % user.username)
                 except stripe.APIConnectionError:
-                    print " ***> Failed: %s" % user.username
+                    logging.debug(" ***> Failed: %s" % user.username)
                     failed.append(username)
                     time.sleep(2)
                     continue
