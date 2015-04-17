@@ -258,6 +258,7 @@ class Profile(models.Model):
             
             for payment in stripe_payments:
                 created = datetime.datetime.fromtimestamp(payment.created)
+                if payment.status = 'failed': continue
                 PaymentHistory.objects.create(user=self.user,
                                               payment_date=created,
                                               payment_amount=payment.amount / 100.0,
