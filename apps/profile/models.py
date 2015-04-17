@@ -890,14 +890,7 @@ class PaymentHistory(models.Model):
     
     @classmethod
     def report(cls, months=24):
-        total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
-        print "Total: $%s" % total['sum']
-        
-        for m in reversed(range(months)):
-            now = datetime.datetime.now()
-            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
-            end_time = start_date + datetime.timedelta(days=31)
-            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+        def _counter(start_date, end_date):
             payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
             payments = payments.aggregate(avg=Avg('payment_amount'), 
                                           sum=Sum('payment_amount'), 
@@ -907,6 +900,25 @@ class PaymentHistory(models.Model):
                 end_date.year, end_date.month, end_date.day,
                 round(payments['avg'], 2), payments['sum'], payments['count'])
 
+        print "\n\nMonthly Totals:"
+        for m in reversed(range(months)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
+            end_time = start_date + datetime.timedelta(days=31)
+            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+            _counter(start_date, end_date)
+        
+        print "\n\nYearly Totals:"
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_time = start_date + datetime.timedelta(days=365)
+            end_date = datetime.datetime(end_time.year, end_time.month, 30) - datetime.timedelta(seconds=1)
+            _counter(start_date, end_date)
+
+        total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
+        print "\n\nTotal: $%s" % total['sum']
 
 class MRedeemedCode(mongo.Document):
     user_id = mongo.IntField()
