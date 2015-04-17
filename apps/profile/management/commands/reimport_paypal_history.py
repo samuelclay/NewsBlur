@@ -34,7 +34,7 @@ class Command(BaseCommand):
             offset += limit
             for user_id in user_ids:
                 try:
-                    user = User.objectrs.get(pk=user_id)
+                    user = User.objects.get(pk=user_id)
                 except User.DoesNotExist:
                     logging.debug(" ***> Couldn't find paypal user_id=%s" % user_id)
                     failed.append(user_id)
