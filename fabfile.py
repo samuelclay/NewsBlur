@@ -483,7 +483,7 @@ def bounce_pgbouncer():
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     run('sleep 2')
     with settings(warn_only=True):
-        sudo('pkill -9 pgbouncer -e')
+        sudo('pkill -9 pgbouncer')
         run('sleep 2')
     run('sudo /etc/init.d/pgbouncer start', pty=False)
 
