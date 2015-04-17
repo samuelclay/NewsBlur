@@ -244,7 +244,10 @@ class Profile(models.Model):
                 # Make sure this doesn't happen again, so let's use Paypal's email.
                 self.user.email = alt_email
                 self.user.save()
+        seen_txn_ids = set()
         for payment in paypal_payments:
+            if payment.txn_id in seen_txn_ids: continue
+            seen_txn_ids.add(payment.txn_id)
             PaymentHistory.objects.create(user=self.user,
                                           payment_date=payment.payment_date,
                                           payment_amount=payment.payment_gross,

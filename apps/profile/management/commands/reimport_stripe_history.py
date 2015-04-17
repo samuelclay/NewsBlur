@@ -5,11 +5,15 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from optparse import make_option
 
+from utils import log as logging
+from apps.profile.models import Profile
+
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         # make_option("-u", "--username", dest="username", nargs=1, help="Specify user id or username"),
         # make_option("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist"),
         make_option("-d", "--days", dest="days", nargs=1, type='int', default=365, help="Number of days to go back"),
+        make_option("-o", "--offset", dest="offset", nargs=1, type='int', default=0, help="Offset customer (in date DESC)"),
     )
 
     def handle(self, *args, **options):
@@ -17,7 +21,7 @@ class Command(BaseCommand):
         week = (datetime.datetime.now() - datetime.timedelta(days=int(options.get('days', 365)))).strftime('%s')
         failed = []
         limit = 100
-        offset = 0
+        offset = offset
         while True:
             logging.debug(" ---> At %s" % offset)
             try:
