@@ -509,6 +509,7 @@ public class BlurDatabaseHelper {
             if ((stateFilter == StateFilter.SOME) || (stateFilter == StateFilter.ALL)) result += f.neutralCount;
             if (stateFilter == StateFilter.ALL) result += f.negativeCount;
         }
+        c.close();
         return result;
     }
 
@@ -521,6 +522,7 @@ public class BlurDatabaseHelper {
             if ((stateFilter == StateFilter.SOME) || (stateFilter == StateFilter.ALL)) result += f.neutralCount;
             if (stateFilter == StateFilter.ALL) result += f.negativeCount;
         }
+        c.close();
         return result;
     }
 
