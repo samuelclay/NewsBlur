@@ -60,6 +60,7 @@ public class Story implements Serializable {
 	@SerializedName("story_timestamp")
 	public long timestamp;
 
+    // NOTE: this is parsed and saved to the DB, but is *not* generally un-thawed when stories are fetched back from the DB, due to size
     @SerializedName("story_content")
     public String content;
 
@@ -92,6 +93,7 @@ public class Story implements Serializable {
     @SerializedName("story_hash")
     public String storyHash;
 
+    // NOTE: this is parsed and saved to the DB, but is *not* generally un-thawed when stories are fetched back from the DB
     @SerializedName("image_urls")
     public String[] imageUrls;
 
@@ -133,7 +135,6 @@ public class Story implements Serializable {
 		}
 		Story story = new Story();
 		story.authors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_AUTHORS));
-		story.content = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CONTENT));
 		story.shortContent = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORT_CONTENT));
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
 		story.timestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
@@ -159,7 +160,6 @@ public class Story implements Serializable {
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
         story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
-		story.imageUrls = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_IMAGE_URLS)), ",");
 		return story;
 	}
 

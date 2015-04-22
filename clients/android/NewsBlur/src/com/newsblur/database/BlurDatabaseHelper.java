@@ -622,6 +622,22 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public String getStoryContent(String hash) {
+        String q = "SELECT " + DatabaseConstants.STORY_CONTENT +
+                   " FROM " + DatabaseConstants.STORY_TABLE +
+                   " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
+        Cursor c = dbRO.rawQuery(q, new String[]{hash});
+        if (c.getCount() < 1) {
+            c.close();
+            return null;
+        } else {
+            c.moveToFirst();
+            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_CONTENT));
+            c.close();
+            return result;
+        }
+    }
+
     public void putStoryText(String hash, String text) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_TEXT_STORY_HASH, hash);
@@ -709,7 +725,7 @@ public class BlurDatabaseHelper {
         };
     }
 
-    public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
+    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
         if (fs == null) return null;
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);

@@ -217,6 +217,10 @@ public class FeedUtils {
         return dbHelper.getStoryText(hash);
     }
 
+    public static String getStoryContent(String hash) {
+        return dbHelper.getStoryContent(hash);
+    }
+
     /**
      * Infer the feed ID for a story from the story's hash.  Useful for APIs
      * that takes a feed ID and story ID and only the story hash is known.
