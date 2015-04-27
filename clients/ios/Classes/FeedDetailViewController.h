@@ -98,6 +98,7 @@
 - (void)deleteFolder;
 - (void)openMoveView;
 - (void)openTrainSite;
+- (void)openRenameSite;
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;

@@ -1884,6 +1884,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 }
 
+
+
 - (void)confirmDeleteSite {
     UIAlertView *deleteConfirm = [[UIAlertView alloc] 
                                   initWithTitle:@"Positive?" 
@@ -1898,16 +1900,33 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 0) {
-        if (buttonIndex == 0) {
-            return;
-        } else {
+        // Delete
+        if (buttonIndex != alertView.cancelButtonIndex) {
             if (storiesCollection.isRiverView) {
                 [self deleteFolder];
             } else {
                 [self deleteSite];
             }
         }
+    } else if (alertView.tag == 1) {
+        // Rename
+        if (buttonIndex != alertView.cancelButtonIndex) {
+            NSString *newTitle = [[alertView textFieldAtIndex:0] text];
+            if (storiesCollection.isRiverView) {
+                [self renameFolder:newTitle];
+            } else {
+                [self renameSite:newTitle];
+            }
+        }
     }
+}
+
+- (void)renameFolder:(NSString *)newTitle {
+    
+}
+
+- (void)renameSite:(NSString *)newTitle {
+    
 }
 
 - (void)deleteSite {
@@ -1972,6 +1991,24 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)openTrainSite {
     [appDelegate openTrainSite];
+}
+
+- (void)openRenameSite {
+    NSString *title = [NSString stringWithFormat:@"Rename \"%@\"", appDelegate.storiesCollection.isRiverView ?
+                       appDelegate.storiesCollection.activeFolder : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
+    NSString *subtitle = (appDelegate.storiesCollection.isRiverView ?
+                          nil : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_address"]);
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                        message:subtitle
+                                                       delegate:self
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles:@"Rename", nil];
+    [alertView setTag:1];
+    [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
+    [[alertView textFieldAtIndex:0] setText:appDelegate.storiesCollection.isRiverView ?
+                                            appDelegate.storiesCollection.activeFolder :
+                                            [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
+    [alertView show];
 }
 
 - (void)showUserProfile {

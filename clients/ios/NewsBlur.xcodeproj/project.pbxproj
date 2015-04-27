@@ -302,6 +302,8 @@
 		FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */; };
 		FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageControl.m */; };
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
+		FF6DD31E1AEDF9F300F1F53A /* menu_icn_rename.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6DD31C1AEDF9F300F1F53A /* menu_icn_rename.png */; };
+		FF6DD31F1AEDF9F300F1F53A /* menu_icn_rename@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6DD31D1AEDF9F300F1F53A /* menu_icn_rename@2x.png */; };
 		FF753CCE175858FC00344EC9 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC4175858FC00344EC9 /* FMDatabase.m */; };
 		FF753CCF175858FC00344EC9 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC6175858FC00344EC9 /* FMDatabaseAdditions.m */; };
 		FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC8175858FC00344EC9 /* FMDatabasePool.m */; };
@@ -1123,6 +1125,8 @@
 		FF6A233016448E0700E15989 /* StoryPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageControl.h; sourceTree = "<group>"; };
 		FF6A233116448E0700E15989 /* StoryPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageControl.m; sourceTree = "<group>"; };
 		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
+		FF6DD31C1AEDF9F300F1F53A /* menu_icn_rename.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_rename.png; sourceTree = "<group>"; };
+		FF6DD31D1AEDF9F300F1F53A /* menu_icn_rename@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_rename@2x.png"; sourceTree = "<group>"; };
 		FF753CC3175858FC00344EC9 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
 		FF753CC4175858FC00344EC9 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
 		FF753CC5175858FC00344EC9 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
@@ -2014,6 +2018,8 @@
 				FFDD846916E88722000AA0A2 /* clock@2x.png */,
 				FF62820C1A1160DD00271FDB /* add_tag.png */,
 				FF62820D1A1160DD00271FDB /* add_tag@2x.png */,
+				FF6DD31C1AEDF9F300F1F53A /* menu_icn_rename.png */,
+				FF6DD31D1AEDF9F300F1F53A /* menu_icn_rename@2x.png */,
 				FFB757FC1727098D001D132F /* menu_icn_mail.png */,
 				FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */,
 				FFDD845016E8871A000AA0A2 /* menu_icn_delete.png */,
@@ -3257,6 +3263,7 @@
 				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
 				FFA0478919CA54A800618DC4 /* osk-iap-badge-60@2x.png in Resources */,
 				439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */,
+				FF6DD31F1AEDF9F300F1F53A /* menu_icn_rename@2x.png in Resources */,
 				437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */,
 				FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */,
 				43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */,
@@ -3414,6 +3421,7 @@
 				FFA047B019CA54A800618DC4 /* osk-readabilityIcon-60@2x.png in Resources */,
 				FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */,
 				FFC486AD19CA410000F4758F /* logo_100.png in Resources */,
+				FF6DD31E1AEDF9F300F1F53A /* menu_icn_rename.png in Resources */,
 				FFA0480119CA54A800618DC4 /* OSKFacebookPublishingViewController.xib in Resources */,
 				FF85BF7416D6A972002D334D /* ak-icon-allstories.png in Resources */,
 				FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */,
