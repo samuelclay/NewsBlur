@@ -1473,6 +1473,7 @@
     if (activeStoryLocation >= 0) {
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
+        [self.storyPageControl view];
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
         [self.storyPageControl animateIntoPlace:YES];
     }

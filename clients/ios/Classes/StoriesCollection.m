@@ -249,7 +249,7 @@
 - (NSString *)activeStoryView {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *storyViewPref = [userPreferences stringForKey:[self storyViewKey]];
-    NSLog(@"Story pref: %@ (%d)", storyViewPref, self.isRiverView);
+//    NSLog(@"Story pref: %@ (%d)", storyViewPref, self.isRiverView);
     if (storyViewPref) {
         return storyViewPref;
     } else {

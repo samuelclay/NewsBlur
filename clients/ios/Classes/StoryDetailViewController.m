@@ -57,6 +57,11 @@
 }
 
 
+- (NSString *)description {
+    NSString *page = appDelegate.storyPageControl.currentPage == self ? @"currentPage" : appDelegate.storyPageControl.previousPage == self ? @"previousPage" : appDelegate.storyPageControl.nextPage == self ? @"nextPage" : @"unattached page";
+    return [NSString stringWithFormat:@"%@", page];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
