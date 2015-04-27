@@ -333,6 +333,8 @@
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
+- (void)renameFeed:(NSString *)newTitle;
+- (void)renameFolder:(NSString *)newTitle;
 
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;

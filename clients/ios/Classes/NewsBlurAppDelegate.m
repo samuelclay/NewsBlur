@@ -2060,6 +2060,16 @@
     return savedStories;
 }
 
+- (void)renameFeed:(NSString *)newTitle {
+    NSMutableDictionary *newActiveFeed = [storiesCollection.activeFeed mutableCopy];
+    [newActiveFeed setObject:newTitle forKey:@"feed_title"];
+    storiesCollection.activeFeed = newActiveFeed;
+}
+
+- (void)renameFolder:(NSString *)newTitle {
+    storiesCollection.activeFolder = newTitle;
+}
+
 #pragma mark -
 #pragma mark Story functions
 

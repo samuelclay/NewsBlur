@@ -1912,21 +1912,47 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         // Rename
         if (buttonIndex != alertView.cancelButtonIndex) {
             NSString *newTitle = [[alertView textFieldAtIndex:0] text];
-            if (storiesCollection.isRiverView) {
-                [self renameFolder:newTitle];
-            } else {
-                [self renameSite:newTitle];
-            }
+            [self renameTo:newTitle];
         }
     }
 }
 
-- (void)renameFolder:(NSString *)newTitle {
+- (void)renameTo:(NSString *)newTitle {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Renaming...";
     
-}
-
-- (void)renameSite:(NSString *)newTitle {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/rename_feed", NEWSBLUR_URL];
+    if (storiesCollection.isRiverView) {
+        urlString = [NSString stringWithFormat:@"%@/reader/rename_folder", NEWSBLUR_URL];
+    }
+    NSURL *url = [NSURL URLWithString:urlString];
     
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setDelegate:self];
+    if (storiesCollection.isRiverView) {
+        [request addPostValue:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"folder_name"];
+        [request addPostValue:[appDelegate extractParentFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
+        [request addPostValue:newTitle forKey:@"new_folder_name"];
+    } else {
+        [request addPostValue:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
+        [request addPostValue:newTitle forKey:@"feed_title"];
+    }
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setCompletionBlock:^(void) {
+        [appDelegate reloadFeedsView:YES];
+        if (storiesCollection.isRiverView) {
+            [appDelegate renameFolder:newTitle];
+        } else {
+            [appDelegate renameFeed:newTitle];
+        }
+        [self.view setNeedsDisplay];
+        [self.navigationController.view setNeedsDisplay];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request setTimeOutSeconds:30];
+    [request setTag:[[storiesCollection.activeFeed objectForKey:@"id"] intValue]];
+    [request startAsynchronous];
 }
 
 - (void)deleteSite {
@@ -1995,7 +2021,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)openRenameSite {
     NSString *title = [NSString stringWithFormat:@"Rename \"%@\"", appDelegate.storiesCollection.isRiverView ?
-                       appDelegate.storiesCollection.activeFolder : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
+                       [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder] : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
     NSString *subtitle = (appDelegate.storiesCollection.isRiverView ?
                           nil : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_address"]);
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
@@ -2006,7 +2032,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [alertView setTag:1];
     [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
     [[alertView textFieldAtIndex:0] setText:appDelegate.storiesCollection.isRiverView ?
-                                            appDelegate.storiesCollection.activeFolder :
+                                            [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder] :
                                             [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
     [alertView show];
 }
