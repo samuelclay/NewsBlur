@@ -92,10 +92,8 @@
 - (void)buildMenuOptions {
     BOOL everything = appDelegate.storiesCollection.isRiverView &&
                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
-    BOOL read = appDelegate.storiesCollection.isRiverView &&
-                [appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"];
-    BOOL saved = appDelegate.storiesCollection.isRiverView &&
-                 [appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"];
+    BOOL read = appDelegate.storiesCollection.isReadView;
+    BOOL saved = appDelegate.storiesCollection.isSavedView;
 
     NSMutableArray *options = [NSMutableArray array];
     
@@ -115,7 +113,7 @@
         }
     }
     
-    if (!appDelegate.storiesCollection.isRiverView) {
+    if (!appDelegate.storiesCollection.isRiverView && !saved && !read) {
         [options addObject:[@"Rename this site" uppercaseString]];
         [options addObject:[@"Train this site" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
