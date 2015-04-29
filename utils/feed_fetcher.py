@@ -165,7 +165,7 @@ class FetchFeed:
                 linebreaks(video['snippet']['description']),
                 thumbnail['url'] if thumbnail else "",
             )
-            link = "https://youtube.com/watch/v/%s" % video['id']
+            link = "http://www.youtube.com/watch?v=%s&feature=youtube_gdata" % video['id']
             story_data = {
                 'title': video['snippet']['title'],
                 'link': link,
