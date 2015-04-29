@@ -131,7 +131,7 @@ class FetchFeed:
     
     def fetch_youtube(self, address):
         try:
-            username = re.search('gdata.youtube.com/feeds/base/users/(\w+)/uploads', address).group(1)
+            username = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address).group(1)
         except IndexError:
             return
         video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
