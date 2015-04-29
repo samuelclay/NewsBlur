@@ -160,7 +160,7 @@ class FetchFeed:
                 thumbnail = video['snippet']['thumbnails'].get('high')
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
-            content = """%s<br><br>%s<br><br><img src="%s" style="display:none">""" % (
+            content = """<div class="NB-youtube-player">%s</div><br>%s<br><img src="%s" style="display:none" />""" % (
                 video['player']['embedHtml'],
                 linebreaks(video['snippet']['description']),
                 thumbnail['url'] if thumbnail else "",
