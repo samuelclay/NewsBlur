@@ -172,7 +172,7 @@ class FetchFeed:
                 'description': content,
                 'author_name': username,
                 'categories': [],
-                'unique_id': link,
+                'unique_id': "tag:youtube.com,2008:video:%s" % video['id'],
                 'pubdate': dateutil.parser.parse(video['snippet']['publishedAt']),
             }
             rss.add_item(**story_data)
