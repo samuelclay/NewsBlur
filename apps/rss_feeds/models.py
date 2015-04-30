@@ -360,7 +360,7 @@ class Feed(models.Model):
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
         feed = None
         
-        if 'www.youtube.com/user/' in url:
+        if url and 'www.youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
             
