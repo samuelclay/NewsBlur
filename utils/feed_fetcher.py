@@ -131,10 +131,17 @@ class FetchFeed:
     
     def fetch_youtube(self, address):
         try:
-            username = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address).group(1)
+            username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address)
+            if not username_groups:
+                return
+            username = username_groups.group(1)
         except IndexError:
             return
+        
         video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
+        if video_ids_xml.status_code != 200:
+            return
+            
         video_ids_soup = BeautifulSoup(video_ids_xml.content)
         video_ids = []
         for video_id in video_ids_soup.findAll('yt:videoid'):
@@ -160,11 +167,14 @@ class FetchFeed:
                 thumbnail = video['snippet']['thumbnails'].get('high')
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
-            content = """<div class="NB-youtube-player">%s</div><br>%s<br><img src="%s" style="display:none" />""" % (
+            content = """<div class="NB-youtube-player">%s</div>
+                         <div class="NB-youtube-description">%s</div>
+                         <img src="%s" style="display:none" />""" % (
                 video['player']['embedHtml'],
                 linebreaks(video['snippet']['description']),
                 thumbnail['url'] if thumbnail else "",
             )
+
             link = "http://www.youtube.com/watch?v=%s&feature=youtube_gdata" % video['id']
             story_data = {
                 'title': video['snippet']['title'],
