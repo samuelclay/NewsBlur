@@ -96,7 +96,7 @@ class FetchFeed:
         if 'gdata.youtube.com' in address:
             youtube_feed = self.fetch_youtube(address)
             if not youtube_feed:
-                logging.debug(u'   ***> [%-30s] ~FRYouTube %s fetch failed: %s.' % 
+                logging.debug(u'   ***> [%-30s] ~FRYouTube fetch failed: %s.' % 
                               (self.feed.title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(youtube_feed)
