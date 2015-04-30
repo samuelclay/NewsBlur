@@ -93,7 +93,7 @@ class FetchFeed:
                           self.feed.title[:30]))
             return FEED_OK, self.fpf
         
-        if 'gdata.youtube.com' in address:
+        if 'gdata.youtube.com' in address or 'youtube.com/feeds/videos.xml?user=' in address:
             youtube_feed = self.fetch_youtube(address)
             if not youtube_feed:
                 logging.debug(u'   ***> [%-30s] ~FRYouTube fetch failed: %s.' % 
@@ -130,13 +130,22 @@ class FetchFeed:
         return identity
     
     def fetch_youtube(self, address):
-        try:
-            username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address)
-            if not username_groups:
+        if 'gdata.youtube.com' in address:
+            try:
+                username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address)
+                if not username_groups:
+                    return
+                username = username_groups.group(1)
+            except IndexError:
                 return
-            username = username_groups.group(1)
-        except IndexError:
-            return
+        elif 'youtube.com/feeds/videos.xml?user=' in address:
+            try:
+                username_groups = re.search('youtube.com/feeds/videos.xml\?user=(\w+)', address)
+                if not username_groups:
+                    return
+                username = username_groups.group(1)
+            except IndexError:
+                return            
         
         video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
         if video_ids_xml.status_code != 200:
