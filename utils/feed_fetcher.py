@@ -176,7 +176,7 @@ class FetchFeed:
                 thumbnail = video['snippet']['thumbnails'].get('high')
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
-            content = """<div class="NB-youtube-player">%s</div>
+            content = """<div class="NB-youtube-player">%s</iframe></div>
                          <div class="NB-youtube-description">%s</div>
                          <img src="%s" style="display:none" />""" % (
                 video['player']['embedHtml'],
