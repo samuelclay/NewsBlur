@@ -721,6 +721,13 @@ public class NBSyncService extends Service {
         return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
+    public static boolean isFeedSetStoriesFresh(FeedSet fs) {
+        Integer count = FeedStoriesSeen.get(fs);
+        if (count == null) return false;
+        if (count < 1) return false;
+        return true;
+    }
+
     public static String getSyncStatusMessage(Context context, boolean brief) {
         if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
         if (brief && !AppConstants.VERBOSE_LOG) return null;
