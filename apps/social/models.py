@@ -2001,7 +2001,15 @@ class MSharedStory(mongo.Document):
         if service in self.posted_to_services:
             logging.user(user, "~BM~FRAlready posted to %s." % (service))
             return
-
+        
+        posts_last_hour = MSharedStory.objects.filter(user_id=self.user_id,
+                                                      posted_to_services__contains=service,
+                                                      shared_date__gte=datetime.datetime.now() -
+                                                                       datetime.timedelta(hours=1)).count()
+        if posts_last_hour >= 3:
+            logging.user(user, "~BM~FRPosted to %s > 3 times in past hour" % service)
+            return
+            
         posted = False
         social_service = MSocialServices.objects.get(user_id=self.user_id)
         

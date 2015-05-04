@@ -244,7 +244,10 @@ class Profile(models.Model):
                 # Make sure this doesn't happen again, so let's use Paypal's email.
                 self.user.email = alt_email
                 self.user.save()
+        seen_txn_ids = set()
         for payment in paypal_payments:
+            if payment.txn_id in seen_txn_ids: continue
+            seen_txn_ids.add(payment.txn_id)
             PaymentHistory.objects.create(user=self.user,
                                           payment_date=payment.payment_date,
                                           payment_amount=payment.payment_gross,
@@ -258,6 +261,7 @@ class Profile(models.Model):
             
             for payment in stripe_payments:
                 created = datetime.datetime.fromtimestamp(payment.created)
+                if payment.status == 'failed': continue
                 PaymentHistory.objects.create(user=self.user,
                                               payment_date=created,
                                               payment_amount=payment.amount / 100.0,
@@ -279,7 +283,7 @@ class Profile(models.Model):
                                    datetime.timedelta(days=365*recent_payments_count))
             self.save()
 
-        logging.user(self.user, "~BY~SN~FWFound ~SB%s paypal~SN and ~SB%s stripe~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
+        logging.user(self.user, "~BY~SN~FWFound ~SB~FB%s paypal~FW~SN and ~SB~FC%s stripe~FW~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
                      len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
 
         if (check_premium and not self.is_premium and
@@ -311,15 +315,25 @@ class Profile(models.Model):
                 'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
             }
             paypal = PayPalInterface(**paypal_opts)
-            transaction = PayPalIPN.objects.filter(custom=self.user.username,
-                                                   txn_type='subscr_payment'
-                                                   ).order_by('-payment_date')[0]
-            refund = paypal.refund_transaction(transaction.txn_id)
-            try:
-                refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
-            except KeyError:
-                refunded = int(transaction.payment_gross)
-            logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
+            transactions = PayPalIPN.objects.filter(custom=self.user.username,
+                                                    txn_type='subscr_payment'
+                                                    ).order_by('-payment_date')
+            if not transactions:
+                transactions = PayPalIPN.objects.filter(payer_email=self.user.email,
+                                                        txn_type='subscr_payment'
+                                                        ).order_by('-payment_date')
+            if transactions:
+                transaction = transactions[0]
+                refund = paypal.refund_transaction(transaction.txn_id)
+                try:
+                    refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
+                except KeyError:
+                    refunded = int(transaction.payment_gross)
+                logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
+            else:
+                logging.user(self.user, "~FRCouldn't refund paypal payment: not found by username or email")
+                refunded = 0
+                    
         
         return refunded
             
@@ -490,7 +504,7 @@ Feeds: %(feeds)s
 
 Sincerely,
 NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
-        mail_admins('New premium account', message, fail_silently=True)
+        # mail_admins('New premium account', message, fail_silently=True)
         
         if not self.user.email or not self.send_emails:
             return
@@ -876,14 +890,7 @@ class PaymentHistory(models.Model):
     
     @classmethod
     def report(cls, months=24):
-        total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
-        print "Total: $%s" % total['sum']
-        
-        for m in reversed(range(months)):
-            now = datetime.datetime.now()
-            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
-            end_time = start_date + datetime.timedelta(days=31)
-            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+        def _counter(start_date, end_date):
             payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
             payments = payments.aggregate(avg=Avg('payment_amount'), 
                                           sum=Sum('payment_amount'), 
@@ -892,7 +899,31 @@ class PaymentHistory(models.Model):
                 start_date.year, start_date.month, start_date.day,
                 end_date.year, end_date.month, end_date.day,
                 round(payments['avg'], 2), payments['sum'], payments['count'])
+            return payments['sum']
 
+        print "\nMonthly Totals:"
+        month_totals = {}
+        for m in reversed(range(months)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
+            end_time = start_date + datetime.timedelta(days=31)
+            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+            total = _counter(start_date, end_date)
+            month_totals[start_date.strftime("%Y-%m")] = total
+
+        print "\nYearly Totals:"
+        year_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_time = start_date + datetime.timedelta(days=365)
+            end_date = datetime.datetime(end_time.year, end_time.month, 30) - datetime.timedelta(seconds=1)
+            if end_date > now: end_date = now
+            year_totals[now.year - y] = _counter(start_date, end_date)
+
+        total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
+        print "\nTotal: $%s" % total['sum']
 
 class MRedeemedCode(mongo.Document):
     user_id = mongo.IntField()

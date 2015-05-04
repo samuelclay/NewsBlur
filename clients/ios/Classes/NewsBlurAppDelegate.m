@@ -1473,6 +1473,7 @@
     if (activeStoryLocation >= 0) {
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
+        [self.storyPageControl view];
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
         [self.storyPageControl animateIntoPlace:YES];
     }
@@ -2057,6 +2058,16 @@
     self.dictSavedStoryTags = savedStoryDict;
     
     return savedStories;
+}
+
+- (void)renameFeed:(NSString *)newTitle {
+    NSMutableDictionary *newActiveFeed = [storiesCollection.activeFeed mutableCopy];
+    [newActiveFeed setObject:newTitle forKey:@"feed_title"];
+    storiesCollection.activeFeed = newActiveFeed;
+}
+
+- (void)renameFolder:(NSString *)newTitle {
+    storiesCollection.activeFolder = newTitle;
 }
 
 #pragma mark -

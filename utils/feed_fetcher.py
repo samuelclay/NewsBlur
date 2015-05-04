@@ -7,6 +7,9 @@ import xml.sax
 import redis
 import random
 import pymongo
+import re
+import requests
+import dateutil.parser
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -21,6 +24,10 @@ from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
+from BeautifulSoup import BeautifulSoup
+from django.utils import feedgenerator
+from django.utils.html import linebreaks
+from utils import json_functions as json
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -85,20 +92,28 @@ class FetchFeed:
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed fetched in real-time with fat ping.' % (
                           self.feed.title[:30]))
             return FEED_OK, self.fpf
-
-        try:
-            self.fpf = feedparser.parse(address,
-                                        agent=USER_AGENT,
-                                        etag=etag,
-                                        modified=modified)
-        except (TypeError, ValueError, KeyError, EOFError), e:
-            logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
-                          (self.feed.title[:30], e))
-            self.fpf = feedparser.parse(address, agent=USER_AGENT)
-        except (TypeError, ValueError, KeyError, EOFError), e:
-            logging.debug(u'   ***> [%-30s] ~FR%s fetch failed: %s.' % 
-                          (self.feed.title[:30], e))
-            return FEED_ERRHTTP, None
+        
+        if 'gdata.youtube.com' in address or 'youtube.com/feeds/videos.xml?user=' in address:
+            youtube_feed = self.fetch_youtube(address)
+            if not youtube_feed:
+                logging.debug(u'   ***> [%-30s] ~FRYouTube fetch failed: %s.' % 
+                              (self.feed.title[:30], address))
+                return FEED_ERRHTTP, None
+            self.fpf = feedparser.parse(youtube_feed)
+        else:
+            try:
+                self.fpf = feedparser.parse(address,
+                                            agent=USER_AGENT,
+                                            etag=etag,
+                                            modified=modified)
+            except (TypeError, ValueError, KeyError, EOFError), e:
+                logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
+                              (self.feed.title[:30], e))
+                self.fpf = feedparser.parse(address, agent=USER_AGENT)
+            except (TypeError, ValueError, KeyError, EOFError), e:
+                logging.debug(u'   ***> [%-30s] ~FR%s fetch failed: %s.' % 
+                              (self.feed.title[:30], e))
+                return FEED_ERRHTTP, None
             
         logging.debug(u'   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss' % (
                       self.feed.title[:30], time.time() - start))
@@ -113,6 +128,75 @@ class FetchFeed:
             identity = current_process._identity[0]
 
         return identity
+    
+    def fetch_youtube(self, address):
+        if 'gdata.youtube.com' in address:
+            try:
+                username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address)
+                if not username_groups:
+                    return
+                username = username_groups.group(1)
+            except IndexError:
+                return
+        elif 'youtube.com/feeds/videos.xml?user=' in address:
+            try:
+                username_groups = re.search('youtube.com/feeds/videos.xml\?user=(\w+)', address)
+                if not username_groups:
+                    return
+                username = username_groups.group(1)
+            except IndexError:
+                return            
+        
+        video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
+        if video_ids_xml.status_code != 200:
+            return
+            
+        video_ids_soup = BeautifulSoup(video_ids_xml.content)
+        video_ids = []
+        for video_id in video_ids_soup.findAll('yt:videoid'):
+            video_ids.append(video_id.getText())
+        
+        videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=player%%2Csnippet&id=%s&key=%s" %
+             (','.join(video_ids), settings.YOUTUBE_API_KEY))
+        videos = json.decode(videos_json.content)
+
+        data = {}
+        data['title'] = "%s's YouTube Videos" % username
+        data['link'] = video_ids_soup.find('author').find('uri').getText()
+        data['description'] = "YouTube videos uploaded by %s" % username
+        data['lastBuildDate'] = datetime.datetime.utcnow()
+        data['generator'] = 'NewsBlur YouTube API v3 Decrapifier - %s' % settings.NEWSBLUR_URL
+        data['docs'] = None
+        data['feed_url'] = address
+        rss = feedgenerator.Atom1Feed(**data)
+
+        for video in videos['items']:
+            thumbnail = video['snippet']['thumbnails'].get('maxres')
+            if not thumbnail:
+                thumbnail = video['snippet']['thumbnails'].get('high')
+            if not thumbnail:
+                thumbnail = video['snippet']['thumbnails'].get('medium')
+            content = """<div class="NB-youtube-player">%s</iframe></div>
+                         <div class="NB-youtube-description">%s</div>
+                         <img src="%s" style="display:none" />""" % (
+                video['player']['embedHtml'],
+                linebreaks(video['snippet']['description']),
+                thumbnail['url'] if thumbnail else "",
+            )
+
+            link = "http://www.youtube.com/watch?v=%s&feature=youtube_gdata" % video['id']
+            story_data = {
+                'title': video['snippet']['title'],
+                'link': link,
+                'description': content,
+                'author_name': username,
+                'categories': [],
+                'unique_id': "tag:youtube.com,2008:video:%s" % video['id'],
+                'pubdate': dateutil.parser.parse(video['snippet']['publishedAt']),
+            }
+            rss.add_item(**story_data)
+        
+        return rss.writeString('utf-8')
         
 class ProcessFeed:
     def __init__(self, feed_id, fpf, options):

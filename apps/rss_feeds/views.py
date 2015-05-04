@@ -29,6 +29,7 @@ IGNORE_AUTOCOMPLETE = [
     "inbox",
     "secret",
     "password",
+    "latitude",
 ]
 
 @json.json_view

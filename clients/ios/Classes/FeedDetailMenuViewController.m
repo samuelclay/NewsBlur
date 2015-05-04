@@ -92,10 +92,8 @@
 - (void)buildMenuOptions {
     BOOL everything = appDelegate.storiesCollection.isRiverView &&
                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
-    BOOL read = appDelegate.storiesCollection.isRiverView &&
-                [appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"];
-    BOOL saved = appDelegate.storiesCollection.isRiverView &&
-                 [appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"];
+    BOOL read = appDelegate.storiesCollection.isReadView;
+    BOOL saved = appDelegate.storiesCollection.isSavedView;
 
     NSMutableArray *options = [NSMutableArray array];
     
@@ -110,9 +108,13 @@
                                 @"this site"];
         [options addObject:[deleteText uppercaseString]];
         [options addObject:[@"Move to another folder" uppercaseString]];
+        if (appDelegate.storiesCollection.isRiverView) {
+            [options addObject:[@"Rename this folder" uppercaseString]];
+        }
     }
     
-    if (!appDelegate.storiesCollection.isRiverView) {
+    if (!appDelegate.storiesCollection.isRiverView && !saved && !read) {
+        [options addObject:[@"Rename this site" uppercaseString]];
         [options addObject:[@"Train this site" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
     }
@@ -162,8 +164,10 @@
     } else if (indexPath.row == 1) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_move.png"];
     } else if (indexPath.row == 2) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_rename.png"];
     } else if (indexPath.row == 3) {
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
+    } else if (indexPath.row == 4) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch.png"];
     }
     
@@ -189,8 +193,10 @@
     } else if (indexPath.row == 1) {
         [appDelegate.feedDetailViewController openMoveView];
     } else if (indexPath.row == 2) {
-        [appDelegate.feedDetailViewController openTrainSite];
+        [appDelegate.feedDetailViewController openRenameSite];
     } else if (indexPath.row == 3) {
+        [appDelegate.feedDetailViewController openTrainSite];
+    } else if (indexPath.row == 4) {
         [appDelegate.feedDetailViewController instafetchFeed];
     }
     
