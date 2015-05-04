@@ -639,6 +639,15 @@ public class NBSyncService extends Service {
             }
         }
 
+        if (fs.isAllSaved() || fs.isAllRead()) {
+            // Note: for reasons relating to the impl. of the web UI, the API returns incorrect
+            // intel values for stories from these two APIs.  Fix them so they don't show green
+            // when they really aren't.
+            for (Story story : apiResponse.stories) {
+                story.intelligence.intelligenceFeed--;
+            }
+        }
+
         dbHelper.insertStories(apiResponse, ActMode, ModeCutoff);
     }
 
