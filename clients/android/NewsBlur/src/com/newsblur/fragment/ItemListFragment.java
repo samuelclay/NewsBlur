@@ -271,7 +271,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-        Story story = adapter.getStory(menuInfo.position);
+        int truePosition = menuInfo.position - 1;
+        Story story = adapter.getStory(truePosition);
         Activity activity = getActivity();
 
         switch (item.getItemId()) {
@@ -310,7 +311,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     }
 
 	@Override
-	public abstract void onItemClick(AdapterView<?> parent, View view, int position, long id);
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        int truePosition = position - 1;
+        onItemClick_(parent, view, truePosition, id);
+    }
+
+	public abstract void onItemClick_(AdapterView<?> parent, View view, int position, long id);
 
     protected void setupBezelSwipeDetector(View v) {
         final GestureDetector gestureDetector = new GestureDetector(getActivity(), new BezelSwipeDetector());
