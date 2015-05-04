@@ -40,6 +40,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -547,6 +548,7 @@ public class NBSyncService extends Service {
             if (!FeedPagesSeen.containsKey(fs)) {
                 FeedPagesSeen.put(fs, 0);
                 FeedStoriesSeen.put(fs, 0);
+                workaroundReadStoryTimestamp = (new Date()).getTime();
             }
             int pageNumber = FeedPagesSeen.get(fs);
             int totalStoriesSeen = FeedStoriesSeen.get(fs);
@@ -585,7 +587,7 @@ public class NBSyncService extends Service {
                 if ((pageNumber == 1) && (apiResponse.stories.length > 0)) {
                     ModeCutoff = apiResponse.stories[0].timestamp;
                 }
-                insertStories(apiResponse);
+                insertStories(apiResponse, fs);
                 NbActivity.updateAllActivities(true);
             
                 if (apiResponse.stories.length == 0) {
@@ -617,6 +619,27 @@ public class NBSyncService extends Service {
             return false;
         }
         return true;
+    }
+
+    private long workaroundReadStoryTimestamp;
+
+    private void insertStories(StoriesResponse apiResponse, FeedSet fs) {
+        if (fs.isAllRead()) {
+            // Ugly Hack Warning: the API doesn't vend the sortation key necessary to display
+            // stories when in the "read stories" view. It does, however, return them in the
+            // correct order, so we can fudge a fake last-read-stamp so they will show up.
+            // Stories read locally with have the correct stamp and show up fine. When local
+            // and remote stories are integrated, the remote hack will override the ordering
+            // so they get put into the correct sequence recorded by the API (the authority).
+            for (Story story : apiResponse.stories) {
+                // this fake TS was set when we fetched the first page. have it decrease as
+                // we page through, so they append to the list as if most-recent-first.
+                workaroundReadStoryTimestamp --;
+                story.lastReadTimestamp = workaroundReadStoryTimestamp;
+            }
+        }
+
+        dbHelper.insertStories(apiResponse, ActMode, ModeCutoff);
     }
 
     void insertStories(StoriesResponse apiResponse) {

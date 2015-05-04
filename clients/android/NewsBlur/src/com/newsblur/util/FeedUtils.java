@@ -128,6 +128,7 @@ public class FeedUtils {
     }
 
     private static void setStoryReadState(Story story, Context context, boolean read) {
+        dbHelper.touchStory(story.storyHash);
         if (story.read == read) { return; }
 
         // update the local object to show as read before DB is touched

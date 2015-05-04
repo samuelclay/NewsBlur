@@ -27,6 +27,7 @@ public class FeedSet implements Serializable {
     private Map<String,String> socialFeeds;
     private boolean isAllNormal;
     private boolean isAllSocial;
+    private boolean isAllRead;
     private boolean isAllSaved;
     private boolean isGlobalShared;
 
@@ -36,9 +37,9 @@ public class FeedSet implements Serializable {
      * Construct a new set of feeds. Only one of the arguments may be non-null or true. Specify an empty
      * set to request all of a given type.
      */
-    private FeedSet(Set<String> feeds, Map<String,String> socialFeeds, boolean allSaved, boolean globalShared) {
+    private FeedSet(Set<String> feeds, Map<String,String> socialFeeds, boolean allSaved, boolean globalShared, boolean allRead) {
 
-        if ( booleanCardinality( (feeds != null), (socialFeeds != null), allSaved, globalShared ) > 1 ) {
+        if ( booleanCardinality( (feeds != null), (socialFeeds != null), allRead, allSaved, globalShared ) > 1 ) {
             throw new IllegalArgumentException("at most one type of feed may be specified");
         }
 
@@ -64,6 +65,11 @@ public class FeedSet implements Serializable {
             }
         }
 
+        if (allRead) {
+            isAllRead = true;
+            return;
+        }
+
         if (allSaved) {
             isAllSaved = true;
             return;
@@ -83,7 +89,7 @@ public class FeedSet implements Serializable {
     public static FeedSet singleFeed(String feedId) {
         Set<String> feedIds = new HashSet<String>(1);
         feedIds.add(feedId);
-        return new FeedSet(feedIds, null, false, false);
+        return new FeedSet(feedIds, null, false, false, false);
     }
 
     /**
@@ -92,7 +98,7 @@ public class FeedSet implements Serializable {
     public static FeedSet singleSocialFeed(String userId, String username) {
         Map<String,String> socialFeedIds = new HashMap<String,String>(1);
         socialFeedIds.put(userId, username);
-        return new FeedSet(null, socialFeedIds, false, false);
+        return new FeedSet(null, socialFeedIds, false, false, false);
     }
 
     /**
@@ -104,42 +110,49 @@ public class FeedSet implements Serializable {
         for (String id : userIds) {
             socialFeedIds.put(id, "");
         }
-        return new FeedSet(null, socialFeedIds, false, false);
+        return new FeedSet(null, socialFeedIds, false, false, false);
     }
 
     /** 
      * Convenience constructor for all (non-social) feeds.
      */
     public static FeedSet allFeeds() {
-        return new FeedSet(Collections.EMPTY_SET, null, false, false);
+        return new FeedSet(Collections.EMPTY_SET, null, false, false, false);
+    }
+
+    /**
+     * Convenience constructor for read stories meta-feed.
+     */
+    public static FeedSet allRead() {
+        return new FeedSet(null, null, false, false, true);
     }
 
     /**
      * Convenience constructor for saved stories feed.
      */
     public static FeedSet allSaved() {
-        return new FeedSet(null, null, true, false);
+        return new FeedSet(null, null, true, false, false);
     }
 
     /**
      * Convenience constructor for global shared stories feed.
      */
     public static FeedSet globalShared() {
-        return new FeedSet(null, null, false, true);
+        return new FeedSet(null, null, false, true, false);
     }
 
     /** 
      * Convenience constructor for all shared/social feeds.
      */
     public static FeedSet allSocialFeeds() {
-        return new FeedSet(null, Collections.EMPTY_MAP, false, false);
+        return new FeedSet(null, Collections.EMPTY_MAP, false, false, false);
     }
 
     /** 
      * Convenience constructor for a folder.
      */
     public static FeedSet folder(String folderName, Set<String> feedIds) {
-        FeedSet fs = new FeedSet(feedIds, null, false, false);
+        FeedSet fs = new FeedSet(feedIds, null, false, false, false);
         fs.setFolderName(folderName);
         return fs;
     }
@@ -181,6 +194,10 @@ public class FeedSet implements Serializable {
         return this.isAllSocial;
     }
 
+    public boolean isAllRead() {
+        return this.isAllRead;
+    }
+
     public boolean isAllSaved() {
         return this.isAllSaved;
     }
@@ -217,6 +234,8 @@ public class FeedSet implements Serializable {
         return result;
     }
 
+    // TODO: get rid of this compat serialisation hack when we switch to an object store!
+
     private static final String COM_SER_NUL = "NUL";
 
     public String toCompactSerial() {
@@ -240,16 +259,18 @@ public class FeedSet implements Serializable {
         s.append(isAllSaved);
         s.append("|");
         s.append(isGlobalShared);
+        s.append("|");
+        s.append(isAllRead);
         return s.toString();
     }
 
     public static FeedSet fromCompactSerial(String s) {
         String[] fields = TextUtils.split(s, "\\|");
-        if ((fields.length != 5) || (!fields[0].equals("FS"))) throw new IllegalArgumentException("invalid compact form");
+        if ((fields.length != 6) || (!fields[0].equals("FS"))) throw new IllegalArgumentException("invalid compact form");
         if (! fields[1].equals(COM_SER_NUL)) {
             HashSet<String> feeds = new HashSet<String>();
             for (String id : TextUtils.split(fields[1], ",")) feeds.add(id);
-            return new FeedSet(feeds, null, false, false);
+            return new FeedSet(feeds, null, false, false, false);
         }
         if (! fields[2].equals(COM_SER_NUL)) {
             HashMap<String,String> socialFeeds = new HashMap<String,String>();
@@ -258,13 +279,16 @@ public class FeedSet implements Serializable {
                 if (kv.length != 2) throw new IllegalArgumentException("invalid compact form");
                 socialFeeds.put(kv[0], kv[1]);
             }
-            return new FeedSet(null, socialFeeds, false, false);
+            return new FeedSet(null, socialFeeds, false, false, false);
         }
         if (fields[3].equals(Boolean.TRUE.toString())) {
-            return new FeedSet(null, null, true, false);
+            return new FeedSet(null, null, true, false, false);
         }
         if (fields[4].equals(Boolean.TRUE.toString())) {
-            return new FeedSet(null, null, false, true);
+            return new FeedSet(null, null, false, true, false);
+        }
+        if (fields[5].equals(Boolean.TRUE.toString())) {
+            return new FeedSet(null, null, false, false, true);
         }
         throw new IllegalArgumentException("invalid compact form");
     }
@@ -285,6 +309,7 @@ public class FeedSet implements Serializable {
             if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
             if ( isAllNormal && s.isAllNormal ) return true;
             if ( isAllSocial && s.isAllSocial ) return true;
+            if ( isAllRead && s.isAllRead ) return true;
             if ( isAllSaved && s.isAllSaved ) return true;
             if ( isGlobalShared && s.isGlobalShared ) return true;
         }
@@ -297,6 +322,7 @@ public class FeedSet implements Serializable {
         if (isAllSocial) return 12;
         if (isAllSaved) return 13;
         if (isGlobalShared) return 14;
+        if (isAllRead) return 15;
 
         int result = 17;
         if (feeds != null) result = 31 * result + feeds.hashCode();

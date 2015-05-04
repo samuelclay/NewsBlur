@@ -46,6 +46,7 @@ public class APIConstants {
 	public static final String URL_CLASSIFIER_SAVE = NEWSBLUR_URL + "/classifier/save";
 	public static final String URL_STORY_TEXT = NEWSBLUR_URL + "/rss_feeds/original_text";
 	public static final String URL_UNREAD_HASHES = NEWSBLUR_URL + "/reader/unread_story_hashes";
+    public static final String URL_READ_STORIES = NEWSBLUR_URL + "/reader/read_stories";
 	
 	public static final String PARAMETER_FEEDS = "f";
 	public static final String PARAMETER_H = "h";

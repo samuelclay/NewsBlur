@@ -383,6 +383,11 @@ public class PrefsUtils {
             throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
         }
 
+        if (fs.isAllRead()) {
+            // dummy value, not really used
+            return StoryOrder.NEWEST;
+        }
+
         if (fs.isAllSaved()) {
             return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
         }
@@ -413,6 +418,11 @@ public class PrefsUtils {
         }
         if (fs.getMultipleSocialFeeds() != null) {
             throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
+        }
+
+        if (fs.isAllRead()) {
+            // dummy value, not really used
+            return ReadFilter.ALL;
         }
 
         if (fs.isAllSaved()) {

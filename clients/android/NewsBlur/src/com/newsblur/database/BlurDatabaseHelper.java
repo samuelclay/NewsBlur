@@ -32,6 +32,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -341,6 +342,12 @@ public class BlurDatabaseHelper {
         Folder folder = Folder.fromCursor(c);
         closeQuietly(c);
         return folder;
+    }
+
+    public void touchStory(String hash) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_LAST_READ_DATE, (new Date()).getTime());
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
     public void markStoryHashesRead(List<String> hashes) {
@@ -781,6 +788,15 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(DatabaseConstants.JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP);
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+            return rawQuery(q.toString(), null, cancellationSignal);
+
+        } else if (fs.isAllRead()) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(" WHERE (" + DatabaseConstants.STORY_LAST_READ_DATE + " > 0)");
+            q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSaved()) {

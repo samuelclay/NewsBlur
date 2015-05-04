@@ -97,6 +97,9 @@ public class Story implements Serializable {
     @SerializedName("image_urls")
     public String[] imageUrls;
 
+    // not yet vended by the API, but tracked locally and fudged (see SyncService) for remote stories
+    public long lastReadTimestamp = 0L;
+ 
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -126,6 +129,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
         values.put(DatabaseConstants.STORY_HASH, storyHash);
         values.put(DatabaseConstants.STORY_IMAGE_URLS, TextUtils.join(",", imageUrls));
+        values.put(DatabaseConstants.STORY_LAST_READ_DATE, lastReadTimestamp);
 		return values;
 	}
 
@@ -160,6 +164,7 @@ public class Story implements Serializable {
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
         story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
+        story.lastReadTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_LAST_READ_DATE));
 		return story;
 	}
 
