@@ -28,6 +28,7 @@ public class ImagePrefetchService extends SubService {
     protected void exec() {
         if (!PrefsUtils.isImagePrefetchEnabled(parent)) return;
         if (ImageQueue.size() < 1) return;
+        if (!PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
 
         gotWork();
 
