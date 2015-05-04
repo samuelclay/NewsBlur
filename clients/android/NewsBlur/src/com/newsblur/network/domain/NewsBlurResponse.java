@@ -23,7 +23,7 @@ public class NewsBlurResponse {
             Log.d(this.getClass().getName(), "Response interpreted as error due to 'message' field: " + message);
             return true;
         }
-        if ((errors != null) && (errors.message.length > 0) && (errors.message[0] != null)) {
+        if ((errors != null) && (errors.message != null) && (errors.message.length > 0) && (errors.message[0] != null)) {
             Log.d(this.getClass().getName(), "Response interpreted as error due to 'ResponseErrors' field: " + errors.message[0]);
             return true;
         }
