@@ -6,7 +6,7 @@
 
     <ImageView
         android:id="@+id/row_read_icon"
-        android:layout_width="13dp"
+        android:layout_width="16dp"
         android:layout_height="13dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
