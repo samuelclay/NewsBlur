@@ -32,6 +32,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -108,11 +109,13 @@ public class BlurDatabaseHelper {
     }
 
     public void cleanupStories(boolean keepOldStories) {
+        // story cleanup happens at a low priority in the background. the goal here is to lock
+        // the DB for as short a time as possible, not absolute efficiency.
         for (String feedId : getAllFeeds()) {
             String q = "DELETE FROM " + DatabaseConstants.STORY_TABLE + 
                        " WHERE " + DatabaseConstants.STORY_ID + " IN " +
                        "( SELECT " + DatabaseConstants.STORY_ID + " FROM " + DatabaseConstants.STORY_TABLE +
-                       " WHERE " + DatabaseConstants.STORY_READ + " = 1" +
+                       " WHERE " + DatabaseConstants.STORY_READ + " = 1" + // don't cleanup unreads
                        " AND " + DatabaseConstants.STORY_FEED_ID + " = " + feedId +
                        " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
                        " LIMIT -1 OFFSET " + (keepOldStories ? AppConstants.MAX_READ_STORIES_STORED : 0) +
@@ -341,6 +344,12 @@ public class BlurDatabaseHelper {
         return folder;
     }
 
+    public void touchStory(String hash) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_LAST_READ_DATE, (new Date()).getTime());
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
+    }
+
     public void markStoryHashesRead(List<String> hashes) {
         // NOTE: attempting to wrap these updates in a transaction for speed makes them silently fail
         for (String hash : hashes) {
@@ -507,6 +516,7 @@ public class BlurDatabaseHelper {
             if ((stateFilter == StateFilter.SOME) || (stateFilter == StateFilter.ALL)) result += f.neutralCount;
             if (stateFilter == StateFilter.ALL) result += f.negativeCount;
         }
+        c.close();
         return result;
     }
 
@@ -519,6 +529,7 @@ public class BlurDatabaseHelper {
             if ((stateFilter == StateFilter.SOME) || (stateFilter == StateFilter.ALL)) result += f.neutralCount;
             if (stateFilter == StateFilter.ALL) result += f.negativeCount;
         }
+        c.close();
         return result;
     }
 
@@ -618,6 +629,22 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public String getStoryContent(String hash) {
+        String q = "SELECT " + DatabaseConstants.STORY_CONTENT +
+                   " FROM " + DatabaseConstants.STORY_TABLE +
+                   " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
+        Cursor c = dbRO.rawQuery(q, new String[]{hash});
+        if (c.getCount() < 1) {
+            c.close();
+            return null;
+        } else {
+            c.moveToFirst();
+            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_CONTENT));
+            c.close();
+            return result;
+        }
+    }
+
     public void putStoryText(String hash, String text) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_TEXT_STORY_HASH, hash);
@@ -705,7 +732,7 @@ public class BlurDatabaseHelper {
         };
     }
 
-    public Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
+    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
         if (fs == null) return null;
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
@@ -761,6 +788,15 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(DatabaseConstants.JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP);
             DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+            return rawQuery(q.toString(), null, cancellationSignal);
+
+        } else if (fs.isAllRead()) {
+
+            StringBuilder q = new StringBuilder(DatabaseConstants.MULTIFEED_STORIES_QUERY_BASE);
+            q.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
+            q.append(" WHERE (" + DatabaseConstants.STORY_LAST_READ_DATE + " > 0)");
+            q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSaved()) {

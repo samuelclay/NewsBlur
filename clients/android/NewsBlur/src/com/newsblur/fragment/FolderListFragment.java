@@ -26,6 +26,7 @@ import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.DatabaseConstants;
@@ -192,9 +193,9 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 		switch(type) {
 		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
             int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-            if (! adapter.isRowSavedStories(groupPosition) ) {
-			    inflater.inflate(R.menu.context_folder, menu);
-            }
+            if (adapter.isRowSavedStories(groupPosition)) break;
+            if (adapter.isRowReadStories(groupPosition)) break;
+            inflater.inflate(R.menu.context_folder, menu);
 			break;
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
@@ -255,6 +256,10 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 			i.putExtra(ItemsList.EXTRA_STATE, currentState);
 			startActivity(i);
 			return true;
+        } else if (adapter.isRowReadStories(groupPosition)) {
+            Intent i = new Intent(getActivity(), ReadStoriesItemsList.class);
+            startActivity(i);
+            return true;
         } else if (adapter.isRowSavedStories(groupPosition)) {
             Intent i = new Intent(getActivity(), SavedStoriesItemsList.class);
             startActivity(i);
@@ -279,6 +284,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         // these shouldn't ever be collapsible
         if (adapter.isFolderRoot(groupPosition)) return;
         if (adapter.isRowSavedStories(groupPosition)) return;
+        if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the expanded preference, since the widget likes to forget it
@@ -295,6 +301,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         // these shouldn't ever be collapsible
         if (adapter.isFolderRoot(groupPosition)) return;
         if (adapter.isRowSavedStories(groupPosition)) return;
+        if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the collapsed preference, since the widget likes to forget it

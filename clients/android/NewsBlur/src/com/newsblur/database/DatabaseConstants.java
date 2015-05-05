@@ -97,6 +97,7 @@ public class DatabaseConstants {
     public static final String STORY_HASH = "story_hash";
     public static final String STORY_ACTIVE = "active";
     public static final String STORY_IMAGE_URLS = "image_urls";
+    public static final String STORY_LAST_READ_DATE = "last_read_date";
 
     public static final String STORY_TEXT_TABLE = "storytext";
     public static final String STORY_TEXT_STORY_HASH = "story_hash";
@@ -230,7 +231,8 @@ public class DatabaseConstants {
 		STORY_STARRED_DATE + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
         STORY_ACTIVE + INTEGER + " DEFAULT 0, " +
-        STORY_IMAGE_URLS + TEXT +
+        STORY_IMAGE_URLS + TEXT + ", " +
+        STORY_LAST_READ_DATE + INTEGER +
         ")";
 
     static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
@@ -302,11 +304,11 @@ public class DatabaseConstants {
 	private static final String STORY_INTELLIGENCE_NEG = SUM_STORY_TOTAL + " < 0 ";
 
 	public static final String[] STORY_COLUMNS = {
-		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE,
+		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS, STORY_SUM_TOTAL, STORY_HASH,
-        STORY_IMAGE_URLS
+        STORY_LAST_READ_DATE
 	};
 
     public static final String MULTIFEED_STORIES_QUERY_BASE = 
@@ -323,6 +325,7 @@ public class DatabaseConstants {
         " INNER JOIN " + SOCIALFEED_TABLE + " ON " + SOCIALFEED_TABLE + "." + SOCIAL_FEED_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_USER_ID;
 
     public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " DESC";
+    public static final String READ_STORY_ORDER = STORY_LAST_READ_DATE + " DESC";
 
     /**
      * Appends to the given story query any and all selection statements that are required to satisfy the specified

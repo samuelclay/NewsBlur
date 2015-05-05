@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
     android:versionCode="91"
-    android:versionName="4.2.3" >
+    android:versionName="4.2.4b2" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -74,6 +74,9 @@
             android:name=".activity.AllStoriesItemsList" />
 
         <activity
+            android:name=".activity.ReadStoriesItemsList" />
+
+        <activity
             android:name=".activity.SavedStoriesItemsList" />
          
         <activity
@@ -93,6 +96,9 @@
         
         <activity
             android:name=".activity.AllStoriesReading"/>
+
+        <activity
+            android:name=".activity.ReadStoriesReading"/>
 
         <activity
             android:name=".activity.SavedStoriesReading"/>

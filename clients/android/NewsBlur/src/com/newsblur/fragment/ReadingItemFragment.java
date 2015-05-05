@@ -81,7 +81,12 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private ImageView feedIcon;
     private Reading activity;
     private DefaultFeedView selectedFeedView;
+
+    /** The story HTML, as provided by the 'content' element of the stories API. */
+    private String storyContent;
+    /** The text-mode story HTML, as retrived via the secondary original text API. */
     private String originalText;
+
     private HashMap<String,String> imageAltTexts;
     private HashMap<String,String> imageUrlRemaps;
     private String sourceUserId;
@@ -419,8 +424,12 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
     private void reloadStoryContent() {
         if (selectedFeedView == DefaultFeedView.STORY) {
-            setupWebview(story.content);
             enableProgress(false);
+            if (storyContent == null) {
+                loadStoryContent();
+            } else {
+                setupWebview(storyContent);
+            }
         } else {
             if (originalText == null) {
                 enableProgress(true);
@@ -474,6 +483,26 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 }
             }.execute();
         }
+    }
+
+    private void loadStoryContent() {
+        if (story == null) return;
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... arg) {
+                return FeedUtils.getStoryContent(story.storyHash);
+            }
+            @Override
+            protected void onPostExecute(String result) {
+                if (result != null) {
+                    ReadingItemFragment.this.storyContent = result;
+                    reloadStoryContent();
+                } else {
+                    Log.w(this.getClass().getName(), "couldn't find story content for existing story.");
+                    getActivity().finish();
+                }
+            }
+        }.execute();
     }
 
 	private void setupWebview(String storyText) {

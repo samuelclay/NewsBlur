@@ -54,7 +54,7 @@ public class FolderItemListFragment extends ItemListFragment {
     }
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	public void onItemClick_(AdapterView<?> parent, View view, int position, long id) {
         if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FolderReading.class);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());

@@ -128,6 +128,7 @@ public class FeedUtils {
     }
 
     private static void setStoryReadState(Story story, Context context, boolean read) {
+        dbHelper.touchStory(story.storyHash);
         if (story.read == read) { return; }
 
         // update the local object to show as read before DB is touched
@@ -215,6 +216,10 @@ public class FeedUtils {
 
     public static String getStoryText(String hash) {
         return dbHelper.getStoryText(hash);
+    }
+
+    public static String getStoryContent(String hash) {
+        return dbHelper.getStoryContent(hash);
     }
 
     /**

@@ -288,6 +288,8 @@ public class APIManager {
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         } else if (fs.isAllSocial()) {
             uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
+        } else if (fs.isAllRead()) {
+            uri = Uri.parse(APIConstants.URL_READ_STORIES);
         } else if (fs.isAllSaved()) {
             uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
         } else if (fs.isGlobalShared()) {
@@ -297,10 +299,12 @@ public class APIManager {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
         }
 
-		// request params common to all stories
+		// request params common to most story sets
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
-		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
+        if ( !(fs.isAllRead() || fs.isAllSaved())) {
+		    values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+		    values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
+        }
 
 		APIResponse response = get(uri.toString(), values);
         return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
