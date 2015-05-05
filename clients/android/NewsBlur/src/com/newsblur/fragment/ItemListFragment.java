@@ -132,7 +132,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         if (footerProgressView != null ) {
             if (isLoading) {
                 if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
-                    headerProgressView.setVisibility(View.GONE);
+                    headerProgressView.setVisibility(View.INVISIBLE);
                     footerProgressView.setVisibility(View.VISIBLE);
                 } else {
                     headerProgressView.setVisibility(View.VISIBLE);
@@ -140,7 +140,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                 }
                 emptyProgressView.setVisibility(View.VISIBLE);
             } else {
-                headerProgressView.setVisibility(View.GONE);
+                headerProgressView.setVisibility(View.INVISIBLE);
                 footerProgressView.setVisibility(View.GONE);
                 emptyProgressView.setVisibility(View.GONE);
             }
