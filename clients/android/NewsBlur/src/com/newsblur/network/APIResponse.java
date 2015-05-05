@@ -1,10 +1,6 @@
 package com.newsblur.network;
 
-import java.io.InputStreamReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -16,6 +12,9 @@ import org.apache.http.HttpStatus;
 import com.newsblur.R;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.util.AppConstants;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 /**
  * A JSON-encoded response from the API servers.  This class encodes the possible outcomes of
@@ -35,76 +34,66 @@ public class APIResponse {
      * Construct an online response.  Will test the response for errors and extract all the
      * info we might need.
      */
-    public APIResponse(Context context, URL originalUrl, HttpURLConnection connection) {
-        this(context, originalUrl, connection, HttpStatus.SC_OK);
+    public APIResponse(Context context, OkHttpClient httpClient, Request request) {
+        this(context, httpClient, request, HttpStatus.SC_OK);
     }
 
     /**
      * Construct an online response.  Will test the response for errors and extract all the
      * info we might need.
      */
-    public APIResponse(Context context, URL originalUrl, HttpURLConnection connection, int expectedReturnCode) {
+    public APIResponse(Context context, OkHttpClient httpClient, Request request, int expectedReturnCode) {
 
         this.errorMessage = context.getResources().getString(R.string.error_unset_message);
 
         try {
-            if (connection.getResponseCode() != expectedReturnCode) {
-                Log.e(this.getClass().getName(), "API returned error code " + connection.getResponseCode() + " calling " + originalUrl + ". Expected " + expectedReturnCode);
-                this.isError = true;
-                this.errorMessage = context.getResources().getString(R.string.error_http_connection);
-                return;
-            }
-            
-            if (!TextUtils.equals(originalUrl.getHost(), connection.getURL().getHost())) {
-                // TODO: the existing code rejects redirects as errors.  Is this correct?
-                Log.e(this.getClass().getName(), "API redirected calling " + originalUrl);
-                this.isError = true;
-                this.errorMessage = context.getResources().getString(R.string.error_http_connection);
-                return;
-            }
-        } catch (IOException ioe) {
-            Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + originalUrl, ioe);
-            this.isError = true;
-            this.errorMessage = context.getResources().getString(R.string.error_read_connection);
-            return;
-        }
+            Response response = httpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
 
-        this.cookie = connection.getHeaderField("Set-Cookie");
-
-        try {
-            StringBuilder builder = new StringBuilder();
-            Reader reader = new InputStreamReader(connection.getInputStream());
-            char[] chunk = new char[1024];
-            int len;
-            long startTime = System.currentTimeMillis();
-            while ( (len = reader.read(chunk)) > 0) {
-                builder.append(chunk, 0, len);
-            }
-            readTime = System.currentTimeMillis() - startTime;
-            this.responseBody = builder.toString();
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + originalUrl, e);
-            this.isError = true;
-            this.errorMessage = context.getResources().getString(R.string.error_read_connection);
-            return;
-        }
-
-        try {
-            connection.disconnect();
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), e.getClass().getName() + " caught closing connection: " + e.getMessage(), e);
-        }
-
-        if (AppConstants.VERBOSE_LOG_NET) {
-            // the default kernel truncates log lines. split by something we probably have, like a json delim
-            if (responseBody.length() < 2048) {
-                Log.d(this.getClass().getName(), "API response: \n" + this.responseBody);
-            } else {
-                Log.d(this.getClass().getName(), "API response: ");
-                for (String s : TextUtils.split(responseBody, "\\}")) {
-                    Log.d(this.getClass().getName(), s + "}");
+                if (response.code() != expectedReturnCode) {
+                    Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.urlString() + ". Expected " + expectedReturnCode);
+                    this.isError = true;
+                    this.errorMessage = context.getResources().getString(R.string.error_http_connection);
+                    return;
                 }
+
+                this.cookie = response.header("Set-Cookie");
+
+                try {
+                    long startTime = System.currentTimeMillis();
+                    this.responseBody = response.body().string();
+                    readTime = System.currentTimeMillis() - startTime;
+                } catch (Exception e) {
+                    Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.urlString(), e);
+                    this.isError = true;
+                    this.errorMessage = context.getResources().getString(R.string.error_read_connection);
+                    return;
+                }
+
+                if (AppConstants.VERBOSE_LOG_NET) {
+                    // the default kernel truncates log lines. split by something we probably have, like a json delim
+                    if (responseBody.length() < 2048) {
+                        Log.d(this.getClass().getName(), "API response: \n" + this.responseBody);
+                    } else {
+                        Log.d(this.getClass().getName(), "API response: ");
+                        for (String s : TextUtils.split(responseBody, "\\}")) {
+                            Log.d(this.getClass().getName(), s + "}");
+                        }
+                    }
+                }
+
+            } else {
+                Log.e(this.getClass().getName(), "API call unsuccessful, error code" + response.code());
+                this.isError = true;
+                this.errorMessage = context.getResources().getString(R.string.error_http_connection);
+                return;
             }
+
+        } catch (IOException ioe) {
+            Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.urlString(), ioe);
+            this.isError = true;
+            this.errorMessage = context.getResources().getString(R.string.error_read_connection);
+            return;
         }
     }
 

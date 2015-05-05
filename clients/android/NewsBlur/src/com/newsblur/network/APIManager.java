@@ -1,10 +1,5 @@
 package com.newsblur.network;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +26,6 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
-import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
@@ -52,6 +46,10 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 
 import org.apache.http.HttpStatus;
 
@@ -60,6 +58,7 @@ public class APIManager {
 	private Context context;
 	private Gson gson;
     private String customUserAgent;
+	private OkHttpClient httpClient;
 
 	public APIManager(final Context context) {
 		this.context = context;
@@ -80,6 +79,7 @@ public class APIManager {
                                 Build.VERSION.RELEASE + " " +
                                 appVersion + ")";
 
+		this.httpClient = new OkHttpClient();
 	}
 
 	public NewsBlurResponse login(final String username, final String password) {
@@ -114,15 +114,6 @@ public class APIManager {
 		ContentValues values = new ContentValues();
 		values.put("autofollow_friends", autofollow ? "true" : "false");
 		final APIResponse response = post(APIConstants.URL_AUTOFOLLOW_PREF, values);
-		return (!response.isError());
-	}
-
-	public boolean addCategories(ArrayList<String> categories) {
-		final ValueMultimap values = new ValueMultimap();
-		for (String category : categories) {
-			values.put(APIConstants.PARAMETER_CATEGORY, URLEncoder.encode(category));
-		}
-		final APIResponse response = post(APIConstants.URL_ADD_CATEGORIES, values, false);
 		return (!response.isError());
 	}
 
@@ -161,7 +152,7 @@ public class APIManager {
             values.put(APIConstants.PARAMETER_DIRECTION, APIConstants.VALUE_NEWER);
         }
 
-		APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
+		APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values);
         // TODO: these calls use a different return format than others: the errors field is an array, not an object
         //return response.getResponse(gson, NewsBlurResponse.class);
         NewsBlurResponse nbr = new NewsBlurResponse();
@@ -172,7 +163,7 @@ public class APIManager {
 	private NewsBlurResponse markAllAsRead() {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
-		APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
+		APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values);
         // TODO: these calls use a different return format than others: the errors field is an array, not an object
         //return response.getResponse(gson, NewsBlurResponse.class);
         NewsBlurResponse nbr = new NewsBlurResponse();
@@ -183,40 +174,30 @@ public class APIManager {
     public NewsBlurResponse markStoryAsRead(String storyHash) {
         ValueMultimap values = new ValueMultimap();
         values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
-        APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values, false);
+        APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
 	public NewsBlurResponse markStoryAsStarred(String storyHash) {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
-		APIResponse response = post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
+		APIResponse response = post(APIConstants.URL_MARK_STORY_AS_STARRED, values);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
 	
     public NewsBlurResponse markStoryAsUnstarred(String storyHash) {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
-		APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNSTARRED, values, false);
+		APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNSTARRED, values);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
     public NewsBlurResponse markStoryHashUnread(String hash) {
 		final ValueMultimap values = new ValueMultimap();
         values.put(APIConstants.PARAMETER_STORY_HASH, hash);
-        APIResponse response = post(APIConstants.URL_MARK_STORY_HASH_UNREAD, values, false);
+        APIResponse response = post(APIConstants.URL_MARK_STORY_HASH_UNREAD, values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
-
-	public CategoriesResponse getCategories() {
-		final APIResponse response = get(APIConstants.URL_CATEGORIES);
-		if (!response.isError()) {
-			CategoriesResponse categoriesResponse = (CategoriesResponse) response.getResponse(gson, CategoriesResponse.class);
-            return categoriesResponse;
-		} else {
-			return null;
-		}
-	}
 
 	public RegisterResponse signup(final String username, final String password, final String email) {
 		final ContentValues values = new ContentValues();
@@ -376,7 +357,7 @@ public class APIManager {
      */
     public FeedFolderResponse getFolderFeedMapping(boolean doUpdateCounts) {
 		ContentValues params = new ContentValues();
-		params.put( APIConstants.PARAMETER_UPDATE_COUNTS, (doUpdateCounts ? "true" : "false") );
+		params.put(APIConstants.PARAMETER_UPDATE_COUNTS, (doUpdateCounts ? "true" : "false"));
 		APIResponse response = get(APIConstants.URL_FEEDS, params);
 
 		if (response.isError()) {
@@ -532,38 +513,35 @@ public class APIManager {
         int tryCount = 0;
         do {
             backoffSleep(tryCount++);
-            response = get_single(urlString);
+            response = get_single(urlString, HttpStatus.SC_OK);
         } while ((response.isError()) && (tryCount < AppConstants.MAX_API_TRIES));
         return response;
-    }
-
-    private APIResponse get_single(final String urlString) {
-        return get_single(urlString, HttpStatus.SC_OK);
     }
 
 	private APIResponse get_single(final String urlString, int expectedReturnCode) {
 		if (!NetworkUtils.isOnline(context)) {
 			return new APIResponse(context);
 		}
-		try {
-			URL url = new URL(urlString);
-            if (AppConstants.VERBOSE_LOG) {
-                Log.d(this.getClass().getName(), "API GET " + url );
-            }
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-			String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
-			if (cookie != null) {
-				connection.setRequestProperty("Cookie", cookie);
-			}
-            connection.setRequestProperty("User-Agent", this.customUserAgent);
-			return new APIResponse(context, url, connection, expectedReturnCode);
-		} catch (IOException e) {
-			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
-			return new APIResponse(context);
-		} 
+
+		if (AppConstants.VERBOSE_LOG) {
+			Log.d(this.getClass().getName(), "API GET " + urlString);
+		}
+
+		Request.Builder requestBuilder = new Request.Builder().url(urlString);
+		addCookieHeader(requestBuilder);
+		requestBuilder.header("User-Agent", this.customUserAgent);
+
+		return new APIResponse(context, httpClient, requestBuilder.build(), expectedReturnCode);
 	}
-	
+
+	private void addCookieHeader(Request.Builder requestBuilder) {
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+		if (cookie != null) {
+			requestBuilder.header("Cookie", cookie);
+		}
+	}
+
 	private APIResponse get(final String urlString, final ContentValues values) {
         return this.get(urlString + "?" + builderGetParametersString(values));
 	}
@@ -584,69 +562,43 @@ public class APIManager {
         return this.get(urlString + "?" + valueMap.getParameterString());
 	}
 
-	private APIResponse post(String urlString, String postBodyString) {
+	private APIResponse post(String urlString, RequestBody formBody) {
         APIResponse response;
         int tryCount = 0;
         do {
             backoffSleep(tryCount++);
-            response = post_single(urlString, postBodyString);
+            response = post_single(urlString, formBody);
         } while ((response.isError()) && (tryCount < AppConstants.MAX_API_TRIES));
         return response;
     }
 
-	private APIResponse post_single(String urlString, String postBodyString) {
+	private APIResponse post_single(String urlString, RequestBody formBody) {
 		if (!NetworkUtils.isOnline(context)) {
 			return new APIResponse(context);
 		}
-		try {
-			URL url = new URL(urlString);
-            if (AppConstants.VERBOSE_LOG) {
-                Log.d(this.getClass().getName(), "API POST " + url );
-                Log.d(this.getClass().getName(), "post body: " + postBodyString);
-            }
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST");
-			connection.setFixedLengthStreamingMode(postBodyString.getBytes().length);
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-			String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
-			if (cookie != null) {
-				connection.setRequestProperty("Cookie", cookie);
-			}
-			PrintWriter printWriter = new PrintWriter(connection.getOutputStream());
-			printWriter.print(postBodyString);
-			printWriter.close();
-			return new APIResponse(context, url, connection);
-		} catch (IOException e) {
-			Log.e(this.getClass().getName(), "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
-			return new APIResponse(context);
-		} 
+
+		if (AppConstants.VERBOSE_LOG) {
+			Log.d(this.getClass().getName(), "API POST " + urlString);
+			Log.d(this.getClass().getName(), "post body: " + formBody.toString());
+		}
+
+		Request.Builder requestBuilder = new Request.Builder().url(urlString);
+		addCookieHeader(requestBuilder);
+		requestBuilder.post(formBody);
+
+		return new APIResponse(context, httpClient, requestBuilder.build());
 	}
 
 	private APIResponse post(final String urlString, final ContentValues values) {
-		List<String> parameters = new ArrayList<String>();
+		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
 		for (Entry<String, Object> entry : values.valueSet()) {
-			final StringBuilder builder = new StringBuilder();
-			
-			builder.append((String) entry.getKey());
-			builder.append("=");
-			try {
-				builder.append(URLEncoder.encode((String) entry.getValue(), "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				Log.e(this.getClass().getName(), e.getLocalizedMessage());
-				return new APIResponse(context);
-			}
-			parameters.add(builder.toString());
+			formEncodingBuilder.add(entry.getKey(), (String)entry.getValue());
 		}
-		final String parameterString = TextUtils.join("&", parameters);
-
-        return this.post(urlString, parameterString);
+        return this.post(urlString, formEncodingBuilder.build());
 	}
 	
-	private APIResponse post(final String urlString, final ValueMultimap valueMap, boolean jsonIfy) {
-        String parameterString = jsonIfy ? valueMap.getJsonString() : valueMap.getParameterString();
-        return this.post(urlString, parameterString);
+	private APIResponse post(final String urlString, final ValueMultimap valueMap) {
+        return this.post(urlString, valueMap.asFormEncodedRequestBody());
 	}
 
     /**
