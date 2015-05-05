@@ -21,3 +21,6 @@
 
 # We're open-source; dont' obfuscate.
 -dontobfuscate
+
+-dontwarn com.squareup.okhttp.**
+-dontwarn okio.**
