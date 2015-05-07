@@ -373,7 +373,6 @@ class SearchFeed:
         }
         cls.ES.indices.put_mapping("%s-type" % cls.name, {
             'properties': mapping,
-            '_source': {'enabled': False},
         }, ["%s-index" % cls.name])
         
     @classmethod

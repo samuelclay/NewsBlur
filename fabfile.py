@@ -243,20 +243,20 @@ def setup_node():
     config_node()
     
 def setup_db(engine=None, skip_common=False):
-    # if not skip_common:
-    #     setup_common()
-    # setup_db_firewall()
-    # setup_motd('db')
-    # copy_db_settings()
-    # if engine == "memcached":
-    #     setup_memcached()
-    if engine == "postgres":
+    if not skip_common:
+        setup_common()
+    setup_db_firewall()
+    setup_motd('db')
+    copy_db_settings()
+    if engine == "memcached":
+        setup_memcached()
+    elif engine == "postgres":
         setup_postgres(standby=False)
         setup_postgres_backups()
     elif engine == "postgres_slave":
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
-        setup_mongo()
+        # setup_mongo()
         setup_mongo_mms()
         setup_mongo_backups()
     elif engine == "redis":
@@ -887,7 +887,8 @@ def setup_mongo():
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
     # Reclaim 5% disk space used for root logs. Set to 1%.
-    sudo('tune2fs -m 1 /dev/vda')
+    with settings(warn_only=True):
+        sudo('tune2fs -m 1 /dev/vda')
 
 def setup_mongo_configsvr():
     sudo('mkdir -p /var/lib/mongodb_configsvr')
@@ -1056,12 +1057,12 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "0.90.13"
+    ES_VERSION = "0.90.0"
     sudo('apt-get update')
     sudo('apt-get install openjdk-7-jre -y')
 
     with cd(env.VENDOR_PATH):
-        run('mkdir elasticsearch-%s' % ES_VERSION)
+        run('mkdir -p elasticsearch-%s' % ES_VERSION)
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
