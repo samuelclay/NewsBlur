@@ -243,11 +243,11 @@ def setup_node():
     config_node()
     
 def setup_db(engine=None, skip_common=False):
-    if not skip_common:
-        setup_common()
-    setup_db_firewall()
-    setup_motd('db')
-    copy_db_settings()
+    # if not skip_common:
+    #     setup_common()
+    # setup_db_firewall()
+    # setup_motd('db')
+    # copy_db_settings()
     # if engine == "memcached":
     #     setup_memcached()
     if engine == "postgres":
@@ -847,19 +847,19 @@ def setup_rabbitmq():
 
 def setup_postgres(standby=False):
     shmmax = 2300047872
-    # sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"')
+    sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"')
     sudo('wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
-    sudo('apt-get -y install postgresql-9.2 postgresql-client-9.2 postgresql-contrib-9.2 libpq-dev')
+    sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
-    ), '/etc/postgresql/9.2/main/postgresql.conf', use_sudo=True)
+    ), '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
     sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
     sudo('sysctl -p')
 
     if standby:
-        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.2/recovery.conf', use_sudo=True)
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/recovery.conf', use_sudo=True)
 
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
@@ -959,7 +959,7 @@ def setup_redis(slave=False):
     
 def setup_munin():
     # sudo('apt-get update')
-    sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
+    # sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
     put('config/spawn_fcgi_munin_html.conf', '/etc/init.d/spawn_fcgi_munin_html', use_sudo=True)
@@ -988,6 +988,26 @@ def setup_munin():
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
         sudo('/etc/init.d/spawn_fcgi_munin_html start')
 
+def copy_munin_data(from_server):
+    put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key'), '~/.ssh/newsblur.key')
+    put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), '~/.ssh/newsblur.key.pub')
+    run('chmod 600 ~/.ssh/newsblur*')
+
+    put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
+    sudo('/etc/init.d/nginx reload')
+
+    run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/var/lib/munin/ /srv/munin" % from_server)
+    sudo("mv /var/lib/munin /var/lib/bak-munin")
+    sudo("mv /srv/munin /var/lib/")
+    sudo("chown munin.munin -R /var/lib/munin")
+
+    run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/etc/munin/ /srv/munin-etc" % from_server)
+    sudo("mv /srv/munin-etc /etc/munin")
+    sudo("chown munin.munin -R /etc/munin")
+
+    sudo("/etc/init.d/munin restart")
+    sudo("/etc/init.d/munin-node restart")
+    
 
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
