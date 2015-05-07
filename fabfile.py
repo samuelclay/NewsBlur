@@ -81,6 +81,7 @@ def do_roledefs(split=False):
 def list_do():
     droplets = do(split=True)
     pprint(droplets)
+    
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     droplets = doapi.show_active_droplets()
     sizes = doapi.sizes()
@@ -89,7 +90,10 @@ def list_do():
     total_cost = 0
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
-        cost = int(sizes.get(droplet.size_id, 96)) * 10
+        size = int(sizes.get(droplet.size_id, 96))
+        if size == 512:
+            size = .5
+        cost = int(size * 10)
         role_costs[roledef] += cost
         total_cost += cost
     
@@ -217,11 +221,10 @@ def setup_app(skip_common=False):
     if not skip_common:
         setup_common()
     setup_app_firewall()
-    setup_app_motd()
+    setup_motd('app')
     copy_app_settings()
     config_nginx()
     setup_gunicorn(supervisor=True)
-    update_gunicorn()
     # setup_node_app()
     # config_node()
     deploy_web()
@@ -243,7 +246,7 @@ def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_db_firewall()
-    setup_db_motd()
+    setup_motd('db')
     copy_db_settings()
     # if engine == "memcached":
     #     setup_memcached()
@@ -276,11 +279,10 @@ def setup_task(queue=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_task_firewall()
-    setup_task_motd()
+    setup_motd('task')
     copy_task_settings()
     enable_celery_supervisor(queue)
     setup_gunicorn(supervisor=False)
-    update_gunicorn()
     config_monit_task()
     setup_usage_monitor()
     done()
@@ -646,9 +648,6 @@ def setup_app_firewall():
     sudo('ufw allow 443')       # https
     sudo('ufw --force enable')
 
-def setup_app_motd():
-    put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
-
 def remove_gunicorn():
     with cd(env.VENDOR_PATH):
         sudo('rm -fr gunicorn')
@@ -656,6 +655,8 @@ def remove_gunicorn():
 def setup_gunicorn(supervisor=True):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
+        sudo('supervisorctl reread')
+        restart_gunicorn()
     # with cd(env.VENDOR_PATH):
     #     sudo('rm -fr gunicorn')
     #     run('git clone git://github.com/benoitc/gunicorn.git')
@@ -829,9 +830,6 @@ def setup_db_firewall():
         ))
 
     sudo('ufw --force enable')
-
-def setup_db_motd():
-    put('config/motd_db.txt', '/etc/motd.tail', use_sudo=True)
 
 def setup_rabbitmq():
     sudo('echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.list')
@@ -1070,8 +1068,11 @@ def setup_task_firewall():
     sudo('ufw allow 80')
     sudo('ufw --force enable')
 
-def setup_task_motd():
-    put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)
+def setup_motd(role='app'):
+    motd = '/etc/update-motd.d/22-newsblur-motd'
+    put('config/motd_%s.txt' % role, motd, use_sudo=True)
+    sudo('chown root.root %s' % motd)
+    sudo('chmod a+x %s' % motd)
 
 def enable_celery_supervisor(queue=None):
     if not queue:
@@ -1264,13 +1265,14 @@ def deploy_code(copy_assets=False, full=False, fast=False, reload=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-            
-        if reload:
-            sudo('supervisorctl reload')
-        elif fast:
-            kill_gunicorn()
-        else:
-            sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
+        
+        with settings(warn_only=True):
+            if reload:
+                sudo('supervisorctl reload')
+            elif fast:
+                kill_gunicorn()
+            else:
+                sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
 
 @parallel
 def kill():
