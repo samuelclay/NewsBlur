@@ -1057,7 +1057,7 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "0.90.0"
+    ES_VERSION = "0.90.13"
     sudo('apt-get update')
     sudo('apt-get install openjdk-7-jre -y')
 
