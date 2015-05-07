@@ -254,7 +254,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             inflater.inflate(R.menu.context_story_oldest, menu);
         }
 
-        Story story = adapter.getStory(((AdapterView.AdapterContextMenuInfo) (menuInfo)).position);
+        int truePosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position - 1;
+        Story story = adapter.getStory(truePosition);
         if (story.read) {
             menu.removeItem(R.id.menu_mark_story_as_read);
         } else {
