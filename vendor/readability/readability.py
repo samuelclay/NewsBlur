@@ -9,12 +9,12 @@ from lxml.etree import tounicode
 from lxml.html import document_fromstring
 from lxml.html import fragment_fromstring
 
-from cleaners import clean_attributes
-from cleaners import html_cleaner
-from htmls import build_doc
-from htmls import get_body
-from htmls import get_title
-from htmls import shorten_title
+from .cleaners import clean_attributes
+from .cleaners import html_cleaner
+from .htmls import build_doc
+from .htmls import get_body
+from .htmls import get_title
+from .htmls import shorten_title
 
 
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +32,7 @@ REGEXES = {
     #'trimRe': re.compile('^\s+|\s+$/'),
     #'normalizeRe': re.compile('\s{2,}/'),
     #'killBreaksRe': re.compile('(<br\s*\/?>(\s|&nbsp;?)*){1,}/'),
-    #'videoRe': re.compile('http:\/\/(www\.)?(youtube|vimeo)\.com', re.I),
+    'videoRe': re.compile('http:\/\/(www\.)?(youtube|vimeo)\.com', re.I),
     #skipFootnoteLink:      /^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$/i,
 }
 
@@ -183,6 +183,7 @@ class Document:
                         if article is None:
                             article = self.html
                 cleaned_article = self.sanitize(article, candidates)
+
                 article_length = len(cleaned_article or '')
                 retry_length = self.options.get(
                     'retry_length',
@@ -428,8 +429,15 @@ class Document:
             if self.class_weight(header) < 0 or self.get_link_density(header) > 0.33:
                 header.drop_tree()
 
-        for elem in self.tags(node, "form", "iframe", "textarea"):
+        for elem in self.tags(node, "form", "textarea"):
             elem.drop_tree()
+
+        for elem in self.tags(node, "iframe"):
+            if "src" in elem.attrib and REGEXES["videoRe"].search(elem.attrib["src"]):
+                elem.text = "VIDEO" # ADD content to iframe text node to force <iframe></iframe> proper output
+            else:
+                elem.drop_tree()
+
         allowed = {}
         # Conditionally clean <table>s, <ul>s, and <div>s
         for el in self.reverse_tags(node, "table", "ul", "div"):
@@ -474,7 +482,7 @@ class Document:
 
                 #if el.tag == 'div' and counts["img"] >= 1:
                 #    continue
-                if counts["p"] and counts["img"] > counts["p"]:
+                if counts["p"] and counts["img"] > 1+counts["p"]*1.3:
                     reason = "too many images (%s)" % counts["img"]
                     to_remove = True
                 elif counts["li"] > counts["p"] and tag != "ul" and tag != "ol":
