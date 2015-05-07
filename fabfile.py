@@ -724,14 +724,15 @@ def maintenance_off():
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
+    version = "1.5.12"
     sudo('ufw allow 81')    # nginx moved
     sudo('ufw allow 1936')  # haproxy stats
     # sudo('apt-get install -y haproxy')
     # sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
-        run('wget http://www.haproxy.org/download/1.5/src/haproxy-1.5.6.tar.gz')
-        run('tar -xf haproxy-1.5.6.tar.gz')
-        with cd('haproxy-1.5.6'):
+        run('wget http://www.haproxy.org/download/1.5/src/haproxy-%s.tar.gz' % version)
+        run('tar -xf haproxy-%s.tar.gz' % version)
+        with cd('haproxy-%s' % version):
             run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
@@ -750,6 +751,7 @@ def setup_haproxy(debug=False):
     sudo('restart rsyslog')
 
     sudo('/etc/init.d/haproxy stop')
+    run('sleep 1')
     sudo('/etc/init.d/haproxy start')
 
 def config_haproxy(debug=False):
