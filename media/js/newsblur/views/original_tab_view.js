@@ -566,9 +566,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                     NEWSBLUR.reader.active_feed) {
                   $('.NB-feed-frame').attr('src', '');
                   window.top.location = '/reader/buster';
-                  NEWSBLUR.reader.switch_taskbar_view('feed', {
-                    skip_save_type: true
-                  });
+                  NEWSBLUR.reader.switch_taskbar_view('feed');
                 }
             }
         }, 1);
