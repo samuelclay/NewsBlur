@@ -93,14 +93,15 @@ class FetchFeed:
                           self.feed.title[:30]))
             return FEED_OK, self.fpf
         
-        if 'gdata.youtube.com' in address or 'youtube.com/feeds/videos.xml?user=' in address:
+        if 'youtube.com' in address:
             youtube_feed = self.fetch_youtube(address)
             if not youtube_feed:
                 logging.debug(u'   ***> [%-30s] ~FRYouTube fetch failed: %s.' % 
                               (self.feed.title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(youtube_feed)
-        else:
+
+        if not self.fpf:
             try:
                 self.fpf = feedparser.parse(address,
                                             agent=USER_AGENT,
@@ -130,9 +131,12 @@ class FetchFeed:
         return identity
     
     def fetch_youtube(self, address):
+        username = None
+        channel_id = None
+        
         if 'gdata.youtube.com' in address:
             try:
-                username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address)
+                username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/', address)
                 if not username_groups:
                     return
                 username = username_groups.group(1)
@@ -146,8 +150,28 @@ class FetchFeed:
                 username = username_groups.group(1)
             except IndexError:
                 return            
+        elif 'youtube.com/feeds/videos.xml?channel_id=' in address:
+            try:
+                channel_groups = re.search('youtube.com/feeds/videos.xml\?channel_id=([-_\w]+)', address)
+                if not channel_groups:
+                    return
+                channel_id = channel_groups.group(1)
+            except IndexError:
+                return            
         
-        video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
+        if channel_id:
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id)
+            channel_json = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s" %
+                                       (channel_id, settings.YOUTUBE_API_KEY))
+            channel = json.decode(channel_json.content)
+            username = channel['items'][0]['snippet']['title']
+            description = channel['items'][0]['snippet']['description']
+        elif username:
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
+            description = "YouTube videos uploaded by %s" % username
+        else:
+            return
+            
         if video_ids_xml.status_code != 200:
             return
             
@@ -163,7 +187,7 @@ class FetchFeed:
         data = {}
         data['title'] = "%s's YouTube Videos" % username
         data['link'] = video_ids_soup.find('author').find('uri').getText()
-        data['description'] = "YouTube videos uploaded by %s" % username
+        data['description'] = description
         data['lastBuildDate'] = datetime.datetime.utcnow()
         data['generator'] = 'NewsBlur YouTube API v3 Decrapifier - %s' % settings.NEWSBLUR_URL
         data['docs'] = None
@@ -184,7 +208,7 @@ class FetchFeed:
                 thumbnail['url'] if thumbnail else "",
             )
 
-            link = "http://www.youtube.com/watch?v=%s&feature=youtube_gdata" % video['id']
+            link = "http://www.youtube.com/watch?v=%s" % video['id']
             story_data = {
                 'title': video['snippet']['title'],
                 'link': link,
