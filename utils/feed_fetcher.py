@@ -21,7 +21,7 @@ from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
 # from utils import feedparser
 from utils import feedparser
-from utils.story_functions import pre_process_story, strip_tags
+from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
 from BeautifulSoup import BeautifulSoup
@@ -176,11 +176,11 @@ class FetchFeed:
                 thumbnail = video['snippet']['thumbnails'].get('high')
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
-            content = """<div class="NB-youtube-player">%s</iframe></div>
+            content = """<div class="NB-youtube-player"><iframe allowfullscreen="true" src="%s"></iframe></div>
                          <div class="NB-youtube-description">%s</div>
                          <img src="%s" style="display:none" />""" % (
-                video['player']['embedHtml'],
-                linebreaks(video['snippet']['description']),
+                ("http://www.youtube.com/embed/" + video['id']),
+                linkify(linebreaks(video['snippet']['description'])),
                 thumbnail['url'] if thumbnail else "",
             )
 
