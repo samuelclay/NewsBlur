@@ -2722,6 +2722,10 @@ body {
     max-width: 99% !important;
 }
 
+.NB-feed-story .NB-youtube-stats {
+    margin-top: 8px;
+}
+
 .NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
 }

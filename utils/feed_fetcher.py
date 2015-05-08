@@ -10,6 +10,7 @@ import pymongo
 import re
 import requests
 import dateutil.parser
+import isodate
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -180,13 +181,14 @@ class FetchFeed:
         for video_id in video_ids_soup.findAll('yt:videoid'):
             video_ids.append(video_id.getText())
         
-        videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=player%%2Csnippet&id=%s&key=%s" %
+        videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=contentDetails%%2Csnippet&id=%s&key=%s" %
              (','.join(video_ids), settings.YOUTUBE_API_KEY))
         videos = json.decode(videos_json.content)
-
+        channel_url = video_ids_soup.find('author').find('uri').getText()
+        
         data = {}
         data['title'] = "%s's YouTube Videos" % username
-        data['link'] = video_ids_soup.find('author').find('uri').getText()
+        data['link'] = channel_url
         data['description'] = description
         data['lastBuildDate'] = datetime.datetime.utcnow()
         data['generator'] = 'NewsBlur YouTube API v3 Decrapifier - %s' % settings.NEWSBLUR_URL
@@ -200,10 +202,26 @@ class FetchFeed:
                 thumbnail = video['snippet']['thumbnails'].get('high')
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
+            duration_sec = isodate.parse_duration(video['contentDetails']['duration']).seconds
+            if duration_sec >= 3600:
+                hours = (duration_sec / 3600)
+                minutes = (duration_sec - (hours*3600)) / 60
+                seconds = duration_sec - (hours*3600) - (minutes*60)
+                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
+            else:
+                minutes = duration_sec / 60
+                seconds = duration_sec - (minutes*60)
+                duration = "%s:%s" % ('{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
             content = """<div class="NB-youtube-player"><iframe allowfullscreen="true" src="%s"></iframe></div>
+                         <div class="NB-youtube-stats"><small>
+                             <b>From:</b> <a href="%s">%s</a><br />
+                             <b>Duration:</b> %s<br />
+                         </small></div><hr>
                          <div class="NB-youtube-description">%s</div>
                          <img src="%s" style="display:none" />""" % (
-                ("http://www.youtube.com/embed/" + video['id']),
+                ("https://www.youtube.com/embed/" + video['id']),
+                channel_url, username,
+                duration,
                 linkify(linebreaks(video['snippet']['description'])),
                 thumbnail['url'] if thumbnail else "",
             )
