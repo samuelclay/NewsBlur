@@ -256,7 +256,7 @@ def setup_db(engine=None, skip_common=False):
     elif engine == "postgres_slave":
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
-        # setup_mongo()
+        setup_mongo()
         setup_mongo_mms()
         setup_mongo_backups()
     elif engine == "redis":
@@ -294,7 +294,7 @@ def setup_task_image():
     config_pgbouncer()
     pull()
     pip()
-    deploy()
+    deploy(reload=True)
     done()
 
 # ==================
