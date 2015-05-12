@@ -11,6 +11,7 @@ import re
 import requests
 import dateutil.parser
 import isodate
+import urlparse
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -145,18 +146,17 @@ class FetchFeed:
                 return
         elif 'youtube.com/feeds/videos.xml?user=' in address:
             try:
-                username_groups = re.search('youtube.com/feeds/videos.xml\?user=(\w+)', address)
-                if not username_groups:
-                    return
-                username = username_groups.group(1)
+                username = urlparse.parse_qs(urlparse.urlparse(address).query)['user'][0]
             except IndexError:
                 return            
         elif 'youtube.com/feeds/videos.xml?channel_id=' in address:
             try:
-                channel_groups = re.search('youtube.com/feeds/videos.xml\?channel_id=([-_\w]+)', address)
-                if not channel_groups:
-                    return
-                channel_id = channel_groups.group(1)
+                channel_id = urlparse.parse_qs(urlparse.urlparse(address).query)['channel_id'][0]
+            except IndexError:
+                return            
+        elif 'youtube.com/playlist' in address:
+            try:
+                list_id = urlparse.parse_qs(urlparse.urlparse(address).query)['list'][0]
             except IndexError:
                 return            
         
@@ -167,27 +167,39 @@ class FetchFeed:
             channel = json.decode(channel_json.content)
             username = channel['items'][0]['snippet']['title']
             description = channel['items'][0]['snippet']['description']
+        elif list_id:
+            playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s" %
+                                       (list_id, settings.YOUTUBE_API_KEY))
+            playlist = json.decode(playlist_json.content)
+            username = playlist['items'][0]['snippet']['title']
+            description = playlist['items'][0]['snippet']['description']
+            channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
             video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
             description = "YouTube videos uploaded by %s" % username
         else:
             return
-            
-        if video_ids_xml.status_code != 200:
-            return
-            
-        video_ids_soup = BeautifulSoup(video_ids_xml.content)
-        video_ids = []
-        for video_id in video_ids_soup.findAll('yt:videoid'):
-            video_ids.append(video_id.getText())
+                    
+        if list_id:
+            playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&key=%s" %
+                                       (list_id, settings.YOUTUBE_API_KEY))
+            playlist = json.decode(playlist_json.content)
+            video_ids = [video['snippet']['resourceId']['videoId'] for video in playlist['items']]
+        else:    
+            if video_ids_xml.status_code != 200:
+                return
+            video_ids_soup = BeautifulSoup(video_ids_xml.content)
+            channel_url = video_ids_soup.find('author').find('uri').getText()
+            video_ids = []
+            for video_id in video_ids_soup.findAll('yt:videoid'):
+                video_ids.append(video_id.getText())
         
         videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=contentDetails%%2Csnippet&id=%s&key=%s" %
              (','.join(video_ids), settings.YOUTUBE_API_KEY))
         videos = json.decode(videos_json.content)
-        channel_url = video_ids_soup.find('author').find('uri').getText()
-        
+
         data = {}
-        data['title'] = "%s's YouTube Videos" % username
+        data['title'] = ("%s's YouTube Videos" % username if 'Uploads' not in username else username)
         data['link'] = channel_url
         data['description'] = description
         data['lastBuildDate'] = datetime.datetime.utcnow()
