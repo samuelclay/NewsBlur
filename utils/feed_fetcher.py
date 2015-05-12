@@ -135,6 +135,7 @@ class FetchFeed:
     def fetch_youtube(self, address):
         username = None
         channel_id = None
+        list_id = None
         
         if 'gdata.youtube.com' in address:
             try:
