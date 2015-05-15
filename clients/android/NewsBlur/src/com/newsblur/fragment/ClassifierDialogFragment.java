@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+import butterknife.OnClick;
+
 import com.newsblur.R;
 import com.newsblur.domain.Classifier;
 import com.newsblur.util.FeedUtils;
@@ -25,12 +29,16 @@ public class ClassifierDialogFragment extends DialogFragment {
 	private static final String CALLBACK = "callback";
 	private static final String CLASSIFIER = "classifier";
 
+    @FindView(R.id.tag_negative) ImageView classifyNegative;
+    @FindView(R.id.tag_positive) ImageView classifyPositive;
+    @FindView(R.id.dialog_message) TextView message;
+
 	private String key, feedId;
 	private Classifier classifier;
 	private int classifierType;
 
 	private TagUpdateCallback tagCallback;
-
+    private Map<String,Integer> typeHashMap;
 
 	public static ClassifierDialogFragment newInstance(TagUpdateCallback callbackInterface, final String feedId, final Classifier classifier, final String key, final int classifierType) {
 		ClassifierDialogFragment frag = new ClassifierDialogFragment();
@@ -64,49 +72,10 @@ public class ClassifierDialogFragment extends DialogFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		View v = inflater.inflate(R.layout.fragment_classify_dialog, container, false);
-		final TextView message = (TextView) v.findViewById(R.id.dialog_message);
-		message.setText(key);
+        ButterKnife.bind(this, v);
 
-		final ImageView classifyPositive = (ImageView) v.findViewById(R.id.tag_positive);
-		final ImageView classifyNegative = (ImageView) v.findViewById(R.id.tag_negative);
+		typeHashMap = classifier.getMapForType(classifierType);
 
-		final Map<String,Integer> typeHashMap = classifier.getMapForType(classifierType);
-		
-		setupTypeUI(classifyPositive, classifyNegative, typeHashMap);
-		
-		classifyNegative.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-                int classifierAction = (typeHashMap.containsKey(key) && typeHashMap.get(key) == Classifier.DISLIKE) ? Classifier.CLEAR_DISLIKE : Classifier.DISLIKE;
-                FeedUtils.updateClassifier(feedId, key, classifier, classifierType, classifierAction, getActivity());
-                tagCallback.updateTagView(key, classifierType,classifierAction);
-				ClassifierDialogFragment.this.dismiss();
-			}
-		});
-		
-		message.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-                FeedUtils.updateClassifier(feedId, key, classifier, classifierType, Classifier.CLEAR_LIKE, getActivity());
-                tagCallback.updateTagView(key, classifierType, Classifier.CLEAR_LIKE);	
-				ClassifierDialogFragment.this.dismiss();
-			}
-		});
-
-		classifyPositive.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-                int classifierAction = (typeHashMap.containsKey(key) && typeHashMap.get(key) == Classifier.LIKE) ? Classifier.CLEAR_LIKE : Classifier.LIKE;
-                FeedUtils.updateClassifier(feedId, key, classifier, classifierType, classifierAction, getActivity());
-                tagCallback.updateTagView(key, classifierType,classifierAction);
-				ClassifierDialogFragment.this.dismiss();
-			}
-		});
-
-		return v;
-	}
-
-	private void setupTypeUI(final ImageView classifyPositive, final ImageView classifyNegative, final Map<String, Integer> typeHashMap) {
 		if (typeHashMap != null && typeHashMap.containsKey(key)) {
 			switch (typeHashMap.get(key)) {
 			case Classifier.LIKE:
@@ -116,8 +85,33 @@ public class ClassifierDialogFragment extends DialogFragment {
 				classifyNegative.setImageResource(R.drawable.tag_negative_already);
 				break;	
 			}
-		}
+		} 
+
+		message.setText(key);
+
+		return v;
 	}
+
+    @OnClick(R.id.tag_negative) void onClickNegative() {
+        int classifierAction = (typeHashMap.containsKey(key) && typeHashMap.get(key) == Classifier.DISLIKE) ? Classifier.CLEAR_DISLIKE : Classifier.DISLIKE;
+        FeedUtils.updateClassifier(feedId, key, classifier, classifierType, classifierAction, getActivity());
+        tagCallback.updateTagView(key, classifierType,classifierAction);
+        ClassifierDialogFragment.this.dismiss();
+    }
+
+    @OnClick(R.id.tag_positive) void onClickPositive() {
+        int classifierAction = (typeHashMap.containsKey(key) && typeHashMap.get(key) == Classifier.LIKE) ? Classifier.CLEAR_LIKE : Classifier.LIKE;
+        FeedUtils.updateClassifier(feedId, key, classifier, classifierType, classifierAction, getActivity());
+        tagCallback.updateTagView(key, classifierType,classifierAction);
+        ClassifierDialogFragment.this.dismiss();
+    }
+
+    @OnClick(R.id.dialog_message) void onClickNeutral() {
+        FeedUtils.updateClassifier(feedId, key, classifier, classifierType, Classifier.CLEAR_LIKE, getActivity());
+        tagCallback.updateTagView(key, classifierType, Classifier.CLEAR_LIKE);	
+        ClassifierDialogFragment.this.dismiss();
+    }
+
 	
 	public interface TagUpdateCallback extends Serializable{
 		public void updateTagView(String value, int classifierType, int classifierAction);
