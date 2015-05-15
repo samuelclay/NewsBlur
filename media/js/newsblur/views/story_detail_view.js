@@ -90,6 +90,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.toggle_intelligence();
         this.generate_gradients();
         this.render_comments();
+        this.attach_handlers();
         
         return this;
     },

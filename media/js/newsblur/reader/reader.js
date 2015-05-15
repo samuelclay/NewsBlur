@@ -1621,12 +1621,16 @@
             } else if (story_layout == 'split') {
                 NEWSBLUR.app.story_list.render();
                 if (this.active_story) {
+                    NEWSBLUR.app.story_list.show_only_selected_story();
                     this.active_story.story_title_view.toggle_selected();
+                    this.active_story.story_view.toggle_selected();
                 }
             } else if (story_layout == 'full') {
                 NEWSBLUR.app.story_list.render();
                 if (this.active_story) {
+                    NEWSBLUR.app.story_list.show_only_selected_story();
                     this.active_story.story_title_view.toggle_selected();
+                    this.active_story.story_view.toggle_selected();
                 }
             }
             
