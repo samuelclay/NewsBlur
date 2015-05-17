@@ -27,6 +27,9 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+
 import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
@@ -73,11 +76,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected final Object STORIES_MUTEX = new Object();
 	protected Cursor stories;
 
-    private View contentView; // we use this a ton, so cache it
-	protected ViewPager pager;
-    protected Button overlayLeft, overlayRight;
-    protected ProgressBar overlayProgress, overlayProgressRight, overlayProgressLeft;
-    protected Button overlayText, overlaySend;
+    @FindView(android.R.id.content) View contentView; // we use this a ton, so cache it
+    @FindView(R.id.reading_overlay_left) Button overlayLeft;
+    @FindView(R.id.reading_overlay_right) Button overlayRight;
+    @FindView(R.id.reading_overlay_progress) ProgressBar overlayProgress;
+    @FindView(R.id.reading_overlay_progress_right) ProgressBar overlayProgressRight;
+    @FindView(R.id.reading_overlay_progress_left) ProgressBar overlayProgressLeft;
+    @FindView(R.id.reading_overlay_text) Button overlayText;
+    @FindView(R.id.reading_overlay_send) Button overlaySend;
+    
+    ViewPager pager;
+
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     private boolean stopLoading;
@@ -104,14 +113,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
-        this.contentView = findViewById(android.R.id.content);
-        this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
-        this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
-        this.overlayProgress = (ProgressBar) findViewById(R.id.reading_overlay_progress);
-        this.overlayProgressRight = (ProgressBar) findViewById(R.id.reading_overlay_progress_right);
-        this.overlayProgressLeft = (ProgressBar) findViewById(R.id.reading_overlay_progress_left);
-        this.overlayText = (Button) findViewById(R.id.reading_overlay_text);
-        this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
+        ButterKnife.bind(this);
 
 		fragmentManager = getFragmentManager();
 
@@ -221,7 +223,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
 	private void setupPager() {
-		pager = (ViewPager) findViewById(R.id.reading_pager);
+        pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
         if (PrefsUtils.isLightThemeSelected(this)) {
             pager.setPageMarginDrawable(R.drawable.divider_light);

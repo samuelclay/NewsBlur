@@ -24,6 +24,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
@@ -43,7 +46,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public static int ITEMLIST_LOADER = 0x01;
 
     protected ItemsList activity;
-	protected ListView itemList;
+	@FindView(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter currentState;
@@ -55,7 +58,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     // loading indicator for when stories are present and fresh (at bottom of list)
     protected ProgressThrobber footerProgressView;
     // loading indicator for when no stories are loaded yet (instead of list)
-    protected ProgressThrobber emptyProgressView;
+    @FindView(R.id.empty_view_loading_throb) ProgressThrobber emptyProgressView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -68,8 +71,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-        emptyProgressView = (ProgressThrobber) v.findViewById(R.id.empty_view_loading_throb);
+        ButterKnife.bind(this, v);
+
         emptyProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                     getResources().getColor(R.color.refresh_2),
                                     getResources().getColor(R.color.refresh_3),
@@ -148,10 +151,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     }
 
     private void updateLoadingMessage() {
-        View v = this.getView();
-        if (v == null) return; // we might have beat construction?
-
-        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         if (itemList == null) {
             Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
             return;
@@ -168,10 +167,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     }
 
     public void scrollToTop() {
-        View v = this.getView();
-        if (v == null) return; // we might have beat construction?
-
-        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
         if (itemList == null) {
             Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
             return;
