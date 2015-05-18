@@ -205,7 +205,8 @@ class Profile(models.Model):
             sub.active = False
             try:
                 sub.save()
-                sub.feed.setup_feed_for_premium_subscribers()
+                # Don't bother recalculating feed's subs, as it will do that on next fetch
+                # sub.feed.setup_feed_for_premium_subscribers()
             except (IntegrityError, Feed.DoesNotExist):
                 pass
         
