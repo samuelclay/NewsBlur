@@ -279,9 +279,12 @@ class Profile(models.Model):
                     oldest_recent_payment_date = payment.payment_date
         
         if oldest_recent_payment_date:
-            self.premium_expire = (oldest_recent_payment_date +
-                                   datetime.timedelta(days=365*recent_payments_count))
-            self.save()
+            new_premium_expire = (oldest_recent_payment_date +
+                                  datetime.timedelta(days=365*recent_payments_count))
+            # Only move premium expire forward, never earlier. Also set expiration if not premium.
+            if (not self.is_premium and not self.premium_expire) or new_premium_expire > self.premium_expire:
+                self.premium_expire = new_premium_expire
+                self.save()
 
         logging.user(self.user, "~BY~SN~FWFound ~SB~FB%s paypal~FW~SN and ~SB~FC%s stripe~FW~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
                      len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
@@ -647,21 +650,26 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
-        
-    def send_premium_expire_grace_period_email(self, force=False):
-        if not self.user.email:
-            logging.user(self.user, "~FM~SB~FRNot~FM~SN sending premium expire grace for user: %s" % (self.user))
-            return
-
+    
+    def grace_period_email_sent(self, force=False):
         emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
                                                 email_type='premium_expire_grace')
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
             if email.date_sent > day_ago and not force:
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
-                return
+                return True
         
-        self.premium_expire = datetime.datetime.now()
+    def send_premium_expire_grace_period_email(self, force=False):
+        if not self.user.email:
+            logging.user(self.user, "~FM~SB~FRNot~FM~SN sending premium expire grace for user: %s" % (self.user))
+            return
+
+        if self.grace_period_email_sent(force=force):
+            return
+            
+        if self.premium_expire < datetime.datetime.now():
+            self.premium_expire = datetime.datetime.now()
         self.save()
         
         delta      = datetime.datetime.now() - self.last_seen_on

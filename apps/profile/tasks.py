@@ -22,27 +22,28 @@ class PremiumExpire(Task):
     
     def run(self, **kwargs):
         # Get expired but grace period users
-        five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
+        two_days_ago = datetime.datetime.now() - datetime.timedelta(days=2)
+        thirty_days_ago = datetime.datetime.now() - datetime.timedelta(days=30)
         expired_profiles = Profile.objects.filter(is_premium=True, 
-                                                  premium_expire__lte=five_days_ago)
-        logging.debug(" ---> %s users have expired premiums, syncing payments..." % expired_profiles.count())
-        for profile in expired_profiles:
-            profile.setup_premium_history()
-
-        expired_profiles = Profile.objects.filter(is_premium=True, 
-                                                  premium_expire__lte=five_days_ago)
+                                                  premium_expire__lte=two_days_ago,
+                                                  premium_expire__gt=thirty_days_ago)
         logging.debug(" ---> %s users have expired premiums, emailing grace..." % expired_profiles.count())
         for profile in expired_profiles:
-            profile.send_premium_expire_grace_period_email()
+            if profile.grace_period_email_sent():
+                continue
+            profile.setup_premium_history()
+            if profile.premium_expire < two_days_ago:
+                profile.send_premium_expire_grace_period_email()
             
         # Get fully expired users
-        thirty_days_ago = datetime.datetime.now() - datetime.timedelta(days=30)
         expired_profiles = Profile.objects.filter(is_premium=True,
                                                   premium_expire__lte=thirty_days_ago)
         logging.debug(" ---> %s users have expired premiums, deactivating and emailing..." % expired_profiles.count())
         for profile in expired_profiles:
-            profile.send_premium_expire_email()
-            profile.deactivate_premium()
+            profile.setup_premium_history()
+            if profile.premium_expire < thirty_days_ago:
+                profile.send_premium_expire_email()
+                profile.deactivate_premium()
 
 
 class ActivateNextNewUser(Task):
