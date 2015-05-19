@@ -9,6 +9,7 @@ import struct
 import operator
 import gzip
 import datetime
+import requests
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from boto.s3.key import Key
 from StringIO import StringIO
@@ -186,6 +187,9 @@ class IconImporter(object):
         else:
             content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
+        if not url:
+            content = requests.get(self.feed.feed_link).content
+            url = self._url_from_html(content)
         if url:
             image, image_file = self.get_image_from_url(url)
         return image, image_file, url
