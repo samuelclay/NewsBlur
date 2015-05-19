@@ -5089,6 +5089,10 @@ form.opml_import_form input {
   background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 7px;
   background-size: 16px;
 }
+.NB-splash-info .NB-splash-links .NB-splash-link-facebook a:hover {
+  background: transparent url('/media/embed/reader/facebook.png') no-repeat 0 6px;
+  background-size: 16px;
+}
 
 .NB-splash-info .NB-splash-links a {
     font-weight: bold;
