@@ -1947,7 +1947,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [appDelegate renameFeed:newTitle];
         }
         [self.view setNeedsDisplay];
-        self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            appDelegate.storyPageControl.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+        } else {
+            self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+        }
         [self.navigationController.view setNeedsDisplay];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         

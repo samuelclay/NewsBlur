@@ -545,7 +545,7 @@
     
     if (suppressRedraw) return;
     
-    NSInteger wasIndex = pageController.pageIndex;
+    //    NSInteger wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
 //    NSLog(@"Applied Index to %@: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d] %@", pageController, (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds, NSStringFromCGRect(self.scrollView.frame));
     
