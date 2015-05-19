@@ -455,7 +455,7 @@ def refund_premium(request):
 def upgrade_premium(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    upgraded = user.profile.activate_premium()
+    upgraded = user.profile.activate_premium(never_expire=True)
     
     return {'code': 1 if upgraded else -1}    
 

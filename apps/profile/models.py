@@ -163,7 +163,7 @@ class Profile(models.Model):
         if not feed_opens and not feed_count:
             return True
         
-    def activate_premium(self):
+    def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
         EmailNewPremium.delay(user_id=self.user.pk)
         
@@ -191,6 +191,10 @@ class Profile(models.Model):
         
         self.queue_new_feeds()
         self.setup_premium_history()
+        
+        if never_expire:
+            self.premium_expire = None
+            self.save()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
         
