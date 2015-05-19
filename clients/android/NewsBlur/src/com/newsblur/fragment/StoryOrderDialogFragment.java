@@ -1,25 +1,29 @@
 package com.newsblur.fragment;
 
-
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RadioButton;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+import butterknife.OnClick;
+
 import com.newsblur.R;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 
-public class StoryOrderDialogFragment extends DialogFragment implements OnClickListener {
+public class StoryOrderDialogFragment extends DialogFragment {
 	
 	private static String CURRENT_ORDER = "currentOrder";
 	private StoryOrder currentValue;
+    @FindView(R.id.radio_newest) RadioButton newestButton;
+    @FindView(R.id.radio_oldest) RadioButton oldestButton;
 
 	public static StoryOrderDialogFragment newInstance(StoryOrder currentValue) {
 		StoryOrderDialogFragment dialog = new StoryOrderDialogFragment();
@@ -39,11 +43,9 @@ public class StoryOrderDialogFragment extends DialogFragment implements OnClickL
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		currentValue = (StoryOrder) getArguments().getSerializable(CURRENT_ORDER);
 		View v = inflater.inflate(R.layout.storyorder_dialog, null);
-		RadioButton newestButton = (RadioButton) v.findViewById(R.id.radio_newest);
-		newestButton.setOnClickListener(this);
+        ButterKnife.bind(this, v);
+
 		newestButton.setChecked(currentValue == StoryOrder.NEWEST);
-		RadioButton oldestButton = (RadioButton) v.findViewById(R.id.radio_oldest);
-		oldestButton.setOnClickListener(this);
 		oldestButton.setChecked(currentValue == StoryOrder.OLDEST);
 		
 		getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
@@ -53,19 +55,18 @@ public class StoryOrderDialogFragment extends DialogFragment implements OnClickL
 		return v;
 	}
 
-    @Override
-    public void onClick(View v) {
-        StoryOrderChangedListener listener = (StoryOrderChangedListener)getActivity();
-        if (v.getId() == R.id.radio_oldest) {
-            if (currentValue == StoryOrder.NEWEST) {
-                listener.storyOrderChanged(StoryOrder.OLDEST);
-            }
-        } else {
-            if (currentValue == StoryOrder.OLDEST) {
-                listener.storyOrderChanged(StoryOrder.NEWEST);
-            }
+    @OnClick(R.id.radio_newest) void selectNewest() {
+        if (currentValue != StoryOrder.NEWEST) {
+            ((StoryOrderChangedListener) getActivity()).storyOrderChanged(StoryOrder.NEWEST);
         }
-        
         dismiss();
     }
+
+    @OnClick(R.id.radio_oldest) void selectOldest() {
+        if (currentValue != StoryOrder.OLDEST) {
+            ((StoryOrderChangedListener) getActivity()).storyOrderChanged(StoryOrder.OLDEST);
+        }
+        dismiss();
+    }
+
 }
