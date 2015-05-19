@@ -151,7 +151,7 @@
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
     }
     if (self.webView.scrollView.contentOffset.x == 0 &&
-        velocity.x > 0 && abs(velocity.y) < 200) {
+        velocity.x > 0 && fabs(velocity.y) < 200) {
         return NO;
     }
     
@@ -164,7 +164,7 @@
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
     }
     if (self.webView.scrollView.contentOffset.x == 0 &&
-        velocity.x > 0 && abs(velocity.y) < 200) {
+        velocity.x > 0 && fabs(velocity.y) < 200) {
         return YES;
     }
     return NO;
@@ -184,7 +184,7 @@
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
     }
     if (self.webView.scrollView.contentOffset.x == 0 &&
-        velocity.x > 0 && abs(velocity.y) < 200) {
+        velocity.x > 0 && fabs(velocity.y) < 200) {
         return YES;
     }
     return NO;

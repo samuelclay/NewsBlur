@@ -1947,8 +1947,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [appDelegate renameFeed:newTitle];
         }
         [self.view setNeedsDisplay];
+        self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
         [self.navigationController.view setNeedsDisplay];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
+        
     }];
     [request setTimeOutSeconds:30];
     [request setTag:[[storiesCollection.activeFeed objectForKey:@"id"] intValue]];

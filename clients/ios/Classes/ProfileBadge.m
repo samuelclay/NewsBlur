@@ -215,7 +215,7 @@
         
         UIImage *locationIcon = [UIImage imageNamed:@"7-location-place.png"];
         UIImageView *locationIconView = [[UIImageView alloc] initWithImage:locationIcon];
-        locationIconView.Frame = CGRectMake(kTopBadgeTextXCoordinate,
+        locationIconView.frame = CGRectMake(kTopBadgeTextXCoordinate,
                                             yCoordinatePointer + 2, 
                                             16, 
                                             16);
