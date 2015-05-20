@@ -9886,6 +9886,10 @@ form.opml_import_form input {
     margin: 12px 0;
     width: 170px;
 }
+.NB-static-about .NB-about-tagline img {
+    border: 1px solid #505050;
+    width: 500px;
+}
 
 .NB-static-faq .NB-link-about-faq {
   float: right;
