@@ -287,7 +287,8 @@ class Profile(models.Model):
             new_premium_expire = (oldest_recent_payment_date +
                                   datetime.timedelta(days=365*recent_payments_count))
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
-            if (not self.is_premium and not self.premium_expire) or new_premium_expire > self.premium_expire:
+            if ((check_premium and not self.premium_expire) or 
+                (self.premium_expire and new_premium_expire > self.premium_expire)):
                 self.premium_expire = new_premium_expire
                 self.save()
 
