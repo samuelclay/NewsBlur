@@ -594,9 +594,18 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             unreadSearchStarted = true;
         }
 
-        int candidate = 0;
         boolean unreadFound = false;
+        // start searching just after the current story
+        int candidate = pager.getCurrentItem() + 1;
         unreadSearch:while (!unreadFound) {
+            // if we've reached the end of the list, loop back to the beginning
+            if (candidate >= readingAdapter.getCount()) {
+                candidate = 0;
+            }
+            // if we have looped all the way around to the story we are on, there aren't any left
+            if (candidate == pager.getCurrentItem()) {
+                break unreadSearch;
+            }
             Story story = readingAdapter.getStory(candidate);
             if (this.stopLoading) {
                 // this activity was ended before we finished. just stop.
@@ -605,13 +614,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             } 
             // iterate through the stories in our cursor until we find an unread one
             if (story != null) {
-                if ((candidate == pager.getCurrentItem()) || (story.read) ) {
+                if (story.read) {
                     candidate++;
                     continue unreadSearch;
                 } else {
                     unreadFound = true;
                 }
             }
+            // if we didn't continue or break, the cursor probably changed out from under us, so stop.
             break unreadSearch;
         }
 
@@ -634,7 +644,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             } else {
                 // trigger a check to see if there are any more to search before proceeding. By leaving the
                 // unreadSearchActive flag high, this method will be called again when a new cursor is loaded
-                this.checkStoryCount(candidate+1);
+                this.checkStoryCount(readingAdapter.getCount()+1);
             }
         }
     }
