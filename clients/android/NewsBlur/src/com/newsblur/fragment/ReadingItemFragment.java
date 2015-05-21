@@ -290,7 +290,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 		for (String userId : story.sharedUserIds) {
 			if (TextUtils.equals(userId, user.id)) {
-				shareButton.setText(R.string.edit);
+				shareButton.setText(R.string.already_shared);
 				break;
 			}
 		}

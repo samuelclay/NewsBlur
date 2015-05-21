@@ -22,7 +22,6 @@
     
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching text…</string>
-    <string name="edit">Shared</string>
     
     <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
     <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
@@ -57,10 +56,13 @@
 	<string name="shared">Story shared</string>
 	<string name="error_sharing">There was an problem sharing this story.</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-	
+    <string name="share_this">SHARE THIS STORY</string>
+    <string name="already_shared">SHARED</string>
+    <string name="share_this_story">Share this story</string>
+    <string name="update_shared">Update comment</string>
+
 	<string name="save_this">SAVE THIS STORY</string>
 	<string name="unsave_this">UNSAVE THIS STORY</string>
-    <string name="share_this">SHARE THIS STORY</string>
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
@@ -145,7 +147,6 @@
     <string name="add_facebook">Add Facebook friends</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
-    <string name="share_this_story">Share this story</string>
     <string name="comment_favourited">Comment favorited</string>
     <string name="error_liking_comment">Error favoriting comment</string>
     <string name="public_comment_count">%d PUBLIC COMMENTS</string>

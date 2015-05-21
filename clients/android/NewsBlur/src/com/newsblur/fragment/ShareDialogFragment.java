@@ -87,7 +87,7 @@ public class ShareDialogFragment extends DialogFragment {
 
         int positiveButtonText = R.string.share_this_story;
         if (hasBeenShared) {
-            positiveButtonText = R.string.edit;
+            positiveButtonText = R.string.update_shared;
             if (previousComment != null ) {
                 commentEditText.setText(previousComment.commentText);
             }
