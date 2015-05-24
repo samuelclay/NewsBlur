@@ -1,8 +1,8 @@
-package com.newsblur.network.domain;
+package com.newsblur.domain;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ActivitiesResponse {
+public class ActivityDetails {
 	
 	public String category;
 	public String content;

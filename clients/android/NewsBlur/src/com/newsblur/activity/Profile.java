@@ -12,7 +12,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileActivityFragment;
 import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.ActivitiesResponse;
+import com.newsblur.domain.ActivityDetails;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.PrefsUtils;
 
@@ -72,7 +72,7 @@ public class Profile extends NbActivity {
 
 	private class LoadUserTask extends AsyncTask<Void, Void, Void> {
 		private UserDetails user;
-		private ActivitiesResponse[] activities;
+		private ActivityDetails[] activities;
 
 		@Override
 		protected void onPreExecute() {

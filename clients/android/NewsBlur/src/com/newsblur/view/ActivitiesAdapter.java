@@ -20,11 +20,11 @@ import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Profile;
 import com.newsblur.domain.UserDetails;
-import com.newsblur.network.domain.ActivitiesResponse;
+import com.newsblur.domain.ActivityDetails;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 
-public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
+public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
@@ -34,13 +34,13 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 	private Context context;
 	private UserDetails currentUserDetails;
 	
-	public ActivitiesAdapter(final Context context, final ActivitiesResponse[] activities, UserDetails user) {
+	public ActivitiesAdapter(final Context context, final ActivityDetails[] activities, UserDetails user) {
 		super(context, R.id.row_activity_text);
 		inflater = LayoutInflater.from(context);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.context = context;
 		
-		for (ActivitiesResponse response : activities) {
+		for (ActivityDetails response : activities) {
 			add(response);
 		}
 		
@@ -71,7 +71,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		} else {
 			view = convertView;
 		}
-		final ActivitiesResponse activity = getItem(position);
+		final ActivityDetails activity = getItem(position);
 		SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 		
 		ClickableSpan usernameClick = new ClickableSpan() {
