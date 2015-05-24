@@ -92,6 +92,7 @@
     <string name="profile_shared_story">Shared the story</string>
     <string name="profile_button_follow">Follow</string>
     <string name="profile_button_unfollow">Following</string>
+    <string name="profile_subscribed_to">You subcribed to</string>
     
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>

@@ -13,6 +13,7 @@ import com.newsblur.fragment.ProfileActivityFragment;
 import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.domain.ActivityDetails;
+import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.PrefsUtils;
 
@@ -84,9 +85,10 @@ public class Profile extends NbActivity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			if (!TextUtils.isEmpty(userId)) {
-				profileResponse = apiManager.getUser(getIntent().getStringExtra(USER_ID));
+				String intentUserId  = getIntent().getStringExtra(USER_ID);
+				profileResponse = apiManager.getUser(intentUserId);
 				user = profileResponse.user;
-				activities = profileResponse.activities;
+				activities = apiManager.getActivities(intentUserId).activities;
 			} else {
 				apiManager.updateUserProfile();
 				user = PrefsUtils.getUserDetails(Profile.this);
@@ -94,8 +96,9 @@ public class Profile extends NbActivity {
 				// have failed then user.id == null would cause a force close
 				if (user.id != null) {
 					profileResponse = apiManager.getUser(user.id);
-					if (profileResponse != null) {
-						activities = profileResponse.activities;
+					ActivitiesResponse activitiesResponse = apiManager.getActivities(user.id);
+					if (activitiesResponse != null) {
+						activities = activitiesResponse.activities;
 					}
 				}
 			}

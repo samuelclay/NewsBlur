@@ -26,6 +26,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
+import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
@@ -432,6 +433,18 @@ public class APIManager {
 		if (!response.isError()) {
 			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
 			return profileResponse;
+		} else {
+			return null;
+		}
+	}
+
+	public ActivitiesResponse getActivities(String userId) {
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_USER_ID, userId);
+		final APIResponse response = get(APIConstants.URL_USER_ACTIVITIES, values);
+		if (!response.isError()) {
+			ActivitiesResponse activitiesResponse = (ActivitiesResponse) response.getResponse(gson, ActivitiesResponse.class);
+			return activitiesResponse;
 		} else {
 			return null;
 		}

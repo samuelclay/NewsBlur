@@ -16,7 +16,8 @@ public class APIConstants {
 	public static final String URL_MY_PROFILE = NEWSBLUR_URL + "/social/load_user_profile";
 	public static final String URL_FOLLOW = NEWSBLUR_URL + "/social/follow";
 	public static final String URL_UNFOLLOW = NEWSBLUR_URL + "/social/unfollow";
-	
+
+	public static final String URL_USER_ACTIVITIES = NEWSBLUR_URL + "/social/activities";
 	public static final String URL_USER_INTERACTIONS = NEWSBLUR_URL + "/social/interactions";
 	public static final String URL_RIVER_STORIES = NEWSBLUR_URL + "/reader/river_stories";
 	public static final String URL_SHARED_RIVER_STORIES = NEWSBLUR_URL + "/social/river_stories";
