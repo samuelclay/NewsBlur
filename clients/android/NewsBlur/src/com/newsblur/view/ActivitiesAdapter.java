@@ -21,6 +21,7 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Profile;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
+import com.newsblur.network.APIConstants;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 
@@ -94,7 +95,9 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		
 		activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
 		// TODO images for each category type
-		if (activity.user != null) {
+		if (TextUtils.equals(activity.category, "feedsub")) {
+			imageLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
+		} else if (activity.user != null) {
 			imageLoader.displayImage(activity.user.photoUrl, imageView);
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
 			imageLoader.displayImage(currentUserDetails.photoUrl, imageView, 10f);
@@ -103,7 +106,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		}
 
 		if (TextUtils.equals(activity.category, "feedsub")) {
-			addFeedsubscriptionContent(activity, stringBuilder, usernameClick);
+			addFeedSubscriptionContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "star")) {
 			addStarContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "signup")) {
@@ -124,13 +127,11 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		return view;
 	}
 
-	private void addFeedsubscriptionContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+	private void addFeedSubscriptionContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(subscribedTo);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.content);
-		stringBuilder.setSpan(darkgray, 0, subscribedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(usernameClick, subscribedTo.length() + 1, subscribedTo.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(highlight, subscribedTo.length() + 1, subscribedTo.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		stringBuilder.setSpan(darkgray, 0, subscribedTo.length() + activity.content.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
 	private void addStarContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {

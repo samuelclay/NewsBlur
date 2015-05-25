@@ -7,6 +7,9 @@ public class ActivityDetails {
 	public String category;
 	public String content;
 	public String title;
+
+	@SerializedName("feed_id")
+	public String feedId;
 	
 	@SerializedName("time_since")
 	public String timeSince;

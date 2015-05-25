@@ -88,4 +88,6 @@ public class APIConstants {
 	
     public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
     public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";
+
+	public static final String S3_URL_FEED_ICONS = "https://s3.amazonaws.com/icons.newsblur.com/";
 }
