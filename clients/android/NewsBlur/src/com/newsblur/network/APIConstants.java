@@ -78,6 +78,7 @@ public class APIConstants {
 	public static final String PARAMETER_INCLUDE_TIMESTAMPS = "include_timestamps";
     public static final String PARAMETER_GLOBAL_FEED = "global_feed";
 	public static final String PARAMETER_INCLUDE_HIDDEN = "include_hidden";
+	public static final String PARAMETER_LIMIT = "limit";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

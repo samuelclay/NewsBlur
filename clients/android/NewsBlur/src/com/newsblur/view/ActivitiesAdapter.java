@@ -57,6 +57,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		signup = resources.getString(R.string.profile_signup);
 		ago = resources.getString(R.string.profile_ago);
 
+		// TODO rename variables
         if (PrefsUtils.isLightThemeSelected(context)) {
             highlight = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
             darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
@@ -76,7 +77,8 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		}
 		final ActivityDetails activity = getItem(position);
 		SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-		
+
+		// TODO handle different links
 		ClickableSpan usernameClick = new ClickableSpan() {
 			@Override
 			public void onClick(View widget) {

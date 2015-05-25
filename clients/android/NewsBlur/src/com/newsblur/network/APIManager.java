@@ -441,6 +441,7 @@ public class APIManager {
 	public ActivitiesResponse getActivities(String userId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
+		values.put(APIConstants.PARAMETER_LIMIT, "10");
 		final APIResponse response = get(APIConstants.URL_USER_ACTIVITIES, values);
 		if (!response.isError()) {
 			ActivitiesResponse activitiesResponse = (ActivitiesResponse) response.getResponse(gson, ActivitiesResponse.class);
