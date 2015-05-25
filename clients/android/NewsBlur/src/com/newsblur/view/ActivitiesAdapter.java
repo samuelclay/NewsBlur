@@ -28,7 +28,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
-	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, likedComment, subscribedTo;
+	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, likedComment, subscribedTo, saved, signup;
 	private ForegroundColorSpan highlight, darkgray;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
@@ -53,6 +53,8 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		sharedStory = resources.getString(R.string.profile_shared_story);
 		withComment = resources.getString(R.string.profile_with_comment);
 		subscribedTo = resources.getString(R.string.profile_subscribed_to);
+		saved = resources.getString(R.string.profile_saved);
+		signup = resources.getString(R.string.profile_signup);
 		ago = resources.getString(R.string.profile_ago);
 
         if (PrefsUtils.isLightThemeSelected(context)) {
@@ -98,10 +100,12 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 			imageView.setImageResource(R.drawable.logo);
 		}
 
-		// TODO signup
-		// TODO star
 		if (TextUtils.equals(activity.category, "feedsub")) {
 			addFeedsubscriptionContent(activity, stringBuilder, usernameClick);
+		} else if (TextUtils.equals(activity.category, "star")) {
+			addStarContent(activity, stringBuilder, usernameClick);
+		} else if (TextUtils.equals(activity.category, "signup")) {
+			addSignupContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "follow")) {
             addFollowContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "comment_like")) {
@@ -125,6 +129,22 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(darkgray, 0, subscribedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(usernameClick, subscribedTo.length() + 1, subscribedTo.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(highlight, subscribedTo.length() + 1, subscribedTo.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	}
+
+	private void addStarContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+		stringBuilder.append(saved);
+		stringBuilder.append(" ");
+		stringBuilder.append(activity.content);
+		stringBuilder.setSpan(darkgray, 0, saved.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		stringBuilder.setSpan(usernameClick, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		stringBuilder.setSpan(highlight, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	}
+
+	private void addSignupContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+		stringBuilder.append(activity.user.username);
+		stringBuilder.append(" ");
+		stringBuilder.append(signup);
+		stringBuilder.setSpan(darkgray, 0, activity.user.username.length() + signup.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
 	private void addFollowContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
@@ -158,7 +178,6 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.append("\"");
 		stringBuilder.setSpan(darkgray, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(usernameClick, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(darkgray, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
