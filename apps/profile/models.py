@@ -322,6 +322,7 @@ class Profile(models.Model):
                 'API_USERNAME': settings.PAYPAL_API_USERNAME,
                 'API_PASSWORD': settings.PAYPAL_API_PASSWORD,
                 'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
+                'API_CA_CERTS': False,
             }
             paypal = PayPalInterface(**paypal_opts)
             transactions = PayPalIPN.objects.filter(custom=self.user.username,
@@ -362,6 +363,7 @@ class Profile(models.Model):
             'API_USERNAME': settings.PAYPAL_API_USERNAME,
             'API_PASSWORD': settings.PAYPAL_API_PASSWORD,
             'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
+            'API_CA_CERTS': False,
         }
         paypal = PayPalInterface(**paypal_opts)
         transaction = transactions[0]

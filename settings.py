@@ -79,7 +79,6 @@ ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = True
 PAYPAL_TEST           = False
-API_CA_CERTS          = False
 
 # ===============
 # = Enviornment =
