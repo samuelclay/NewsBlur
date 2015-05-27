@@ -423,9 +423,9 @@ class UserSubscription(models.Model):
     
     @classmethod
     def identify_deleted_feed_users(cls, old_feed_id):
-        users = UserSubscriptionFolders.objects.filter(folders__contains="5636682").only('user')
+        users = UserSubscriptionFolders.objects.filter(folders__contains=old_feed_id).only('user')
         user_ids = [usf.user_id for usf in users]
-        f = open('users.txt', 'w')
+        f = open('utils/backups/users.txt', 'w')
         f.write('\n'.join([str(u) for u in user_ids]))
 
         return user_ids
