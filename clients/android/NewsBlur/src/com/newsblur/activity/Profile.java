@@ -12,8 +12,6 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileActivityFragment;
 import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
-import com.newsblur.domain.ActivityDetails;
-import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.PrefsUtils;
 
@@ -73,7 +71,6 @@ public class Profile extends NbActivity {
 
 	private class LoadUserTask extends AsyncTask<Void, Void, Void> {
 		private UserDetails user;
-		private ActivityDetails[] activities;
 
 		@Override
 		protected void onPreExecute() {
@@ -88,7 +85,6 @@ public class Profile extends NbActivity {
 				String intentUserId  = getIntent().getStringExtra(USER_ID);
 				profileResponse = apiManager.getUser(intentUserId);
 				user = profileResponse.user;
-				activities = apiManager.getActivities(intentUserId).activities;
 			} else {
 				apiManager.updateUserProfile();
 				user = PrefsUtils.getUserDetails(Profile.this);
@@ -96,10 +92,6 @@ public class Profile extends NbActivity {
 				// have failed then user.id == null would cause a force close
 				if (user.id != null) {
 					profileResponse = apiManager.getUser(user.id);
-					ActivitiesResponse activitiesResponse = apiManager.getActivities(user.id);
-					if (activitiesResponse != null) {
-						activities = activitiesResponse.activities;
-					}
 				}
 			}
 			return null;
@@ -109,10 +101,7 @@ public class Profile extends NbActivity {
 		protected void onPostExecute(Void result) {
 			if (user != null && detailsFragment != null && activitiesFragment != null) {
 				detailsFragment.setUser(Profile.this, user, TextUtils.isEmpty(userId));
-				// activities could be null if no profile response was received
-				if (activities != null) {
-				  activitiesFragment.setActivitiesAndUser(Profile.this, activities, user);
-			    }
+				activitiesFragment.setUser(Profile.this, user);
 			}
 		}
 	}

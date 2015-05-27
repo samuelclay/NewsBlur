@@ -35,15 +35,11 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 	private Context context;
 	private UserDetails currentUserDetails;
 	
-	public ActivitiesAdapter(final Context context, final ActivityDetails[] activities, UserDetails user) {
+	public ActivitiesAdapter(final Context context, UserDetails user) {
 		super(context, R.id.row_activity_text);
 		inflater = LayoutInflater.from(context);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.context = context;
-		
-		for (ActivityDetails response : activities) {
-			add(response);
-		}
 		
 		currentUserDetails = user;
 		
