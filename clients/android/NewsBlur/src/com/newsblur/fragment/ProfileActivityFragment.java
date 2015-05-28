@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +43,8 @@ public class ProfileActivityFragment extends Fragment {
 	}
 	
 	public void setUser(Context context, UserDetails user) {
-		// TODO reset the page number in the listener for new user?
 		this.user = user;
+		Log.d("mark", "set user to = " + user.username);
 		adapter = new ActivitiesAdapter(context, user);
 		displayActivities();
 	}
@@ -60,7 +61,16 @@ public class ProfileActivityFragment extends Fragment {
 
 			@Override
 			protected ActivityDetails[] doInBackground(Void... voids) {
-				ActivitiesResponse activitiesResponse = apiManager.getActivities(user.id, pageNumber);
+				Log.d("mark", "user.id = " + user.id);
+				Log.d("mark", "user.userId = " + user.userId);
+				Log.d("mark", "pageNumber = " + pageNumber);
+				// For the logged in user user.userId is null.
+				// From the user intent user.userId is the number while user.id is prefixed with social:
+				String id = user.userId;
+				if (id == null) {
+					id = user.id;
+				}
+				ActivitiesResponse activitiesResponse = apiManager.getActivities(id, pageNumber);
 				if (activitiesResponse != null) {
 					return activitiesResponse.activities;
 				} else {

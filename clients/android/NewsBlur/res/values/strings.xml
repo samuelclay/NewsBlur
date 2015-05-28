@@ -88,13 +88,14 @@
     <string name="profile_started_following">Started following </string>
     <string name="profile_replied_to">Replied to</string>
     <string name="profile_with_comment">with the comment</string>
-    <string name="profile_liked_comment">Liked the comment</string>
-    <string name="profile_shared_story">Shared the story</string>
+    <string name="profile_shared_story">You shared</string>
     <string name="profile_button_follow">Follow</string>
     <string name="profile_button_unfollow">Following</string>
     <string name="profile_subscribed_to">You subscribed to</string>
     <string name="profile_saved">You saved</string>
+    <string name="profile_favorited">You favorited</string>
     <string name="profile_signup">signed up for Newsblur</string>
+    <string name="profile_comments_on">comments on</string>
     
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>

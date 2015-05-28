@@ -29,7 +29,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
-	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, likedComment, subscribedTo, saved, signup;
+	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, favorited, subscribedTo, saved, signup, commentsOn;
 	private ForegroundColorSpan highlight, darkgray;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
@@ -46,13 +46,14 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		Resources resources = context.getResources();
 		startedFollowing = resources.getString(R.string.profile_started_following);
 		repliedTo = resources.getString(R.string.profile_replied_to);
-		likedComment = resources.getString(R.string.profile_liked_comment);
+		favorited = resources.getString(R.string.profile_favorited);
 		sharedStory = resources.getString(R.string.profile_shared_story);
 		withComment = resources.getString(R.string.profile_with_comment);
 		subscribedTo = resources.getString(R.string.profile_subscribed_to);
 		saved = resources.getString(R.string.profile_saved);
 		signup = resources.getString(R.string.profile_signup);
 		ago = resources.getString(R.string.profile_ago);
+		commentsOn = resources.getString(R.string.profile_comments_on);
 
 		// TODO rename variables
         if (PrefsUtils.isLightThemeSelected(context)) {
@@ -76,7 +77,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 
 		// TODO handle different links
-		ClickableSpan usernameClick = new ClickableSpan() {
+		ClickableSpanWithoutUnderline usernameClick = new ClickableSpanWithoutUnderline() {
 			@Override
 			public void onClick(View widget) {
 				Intent i = new Intent(context, Profile.class);
@@ -130,6 +131,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(darkgray, 0, subscribedTo.length() + activity.content.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
+	// TODO
 	private void addStarContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(saved);
 		stringBuilder.append(" ");
@@ -139,6 +141,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(highlight, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
+	// TODO
 	private void addSignupContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(activity.user.username);
 		stringBuilder.append(" ");
@@ -146,6 +149,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(darkgray, 0, activity.user.username.length() + signup.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
+	// TODO
 	private void addFollowContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(startedFollowing);
 		stringBuilder.append(" ");
@@ -156,18 +160,34 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 	}
 
 	private void addCommentLikeContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
-		stringBuilder.append(likedComment);
+		stringBuilder.append(favorited);
+		stringBuilder.append(" ");
+		stringBuilder.append(activity.user.username);
+		stringBuilder.append(" ");
+		stringBuilder.append(commentsOn);
+		stringBuilder.append(" ");
+		stringBuilder.append(activity.title);
 		stringBuilder.append(" \"");
 		stringBuilder.append(activity.content);
 		stringBuilder.append("\" ");
-		stringBuilder.append("by ");
-		stringBuilder.append(activity.user.username);
-		stringBuilder.setSpan(darkgray, 0, likedComment.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(highlight, likedComment.length() + 1, likedComment.length() + 3 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(darkgray, stringBuilder.length() - activity.user.username.length() - 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(usernameClick, likedComment.length() + 3 + activity.content.length() + 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+		int usernameLength = activity.user.username.length();
+		stringBuilder.setSpan(darkgray, 0, favorited.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		int usernameSpanStart = favorited.length() + 1;
+		stringBuilder.setSpan(highlight, usernameSpanStart, usernameSpanStart + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		stringBuilder.setSpan(usernameClick, usernameSpanStart, usernameSpanStart + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+		// TODO click on title
+		int titleSpanStart = usernameSpanStart + usernameLength + 1 + commentsOn.length() + 1;
+		int titleLength = activity.title.length();
+		stringBuilder.setSpan(highlight, titleSpanStart, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+		// TODO different font for content
+		//stringBuilder.setSpan(darkgray, stringBuilder.length() - activity.user.username.length() - 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		//stringBuilder.setSpan(usernameClick, favorited.length() + 3 + activity.content.length() + 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
+	// TODO
 	private void addCommentReplyContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(repliedTo);
 		stringBuilder.append(" ");
@@ -181,6 +201,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(darkgray, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
+	// TODO
 	private void addSharedStoryContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(sharedStory);
 		stringBuilder.append(" ");
