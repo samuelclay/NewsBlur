@@ -98,7 +98,9 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 			imageLoader.displayImage(activity.user.photoUrl, imageView);
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
 			imageLoader.displayImage(currentUserDetails.photoUrl, imageView, 10f);
-		} else {
+		} else if (TextUtils.equals(activity.category, "star")) {
+			imageView.setImageResource(R.drawable.clock);
+	    } else {
 			imageView.setImageResource(R.drawable.logo);
 		}
 
@@ -107,7 +109,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		} else if (TextUtils.equals(activity.category, "star")) {
 			addStarContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "signup")) {
-			addSignupContent(activity, stringBuilder, usernameClick);
+			addSignupContent(activity, stringBuilder);
 		} else if (TextUtils.equals(activity.category, "follow")) {
             addFollowContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "comment_like")) {
@@ -141,12 +143,9 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(highlight, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	// TODO
-	private void addSignupContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
-		stringBuilder.append(activity.user.username);
-		stringBuilder.append(" ");
+	private void addSignupContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(signup);
-		stringBuilder.setSpan(darkgray, 0, activity.user.username.length() + signup.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		stringBuilder.setSpan(darkgray, 0, signup.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
 	// TODO

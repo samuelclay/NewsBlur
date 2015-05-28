@@ -94,7 +94,7 @@
     <string name="profile_subscribed_to">You subscribed to</string>
     <string name="profile_saved">You saved</string>
     <string name="profile_favorited">You favorited</string>
-    <string name="profile_signup">signed up for Newsblur</string>
+    <string name="profile_signup">You signed up for Newsblur</string>
     <string name="profile_comments_on">comments on</string>
     
     <string name="menu_profile">Profile</string>
