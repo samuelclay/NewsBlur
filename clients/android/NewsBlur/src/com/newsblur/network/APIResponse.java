@@ -28,6 +28,7 @@ public class APIResponse {
     private String errorMessage;
 	private String cookie;
     private String responseBody;
+    public long connectTime;
     public long readTime;
 
     /**
@@ -47,7 +48,9 @@ public class APIResponse {
         this.errorMessage = context.getResources().getString(R.string.error_unset_message);
 
         try {
+            long startTime = System.currentTimeMillis();
             Response response = httpClient.newCall(request).execute();
+            connectTime = System.currentTimeMillis() - startTime;
             if (response.isSuccessful()) {
 
                 if (response.code() != expectedReturnCode) {
@@ -60,7 +63,7 @@ public class APIResponse {
                 this.cookie = response.header("Set-Cookie");
 
                 try {
-                    long startTime = System.currentTimeMillis();
+                    startTime = System.currentTimeMillis();
                     this.responseBody = response.body().string();
                     readTime = System.currentTimeMillis() - startTime;
                 } catch (Exception e) {
@@ -80,6 +83,10 @@ public class APIResponse {
                             Log.d(this.getClass().getName(), s + "}");
                         }
                     }
+                }
+
+                if (AppConstants.VERBOSE_LOG_NET) {
+                    Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms", request.urlString(), connectTime, readTime));
                 }
 
             } else {
