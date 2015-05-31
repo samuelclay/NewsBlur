@@ -30,7 +30,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
 	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, favorited, subscribedTo, saved, signup, commentsOn;
-	private ForegroundColorSpan linkColor, contentColor;
+	private ForegroundColorSpan linkColor, contentColor, quoteColor;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
 	private UserDetails currentUserDetails;
@@ -58,9 +58,12 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		if (PrefsUtils.isLightThemeSelected(context)) {
             linkColor = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
             contentColor = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
+            // TODO
+            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
         } else {
             linkColor = new ForegroundColorSpan(resources.getColor(R.color.dark_linkblue));
             contentColor = new ForegroundColorSpan(resources.getColor(R.color.white));
+            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.lightgray));
         }
 	}
 	
@@ -165,7 +168,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.append(commentsOn);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.title);
-		stringBuilder.append(" \"");
+		stringBuilder.append("\n\n\"");
 		stringBuilder.append(activity.content);
 		stringBuilder.append("\" ");
 
@@ -180,9 +183,8 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		int titleLength = activity.title.length();
 		stringBuilder.setSpan(linkColor, titleSpanStart, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-		// TODO different font for content
-		//stringBuilder.setSpan(contentColor, stringBuilder.length() - activity.user.username.length() - 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		//stringBuilder.setSpan(usernameClick, favorited.length() + 3 + activity.content.length() + 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		int quoteSpanStart = titleSpanStart + titleLength;
+		stringBuilder.setSpan(quoteColor, quoteSpanStart, quoteSpanStart + activity.content.length() + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
 	// TODO
