@@ -17,24 +17,22 @@
         android:contentDescription="@string/description_activity_icon" />
 
     <TextView
-        android:id="@+id/row_activity_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="10dp"
-        style="?defaultText"
-        android:textSize="10dp" />
-
-    <TextView
         android:id="@+id/row_activity_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@id/row_activity_time"
         android:layout_toRightOf="@id/row_activity_icon"
         style="?defaultText"
         android:textSize="13dp" />
+
+    <TextView
+        android:id="@+id/row_activity_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/row_activity_text"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/row_activity_text"
+        style="?defaultText"
+        android:textSize="10dp" />
 
 </RelativeLayout>
