@@ -17,6 +17,7 @@ import com.newsblur.domain.ActivityDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.view.ActivitiesAdapter;
+import com.newsblur.view.ProgressThrobber;
 
 public class ProfileActivityFragment extends Fragment {
 
@@ -24,8 +25,9 @@ public class ProfileActivityFragment extends Fragment {
 	private ActivitiesAdapter adapter;
 	private APIManager apiManager;
 	private UserDetails user;
+    private ProgressThrobber footerProgressView;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		apiManager = new APIManager(getActivity());
@@ -35,6 +37,16 @@ public class ProfileActivityFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View v = inflater.inflate(R.layout.fragment_profileactivity, null);
 		activityList = (ListView) v.findViewById(R.id.profile_details_activitylist);
+
+        View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
+        footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
+        footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
+                                     getResources().getColor(R.color.refresh_2),
+                                     getResources().getColor(R.color.refresh_3),
+                getResources().getColor(R.color.refresh_4));
+        activityList.addFooterView(footerView, null, false);
+        activityList.setFooterDividersEnabled(false);
+
 		if (adapter != null) {
 			displayActivities();
 		}
@@ -55,11 +67,14 @@ public class ProfileActivityFragment extends Fragment {
 	}
 
 	private void loadPage(final int pageNumber) {
-		// TODO progress indicator
-		// TODO pass limit?
 		new AsyncTask<Void, Void, ActivityDetails[]>() {
 
-			@Override
+            @Override
+            protected void onPreExecute() {
+                footerProgressView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
 			protected ActivityDetails[] doInBackground(Void... voids) {
 				Log.d("mark", "user.id = " + user.id);
 				Log.d("mark", "user.userId = " + user.userId);
@@ -84,6 +99,7 @@ public class ProfileActivityFragment extends Fragment {
 					adapter.add(activity);
 				}
 				adapter.notifyDataSetChanged();
+                footerProgressView.setVisibility(View.GONE);
 			}
 		}.execute();
 	}
