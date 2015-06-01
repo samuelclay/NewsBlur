@@ -18,10 +18,9 @@
         android:showAsAction="never"
         android:title="@string/menu_original"/>
     <item
-        android:id="@+id/menu_shared"
-        android:icon="@drawable/share"
+        android:id="@+id/menu_send_story"
         android:showAsAction="never"
-        android:title="@string/menu_share"/>
+        android:title="@string/menu_send_story"/>
     
     <item
         android:id="@+id/menu_textsize"
