@@ -31,6 +31,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+import butterknife.OnClick;
+
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Reading;
@@ -59,7 +63,7 @@ import java.util.regex.Pattern;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ReadingItemFragment extends NbFragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
+public class ReadingItemFragment extends NbFragment implements ClassifierDialogFragment.TagUpdateCallback {
 
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
@@ -71,16 +75,17 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private Classifier classifier;
 	private NewsblurWebview web;
 	private BroadcastReceiver receiver;
-	private TextView itemAuthors;
-	private TextView itemFeed;
+    @FindView(R.id.reading_item_authors) TextView itemAuthors;
+	@FindView(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
 	private FlowLayout tagContainer;
 	private View view;
 	private UserDetails user;
-	public String previouslySavedShareText;
 	private ImageView feedIcon;
     private Reading activity;
     private DefaultFeedView selectedFeedView;
+    @FindView(R.id.save_story_button) Button saveButton;
+    @FindView(R.id.share_story_button) Button shareButton;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;
@@ -182,15 +187,15 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     }
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.fragment_readingitem, null);
+        ButterKnife.bind(this, view);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
         registerForContextMenu(web);
 
 		setupItemMetadata();
-		setupShareButton();
-		setupSaveButton();
+		updateShareButton();
+	    updateSaveButton();
 
 		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
 			view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
@@ -261,47 +266,34 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             super.onCreateContextMenu(menu, v, menuInfo);
         }
     }
-	
-	private void setupSaveButton() {
-		final Button saveButton = (Button) view.findViewById(R.id.save_story_button);
-        saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
 
-        saveButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-                if (story.starred) {
-                    FeedUtils.setStorySaved(story, false, activity);
-                } else {
-                    FeedUtils.setStorySaved(story,true, activity);
-                }
-			}
-		});
-	}
+    @OnClick(R.id.save_story_button) void clickSave() {
+        if (story.starred) {
+            FeedUtils.setStorySaved(story, false, activity);
+        } else {
+            FeedUtils.setStorySaved(story,true, activity);
+        }
+    }
 
     private void updateSaveButton() {
-        if (view == null) { return; }
-		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
-        if (saveButton == null) { return; }
+        if (saveButton == null) return;
         saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
     }
 
-	private void setupShareButton() {
-		Button shareButton = (Button) view.findViewById(R.id.share_story_button);
+    @OnClick(R.id.share_story_button) void clickShare() {
+        DialogFragment newFragment = ShareDialogFragment.newInstance(story, sourceUserId);
+        newFragment.show(getFragmentManager(), "dialog");
+    }
 
+	private void updateShareButton() {
+        if (shareButton == null) return;
 		for (String userId : story.sharedUserIds) {
 			if (TextUtils.equals(userId, user.id)) {
 				shareButton.setText(R.string.already_shared);
-				break;
+				return;
 			}
 		}
-
-		shareButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story, previouslySavedShareText, sourceUserId);
-				newFragment.show(getFragmentManager(), "dialog");
-			}
-		});
+        shareButton.setText(R.string.share_this);
 	}
 
 	private void setupItemCommentsAndShares(final View view) {
@@ -313,8 +305,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
         TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
         TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-        itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
-        itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
         feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
 		if (TextUtils.equals(feedColor, "#null") || TextUtils.equals(feedFade, "#null")) {
@@ -460,6 +450,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
     public void handleUpdate() {
         updateSaveButton();
+        updateShareButton();
         reloadStoryContent();
     }
 
@@ -625,74 +616,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			break;	
 		}
 	}
-
-	@Override
-	public void sharedCallback(String sharedText, boolean hasAlreadyBeenShared) {
-        try {
-            view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
-            
-            if (!hasAlreadyBeenShared) {
-                
-                if (!TextUtils.isEmpty(sharedText)) {
-                    View commentView = inflater.inflate(R.layout.include_comment, null);
-                    commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
-
-                    TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-                    commentText.setTag("commentBy" + user.id);
-                    commentText.setText(sharedText);
-
-                    TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
-                    if (!TextUtils.isEmpty(user.location)) {
-                        commentLocation.setText(user.location.toUpperCase());
-                    } else {
-                        commentLocation.setVisibility(View.GONE);
-                    }
-
-                    if (PrefsUtils.getUserImage(getActivity()) != null) {
-                        ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
-                        commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
-                    }
-
-                    TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-                    commentSharedDate.setText(R.string.now);
-
-                    TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
-                    commentUsername.setText(user.username);
-
-                    ((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
-
-                    ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
-                    
-                    final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
-                    ((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
-                    
-                } else {
-                    ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
-                    final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
-                    ((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
-                }
-            } else {
-                View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
-                TextView commentText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_BY + user.id);
-                commentText.setText(sharedText);
-
-                TextView commentDateText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_DATE_BY + user.id);
-                commentDateText.setText(R.string.now);
-            }
-        } catch (Exception e) {
-            // this entire method does not respect context state and can be triggered on stale fragments. it should
-            // be replaced with a proper Loader, or it will always risk crashing the application
-            Log.w(this.getClass().getName(), "async error in callback", e);
-        }
-	}
-
-
-	@Override
-	public void setPreviouslySavedShareText(String previouslySavedShareText) {
-		this.previouslySavedShareText = previouslySavedShareText;
-	}
-
     private class ImmersiveViewHandler extends GestureDetector.SimpleOnGestureListener implements View.OnSystemUiVisibilityChangeListener {
         private View view;
 

@@ -31,6 +31,7 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -610,6 +611,33 @@ public class BlurDatabaseHelper {
     public void setStoryStarred(String hash, boolean starred) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_STARRED, starred);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
+    }
+
+    public void setStoryShared(String hash) {
+        // get a fresh copy of the story from the DB so we can append to the shared ID set
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, 
+                              new String[]{DatabaseConstants.STORY_SHARED_USER_IDS}, 
+                              DatabaseConstants.STORY_HASH + " = ?", 
+                              new String[]{hash}, 
+                              null, null, null);
+        if ((c == null)||(c.getCount() < 1)) {
+            Log.w(this.getClass().getName(), "story removed before finishing mark-shared");
+            closeQuietly(c);
+            return;
+        }
+        c.moveToFirst();
+		String[] sharedUserIds = TextUtils.split(c.getString(c.getColumnIndex(DatabaseConstants.STORY_SHARED_USER_IDS)), ",");
+        closeQuietly(c);
+
+        // the new id to append to the shared list (the current user)
+        String currentUser = PrefsUtils.getUserDetails(context).id;
+
+        // append to set and update DB
+        Set<String> newIds = new HashSet<String>(Arrays.asList(sharedUserIds));
+        newIds.add(currentUser);
+        ContentValues values = new ContentValues();
+		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, TextUtils.join(",", newIds));
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 

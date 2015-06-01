@@ -54,7 +54,7 @@ public class FeedUtils {
             protected Void doInBackground(Void... arg) {
                 ReadingAction ra = (saved ? ReadingAction.saveStory(story.storyHash) : ReadingAction.unsaveStory(story.storyHash));
                 ra.doLocal(dbHelper);
-                NbActivity.updateAllActivities();
+                NbActivity.updateAllActivities(true);
                 dbHelper.enqueueAction(ra);
                 triggerSync(context);
                 return null;
@@ -167,7 +167,6 @@ public class FeedUtils {
     }
 
     public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
-
         // first, update the server
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
@@ -190,7 +189,7 @@ public class FeedUtils {
         dbHelper.insertClassifier(classifier);
     }
 
-    public static void shareStory(Story story, Context context) {
+    public static void sendStory(Story story, Context context) {
         if (story == null ) { return; } 
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -199,7 +198,18 @@ public class FeedUtils {
         final String shareString = context.getResources().getString(R.string.share);
         intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { Html.fromHtml(story.title),
                                                                                        story.permalink }));
-        context.startActivity(Intent.createChooser(intent, "Share using"));
+        context.startActivity(Intent.createChooser(intent, "Send using"));
+    }
+
+	public static void shareStory(Story story, String comment, String sourceUserId, Context context) {
+        if (story.sourceUserId != null) {
+            sourceUserId = story.sourceUserId;
+        }
+        ReadingAction ra = ReadingAction.shareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(true);
+        triggerSync(context);
     }
 
     public static FeedSet feedSetFromFolderName(String folderName) {

@@ -288,8 +288,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             FeedUtils.markFeedsRead(getFeedSet(), null, story.timestamp, activity);
             return true;
 
-        case R.id.menu_shared:
-            FeedUtils.shareStory(story, activity);
+        case R.id.menu_send_story:
+            FeedUtils.sendStory(story, activity);
             return true;
 
         case R.id.menu_save_story:

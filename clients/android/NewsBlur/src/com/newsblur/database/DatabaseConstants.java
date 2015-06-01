@@ -136,6 +136,8 @@ public class DatabaseConstants {
     public static final String ACTION_FEED_ID = "feed_id";
     public static final String ACTION_INCLUDE_OLDER = "include_older";
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
+    public static final String ACTION_STORY_ID = "story_id";
+    public static final String ACTION_SOURCE_USER_ID = "source_user_id";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -270,7 +272,9 @@ public class DatabaseConstants {
         ACTION_STORY_HASH + TEXT + ", " +
         ACTION_FEED_ID + TEXT + ", " +
         ACTION_INCLUDE_OLDER + INTEGER + ", " +
-        ACTION_INCLUDE_NEWER + INTEGER +
+        ACTION_INCLUDE_NEWER + INTEGER + ", " +
+        ACTION_STORY_ID + TEXT + ", " +
+        ACTION_SOURCE_USER_ID + TEXT +
         ")";
 
 	public static final String[] FEED_COLUMNS = {
