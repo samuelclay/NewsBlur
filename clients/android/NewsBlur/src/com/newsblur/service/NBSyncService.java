@@ -386,7 +386,7 @@ public class NBSyncService extends Service {
             ExhaustedFeeds.clear();
             FeedPagesSeen.clear();
             FeedStoriesSeen.clear();
-            UnreadsService.clearHashes();
+            UnreadsService.clear();
             RecountCandidates.clear();
 
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -836,6 +836,19 @@ public class NBSyncService extends Service {
     public static void softInterrupt() {
         if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "soft stop");
         HaltNow = true;
+    }
+
+    /**
+     * Resets any internal temp vars or queues. Called when switching accounts.
+     */
+    public static void clearState() {
+        clearPendingStoryRequest();
+        FollowupActions.clear();
+        RecountCandidates.clear();
+        resetFeeds();
+        OriginalTextService.clear();
+        UnreadsService.clear();
+        ImagePrefetchService.clear();
     }
 
     public static void resumeFromInterrupt() {

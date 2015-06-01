@@ -70,6 +70,11 @@ public class OriginalTextService extends SubService {
         return (Hashes.size() + PriorityHashes.size());
     }
 
+    public static void clear() {
+        Hashes.clear();
+        PriorityHashes.clear();
+    }
+
     public static boolean running() {
         return Running;
     }

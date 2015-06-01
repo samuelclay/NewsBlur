@@ -114,6 +114,7 @@ public class PrefsUtils {
 
     public static void clearPrefsAndDbForLoginAs(Context context) {
         NBSyncService.softInterrupt();
+        NBSyncService.clearState();
 
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
