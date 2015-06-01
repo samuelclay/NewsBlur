@@ -86,7 +86,7 @@ public class APIResponse {
                 }
 
                 if (AppConstants.VERBOSE_LOG_NET) {
-                    Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms", request.urlString(), connectTime, readTime));
+                    Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.urlString(), connectTime, readTime, responseBody.length()));
                 }
 
             } else {
