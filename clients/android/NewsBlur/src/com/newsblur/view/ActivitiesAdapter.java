@@ -29,7 +29,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
-	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, favorited, subscribedTo, saved, signup, commentsOn;
+	private final String startedFollowing, ago, repliedTo, sharedStory, favorited, subscribedTo, saved, signup, commentsOn;
 	private ForegroundColorSpan linkColor, contentColor, quoteColor;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
@@ -48,7 +48,6 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		repliedTo = resources.getString(R.string.profile_replied_to);
 		favorited = resources.getString(R.string.profile_favorited);
 		sharedStory = resources.getString(R.string.profile_shared_story);
-		withComment = resources.getString(R.string.profile_with_comment);
 		subscribedTo = resources.getString(R.string.profile_subscribed_to);
 		saved = resources.getString(R.string.profile_saved);
 		signup = resources.getString(R.string.profile_signup);
@@ -93,7 +92,6 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		ImageView imageView = (ImageView) view.findViewById(R.id.row_activity_icon);
 		
 		activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
-		// TODO images for each category type
 		if (TextUtils.equals(activity.category, "feedsub")) {
 			imageLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
@@ -111,7 +109,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		} else if (TextUtils.equals(activity.category, "star")) {
 			addStarContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "signup")) {
-			addSignupContent(activity, stringBuilder);
+			addSignupContent(stringBuilder);
 		} else if (TextUtils.equals(activity.category, "follow")) {
             addFollowContent(activity, stringBuilder, usernameClick);
 		} else if (TextUtils.equals(activity.category, "comment_like")) {
@@ -135,22 +133,22 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(contentColor, 0, subscribedTo.length() + activity.content.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	// TODO
 	private void addStarContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(saved);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.content);
 		stringBuilder.setSpan(contentColor, 0, saved.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        // TODO link to saved story
 		stringBuilder.setSpan(usernameClick, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(linkColor, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	private void addSignupContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
+	private void addSignupContent(SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(signup);
 		stringBuilder.setSpan(contentColor, 0, signup.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	// TODO
 	private void addFollowContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(startedFollowing);
 		stringBuilder.append(" ");
@@ -187,36 +185,34 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(quoteColor, quoteSpanStart, quoteSpanStart + activity.content.length() + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	// TODO
 	private void addCommentReplyContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(repliedTo);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.user.username);
-		stringBuilder.append(": \"");
+		stringBuilder.append("\n\n\"");
 		stringBuilder.append(activity.content);
 		stringBuilder.append("\"");
 		stringBuilder.setSpan(contentColor, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(usernameClick, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(linkColor, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(contentColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		stringBuilder.setSpan(quoteColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	// TODO
 	private void addSharedStoryContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
 		stringBuilder.append(sharedStory);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.title);
 		stringBuilder.append(" ");
 		if (!TextUtils.isEmpty(activity.content)) {
-			stringBuilder.append(withComment);
-			stringBuilder.append(": \"");
+			stringBuilder.append("\n\n\"");
 			stringBuilder.append(activity.content);
 			stringBuilder.append("\"");
 		}
 		stringBuilder.setSpan(contentColor, 0, sharedStory.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // TODO link to story
 		stringBuilder.setSpan(linkColor, sharedStory.length() + 1, sharedStory.length() + 1 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		if (!TextUtils.isEmpty(activity.content)) {
-			stringBuilder.setSpan(contentColor, sharedStory.length() + 4 + activity.title.length() + withComment.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(quoteColor, sharedStory.length() + 2 + activity.title.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
 	}
 }

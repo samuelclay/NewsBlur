@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,7 @@ public class ProfileActivityFragment extends Fragment {
         footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                      getResources().getColor(R.color.refresh_2),
                                      getResources().getColor(R.color.refresh_3),
-                getResources().getColor(R.color.refresh_4));
+                                     getResources().getColor(R.color.refresh_4));
         activityList.addFooterView(footerView, null, false);
         activityList.setFooterDividersEnabled(false);
 
@@ -56,7 +55,6 @@ public class ProfileActivityFragment extends Fragment {
 	
 	public void setUser(Context context, UserDetails user) {
 		this.user = user;
-		Log.d("mark", "set user to = " + user.username);
 		adapter = new ActivitiesAdapter(context, user);
 		displayActivities();
 	}
@@ -76,9 +74,6 @@ public class ProfileActivityFragment extends Fragment {
 
             @Override
 			protected ActivityDetails[] doInBackground(Void... voids) {
-				Log.d("mark", "user.id = " + user.id);
-				Log.d("mark", "user.userId = " + user.userId);
-				Log.d("mark", "pageNumber = " + pageNumber);
 				// For the logged in user user.userId is null.
 				// From the user intent user.userId is the number while user.id is prefixed with social:
 				String id = user.userId;
