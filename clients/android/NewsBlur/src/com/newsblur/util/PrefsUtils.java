@@ -99,6 +99,7 @@ public class PrefsUtils {
 
     public static void logout(Context context) {
         NBSyncService.softInterrupt();
+        NBSyncService.clearState();
 
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
