@@ -1936,7 +1936,7 @@ class MSharedStory(mongo.Document):
             for u, user_id in enumerate(story['shared_by_public']):
                 if user_id not in profiles: continue
                 stories[s]['shared_by_public'][u] = profiles[user_id]
-            for comment_set in ['friend_comments', 'public_comments']:
+            for comment_set in ['friend_comments', 'public_comments', 'friend_shares']:
                 for c, comment in enumerate(story[comment_set]):
                     if comment['user_id'] not in profiles: continue
                     stories[s][comment_set][c]['user'] = profiles[comment['user_id']]
