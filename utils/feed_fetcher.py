@@ -292,7 +292,7 @@ class ProcessFeed:
                 if self.fpf.href.endswith('feedburner.com/atom.xml'):
                     return FEED_ERRHTTP, ret_values
                 redirects, non_redirects = self.feed.count_redirects_in_history('feed')
-                self.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (20-len(redirects)))
+                self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (20-len(redirects)))
                 if len(redirects) >= 20 or len(non_redirects) == 0:
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
@@ -367,7 +367,7 @@ class ProcessFeed:
             if new_feed_link != self.feed.feed_link:
                 logging.debug("   ---> [%-30s] ~SB~FRFeed's page is different: %s to %s" % (self.feed.title[:30], self.feed.feed_link, new_feed_link))               
                 redirects, non_redirects = self.feed.count_redirects_in_history('page')
-                self.save_page_history(301, "HTTP Redirect (%s to go)" % (20-len(redirects)))
+                self.feed.save_page_history(301, "HTTP Redirect (%s to go)" % (20-len(redirects)))
                 if len(redirects) >= 20 or len(non_redirects) == 0:
                     self.feed.feed_link = new_feed_link
 
