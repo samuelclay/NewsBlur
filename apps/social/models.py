@@ -1840,6 +1840,7 @@ class MSharedStory(mongo.Document):
         profile_user_ids = set()
         for story in stories: 
             story['friend_comments'] = []
+            story['friend_shares'] = []
             story['public_comments'] = []
             story['reply_count'] = 0
             if check_all or story['comment_count']:
@@ -1895,6 +1896,21 @@ class MSharedStory(mongo.Document):
                     story['share_user_ids'] = story['friend_user_ids'] + story['public_user_ids']
                 if story.get('source_user_id'):
                     profile_user_ids.add(story['source_user_id'])
+                shared_stories = []
+                if story['shared_by_friends']:
+                    params = {
+                        'story_hash': story['story_hash'],
+                        'user_id__in': story['shared_by_friends'],
+                    }
+                    shared_stories = cls.objects.filter(**params)
+                for shared_story in shared_stories:
+                    comments = shared_story.comments_with_author()
+                    story['reply_count'] += len(comments['replies'])
+                    story['friend_shares'].append(comments)
+                    if comments.get('source_user_id'):
+                        profile_user_ids.add(comments['source_user_id'])
+                    if comments.get('liking_users'):
+                        profile_user_ids = profile_user_ids.union(comments['liking_users'])
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.canonical(compact=True) for profile in profiles]

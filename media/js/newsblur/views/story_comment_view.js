@@ -27,7 +27,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var has_likes = _.any(this.model.get('liking_users'));
         var liked = _.contains(this.model.get('liking_users'), NEWSBLUR.Globals.user_id);
 
-        var $comment = $.make('div', [
+        var $comment = $.make('div', { className: (this.options.friend_share ? "NB-story-comment-friend-share" : "") }, [
             $.make('div', { className: 'NB-story-comment-author-avatar NB-user-avatar ' + reshare_class }, [
                 $.make('img', { src: this.user.get('photo_url') })
             ]),
