@@ -50,7 +50,7 @@
     return _this.collection.findOne({
       _id: feed_id
     }, function(err, docs) {
-      console.log("Req: " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0));
+      console.log("Req: " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0) + " (err: " + err + ", docs? " + (!!(docs && docs.data)) + ")");
       if (!err && etag && docs && (docs != null ? docs.color : void 0) === etag) {
         return res.send(304);
       } else if (!err && docs && docs.data) {
