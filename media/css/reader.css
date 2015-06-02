@@ -3213,6 +3213,9 @@ body {
     left: 6px;
     z-index: 1;
 }
+.NB-story-comment .NB-story-comment-friend-share .NB-story-comment-author-avatar.NB-user-avatar.NB-story-comment-reshare {
+    top: 10px;
+}
 .NB-story-comment .NB-story-comment-author-avatar.NB-user-avatar img {
     border-radius: 6px;
     margin: 2px 0 0 1px;
@@ -3223,9 +3226,20 @@ body {
     height: 24px;
     width: 24px;
 }
+.NB-story-comment .NB-story-comment-friend-share .NB-story-comment-author-avatar.NB-user-avatar img {
+    height: 24px;
+    width: 24px;  
+    margin-left: 6px;
+}
+.NB-story-comment .NB-story-comment-friend-share .NB-story-comment-author-avatar.NB-user-avatar.NB-story-comment-reshare img {
+    margin-left: 0px;
+}
 .NB-story-comment .NB-story-comment-author-container {
     overflow: hidden;
     margin: 6px 0 0;
+}
+.NB-story-comment .NB-story-comment-friend-share .NB-story-comment-author-container {
+    margin-top: 10px;
 }
 .NB-story-comment .NB-story-comment-reshares {
     position: absolute;
@@ -3283,7 +3297,8 @@ body {
     width: auto;
     height: auto;
 }
-.NB-story-comment .NB-story-comment-likes-users .NB-story-share-profile .NB-user-avatar img {
+.NB-story-comment .NB-story-comment-likes-users .NB-story-share-profile .NB-user-avatar img,
+.NB-story-comment .NB-story-comment-friend-share .NB-story-comment-likes-users .NB-story-share-profile .NB-user-avatar img {
     width: 12px;
     height: 12px;
 }
@@ -3536,6 +3551,11 @@ body {
     height: 22px;
     border-radius: 3px;
 }
+.NB-story-comment-friend-share .NB-story-share-profile .NB-user-avatar img.NB-user-avatar-image {
+    height: 18px;
+    width: 18px;
+}
+
 .NB-story-share-profile .NB-user-avatar img.NB-user-avatar-private {
   width: 8px;
   height: 8px;

@@ -17,6 +17,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             }));
             this.render_teaser();
             this.render_comments_friends();
+            this.render_shares_friends();
             this.render_comments_public();
             this.$el.toggleClass('NB-hidden', !this.model.get('comment_count'));
         }
@@ -82,6 +83,30 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
                 model: comment, 
                 story: this.model,
                 friend_comment: true
+            }).render().el;
+            this.$el.append($comment);
+        }, this));
+    },
+
+    render_shares_friends: function() {
+        var shares_without_comments = this.model.get('shared_by_friends');
+        if (shares_without_comments.length <= 0) return;
+        
+        var $header = $.make('div', { 
+            className: 'NB-story-comments-public-header-wrapper' 
+        }, $.make('div', { 
+            className: 'NB-story-comments-public-header NB-module-header' 
+        }, [
+            Inflector.pluralize(' share', shares_without_comments.length, true)
+        ]));
+        
+        this.$el.append($header);
+        
+        this.model.friend_shares.each(_.bind(function(comment) {
+            var $comment = new NEWSBLUR.Views.StoryComment({
+                model: comment,
+                story: this.model,
+                friend_share: true
             }).render().el;
             this.$el.append($comment);
         }, this));
