@@ -19,7 +19,8 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             this.render_comments_friends();
             this.render_shares_friends();
             this.render_comments_public();
-            this.$el.toggleClass('NB-hidden', !this.model.get('comment_count'));
+            this.$el.toggleClass('NB-hidden', (!this.model.get('comment_count') && 
+                                               !this.model.get('share_count_friends')));
         }
 
         return this;
@@ -42,7 +43,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
             $comments_public.append($thumb);
         });
-        if (!this.model.friend_comments.length && !this.model.public_comments.length) {
+        if (!this.model.friend_comments.length && !this.model.public_comments.length && !this.model.friend_shares.length) {
             this.$el.hide();
         }
         
