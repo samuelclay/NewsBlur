@@ -367,6 +367,8 @@ public class APIManager {
 
 		// note: this response is complex enough, we have to do a custom parse in the FFR
         FeedFolderResponse result = new FeedFolderResponse(response.getResponseBody(), gson);
+        // bind a litle extra instrumentation to this response, since it powers the feedback link
+        result.connTime = response.connectTime;
         result.readTime = response.readTime;
         return result;
 	}
