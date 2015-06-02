@@ -27,7 +27,7 @@ db.open (err, client) =>
 app.get /^\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
     feed_id = parseInt(req.params, 10)
     etag = req.header('If-None-Match')
-    @collection.findOne _id: feed_id, (err, docs) ->
+    @collection.findOne feed_id: feed_id, (err, docs) ->
         console.log "Req: #{feed_id}, etag: #{etag}/#{docs?.color} (err: #{err}, docs? #{!!(docs and docs.data)})"
         if not err and etag and docs and docs?.color == etag
             res.send 304

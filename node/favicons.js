@@ -48,7 +48,7 @@
     feed_id = parseInt(req.params, 10);
     etag = req.header('If-None-Match');
     return _this.collection.findOne({
-      _id: feed_id
+      feed_id: feed_id
     }, function(err, docs) {
       console.log("Req: " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0) + " (err: " + err + ", docs? " + (!!(docs && docs.data)) + ")");
       if (!err && etag && docs && (docs != null ? docs.color : void 0) === etag) {
