@@ -11147,6 +11147,12 @@ form.opml_import_form input {
 .NB-interaction .NB-splash-link:hover {
     color: #405BA8;
 }
+.NB-interaction-content {
+    font-size: 11px;
+    padding-top: 4px;
+    line-height: 16px;
+    color: #9d9d9d;
+}
 .NB-interaction-content a {
     color: #A6A9B0;
 }
@@ -11168,7 +11174,7 @@ form.opml_import_form input {
     height: 16px;
 }
 .NB-interaction-date {
-    color: #929697;
+    color: #5e828b;
     font-size: 10px;
     text-transform: uppercase;
     padding: 5px 0 0;
@@ -11182,12 +11188,6 @@ form.opml_import_form input {
     color: #404040;
     padding: 2px 0 0 0;
     opacity: .9;
-}
-.NB-interaction-content {
-    font-size: 11px;
-    padding-top: 4px;
-    line-height: 16px;
-    color: #b6b6b6;
 }
 .NB-interaction-username {
     cursor: pointer;
