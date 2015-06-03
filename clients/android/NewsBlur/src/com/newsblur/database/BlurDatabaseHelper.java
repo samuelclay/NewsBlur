@@ -138,9 +138,13 @@ public class BlurDatabaseHelper {
     }
 
     public void cleanupFeedsFolders() {
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);}
+        synchronized (RW_MUTEX) {
+            dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
+        }
     }
 
     public void vacuum() {
@@ -314,6 +318,7 @@ public class BlurDatabaseHelper {
         for (Story story : apiResponse.stories) {
             for (Comment comment : story.publicComments) {
                 comment.storyId = story.id;
+                // we need a primary key for comments, so construct one
                 comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
                 commentValues.add(comment.getValues());
                 for (Reply reply : comment.replies) {
@@ -323,6 +328,19 @@ public class BlurDatabaseHelper {
             }
             for (Comment comment : story.friendsComments) {
                 comment.storyId = story.id;
+                // we need a primary key for comments, so construct one
+                comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
+                comment.byFriend = true;
+                commentValues.add(comment.getValues());
+                for (Reply reply : comment.replies) {
+                    reply.commentId = comment.id;
+                    replyValues.add(reply.getValues());
+                }
+            }
+            for (Comment comment : story.friendsShares) {
+                comment.isPseudo = true;
+                comment.storyId = story.id;
+                // we need a primary key for comments, so construct one
                 comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
                 comment.byFriend = true;
                 commentValues.add(comment.getValues());
@@ -888,6 +906,19 @@ public class BlurDatabaseHelper {
         Comment comment = Comment.fromCursor(c);
         closeQuietly(c);
         return comment;
+    }
+
+    public void insertUpdateComment(String storyId, String feedId, String commentText) {
+        // we can only insert comments as the currently logged-in user
+        String userId = PrefsUtils.getUserDetails(context).id;
+
+        Comment comment = new Comment();
+        comment.id = TextUtils.concat(storyId, feedId, userId).toString();
+        comment.storyId = storyId;
+        comment.userId = userId;
+        comment.commentText = commentText;
+        comment.byFriend = true;
+        synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }
 
     public UserProfile getUserProfile(String userId) {

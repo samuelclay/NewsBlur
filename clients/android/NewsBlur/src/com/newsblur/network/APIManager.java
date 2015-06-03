@@ -448,22 +448,22 @@ public class APIManager {
 		}
 	}
 
-	public boolean favouriteComment(String storyId, String commentId, String feedId) {
+	public NewsBlurResponse favouriteComment(String storyId, String commentId, String feedId) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
-		final APIResponse response = post(APIConstants.URL_LIKE_COMMENT, values);
-		return (!response.isError());
+		APIResponse response = post(APIConstants.URL_LIKE_COMMENT, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
-	public Boolean unFavouriteComment(String storyId, String commentId, String feedId) {
+	public NewsBlurResponse unFavouriteComment(String storyId, String commentId, String feedId) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
-		final APIResponse response = post(APIConstants.URL_UNLIKE_COMMENT, values);
-		return (!response.isError());
+		APIResponse response = post(APIConstants.URL_UNLIKE_COMMENT, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
 	public boolean replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {

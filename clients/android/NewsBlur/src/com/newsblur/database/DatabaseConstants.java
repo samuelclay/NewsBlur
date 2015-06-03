@@ -131,6 +131,8 @@ public class DatabaseConstants {
     public static final String ACTION_UNSAVE = "unsave";
     public static final String ACTION_SHARE = "share";
     public static final String ACTION_UNSHARE = "unshare";
+    public static final String ACTION_LIKE_COMMENT = "like_comment";
+    public static final String ACTION_UNLIKE_COMMENT = "unlike_comment";
     public static final String ACTION_COMMENT = "comment";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
@@ -138,6 +140,7 @@ public class DatabaseConstants {
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
     public static final String ACTION_STORY_ID = "story_id";
     public static final String ACTION_SOURCE_USER_ID = "source_user_id";
+    public static final String ACTION_COMMENT_ID = "comment_id";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -268,13 +271,16 @@ public class DatabaseConstants {
         ACTION_UNSAVE + INTEGER + " DEFAULT 0, " +
         ACTION_SHARE + INTEGER + " DEFAULT 0, " +
         ACTION_UNSHARE + INTEGER + " DEFAULT 0, " +
+        ACTION_LIKE_COMMENT + INTEGER + " DEFAULT 0, " +
+        ACTION_UNLIKE_COMMENT + INTEGER + " DEFAULT 0, " +
         ACTION_COMMENT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
         ACTION_FEED_ID + TEXT + ", " +
         ACTION_INCLUDE_OLDER + INTEGER + ", " +
         ACTION_INCLUDE_NEWER + INTEGER + ", " +
         ACTION_STORY_ID + TEXT + ", " +
-        ACTION_SOURCE_USER_ID + TEXT +
+        ACTION_SOURCE_USER_ID + TEXT + ", " +
+        ACTION_COMMENT_ID + TEXT +
         ")";
 
 	public static final String[] FEED_COLUMNS = {

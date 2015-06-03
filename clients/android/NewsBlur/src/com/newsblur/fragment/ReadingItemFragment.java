@@ -41,8 +41,6 @@ import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
-import com.newsblur.network.APIManager;
-import com.newsblur.network.SetupCommentSectionTask;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
@@ -69,7 +67,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
 	public Story story;
 	private LayoutInflater inflater;
-	private APIManager apiManager;
 	private ImageLoader imageLoader;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
@@ -131,7 +128,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
-		apiManager = new APIManager(getActivity());
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
 
 		inflater = getActivity().getLayoutInflater();
@@ -197,11 +193,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		updateShareButton();
 	    updateSaveButton();
 
-		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
-			view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
-			view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
-			setupItemCommentsAndShares(view);
-		}
+        setupItemCommentsAndShares();
 
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(this.activity);
@@ -296,8 +288,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         shareButton.setText(R.string.share_this);
 	}
 
-	private void setupItemCommentsAndShares(final View view) {
-		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, apiManager, story, imageLoader).execute();
+	private void setupItemCommentsAndShares() {
+        new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, story, imageLoader).execute();
 	}
 
 	private void setupItemMetadata() {
@@ -452,6 +444,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         updateSaveButton();
         updateShareButton();
         reloadStoryContent();
+        setupItemCommentsAndShares();
     }
 
     private void loadOriginalText() {

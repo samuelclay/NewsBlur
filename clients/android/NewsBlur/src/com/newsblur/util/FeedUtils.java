@@ -212,6 +212,22 @@ public class FeedUtils {
         triggerSync(context);
     }
 
+    public static void likeComment(Story story, String commentId, Context context) {
+        ReadingAction ra = ReadingAction.likeComment(story.id, commentId, story.feedId);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(true);
+        triggerSync(context);
+    }
+
+    public static void unlikeComment(Story story, String commentId, Context context) {
+        ReadingAction ra = ReadingAction.unlikeComment(story.id, commentId, story.feedId);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(true);
+        triggerSync(context);
+    }
+
     public static FeedSet feedSetFromFolderName(String folderName) {
         return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));
     }

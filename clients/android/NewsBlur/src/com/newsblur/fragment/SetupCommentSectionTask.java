@@ -1,4 +1,4 @@
-package com.newsblur.network;
+package com.newsblur.fragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -43,7 +43,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	private ArrayList<View> publicCommentViews;
 	private ArrayList<View> friendCommentViews;
-	private final APIManager apiManager;
 
 	private final Story story;
 	private final LayoutInflater inflater;
@@ -54,11 +53,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private final FragmentManager manager;
 	private List<Comment> comments;
 
-	public SetupCommentSectionTask(final Context context, final View view, final FragmentManager manager, LayoutInflater inflater, final APIManager apiManager, final Story story, final ImageLoader imageLoader) {
+	public SetupCommentSectionTask(Context context, View view, FragmentManager manager, LayoutInflater inflater, Story story, ImageLoader imageLoader) {
 		this.context = context;
 		this.manager = manager;
 		this.inflater = inflater;
-		this.apiManager = apiManager;
 		this.story = story;
 		this.imageLoader = imageLoader;
 		viewHolder = new WeakReference<View>(view);
@@ -96,7 +94,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-			commentSharedDate.setText(comment.sharedDate + " ago");
+            // TODO: this uses hard-coded "ago" values, which will be wrong when reading prefetched stories
+            if (comment.sharedDate != null) {
+			    commentSharedDate.setText(comment.sharedDate + " ago");
+            }
 			commentSharedDate.setTag(COMMENT_DATE_BY + comment.userId);
 
 			final FlowLayout favouriteContainer = (FlowLayout) commentView.findViewById(R.id.comment_favourite_avatars);
@@ -123,9 +124,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					@Override
 					public void onClick(View v) {
 						if (!Arrays.asList(comment.likingUsers).contains(user.id)) {
-							new LikeCommentTask(context, apiManager, favouriteIcon, favouriteContainer, story.id, comment, story.feedId, user.id).execute();
+                            FeedUtils.likeComment(story, comment.userId, context);
 						} else {
-							new UnLikeCommentTask(context, apiManager, favouriteIcon, favouriteContainer, story.id, comment, story.feedId, user.id).execute();
+                            FeedUtils.unlikeComment(story, comment.userId, context);
 						}
 					}
 				});
@@ -204,12 +205,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				imageLoader.displayImage(userPhoto, commentImage, 10f);
 			}
 
-			if (comment.byFriend) {
-				friendCommentViews.add(commentView);
-			} else {
-				publicCommentViews.add(commentView);
-			}
-
 			commentImage.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
@@ -218,76 +213,100 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					context.startActivity(i);
 				}
 			});
+
+			if (comment.byFriend) {
+				friendCommentViews.add(commentView);
+			} else {
+				publicCommentViews.add(commentView);
+			}
 		}
 
 		return null;
 	}
 
 	protected void onPostExecute(Void result) {
-		if (viewHolder.get() != null) {
-			FlowLayout sharedGrid = (FlowLayout) viewHolder.get().findViewById(R.id.reading_social_shareimages);
-			FlowLayout commentGrid = (FlowLayout) viewHolder.get().findViewById(R.id.reading_social_commentimages);
+        View view = viewHolder.get();
+		if (view == null) return; // fragment was dismissed before we rendered
 
-			TextView friendCommentTotal = ((TextView) viewHolder.get().findViewById(R.id.reading_friend_comment_total));
-			TextView publicCommentTotal = ((TextView) viewHolder.get().findViewById(R.id.reading_public_comment_total));
-			
-			ViewUtils.setupCommentCount(context, viewHolder.get(), comments.size());
-			ViewUtils.setupShareCount(context, viewHolder.get(), story.sharedUserIds.length);
+        if (story.sharedUserIds.length > 0 || publicCommentViews.size() > 0 || friendCommentViews.size() > 0) {
+            view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.reading_share_bar).setVisibility(View.GONE);
+            view.findViewById(R.id.share_bar_underline).setVisibility(View.GONE);
+        }
 
-			Set<String> commentIds = new HashSet<String>();
-			for (Comment comment : comments) {
-				commentIds.add(comment.userId);
-			}
+        FlowLayout sharedGrid = (FlowLayout) view.findViewById(R.id.reading_social_shareimages);
+        FlowLayout commentGrid = (FlowLayout) view.findViewById(R.id.reading_social_commentimages);
 
-            for (String userId : story.sharedUserIds) {
-                if (!commentIds.contains(userId)) {
-                    UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
-                    if (user != null) {
-                        ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
-                        sharedGrid.addView(image);
-                    }
+        TextView friendCommentTotal = ((TextView) view.findViewById(R.id.reading_friend_comment_total));
+        TextView publicCommentTotal = ((TextView) view.findViewById(R.id.reading_public_comment_total));
+        
+        ViewUtils.setupCommentCount(context, view, comments.size());
+        ViewUtils.setupShareCount(context, view, story.sharedUserIds.length);
+
+        Set<String> commentIds = new HashSet<String>();
+        for (Comment comment : comments) {
+            commentIds.add(comment.userId);
+        }
+
+        sharedGrid.removeAllViews();
+        for (String userId : story.sharedUserIds) {
+            if (!commentIds.contains(userId)) {
+                UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
+                if (user != null) {
+                    ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
+                    sharedGrid.addView(image);
                 }
             }
+        }
 
-			for (Comment comment : comments) {
-				UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
-				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
-				commentGrid.addView(image);
-			}
-			
-			if (publicCommentViews.size() > 0) {
-				String commentCount = context.getString(R.string.public_comment_count);
-				if (publicCommentViews.size() == 1) {
-					commentCount = commentCount.substring(0, commentCount.length() - 1);
-				}
-				publicCommentTotal.setText(String.format(commentCount, publicCommentViews.size()));
-                viewHolder.get().findViewById(R.id.reading_public_comment_header).setVisibility(View.VISIBLE);
+        commentGrid.removeAllViews();
+        for (Comment comment : comments) {
+            UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
+            ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
+            commentGrid.addView(image);
+        }
+        
+        if (publicCommentViews.size() > 0) {
+            String commentCount = context.getString(R.string.public_comment_count);
+            if (publicCommentViews.size() == 1) {
+                commentCount = commentCount.substring(0, commentCount.length() - 1);
             }
-			
-			if (friendCommentViews.size() > 0) {
-				String commentCount = context.getString(R.string.friends_comments_count);
-				if (friendCommentViews.size() == 1) {
-					commentCount = commentCount.substring(0, commentCount.length() - 1);
-				}
-				friendCommentTotal.setText(String.format(commentCount, friendCommentViews.size()));
-                viewHolder.get().findViewById(R.id.reading_friend_comment_header).setVisibility(View.VISIBLE);
+            publicCommentTotal.setText(String.format(commentCount, publicCommentViews.size()));
+            view.findViewById(R.id.reading_public_comment_header).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.reading_public_comment_header).setVisibility(View.GONE);
+        }
+        
+        if (friendCommentViews.size() > 0) {
+            String commentCount = context.getString(R.string.friends_comments_count);
+            if (friendCommentViews.size() == 1) {
+                commentCount = commentCount.substring(0, commentCount.length() - 1);
             }
+            friendCommentTotal.setText(String.format(commentCount, friendCommentViews.size()));
+            view.findViewById(R.id.reading_friend_comment_header).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.reading_friend_comment_header).setVisibility(View.GONE);
+        }
 
-			for (int i = 0; i < publicCommentViews.size(); i++) {
-				if (i == publicCommentViews.size() - 1) {
-					publicCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
-				}
-				((LinearLayout) viewHolder.get().findViewById(R.id.reading_public_comment_container)).addView(publicCommentViews.get(i));
-			}
-			
-			for (int i = 0; i < friendCommentViews.size(); i++) {
-				if (i == friendCommentViews.size() - 1) {
-					friendCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
-				}
-				((LinearLayout) viewHolder.get().findViewById(R.id.reading_friend_comment_container)).addView(friendCommentViews.get(i));
-			}
-			
-		}
+        LinearLayout publicCommentListContainer = (LinearLayout) view.findViewById(R.id.reading_public_comment_container);
+        publicCommentListContainer.removeAllViews();
+        for (int i = 0; i < publicCommentViews.size(); i++) {
+            if (i == publicCommentViews.size() - 1) {
+                publicCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
+            }
+            publicCommentListContainer.addView(publicCommentViews.get(i));
+        }
+        
+        LinearLayout friendCommentListContainer = (LinearLayout) view.findViewById(R.id.reading_friend_comment_container);
+        friendCommentListContainer.removeAllViews();
+        for (int i = 0; i < friendCommentViews.size(); i++) {
+            if (i == friendCommentViews.size() - 1) {
+                friendCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
+            }
+            friendCommentListContainer.addView(friendCommentViews.get(i));
+        }
 	}
 }
 

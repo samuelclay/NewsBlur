@@ -12,6 +12,7 @@ import com.newsblur.database.DatabaseConstants;
 public class Comment implements Serializable {
 	private static final long serialVersionUID = -2018705258520565390L;
 
+    // we almost always override API version with sensible PK constructed by concating story, feed, and user IDs
 	public String id;
 
 	@SerializedName("comments")
@@ -36,7 +37,11 @@ public class Comment implements Serializable {
 	
 	public String storyId;
 	
+    // not vended by API, but we set it depending on which comment block of the response in which it appeared
 	public boolean byFriend = false;
+
+    // means this "comment" is actually a text-less share, which looks a little bit different
+    public boolean isPseudo = false;
 
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();

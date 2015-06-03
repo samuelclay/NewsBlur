@@ -79,6 +79,10 @@ public class Story implements Serializable {
 	@SerializedName("friend_comments")
 	public Comment[] friendsComments;
 
+	// these are pseudo-comments that allow replying to empty shares
+    @SerializedName("friend_shares")
+	public Comment[] friendsShares;
+
 	@SerializedName("intelligence")
 	public Intelligence intelligence = new Intelligence();
 

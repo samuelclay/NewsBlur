@@ -19,7 +19,10 @@ public class ReadingAction {
         MARK_UNREAD,
         SAVE,
         UNSAVE,
-        SHARE
+        SHARE,
+        REPLY,
+        LIKE_COMMENT,
+        UNLIKE_COMMENT
     };
 
     private ActionType type;
@@ -30,7 +33,8 @@ public class ReadingAction {
     private String storyId;
     private String feedId;
     private String sourceUserId;
-    private String comment;
+    private String commentText;
+    private String commentId;
 
     private ReadingAction() {
         ; // must use helpers
@@ -73,14 +77,32 @@ public class ReadingAction {
         return ra;
     }
 
-    public static ReadingAction shareStory(String hash, String storyId, String feedId, String sourceUserId, String comment) {
+    public static ReadingAction shareStory(String hash, String storyId, String feedId, String sourceUserId, String commentText) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.SHARE;
         ra.storyHash = hash;
         ra.storyId = storyId;
         ra.feedId = feedId;
         ra.sourceUserId = sourceUserId;
-        ra.comment = comment;
+        ra.commentText = commentText;
+        return ra;
+    }
+
+    public static ReadingAction likeComment(String storyId, String commentId, String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.LIKE_COMMENT;
+        ra.storyId = storyId;
+        ra.commentId = commentId;
+        ra.feedId = feedId;
+        return ra;
+    }
+
+    public static ReadingAction unlikeComment(String storyId, String commentId, String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.UNLIKE_COMMENT;
+        ra.storyId = storyId;
+        ra.commentId = commentId;
+        ra.feedId = feedId;
         return ra;
     }
 
@@ -123,7 +145,21 @@ public class ReadingAction {
                 values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
                 values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
                 values.put(DatabaseConstants.ACTION_SOURCE_USER_ID, sourceUserId);
-                values.put(DatabaseConstants.ACTION_COMMENT, comment);
+                values.put(DatabaseConstants.ACTION_COMMENT, commentText);
+                break;
+
+            case LIKE_COMMENT:
+                values.put(DatabaseConstants.ACTION_LIKE_COMMENT, 1);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentId);
+                break;
+
+            case UNLIKE_COMMENT:
+                values.put(DatabaseConstants.ACTION_UNLIKE_COMMENT, 1);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentId);
                 break;
 
             default:
@@ -166,7 +202,17 @@ public class ReadingAction {
             ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
             ra.sourceUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_SOURCE_USER_ID));
-            ra.comment = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT));
+            ra.commentText = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_LIKE_COMMENT)) == 1) {
+            ra.type = ActionType.LIKE_COMMENT;
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.commentId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_UNLIKE_COMMENT)) == 1) {
+            ra.type = ActionType.UNLIKE_COMMENT;
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.commentId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -197,7 +243,13 @@ public class ReadingAction {
                 return apiManager.markStoryAsUnstarred(storyHash);
 
             case SHARE:
-                return apiManager.shareStory(storyId, feedId, comment, sourceUserId);
+                return apiManager.shareStory(storyId, feedId, commentText, sourceUserId);
+
+            case LIKE_COMMENT:
+                return apiManager.favouriteComment(storyId, commentId, feedId);
+
+            case UNLIKE_COMMENT:
+                return apiManager.unFavouriteComment(storyId, commentId, feedId);
 
             default:
 
@@ -234,6 +286,17 @@ public class ReadingAction {
 
             case SHARE:
                 dbHelper.setStoryShared(storyHash);
+                if (!TextUtils.isEmpty(commentText)) {
+                    dbHelper.insertUpdateComment(storyId, feedId, commentText);
+                }
+                break;
+
+            case LIKE_COMMENT:
+                // TODO
+                break;
+
+            case UNLIKE_COMMENT:
+                // TODO
                 break;
 
             default:
