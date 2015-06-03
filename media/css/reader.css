@@ -11147,8 +11147,12 @@ form.opml_import_form input {
 .NB-interaction .NB-splash-link:hover {
     color: #405BA8;
 }
+.NB-interaction-content a {
+    color: #A6A9B0;
+}
 .NB-interaction:active:not(.NB-disabled) .NB-interaction-content .NB-splash-link {
-    color: #A85B40;
+    color: #405BA8;
+    text-decoration: none;
 }
 .NB-interaction-photo {
     position: absolute;

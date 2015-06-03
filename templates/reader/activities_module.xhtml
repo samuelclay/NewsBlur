@@ -35,7 +35,7 @@
                 {{ username }} replied to <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>:
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-reply-content" data-story-id="{{ activity.content_id }}">{{ activity.content|safe|truncatewords:16 }}</span>"
+                "<span class="NB-interaction-reply-content" data-story-id="{{ activity.content_id }}">{{ activity.content|safe|truncatewords:128 }}</span>"
             </div>
             <div class="NB-interaction-date">
                 {{ activity.time_since }} ago
@@ -48,7 +48,7 @@
                 {{ username }} favorited <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>'s comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>:
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-sharedstory-content">{{ activity.content|truncatewords:16 }}</span>"
+                "<span class="NB-interaction-sharedstory-content">{{ activity.content|truncatewords:8 }}</span>"
             </div>
             <div class="NB-interaction-date">
                 {{ activity.time_since }} ago
@@ -62,7 +62,7 @@
             </div>
             {% if activity.content %}
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-sharedstory-content">{{ activity.content|safe|truncatewords:16 }}</span>"
+                    "<span class="NB-interaction-sharedstory-content">{{ activity.content|safe|truncatewords:36 }}</span>"
                 </div>
             {% endif %}
             <div class="NB-interaction-date">
@@ -73,7 +73,7 @@
         {% if activity.category == 'star' %}
             <img class="NB-interaction-photo" src="{{ MEDIA_URL }}img/icons/circular/clock.png">
             <div class="NB-interaction-title">
-                You saved "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|safe|truncatewords:8 }}</span>".
+                You saved "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|safe|truncatewords:6 }}</span>".
             </div>
             <div class="NB-interaction-date">
                 {{ activity.time_since }} ago
