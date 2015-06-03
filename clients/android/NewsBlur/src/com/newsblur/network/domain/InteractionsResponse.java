@@ -1,7 +1,13 @@
 package com.newsblur.network.domain;
 
+import com.google.gson.annotations.SerializedName;
+import com.newsblur.domain.ActivityDetails;
+
 /**
- * Created by mark on 03/06/15.
+ * Response for /social/interactions endpoint
  */
-public class InteractionsResponse {
+public class InteractionsResponse extends NewsBlurResponse {
+
+    @SerializedName("interactions")
+    public ActivityDetails[] interactions;
 }
