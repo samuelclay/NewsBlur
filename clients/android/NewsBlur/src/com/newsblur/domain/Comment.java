@@ -40,7 +40,7 @@ public class Comment implements Serializable {
     // not vended by API, but we set it depending on which comment block of the response in which it appeared
 	public boolean byFriend = false;
 
-    // means this "comment" is actually a text-less share, which looks a little bit different
+    // means this "comment" is actually a text-less share, which is identical to a comment, but included in a different list in the story member
     public boolean isPseudo = false;
 
 	public ContentValues getValues() {

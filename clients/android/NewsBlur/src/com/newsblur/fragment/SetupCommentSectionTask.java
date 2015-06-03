@@ -232,8 +232,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
         View view = viewHolder.get();
 		if (view == null) return; // fragment was dismissed before we rendered
 
-        Log.d(this.getClass().getName(), String.format("story %s has %d friend comments and %d public comments.", story.storyHash, friendCommentViews.size(), publicCommentViews.size()));
-
         if (story.sharedUserIds.length > 0 || publicCommentViews.size() > 0 || friendCommentViews.size() > 0) {
             view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
             view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
