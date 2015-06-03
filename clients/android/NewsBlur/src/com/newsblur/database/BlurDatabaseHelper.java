@@ -888,7 +888,7 @@ public class BlurDatabaseHelper {
     public List<Comment> getComments(String storyId) {
         String[] selArgs = new String[] {storyId};
         String selection = DatabaseConstants.COMMENT_STORYID + " = ?"; 
-        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selArgs, null, null, null);
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
         List<Comment> comments = new ArrayList<Comment>(c.getCount());
         while (c.moveToNext()) {
             comments.add(Comment.fromCursor(c));
@@ -900,7 +900,7 @@ public class BlurDatabaseHelper {
     public Comment getComment(String storyId, String userId) {
         String selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
         String[] selArgs = new String[] {storyId, userId};
-        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selArgs, null, null, null);
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
         if (c.getCount() < 1) return null;
         c.moveToFirst();
         Comment comment = Comment.fromCursor(c);

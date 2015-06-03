@@ -54,6 +54,7 @@ public class Comment implements Serializable {
 		values.put(DatabaseConstants.COMMENT_SOURCE_USERID, sourceUserId);
 		values.put(DatabaseConstants.COMMENT_USERID, userId);
 		values.put(DatabaseConstants.COMMENT_ID, id);
+		values.put(DatabaseConstants.COMMENT_ISPSEUDO, isPseudo ? "true" : "false");
 		return values;
 	}
 
@@ -70,7 +71,7 @@ public class Comment implements Serializable {
 		comment.likingUsers = TextUtils.split(likingUsers, ",");
 		comment.sourceUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_SOURCE_USERID));
 		comment.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_ID));
-
+		comment.isPseudo = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_ISPSEUDO)));
 		return comment;
 	}
 

@@ -113,6 +113,7 @@ public class DatabaseConstants {
 	public static final String COMMENT_SHAREDDATE = "comment_shareddate";
 	public static final String COMMENT_BYFRIEND = "comment_byfriend";
 	public static final String COMMENT_USERID = "comment_userid";
+	public static final String COMMENT_ISPSEUDO = "comment_ispseudo";
 
 	public static final String REPLY_TABLE = "comment_replies";
 	public static final String REPLY_ID = BaseColumns._ID;
@@ -194,7 +195,8 @@ public class DatabaseConstants {
 		COMMENT_BYFRIEND + TEXT + ", " +
 		COMMENT_STORYID + TEXT + ", " + 
 		COMMENT_TEXT + TEXT + ", " +
-		COMMENT_USERID + TEXT +
+		COMMENT_USERID + TEXT + ", " +
+        COMMENT_ISPSEUDO + TEXT +
 		")";
 	
 	static final String REPLY_SQL = "CREATE TABLE " + REPLY_TABLE + " (" +
@@ -290,10 +292,6 @@ public class DatabaseConstants {
 
 	public static final String[] SOCIAL_FEED_COLUMNS = {
 		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_TITLE, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT
-	};
-
-	public static final String[] COMMENT_COLUMNS = {
-		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_BYFRIEND, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE, COMMENT_SOURCE_USERID
 	};
 
 	public static final String[] REPLY_COLUMNS = {

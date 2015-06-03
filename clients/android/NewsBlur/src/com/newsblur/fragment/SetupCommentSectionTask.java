@@ -43,6 +43,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	private ArrayList<View> publicCommentViews;
 	private ArrayList<View> friendCommentViews;
+	private ArrayList<View> friendShareViews;
 
 	private final Story story;
 	private final LayoutInflater inflater;
@@ -69,6 +70,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 		publicCommentViews = new ArrayList<View>();
 		friendCommentViews = new ArrayList<View>();
+		friendShareViews = new ArrayList<View>();
 
 		for (final Comment comment : comments) {
 			// skip public comments if they are disabled
@@ -214,7 +216,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				}
 			});
 
-			if (comment.byFriend) {
+			if (comment.isPseudo) {
+                friendShareViews.add(commentView);
+            } else if (comment.byFriend) {
 				friendCommentViews.add(commentView);
 			} else {
 				publicCommentViews.add(commentView);
@@ -228,6 +232,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
         View view = viewHolder.get();
 		if (view == null) return; // fragment was dismissed before we rendered
 
+        Log.d(this.getClass().getName(), String.format("story %s has %d friend comments and %d public comments.", story.storyHash, friendCommentViews.size(), publicCommentViews.size()));
+
         if (story.sharedUserIds.length > 0 || publicCommentViews.size() > 0 || friendCommentViews.size() > 0) {
             view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
             view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
@@ -240,19 +246,24 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
         FlowLayout commentGrid = (FlowLayout) view.findViewById(R.id.reading_social_commentimages);
 
         TextView friendCommentTotal = ((TextView) view.findViewById(R.id.reading_friend_comment_total));
+        TextView friendShareTotal = ((TextView) view.findViewById(R.id.reading_friend_emptyshare_total));
         TextView publicCommentTotal = ((TextView) view.findViewById(R.id.reading_public_comment_total));
         
-        ViewUtils.setupCommentCount(context, view, comments.size());
+        int actualCommentCount = comments.size() - friendShareViews.size(); // comment-less shares are modeled as comments, exclude them
+        ViewUtils.setupCommentCount(context, view, actualCommentCount);
         ViewUtils.setupShareCount(context, view, story.sharedUserIds.length);
 
-        Set<String> commentIds = new HashSet<String>();
+        Set<String> commentingUserIds = new HashSet<String>();
         for (Comment comment : comments) {
-            commentIds.add(comment.userId);
+            if (!comment.isPseudo) {
+                commentingUserIds.add(comment.userId);
+            }
         }
 
         sharedGrid.removeAllViews();
         for (String userId : story.sharedUserIds) {
-            if (!commentIds.contains(userId)) {
+            // only show an icon in either the share grid or the comment grid, not both
+            if (!commentingUserIds.contains(userId)) {
                 UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
                 if (user != null) {
                     ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
@@ -262,8 +273,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
         }
 
         commentGrid.removeAllViews();
-        for (Comment comment : comments) {
-            UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
+        for (String userId : commentingUserIds) {
+            UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
             ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
             commentGrid.addView(image);
         }
@@ -290,6 +301,17 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
             view.findViewById(R.id.reading_friend_comment_header).setVisibility(View.GONE);
         }
 
+        if (friendShareViews.size() > 0) {
+            String commentCount = context.getString(R.string.friends_shares_count);
+            if (friendShareViews.size() == 1) {
+                commentCount = commentCount.substring(0, commentCount.length() - 1);
+            }
+            friendShareTotal.setText(String.format(commentCount, friendShareViews.size()));
+            view.findViewById(R.id.reading_friend_emptyshare_header).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.reading_friend_emptyshare_header).setVisibility(View.GONE);
+        }
+
         LinearLayout publicCommentListContainer = (LinearLayout) view.findViewById(R.id.reading_public_comment_container);
         publicCommentListContainer.removeAllViews();
         for (int i = 0; i < publicCommentViews.size(); i++) {
@@ -306,6 +328,15 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 friendCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
             }
             friendCommentListContainer.addView(friendCommentViews.get(i));
+        }
+
+        LinearLayout friendShareListContainer = (LinearLayout) view.findViewById(R.id.reading_friend_emptyshare_container);
+        friendShareListContainer.removeAllViews();
+        for (int i = 0; i < friendShareViews.size(); i++) {
+            if (i == friendShareViews.size() - 1) {
+                friendShareViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
+            }
+            friendShareListContainer.addView(friendShareViews.get(i));
         }
 	}
 }
