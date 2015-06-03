@@ -122,16 +122,21 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					favouriteContainer.addView(favouriteImage);
 				}
 
-				favouriteIcon.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						if (!Arrays.asList(comment.likingUsers).contains(user.id)) {
-                            FeedUtils.likeComment(story, comment.userId, context);
-						} else {
-                            FeedUtils.unlikeComment(story, comment.userId, context);
-						}
-					}
-				});
+                // users cannot fave their own comments.  attempting to do so will actually queue a fatally invalid API call
+                if (TextUtils.equals(comment.userId, user.id)) {
+                    favouriteIcon.setVisibility(View.GONE);
+                } else {
+                    favouriteIcon.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!Arrays.asList(comment.likingUsers).contains(user.id)) {
+                                FeedUtils.likeComment(story, comment.userId, context);
+                            } else {
+                                FeedUtils.unlikeComment(story, comment.userId, context);
+                            }
+                        }
+                    });
+                }
 			}
 
 			replyIcon.setOnClickListener(new OnClickListener() {

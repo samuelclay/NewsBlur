@@ -212,16 +212,16 @@ public class FeedUtils {
         triggerSync(context);
     }
 
-    public static void likeComment(Story story, String commentId, Context context) {
-        ReadingAction ra = ReadingAction.likeComment(story.id, commentId, story.feedId);
+    public static void likeComment(Story story, String commentUserId, Context context) {
+        ReadingAction ra = ReadingAction.likeComment(story.id, commentUserId, story.feedId);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
         NbActivity.updateAllActivities(true);
         triggerSync(context);
     }
 
-    public static void unlikeComment(Story story, String commentId, Context context) {
-        ReadingAction ra = ReadingAction.unlikeComment(story.id, commentId, story.feedId);
+    public static void unlikeComment(Story story, String commentUserId, Context context) {
+        ReadingAction ra = ReadingAction.unlikeComment(story.id, commentUserId, story.feedId);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
         NbActivity.updateAllActivities(true);
