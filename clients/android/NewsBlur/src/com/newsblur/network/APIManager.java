@@ -28,6 +28,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
+import com.newsblur.network.domain.InteractionsResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
@@ -451,6 +452,20 @@ public class APIManager {
 			return null;
 		}
 	}
+
+    public InteractionsResponse getInteractions(String userId, int pageNumber) {
+        final ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_USER_ID, userId);
+        values.put(APIConstants.PARAMETER_LIMIT, "10");
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
+        final APIResponse response = get(APIConstants.URL_USER_INTERACTIONS, values);
+        if (!response.isError()) {
+            InteractionsResponse interactionsResponse = (InteractionsResponse) response.getResponse(gson, InteractionsResponse.class);
+            return interactionsResponse;
+        } else {
+            return null;
+        }
+    }
 
 	public StoryTextResponse getStoryText(String feedId, String storyId) {
 		final ContentValues values = new ContentValues();
