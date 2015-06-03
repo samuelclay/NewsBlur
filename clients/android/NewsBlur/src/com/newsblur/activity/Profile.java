@@ -12,7 +12,6 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileActivityFragment;
 import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.PrefsUtils;
 
 public class Profile extends NbActivity {
@@ -24,7 +23,6 @@ public class Profile extends NbActivity {
 	private APIManager apiManager;
 	public static final String USER_ID = "user_id";
 	private ProfileDetailsFragment detailsFragment;
-	private ProfileResponse profileResponse;
 	private ProfileActivityFragment activitiesFragment;
 	private String userId = null;
 	
@@ -83,16 +81,10 @@ public class Profile extends NbActivity {
 		protected Void doInBackground(Void... params) {
 			if (!TextUtils.isEmpty(userId)) {
 				String intentUserId  = getIntent().getStringExtra(USER_ID);
-				profileResponse = apiManager.getUser(intentUserId);
-				user = profileResponse.user;
+				user = apiManager.getUser(intentUserId).user;
 			} else {
 				apiManager.updateUserProfile();
 				user = PrefsUtils.getUserDetails(Profile.this);
-				// check user.id has been set. If previous attempts to update the user details
-				// have failed then user.id == null would cause a force close
-				if (user.id != null) {
-					profileResponse = apiManager.getUser(user.id);
-				}
 			}
 			return null;
 		}
