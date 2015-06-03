@@ -1907,6 +1907,8 @@ class MSharedStory(mongo.Document):
                     comments = shared_story.comments_with_author()
                     story['reply_count'] += len(comments['replies'])
                     story['friend_shares'].append(comments)
+                    profile_user_ids = profile_user_ids.union([reply['user_id'] 
+                                                               for reply in comments['replies']])
                     if comments.get('source_user_id'):
                         profile_user_ids.add(comments['source_user_id'])
                     if comments.get('liking_users'):
