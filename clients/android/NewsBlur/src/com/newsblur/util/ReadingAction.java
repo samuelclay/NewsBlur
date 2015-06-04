@@ -34,7 +34,7 @@ public class ReadingAction {
     private String feedId;
     private String sourceUserId;
     private String commentText;
-    private String commentId;
+    private String commentUserId;
 
     private ReadingAction() {
         ; // must use helpers
@@ -88,20 +88,20 @@ public class ReadingAction {
         return ra;
     }
 
-    public static ReadingAction likeComment(String storyId, String commentId, String feedId) {
+    public static ReadingAction likeComment(String storyId, String commentUserId, String feedId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.LIKE_COMMENT;
         ra.storyId = storyId;
-        ra.commentId = commentId;
+        ra.commentUserId = commentUserId;
         ra.feedId = feedId;
         return ra;
     }
 
-    public static ReadingAction unlikeComment(String storyId, String commentId, String feedId) {
+    public static ReadingAction unlikeComment(String storyId, String commentUserId, String feedId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UNLIKE_COMMENT;
         ra.storyId = storyId;
-        ra.commentId = commentId;
+        ra.commentUserId = commentUserId;
         ra.feedId = feedId;
         return ra;
     }
@@ -152,14 +152,14 @@ public class ReadingAction {
                 values.put(DatabaseConstants.ACTION_LIKE_COMMENT, 1);
                 values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
                 values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
-                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentUserId);
                 break;
 
             case UNLIKE_COMMENT:
                 values.put(DatabaseConstants.ACTION_UNLIKE_COMMENT, 1);
                 values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
                 values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
-                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentUserId);
                 break;
 
             default:
@@ -207,12 +207,12 @@ public class ReadingAction {
             ra.type = ActionType.LIKE_COMMENT;
             ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
-            ra.commentId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+            ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
         } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_UNLIKE_COMMENT)) == 1) {
             ra.type = ActionType.UNLIKE_COMMENT;
             ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
-            ra.commentId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+            ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -246,10 +246,10 @@ public class ReadingAction {
                 return apiManager.shareStory(storyId, feedId, commentText, sourceUserId);
 
             case LIKE_COMMENT:
-                return apiManager.favouriteComment(storyId, commentId, feedId);
+                return apiManager.favouriteComment(storyId, commentUserId, feedId);
 
             case UNLIKE_COMMENT:
-                return apiManager.unFavouriteComment(storyId, commentId, feedId);
+                return apiManager.unFavouriteComment(storyId, commentUserId, feedId);
 
             default:
 
@@ -292,11 +292,11 @@ public class ReadingAction {
                 break;
 
             case LIKE_COMMENT:
-                // TODO
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
                 break;
 
             case UNLIKE_COMMENT:
-                // TODO
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
                 break;
 
             default:
