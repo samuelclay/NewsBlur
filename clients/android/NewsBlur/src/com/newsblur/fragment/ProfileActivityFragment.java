@@ -1,16 +1,21 @@
 package com.newsblur.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.newsblur.R;
+import com.newsblur.activity.Profile;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.network.APIManager;
@@ -18,7 +23,7 @@ import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.view.ActivitiesAdapter;
 import com.newsblur.view.ProgressThrobber;
 
-public class ProfileActivityFragment extends Fragment {
+public class ProfileActivityFragment extends Fragment implements AdapterView.OnItemClickListener {
 
 	private ListView activityList;
 	private ActivitiesAdapter adapter;
@@ -50,6 +55,7 @@ public class ProfileActivityFragment extends Fragment {
 			displayActivities();
 		}
 		activityList.setOnScrollListener(new EndlessScrollListener());
+        activityList.setOnItemClickListener(this);
 		return v;
 	}
 	
@@ -99,7 +105,18 @@ public class ProfileActivityFragment extends Fragment {
 		}.execute();
 	}
 
-	/**
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        ActivityDetails activity = adapter.getItem(position);
+        if (TextUtils.equals(activity.category, "follow")) {
+            Context context = getActivity();
+            Intent i = new Intent(context, Profile.class);
+            i.putExtra(Profile.USER_ID, activity.id);
+            context.startActivity(i);
+        }
+    }
+
+    /**
 	 * Detects when user is close to the end of the current page and starts loading the next page
 	 * so the user will not have to wait (that much) for the next entries.
 	 *

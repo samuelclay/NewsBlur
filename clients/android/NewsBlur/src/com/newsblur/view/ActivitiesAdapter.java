@@ -1,13 +1,10 @@
 package com.newsblur.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +15,6 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
-import com.newsblur.activity.Profile;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.network.APIConstants;
@@ -76,16 +72,6 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		}
 		final ActivityDetails activity = getItem(position);
 		SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-
-		// TODO handle different links
-		ClickableSpanWithoutUnderline usernameClick = new ClickableSpanWithoutUnderline() {
-			@Override
-			public void onClick(View widget) {
-				Intent i = new Intent(context, Profile.class);
-				i.putExtra(Profile.USER_ID, activity.id);
-				context.startActivity(i);
-			}
-		};
 		
 		TextView activityText = (TextView) view.findViewById(R.id.row_activity_text);
 		TextView activityTime = (TextView) view.findViewById(R.id.row_activity_time);
@@ -105,43 +91,40 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		}
 
 		if (TextUtils.equals(activity.category, "feedsub")) {
-			addFeedSubscriptionContent(activity, stringBuilder, usernameClick);
+			addFeedSubscriptionContent(activity, stringBuilder);
 		} else if (TextUtils.equals(activity.category, "star")) {
-			addStarContent(activity, stringBuilder, usernameClick);
+			addStarContent(activity, stringBuilder);
 		} else if (TextUtils.equals(activity.category, "signup")) {
 			addSignupContent(stringBuilder);
 		} else if (TextUtils.equals(activity.category, "follow")) {
-            addFollowContent(activity, stringBuilder, usernameClick);
+            addFollowContent(activity, stringBuilder);
 		} else if (TextUtils.equals(activity.category, "comment_like")) {
-			addCommentLikeContent(activity, stringBuilder, usernameClick);
+			addCommentLikeContent(activity, stringBuilder);
 		} else if (TextUtils.equals(activity.category, "comment_reply")) {
-			addCommentReplyContent(activity, stringBuilder, usernameClick);
+			addCommentReplyContent(activity, stringBuilder);
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
-			addSharedStoryContent(activity, stringBuilder, usernameClick);
+			addSharedStoryContent(activity, stringBuilder);
 		}
 		
 		activityText.setText(stringBuilder);
-		activityText.setMovementMethod(LinkMovementMethod.getInstance());
-		
 		return view;
 	}
 
-	private void addFeedSubscriptionContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+	private void addFeedSubscriptionContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(subscribedTo);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.content);
-		stringBuilder.setSpan(contentColor, 0, subscribedTo.length() + activity.content.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-	}
 
-	private void addStarContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+		stringBuilder.setSpan(contentColor, 0, subscribedTo.length() + activity.content.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+	private void addStarContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(saved);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.content);
-		stringBuilder.setSpan(contentColor, 0, saved.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // TODO link to saved story
-		stringBuilder.setSpan(usernameClick, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(linkColor, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(contentColor, 0, saved.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
 	private void addSignupContent(SpannableStringBuilder stringBuilder) {
@@ -149,16 +132,16 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(contentColor, 0, signup.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	private void addFollowContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+	private void addFollowContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(startedFollowing);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.user.username);
+
 		stringBuilder.setSpan(contentColor, 0, startedFollowing.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(usernameClick, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(linkColor, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	private void addCommentLikeContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+	private void addCommentLikeContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(favorited);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.user.username);
@@ -174,9 +157,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(contentColor, 0, favorited.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		int usernameSpanStart = favorited.length() + 1;
 		stringBuilder.setSpan(linkColor, usernameSpanStart, usernameSpanStart + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(usernameClick, usernameSpanStart, usernameSpanStart + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-		// TODO click on title
 		int titleSpanStart = usernameSpanStart + usernameLength + 1 + commentsOn.length() + 1;
 		int titleLength = activity.title.length();
 		stringBuilder.setSpan(linkColor, titleSpanStart, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -185,20 +166,20 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		stringBuilder.setSpan(quoteColor, quoteSpanStart, quoteSpanStart + activity.content.length() + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	private void addCommentReplyContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+	private void addCommentReplyContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(repliedTo);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.user.username);
 		stringBuilder.append("\n\n\"");
 		stringBuilder.append(activity.content);
 		stringBuilder.append("\"");
+
 		stringBuilder.setSpan(contentColor, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		stringBuilder.setSpan(usernameClick, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(linkColor, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		stringBuilder.setSpan(quoteColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
-	private void addSharedStoryContent(ActivityDetails activity, SpannableStringBuilder stringBuilder, ClickableSpan usernameClick) {
+	private void addSharedStoryContent(ActivityDetails activity, SpannableStringBuilder stringBuilder) {
 		stringBuilder.append(sharedStory);
 		stringBuilder.append(" ");
 		stringBuilder.append(activity.title);
@@ -208,9 +189,9 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 			stringBuilder.append(activity.content);
 			stringBuilder.append("\"");
 		}
+
 		stringBuilder.setSpan(contentColor, 0, sharedStory.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        // TODO link to story
-		stringBuilder.setSpan(linkColor, sharedStory.length() + 1, sharedStory.length() + 1 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, sharedStory.length() + 1, sharedStory.length() + 1 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		if (!TextUtils.isEmpty(activity.content)) {
 			stringBuilder.setSpan(quoteColor, sharedStory.length() + 2 + activity.title.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
