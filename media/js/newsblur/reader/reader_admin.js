@@ -1,5 +1,7 @@
 NEWSBLUR.ReaderUserAdmin = function(options) {
-    var defaults = {};
+    var defaults = {
+        width: 700
+    };
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
@@ -78,6 +80,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 ]));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: left" }, "Full Refund"));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund-partial", style: "float: left" }, "Refund $12"));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-never-expire", style: "float: left" }, "Never expire"));
             } else {
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "Upgrade to premium"));
             }
@@ -86,20 +89,29 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-opml", style: "float: left" }, "OPML"));
             
             $statistics.append($.make('dl', [
-                $.make('dt', 'Stripe Id:'),
-                $.make('dd', $.make('a', { href: "https://manage.stripe.com/customers/" + data.statistics.stripe_id, className: 'NB-splash-link' }, data.statistics.stripe_id)),
+                $.make('dt', 'Created:'),
+                $.make('dd', data.statistics.created_date),
                 $.make('dt', 'Last seen:'),
                 $.make('dd', data.statistics.last_seen_date),
                 $.make('dt', 'Timezone:'),
                 $.make('dd', data.statistics.timezone),
                 $.make('dt', 'Email:'),
                 $.make('dd', data.statistics.email),
+                $.make('dt', 'Stripe Id:'),
+                $.make('dd', $.make('a', { href: "https://manage.stripe.com/customers/" + data.statistics.stripe_id, className: 'NB-splash-link' }, data.statistics.stripe_id)),
                 $.make('dt', 'Feeds:'),
                 $.make('dd', Inflector.commas(data.statistics.feeds)),
                 $.make('dt', 'Feed opens:'),
                 $.make('dd', Inflector.commas(data.statistics.feed_opens)),
                 $.make('dt', 'Read Stories:'),
-                $.make('dd', Inflector.commas(data.statistics.read_story_count))
+                $.make('dd', Inflector.commas(data.statistics.read_story_count)),
+                $.make('dt', 'Training:'),
+                $.make('dd', { className: 'NB-admin-training-counts' }, [
+                    $.make('span', { className: data.statistics.training.title ? '' : 'NB-grey' }, 'Title: ' + data.statistics.training.title),
+                    $.make('span', { className: data.statistics.training.author ? '' : 'NB-grey' }, 'Author: ' + data.statistics.training.author),
+                    $.make('span', { className: data.statistics.training.tag ? '' : 'NB-grey' }, 'Tag: ' + data.statistics.training.tag),
+                    $.make('span', { className: data.statistics.training.feed ? '' : 'NB-grey' }, 'Feed: ' + data.statistics.training.feed)
+                ])
             ]));
             $(window).resize();
         }, this));
@@ -133,6 +145,17 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $(".NB-admin-action-refund").replaceWith($.make('div', 'Refunded $' + data.refunded));
             }, function(data) {
                 $(".NB-admin-action-refund").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-never-expire' }, function($t, $p) {
+            e.preventDefault();
+            
+            NEWSBLUR.assets.never_expire_premium({
+                'user_id': self.user.get('user_id')
+            }, function(data) {
+                self.fetch_payment_history();
+            }, function(data) {
+                $(".NB-admin-action-never-expire").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-upgrade' }, function($t, $p) {
