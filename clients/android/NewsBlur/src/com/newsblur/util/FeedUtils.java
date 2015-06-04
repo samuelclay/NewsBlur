@@ -234,4 +234,8 @@ public class FeedUtils {
         return parts[0];
     }
 
+    public static Feed getFeed(String feedId) {
+        return dbHelper.getFeed(feedId);
+    }
+
 }
