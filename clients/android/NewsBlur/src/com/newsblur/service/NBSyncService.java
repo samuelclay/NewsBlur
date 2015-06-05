@@ -97,7 +97,9 @@ public class NBSyncService extends Service {
 
     private volatile static boolean isMemoryLow = false;
     private static long lastFeedCount = 0L;
+    private static long lastFFConnMillis = 0L;
     private static long lastFFReadMillis = 0L;
+    private static long lastFFParseMillis = 0L;
     private static long lastFFWriteMillis = 0L;
 
     /** Feed set that we need to sync immediately for the UI. */
@@ -386,7 +388,7 @@ public class NBSyncService extends Service {
             ExhaustedFeeds.clear();
             FeedPagesSeen.clear();
             FeedStoriesSeen.clear();
-            UnreadsService.clearHashes();
+            UnreadsService.clear();
             RecountCandidates.clear();
 
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -402,7 +404,9 @@ public class NBSyncService extends Service {
                 return;
             }
 
+            lastFFConnMillis = feedResponse.connTime;
             lastFFReadMillis = feedResponse.readTime;
+            lastFFParseMillis = feedResponse.parseTime;
             long startTime = System.currentTimeMillis();
 
             isPremium = feedResponse.isPremium;
@@ -838,6 +842,19 @@ public class NBSyncService extends Service {
         HaltNow = true;
     }
 
+    /**
+     * Resets any internal temp vars or queues. Called when switching accounts.
+     */
+    public static void clearState() {
+        clearPendingStoryRequest();
+        FollowupActions.clear();
+        RecountCandidates.clear();
+        resetFeeds();
+        OriginalTextService.clear();
+        UnreadsService.clear();
+        ImagePrefetchService.clear();
+    }
+
     public static void resumeFromInterrupt() {
         HaltNow = false;
     }
@@ -879,7 +896,11 @@ public class NBSyncService extends Service {
 
     public static String getSpeedInfo() {
         StringBuilder s = new StringBuilder();
-        s.append(lastFeedCount).append(" in ").append(lastFFReadMillis).append(" and ").append(lastFFWriteMillis);
+        s.append(lastFeedCount).append(" feeds in ");
+        s.append(" conn:").append(lastFFConnMillis);
+        s.append(" read:").append(lastFFReadMillis);
+        s.append(" parse:").append(lastFFParseMillis);
+        s.append(" store:").append(lastFFWriteMillis);
         return s.toString();
     }
 

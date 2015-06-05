@@ -113,6 +113,7 @@ public class DatabaseConstants {
 	public static final String COMMENT_SHAREDDATE = "comment_shareddate";
 	public static final String COMMENT_BYFRIEND = "comment_byfriend";
 	public static final String COMMENT_USERID = "comment_userid";
+	public static final String COMMENT_ISPSEUDO = "comment_ispseudo";
 
 	public static final String REPLY_TABLE = "comment_replies";
 	public static final String REPLY_ID = BaseColumns._ID;
@@ -131,11 +132,17 @@ public class DatabaseConstants {
     public static final String ACTION_UNSAVE = "unsave";
     public static final String ACTION_SHARE = "share";
     public static final String ACTION_UNSHARE = "unshare";
-    public static final String ACTION_COMMENT = "comment";
+    public static final String ACTION_LIKE_COMMENT = "like_comment";
+    public static final String ACTION_UNLIKE_COMMENT = "unlike_comment";
+    public static final String ACTION_REPLY = "reply";
+    public static final String ACTION_COMMENT_TEXT = "comment_text";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
     public static final String ACTION_INCLUDE_OLDER = "include_older";
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
+    public static final String ACTION_STORY_ID = "story_id";
+    public static final String ACTION_SOURCE_USER_ID = "source_user_id";
+    public static final String ACTION_COMMENT_ID = "comment_id";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -189,7 +196,8 @@ public class DatabaseConstants {
 		COMMENT_BYFRIEND + TEXT + ", " +
 		COMMENT_STORYID + TEXT + ", " + 
 		COMMENT_TEXT + TEXT + ", " +
-		COMMENT_USERID + TEXT +
+		COMMENT_USERID + TEXT + ", " +
+        COMMENT_ISPSEUDO + TEXT +
 		")";
 	
 	static final String REPLY_SQL = "CREATE TABLE " + REPLY_TABLE + " (" +
@@ -266,11 +274,17 @@ public class DatabaseConstants {
         ACTION_UNSAVE + INTEGER + " DEFAULT 0, " +
         ACTION_SHARE + INTEGER + " DEFAULT 0, " +
         ACTION_UNSHARE + INTEGER + " DEFAULT 0, " +
-        ACTION_COMMENT + TEXT + ", " +
+        ACTION_LIKE_COMMENT + INTEGER + " DEFAULT 0, " +
+        ACTION_UNLIKE_COMMENT + INTEGER + " DEFAULT 0, " +
+        ACTION_REPLY + INTEGER + " DEFAULT 0, " +
+        ACTION_COMMENT_TEXT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
         ACTION_FEED_ID + TEXT + ", " +
         ACTION_INCLUDE_OLDER + INTEGER + ", " +
-        ACTION_INCLUDE_NEWER + INTEGER +
+        ACTION_INCLUDE_NEWER + INTEGER + ", " +
+        ACTION_STORY_ID + TEXT + ", " +
+        ACTION_SOURCE_USER_ID + TEXT + ", " +
+        ACTION_COMMENT_ID + TEXT +
         ")";
 
 	public static final String[] FEED_COLUMNS = {
@@ -280,14 +294,6 @@ public class DatabaseConstants {
 
 	public static final String[] SOCIAL_FEED_COLUMNS = {
 		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_TITLE, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT
-	};
-
-	public static final String[] COMMENT_COLUMNS = {
-		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_BYFRIEND, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE, COMMENT_SOURCE_USERID
-	};
-
-	public static final String[] REPLY_COLUMNS = {
-		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
 
     public static final String SUM_STORY_TOTAL = "storyTotal";

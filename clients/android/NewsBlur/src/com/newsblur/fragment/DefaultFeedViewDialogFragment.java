@@ -10,6 +10,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RadioButton;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+import butterknife.OnClick;
+
 import com.newsblur.R;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
@@ -17,10 +21,12 @@ import com.newsblur.util.DefaultFeedViewChangedListener;
 /**
  * Created by mark on 09/01/2014.
  */
-public class DefaultFeedViewDialogFragment extends DialogFragment implements View.OnClickListener {
+public class DefaultFeedViewDialogFragment extends DialogFragment {
 
     private static String CURRENT_VIEW = "currentView";
     private DefaultFeedView currentValue;
+    @FindView(R.id.radio_story) RadioButton storyButton;
+    @FindView(R.id.radio_text) RadioButton textButton;
 
     public static DefaultFeedViewDialogFragment newInstance(DefaultFeedView currentValue) {
         DefaultFeedViewDialogFragment dialog = new DefaultFeedViewDialogFragment();
@@ -40,11 +46,9 @@ public class DefaultFeedViewDialogFragment extends DialogFragment implements Vie
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         currentValue = (DefaultFeedView) getArguments().getSerializable(CURRENT_VIEW);
         View v = inflater.inflate(R.layout.defaultfeedview_dialog, null);
-        RadioButton storyButton = (RadioButton) v.findViewById(R.id.radio_story);
-        storyButton.setOnClickListener(this);
+        ButterKnife.bind(this, v);
+
         storyButton.setChecked(currentValue == DefaultFeedView.STORY);
-        RadioButton textButton = (RadioButton) v.findViewById(R.id.radio_text);
-        textButton.setOnClickListener(this);
         textButton.setChecked(currentValue == DefaultFeedView.TEXT);
 
         getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
@@ -54,19 +58,18 @@ public class DefaultFeedViewDialogFragment extends DialogFragment implements Vie
         return v;
     }
 
-    @Override
-    public void onClick(View v) {
-        DefaultFeedViewChangedListener listener = (DefaultFeedViewChangedListener)getActivity();
-        if (v.getId() == R.id.radio_story) {
-            if (currentValue == DefaultFeedView.TEXT) {
-                listener.defaultFeedViewChanged(DefaultFeedView.STORY);
-            }
-        } else {
-            if (currentValue == DefaultFeedView.STORY) {
-                listener.defaultFeedViewChanged(DefaultFeedView.TEXT);
-            }
+    @OnClick(R.id.radio_story) void selectStory() {
+        if (currentValue != DefaultFeedView.STORY) {
+            ((DefaultFeedViewChangedListener) getActivity()).defaultFeedViewChanged(DefaultFeedView.STORY);
         }
-
         dismiss();
     }
+        
+    @OnClick(R.id.radio_text) void selectText() {
+        if (currentValue != DefaultFeedView.TEXT) {
+            ((DefaultFeedViewChangedListener) getActivity()).defaultFeedViewChanged(DefaultFeedView.TEXT);
+        }
+        dismiss();
+    }
+
 }

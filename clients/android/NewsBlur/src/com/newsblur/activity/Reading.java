@@ -27,6 +27,9 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+
 import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
@@ -73,11 +76,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected final Object STORIES_MUTEX = new Object();
 	protected Cursor stories;
 
-    private View contentView; // we use this a ton, so cache it
-	protected ViewPager pager;
-    protected Button overlayLeft, overlayRight;
-    protected ProgressBar overlayProgress, overlayProgressRight, overlayProgressLeft;
-    protected Button overlayText, overlaySend;
+    @FindView(android.R.id.content) View contentView; // we use this a ton, so cache it
+    @FindView(R.id.reading_overlay_left) Button overlayLeft;
+    @FindView(R.id.reading_overlay_right) Button overlayRight;
+    @FindView(R.id.reading_overlay_progress) ProgressBar overlayProgress;
+    @FindView(R.id.reading_overlay_progress_right) ProgressBar overlayProgressRight;
+    @FindView(R.id.reading_overlay_progress_left) ProgressBar overlayProgressLeft;
+    @FindView(R.id.reading_overlay_text) Button overlayText;
+    @FindView(R.id.reading_overlay_send) Button overlaySend;
+    
+    ViewPager pager;
+
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     private boolean stopLoading;
@@ -104,14 +113,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
-        this.contentView = findViewById(android.R.id.content);
-        this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
-        this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
-        this.overlayProgress = (ProgressBar) findViewById(R.id.reading_overlay_progress);
-        this.overlayProgressRight = (ProgressBar) findViewById(R.id.reading_overlay_progress_right);
-        this.overlayProgressLeft = (ProgressBar) findViewById(R.id.reading_overlay_progress_left);
-        this.overlayText = (Button) findViewById(R.id.reading_overlay_text);
-        this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
+        ButterKnife.bind(this);
 
 		fragmentManager = getFragmentManager();
 
@@ -221,7 +223,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
 	private void setupPager() {
-		pager = (ViewPager) findViewById(R.id.reading_pager);
+        pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
         if (PrefsUtils.isLightThemeSelected(this)) {
             pager.setPageMarginDrawable(R.drawable.divider_light);
@@ -285,11 +287,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
-            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText, readingAdapter.getSourceUserId());
+            DialogFragment newFragment = ShareDialogFragment.newInstance(story, readingAdapter.getSourceUserId());
             newFragment.show(getFragmentManager(), "dialog");
 			return true;
-		} else if (item.getItemId() == R.id.menu_shared) {
-			FeedUtils.shareStory(story, this);
+		} else if (item.getItemId() == R.id.menu_send_story) {
+			FeedUtils.sendStory(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
@@ -592,9 +594,18 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             unreadSearchStarted = true;
         }
 
-        int candidate = 0;
         boolean unreadFound = false;
+        // start searching just after the current story
+        int candidate = pager.getCurrentItem() + 1;
         unreadSearch:while (!unreadFound) {
+            // if we've reached the end of the list, loop back to the beginning
+            if (candidate >= readingAdapter.getCount()) {
+                candidate = 0;
+            }
+            // if we have looped all the way around to the story we are on, there aren't any left
+            if (candidate == pager.getCurrentItem()) {
+                break unreadSearch;
+            }
             Story story = readingAdapter.getStory(candidate);
             if (this.stopLoading) {
                 // this activity was ended before we finished. just stop.
@@ -603,13 +614,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             } 
             // iterate through the stories in our cursor until we find an unread one
             if (story != null) {
-                if ((candidate == pager.getCurrentItem()) || (story.read) ) {
+                if (story.read) {
                     candidate++;
                     continue unreadSearch;
                 } else {
                     unreadFound = true;
                 }
             }
+            // if we didn't continue or break, the cursor probably changed out from under us, so stop.
             break unreadSearch;
         }
 
@@ -632,7 +644,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             } else {
                 // trigger a check to see if there are any more to search before proceeding. By leaving the
                 // unreadSearchActive flag high, this method will be called again when a new cursor is loaded
-                this.checkStoryCount(candidate+1);
+                this.checkStoryCount(readingAdapter.getCount()+1);
             }
         }
     }
@@ -682,7 +694,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     public void overlaySend(View v) {
         if ((readingAdapter == null) || (pager == null)) return;
 		Story story = readingAdapter.getStory(pager.getCurrentItem());
-        FeedUtils.shareStory(story, this);
+        FeedUtils.sendStory(story, this);
     }
 
     public void overlayText(View v) {

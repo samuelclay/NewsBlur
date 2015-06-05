@@ -19,8 +19,13 @@ import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.ExpandableListView.OnGroupClickListener;
+
+import butterknife.ButterKnife;
+import butterknife.FindView;
+import butterknife.OnChildClick;
+import butterknife.OnGroupClick;
+import butterknife.OnGroupCollapse;
+import butterknife.OnGroupExpand;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
@@ -42,12 +47,8 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
-public class FolderListFragment extends NbFragment implements OnGroupClickListener,
-                                                              OnChildClickListener, 
-                                                              OnCreateContextMenuListener, 
-                                                              LoaderManager.LoaderCallbacks<Cursor>,
-                                                              ExpandableListView.OnGroupCollapseListener,
-                                                              ExpandableListView.OnGroupExpandListener {
+public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener, 
+                                                              LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int SOCIALFEEDS_LOADER = 1;
     private static final int FOLDERS_LOADER = 2;
@@ -57,7 +58,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 	private FolderListAdapter adapter;
 	public StateFilter currentState = StateFilter.SOME;
 	private SharedPreferences sharedPreferences;
-    private ExpandableListView list;
+    @FindView(R.id.folderfeed_list) ExpandableListView list;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -139,7 +140,8 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
-        list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
+        ButterKnife.bind(this, v);
+
         list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
         list.setOnCreateContextMenuListener(this);
 
@@ -150,10 +152,6 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 
         list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
         list.setAdapter(adapter);
-        list.setOnGroupClickListener(this);
-        list.setOnChildClickListener(this);
-        list.setOnGroupCollapseListener(this);
-        list.setOnGroupExpandListener(this);
 
         // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
         list.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
@@ -249,8 +247,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 		hasUpdated();
 	}
 
-	@Override
-	public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
+	@OnGroupClick(R.id.folderfeed_list) boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         if (adapter.isFolderRoot(groupPosition)) {
 			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
 			i.putExtra(ItemsList.EXTRA_STATE, currentState);
@@ -279,8 +276,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
 		}
 	}
 
-    @Override
-    public void onGroupExpand(int groupPosition) {
+    @OnGroupExpand(R.id.folderfeed_list) void onGroupExpand(int groupPosition) {
         // these shouldn't ever be collapsible
         if (adapter.isFolderRoot(groupPosition)) return;
         if (adapter.isRowSavedStories(groupPosition)) return;
@@ -296,8 +292,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         checkOpenFolderPreferences();
     }
 
-    @Override
-    public void onGroupCollapse(int groupPosition) {
+    @OnGroupCollapse(R.id.folderfeed_list) void onGroupCollapse(int groupPosition) {
         // these shouldn't ever be collapsible
         if (adapter.isFolderRoot(groupPosition)) return;
         if (adapter.isRowSavedStories(groupPosition)) return;
@@ -311,8 +306,7 @@ public class FolderListFragment extends NbFragment implements OnGroupClickListen
         adapter.forceRecount();
     }
 
-	@Override
-	public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
+	@OnChildClick(R.id.folderfeed_list) boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
         String childName = adapter.getChild(groupPosition, childPosition);
 		if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
             SocialFeed socialFeed = adapter.getSocialFeed(childName);

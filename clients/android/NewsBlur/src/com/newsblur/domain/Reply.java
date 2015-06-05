@@ -4,6 +4,7 @@ import java.util.Date;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -24,6 +25,7 @@ public class Reply {
 	@SerializedName("date")
 	public Date date;
 
+    // NB: this is the commentId that we generate, not the API one
 	public String commentId;
 
 	public ContentValues getValues() {
@@ -47,4 +49,9 @@ public class Reply {
 		reply.userId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.REPLY_USERID));
 		return reply;	
 	}
+
+    // construct a string we can internally use as a PK
+    public String constructId() {
+        return TextUtils.concat(commentId, "_", Long.toString(date.getTime())).toString();
+    }
 }

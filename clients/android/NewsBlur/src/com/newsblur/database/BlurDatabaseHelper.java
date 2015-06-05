@@ -31,7 +31,9 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -137,9 +139,14 @@ public class BlurDatabaseHelper {
     }
 
     public void cleanupFeedsFolders() {
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);}
+        synchronized (RW_MUTEX) {
+            dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
+        }
     }
 
     public void vacuum() {
@@ -310,29 +317,68 @@ public class BlurDatabaseHelper {
         // handle comments
         List<ContentValues> commentValues = new ArrayList<ContentValues>();
         List<ContentValues> replyValues = new ArrayList<ContentValues>();
+        // track which comments were seen, so replies can be cleared before re-insertion. there isn't
+        // enough data to de-dupe them for an insert/update operation
+        List<String> freshCommentIds = new ArrayList<String>();
         for (Story story : apiResponse.stories) {
             for (Comment comment : story.publicComments) {
                 comment.storyId = story.id;
-                comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
+                // we need a primary key for comments, so construct one
+                comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
                 commentValues.add(comment.getValues());
                 for (Reply reply : comment.replies) {
                     reply.commentId = comment.id;
+                    reply.id = reply.constructId();
                     replyValues.add(reply.getValues());
                 }
+                freshCommentIds.add(comment.id);
             }
             for (Comment comment : story.friendsComments) {
                 comment.storyId = story.id;
-                comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
+                // we need a primary key for comments, so construct one
+                comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
                 comment.byFriend = true;
                 commentValues.add(comment.getValues());
                 for (Reply reply : comment.replies) {
                     reply.commentId = comment.id;
+                    reply.id = reply.constructId();
                     replyValues.add(reply.getValues());
                 }
+                freshCommentIds.add(comment.id);
+            }
+            for (Comment comment : story.friendsShares) {
+                comment.isPseudo = true;
+                comment.storyId = story.id;
+                // we need a primary key for comments, so construct one
+                comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
+                comment.byFriend = true;
+                commentValues.add(comment.getValues());
+                for (Reply reply : comment.replies) {
+                    reply.commentId = comment.id;
+                    reply.id = reply.constructId();
+                    replyValues.add(reply.getValues());
+                }
+                freshCommentIds.add(comment.id);
             }
         }
+        deleteRepliesForComments(freshCommentIds);
         bulkInsertValues(DatabaseConstants.COMMENT_TABLE, commentValues);
         bulkInsertValues(DatabaseConstants.REPLY_TABLE, replyValues);
+    }
+
+    private void deleteRepliesForComments(Collection<String> commentIds) {
+        // NB: attempting to do this with a "WHERE col IN (vector)" for speed can cause errors on some versions of sqlite
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                for (String commentId : commentIds) {
+                    dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COMMENTID + " = ?", new String[]{commentId});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public Folder getFolder(String folderName) {
@@ -613,6 +659,33 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
+    public void setStoryShared(String hash) {
+        // get a fresh copy of the story from the DB so we can append to the shared ID set
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, 
+                              new String[]{DatabaseConstants.STORY_SHARED_USER_IDS}, 
+                              DatabaseConstants.STORY_HASH + " = ?", 
+                              new String[]{hash}, 
+                              null, null, null);
+        if ((c == null)||(c.getCount() < 1)) {
+            Log.w(this.getClass().getName(), "story removed before finishing mark-shared");
+            closeQuietly(c);
+            return;
+        }
+        c.moveToFirst();
+		String[] sharedUserIds = TextUtils.split(c.getString(c.getColumnIndex(DatabaseConstants.STORY_SHARED_USER_IDS)), ",");
+        closeQuietly(c);
+
+        // the new id to append to the shared list (the current user)
+        String currentUser = PrefsUtils.getUserDetails(context).id;
+
+        // append to set and update DB
+        Set<String> newIds = new HashSet<String>(Arrays.asList(sharedUserIds));
+        newIds.add(currentUser);
+        ContentValues values = new ContentValues();
+		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, TextUtils.join(",", newIds));
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
+    }
+
     public String getStoryText(String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_TEXT_STORY_TEXT +
                    " FROM " + DatabaseConstants.STORY_TEXT_TABLE +
@@ -842,7 +915,7 @@ public class BlurDatabaseHelper {
     public List<Comment> getComments(String storyId) {
         String[] selArgs = new String[] {storyId};
         String selection = DatabaseConstants.COMMENT_STORYID + " = ?"; 
-        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selArgs, null, null, null);
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
         List<Comment> comments = new ArrayList<Comment>(c.getCount());
         while (c.moveToNext()) {
             comments.add(Comment.fromCursor(c));
@@ -854,12 +927,60 @@ public class BlurDatabaseHelper {
     public Comment getComment(String storyId, String userId) {
         String selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
         String[] selArgs = new String[] {storyId, userId};
-        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selArgs, null, null, null);
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
         if (c.getCount() < 1) return null;
         c.moveToFirst();
         Comment comment = Comment.fromCursor(c);
         closeQuietly(c);
         return comment;
+    }
+
+    public void insertUpdateComment(String storyId, String feedId, String commentText) {
+        // we can only insert comments as the currently logged-in user
+        String userId = PrefsUtils.getUserDetails(context).id;
+
+        Comment comment = new Comment();
+        comment.id = Comment.constructId(storyId, feedId, userId);
+        comment.storyId = storyId;
+        comment.userId = userId;
+        comment.commentText = commentText;
+        comment.byFriend = true;
+        if (TextUtils.isEmpty(commentText)) {
+            comment.isPseudo = true;
+        }
+        synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
+    }
+
+    public void setCommentLiked(String storyId, String userId, String feedId, boolean liked) {
+        String commentKey = Comment.constructId(storyId, feedId, userId);
+        // get a fresh copy of the story from the DB so we can append to the shared ID set
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, 
+                              new String[]{DatabaseConstants.COMMENT_LIKING_USERS}, 
+                              DatabaseConstants.COMMENT_ID + " = ?", 
+                              new String[]{commentKey}, 
+                              null, null, null);
+        if ((c == null)||(c.getCount() < 1)) {
+            Log.w(this.getClass().getName(), "story removed before finishing mark-shared");
+            closeQuietly(c);
+            return;
+        }
+        c.moveToFirst();
+		String[] likingUserIds = TextUtils.split(c.getString(c.getColumnIndex(DatabaseConstants.COMMENT_LIKING_USERS)), ",");
+        closeQuietly(c);
+
+        // the new id to append/remove from the liking list (the current user)
+        String currentUser = PrefsUtils.getUserDetails(context).id;
+
+        // append to set and update DB
+        Set<String> newIds = new HashSet<String>(Arrays.asList(likingUserIds));
+        if (liked) {
+            newIds.add(currentUser);
+        } else {
+            newIds.remove(currentUser);
+        }
+        ContentValues values = new ContentValues();
+		values.put(DatabaseConstants.COMMENT_LIKING_USERS, TextUtils.join(",", newIds));
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.COMMENT_TABLE, values, DatabaseConstants.COMMENT_ID + " = ?", new String[]{commentKey});}
     }
 
     public UserProfile getUserProfile(String userId) {
@@ -874,13 +995,23 @@ public class BlurDatabaseHelper {
     public List<Reply> getCommentReplies(String commentId) {
         String[] selArgs = new String[] {commentId};
         String selection = DatabaseConstants.REPLY_COMMENTID+ " = ?";
-        Cursor c = dbRO.query(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COLUMNS, selection, selArgs, null, null, DatabaseConstants.REPLY_DATE + " DESC");
+        Cursor c = dbRO.query(DatabaseConstants.REPLY_TABLE, null, selection, selArgs, null, null, DatabaseConstants.REPLY_DATE + " ASC");
         List<Reply> replies = new ArrayList<Reply>(c.getCount());
         while (c.moveToNext()) {
             replies.add(Reply.fromCursor(c));
         }
         closeQuietly(c);
         return replies;
+    }
+
+    public void replyToComment(String storyId, String feedId, String commentUserId, String replyText) {
+        Reply reply = new Reply();
+        reply.commentId = Comment.constructId(storyId, feedId, commentUserId);
+        reply.text = replyText;
+        reply.userId = PrefsUtils.getUserDetails(context).id;
+        reply.date = new Date();
+        reply.id = reply.constructId();
+        synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }
 
     public static void closeQuietly(Cursor c) {

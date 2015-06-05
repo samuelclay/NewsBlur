@@ -332,7 +332,7 @@ public class APIManager {
 		}
 	}
 
-	public Boolean shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
+	public NewsBlurResponse shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
 		final ContentValues values = new ContentValues();
 		if (!TextUtils.isEmpty(comment)) {
 			values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
@@ -343,12 +343,8 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 
-		final APIResponse response = post(APIConstants.URL_SHARE_STORY, values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
+		APIResponse response = post(APIConstants.URL_SHARE_STORY, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
 	/**
@@ -371,6 +367,8 @@ public class APIManager {
 
 		// note: this response is complex enough, we have to do a custom parse in the FFR
         FeedFolderResponse result = new FeedFolderResponse(response.getResponseBody(), gson);
+        // bind a litle extra instrumentation to this response, since it powers the feedback link
+        result.connTime = response.connectTime;
         result.readTime = response.readTime;
         return result;
 	}
@@ -450,32 +448,32 @@ public class APIManager {
 		}
 	}
 
-	public boolean favouriteComment(String storyId, String commentId, String feedId) {
+	public NewsBlurResponse favouriteComment(String storyId, String commentUserId, String feedId) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
-		final APIResponse response = post(APIConstants.URL_LIKE_COMMENT, values);
-		return (!response.isError());
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
+		APIResponse response = post(APIConstants.URL_LIKE_COMMENT, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
-	public Boolean unFavouriteComment(String storyId, String commentId, String feedId) {
+	public NewsBlurResponse unFavouriteComment(String storyId, String commentUserId, String feedId) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
-		final APIResponse response = post(APIConstants.URL_UNLIKE_COMMENT, values);
-		return (!response.isError());
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
+		APIResponse response = post(APIConstants.URL_UNLIKE_COMMENT, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
-	public boolean replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
+	public NewsBlurResponse replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
-		final APIResponse response = post(APIConstants.URL_REPLY_TO, values);
-		return (!response.isError());
+		APIResponse response = post(APIConstants.URL_REPLY_TO, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
 	public boolean addFeed(String feedUrl, String folderName) {

@@ -17,6 +17,9 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+
 import com.newsblur.R;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
@@ -35,10 +38,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
-    private TextView overlayStatusText;
     private boolean isLightTheme;
     private SwipeRefreshLayout swipeLayout;
     private boolean wasSwipeEnabled = false;
+    @FindView(R.id.main_sync_status) TextView overlayStatusText;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
 		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
@@ -62,8 +67,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
         ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
-
-        this.overlayStatusText = (TextView) findViewById(R.id.main_sync_status);
 
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);

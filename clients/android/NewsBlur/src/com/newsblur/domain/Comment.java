@@ -12,6 +12,7 @@ import com.newsblur.database.DatabaseConstants;
 public class Comment implements Serializable {
 	private static final long serialVersionUID = -2018705258520565390L;
 
+    // we almost always override API version with sensible PK constructed by concating story, feed, and user IDs
 	public String id;
 
 	@SerializedName("comments")
@@ -36,7 +37,11 @@ public class Comment implements Serializable {
 	
 	public String storyId;
 	
+    // not vended by API, but we set it depending on which comment block of the response in which it appeared
 	public boolean byFriend = false;
+
+    // means this "comment" is actually a text-less share, which is identical to a comment, but included in a different list in the story member
+    public boolean isPseudo = false;
 
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
@@ -49,11 +54,11 @@ public class Comment implements Serializable {
 		values.put(DatabaseConstants.COMMENT_SOURCE_USERID, sourceUserId);
 		values.put(DatabaseConstants.COMMENT_USERID, userId);
 		values.put(DatabaseConstants.COMMENT_ID, id);
+		values.put(DatabaseConstants.COMMENT_ISPSEUDO, isPseudo ? "true" : "false");
 		return values;
 	}
 
 	public static Comment fromCursor(final Cursor cursor) {
-		
 		Comment comment = new Comment();
 		comment.date = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_DATE));
 		comment.sharedDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_SHAREDDATE));
@@ -65,8 +70,12 @@ public class Comment implements Serializable {
 		comment.likingUsers = TextUtils.split(likingUsers, ",");
 		comment.sourceUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_SOURCE_USERID));
 		comment.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_ID));
-
+		comment.isPseudo = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_ISPSEUDO)));
 		return comment;
 	}
+
+    public static String constructId(String storyId, String feedId, String userId) {
+        return TextUtils.concat(feedId, storyId, userId).toString();
+    }
 
 }

@@ -22,7 +22,6 @@
     
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching text…</string>
-    <string name="edit">Shared</string>
     
     <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
     <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
@@ -46,21 +45,18 @@
 	<string name="read_stories_title">Read Stories</string>
 	<string name="saved_stories_title">Saved Stories</string>
 	
-	<string name="now">now</string>
-	
 	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
 	
-	<string name="replied">Reply posted</string>
-	<string name="error_replying">There was an error replying</string>
 	<string name="share">\"%1$s\" - %2$s</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
-	<string name="shared">Story shared</string>
-	<string name="error_sharing">There was an problem sharing this story.</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-	
+    <string name="share_this">SHARE THIS STORY</string>
+    <string name="already_shared">SHARED</string>
+    <string name="share_this_story">Share this story</string>
+    <string name="update_shared">Update comment</string>
+
 	<string name="save_this">SAVE THIS STORY</string>
 	<string name="unsave_this">UNSAVE THIS STORY</string>
-    <string name="share_this">SHARE THIS STORY</string>
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
@@ -96,7 +92,7 @@
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_original">View original</string>
-    <string name="menu_share">Send to…</string>
+    <string name="menu_send_story">Send to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
@@ -145,11 +141,9 @@
     <string name="add_facebook">Add Facebook friends</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
-    <string name="share_this_story">Share this story</string>
-    <string name="comment_favourited">Comment favorited</string>
-    <string name="error_liking_comment">Error favoriting comment</string>
     <string name="public_comment_count">%d PUBLIC COMMENTS</string>
     <string name="friends_comments_count">%d COMMENTS</string>
+    <string name="friends_shares_count">%d SHARES</string>
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     
