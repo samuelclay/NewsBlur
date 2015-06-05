@@ -24,3 +24,13 @@
 
 -dontwarn com.squareup.okhttp.**
 -dontwarn okio.**
+
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewInjector { *; }
+-keepclasseswithmembernames class * {
+    @butterknife.InjectView <fields>;
+}
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
