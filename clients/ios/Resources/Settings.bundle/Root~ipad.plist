@@ -434,6 +434,7 @@
 				<string>In-app browser</string>
 				<string>Safari</string>
 				<string>Chrome</string>
+				<string>Opera Mini</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>inapp</string>
@@ -442,6 +443,7 @@
 				<string>inapp</string>
 				<string>safari</string>
 				<string>chrome</string>
+				<string>opera_mini</string>
 			</array>
 			<key>Key</key>
 			<string>story_browser</string>
