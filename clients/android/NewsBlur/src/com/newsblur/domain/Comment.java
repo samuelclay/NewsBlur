@@ -59,7 +59,6 @@ public class Comment implements Serializable {
 	}
 
 	public static Comment fromCursor(final Cursor cursor) {
-		
 		Comment comment = new Comment();
 		comment.date = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_DATE));
 		comment.sharedDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_SHAREDDATE));

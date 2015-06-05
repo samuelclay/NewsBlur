@@ -944,6 +944,9 @@ public class BlurDatabaseHelper {
         comment.userId = userId;
         comment.commentText = commentText;
         comment.byFriend = true;
+        if (TextUtils.isEmpty(commentText)) {
+            comment.isPseudo = true;
+        }
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }
 

@@ -313,9 +313,7 @@ public class ReadingAction {
 
             case SHARE:
                 dbHelper.setStoryShared(storyHash);
-                if (!TextUtils.isEmpty(commentReplyText)) {
-                    dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
-                }
+                dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
                 break;
 
             case LIKE_COMMENT:
