@@ -143,6 +143,7 @@ public class BlurDatabaseHelper {
             dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
             dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
             dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, null);
             dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
             dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
         }
