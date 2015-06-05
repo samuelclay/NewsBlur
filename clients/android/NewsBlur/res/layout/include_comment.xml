@@ -45,16 +45,6 @@
             android:visibility="invisible" />
 
         <ImageView
-            android:id="@+id/comment_user_reshare_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:contentDescription="@string/description_comment_user"
-            android:scaleType="fitCenter" />
-
-        <ImageView
             android:id="@+id/comment_reply_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
