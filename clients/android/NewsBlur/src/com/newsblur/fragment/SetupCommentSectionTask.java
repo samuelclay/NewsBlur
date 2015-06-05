@@ -37,9 +37,6 @@ import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 
 public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
-	public static final String COMMENT_BY = "commentBy";
-	public static final String COMMENT_DATE_BY = "commentDateBy";
-	public static final String COMMENT_VIEW_BY = "commentViewBy";
 
 	private ArrayList<View> publicCommentViews;
 	private ArrayList<View> friendCommentViews;
@@ -86,13 +83,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
             }
 			
 			View commentView = inflater.inflate(R.layout.include_comment, null);
-			commentView.setTag(COMMENT_VIEW_BY + comment.userId);
-
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-
 			commentText.setText(Html.fromHtml(comment.commentText));
-			commentText.setTag(COMMENT_BY + comment.userId);
-
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
@@ -100,7 +92,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
             if (comment.sharedDate != null) {
 			    commentSharedDate.setText(comment.sharedDate + " ago");
             }
-			commentSharedDate.setTag(COMMENT_DATE_BY + comment.userId);
 
 			final FlowLayout favouriteContainer = (FlowLayout) commentView.findViewById(R.id.comment_favourite_avatars);
 			final ImageView favouriteIcon = (ImageView) commentView.findViewById(R.id.comment_favourite_icon);
@@ -113,12 +104,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 				for (String id : comment.likingUsers) {
 					ImageView favouriteImage = new ImageView(context);
-
 					UserProfile user = FeedUtils.dbHelper.getUserProfile(id);
-
 					imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
-					favouriteImage.setTag(id);
-					
 					favouriteContainer.addView(favouriteImage);
 				}
 
