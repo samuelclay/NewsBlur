@@ -33,6 +33,7 @@ import com.newsblur.util.StoryOrder;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -315,6 +316,9 @@ public class BlurDatabaseHelper {
         // handle comments
         List<ContentValues> commentValues = new ArrayList<ContentValues>();
         List<ContentValues> replyValues = new ArrayList<ContentValues>();
+        // track which comments were seen, so replies can be cleared before re-insertion. there isn't
+        // enough data to de-dupe them for an insert/update operation
+        List<String> freshCommentIds = new ArrayList<String>();
         for (Story story : apiResponse.stories) {
             for (Comment comment : story.publicComments) {
                 comment.storyId = story.id;
@@ -326,6 +330,7 @@ public class BlurDatabaseHelper {
                     reply.id = reply.constructId();
                     replyValues.add(reply.getValues());
                 }
+                freshCommentIds.add(comment.id);
             }
             for (Comment comment : story.friendsComments) {
                 comment.storyId = story.id;
@@ -338,6 +343,7 @@ public class BlurDatabaseHelper {
                     reply.id = reply.constructId();
                     replyValues.add(reply.getValues());
                 }
+                freshCommentIds.add(comment.id);
             }
             for (Comment comment : story.friendsShares) {
                 comment.isPseudo = true;
@@ -351,10 +357,27 @@ public class BlurDatabaseHelper {
                     reply.id = reply.constructId();
                     replyValues.add(reply.getValues());
                 }
+                freshCommentIds.add(comment.id);
             }
         }
+        deleteRepliesForComments(freshCommentIds);
         bulkInsertValues(DatabaseConstants.COMMENT_TABLE, commentValues);
         bulkInsertValues(DatabaseConstants.REPLY_TABLE, replyValues);
+    }
+
+    private void deleteRepliesForComments(Collection<String> commentIds) {
+        // NB: attempting to do this with a "WHERE col IN (vector)" for speed can cause errors on some versions of sqlite
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                for (String commentId : commentIds) {
+                    dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COMMENTID + " = ?", new String[]{commentId});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public Folder getFolder(String folderName) {
@@ -916,7 +939,7 @@ public class BlurDatabaseHelper {
         String userId = PrefsUtils.getUserDetails(context).id;
 
         Comment comment = new Comment();
-        comment.id = TextUtils.concat(storyId, feedId, userId).toString();
+        comment.id = Comment.constructId(storyId, feedId, userId);
         comment.storyId = storyId;
         comment.userId = userId;
         comment.commentText = commentText;
