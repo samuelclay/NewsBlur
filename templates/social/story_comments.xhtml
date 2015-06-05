@@ -7,6 +7,14 @@
             {% render_story_comment story comment %}
         {% endfor %}
 
+        {% if story.share_count_friends %}
+            <div class="NB-story-comments-shares">
+                {% for comment in story.friend_shares %}
+                    {% render_story_comment story comment %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="NB-story-comment-edit NB-story-comment {% if story.shared_by_user %}NB-hidden{% endif %}" data-user-id="{{ user_social_profile.user_id }}">
             <a href="{{ user_social_profile.blurblog_url }}" class="NB-user-avatar">
                 <img src="{% if user_social_profile.photo_url %}{{ user_social_profile.photo_url }}{% else %}{{ MEDIA_URL }}/img/circular/circular_avatar.png{% endif %}">
@@ -27,7 +35,7 @@
         
         <div class="NB-story-comments-public">
             {% if story.comment_count_public %}
-                <div class="NB-story-comments-public-header-wrapper">
+                <div class="NB-story-comments-public-header-wrapper {% if story.shared_by_user and not story.friend_comments %}NB-public-top{% endif %}">
                     <div class="NB-story-comments-public-header">
                         {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
                     </div>

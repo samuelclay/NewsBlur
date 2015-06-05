@@ -1513,7 +1513,21 @@
                                sourceName]];
         
         [[UIApplication sharedApplication] openURL:activityURL];
-            return;
+        return;
+    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"opera_mini"] &&
+               [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"opera-http://"]]) {
+
+                   
+        NSString *operaURL;
+        NSRange prefix = [[url absoluteString] rangeOfString: @"http"];
+        if (NSNotFound != prefix.location) {
+            operaURL = [[url absoluteString]
+                        stringByReplacingCharactersInRange: prefix
+                        withString:                         @"opera-http"];
+        }
+                   
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
+        return;
     } else {
         self.activeOriginalStoryURL = url;
         

@@ -15,11 +15,11 @@ SECURE = !!process.env.NODE_SSL
 if SECURE
     privateKey = fs.readFileSync('./config/certificates/newsblur.com.key').toString()
     certificate = fs.readFileSync('./config/certificates/newsblur.com.crt').toString()
-    ca = fs.readFileSync('./config/certificates/intermediate.crt').toString()
+    # ca = fs.readFileSync('./config/certificates/intermediate.crt').toString()
     io = require('socket.io').listen 8889
         key: privateKey
         cert: certificate
-        ca: ca
+        # ca: ca
 else
     io = require('socket.io').listen 8888
 

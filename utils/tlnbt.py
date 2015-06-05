@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
 import tlnb
+import sys
 
 if __name__ == "__main__":
-    tlnb.main(role="task", role2="ec2task")
+    role = "task"
+    if len(sys.argv) > 1:
+        role = sys.argv[1]
+    tlnb.main(role=role, role2="ec2task")
+    

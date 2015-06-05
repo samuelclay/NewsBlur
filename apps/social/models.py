@@ -1840,6 +1840,7 @@ class MSharedStory(mongo.Document):
         profile_user_ids = set()
         for story in stories: 
             story['friend_comments'] = []
+            story['friend_shares'] = []
             story['public_comments'] = []
             story['reply_count'] = 0
             if check_all or story['comment_count']:
@@ -1895,6 +1896,23 @@ class MSharedStory(mongo.Document):
                     story['share_user_ids'] = story['friend_user_ids'] + story['public_user_ids']
                 if story.get('source_user_id'):
                     profile_user_ids.add(story['source_user_id'])
+                shared_stories = []
+                if story['shared_by_friends']:
+                    params = {
+                        'story_hash': story['story_hash'],
+                        'user_id__in': story['shared_by_friends'],
+                    }
+                    shared_stories = cls.objects.filter(**params)
+                for shared_story in shared_stories:
+                    comments = shared_story.comments_with_author()
+                    story['reply_count'] += len(comments['replies'])
+                    story['friend_shares'].append(comments)
+                    profile_user_ids = profile_user_ids.union([reply['user_id'] 
+                                                               for reply in comments['replies']])
+                    if comments.get('source_user_id'):
+                        profile_user_ids.add(comments['source_user_id'])
+                    if comments.get('liking_users'):
+                        profile_user_ids = profile_user_ids.union(comments['liking_users'])
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.canonical(compact=True) for profile in profiles]
@@ -1920,7 +1938,7 @@ class MSharedStory(mongo.Document):
             for u, user_id in enumerate(story['shared_by_public']):
                 if user_id not in profiles: continue
                 stories[s]['shared_by_public'][u] = profiles[user_id]
-            for comment_set in ['friend_comments', 'public_comments']:
+            for comment_set in ['friend_comments', 'public_comments', 'friend_shares']:
                 for c, comment in enumerate(story[comment_set]):
                     if comment['user_id'] not in profiles: continue
                     stories[s][comment_set][c]['user'] = profiles[comment['user_id']]
@@ -2743,6 +2761,10 @@ class MInteraction(mongo.Document):
                                            self.category, self.content and self.content[:20])
     
     def canonical(self):
+        story_hash = None
+        if self.story_feed_id:
+            story_hash = MStory.ensure_story_hash(self.content_id, story_feed_id=self.story_feed_id)
+
         return {
             'date': self.date,
             'category': self.category,
@@ -2752,6 +2774,7 @@ class MInteraction(mongo.Document):
             'feed_id': self.feed_id,
             'story_feed_id': self.story_feed_id,
             'content_id': self.content_id,
+            'story_hash': story_hash,
         }
     
     @classmethod
@@ -2867,11 +2890,12 @@ class MInteraction(mongo.Document):
         cls.publish_update_to_subscribers(user_id)
     
     @classmethod
-    def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_title, comments):
+    def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_feed_id, story_title, comments):
         cls.objects.get_or_create(user_id=comment_user_id,
                                   with_user_id=liking_user_id,
                                   category="comment_like",
                                   feed_id="social:%s" % comment_user_id,
+                                  story_feed_id=story_feed_id,
                                   content_id=story_id,
                                   defaults={
                                     "title": story_title,
@@ -2974,6 +2998,10 @@ class MActivity(mongo.Document):
         return "<%s> %s - %s" % (user.username, self.category, self.content and self.content[:20])
     
     def canonical(self):
+        story_hash = None
+        if self.story_feed_id:
+            story_hash = MStory.ensure_story_hash(self.content_id, story_feed_id=self.story_feed_id)
+
         return {
             'date': self.date,
             'category': self.category,
@@ -2984,6 +3012,7 @@ class MActivity(mongo.Document):
             'feed_id': self.feed_id or self.story_feed_id,
             'story_feed_id': self.story_feed_id or self.feed_id,
             'content_id': self.content_id,
+            'story_hash': story_hash,
         }
         
     @classmethod
@@ -3109,11 +3138,12 @@ class MActivity(mongo.Document):
         original.delete()
             
     @classmethod
-    def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_title, comments):
+    def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_feed_id, story_title, comments):
         cls.objects.get_or_create(user_id=liking_user_id,
                                   with_user_id=comment_user_id,
                                   category="comment_like",
                                   feed_id="social:%s" % comment_user_id,
+                                  story_feed_id=story_feed_id,
                                   content_id=story_id,
                                   defaults={
                                     "title": story_title,

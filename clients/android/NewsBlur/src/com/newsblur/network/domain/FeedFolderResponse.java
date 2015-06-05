@@ -22,8 +22,10 @@ import com.newsblur.util.AppConstants;
 
 public class FeedFolderResponse {
     
-    /** Helper variable so users of the parser can pass along how long it took to read the JSON stream, for instrumentation. */
+    /** Helper variables so users of the parser can pass along instrumentation. */
+    public long connTime;
     public long readTime;
+    public long parseTime;
 	
     public Set<Folder> folders;
 	public Set<Feed> feeds;
@@ -35,6 +37,7 @@ public class FeedFolderResponse {
 	public int starredCount;
 	
 	public FeedFolderResponse(String json, Gson gson) {
+        long startTime = System.currentTimeMillis();
 
 		JsonParser parser = new JsonParser();
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
@@ -93,6 +96,8 @@ public class FeedFolderResponse {
             folders.add(emptyRootFolder);
             Log.d( this.getClass().getName(), "root folder was missing.  added it.");
         } 
+
+        parseTime = System.currentTimeMillis() - startTime;
 	}
 	
 	/**

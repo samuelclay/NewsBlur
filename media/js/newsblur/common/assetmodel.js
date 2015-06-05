@@ -1641,6 +1641,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/profile/refund_premium', data, callback, error_callback);
     },
     
+    never_expire_premium: function(data, callback, error_callback) {
+        this.make_request('/profile/never_expire_premium', data, callback, error_callback);
+    },
+    
     delete_saved_stories: function(timestamp, callback, error_callback) {
         var self = this;
         var pre_callback = function(data) {

@@ -16,6 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+
 import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.activity.Main;
@@ -27,9 +30,11 @@ import com.newsblur.util.UIUtils;
 public class LoginProgressFragment extends Fragment {
 
 	private APIManager apiManager;
-	private TextView updateStatus, retrievingFeeds;
-	private ImageView loginProfilePicture;
-	private ProgressBar feedProgress, loggingInProgress;
+	@FindView(R.id.login_logging_in) TextView updateStatus;
+    @FindView(R.id.login_retrieving_feeds) TextView retrievingFeeds;
+	@FindView(R.id.login_profile_picture) ImageView loginProfilePicture;
+	@FindView(R.id.login_feed_progress) ProgressBar feedProgress;
+    @FindView(R.id.login_logging_in_progress) ProgressBar loggingInProgress;
 	private LoginTask loginTask;
 	private String username;
 	private String password;
@@ -56,12 +61,7 @@ public class LoginProgressFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_loginprogress, null);
-
-		updateStatus = (TextView) v.findViewById(R.id.login_logging_in);
-		retrievingFeeds = (TextView) v.findViewById(R.id.login_retrieving_feeds);
-		feedProgress = (ProgressBar) v.findViewById(R.id.login_feed_progress);
-		loggingInProgress = (ProgressBar) v.findViewById(R.id.login_logging_in_progress);
-		loginProfilePicture = (ImageView) v.findViewById(R.id.login_profile_picture);
+        ButterKnife.bind(this, v);
 
         loginTask = new LoginTask();
         loginTask.execute();
@@ -70,7 +70,6 @@ public class LoginProgressFragment extends Fragment {
 	}
 
 	private class LoginTask extends AsyncTask<Void, Void, NewsBlurResponse> {
-
 		@Override
 		protected void onPreExecute() {
 			Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
@@ -104,7 +103,6 @@ public class LoginProgressFragment extends Fragment {
 
                 Intent startMain = new Intent(getActivity(), Main.class);
                 c.startActivity(startMain);
-
 			} else {
                 UIUtils.safeToast(c, result.getErrorMessage(), Toast.LENGTH_LONG);
 				startActivity(new Intent(c, Login.class));

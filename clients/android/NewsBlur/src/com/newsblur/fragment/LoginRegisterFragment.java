@@ -16,29 +16,28 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewSwitcher;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+import butterknife.OnClick;
+
 import com.newsblur.R;
 import com.newsblur.activity.LoginProgress;
 import com.newsblur.activity.RegisterProgress;
 
-public class LoginRegisterFragment extends Fragment implements OnClickListener {
+public class LoginRegisterFragment extends Fragment {
 
-	private EditText username, password;
-	private ViewSwitcher viewSwitcher;
-
-	private EditText register_username, register_password, register_email;
+	@FindView(R.id.login_username) EditText username;
+    @FindView(R.id.login_password) EditText password;
+    @FindView(R.id.registration_username) EditText register_username;
+    @FindView(R.id.registration_password) EditText register_password;
+    @FindView(R.id.registration_email) EditText register_email;
+	@FindView(R.id.login_viewswitcher) ViewSwitcher viewSwitcher;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View v = inflater.inflate(R.layout.fragment_loginregister, container, false);
+        ButterKnife.bind(this, v);
 
-		final Button loginButton = (Button) v.findViewById(R.id.login_button);
-		final Button registerButton = (Button) v.findViewById(R.id.registration_button);
-		loginButton.setOnClickListener(this);
-		registerButton.setOnClickListener(this);
-
-		username = (EditText) v.findViewById(R.id.login_username);
-		password = (EditText) v.findViewById(R.id.login_password);
-		
 		password.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView arg0, int actionId, KeyEvent event) {
@@ -48,10 +47,6 @@ public class LoginRegisterFragment extends Fragment implements OnClickListener {
 				return false;
 			}
 		});
-
-		register_username = (EditText) v.findViewById(R.id.registration_username);
-		register_password = (EditText) v.findViewById(R.id.registration_password);
-		register_email = (EditText) v.findViewById(R.id.registration_email);
 
 		register_email.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
@@ -63,44 +58,10 @@ public class LoginRegisterFragment extends Fragment implements OnClickListener {
 			}
 		});
 
-		viewSwitcher = (ViewSwitcher) v.findViewById(R.id.login_viewswitcher);
-
-		TextView changeToLogin = (TextView) v.findViewById(R.id.login_change_to_login);
-		TextView changeToRegister = (TextView) v.findViewById(R.id.login_change_to_register);
-
-		changeToLogin.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				viewSwitcher.showPrevious();
-			}
-		});
-
-		changeToRegister.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				viewSwitcher.showNext();
-			}
-		});
-
 		return v;
 	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-	}
-
-	@Override
-	public void onClick(View viewClicked) {
-		if (viewClicked.getId() == R.id.login_button) {
-			logIn();
-		} else if (viewClicked.getId() == R.id.registration_button) {
-			signUp();
-		}
-	}
-
-	private void logIn() {
+	@OnClick(R.id.login_button) void logIn() {
 		if (!TextUtils.isEmpty(username.getText().toString())) {
 			Intent i = new Intent(getActivity(), LoginProgress.class);
 			i.putExtra("username", username.getText().toString());
@@ -109,7 +70,7 @@ public class LoginRegisterFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-	private void signUp() {
+    @OnClick(R.id.registration_button) void signUp() {
 		Intent i = new Intent(getActivity(), RegisterProgress.class);
 		i.putExtra("username", register_username.getText().toString());
 		i.putExtra("password", register_password.getText().toString());
@@ -117,5 +78,12 @@ public class LoginRegisterFragment extends Fragment implements OnClickListener {
 		startActivity(i);
 	}
 
+    @OnClick(R.id.login_change_to_login) void showLogin() {
+        viewSwitcher.showPrevious();
+    }
+
+    @OnClick(R.id.login_change_to_register) void showRegister() {
+        viewSwitcher.showNext();
+    }
 
 }

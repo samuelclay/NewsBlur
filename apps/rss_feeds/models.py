@@ -194,7 +194,6 @@ class Feed(models.Model):
             feed['tagline'] = self.data.feed_tagline
             feed['feed_tags'] = json.decode(self.data.popular_tags) if self.data.popular_tags else []
             feed['feed_authors'] = json.decode(self.data.popular_authors) if self.data.popular_authors else []
-
             
         return feed
     
@@ -622,6 +621,16 @@ class Feed(models.Model):
             self.save()
         
         return errors, non_errors
+
+    def count_redirects_in_history(self, fetch_type='feed', fetch_history=None):
+        logging.debug('   ---> [%-30s] Counting redirects in history...' % (unicode(self)[:30]))
+        if not fetch_history:
+            fetch_history = MFetchHistory.feed(self.pk)
+        fh = fetch_history[fetch_type+'_fetch_history']
+        redirects     = [h for h in fh if h['status_code'] and int(h['status_code'])     in (301, 302)]
+        non_redirects = [h for h in fh if h['status_code'] and int(h['status_code']) not in (301, 302)]
+        
+        return redirects, non_redirects
     
     def count_subscribers(self, verbose=False):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)

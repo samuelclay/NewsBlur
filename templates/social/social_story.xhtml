@@ -71,7 +71,7 @@
     </div>
     
     <div class="NB-story-comments-container">
-        {% if story.comment_count or not story.shared_by_user %}
+        {% if story.comment_count or not story.shared_by_user or story.friend_share_count %}
             {% render_story_comments story %}
         {% endif %}
     </div>

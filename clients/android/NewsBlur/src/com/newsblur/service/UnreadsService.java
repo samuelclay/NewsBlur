@@ -145,7 +145,7 @@ public class UnreadsService extends SubService {
         return true;
     }
 
-    public static void clearHashes() {
+    public static void clear() {
         StoryHashQueue.clear();
     }
 

@@ -18,7 +18,11 @@ public class ReadingAction {
         MARK_READ,
         MARK_UNREAD,
         SAVE,
-        UNSAVE
+        UNSAVE,
+        SHARE,
+        REPLY,
+        LIKE_COMMENT,
+        UNLIKE_COMMENT
     };
 
     private ActionType type;
@@ -26,6 +30,11 @@ public class ReadingAction {
     private FeedSet feedSet;
     private Long olderThan;
     private Long newerThan;
+    private String storyId;
+    private String feedId;
+    private String sourceUserId;
+    private String commentReplyText; // used for both comments and replies
+    private String commentUserId;
 
     private ReadingAction() {
         ; // must use helpers
@@ -68,6 +77,45 @@ public class ReadingAction {
         return ra;
     }
 
+    public static ReadingAction shareStory(String hash, String storyId, String feedId, String sourceUserId, String commentReplyText) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.SHARE;
+        ra.storyHash = hash;
+        ra.storyId = storyId;
+        ra.feedId = feedId;
+        ra.sourceUserId = sourceUserId;
+        ra.commentReplyText = commentReplyText;
+        return ra;
+    }
+
+    public static ReadingAction likeComment(String storyId, String commentUserId, String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.LIKE_COMMENT;
+        ra.storyId = storyId;
+        ra.commentUserId = commentUserId;
+        ra.feedId = feedId;
+        return ra;
+    }
+
+    public static ReadingAction unlikeComment(String storyId, String commentUserId, String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.UNLIKE_COMMENT;
+        ra.storyId = storyId;
+        ra.commentUserId = commentUserId;
+        ra.feedId = feedId;
+        return ra;
+    }
+
+    public static ReadingAction replyToComment(String storyId, String feedId, String commentUserId, String commentReplyText) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.REPLY;
+        ra.storyId = storyId;
+        ra.commentUserId = commentUserId;
+        ra.feedId = feedId;
+        ra.commentReplyText = commentReplyText;
+        return ra;
+    }
+
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, System.currentTimeMillis());
@@ -99,6 +147,37 @@ public class ReadingAction {
             case UNSAVE:
                 values.put(DatabaseConstants.ACTION_UNSAVE, 1);
                 values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
+                break;
+
+            case SHARE:
+                values.put(DatabaseConstants.ACTION_SHARE, 1);
+                values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_SOURCE_USER_ID, sourceUserId);
+                values.put(DatabaseConstants.ACTION_COMMENT_TEXT, commentReplyText);
+                break;
+
+            case LIKE_COMMENT:
+                values.put(DatabaseConstants.ACTION_LIKE_COMMENT, 1);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentUserId);
+                break;
+
+            case UNLIKE_COMMENT:
+                values.put(DatabaseConstants.ACTION_UNLIKE_COMMENT, 1);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentUserId);
+                break;
+
+            case REPLY: 
+                values.put(DatabaseConstants.ACTION_REPLY, 1);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentUserId);
+                values.put(DatabaseConstants.ACTION_COMMENT_TEXT, commentReplyText);
                 break;
 
             default:
@@ -135,6 +214,29 @@ public class ReadingAction {
         } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_UNSAVE)) == 1) {
             ra.type = ActionType.UNSAVE;
             ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_SHARE)) == 1) {
+            ra.type = ActionType.SHARE;
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.sourceUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_SOURCE_USER_ID));
+            ra.commentReplyText = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_TEXT));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_LIKE_COMMENT)) == 1) {
+            ra.type = ActionType.LIKE_COMMENT;
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_UNLIKE_COMMENT)) == 1) {
+            ra.type = ActionType.UNLIKE_COMMENT;
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+        } else if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_REPLY)) == 1) {
+            ra.type = ActionType.REPLY;
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+            ra.commentReplyText = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_TEXT));
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -163,6 +265,18 @@ public class ReadingAction {
 
             case UNSAVE:
                 return apiManager.markStoryAsUnstarred(storyHash);
+
+            case SHARE:
+                return apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
+
+            case LIKE_COMMENT:
+                return apiManager.favouriteComment(storyId, commentUserId, feedId);
+
+            case UNLIKE_COMMENT:
+                return apiManager.unFavouriteComment(storyId, commentUserId, feedId);
+
+            case REPLY:
+                return apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
 
             default:
 
@@ -195,6 +309,23 @@ public class ReadingAction {
 
             case UNSAVE:
                 dbHelper.setStoryStarred(storyHash, false);
+                break;
+
+            case SHARE:
+                dbHelper.setStoryShared(storyHash);
+                dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
+                break;
+
+            case LIKE_COMMENT:
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
+                break;
+
+            case UNLIKE_COMMENT:
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
+                break;
+
+            case REPLY:
+                dbHelper.replyToComment(storyId, feedId, commentUserId, commentReplyText);
                 break;
 
             default:

@@ -69,6 +69,10 @@ public class ImagePrefetchService extends SubService {
         return ImageQueue.size();
     }
 
+    public static void clear() {
+        ImageQueue.clear();
+    }
+
     public static boolean running() {
         return Running;
     }

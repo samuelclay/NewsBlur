@@ -14,6 +14,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import butterknife.ButterKnife;
+import butterknife.FindView;
+import butterknife.OnClick;
+
 import com.newsblur.R;
 import com.newsblur.activity.AddSocial;
 import com.newsblur.activity.Login;
@@ -28,9 +32,9 @@ public class RegisterProgressFragment extends Fragment {
 	private String password;
 	private String email;
 	private RegisterTask registerTask;
-	private ViewSwitcher switcher;
-	private Button next;
-	private ImageView registerProgressLogo;
+	@FindView(R.id.register_viewswitcher) ViewSwitcher switcher;
+	@FindView(R.id.registering_next_1) Button next;
+	@FindView(R.id.registerprogress_logo) ImageView registerProgressLogo;
 
 	public static RegisterProgressFragment getInstance(String username, String password, String email) {
 		RegisterProgressFragment fragment = new RegisterProgressFragment();
@@ -51,18 +55,14 @@ public class RegisterProgressFragment extends Fragment {
 		username = getArguments().getString("username");
 		password = getArguments().getString("password");
 		email = getArguments().getString("email");
-
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_registerprogress, null);
-		switcher = (ViewSwitcher) v.findViewById(R.id.register_viewswitcher);
+        ButterKnife.bind(this, v);
 
-		registerProgressLogo = (ImageView) v.findViewById(R.id.registerprogress_logo);
 		registerProgressLogo.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.rotate));
-
-		next = (Button) v.findViewById(R.id.registering_next_1);
 
 		if (registerTask != null) {
 			switcher.showNext();
@@ -71,16 +71,13 @@ public class RegisterProgressFragment extends Fragment {
 			registerTask.execute();
 		}
 
-		next.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Intent i = new Intent(getActivity(), AddSocial.class);
-				startActivity(i);
-			}
-		});
-
 		return v;
 	}
+
+    @OnClick(R.id.registering_next_1) void next() {
+        Intent i = new Intent(getActivity(), AddSocial.class);
+        startActivity(i);
+    }
 
 	private class RegisterTask extends AsyncTask<Void, Void, RegisterResponse> {
 
