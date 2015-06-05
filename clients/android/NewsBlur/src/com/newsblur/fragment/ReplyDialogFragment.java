@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
+import com.newsblur.util.FeedUtils;
 
 public class ReplyDialogFragment extends DialogFragment {
 
@@ -25,9 +26,6 @@ public class ReplyDialogFragment extends DialogFragment {
 	private String commentUserId, commentUsername;
 	private Story story;
 	
-	private APIManager apiManager;
-
-
 	public static ReplyDialogFragment newInstance(final Story story, final String commentUserId, final String commentUsername) {
 		ReplyDialogFragment frag = new ReplyDialogFragment();
 		Bundle args = new Bundle();
@@ -40,17 +38,14 @@ public class ReplyDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         story = (Story) getArguments().getSerializable(STORY);
-
         commentUserId = getArguments().getString(COMMENT_USER_ID);
         commentUsername = getArguments().getString(COMMENT_USERNAME);
 
         final Activity activity = getActivity();
-        apiManager = new APIManager(activity);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        final String shareString = getResources().getString(R.string.reply_to);
+        String shareString = getResources().getString(R.string.reply_to);
         builder.setTitle(String.format(shareString, getArguments().getString(COMMENT_USERNAME)));
 
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
@@ -61,23 +56,7 @@ public class ReplyDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
-                new AsyncTask<Void, Void, Boolean>() {
-                    @Override
-                    protected Boolean doInBackground(Void... arg) {
-                        return apiManager.replyToComment(story.id, story.feedId, commentUserId, reply.getText().toString());
-                    }
-
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        if (result) {
-                            Toast.makeText(activity, R.string.replied, Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(activity, R.string.error_replying, Toast.LENGTH_LONG).show();
-                        }
-                        ReplyDialogFragment.this.dismiss();
-                    };
-                }.execute();
+                FeedUtils.replyToComment(story.id, story.feedId, commentUserId, reply.getText().toString(), activity);
             }
         });
         builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {

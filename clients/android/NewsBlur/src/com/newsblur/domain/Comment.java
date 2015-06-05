@@ -76,7 +76,7 @@ public class Comment implements Serializable {
 	}
 
     public static String constructId(String storyId, String feedId, String userId) {
-        return TextUtils.concat(storyId, feedId, userId).toString();
+        return TextUtils.concat(feedId, storyId, userId).toString();
     }
 
 }

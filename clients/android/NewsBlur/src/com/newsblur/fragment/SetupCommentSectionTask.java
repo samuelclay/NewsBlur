@@ -177,8 +177,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					replyUsername.setText(R.string.unknown_user);
 				}
 				
-				TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
-				replySharedDate.setText(reply.shortDate + " ago");
+                if (reply.shortDate != null) {
+                    TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
+                    replySharedDate.setText(reply.shortDate + " ago");
+                }
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}

@@ -133,11 +133,11 @@
 
     <LinearLayout
         android:id="@+id/comment_replies_container"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
-      <View
+    <View
         android:id="@+id/comment_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"

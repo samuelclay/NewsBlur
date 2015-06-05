@@ -227,6 +227,14 @@ public class FeedUtils {
         NbActivity.updateAllActivities(true);
         triggerSync(context);
     }
+    
+    public static void replyToComment(String storyId, String feedId, String commentUserId, String replyText, Context context) {
+        ReadingAction ra = ReadingAction.replyToComment(storyId, feedId, commentUserId, replyText);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(true);
+        triggerSync(context);
+    }
 
     public static FeedSet feedSetFromFolderName(String folderName) {
         return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));

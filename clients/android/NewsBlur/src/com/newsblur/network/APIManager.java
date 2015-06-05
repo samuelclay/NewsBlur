@@ -466,14 +466,14 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
-	public boolean replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
+	public NewsBlurResponse replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
-		final APIResponse response = post(APIConstants.URL_REPLY_TO, values);
-		return (!response.isError());
+		APIResponse response = post(APIConstants.URL_REPLY_TO, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
 	public boolean addFeed(String feedUrl, String folderName) {
