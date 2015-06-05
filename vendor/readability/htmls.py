@@ -1,9 +1,10 @@
-from cleaners import normalize_spaces, clean_attributes
-from encoding import get_encoding
 from lxml.html import tostring
 import logging
 import lxml.html
 import re, sys
+
+from .cleaners import normalize_spaces, clean_attributes
+from .encoding import get_encoding
 
 utf8_parser = lxml.html.HTMLParser(encoding='utf-8')
 
@@ -43,7 +44,7 @@ def norm_title(title):
 
 def get_title(doc):
     title = doc.find('.//title')
-    if title is None or len(title.text) == 0:
+    if title is None or title.text is None or len(title.text) == 0:
         return '[no-title]'
 
     return norm_title(title.text)

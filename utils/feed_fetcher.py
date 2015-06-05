@@ -10,6 +10,8 @@ import pymongo
 import re
 import requests
 import dateutil.parser
+import isodate
+import urlparse
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -21,7 +23,7 @@ from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
 # from utils import feedparser
 from utils import feedparser
-from utils.story_functions import pre_process_story, strip_tags
+from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
 from BeautifulSoup import BeautifulSoup
@@ -93,14 +95,15 @@ class FetchFeed:
                           self.feed.title[:30]))
             return FEED_OK, self.fpf
         
-        if 'gdata.youtube.com' in address or 'youtube.com/feeds/videos.xml?user=' in address:
+        if 'youtube.com' in address:
             youtube_feed = self.fetch_youtube(address)
             if not youtube_feed:
                 logging.debug(u'   ***> [%-30s] ~FRYouTube fetch failed: %s.' % 
                               (self.feed.title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(youtube_feed)
-        else:
+
+        if not self.fpf:
             try:
                 self.fpf = feedparser.parse(address,
                                             agent=USER_AGENT,
@@ -130,9 +133,13 @@ class FetchFeed:
         return identity
     
     def fetch_youtube(self, address):
+        username = None
+        channel_id = None
+        list_id = None
+        
         if 'gdata.youtube.com' in address:
             try:
-                username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/uploads', address)
+                username_groups = re.search('gdata.youtube.com/feeds/\w+/users/(\w+)/', address)
                 if not username_groups:
                     return
                 username = username_groups.group(1)
@@ -140,30 +147,62 @@ class FetchFeed:
                 return
         elif 'youtube.com/feeds/videos.xml?user=' in address:
             try:
-                username_groups = re.search('youtube.com/feeds/videos.xml\?user=(\w+)', address)
-                if not username_groups:
-                    return
-                username = username_groups.group(1)
+                username = urlparse.parse_qs(urlparse.urlparse(address).query)['user'][0]
+            except IndexError:
+                return            
+        elif 'youtube.com/feeds/videos.xml?channel_id=' in address:
+            try:
+                channel_id = urlparse.parse_qs(urlparse.urlparse(address).query)['channel_id'][0]
+            except IndexError:
+                return            
+        elif 'youtube.com/playlist' in address:
+            try:
+                list_id = urlparse.parse_qs(urlparse.urlparse(address).query)['list'][0]
             except IndexError:
                 return            
         
-        video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
-        if video_ids_xml.status_code != 200:
+        if channel_id:
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id)
+            channel_json = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s" %
+                                       (channel_id, settings.YOUTUBE_API_KEY))
+            channel = json.decode(channel_json.content)
+            username = channel['items'][0]['snippet']['title']
+            description = channel['items'][0]['snippet']['description']
+        elif list_id:
+            playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s" %
+                                       (list_id, settings.YOUTUBE_API_KEY))
+            playlist = json.decode(playlist_json.content)
+            username = playlist['items'][0]['snippet']['title']
+            description = playlist['items'][0]['snippet']['description']
+            channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
+        elif username:
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
+            description = "YouTube videos uploaded by %s" % username
+        else:
             return
-            
-        video_ids_soup = BeautifulSoup(video_ids_xml.content)
-        video_ids = []
-        for video_id in video_ids_soup.findAll('yt:videoid'):
-            video_ids.append(video_id.getText())
+                    
+        if list_id:
+            playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&key=%s" %
+                                       (list_id, settings.YOUTUBE_API_KEY))
+            playlist = json.decode(playlist_json.content)
+            video_ids = [video['snippet']['resourceId']['videoId'] for video in playlist['items']]
+        else:    
+            if video_ids_xml.status_code != 200:
+                return
+            video_ids_soup = BeautifulSoup(video_ids_xml.content)
+            channel_url = video_ids_soup.find('author').find('uri').getText()
+            video_ids = []
+            for video_id in video_ids_soup.findAll('yt:videoid'):
+                video_ids.append(video_id.getText())
         
-        videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=player%%2Csnippet&id=%s&key=%s" %
+        videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=contentDetails%%2Csnippet&id=%s&key=%s" %
              (','.join(video_ids), settings.YOUTUBE_API_KEY))
         videos = json.decode(videos_json.content)
 
         data = {}
-        data['title'] = "%s's YouTube Videos" % username
-        data['link'] = video_ids_soup.find('author').find('uri').getText()
-        data['description'] = "YouTube videos uploaded by %s" % username
+        data['title'] = ("%s's YouTube Videos" % username if 'Uploads' not in username else username)
+        data['link'] = channel_url
+        data['description'] = description
         data['lastBuildDate'] = datetime.datetime.utcnow()
         data['generator'] = 'NewsBlur YouTube API v3 Decrapifier - %s' % settings.NEWSBLUR_URL
         data['docs'] = None
@@ -176,15 +215,31 @@ class FetchFeed:
                 thumbnail = video['snippet']['thumbnails'].get('high')
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
-            content = """<div class="NB-youtube-player">%s</iframe></div>
+            duration_sec = isodate.parse_duration(video['contentDetails']['duration']).seconds
+            if duration_sec >= 3600:
+                hours = (duration_sec / 3600)
+                minutes = (duration_sec - (hours*3600)) / 60
+                seconds = duration_sec - (hours*3600) - (minutes*60)
+                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
+            else:
+                minutes = duration_sec / 60
+                seconds = duration_sec - (minutes*60)
+                duration = "%s:%s" % ('{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
+            content = """<div class="NB-youtube-player"><iframe allowfullscreen="true" src="%s"></iframe></div>
+                         <div class="NB-youtube-stats"><small>
+                             <b>From:</b> <a href="%s">%s</a><br />
+                             <b>Duration:</b> %s<br />
+                         </small></div><hr>
                          <div class="NB-youtube-description">%s</div>
                          <img src="%s" style="display:none" />""" % (
-                video['player']['embedHtml'],
-                linebreaks(video['snippet']['description']),
+                ("https://www.youtube.com/embed/" + video['id']),
+                channel_url, username,
+                duration,
+                linkify(linebreaks(video['snippet']['description'])),
                 thumbnail['url'] if thumbnail else "",
             )
 
-            link = "http://www.youtube.com/watch?v=%s&feature=youtube_gdata" % video['id']
+            link = "http://www.youtube.com/watch?v=%s" % video['id']
             story_data = {
                 'title': video['snippet']['title'],
                 'link': link,
@@ -232,9 +287,13 @@ class ProcessFeed:
                 return FEED_SAME, ret_values
             
             # 302: Temporary redirect: ignore
-            # 301: Permanent redirect: save it
+            # 301: Permanent redirect: save it (after 20 tries)
             if self.fpf.status == 301:
-                if not self.fpf.href.endswith('feedburner.com/atom.xml'):
+                if self.fpf.href.endswith('feedburner.com/atom.xml'):
+                    return FEED_ERRHTTP, ret_values
+                redirects, non_redirects = self.feed.count_redirects_in_history('feed')
+                self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (20-len(redirects)))
+                if len(redirects) >= 20 or len(non_redirects) == 0:
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
@@ -304,8 +363,14 @@ class ProcessFeed:
             self.feed.data.feed_tagline = utf8encode(tagline)
             self.feed.data.save()
         if not self.feed.feed_link_locked:
-            self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
-        
+            new_feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
+            if new_feed_link != self.feed.feed_link:
+                logging.debug("   ---> [%-30s] ~SB~FRFeed's page is different: %s to %s" % (self.feed.title[:30], self.feed.feed_link, new_feed_link))               
+                redirects, non_redirects = self.feed.count_redirects_in_history('page')
+                self.feed.save_page_history(301, "HTTP Redirect (%s to go)" % (20-len(redirects)))
+                if len(redirects) >= 20 or len(non_redirects) == 0:
+                    self.feed.feed_link = new_feed_link
+
         self.feed = self.feed.save()
         
         # Determine if stories aren't valid and replace broken guids

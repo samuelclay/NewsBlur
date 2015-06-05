@@ -9,12 +9,19 @@ import struct
 import operator
 import gzip
 import datetime
+import requests
 from PIL import BmpImagePlugin, PngImagePlugin, Image
+from socket import error as SocketError
 from boto.s3.key import Key
 from StringIO import StringIO
 from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
+from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
+from OpenSSL.SSL import Error as OpenSSLError
+from pyasn1.error import PyAsn1Error
+from requests.packages.urllib3.exceptions import LocationParseError
+
 
 class IconImporter(object):
     
@@ -186,6 +193,14 @@ class IconImporter(object):
         else:
             content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
+        if not url:
+            try:
+                content = requests.get(self.feed.feed_link).content
+                url = self._url_from_html(content)
+            except (AttributeError, SocketError, requests.ConnectionError, 
+                    requests.models.MissingSchema, requests.sessions.InvalidSchema,
+                    LocationParseError, OpenSSLError, PyAsn1Error), e:
+                logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
             image, image_file = self.get_image_from_url(url)
         return image, image_file, url

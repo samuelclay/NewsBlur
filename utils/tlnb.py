@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 import time
 import select
 import subprocess
@@ -46,33 +47,43 @@ def create_streams_for_roles(role, role2, command=None, path=None):
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"
-    for hostname in (hosts[role] + hosts[role2]):
-        if isinstance(hostname, dict):
-            address = hostname['address']
-            hostname = hostname['name']
-        elif ':' in hostname:
-            hostname, address = hostname.split(':', 1)
-        elif isinstance(hostname, tuple):
-            hostname, address = hostname[0], hostname[1]
-        else:
-            address = hostname
-        if any(h in hostname for h in IGNORE_HOSTS): continue
-        if hostname in found: continue
-        if 'ec2' in hostname:
-            s = subprocess.Popen(["ssh", 
-                                  "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
-                                                                        "keys/ec2.pem")),
-                                  address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
-        else:
-            s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
-                                  "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
-                                                                        "keys/newsblur.key")),
-                                  address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
-        s.name = hostname
-        streams.append(s)
-        found.add(hostname)
-        
+    if role in hosts:
+        for hostname in (hosts[role] + hosts[role2]):
+            if any(h in hostname for h in IGNORE_HOSTS) and role != 'push': continue
+            follow_host(streams, found, hostname, command, path)
+    else:
+        host = role
+        role = re.search(r'([^0-9]+)', host).group()
+        for hostname in hosts[role]:
+            if hostname['name'] == host:
+                follow_host(streams, found, hostname, command, path)
+
     return streams
+
+def follow_host(streams, found, hostname, command=None, path=None):
+    if isinstance(hostname, dict):
+        address = hostname['address']
+        hostname = hostname['name']
+    elif ':' in hostname:
+        hostname, address = hostname.split(':', 1)
+    elif isinstance(hostname, tuple):
+        hostname, address = hostname[0], hostname[1]
+    else:
+        address = hostname
+    if hostname in found: return
+    if 'ec2' in hostname:
+        s = subprocess.Popen(["ssh", 
+                              "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
+                                                                    "keys/ec2.pem")),
+                              address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
+    else:
+        s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
+                              "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
+                                                                    "keys/newsblur.key")),
+                              address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
+    s.name = hostname
+    streams.append(s)
+    found.add(hostname)
 
 def read_streams(streams):
     while True:

@@ -224,7 +224,7 @@ secondStateIconName:(NSString *)secondIconName
         UIPanGestureRecognizer *g = (UIPanGestureRecognizer *)gestureRecognizer;
         CGPoint point = [g velocityInView:self];
         
-        if (fabsf(point.x) > fabsf(point.y) ) {
+        if (fabs(point.x) > fabs(point.y) ) {
             
             // We notify the delegate that we just started dragging
             if ([_delegate respondsToSelector:@selector(swipeTableViewCellDidStartSwiping:)]) {
@@ -297,7 +297,7 @@ secondStateIconName:(NSString *)secondIconName
     if (percentage >= 0 && percentage < kMCStop1)
         alpha = percentage / kMCStop1;
     else if (percentage < 0 && percentage > -kMCStop1)
-        alpha = fabsf(percentage / kMCStop1);
+        alpha = fabs(percentage / kMCStop1);
     else alpha = 1.0;
     
     return alpha;

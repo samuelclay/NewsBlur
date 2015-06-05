@@ -14,6 +14,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     populate_comments: function(story, collection) {
         this.friend_comments = new NEWSBLUR.Collections.Comments(this.get('friend_comments'));
+        this.friend_shares = new NEWSBLUR.Collections.Comments(this.get('friend_shares'));
         this.public_comments = new NEWSBLUR.Collections.Comments(this.get('public_comments'));
     },
     

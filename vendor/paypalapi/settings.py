@@ -116,7 +116,7 @@ class PayPalConfig(object):
 
         # Set the CA_CERTS location. This can either be a None, a bool, or a
         # string path.
-        if kwargs.get('API_CA_CERTS'):
+        if 'API_CA_CERTS' in kwargs:
             self.API_CA_CERTS = kwargs['API_CA_CERTS']
 
             if isinstance(self.API_CA_CERTS, basestring) and not os.path.exists(self.API_CA_CERTS):

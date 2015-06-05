@@ -1621,12 +1621,16 @@
             } else if (story_layout == 'split') {
                 NEWSBLUR.app.story_list.render();
                 if (this.active_story) {
+                    NEWSBLUR.app.story_list.show_only_selected_story();
                     this.active_story.story_title_view.toggle_selected();
+                    this.active_story.story_view.toggle_selected();
                 }
             } else if (story_layout == 'full') {
                 NEWSBLUR.app.story_list.render();
                 if (this.active_story) {
+                    NEWSBLUR.app.story_list.show_only_selected_story();
                     this.active_story.story_title_view.toggle_selected();
+                    this.active_story.story_view.toggle_selected();
                 }
             }
             
@@ -2167,11 +2171,7 @@
             options = options || {};
             // NEWSBLUR.log(['Found story', this.story_view, options.found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
 
-            if (_.contains(['list', 'grid'], 
-                NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) && 
-                (this.story_view == 'page' || this.story_view == 'story')) {
-                this.switch_taskbar_view('feed', {skip_save_type: 'layout'});
-            } else if (options.story_not_found) {
+            if (options.story_not_found) {
                 // Story not found, show in feed view with link to page view
                 if (this.story_view == 'page' && !this.flags['page_view_showing_feed_view']) {
                     // NEWSBLUR.log(['turn on feed view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
@@ -2181,6 +2181,10 @@
                     this.switch_taskbar_view('feed', {skip_save_type: 'page'});
                     NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
                 }
+            } else if (_.contains(['list', 'grid'], 
+                NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) && 
+                (this.story_view == 'page' || this.story_view == 'story')) {
+                this.switch_taskbar_view('feed', {skip_save_type: 'layout'});
             } else if (this.story_view == 'page' && this.flags['page_view_showing_feed_view']) {
                 // NEWSBLUR.log(['turn off feed view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
                 this.flags['page_view_showing_feed_view'] = false;

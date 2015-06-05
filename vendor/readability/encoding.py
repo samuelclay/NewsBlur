@@ -26,7 +26,7 @@ def get_encoding(page):
     if not text.strip() or len(text) < 10:
         return enc # can't guess
     res = chardet.detect(text)
-    enc = res['encoding']
+    enc = res['encoding'] or 'utf-8'
     #print '->', enc, "%.2f" % res['confidence']
     enc = custom_decode(enc)
     return enc

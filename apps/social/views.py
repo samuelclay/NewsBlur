@@ -1185,11 +1185,13 @@ def like_comment(request):
     MActivity.new_comment_like(liking_user_id=request.user.pk,
                                comment_user_id=comment['user_id'],
                                story_id=story_id,
+                               story_feed_id=feed_id,
                                story_title=shared_story.story_title,
                                comments=shared_story.comments)
     MInteraction.new_comment_like(liking_user_id=request.user.pk, 
                                   comment_user_id=comment['user_id'],
                                   story_id=story_id,
+                                  story_feed_id=feed_id,
                                   story_title=shared_story.story_title,
                                   comments=shared_story.comments)
                                        

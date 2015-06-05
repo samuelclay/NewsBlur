@@ -81,6 +81,7 @@ def do_roledefs(split=False):
 def list_do():
     droplets = do(split=True)
     pprint(droplets)
+    
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     droplets = doapi.show_active_droplets()
     sizes = doapi.sizes()
@@ -89,7 +90,10 @@ def list_do():
     total_cost = 0
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
-        cost = int(sizes.get(droplet.size_id, 96)) * 10
+        size = int(sizes.get(droplet.size_id, 96))
+        if size == 512:
+            size = .5
+        cost = int(size * 10)
         role_costs[roledef] += cost
         total_cost += cost
     
@@ -217,11 +221,10 @@ def setup_app(skip_common=False):
     if not skip_common:
         setup_common()
     setup_app_firewall()
-    setup_app_motd()
+    setup_motd('app')
     copy_app_settings()
     config_nginx()
     setup_gunicorn(supervisor=True)
-    update_gunicorn()
     # setup_node_app()
     # config_node()
     deploy_web()
@@ -243,11 +246,11 @@ def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_db_firewall()
-    setup_db_motd()
+    setup_motd('db')
     copy_db_settings()
-    # if engine == "memcached":
-    #     setup_memcached()
-    if engine == "postgres":
+    if engine == "memcached":
+        setup_memcached()
+    elif engine == "postgres":
         setup_postgres(standby=False)
         setup_postgres_backups()
     elif engine == "postgres_slave":
@@ -276,11 +279,10 @@ def setup_task(queue=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_task_firewall()
-    setup_task_motd()
+    setup_motd('task')
     copy_task_settings()
     enable_celery_supervisor(queue)
     setup_gunicorn(supervisor=False)
-    update_gunicorn()
     config_monit_task()
     setup_usage_monitor()
     done()
@@ -292,7 +294,7 @@ def setup_task_image():
     config_pgbouncer()
     pull()
     pip()
-    deploy()
+    deploy(reload=True)
     done()
 
 # ==================
@@ -646,9 +648,6 @@ def setup_app_firewall():
     sudo('ufw allow 443')       # https
     sudo('ufw --force enable')
 
-def setup_app_motd():
-    put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
-
 def remove_gunicorn():
     with cd(env.VENDOR_PATH):
         sudo('rm -fr gunicorn')
@@ -656,6 +655,8 @@ def remove_gunicorn():
 def setup_gunicorn(supervisor=True):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
+        sudo('supervisorctl reread')
+        restart_gunicorn()
     # with cd(env.VENDOR_PATH):
     #     sudo('rm -fr gunicorn')
     #     run('git clone git://github.com/benoitc/gunicorn.git')
@@ -723,14 +724,15 @@ def maintenance_off():
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
+    version = "1.5.12"
     sudo('ufw allow 81')    # nginx moved
     sudo('ufw allow 1936')  # haproxy stats
     # sudo('apt-get install -y haproxy')
     # sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
-        run('wget http://www.haproxy.org/download/1.5/src/haproxy-1.5.6.tar.gz')
-        run('tar -xf haproxy-1.5.6.tar.gz')
-        with cd('haproxy-1.5.6'):
+        run('wget http://www.haproxy.org/download/1.5/src/haproxy-%s.tar.gz' % version)
+        run('tar -xf haproxy-%s.tar.gz' % version)
+        with cd('haproxy-%s' % version):
             run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
@@ -749,6 +751,7 @@ def setup_haproxy(debug=False):
     sudo('restart rsyslog')
 
     sudo('/etc/init.d/haproxy stop')
+    run('sleep 1')
     sudo('/etc/init.d/haproxy start')
 
 def config_haproxy(debug=False):
@@ -830,9 +833,6 @@ def setup_db_firewall():
 
     sudo('ufw --force enable')
 
-def setup_db_motd():
-    put('config/motd_db.txt', '/etc/motd.tail', use_sudo=True)
-
 def setup_rabbitmq():
     sudo('echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.list')
     run('wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc')
@@ -849,19 +849,19 @@ def setup_rabbitmq():
 
 def setup_postgres(standby=False):
     shmmax = 2300047872
-    # sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"')
+    sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"')
     sudo('wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
-    sudo('apt-get -y install postgresql-9.2 postgresql-client-9.2 postgresql-contrib-9.2 libpq-dev')
+    sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
-    ), '/etc/postgresql/9.2/main/postgresql.conf', use_sudo=True)
+    ), '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
     sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
     sudo('sysctl -p')
 
     if standby:
-        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.2/recovery.conf', use_sudo=True)
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/recovery.conf', use_sudo=True)
 
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
@@ -889,7 +889,8 @@ def setup_mongo():
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
     # Reclaim 5% disk space used for root logs. Set to 1%.
-    sudo('tune2fs -m 1 /dev/vda')
+    with settings(warn_only=True):
+        sudo('tune2fs -m 1 /dev/vda')
 
 def setup_mongo_configsvr():
     sudo('mkdir -p /var/lib/mongodb_configsvr')
@@ -960,7 +961,7 @@ def setup_redis(slave=False):
     config_monit_redis()
     
 def setup_munin():
-    # sudo('apt-get update')
+    sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
@@ -990,6 +991,26 @@ def setup_munin():
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
         sudo('/etc/init.d/spawn_fcgi_munin_html start')
 
+def copy_munin_data(from_server):
+    put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key'), '~/.ssh/newsblur.key')
+    put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), '~/.ssh/newsblur.key.pub')
+    run('chmod 600 ~/.ssh/newsblur*')
+
+    put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
+    sudo('/etc/init.d/nginx reload')
+
+    run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/var/lib/munin/ /srv/munin" % from_server)
+    sudo("mv /var/lib/munin /var/lib/bak-munin")
+    sudo("mv /srv/munin /var/lib/")
+    sudo("chown munin.munin -R /var/lib/munin")
+
+    run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/etc/munin/ /srv/munin-etc" % from_server)
+    sudo("mv /srv/munin-etc /etc/munin")
+    sudo("chown munin.munin -R /etc/munin")
+
+    sudo("/etc/init.d/munin restart")
+    sudo("/etc/init.d/munin-node restart")
+    
 
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
@@ -1043,7 +1064,7 @@ def setup_elasticsearch():
     sudo('apt-get install openjdk-7-jre -y')
 
     with cd(env.VENDOR_PATH):
-        run('mkdir elasticsearch-%s' % ES_VERSION)
+        run('mkdir -p elasticsearch-%s' % ES_VERSION)
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
@@ -1070,8 +1091,11 @@ def setup_task_firewall():
     sudo('ufw allow 80')
     sudo('ufw --force enable')
 
-def setup_task_motd():
-    put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)
+def setup_motd(role='app'):
+    motd = '/etc/update-motd.d/22-newsblur-motd'
+    put('config/motd_%s.txt' % role, motd, use_sudo=True)
+    sudo('chown root.root %s' % motd)
+    sudo('chmod a+x %s' % motd)
 
 def enable_celery_supervisor(queue=None):
     if not queue:
@@ -1122,6 +1146,8 @@ def setup_do(name, size=2, image=None):
         print images
         image_id = images[IMAGE_NAME]
     else:
+        if image == "task": 
+            image = "task_05-2015"
         IMAGE_NAME = image
         images = dict((s.name, s.id) for s in doapi.images(show_all=False))
         image_id = images[IMAGE_NAME]
@@ -1264,13 +1290,14 @@ def deploy_code(copy_assets=False, full=False, fast=False, reload=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-            
-        if reload:
-            sudo('supervisorctl reload')
-        elif fast:
-            kill_gunicorn()
-        else:
-            sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
+        
+        with settings(warn_only=True):
+            if reload:
+                sudo('supervisorctl reload')
+            elif fast:
+                kill_gunicorn()
+            else:
+                sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
 
 @parallel
 def kill():

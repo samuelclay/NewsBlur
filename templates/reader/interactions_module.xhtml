@@ -29,7 +29,7 @@
                 </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
             </div>
             <div class="NB-interaction-content">
-                <span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>
+                <span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:128 }}</span>
             </div>
             <div class="NB-interaction-date">
                 {{ interaction.time_since }} ago

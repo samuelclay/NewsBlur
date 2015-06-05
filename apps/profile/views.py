@@ -23,6 +23,7 @@ from apps.profile.forms import RedeemCodeForm
 from apps.reader.forms import SignupForm, LoginForm
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
+from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
@@ -407,6 +408,7 @@ def payment_history(request):
 
     history = PaymentHistory.objects.filter(user=user)
     statistics = {
+        "created_date": user.date_joined,
         "last_seen_date": user.profile.last_seen_on,
         "timezone": unicode(user.profile.timezone),
         "stripe_id": user.profile.stripe_id,
@@ -415,6 +417,12 @@ def payment_history(request):
         "email": user.email,
         "read_story_count": RUserStory.read_story_count(user.pk),
         "feed_opens": UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum'],
+        "training": {
+            'title': MClassifierTitle.objects.filter(user_id=user.pk).count(),
+            'tag': MClassifierTag.objects.filter(user_id=user.pk).count(),
+            'author': MClassifierAuthor.objects.filter(user_id=user.pk).count(),
+            'feed': MClassifierFeed.objects.filter(user_id=user.pk).count(),
+        }
     }
     
     return {
@@ -455,9 +463,22 @@ def refund_premium(request):
 def upgrade_premium(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    upgraded = user.profile.activate_premium()
+    upgraded = user.profile.activate_premium(never_expire=True)
     
     return {'code': 1 if upgraded else -1}    
+
+@staff_member_required
+@ajax_login_required
+@json.json_view
+def never_expire_premium(request):
+    user_id = request.REQUEST.get('user_id')
+    user = User.objects.get(pk=user_id)
+    if user.profile.is_premium:
+        user.profile.premium_expire = None
+        user.profile.save()
+        return {'code': 1}
+    
+    return {'code': -1}
 
 @staff_member_required
 @ajax_login_required
@@ -465,7 +486,7 @@ def upgrade_premium(request):
 def update_payment_history(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    user.profile.setup_premium_history()
+    user.profile.setup_premium_history(check_premium=False)
     
     return {'code': 1}
     
