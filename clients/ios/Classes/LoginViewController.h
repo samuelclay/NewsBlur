@@ -32,6 +32,8 @@
     UILabel *passwordLabel;
     UILabel *emailLabel;
     UILabel *passwordOptionalLabel;
+    
+    UIButton *onePasswordButton;
 }
 
 - (void)checkPassword;
@@ -55,6 +57,7 @@
 @property (nonatomic) IBOutlet UITextField *signUpPasswordInput;
 @property (nonatomic) IBOutlet UIButton *selectSignUpButton;
 @property (nonatomic) IBOutlet UIButton *selectLoginButton;
+@property (nonatomic) IBOutlet UIButton *onePasswordButton;
 
 @property (nonatomic) IBOutlet UIView *signUpView;
 @property (nonatomic) IBOutlet UIView *logInView;

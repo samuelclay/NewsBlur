@@ -8,6 +8,7 @@
 
 #import "LoginViewController.h"
 #import "ASIFormDataRequest.h"
+#import "../Other Sources/OnePasswordExtension/OnePasswordExtension.h"
 //#import <QuartzCore/QuartzCore.h>
 
 @implementation LoginViewController
@@ -31,6 +32,7 @@
 @synthesize passwordLabel;
 @synthesize emailLabel;
 @synthesize passwordOptionalLabel;
+@synthesize onePasswordButton;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -48,11 +50,13 @@
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
+    
     [self.loginControl
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
      forState:UIControlStateNormal];
 
+    //[self.onePasswordButton setHidden:![[OnePasswordExtension sharedExtension] isAppExtensionAvailable]];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
@@ -143,6 +147,21 @@
         }
 
     }
+}
+
+- (IBAction)findLoginFrom1Password:(id)sender {
+    [[OnePasswordExtension sharedExtension] findLoginForURLString:@"https://www.newsblur.com" forViewController:self sender:sender completion:^(NSDictionary *loginDictionary, NSError *error) {
+        if (loginDictionary.count == 0) {
+            if (error.code != AppExtensionErrorCodeCancelledByUser) {
+                NSLog(@"Error invoking 1Password App Extension for find login: %@", error);
+            }
+            return;
+        }
+        
+        self.usernameInput.text = loginDictionary[AppExtensionUsernameKey];
+        [passwordInput becomeFirstResponder];
+        self.passwordInput.text = loginDictionary[AppExtensionPasswordKey];
+    }];
 }
 
 #pragma mark -
@@ -375,6 +394,9 @@
             
             emailInput.alpha = 0.0;
             emailLabel.alpha = 0.0;
+            
+            onePasswordButton.frame = CGRectMake(20+ passwordInput.frame.size.width - 31, 129, 31, 31);
+            onePasswordButton.alpha = 1.0;
         }];
         
         passwordInput.returnKeyType = UIReturnKeyGo;
@@ -394,6 +416,9 @@
             
             emailInput.alpha = 1.0;
             emailLabel.alpha = 1.0;
+            
+            onePasswordButton.frame = CGRectMake(width/2+margin + passwordInput.frame.size.width - 31, 67, 31, 31);
+            onePasswordButton.alpha = 0.0; // Don't want to deal with registration yet.
         }];        
         passwordInput.returnKeyType = UIReturnKeyNext;
         usernameInput.keyboardType = UIKeyboardTypeAlphabet;
