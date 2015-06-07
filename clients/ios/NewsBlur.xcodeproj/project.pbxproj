@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
+		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
 		1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -703,6 +705,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
+		010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnePasswordExtension.h; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.h"; sourceTree = "<group>"; };
+		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NewsBlurAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1729,6 +1734,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		010EDEF41B238635003B79DE /* OnePasswordExtension */ = {
+			isa = PBXGroup;
+			children = (
+				010EDEFB1B238722003B79DE /* 1Password.xcassets */,
+				010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */,
+				010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */,
+			);
+			name = OnePasswordExtension;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -1771,6 +1786,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				010EDEF41B238635003B79DE /* OnePasswordExtension */,
 				FF03B00419F987E00063002A /* NJKWebViewProgress */,
 				FF03AFF419F881380063002A /* ARChromeActivity */,
 				FF03AFE619F87F2E0063002A /* TUSafariActivity */,
@@ -3263,6 +3279,7 @@
 				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
 				FFA0478919CA54A800618DC4 /* osk-iap-badge-60@2x.png in Resources */,
 				439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */,
+				010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */,
 				FF6DD31F1AEDF9F300F1F53A /* menu_icn_rename@2x.png in Resources */,
 				437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */,
 				FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */,
@@ -3770,6 +3787,7 @@
 				FF03B00919F987E00063002A /* NJKWebViewProgress.m in Sources */,
 				FFA0480A19CA54A800618DC4 /* OSKMailComposeViewController.m in Sources */,
 				FFA0483319CA54A800618DC4 /* OSKUsernamePasswordCell.m in Sources */,
+				010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */,
 				FFA047D919CA54A800618DC4 /* NSHTTPURLResponse+OSKUtilities.m in Sources */,
 				FFA0481C19CA54A800618DC4 /* OSKReadabilityActivity.m in Sources */,
 				43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */,
