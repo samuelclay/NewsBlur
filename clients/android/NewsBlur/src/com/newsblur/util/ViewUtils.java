@@ -1,9 +1,10 @@
 package com.newsblur.util;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.app.FragmentManager;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -129,6 +130,7 @@ public class ViewUtils {
     }
 
     public static void showSystemUI(View view) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return;
         // Some layout/drawing artifacts as we don't use the FLAG_LAYOUT flags but otherwise the overlays wouldn't appear
         // and the action bar would overlap the content
         view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
