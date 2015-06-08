@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class ActivityDetails {
 	
-	public String category;
+	public Category category;
 	public String content;
 	public String title;
 
@@ -19,7 +19,9 @@ public class ActivityDetails {
 	
 	@SerializedName("with_user_id")
 	public String id;
-	
+
+    @SerializedName("story_hash")
+    public String storyHash;
 	
 	public class WithUser {
 		public String username;
@@ -28,6 +30,22 @@ public class ActivityDetails {
 		public String photoUrl;
 		
 	}
-	
+
+    public enum Category {
+        @SerializedName("feedsub")
+        FEED_SUBSCRIPTION,
+        @SerializedName("signup")
+        SIGNUP,
+        @SerializedName("comment_like")
+        COMMENT_LIKE,
+        @SerializedName("comment_reply")
+        COMMENT_REPLY,
+        @SerializedName("sharedstory")
+        SHARED_STORY,
+        @SerializedName("follow")
+        FOLLOW,
+        @SerializedName("star")
+        STAR
+    }
 }
 

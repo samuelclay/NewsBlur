@@ -17,6 +17,7 @@ import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
+import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
@@ -78,11 +79,11 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		ImageView imageView = (ImageView) view.findViewById(R.id.row_activity_icon);
 		
 		activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
-		if (TextUtils.equals(activity.category, "feedsub")) {
+		if (activity.category == Category.FEED_SUBSCRIPTION) {
 			imageLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
-		} else if (TextUtils.equals(activity.category, "sharedstory")) {
+		} else if (activity.category == Category.SHARED_STORY) {
 			imageLoader.displayImage(currentUserDetails.photoUrl, imageView, 10f);
-		} else if (TextUtils.equals(activity.category, "star")) {
+		} else if (activity.category == Category.STAR) {
 			imageView.setImageResource(R.drawable.clock);
 	    } else if (activity.user != null) {
 			imageLoader.displayImage(activity.user.photoUrl, imageView);
@@ -90,19 +91,19 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 			imageView.setImageResource(R.drawable.logo);
 		}
 
-		if (TextUtils.equals(activity.category, "feedsub")) {
+		if (activity.category == Category.FEED_SUBSCRIPTION) {
 			addFeedSubscriptionContent(activity, stringBuilder);
-		} else if (TextUtils.equals(activity.category, "star")) {
+		} else if (activity.category == Category.STAR) {
 			addStarContent(activity, stringBuilder);
-		} else if (TextUtils.equals(activity.category, "signup")) {
+		} else if (activity.category == Category.SIGNUP) {
 			addSignupContent(stringBuilder);
-		} else if (TextUtils.equals(activity.category, "follow")) {
+		} else if (activity.category == Category.FOLLOW) {
             addFollowContent(activity, stringBuilder);
-		} else if (TextUtils.equals(activity.category, "comment_like")) {
+		} else if (activity.category == Category.COMMENT_LIKE) {
 			addCommentLikeContent(activity, stringBuilder);
-		} else if (TextUtils.equals(activity.category, "comment_reply")) {
+		} else if (activity.category == Category.COMMENT_REPLY) {
 			addCommentReplyContent(activity, stringBuilder);
-		} else if (TextUtils.equals(activity.category, "sharedstory")) {
+		} else if (activity.category == Category.SHARED_STORY) {
 			addSharedStoryContent(activity, stringBuilder);
 		}
 		

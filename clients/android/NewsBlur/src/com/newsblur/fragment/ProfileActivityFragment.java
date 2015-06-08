@@ -22,6 +22,7 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
+import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.FeedUtils;
@@ -115,12 +116,12 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         ActivityDetails activity = adapter.getItem(position);
-        if (TextUtils.equals(activity.category, "follow")) {
+        if (activity.category == Category.FOLLOW) {
             Context context = getActivity();
             Intent i = new Intent(context, Profile.class);
             i.putExtra(Profile.USER_ID, activity.id);
             context.startActivity(i);
-        } else if (TextUtils.equals(activity.category, "feedsub")) {
+        } else if (activity.category == Category.FEED_SUBSCRIPTION) {
             Context context = getActivity();
             Feed feed = FeedUtils.getFeed(activity.feedId);
             // TODO Handle null feed if no longer subscribed - show toast?
