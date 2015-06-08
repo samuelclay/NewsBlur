@@ -147,6 +147,7 @@ public class ViewUtils {
     }
 
     public static boolean isSystemUIHidden(View view) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         return (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
     }
 
