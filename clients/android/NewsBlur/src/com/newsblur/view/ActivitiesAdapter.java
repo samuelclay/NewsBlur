@@ -54,8 +54,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 		if (PrefsUtils.isLightThemeSelected(context)) {
             linkColor = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
             contentColor = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
-            // TODO
-            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
+            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.midgray));
         } else {
             linkColor = new ForegroundColorSpan(resources.getColor(R.color.dark_linkblue));
             contentColor = new ForegroundColorSpan(resources.getColor(R.color.white));
