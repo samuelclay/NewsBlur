@@ -5,20 +5,18 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Profile;
-import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
@@ -27,7 +25,6 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.StateFilter;
 import com.newsblur.view.ActivitiesAdapter;
 import com.newsblur.view.ProgressThrobber;
 
@@ -124,11 +121,14 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
         } else if (activity.category == Category.FEED_SUBSCRIPTION) {
             Context context = getActivity();
             Feed feed = FeedUtils.getFeed(activity.feedId);
-            // TODO Handle null feed if no longer subscribed - show toast?
-            Intent intent = new Intent(context, FeedItemsList.class);
-            intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
-            intent.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
-            context.startActivity(intent);
+            if (feed == null) {
+                Toast.makeText(context, R.string.profile_feed_not_available, Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(context, FeedItemsList.class);
+                intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+                intent.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
+                context.startActivity(intent);
+            }
         }
     }
 
