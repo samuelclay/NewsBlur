@@ -15,14 +15,19 @@ import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
+import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Profile;
+import com.newsblur.activity.Reading;
+import com.newsblur.activity.SavedStoriesReading;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.ActivitiesResponse;
+import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.ActivitiesAdapter;
@@ -129,6 +134,14 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
                 intent.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
                 context.startActivity(intent);
             }
+        } else if (activity.category == Category.STAR) {
+            Intent i = new Intent(getActivity(), SavedStoriesReading.class);
+            i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.allSaved());
+            // TODO what if story doesn't exist?
+            i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
+            //TODO real DefaultFeedView
+            i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, DefaultFeedView.STORY);
+            startActivity(i);
         }
     }
 

@@ -57,6 +57,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	public static final String EXTRA_POSITION = "feed_position";
 	public static final String EXTRA_FOLDERNAME = "foldername";
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
+    public static final String EXTRA_STORY_HASH = "story_hash";
     private static final String TEXT_SIZE = "textsize";
     private static final String BUNDLE_POSITION = "position";
     private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
@@ -72,6 +73,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected StateFilter currentState;
     protected StoryOrder storyOrder;
     protected ReadFilter readFilter;
+
+    // Activities navigate to a particular story by hash.
+    // We can find it once we have the cursor.
+    private String storyHash;
 
     protected final Object STORIES_MUTEX = new Object();
 	protected Cursor stories;
@@ -127,6 +132,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
+
+        storyHash = getIntent().getStringExtra(EXTRA_STORY_HASH);
 
 		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
@@ -199,6 +206,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             readingAdapter.swapCursor(cursor);
             stories = cursor;
 
+            if (storyHash != null) {
+                skipCursorToStoryHash();
+            }
+
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
                 setupPager();
@@ -222,7 +233,18 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 	}
 
-	private void setupPager() {
+    private void skipCursorToStoryHash() {
+        passedPosition = 0;
+        while (stories.moveToNext()) {
+            Story story = Story.fromCursor(stories);
+            if (story.storyHash.equals(storyHash)) {
+                return;
+            }
+            passedPosition++;
+        }
+    }
+
+    private void setupPager() {
         pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
         if (PrefsUtils.isLightThemeSelected(this)) {
