@@ -20,6 +20,7 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Profile;
 import com.newsblur.activity.Reading;
 import com.newsblur.activity.SavedStoriesReading;
+import com.newsblur.activity.SocialFeedReading;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
@@ -140,6 +141,15 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
             // TODO what if story doesn't exist?
             i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME));
+            context.startActivity(i);
+        } else if (activity.category == Category.SHARED_STORY) {
+            Intent i = new Intent(context, SocialFeedReading.class);
+            i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(user.id, user.username));
+            i.putExtra(Reading.EXTRA_SOCIAL_FEED, FeedUtils.getSocialFeed(user.id));
+            i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
+            // TODO what if story doesn't exist?
+            i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
+            i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, user.id));
             context.startActivity(i);
         }
     }

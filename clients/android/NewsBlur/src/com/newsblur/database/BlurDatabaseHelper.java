@@ -779,6 +779,16 @@ public class BlurDatabaseHelper {
         return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
+    public SocialFeed getSocialFeed(String feedId) {
+        Cursor c = dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] {feedId}, null, null, null);
+        SocialFeed result = null;
+        while (c.moveToNext()) {
+            result = SocialFeed.fromCursor(c);
+        }
+        c.close();
+        return result;
+    }
+
     public Loader<Cursor> getFoldersLoader() {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getFoldersCursor(cancellationSignal);}
