@@ -29,6 +29,7 @@ import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.ActivitiesAdapter;
 import com.newsblur.view.ProgressThrobber;
@@ -118,13 +119,12 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         ActivityDetails activity = adapter.getItem(position);
+        Context context = getActivity();
         if (activity.category == Category.FOLLOW) {
-            Context context = getActivity();
             Intent i = new Intent(context, Profile.class);
             i.putExtra(Profile.USER_ID, activity.id);
             context.startActivity(i);
         } else if (activity.category == Category.FEED_SUBSCRIPTION) {
-            Context context = getActivity();
             Feed feed = FeedUtils.getFeed(activity.feedId);
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_feed_not_available, Toast.LENGTH_SHORT).show();
@@ -135,13 +135,12 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
                 context.startActivity(intent);
             }
         } else if (activity.category == Category.STAR) {
-            Intent i = new Intent(getActivity(), SavedStoriesReading.class);
+            Intent i = new Intent(context, SavedStoriesReading.class);
             i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.allSaved());
             // TODO what if story doesn't exist?
             i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
-            //TODO real DefaultFeedView
-            i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, DefaultFeedView.STORY);
-            startActivity(i);
+            i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME));
+            context.startActivity(i);
         }
     }
 

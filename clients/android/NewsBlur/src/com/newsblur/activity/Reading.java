@@ -133,7 +133,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
 
-        storyHash = getIntent().getStringExtra(EXTRA_STORY_HASH);
+        // Only use the storyHash the first time the activity is loaded. Ignore when
+        // recreated due to rotation etc.
+        if (savedInstanceBundle == null) {
+            storyHash = getIntent().getStringExtra(EXTRA_STORY_HASH);
+        }
 
 		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
