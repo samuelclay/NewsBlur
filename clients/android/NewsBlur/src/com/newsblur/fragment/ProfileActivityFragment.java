@@ -148,7 +148,7 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
             i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, user.id));
             context.startActivity(i);
-        } else if (activity.category == Category.COMMENT_LIKE && activity.storyHash != null) {
+        } else if ((activity.category == Category.COMMENT_LIKE || activity.category == Category.COMMENT_REPLY) && activity.storyHash != null) {
             // TODO navigate to comment
             SocialFeed feed = FeedUtils.getSocialFeed(activity.withUserId);
             if (feed == null) {
