@@ -165,10 +165,11 @@ public class PrefsUtils {
 		saveUserImage(context, profile.photoUrl);
 	}
 
-	public static UserDetails getUserDetails(final Context context) {
+	public static UserDetails getUserDetails(Context context) {
 		UserDetails user = new UserDetails();
 
-		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        if (context == null) return null;
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		user.averageStoriesPerMonth = preferences.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0);
 		user.bio = preferences.getString(PrefConstants.USER_BIO, null);
 		user.feedAddress = preferences.getString(PrefConstants.USER_FEED_ADDRESS, null);
