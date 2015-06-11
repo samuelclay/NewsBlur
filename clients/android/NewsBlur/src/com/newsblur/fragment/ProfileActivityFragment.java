@@ -31,13 +31,13 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.view.ActivitiesAdapter;
+import com.newsblur.view.ActivityDetailsAdapter;
 import com.newsblur.view.ProgressThrobber;
 
 public class ProfileActivityFragment extends Fragment implements AdapterView.OnItemClickListener {
 
 	private ListView activityList;
-	private ActivitiesAdapter adapter;
+	private ActivityDetailsAdapter adapter;
 	private APIManager apiManager;
 	private UserDetails user;
     private ProgressThrobber footerProgressView;
@@ -72,7 +72,7 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
 	
 	public void setUser(Context context, UserDetails user) {
 		this.user = user;
-		adapter = new ActivitiesAdapter(context, user);
+		adapter = new ActivityDetailsAdapter(context, user);
 		displayActivities();
 	}
 	

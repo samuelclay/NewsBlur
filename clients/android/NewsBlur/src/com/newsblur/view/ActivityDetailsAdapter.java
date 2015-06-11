@@ -22,7 +22,7 @@ import com.newsblur.network.APIConstants;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 
-public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
+public class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetails> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
@@ -32,7 +32,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivityDetails> {
 	private Context context;
 	private UserDetails currentUserDetails;
 	
-	public ActivitiesAdapter(final Context context, UserDetails user) {
+	public ActivityDetailsAdapter(final Context context, UserDetails user) {
 		super(context, R.id.row_activity_text);
 		inflater = LayoutInflater.from(context);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
