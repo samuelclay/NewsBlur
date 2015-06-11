@@ -18,7 +18,7 @@ public class ActivityDetails {
 	public WithUser user;
 	
 	@SerializedName("with_user_id")
-	public String id;
+	public String withUserId;
 
     @SerializedName("story_hash")
     public String storyHash;

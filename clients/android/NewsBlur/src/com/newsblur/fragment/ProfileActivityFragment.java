@@ -15,19 +15,18 @@ import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
-import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Profile;
 import com.newsblur.activity.Reading;
 import com.newsblur.activity.SavedStoriesReading;
 import com.newsblur.activity.SocialFeedReading;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.ActivitiesResponse;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
@@ -123,7 +122,7 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
         Context context = getActivity();
         if (activity.category == Category.FOLLOW) {
             Intent i = new Intent(context, Profile.class);
-            i.putExtra(Profile.USER_ID, activity.id);
+            i.putExtra(Profile.USER_ID, activity.withUserId);
             context.startActivity(i);
         } else if (activity.category == Category.FEED_SUBSCRIPTION) {
             Feed feed = FeedUtils.getFeed(activity.feedId);
@@ -138,7 +137,6 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
         } else if (activity.category == Category.STAR) {
             Intent i = new Intent(context, SavedStoriesReading.class);
             i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.allSaved());
-            // TODO what if story doesn't exist?
             i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME));
             context.startActivity(i);
@@ -147,10 +145,23 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
             i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(user.id, user.username));
             i.putExtra(Reading.EXTRA_SOCIAL_FEED, FeedUtils.getSocialFeed(user.id));
             i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
-            // TODO what if story doesn't exist?
             i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, user.id));
             context.startActivity(i);
+        } else if (activity.category == Category.COMMENT_LIKE && activity.storyHash != null) {
+            // TODO navigate to comment
+            SocialFeed feed = FeedUtils.getSocialFeed(activity.withUserId);
+            if (feed == null) {
+                Toast.makeText(context, R.string.profile_feed_not_available, Toast.LENGTH_SHORT).show();
+            } else {
+                Intent i = new Intent(context, SocialFeedReading.class);
+                i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(activity.withUserId, activity.user.username));
+                i.putExtra(Reading.EXTRA_SOCIAL_FEED, feed);
+                i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
+                i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
+                i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, activity.withUserId));
+                context.startActivity(i);
+            }
         }
     }
 
