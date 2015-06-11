@@ -45,7 +45,11 @@ public class ActivityDetails {
         @SerializedName("follow")
         FOLLOW,
         @SerializedName("star")
-        STAR
+        STAR,
+        @SerializedName("story_reshare")
+        STORY_RESHARE,
+        @SerializedName("reply_reply")
+        REPLY_REPLY
     }
 }
 
