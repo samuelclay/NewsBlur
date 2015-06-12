@@ -61,6 +61,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private static final String BUNDLE_POSITION = "position";
     private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
     private static final String BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView";
+    private static final String BUNDLE_IS_FULLSCREEN = "is_fullscreen";
 
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
@@ -139,6 +140,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             defaultFeedView = (DefaultFeedView) getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
         }
 
+        // were we fullscreen before rotation?
+        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_IS_FULLSCREEN)) {
+            boolean isFullscreen = savedInstanceBundle.getBoolean(BUNDLE_IS_FULLSCREEN, false);
+            if (isFullscreen) {
+                ViewUtils.hideSystemUI(getWindow().getDecorView());
+            }
+        }
+
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
         this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
@@ -155,6 +164,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if (pager != null) {
             outState.putInt(BUNDLE_POSITION, pager.getCurrentItem());
         }
+
         if (startingUnreadCount != 0) {
             outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
         }
@@ -162,6 +172,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         ReadingItemFragment item = getReadingFragment();
         if (item != null) {
             outState.putSerializable(BUNDLE_SELECTED_FEED_VIEW, item.getSelectedFeedView());
+        }
+
+        if (ViewUtils.isSystemUIHidden(getWindow().getDecorView())) {
+            outState.putBoolean(BUNDLE_IS_FULLSCREEN, true);
         }
     }
 
@@ -476,8 +490,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         enableOverlays();
 
         // Ensure that we come out of immersive view if the activity no longer has focus
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        if (!hasFocus) {
+            ViewUtils.showSystemUI(getWindow().getDecorView());
         }
     }
 

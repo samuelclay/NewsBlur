@@ -63,6 +63,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected Void doInBackground(Void... arg0) {
+        if (context == null) return null;
         comments = FeedUtils.dbHelper.getComments(story.id);
 
 		publicCommentViews = new ArrayList<View>();
@@ -223,6 +224,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	}
 
 	protected void onPostExecute(Void result) {
+        if (context == null) return;
         View view = viewHolder.get();
 		if (view == null) return; // fragment was dismissed before we rendered
 
