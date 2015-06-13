@@ -385,6 +385,10 @@ public class BlurDatabaseHelper {
         String[] selArgs = new String[] {folderName};
         String selection = DatabaseConstants.FOLDER_NAME + " = ?";
         Cursor c = dbRO.query(DatabaseConstants.FOLDER_TABLE, null, selection, selArgs, null, null, null);
+        if (c.getCount() < 1) {
+            closeQuietly(c);
+            return null;
+        }
         Folder folder = Folder.fromCursor(c);
         closeQuietly(c);
         return folder;
