@@ -224,7 +224,7 @@ class Profile(models.Model):
         self.user.save()
         self.send_new_user_queue_email()
         
-    def setup_premium_history(self, alt_email=None, check_premium=False):
+    def setup_premium_history(self, alt_email=None, check_premium=False, force_expiration=False):
         paypal_payments = []
         stripe_payments = []
         existing_history = PaymentHistory.objects.filter(user=self.user, 
@@ -287,7 +287,8 @@ class Profile(models.Model):
             new_premium_expire = (oldest_recent_payment_date +
                                   datetime.timedelta(days=365*recent_payments_count))
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
-            if ((check_premium and not self.premium_expire) or 
+            if (force_expiration or 
+                (check_premium and not self.premium_expire) or 
                 (self.premium_expire and new_premium_expire > self.premium_expire)):
                 self.premium_expire = new_premium_expire
                 self.save()
