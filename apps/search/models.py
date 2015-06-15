@@ -149,6 +149,8 @@ class MUserSearch(mongo.Document):
             except Exception, e:
                 print " ****> Error on search removal: %s" % e
         
+        # You only need to drop the index if there is data you want to clear.
+        # A new search server won't need this, as there isn't anything to drop.
         if drop_index:
             logging.info(" ---> ~FRRemoving stories search index...")
             SearchStory.drop()
