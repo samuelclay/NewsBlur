@@ -5,16 +5,6 @@
     android:orientation="vertical"
     style="?itemBackground" >
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:textColor="@color/white"
-        android:textSize="16dp"
-        android:textStyle="bold"
-        style="?listBackground"
-        android:text="@string/profile_recent_actvity" />
-
     <ListView
         android:id="@+id/profile_details_activitylist"
         android:layout_width="fill_parent"

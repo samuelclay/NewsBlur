@@ -26,7 +26,6 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
@@ -34,11 +33,11 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.ActivityDetailsAdapter;
 import com.newsblur.view.ProgressThrobber;
 
-public class ProfileActivityFragment extends Fragment implements AdapterView.OnItemClickListener {
+public abstract class ProfileActivityDetailsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
 	private ListView activityList;
 	private ActivityDetailsAdapter adapter;
-	private APIManager apiManager;
+	protected APIManager apiManager;
 	private UserDetails user;
     private ProgressThrobber footerProgressView;
 
@@ -97,12 +96,7 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
 				if (id == null) {
 					id = user.id;
 				}
-				ActivitiesResponse activitiesResponse = apiManager.getActivities(id, pageNumber);
-				if (activitiesResponse != null) {
-					return activitiesResponse.activities;
-				} else {
-					return new ActivityDetails[0];
-				}
+				return loadActivityDetails(id, pageNumber);
 			}
 
 			@Override
@@ -115,6 +109,8 @@ public class ProfileActivityFragment extends Fragment implements AdapterView.OnI
 			}
 		}.execute();
 	}
+
+    protected abstract ActivityDetails[] loadActivityDetails(String id, int pageNumber);
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
