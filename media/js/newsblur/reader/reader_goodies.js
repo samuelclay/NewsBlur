@@ -111,6 +111,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-nokia' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds')
             ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://github.com/jrutila/harbour-newsblur'
+              }, 'View in Sailfish OS'),
+              $.make('div', { className: 'NB-goodies-sailfish' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Sailblur')
+            ]),
             $.make('fieldset', [
                 $.make('legend', 'Native Apps for NewsBlur')
             ]),
