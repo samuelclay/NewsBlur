@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoginViewController">
@@ -12,6 +13,7 @@
                 <outlet property="emailLabel" destination="46" id="50"/>
                 <outlet property="errorLabel" destination="29" id="30"/>
                 <outlet property="loginControl" destination="33" id="41"/>
+                <outlet property="onePasswordButton" destination="ar5-A0-aF7" id="umJ-88-aRF"/>
                 <outlet property="passwordInput" destination="6" id="36"/>
                 <outlet property="passwordLabel" destination="7" id="37"/>
                 <outlet property="passwordOptionalLabel" destination="34" id="38"/>
@@ -113,15 +115,6 @@
                             <nil key="highlightedColor"/>
                             <color key="shadowColor" cocoaTouchSystemColor="darkTextColor"/>
                         </label>
-                        <textField opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" clearButtonMode="whileEditing" id="45">
-                            <rect key="frame" x="20" y="129" width="280" height="31"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
-                            <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="join"/>
-                            <connections>
-                                <outlet property="delegate" destination="-1" id="48"/>
-                            </connections>
-                        </textField>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" text="Email" lineBreakMode="tailTruncation" minimumFontSize="10" adjustsFontSizeToFit="NO" id="46" userLabel="Label - Email">
                             <rect key="frame" x="21" y="106" width="212" height="22"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -143,6 +136,25 @@
                                 <action selector="selectLoginSignup" destination="-1" eventType="valueChanged" id="42"/>
                             </connections>
                         </segmentedControl>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ar5-A0-aF7" userLabel="OnePasswordButton">
+                            <rect key="frame" x="268" y="131" width="27" height="27"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <state key="normal" image="onepassword-button">
+                                <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="findLoginFrom1Password:" destination="-1" eventType="touchDown" id="AsK-1Q-ZHP"/>
+                            </connections>
+                        </button>
+                        <textField opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" clearButtonMode="whileEditing" id="45">
+                            <rect key="frame" x="20" y="129" width="280" height="31"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="join"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="48"/>
+                            </connections>
+                        </textField>
                     </subviews>
                     <connections>
                         <outlet property="delegate" destination="-1" id="32"/>
@@ -157,6 +169,7 @@
         <image name="Background.png" width="320" height="480"/>
         <image name="logo_background.png" width="1" height="59"/>
         <image name="logo_newsblur_blur.png" width="612" height="118"/>
+        <image name="onepassword-button" width="27" height="27"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

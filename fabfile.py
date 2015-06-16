@@ -181,7 +181,7 @@ def ec2():
 
 def all():
     do()
-    env.roles = ['app', 'dev', 'db', 'task', 'debug', 'node', 'push', 'work']
+    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work']
 
 # =============
 # = Bootstrap =
@@ -811,7 +811,6 @@ def setup_db_firewall():
     # DigitalOcean
     for ip in set(env.roledefs['app'] +
                   env.roledefs['db'] +
-                  env.roledefs['dev'] +
                   env.roledefs['debug'] +
                   env.roledefs['task'] +
                   env.roledefs['work'] +

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoginViewController">
@@ -13,6 +13,7 @@
                 <outlet property="emailLabel" destination="46" id="50"/>
                 <outlet property="errorLabel" destination="29" id="30"/>
                 <outlet property="logInView" destination="82" id="123"/>
+                <outlet property="onePasswordButton" destination="n4i-hq-JhB" id="RhN-9C-3sx"/>
                 <outlet property="passwordInput" destination="86" id="109"/>
                 <outlet property="passwordLabel" destination="7" id="37"/>
                 <outlet property="passwordOptionalLabel" destination="34" id="38"/>
@@ -189,6 +190,16 @@
                                 <action selector="tapLoginButton" destination="-1" eventType="touchUpInside" id="129"/>
                             </connections>
                         </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="n4i-hq-JhB">
+                            <rect key="frame" x="365" y="166" width="35" height="27"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" image="onepassword-button">
+                                <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="findLoginFrom1Password:" destination="-1" eventType="touchDown" id="mKJ-Ck-efB"/>
+                            </connections>
+                        </button>
                     </subviews>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="75">
@@ -263,8 +274,14 @@
         <image name="fountain_pen.png" width="50" height="50"/>
         <image name="fountain_pen_on.png" width="50" height="50"/>
         <image name="login_background.png" width="504" height="304"/>
+        <image name="onepassword-button" width="27" height="27"/>
         <image name="orange_button.png" width="111" height="32"/>
         <image name="user.png" width="50" height="50"/>
         <image name="user_on.png" width="50" height="50"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
 </document>

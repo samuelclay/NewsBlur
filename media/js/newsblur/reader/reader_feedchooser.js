@@ -71,7 +71,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ' for going premium!'
                   ]),
                   $.make('h2', { className: 'NB-modal-subtitle' }, [
-                      'Your premium account will renew on:',
+                      'Your premium account is paid until:',
                       $.make('br'),
                       $.make('b', { style: 'display: block; margin: 8px 0' }, [
                           $.make('span', { className: 'NB-raquo' }, '&raquo;'),

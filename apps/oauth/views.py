@@ -630,9 +630,14 @@ def api_share_new_story(request):
     story_title = fields.get('story_title', "")
     story_author = fields.get('story_author', "")
     comments = fields.get('comments', None)
-
+        
     original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
-    
+    story_hash = MStory.guid_hash_unsaved(story_url)
+    if not user.profile.is_premium and MSharedStory.feed_quota(user.pk, original_feed and original_feed.pk or 0, story_hash):
+        return {"errors": [{
+            'message': 'Only premium users can share multiple stories per day from the same site.'
+        }]}
+        
     if not story_content or not story_title:
         ti = TextImporter(feed=original_feed, story_url=story_url, request=request)
         original_story = ti.fetch(return_document=True)
