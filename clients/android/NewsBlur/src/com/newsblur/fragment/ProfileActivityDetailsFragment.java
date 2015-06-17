@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
@@ -39,7 +40,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
 	private ActivityDetailsAdapter adapter;
 	protected APIManager apiManager;
 	private UserDetails user;
-    private ProgressThrobber footerProgressView;
+    private ProgressThrobber loadingProgressView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,14 +53,13 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
 		final View v = inflater.inflate(R.layout.fragment_profileactivity, null);
 		activityList = (ListView) v.findViewById(R.id.profile_details_activitylist);
 
-        View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
-        footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
-        footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                     getResources().getColor(R.color.refresh_2),
-                                     getResources().getColor(R.color.refresh_3),
-                                     getResources().getColor(R.color.refresh_4));
-        activityList.addFooterView(footerView, null, false);
+        loadingProgressView = (ProgressThrobber) v.findViewById(R.id.empty_view_loading_throb);
+        loadingProgressView.setColors(getResources().getColor(R.color.refresh_1),
+                                      getResources().getColor(R.color.refresh_2),
+                                      getResources().getColor(R.color.refresh_3),
+                                      getResources().getColor(R.color.refresh_4));
         activityList.setFooterDividersEnabled(false);
+        activityList.setEmptyView(v.findViewById(R.id.empty_view));
 
 		if (adapter != null) {
 			displayActivities();
@@ -85,7 +85,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
 
             @Override
             protected void onPreExecute() {
-                footerProgressView.setVisibility(View.VISIBLE);
+                loadingProgressView.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -101,11 +101,16 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(ActivityDetails[] result) {
+                if (pageNumber == 1 && result.length == 0) {
+                    View emptyView = activityList.getEmptyView();
+                    TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
+                    textView.setText(R.string.profile_no_interactions);
+                }
 				for (ActivityDetails activity : result) {
 					adapter.add(activity);
 				}
 				adapter.notifyDataSetChanged();
-                footerProgressView.setVisibility(View.GONE);
+                loadingProgressView.setVisibility(View.GONE);
 			}
 		}.execute();
 	}

@@ -5,6 +5,30 @@
     android:orientation="vertical"
     style="?itemBackground" >
 
+    <RelativeLayout
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/empty_view_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/empty_list_view_loading"
+            style="?defaultText"
+            android:textSize="13dp"
+            android:textStyle="italic" />
+
+        <com.newsblur.view.ProgressThrobber
+            android:id="@+id/empty_view_loading_throb"
+            android:layout_width="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_height="6dp" />
+
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/profile_details_activitylist"
         android:layout_width="fill_parent"
