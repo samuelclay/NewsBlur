@@ -71,9 +71,11 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
 	
 	public void setUser(Context context, UserDetails user) {
 		this.user = user;
-		adapter = new ActivityDetailsAdapter(context, user);
+		adapter = createAdapter(context, user);
 		displayActivities();
 	}
+
+    protected abstract ActivityDetailsAdapter createAdapter(Context context, UserDetails user);
 	
 	private void displayActivities() {
 		activityList.setAdapter(adapter);
