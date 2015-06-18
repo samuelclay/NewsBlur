@@ -57,7 +57,7 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         stringBuilder.append(activity.content);
 
         stringBuilder.setSpan(contentColor, 0, subscribedTo.length() + activity.content.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 
     private CharSequence getStarContent(ActivityDetails activity) {
@@ -68,14 +68,14 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
         stringBuilder.setSpan(contentColor, 0, saved.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(linkColor, saved.length() + 1, saved.length() + 1 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 
     private CharSequence getSignupContent() {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         stringBuilder.append(signup);
         stringBuilder.setSpan(contentColor, 0, signup.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 
     private CharSequence getFollowContent(ActivityDetails activity) {
@@ -86,7 +86,7 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
         stringBuilder.setSpan(contentColor, 0, startedFollowing.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(linkColor, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 
     private CharSequence getCommentLikeContent(ActivityDetails activity) {
@@ -113,7 +113,7 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
         int quoteSpanStart = titleSpanStart + titleLength;
         stringBuilder.setSpan(quoteColor, quoteSpanStart, quoteSpanStart + activity.content.length() + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 
     private CharSequence getCommentReplyContent(ActivityDetails activity) {
@@ -128,7 +128,7 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         stringBuilder.setSpan(contentColor, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(linkColor, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(quoteColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 
     private CharSequence getSharedStoryContent(ActivityDetails activity) {
@@ -148,6 +148,6 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         if (!TextUtils.isEmpty(activity.content)) {
             stringBuilder.setSpan(quoteColor, sharedStory.length() + 2 + activity.title.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 }
