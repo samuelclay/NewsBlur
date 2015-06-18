@@ -99,6 +99,7 @@
     <string name="profile_signup">You signed up for Newsblur</string>
     <string name="profile_comments_on">comments on</string>
     <string name="profile_feed_not_available">You are no longer subscribed to this feed</string>
+    <string name="profile_do_not_follow">You do not follow this user</string>
     <string name="profile_no_interactions">No interactions</string>
     
     <string name="menu_profile">Profile</string>

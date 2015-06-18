@@ -151,11 +151,11 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, user.id));
             context.startActivity(i);
-        } else if ((activity.category == Category.COMMENT_LIKE || activity.category == Category.COMMENT_REPLY) && activity.storyHash != null) {
+        } else if (isCommentCategory(activity)) {
             // TODO navigate to comment
             SocialFeed feed = FeedUtils.getSocialFeed(activity.withUserId);
             if (feed == null) {
-                Toast.makeText(context, R.string.profile_feed_not_available, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.profile_do_not_follow, Toast.LENGTH_SHORT).show();
             } else {
                 Intent i = new Intent(context, SocialFeedReading.class);
                 i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(activity.withUserId, activity.user.username));
@@ -166,6 +166,12 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                 context.startActivity(i);
             }
         }
+    }
+
+    private boolean isCommentCategory(ActivityDetails activity) {
+        return activity.storyHash != null && (activity.category == Category.COMMENT_LIKE ||
+                                              activity.category == Category.COMMENT_REPLY ||
+                                              activity.category == Category.REPLY_REPLY);
     }
 
     /**
