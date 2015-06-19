@@ -397,7 +397,7 @@ public class BlurDatabaseHelper {
     public void touchStory(String hash) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, (new Date()).getTime());
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_LAST_READ_DATE + " < 1 AND " + DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
     public void markStoryHashesRead(List<String> hashes) {
