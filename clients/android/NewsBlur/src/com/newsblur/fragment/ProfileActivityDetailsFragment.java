@@ -40,6 +40,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
 	private ActivityDetailsAdapter adapter;
 	protected APIManager apiManager;
 	private UserDetails user;
+    private ProgressThrobber footerProgressView;
     private ProgressThrobber loadingProgressView;
 
     @Override
@@ -60,6 +61,14 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                                       getResources().getColor(R.color.refresh_4));
         activityList.setFooterDividersEnabled(false);
         activityList.setEmptyView(v.findViewById(R.id.empty_view));
+
+        View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
+        footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
+        footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
+                                     getResources().getColor(R.color.refresh_2),
+                                     getResources().getColor(R.color.refresh_3),
+                                     getResources().getColor(R.color.refresh_4));
+        activityList.addFooterView(footerView, null, false);
 
 		if (adapter != null) {
 			displayActivities();
@@ -88,6 +97,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             @Override
             protected void onPreExecute() {
                 loadingProgressView.setVisibility(View.VISIBLE);
+                footerProgressView.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -113,6 +123,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
 				}
 				adapter.notifyDataSetChanged();
                 loadingProgressView.setVisibility(View.GONE);
+                footerProgressView.setVisibility(View.GONE);
 			}
 		}.execute();
 	}
