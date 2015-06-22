@@ -124,7 +124,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		; // our adapter doesn't hold on to cursors
 	}
 
-	public synchronized void hasUpdated() {
+	public void hasUpdated() {
+        if (isAdded()) {
+            getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
+            getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
+            getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
+            getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
+        }
+	}
+
+    public synchronized void startLoaders() {
         if (isAdded()) {
             if (getLoaderManager().getLoader(FOLDERS_LOADER) == null) {
                 // if the loaders haven't yet been created, do so
@@ -132,15 +141,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
                 getLoaderManager().initLoader(FEEDS_LOADER, null, this);
                 getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
-            } else {
-                // otherwise, just refresh them
-                getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
-                getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
-                getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
-                getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
             }
         }
-	}
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
