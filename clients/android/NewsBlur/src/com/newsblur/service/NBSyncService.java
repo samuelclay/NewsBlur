@@ -259,39 +259,33 @@ public class NBSyncService extends Service {
      * Check for upgrades and wipe the DB if necessary, and do DB maintenance
      */
     private void housekeeping() {
-        try {
-            boolean upgraded = PrefsUtils.checkForUpgrade(this);
-            if (upgraded) {
-                HousekeepingRunning = true;
-                NbActivity.updateAllActivities(false);
-                // wipe the local DB
-                dbHelper.dropAndRecreateTables();
-                NbActivity.updateAllActivities(true);
-                // in case this is the first time we have run since moving the cache to the new location,
-                // blow away the old version entirely. This line can be removed some time well after
-                // v61+ is widely deployed
-                FileCache.cleanUpOldCache(this);
-                PrefsUtils.updateVersion(this);
-            }
-
-            boolean autoVac = PrefsUtils.isTimeToVacuum(this);
-            // this will lock up the DB for a few seconds, only do it if the UI is hidden
-            if (NbActivity.getActiveActivityCount() > 0) autoVac = false;
-            
-            if (upgraded || autoVac) {
-                HousekeepingRunning = true;
-                NbActivity.updateAllActivities(false);
-                Log.i(this.getClass().getName(), "rebuilding DB . . .");
-                dbHelper.vacuum();
-                Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
-                PrefsUtils.updateLastVacuumTime(this);
-            }
-        } finally {
-            if (HousekeepingRunning) {
-                HousekeepingRunning = false;
-                NbActivity.updateAllActivities(true);
-            }
+        HousekeepingRunning = true;
+        boolean upgraded = PrefsUtils.checkForUpgrade(this);
+        if (upgraded) {
+            NbActivity.updateAllActivities(false);
+            // wipe the local DB
+            dbHelper.dropAndRecreateTables();
+            // in case this is the first time we have run since moving the cache to the new location,
+            // blow away the old version entirely. This line can be removed some time well after
+            // v61+ is widely deployed
+            FileCache.cleanUpOldCache(this);
+            PrefsUtils.updateVersion(this);
         }
+
+        boolean autoVac = PrefsUtils.isTimeToVacuum(this);
+        // this will lock up the DB for a few seconds, only do it if the UI is hidden
+        if (NbActivity.getActiveActivityCount() > 0) autoVac = false;
+        
+        if (upgraded || autoVac) {
+            NbActivity.updateAllActivities(false);
+            Log.i(this.getClass().getName(), "rebuilding DB . . .");
+            dbHelper.vacuum();
+            Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
+            PrefsUtils.updateLastVacuumTime(this);
+        }
+
+        HousekeepingRunning = false;
+        NbActivity.updateAllActivities(true);
     }
 
     /**
