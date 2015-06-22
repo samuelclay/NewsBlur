@@ -84,9 +84,11 @@
     <string name="profile_recent_interactions">Interactions</string>
     <string name="profile_started_following">followed</string>
     <string name="profile_you">You</string>
-    <string name="profile_now_following">is now following you</string>
+    <string name="profile_you_lower">you</string>
+    <string name="profile_your">your</string>
+    <string name="profile_now_following">is now following %1$s</string>
     <string name="profile_replied_to">Replied to</string>
-    <string name="profile_replied_to_your">replied to your</string>
+    <string name="profile_replied_to_your">replied to %1$s</string>
     <string name="profile_shared_story">shared</string>
     <string name="profile_comment">comment</string>
     <string name="profile_reply">reply</string>
@@ -96,7 +98,7 @@
     <string name="profile_saved">saved</string>
     <string name="profile_reshared">re-shared</string>
     <string name="profile_favorited">favorited</string>
-    <string name="profile_favorited_comments">favorited your comments on</string>
+    <string name="profile_favorited_comments">favorited %1$s comments on</string>
     <string name="profile_signup">signed up for Newsblur</string>
     <string name="profile_comments_on">comments on</string>
     <string name="profile_feed_not_available">You are no longer subscribed to this feed</string>

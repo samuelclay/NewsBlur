@@ -15,7 +15,7 @@ import com.newsblur.domain.UserDetails;
  */
 public class InteractionsAdapter extends ActivityDetailsAdapter {
 
-    private final String nowFollowingYou, repliedToYour, comment, reply, favoritedComments, reshared;
+    private final String nowFollowingYou, repliedToYour, comment, reply, favoritedComments, reshared, your, you;
 
     public InteractionsAdapter(final Context context, UserDetails user) {
         super(context, user);
@@ -27,38 +27,53 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
         reply = resources.getString(R.string.profile_reply);
         favoritedComments = resources.getString(R.string.profile_favorited_comments);
         reshared = resources.getString(R.string.profile_reshared);
+        your = resources.getString(R.string.profile_your);
+        you = resources.getString(R.string.profile_you_lower);
     }
 
     @Override
     protected CharSequence getTextForActivity(ActivityDetails activity) {
         if (activity.category == ActivityDetails.Category.FOLLOW) {
-            return getFollowContent(activity);
+            String userString = you;
+            if (!userIsYou) {
+                userString = currentUserDetails.username;
+            }
+            return getFollowContent(activity, userString);
         } else if (activity.category == ActivityDetails.Category.COMMENT_LIKE) {
-            return getCommentLikeContent(activity);
+            String userString = your;
+            if (!userIsYou) {
+                userString = currentUserDetails.username + "'s";
+            }
+            return getCommentLikeContent(activity, userString);
         } else if (activity.category == ActivityDetails.Category.COMMENT_REPLY ||
                    activity.category == ActivityDetails.Category.REPLY_REPLY) {
-            return getCommentReplyContent(activity);
+            String userString = your;
+            if (!userIsYou) {
+                userString = currentUserDetails.username + "'s";
+            }
+            return getCommentReplyContent(activity, userString);
         } else {
             return getSharedStoryContent(activity);
         }
     }
 
-    private CharSequence getFollowContent(ActivityDetails activity) {
+    private CharSequence getFollowContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         stringBuilder.append(activity.user.username);
         stringBuilder.append(" ");
-        stringBuilder.append(nowFollowingYou);
+        stringBuilder.append(String.format(nowFollowingYou, userString));
 
         stringBuilder.setSpan(linkColor, 0, activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(contentColor, activity.user.username.length() + 1, activity.user.username.length() + 1 + nowFollowingYou.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }
 
-    private CharSequence getCommentLikeContent(ActivityDetails activity) {
+    private CharSequence getCommentLikeContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         stringBuilder.append(activity.user.username);
         stringBuilder.append(" ");
-        stringBuilder.append(favoritedComments);
+        String favoritedString = String.format(favoritedComments, userString);
+        stringBuilder.append(favoritedString );
         stringBuilder.append(" ");
         stringBuilder.append(activity.title);
         stringBuilder.append("\n\n\"");
@@ -66,21 +81,21 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
         stringBuilder.append("\" ");
 
         int usernameLength = activity.user.username.length();
-        int titleSpanStart = usernameLength + 1 + favoritedComments.length() + 1;
+        int titleSpanStart = usernameLength + 1 + favoritedString.length() + 1;
         int titleLength = activity.title.length();
         stringBuilder.setSpan(linkColor, 0, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(contentColor, usernameLength + 1, usernameLength + 1 + favoritedComments.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(contentColor, usernameLength + 1, usernameLength + 1 + favoritedString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         int quoteSpanStart = titleSpanStart + titleLength;
         stringBuilder.setSpan(quoteColor, quoteSpanStart, quoteSpanStart + activity.content.length() + 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }
 
-    private CharSequence getCommentReplyContent(ActivityDetails activity) {
+    private CharSequence getCommentReplyContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         stringBuilder.append(activity.user.username);
         stringBuilder.append(" ");
-        stringBuilder.append(repliedToYour);
+        stringBuilder.append(String.format(repliedToYour, userString));
         stringBuilder.append(" ");
         int commentReplyLength = 0;
         if (activity.category == ActivityDetails.Category.COMMENT_REPLY) {

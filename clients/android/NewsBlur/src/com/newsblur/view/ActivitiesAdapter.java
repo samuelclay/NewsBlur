@@ -16,7 +16,6 @@ import com.newsblur.domain.UserDetails;
 public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
     private final String startedFollowing, repliedTo, favorited, subscribedTo, saved, signup, commentsOn, sharedStory, you;
-    private final boolean userIsYou;
 
     public ActivitiesAdapter(final Context context, UserDetails user) {
         super(context, user);
@@ -32,7 +31,6 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         sharedStory = resources.getString(R.string.profile_shared_story);
         you = resources.getString(R.string.profile_you);
 
-        userIsYou = user.userId == null;
     }
 
     @Override

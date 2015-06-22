@@ -28,7 +28,8 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
 	protected UserDetails currentUserDetails;
-	
+    protected final boolean userIsYou;
+
 	public ActivityDetailsAdapter(final Context context, UserDetails user) {
 		super(context, R.id.row_activity_text);
 		inflater = LayoutInflater.from(context);
@@ -49,6 +50,8 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
             contentColor = new ForegroundColorSpan(resources.getColor(R.color.white));
             quoteColor = new ForegroundColorSpan(resources.getColor(R.color.lightgray));
         }
+
+        userIsYou = user.userId == null;
 	}
 	
 	@Override
