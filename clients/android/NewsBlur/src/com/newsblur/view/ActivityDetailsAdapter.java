@@ -27,7 +27,7 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 	protected ForegroundColorSpan linkColor, contentColor, quoteColor;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
-	private UserDetails currentUserDetails;
+	protected UserDetails currentUserDetails;
 	
 	public ActivityDetailsAdapter(final Context context, UserDetails user) {
 		super(context, R.id.row_activity_text);
