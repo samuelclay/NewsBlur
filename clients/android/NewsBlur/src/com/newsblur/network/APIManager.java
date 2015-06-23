@@ -1,5 +1,6 @@
 package com.newsblur.network;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,10 +47,12 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import org.apache.http.HttpStatus;
 
@@ -97,17 +100,26 @@ public class APIManager {
         return loginResponse;
     }
 
-    public boolean loginAs(final String username) {
-        final ContentValues values = new ContentValues();
+    public boolean loginAs(String username) {
+        ContentValues values = new ContentValues();
         values.put(APIConstants.PARAMETER_USER, username);
         String urlString = APIConstants.URL_LOGINAS + "?" + builderGetParametersString(values);
-        final APIResponse response = get_single(urlString, HttpStatus.SC_MOVED_TEMPORARILY);
-        if (!response.isError()) {
-            PrefsUtils.saveLogin(context, username, response.getCookie());
-            return true;
-        } else {
+        Log.i(this.getClass().getName(), "doing superuser swap: " + urlString);
+        // This API returns a redirect that means the call worked, but we do not want to follow it.  To
+        // just get the cookie from the 302 and stop, we directly use a one-off OkHttpClient.
+		Request.Builder requestBuilder = new Request.Builder().url(urlString);
+		addCookieHeader(requestBuilder);
+        OkHttpClient noredirHttpClient = new OkHttpClient();
+        noredirHttpClient.setFollowRedirects(false);
+        try {
+            Response response = noredirHttpClient.newCall(requestBuilder.build()).execute();
+            if (!response.isRedirect()) return false;
+            String newCookie = response.header("Set-Cookie");
+            PrefsUtils.saveLogin(context, username, newCookie);
+        } catch (IOException ioe) {
             return false;
         }
+        return true;
     }
 
 	public boolean setAutoFollow(boolean autofollow) {
