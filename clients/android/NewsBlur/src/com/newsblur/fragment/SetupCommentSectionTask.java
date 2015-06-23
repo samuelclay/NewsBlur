@@ -106,8 +106,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				for (String id : comment.likingUsers) {
 					ImageView favouriteImage = new ImageView(context);
 					UserProfile user = FeedUtils.dbHelper.getUserProfile(id);
-					imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
-					favouriteContainer.addView(favouriteImage);
+                    if (user != null) {
+                        imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
+                        favouriteContainer.addView(favouriteImage);
+                    }
 				}
 
                 // users cannot fave their own comments.  attempting to do so will actually queue a fatally invalid API call
@@ -132,9 +134,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				public void onClick(View v) {
 					if (story != null) {
 						UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
-
-						DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
-						newFragment.show(manager, "dialog");
+                        if (user != null) {
+                            DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
+                            newFragment.show(manager, "dialog");
+                        }
 					}
 				}
 			});
@@ -269,8 +272,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
         commentGrid.removeAllViews();
         for (String userId : commentingUserIds) {
             UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
-            ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
-            commentGrid.addView(image);
+            if (user != null) {
+                ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
+                commentGrid.addView(image);
+            }
         }
         
         if (publicCommentViews.size() > 0) {

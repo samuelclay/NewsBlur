@@ -634,6 +634,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             unreadSearchStarted = true;
         }
 
+        // if we somehow got tapped before construction or are running during destruction, stop and
+        // let either finish. search will happen when the cursor is pushed.
+        if ((pager == null) || (readingAdapter == null)) return;
+
         boolean unreadFound = false;
         // start searching just after the current story
         int candidate = pager.getCurrentItem() + 1;

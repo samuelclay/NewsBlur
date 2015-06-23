@@ -109,7 +109,7 @@ public class PrefsUtils {
         
         // prompt for a new login
         Intent i = new Intent(context, Login.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(i);
     }
 
