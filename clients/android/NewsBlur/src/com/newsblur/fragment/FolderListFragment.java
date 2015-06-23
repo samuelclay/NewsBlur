@@ -65,18 +65,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		super.onCreate(savedInstanceState);
         currentState = PrefsUtils.getStateFilter(getActivity());
 		adapter = new FolderListAdapter(getActivity(), currentState);
+        // NB: it is by design that loaders are not started until we get a
+        // ping from the sync service indicating that it has initialised
 	}
 
     @Override
-    public synchronized void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 		sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        if (getLoaderManager().getLoader(FOLDERS_LOADER) == null) {
-            getLoaderManager().initLoader(SOCIALFEEDS_LOADER, null, this);
-            getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
-            getLoaderManager().initLoader(FEEDS_LOADER, null, this);
-            getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
-        }
     }
 
 	@Override
@@ -130,12 +126,24 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	public void hasUpdated() {
         if (isAdded()) {
-		    getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
-		    getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
-		    getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
-		    getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
+            getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
+            getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
+            getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
+            getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
         }
 	}
+
+    public synchronized void startLoaders() {
+        if (isAdded()) {
+            if (getLoaderManager().getLoader(FOLDERS_LOADER) == null) {
+                // if the loaders haven't yet been created, do so
+                getLoaderManager().initLoader(SOCIALFEEDS_LOADER, null, this);
+                getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
+                getLoaderManager().initLoader(FEEDS_LOADER, null, this);
+                getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
+            }
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

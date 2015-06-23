@@ -228,6 +228,9 @@ public class NBSyncService extends Service {
                 return;
             }
 
+            // ping activities to indicate that housekeeping is done, and the DB is safe to use
+            NbActivity.updateAllActivitiesReady();
+
             originalTextService.start(startId);
 
             // first: catch up

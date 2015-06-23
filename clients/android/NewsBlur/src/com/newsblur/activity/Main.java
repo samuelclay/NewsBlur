@@ -165,6 +165,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		if (freshData) folderFeedList.hasUpdated();
 	}
 
+    @Override
+    public void handleUpdateReady() {
+        folderFeedList.startLoaders();
+    }
+
     private void updateStatusIndicators() {
         if (NBSyncService.isFeedFolderSyncRunning()) {
             swipeLayout.setRefreshing(true);

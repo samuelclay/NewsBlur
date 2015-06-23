@@ -2,6 +2,7 @@ package com.newsblur.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -242,6 +243,7 @@ public class FeedUtils {
 
     private static Set<String> getFeedIdsRecursive(String folderName) {
         Folder folder = dbHelper.getFolder(folderName);
+        if (folder == null) return Collections.emptySet();
         Set<String> feedIds = new HashSet<String>(folder.feedIds.size());
         for (String id : folder.feedIds) feedIds.add(id);
         for (String child : folder.children) feedIds.addAll(getFeedIdsRecursive(child));

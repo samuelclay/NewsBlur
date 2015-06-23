@@ -122,6 +122,21 @@ public class NbActivity extends Activity {
     }
 
     /**
+     * Called on each NB activity after the DB is initialised by the sync service. This method
+     * should return as quickly as possible.
+     */
+    protected void handleUpdateReady() {
+    }
+
+    public static void updateAllActivitiesReady() {
+        synchronized (AllActivities) {
+            for (NbActivity activity : AllActivities) {
+                activity.handleUpdateReady();
+            }
+        }
+    }
+
+    /**
      * Gets the number of active/foreground NB activities. Used by the sync service to
      * determine if the app is active so we can honour user requests not to run in
      * the background.

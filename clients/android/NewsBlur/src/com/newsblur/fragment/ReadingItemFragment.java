@@ -483,7 +483,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     reloadStoryContent();
                 } else {
                     Log.w(this.getClass().getName(), "couldn't find story content for existing story.");
-                    getActivity().finish();
+                    Activity act = getActivity();
+                    if (act != null) act.finish();
                 }
             }
         }.execute();
