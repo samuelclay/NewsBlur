@@ -107,8 +107,8 @@ public class APIManager {
         Log.i(this.getClass().getName(), "doing superuser swap: " + urlString);
         // This API returns a redirect that means the call worked, but we do not want to follow it.  To
         // just get the cookie from the 302 and stop, we directly use a one-off OkHttpClient.
-		Request.Builder requestBuilder = new Request.Builder().url(urlString);
-		addCookieHeader(requestBuilder);
+        Request.Builder requestBuilder = new Request.Builder().url(urlString);
+        addCookieHeader(requestBuilder);
         OkHttpClient noredirHttpClient = new OkHttpClient();
         noredirHttpClient.setFollowRedirects(false);
         try {
