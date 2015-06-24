@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -154,21 +155,13 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME));
             context.startActivity(i);
-        } else if (activity.category == Category.SHARED_STORY) {
-            Intent i = new Intent(context, SocialFeedReading.class);
-            i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(user.id, user.username));
-            i.putExtra(Reading.EXTRA_SOCIAL_FEED, FeedUtils.getSocialFeed(user.id));
-            i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
-            i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
-            i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, user.id));
-            context.startActivity(i);
-        } else if (isCommentCategory(activity)) {
+        } else if (isSocialFeedCategory(activity)) {
             SocialFeed feed = FeedUtils.getSocialFeed(activity.withUserId);
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_do_not_follow, Toast.LENGTH_SHORT).show();
             } else {
                 Intent i = new Intent(context, SocialFeedReading.class);
-                i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(activity.withUserId, activity.user.username));
+                i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(feed.userId, feed.username));
                 i.putExtra(Reading.EXTRA_SOCIAL_FEED, feed);
                 i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
                 i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
@@ -178,10 +171,11 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
         }
     }
 
-    private boolean isCommentCategory(ActivityDetails activity) {
+    private boolean isSocialFeedCategory(ActivityDetails activity) {
         return activity.storyHash != null && (activity.category == Category.COMMENT_LIKE ||
                                               activity.category == Category.COMMENT_REPLY ||
-                                              activity.category == Category.REPLY_REPLY);
+                                              activity.category == Category.REPLY_REPLY ||
+                                              activity.category == Category.SHARED_STORY);
     }
 
     /**
