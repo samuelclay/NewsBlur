@@ -1,45 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.newsblur.view.NonfocusScrollview xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/reading_scrollview"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="?itemBackground" >
+    android:layout_height="match_parent" >
 
-    <LinearLayout
+    <!-- The two views in this top FrameLayout are swapped when HTML5 webview custom content wants to be displayed -->
+
+    <com.newsblur.view.NonfocusScrollview
+        android:id="@+id/reading_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:layout_height="match_parent"
+        style="?itemBackground" >
 
-        <include layout="@layout/include_reading_item_metadata" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            style="?itemHeaderDivider" />
-
-        <include layout="@layout/include_reading_share_bar" />
-
-        <View
-            android:id="@+id/share_bar_underline"
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            style="?divider"
-            android:visibility="gone" />
-
-        <com.newsblur.view.NewsblurWebview
-            android:id="@+id/reading_webview"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="?itemBackground"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="12dp"
-            android:scrollbars="none" />
+            android:orientation="vertical" >
 
-       <include
-           layout="@layout/include_reading_item_comment" />
-        
-    </LinearLayout>
+            <include layout="@layout/include_reading_item_metadata" />
 
-</com.newsblur.view.NonfocusScrollview>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="bottom"
+                style="?itemHeaderDivider" />
+
+            <include layout="@layout/include_reading_share_bar" />
+
+            <View
+                android:id="@+id/share_bar_underline"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                style="?divider"
+                android:visibility="gone" />
+
+            <com.newsblur.view.NewsblurWebview
+                android:id="@+id/reading_webview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?itemBackground"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="12dp"
+                android:scrollbars="none" />
+
+           <include
+               layout="@layout/include_reading_item_comment" />
+            
+        </LinearLayout>
+
+    </com.newsblur.view.NonfocusScrollview>
+
+    <FrameLayout
+        android:id="@+id/custom_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>

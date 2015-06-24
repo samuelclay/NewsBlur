@@ -70,7 +70,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private ImageLoader imageLoader;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	private NewsblurWebview web;
+	@FindView(R.id.reading_webview) NewsblurWebview web;
+    @FindView(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
+    @FindView(R.id.reading_scrollview) View fragmentScrollview;
 	private BroadcastReceiver receiver;
     @FindView(R.id.reading_item_authors) TextView itemAuthors;
 	@FindView(R.id.reading_feed_title) TextView itemFeed;
@@ -186,8 +188,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
 
-		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
         registerForContextMenu(web);
+        web.setCustomViewLayout(webviewCustomViewLayout);
+        web.setWebviewWrapperLayout(fragmentScrollview);
+        web.setActivity(activity);
 
 		setupItemMetadata();
 		updateShareButton();
