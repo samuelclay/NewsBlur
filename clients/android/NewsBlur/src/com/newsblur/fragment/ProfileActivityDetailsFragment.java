@@ -163,7 +163,6 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, user.id));
             context.startActivity(i);
         } else if (isCommentCategory(activity)) {
-            // TODO navigate to comment
             SocialFeed feed = FeedUtils.getSocialFeed(activity.withUserId);
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_do_not_follow, Toast.LENGTH_SHORT).show();
