@@ -34,6 +34,10 @@ img, video, embed, object, iframe, div, figure, dl, dt {
     margin-right: 0px !important;
 }
 
+iframe {
+	width: 100% !important;
+}
+
 a {
 	text-decoration: none;
 }
