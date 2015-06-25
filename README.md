@@ -41,6 +41,14 @@
 
 ### Prerequisites
 
+#### What you can safely ignore
+
+Not every program listed in the Prerequisites section is necessary to run NewsBlur. 
+
+ * `Elasticsearch` is the only module that requires Java. If you can live without searching for feeds or searching for stories, then you can ignore it and NewsBlur will just spit out that you don't have a search server in the logs.
+ * `Jammit` is for asset compression. Don't bother using it since the alternative is to just serve every js and css file in individual files without compression. Besides, nginx gzips those files automatically if you use the built-in nginx config. Just set `DEBUG_ASSETS = True` in your local_settings.py (which is also in local_settings.py.template).
+ * `numpy` and `scipy` are used for the colors used all over the site. Every site's favicon is analyzed for its dominant color, and that color is what gives every site its feel. You'll see it by every story all over. I'd recommend installing it, as you can just use prebuilt packages and don't have to install from source, which is possible but not trivial.
+
 #### Relational Database (MySQL, PostgreSQL)
 
 You will want to have your database set up before you begin installation. Fabric can install

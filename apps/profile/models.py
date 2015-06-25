@@ -979,9 +979,19 @@ class RNewUserQueue:
             logging.debug("~FRCan't activate free account, can't find user ~SB%s~SN. ~FB%s still in queue." % (user_id, count-1))
             return
             
-        logging.user(user, "~FBActivating free account. %s still in queue." % (count-1))
+        logging.user(user, "~FBActivating free account (%s). %s still in queue." % (user.email, (count-1)))
 
         user.profile.activate_free()
+    
+    @classmethod
+    def activate_all(cls):
+        count = cls.user_count()
+        if not count:
+            logging.debug("~FBNo users to activate, sleeping...")
+            return
+        
+        for i in range(count):
+            cls.activate_next()
         
     @classmethod
     def add_user(cls, user_id):
