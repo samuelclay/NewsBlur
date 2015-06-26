@@ -7,31 +7,29 @@ body {
     padding: 0px !important;
 }
 
-.NB-story {
-    max-width: 100%;
+.NB-story, .NB-youtube-player {
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
     overflow: hidden;
     margin: 0;
 }
 
 p, div, table {
-	line-height: 1.5em;
     clear: both;
+	line-height: 1.5em;
+}
+
+p, a, table, img, video, embed, object, iframe, div, figure, dl, dt {
 	width: auto !important;
     max-width: 100% !important;
-    margin-left: 0px !important;
-    margin-right: 0px !important;
+	height: auto !important;	
+    max-height: none !important;
+    margin: 0px !important;
 }
 
 p {
     margin-bottom: 0.6em !important;
-}
-
-img, video, embed, object, iframe, div, figure, dl, dt {
-	width: auto !important;
-    max-width: 100% !important;
-	height: auto !important;	
-    margin-left: 0px !important;
-    margin-right: 0px !important;
 }
 
 iframe {
