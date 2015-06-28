@@ -449,19 +449,19 @@ public class APIManager {
 		}
 	}
 
-	public ActivitiesResponse getActivities(String userId, int pageNumber) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_USER_ID, userId);
-		values.put(APIConstants.PARAMETER_LIMIT, "10");
-		values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-		final APIResponse response = get(APIConstants.URL_USER_ACTIVITIES, values);
-		if (!response.isError()) {
-			ActivitiesResponse activitiesResponse = (ActivitiesResponse) response.getResponse(gson, ActivitiesResponse.class);
-			return activitiesResponse;
-		} else {
-			return null;
-		}
-	}
+    public ActivitiesResponse getActivities(String userId, int pageNumber) {
+        final ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_USER_ID, userId);
+        values.put(APIConstants.PARAMETER_LIMIT, "10");
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
+        final APIResponse response = get(APIConstants.URL_USER_ACTIVITIES, values);
+        if (!response.isError()) {
+            ActivitiesResponse activitiesResponse = (ActivitiesResponse) response.getResponse(gson, ActivitiesResponse.class);
+            return activitiesResponse;
+        } else {
+            return null;
+        }
+    }
 
     public InteractionsResponse getInteractions(String userId, int pageNumber) {
         final ContentValues values = new ContentValues();

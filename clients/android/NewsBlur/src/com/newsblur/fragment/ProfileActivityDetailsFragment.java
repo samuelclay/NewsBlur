@@ -37,23 +37,23 @@ import com.newsblur.view.ProgressThrobber;
 
 public abstract class ProfileActivityDetailsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
-	private ListView activityList;
-	private ActivityDetailsAdapter adapter;
-	protected APIManager apiManager;
-	private UserDetails user;
+    private ListView activityList;
+    private ActivityDetailsAdapter adapter;
+    protected APIManager apiManager;
+    private UserDetails user;
     private ProgressThrobber footerProgressView;
     private ProgressThrobber loadingProgressView;
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		apiManager = new APIManager(getActivity());
-	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View v = inflater.inflate(R.layout.fragment_profileactivity, null);
-		activityList = (ListView) v.findViewById(R.id.profile_details_activitylist);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        apiManager = new APIManager(getActivity());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View v = inflater.inflate(R.layout.fragment_profileactivity, null);
+        activityList = (ListView) v.findViewById(R.id.profile_details_activitylist);
 
         loadingProgressView = (ProgressThrobber) v.findViewById(R.id.empty_view_loading_throb);
         loadingProgressView.setColors(getResources().getColor(R.color.refresh_1),
@@ -71,29 +71,29 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                                      getResources().getColor(R.color.refresh_4));
         activityList.addFooterView(footerView, null, false);
 
-		if (adapter != null) {
-			displayActivities();
-		}
-		activityList.setOnScrollListener(new EndlessScrollListener());
+        if (adapter != null) {
+            displayActivities();
+        }
+        activityList.setOnScrollListener(new EndlessScrollListener());
         activityList.setOnItemClickListener(this);
-		return v;
-	}
-	
-	public void setUser(Context context, UserDetails user) {
-		this.user = user;
-		adapter = createAdapter(context, user);
-		displayActivities();
-	}
+        return v;
+    }
+
+    public void setUser(Context context, UserDetails user) {
+        this.user = user;
+        adapter = createAdapter(context, user);
+        displayActivities();
+    }
 
     protected abstract ActivityDetailsAdapter createAdapter(Context context, UserDetails user);
-	
-	private void displayActivities() {
-		activityList.setAdapter(adapter);
-		loadPage(1);
-	}
 
-	private void loadPage(final int pageNumber) {
-		new AsyncTask<Void, Void, ActivityDetails[]>() {
+    private void displayActivities() {
+        activityList.setAdapter(adapter);
+        loadPage(1);
+    }
+
+    private void loadPage(final int pageNumber) {
+        new AsyncTask<Void, Void, ActivityDetails[]>() {
 
             @Override
             protected void onPreExecute() {
@@ -102,32 +102,32 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             }
 
             @Override
-			protected ActivityDetails[] doInBackground(Void... voids) {
-				// For the logged in user user.userId is null.
-				// From the user intent user.userId is the number while user.id is prefixed with social:
-				String id = user.userId;
-				if (id == null) {
-					id = user.id;
-				}
-				return loadActivityDetails(id, pageNumber);
-			}
+            protected ActivityDetails[] doInBackground(Void... voids) {
+                // For the logged in user user.userId is null.
+                // From the user intent user.userId is the number while user.id is prefixed with social:
+                String id = user.userId;
+                if (id == null) {
+                    id = user.id;
+                }
+                return loadActivityDetails(id, pageNumber);
+            }
 
-			@Override
-			protected void onPostExecute(ActivityDetails[] result) {
+            @Override
+            protected void onPostExecute(ActivityDetails[] result) {
                 if (pageNumber == 1 && result.length == 0) {
                     View emptyView = activityList.getEmptyView();
                     TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
                     textView.setText(R.string.profile_no_interactions);
                 }
-				for (ActivityDetails activity : result) {
-					adapter.add(activity);
-				}
-				adapter.notifyDataSetChanged();
+                for (ActivityDetails activity : result) {
+                    adapter.add(activity);
+                }
+                adapter.notifyDataSetChanged();
                 loadingProgressView.setVisibility(View.GONE);
                 footerProgressView.setVisibility(View.GONE);
-			}
-		}.execute();
-	}
+            }
+        }.execute();
+    }
 
     protected abstract ActivityDetails[] loadActivityDetails(String id, int pageNumber);
 
@@ -179,47 +179,48 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
     }
 
     /**
-	 * Detects when user is close to the end of the current page and starts loading the next page
-	 * so the user will not have to wait (that much) for the next entries.
-	 *
-	 * @author Ognyan Bankov
-	 *
-	 * https://github.com/ogrebgr/android_volley_examples/blob/master/src/com/github/volley_examples/Act_NetworkListView.java
-	 */
-	public class EndlessScrollListener implements AbsListView.OnScrollListener {
-		// how many entries earlier to start loading next page
-		private int visibleThreshold = 5;
-		private int currentPage = 1;
-		private int previousTotal = 0;
-		private boolean loading = true;
+     * Detects when user is close to the end of the current page and starts loading the next page
+     * so the user will not have to wait (that much) for the next entries.
+     *
+     * @author Ognyan Bankov
+     *         <p/>
+     *         https://github.com/ogrebgr/android_volley_examples/blob/master/src/com/github/volley_examples/Act_NetworkListView.java
+     */
+    public class EndlessScrollListener implements AbsListView.OnScrollListener {
+        // how many entries earlier to start loading next page
+        private int visibleThreshold = 5;
+        private int currentPage = 1;
+        private int previousTotal = 0;
+        private boolean loading = true;
 
-		public EndlessScrollListener() {
-		}
-		public EndlessScrollListener(int visibleThreshold) {
-			this.visibleThreshold = visibleThreshold;
-		}
+        public EndlessScrollListener() {
+        }
 
-		@Override
-		public void onScroll(AbsListView view, int firstVisibleItem,
-							 int visibleItemCount, int totalItemCount) {
-			if (loading) {
-				if (totalItemCount > previousTotal) {
-					loading = false;
-					previousTotal = totalItemCount;
-					currentPage++;
-				}
-			}
-			if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-				// I load the next page of gigs using a background task,
-				// but you can call any function here.
-				loadPage(currentPage);
-				loading = true;
-			}
-		}
+        public EndlessScrollListener(int visibleThreshold) {
+            this.visibleThreshold = visibleThreshold;
+        }
 
-		@Override
-		public void onScrollStateChanged(AbsListView view, int scrollState) {
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem,
+                             int visibleItemCount, int totalItemCount) {
+            if (loading) {
+                if (totalItemCount > previousTotal) {
+                    loading = false;
+                    previousTotal = totalItemCount;
+                    currentPage++;
+                }
+            }
+            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                // I load the next page of gigs using a background task,
+                // but you can call any function here.
+                loadPage(currentPage);
+                loading = true;
+            }
+        }
 
-		}
-	}
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+        }
+    }
 }
