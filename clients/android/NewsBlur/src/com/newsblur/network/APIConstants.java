@@ -16,7 +16,8 @@ public class APIConstants {
 	public static final String URL_MY_PROFILE = NEWSBLUR_URL + "/social/load_user_profile";
 	public static final String URL_FOLLOW = NEWSBLUR_URL + "/social/follow";
 	public static final String URL_UNFOLLOW = NEWSBLUR_URL + "/social/unfollow";
-	
+
+	public static final String URL_USER_ACTIVITIES = NEWSBLUR_URL + "/social/activities";
 	public static final String URL_USER_INTERACTIONS = NEWSBLUR_URL + "/social/interactions";
 	public static final String URL_RIVER_STORIES = NEWSBLUR_URL + "/reader/river_stories";
 	public static final String URL_SHARED_RIVER_STORIES = NEWSBLUR_URL + "/social/river_stories";
@@ -77,6 +78,7 @@ public class APIConstants {
 	public static final String PARAMETER_INCLUDE_TIMESTAMPS = "include_timestamps";
     public static final String PARAMETER_GLOBAL_FEED = "global_feed";
 	public static final String PARAMETER_INCLUDE_HIDDEN = "include_hidden";
+	public static final String PARAMETER_LIMIT = "limit";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
@@ -86,4 +88,6 @@ public class APIConstants {
 	
     public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
     public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";
+
+	public static final String S3_URL_FEED_ICONS = "https://s3.amazonaws.com/icons.newsblur.com/";
 }

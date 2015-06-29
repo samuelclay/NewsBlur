@@ -190,6 +190,16 @@
         <item name="android:textColor">@color/midgray</item>
     </style>
 
+    <style name="activityDetailsPager">
+        <item name="android:background">@drawable/gradient_background_default</item>
+        <item name="android:textColor">@color/darkgray</item>
+    </style>
+
+    <style name="activityDetailsPager.dark">
+        <item name="android:background">@drawable/dark_gradient_background_default</item>
+        <item name="android:textColor">@color/lightgray</item>
+    </style>
+
     <style name="folderBorderTop">
         <item name="android:background">@color/folder_border_top</item>
     </style>

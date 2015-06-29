@@ -29,7 +29,6 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 	private TextView username, bio, location, sharedCount, followerCount, followingCount, website;
 	private View locationIcon;
 	private ImageView imageView;
-	private String noBio, noLocation;  
 	private boolean viewingSelf = false;
 	private ImageLoader imageLoader;
 	private Button followButton, unfollowButton;
@@ -38,8 +37,6 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		noBio = getString(R.string.profile_no_bio);
-		noLocation = getActivity().getResources().getString(R.string.profile_no_location);
 		imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		apiManager = new APIManager(getActivity());
 	}

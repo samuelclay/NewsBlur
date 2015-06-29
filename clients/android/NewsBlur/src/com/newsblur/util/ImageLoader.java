@@ -95,7 +95,8 @@ public class ImageLoader {
 			if (url.startsWith("/")) {
 				url = APIConstants.NEWSBLUR_URL + url;
 			}
-			NetworkUtils.loadURL(new URL(url), f);
+			long bytesRead = NetworkUtils.loadURL(new URL(url), f);
+			if (bytesRead == 0) return null;
 
 			fis = new FileInputStream(f);
 			bitmap = BitmapFactory.decodeStream(fis);
