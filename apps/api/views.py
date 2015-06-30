@@ -54,7 +54,7 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.user(request, "~FG~SB~BBAPI NEW SIGNUP~FW")
+            logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s" % new_user.email)
             code = 1
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)

@@ -159,6 +159,16 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
     }
 
+    public Feed getFeed(String feedId) {
+        Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null,  DatabaseConstants.FEED_ID + " = ?", new String[] {feedId}, null, null, null);
+        Feed result = null;
+        while (c.moveToNext()) {
+            result = Feed.fromCursor(c);
+        }
+        c.close();
+        return result;
+    }
+
     private void bulkInsertValues(String table, List<ContentValues> valuesList) {
         if (valuesList.size() < 1) return;
         synchronized (RW_MUTEX) {
@@ -771,6 +781,16 @@ public class BlurDatabaseHelper {
 
     public Cursor getSocialFeedsCursor(StateFilter stateFilter, CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
+    }
+
+    public SocialFeed getSocialFeed(String feedId) {
+        Cursor c = dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] {feedId}, null, null, null);
+        SocialFeed result = null;
+        while (c.moveToNext()) {
+            result = SocialFeed.fromCursor(c);
+        }
+        c.close();
+        return result;
     }
 
     public Loader<Cursor> getFoldersLoader() {

@@ -1,6 +1,7 @@
 package com.newsblur.network.domain;
 
 import com.google.gson.annotations.SerializedName;
+import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.UserDetails;
 
 public class ProfileResponse extends NewsBlurResponse {
@@ -9,6 +10,6 @@ public class ProfileResponse extends NewsBlurResponse {
 	public UserDetails user;
 	
 	@SerializedName("activities")
-	public ActivitiesResponse[] activities;
+	public ActivityDetails[] activities;
 	
 }

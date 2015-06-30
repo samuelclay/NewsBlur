@@ -62,6 +62,8 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                         'esc'
                     ]),
                     $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                        'shift',
+                        $.make('span', '+'),
                         'd'
                     ])
                   ]),

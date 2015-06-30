@@ -176,7 +176,7 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
+            logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             if not new_user.is_active:
                 url = "https://%s%s" % (Site.objects.get_current().domain,
                                          reverse('stripe-form'))
