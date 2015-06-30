@@ -129,13 +129,7 @@ def redeem_code(request):
         form = RedeemCodeForm(data=request.POST)
         if form.is_valid():
             gift_code = request.POST['gift_code']
-            PaymentHistory.objects.create(user=request.user,
-                                          payment_date=datetime.datetime.now(),
-                                          payment_amount=12,
-                                          payment_provider='good-web-bundle')
-            MRedeemedCode.record(request.user.pk, gift_code)
-            request.user.profile.activate_premium()
-            logging.user(request.user, "~FG~BBRedeeming gift code: %s~FW" % gift_code)
+            MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
             return render_to_response('reader/paypal_return.xhtml', 
                                       {}, context_instance=RequestContext(request))
 

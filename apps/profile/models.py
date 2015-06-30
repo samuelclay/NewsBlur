@@ -4,6 +4,7 @@ import dateutil
 import stripe
 import hashlib
 import redis
+import uuid
 import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
@@ -277,13 +278,19 @@ class Profile(models.Model):
         last_year = datetime.datetime.now() - datetime.timedelta(days=364)
         recent_payments_count = 0
         oldest_recent_payment_date = None
+        free_lifetime_premium = False
         for payment in payment_history:
+            if payment.payment_amount == 0:
+                free_lifetime_premium = True
             if payment.payment_date > last_year:
                 recent_payments_count += 1
                 if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
                     oldest_recent_payment_date = payment.payment_date
         
-        if oldest_recent_payment_date:
+        if free_lifetime_premium:
+            self.premium_expire = None
+            self.save()
+        elif oldest_recent_payment_date:
             new_premium_expire = (oldest_recent_payment_date +
                                   datetime.timedelta(days=365*recent_payments_count))
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
@@ -942,6 +949,46 @@ class PaymentHistory(models.Model):
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
         print "\nTotal: $%s" % total['sum']
 
+
+class MGiftCode(mongo.Document):
+    gifting_user_id = mongo.IntField()
+    receiving_user_id = mongo.IntField()
+    gift_code = mongo.StringField(max_length=12)
+    duration_days = mongo.IntField()
+    payment_amount = mongo.IntField()
+    created_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'gift_codes',
+        'allow_inheritance': False,
+        'indexes': ['gifting_user_id', 'receiving_user_id', 'created_date'],
+    }
+    
+    def __unicode__(self):
+        return "%s gifted %s on %s: %s (redeemed %s times)" % (self.gifting_user_id, self.receiving_user_id, self.created_date, self.gift_code, self.redeemed)
+    
+    @property
+    def redeemed(self):
+        redeemed_code = MRedeemedCode.objects.filter(gift_code=self.gift_code)
+        return len(redeemed_code)
+    
+    @staticmethod
+    def create_code(gift_code=None):
+        u = unicode(uuid.uuid4())
+        code = u[:8] + u[9:13]
+        if gift_code:
+            code = gift_code + code[len(gift_code):]
+        return code
+        
+    @classmethod
+    def add(cls, duration=0, gifting_user_id=None, receiving_user_id=None, gift_code=None, payment=0):
+        return cls.objects.create(gift_code=cls.create_code(gift_code), 
+                                   gifting_user_id=gifting_user_id,
+                                   receiving_user_id=receiving_user_id,
+                                   duration_days=duration,
+                                   payment_amount=payment)
+
+
 class MRedeemedCode(mongo.Document):
     user_id = mongo.IntField()
     gift_code = mongo.StringField()
@@ -960,7 +1007,26 @@ class MRedeemedCode(mongo.Document):
     def record(cls, user_id, gift_code):
         cls.objects.create(user_id=user_id, 
                            gift_code=gift_code)
-
+    @classmethod
+    def redeem(cls, user, gift_code):
+        newsblur_gift_code = MGiftCode.objects.filter(gift_code__iexact=gift_code)
+        if newsblur_gift_code:
+            newsblur_gift_code = newsblur_gift_code[0]
+            PaymentHistory.objects.create(user=user,
+                                          payment_date=datetime.datetime.now(),
+                                          payment_amount=newsblur_gift_code.payment_amount,
+                                          payment_provider='newsblur-gift')
+            
+        else:
+            # Thinkup / Good Web Bundle
+            PaymentHistory.objects.create(user=user,
+                                          payment_date=datetime.datetime.now(),
+                                          payment_amount=12,
+                                          payment_provider='good-web-bundle')
+        cls.record(user.pk, gift_code)
+        user.profile.activate_premium()
+        logging.user(user, "~FG~BBRedeeming gift code: %s~FW" % gift_code)
+        
 
 class RNewUserQueue:
     
