@@ -5,7 +5,7 @@ from vendor.zebra.forms import StripePaymentForm
 from django.utils.safestring import mark_safe
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from apps.profile.models import change_password, blank_authenticate
+from apps.profile.models import change_password, blank_authenticate, MGiftCode
 from apps.social.models import MSocialProfile
 
 PLANS = [
@@ -191,15 +191,23 @@ class RedeemCodeForm(forms.Form):
         if len(gift_code) != 12:
             raise forms.ValidationError('Your gift code should be 12 characters long.')
         
-        req = requests.get('https://www.thinkup.com/join/api/bundle/', params={'code': gift_code})
-        response = req.json()
+        newsblur_gift_code = MGiftCode.objects.filter(gift_code__iexact=gift_code)
+
+        if newsblur_gift_code:
+            # Native gift codes
+            newsblur_gift_code = newsblur_gift_code[0]
+            return newsblur_gift_code.gift_code
+        else:
+            # Thinkup / Good Web Bundle
+            req = requests.get('https://www.thinkup.com/join/api/bundle/', params={'code': gift_code})
+            response = req.json()
         
-        is_valid = response.get('is_valid', None)
-        if is_valid:
-            return gift_code
-        elif is_valid == False:
-            raise forms.ValidationError('Your gift code is invalid. Check it for errors.')
-        elif response.get('error', None):
-            raise forms.ValidationError('Your gift code is invalid, says the server: %s' % response['error'])
+            is_valid = response.get('is_valid', None)
+            if is_valid:
+                return gift_code
+            elif is_valid == False:
+                raise forms.ValidationError('Your gift code is invalid. Check it for errors.')
+            elif response.get('error', None):
+                raise forms.ValidationError('Your gift code is invalid, says the server: %s' % response['error'])
         
         return gift_code
