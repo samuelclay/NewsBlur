@@ -1,12 +1,7 @@
 package com.newsblur.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import android.content.Context;
@@ -14,7 +9,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.newsblur.R;
@@ -28,7 +22,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.service.NBSyncService;
-import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
@@ -75,6 +68,23 @@ public class FeedUtils {
                 dbHelper.deleteFeed(feedId);
                 NbActivity.updateAllActivities();
                 Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
+            }
+        }.execute();
+    }
+
+    public static void deleteSocialFeed(final String userId, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                apiManager.unfollowUser(userId);
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void result) {
+                // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
+                dbHelper.deleteSocialFeed(userId);
+                NbActivity.updateAllActivities();
+                Toast.makeText(context, R.string.toast_unfollowed, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }

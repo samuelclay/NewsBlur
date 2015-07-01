@@ -6,5 +6,8 @@
     
     <item android:id="@+id/menu_delete_feed"
           android:title="@string/menu_delete_feed" />
+
+    <item android:id="@+id/menu_unfollow"
+          android:title="@string/menu_unfollow" />
     
 </menu>

@@ -111,6 +111,7 @@
     <string name="menu_send_story">Send to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
+    <string name="menu_unfollow">Unfollow user</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
     <string name="menu_sharenewsblur">Share this story</string>
     <string name="menu_textsize">Adjust text size</string>
@@ -129,6 +130,7 @@
     <string name="toast_story_unread">Story marked as unread</string>
 
     <string name="toast_feed_deleted">Feed deleted</string>
+    <string name="toast_unfollowed">Unfollowed</string>
     
     <string name="logout_warning">Are you sure you want to log out?</string>
     
@@ -162,6 +164,7 @@
     <string name="friends_shares_count">%d SHARES</string>
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
+    <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
     
     <string name="menu_default_view">Default View</string>
     
