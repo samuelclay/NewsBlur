@@ -981,7 +981,7 @@ class MGiftCode(mongo.Document):
         return code
         
     @classmethod
-    def add(cls, duration=0, gifting_user_id=None, receiving_user_id=None, gift_code=None, payment=0):
+    def add(cls, gift_code=None, duration=0, gifting_user_id=None, receiving_user_id=None, payment=0):
         return cls.objects.create(gift_code=cls.create_code(gift_code), 
                                    gifting_user_id=gifting_user_id,
                                    receiving_user_id=receiving_user_id,
