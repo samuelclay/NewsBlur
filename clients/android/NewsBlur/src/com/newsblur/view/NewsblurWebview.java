@@ -18,6 +18,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import com.newsblur.activity.Reading;
+import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.util.AppConstants;
 
 public class NewsblurWebview extends WebView {
@@ -25,8 +26,9 @@ public class NewsblurWebview extends WebView {
     private NewsblurWebChromeClient webChromeClient;
     private boolean isCustomViewShowing;
 
+    public ReadingItemFragment fragment;
     // we need the less-abstract activity class in order to manipulate the overlay widgets
-    private Reading activity;
+    public Reading activity;
 
 	public NewsblurWebview(final Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -99,10 +101,6 @@ public class NewsblurWebview extends WebView {
         this.webChromeClient.webviewWrapperLayout = webviewWrapperLayout;
     }
 
-    public void setActivity(Reading activity) {
-        this.activity = activity;
-    }
-
     // this WCC implements the bare minimum callbacks to get HTML5 fullscreen video working
     class NewsblurWebChromeClient extends WebChromeClient {
         public View customView;
@@ -157,6 +155,10 @@ public class NewsblurWebview extends WebView {
             }
             customView = null;
             isCustomViewShowing = false;
+        }
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            if (newProgress == 100) fragment.onWebLoadFinished();
         }
     }
 

@@ -42,6 +42,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private ArrayList<View> friendCommentViews;
 	private ArrayList<View> friendShareViews;
 
+    private final ReadingItemFragment fragment;
 	private final Story story;
 	private final LayoutInflater inflater;
 	private final ImageLoader imageLoader;
@@ -51,9 +52,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private final FragmentManager manager;
 	private List<Comment> comments;
 
-	public SetupCommentSectionTask(Context context, View view, FragmentManager manager, LayoutInflater inflater, Story story, ImageLoader imageLoader) {
-		this.context = context;
-		this.manager = manager;
+	public SetupCommentSectionTask(ReadingItemFragment fragment, View view, LayoutInflater inflater, Story story, ImageLoader imageLoader) {
+        this.fragment = fragment;
+		this.context = fragment.getActivity();
+		this.manager = fragment.getFragmentManager();
 		this.inflater = inflater;
 		this.story = story;
 		this.imageLoader = imageLoader;
@@ -337,6 +339,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
             }
             friendShareListContainer.addView(friendShareViews.get(i));
         }
+
+        fragment.onSocialLoadFinished();
 	}
 }
 
