@@ -399,9 +399,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                         }
                     }
                 }
-
                 checkStoryCount(position);
                 updateOverlayText();
+                enableOverlays();
                 return null;
             }
         }.execute();
@@ -461,8 +461,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /**
      * Make visible and update the overlay UI.
      */
-    private void enableOverlays() {
+    public void enableOverlays() {
         this.setOverlayAlpha(1.0f);
+    }
+
+    public void disableOverlays() {
+        this.setOverlayAlpha(0.0f);
     }
 
     /**
@@ -513,8 +517,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // this callback is a good API-level-independent way to tell when the root view size/layout changes
         super.onWindowFocusChanged(hasFocus);
         this.contentView = findViewById(android.R.id.content);
-        enableOverlays();
-
         // Ensure that we come out of immersive view if the activity no longer has focus
         if (!hasFocus) {
             ViewUtils.showSystemUI(getWindow().getDecorView());
@@ -573,13 +575,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private void markStoryRead(Story story) {
         FeedUtils.markStoryAsRead(story, this);
-        enableOverlays();
     }
 
     private void markStoryUnread(Story story) {
         FeedUtils.markStoryUnread(story, this);
         Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
-        enableOverlays();
     }
 
     // NB: this callback is for the text size slider

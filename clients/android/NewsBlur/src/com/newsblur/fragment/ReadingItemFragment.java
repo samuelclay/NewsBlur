@@ -70,7 +70,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private ImageLoader imageLoader;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	private NewsblurWebview web;
+	@FindView(R.id.reading_webview) NewsblurWebview web;
+    @FindView(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
+    @FindView(R.id.reading_scrollview) View fragmentScrollview;
 	private BroadcastReceiver receiver;
     @FindView(R.id.reading_item_authors) TextView itemAuthors;
 	@FindView(R.id.reading_feed_title) TextView itemFeed;
@@ -93,6 +95,13 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     private HashMap<String,String> imageUrlRemaps;
     private String sourceUserId;
     private int contentHash;
+
+    // these three flags are progressively set by async callbacks and unioned
+    // to set isLoadFinished, when we trigger any final UI tricks.
+    private boolean isContentLoadFinished;
+    private boolean isWebLoadFinished;
+    private boolean isSocialLoadFinished;
+    private Boolean isLoadFinished = false;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
@@ -186,13 +195,15 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
 
-		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
         registerForContextMenu(web);
+        web.setCustomViewLayout(webviewCustomViewLayout);
+        web.setWebviewWrapperLayout(fragmentScrollview);
+        web.fragment = this;
+        web.activity = activity;
 
 		setupItemMetadata();
 		updateShareButton();
 	    updateSaveButton();
-
         setupItemCommentsAndShares();
 
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
@@ -288,9 +299,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         shareButton.setText(R.string.share_this);
 	}
 
-	private void setupItemCommentsAndShares() {
-        new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, story, imageLoader).execute();
-	}
+    private void setupItemCommentsAndShares() {
+        new SetupCommentSectionTask(this, view, inflater, story, imageLoader).execute();
+    }
 
 	private void setupItemMetadata() {
         View feedHeader = view.findViewById(R.id.row_item_feed_header);
@@ -411,6 +422,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 loadStoryContent();
             } else {
                 setupWebview(storyContent);
+                onContentLoadFinished();
             }
         } else {
             if (originalText == null) {
@@ -418,6 +430,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 loadOriginalText();
             } else {
                 setupWebview(originalText);
+                onContentLoadFinished();
                 enableProgress(false);
             }
         }
@@ -559,6 +572,41 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }
 
         return html;
+    }
+
+    /** We have pushed our desired content into the WebView. */
+    private void onContentLoadFinished() {
+        isContentLoadFinished = true;
+        checkLoadStatus();
+    }
+
+    /** The webview has finished loading our desired content. */
+    public void onWebLoadFinished() {
+        isWebLoadFinished = true;
+        checkLoadStatus();
+    }
+
+    /** The social UI has finished loading from the DB. */
+    public void onSocialLoadFinished() {
+        isSocialLoadFinished = true;
+        checkLoadStatus();
+    }
+
+    private void checkLoadStatus() {
+        synchronized (isLoadFinished) {
+            if (isContentLoadFinished && isWebLoadFinished && isSocialLoadFinished) {
+                // iff this is the first time all content has finished loading, trigger any UI
+                // behaviour that is position-dependent
+                if (!isLoadFinished) {
+                    onLoadFinished();
+                }
+                isLoadFinished = true;
+            }
+        }
+    }
+
+    private void onLoadFinished() {
+        // TODO: perform any position-dependent UI behaviours here (@manderson23)
     }
 
 	private class TextSizeReceiver extends BroadcastReceiver {
