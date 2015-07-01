@@ -7,13 +7,11 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,8 +33,6 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
-import com.newsblur.database.DatabaseConstants;
-import static com.newsblur.database.DatabaseConstants.getStr;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
@@ -197,7 +193,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-        
+
 		switch(type) {
 		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
             if (adapter.isRowSavedStories(groupPosition)) break;
