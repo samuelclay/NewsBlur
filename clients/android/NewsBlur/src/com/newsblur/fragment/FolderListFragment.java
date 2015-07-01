@@ -13,6 +13,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -195,10 +196,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-
+        int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+        
 		switch(type) {
 		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
-            int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (adapter.isRowReadStories(groupPosition)) break;
             inflater.inflate(R.menu.context_folder, menu);
@@ -206,22 +207,27 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
 			inflater.inflate(R.menu.context_feed, menu);
+            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+                menu.removeItem(R.id.menu_delete_feed);
+            } else {
+                menu.removeItem(R.id.menu_unfollow);
+            }
 			break;
 		}
 	}
 
-	@Override
+    @Override
 	public boolean onContextItemSelected(MenuItem item) {
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
         int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 
-		if (item.getItemId() == R.id.menu_delete_feed) {
-			String folderName = adapter.getGroup(groupPosition);
+		if (item.getItemId() == R.id.menu_delete_feed || item.getItemId() == R.id.menu_unfollow) {
 			DialogFragment deleteFeedFragment;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
-                deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getSocialFeed(adapter.getChild(groupPosition, childPosition)), folderName);
+                deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getSocialFeed(adapter.getChild(groupPosition, childPosition)));
             } else {
+                String folderName = adapter.getGroup(groupPosition);
                 deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getFeed(adapter.getChild(groupPosition, childPosition)), folderName);
             }
 			deleteFeedFragment.show(getFragmentManager(), "dialog");

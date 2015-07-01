@@ -27,6 +27,7 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 
@@ -75,6 +76,23 @@ public class FeedUtils {
                 dbHelper.deleteFeed(feedId);
                 NbActivity.updateAllActivities();
                 Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
+            }
+        }.execute();
+    }
+
+    public static void deleteSocialFeed(final String userId, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                apiManager.unfollowUser(userId);
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void result) {
+                // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
+                dbHelper.deleteSocialFeed(userId);
+                NbActivity.updateAllActivities();
+                Toast.makeText(context, R.string.toast_unfollowed, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }
