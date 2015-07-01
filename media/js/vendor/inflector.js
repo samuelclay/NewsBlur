@@ -167,7 +167,7 @@ window.Inflector = {
 
     // From Prototype.js. Strip out HTML tags.
     stripTags : function(s) {
-        return s.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?>|<\/\w+>/gi, '');
+        return $('<p>' + s + '</p>').text();
     },
 
     escapeRegExp : function(s) {
