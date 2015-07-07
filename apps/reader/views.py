@@ -525,7 +525,7 @@ def load_single_feed(request, feed_id):
     include_hidden          = is_true(request.REQUEST.get('include_hidden', False))
     message                 = None
     user_search             = None
-    
+
     dupe_feed_id = None
     user_profiles = []
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)

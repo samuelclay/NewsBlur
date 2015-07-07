@@ -53,7 +53,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'traditional': true,
             'domSuccessTrigger': true,
             'preventDoubleRequests': false,
-            'timeout': 15000
+            'timeout': 15000,
+            'retry': true
         }, options);
         var request_type = options.request_type || 'POST';
         var clear_queue = false;
@@ -104,6 +105,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
                               !!error_callback, error_callback, $.isFunction(callback)]);
                 
+                if (options.retry) {
+                    NEWSBLUR.log(['Retrying...', url, data, !!callback, !!error_callback, options]);
+                    options.retry = false;
+                    self.make_request(url, data, callback, error_callback, options);
+                    return;
+                }
                 if (errorThrown == "timeout") textStatus = "NewsBlur timed out trying<br />to connect. Just try again.";
                 if (error_callback) {
                     error_callback(e, textStatus, errorThrown);
