@@ -7,6 +7,7 @@ import time
 import urllib2
 import httplib
 import zlib
+from mongoengine.queryset import NotUniqueError
 from socket import error as SocketError
 from boto.s3.key import Key
 from django.conf import settings

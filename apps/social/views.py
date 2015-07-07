@@ -4,6 +4,7 @@ import zlib
 import random
 import re
 from bson.objectid import ObjectId
+from mongoengine.queryset import NotUniqueError
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -571,7 +572,7 @@ def mark_story_as_shared(request):
         }
         try:
             shared_story = MSharedStory.objects.create(**story_db)
-        except MSharedStory.NotUniqueError:
+        except NotUniqueError:
             shared_story = MSharedStory.objects.get(story_guid=story_db['story_guid'],
                                                     user_id=story_db['user_id'])
         except MSharedStory.DoesNotExist:
