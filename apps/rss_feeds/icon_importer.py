@@ -199,6 +199,7 @@ class IconImporter(object):
                 url = self._url_from_html(content)
             except (AttributeError, SocketError, requests.ConnectionError, 
                     requests.models.MissingSchema, requests.sessions.InvalidSchema,
+                    requests.sessions.TooManyRedirects,
                     LocationParseError, OpenSSLError, PyAsn1Error), e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
