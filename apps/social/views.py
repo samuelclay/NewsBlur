@@ -1169,10 +1169,14 @@ def like_comment(request):
     
     if comment_user_id == request.user.pk:
         return json.json_response(request, {'code': -1, 'message': 'You cannot favorite your own shared story comment.'})
+
+    try:
+        shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
+                                                story_feed_id=feed_id, 
+                                                story_guid=story_id)
+    except MSharedStory.DoesNotExist:
+        return json.json_response(request, {'code': -1, 'message': 'The shared comment cannot be found.'})
         
-    shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
-                                            story_feed_id=feed_id, 
-                                            story_guid=story_id)
     shared_story.add_liking_user(request.user.pk)
     comment, profiles = shared_story.comment_with_author_and_profiles()
 
