@@ -166,14 +166,20 @@ class FetchFeed:
             channel_json = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s" %
                                        (channel_id, settings.YOUTUBE_API_KEY))
             channel = json.decode(channel_json.content)
-            username = channel['items'][0]['snippet']['title']
-            description = channel['items'][0]['snippet']['description']
+            try:
+                username = channel['items'][0]['snippet']['title']
+                description = channel['items'][0]['snippet']['description']
+            except IndexError:
+                return
         elif list_id:
             playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s" %
                                        (list_id, settings.YOUTUBE_API_KEY))
             playlist = json.decode(playlist_json.content)
-            username = playlist['items'][0]['snippet']['title']
-            description = playlist['items'][0]['snippet']['description']
+            try:
+                username = playlist['items'][0]['snippet']['title']
+                description = playlist['items'][0]['snippet']['description']
+            except IndexError:
+                return
             channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
             video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
@@ -185,7 +191,10 @@ class FetchFeed:
             playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&key=%s" %
                                        (list_id, settings.YOUTUBE_API_KEY))
             playlist = json.decode(playlist_json.content)
-            video_ids = [video['snippet']['resourceId']['videoId'] for video in playlist['items']]
+            try:
+                video_ids = [video['snippet']['resourceId']['videoId'] for video in playlist['items']]
+            except IndexError:
+                return
         else:    
             if video_ids_xml.status_code != 200:
                 return
