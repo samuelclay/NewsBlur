@@ -245,7 +245,7 @@ def setup_node():
 def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
-    setup_db_firewall()
+        setup_db_firewall()
     setup_motd('db')
     copy_db_settings()
     if engine == "memcached":
@@ -688,7 +688,7 @@ def setup_node_app():
 def config_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
-    # put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
+    put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
@@ -848,8 +848,8 @@ def setup_rabbitmq():
 
 def setup_postgres(standby=False):
     shmmax = 2300047872
-    sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"')
-    sudo('wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -')
+    sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"') # You might have to run this manually
+    sudo('wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
     sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
     put('config/postgresql%s.conf' % (
@@ -865,15 +865,19 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
-def copy_postgres_to_standby():
-    slave = 'db02'
-    # Make sure you can ssh from master to slave and back.
+def copy_postgres_to_standby(master='db01'):
+    # http://www.rassoc.com/gregr/weblog/2013/02/16/zero-to-postgresql-streaming-replication-in-10-mins/
+    
+    # Make sure you can ssh from master to slave and back with the postgres user account.
     # Need to give postgres accounts keys in authroized_keys.
 
     # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
-    sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
+    # sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
     # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
+    sudo('su postgres pg_basebackup -h %s -D /var/lib/postgresql/9.2/main -v -P -X fetch' % master)
+    sudo('cp /var/lib/postgresql/9.2/recovery.conf /var/lib/postgresql/9.2/main/')
+    
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
@@ -1003,9 +1007,9 @@ def copy_munin_data(from_server):
     sudo("mv /srv/munin /var/lib/")
     sudo("chown munin.munin -R /var/lib/munin")
 
-    run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/etc/munin/ /srv/munin-etc" % from_server)
-    sudo("mv /srv/munin-etc /etc/munin")
-    sudo("chown munin.munin -R /etc/munin")
+    # run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/etc/munin/ /srv/munin-etc" % from_server)
+    # sudo("mv /srv/munin-etc /etc/munin")
+    # sudo("chown munin.munin -R /etc/munin")
 
     sudo("/etc/init.d/munin restart")
     sudo("/etc/init.d/munin-node restart")
