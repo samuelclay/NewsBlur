@@ -81,7 +81,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         $layout.removeClass('NB-grid-columns-1')
                .removeClass('NB-grid-columns-2')
                .removeClass('NB-grid-columns-3')
-               .removeClass('NB-grid-columns-4')
+               .removeClass('NB-grid-columns-4');
 
         if (columns > 0) {
             $layout.addClass('NB-grid-columns-' + columns);
