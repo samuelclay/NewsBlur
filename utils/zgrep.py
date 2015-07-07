@@ -100,4 +100,4 @@ if __name__ == "__main__":
     path = options.path
     find = options.find
     command = "zgrep \"%s\"" % find
-    main(role="app", role2="dev", command=command, path=path)
+    main(role="app", command=command, path=path)
