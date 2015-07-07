@@ -96,7 +96,10 @@ class FetchFeed:
             return FEED_OK, self.fpf
         
         if 'youtube.com' in address:
-            youtube_feed = self.fetch_youtube(address)
+            try:
+                youtube_feed = self.fetch_youtube(address)
+            except (requests.adapters.ConnectionError):
+                youtube_feed = None
             if not youtube_feed:
                 logging.debug(u'   ***> [%-30s] ~FRYouTube fetch failed: %s.' % 
                               (self.feed.title[:30], address))
