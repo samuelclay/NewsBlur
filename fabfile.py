@@ -1150,7 +1150,7 @@ def setup_do(name, size=2, image=None):
         image_id = images[IMAGE_NAME]
     else:
         if image == "task": 
-            image = "task_05-2015"
+            image = "task_07-2015"
         IMAGE_NAME = image
         images = dict((s.name, s.id) for s in doapi.images(show_all=False))
         image_id = images[IMAGE_NAME]
