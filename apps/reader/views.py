@@ -1126,7 +1126,8 @@ def load_river_stories__redis(request):
     # Intelligence classifiers for all feeds involved
     if found_trained_feed_ids:
         classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
-                                                        feed_id__in=found_trained_feed_ids))
+                                                        feed_id__in=found_trained_feed_ids,
+                                                        social_user_id=0))
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
                                                             feed_id__in=found_trained_feed_ids))
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
