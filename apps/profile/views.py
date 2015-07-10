@@ -457,9 +457,12 @@ def refund_premium(request):
 def upgrade_premium(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    upgraded = user.profile.activate_premium(never_expire=True)
     
-    return {'code': 1 if upgraded else -1}    
+    gift = MGiftCode.add(gifting_user_id=User.objects.get(username='samuel').pk, 
+                         receiving_user_id=user.pk)
+    MRedeemedCode.redeem(user, gift.gift_code)
+    
+    return {'code': user.profile.is_premium}
 
 @staff_member_required
 @ajax_login_required
