@@ -506,6 +506,9 @@ public class NBSyncService extends Service {
                     apiIds.addAll(fs.getFlatFeedIds());
                 }
 
+                // if any reading activities are pending, it makes no sense to recount yet
+                if (dbHelper.getActions(false).getCount() > 0) return;
+
                 UnreadCountResponse apiResponse = apiManager.getFeedUnreadCounts(apiIds);
                 if ((apiResponse == null) || (apiResponse.isError())) {
                     Log.w(this.getClass().getName(), "Bad response to feed_unread_count");
