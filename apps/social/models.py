@@ -1500,7 +1500,49 @@ class MSharedStory(mongo.Document):
         self.remove_from_redis()
 
         super(MSharedStory, self).delete(*args, **kwargs)
-    
+
+    @classmethod
+    def trim_old_stories(cls, stories=10, days=90, dryrun=False):
+        print " ---> Fetching shared story counts..."
+        stats = settings.MONGODB.newsblur.shared_stories.aggregate([{
+            "$group": {
+                "_id":      "$user_id",
+                "stories":  {"$sum": 1},
+            },
+        }, {
+            "$match": {
+                "stories": {"$gte": stories}
+            },
+        }])
+        month_ago = datetime.datetime.now() - datetime.timedelta(days=days)
+        user_ids = stats['result']
+        user_ids = sorted(user_ids, key=lambda x:x['stories'], reverse=True)
+        print " ---> Found %s users with more than %s starred stories" % (len(user_ids), stories)
+
+        total = 0
+        for stat in user_ids:
+            try:
+                user = User.objects.select_related('profile').get(pk=stat['_id'])
+            except User.DoesNotExist:
+                user = None
+            
+            if user and (user.profile.is_premium or user.profile.last_seen_on > month_ago):
+                continue
+            
+            total += stat['stories']
+            username = "%s (%s)" % (user and user.username or " - ", stat['_id'])
+            print " ---> %19.19s: %-20.20s %s stories" % (user and user.profile.last_seen_on or "Deleted",
+                                                          username, 
+                                                          stat['stories'])
+            if not dryrun and stat['_id']:
+                cls.objects.filter(user_id=stat['_id']).delete()
+            elif not dryrun and stat['_id'] == 0:
+                print " ---> Deleting unshared stories (user_id = 0)"
+                cls.objects.filter(user_id=stat['_id']).delete()
+                    
+        
+        print " ---> Deleted %s stories in total." % total
+        
     def unshare_story(self):
         socialsubs = MSocialSubscription.objects.filter(subscription_user_id=self.user_id,
                                                         needs_unread_recalc=False)

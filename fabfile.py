@@ -823,12 +823,12 @@ def setup_db_firewall():
         ))
 
     # EC2
-    for host in set(env.roledefs['ec2task']):
-        ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
-        sudo('ufw allow proto tcp from %s to any port %s' % (
-            ip,
-            ','.join(map(str, ports))
-        ))
+    # for host in set(env.roledefs['ec2task']):
+    #     ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
+    #     sudo('ufw allow proto tcp from %s to any port %s' % (
+    #         ip,
+    #         ','.join(map(str, ports))
+    #     ))
 
     sudo('ufw --force enable')
 
