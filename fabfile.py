@@ -724,7 +724,7 @@ def maintenance_off():
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
-    version = "1.5.12"
+    version = "1.5.14"
     sudo('ufw allow 81')    # nginx moved
     sudo('ufw allow 1936')  # haproxy stats
     # sudo('apt-get install -y haproxy')

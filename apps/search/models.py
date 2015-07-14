@@ -419,3 +419,14 @@ class SearchFeed:
                                     doc_types=[cls.type_name()])
             
         return results
+    
+    @classmethod
+    def export_csv(cls):
+        import djqscsv
+
+        qs = Feed.objects.filter(num_subscribers__gte=20).values('id', 'feed_title', 'feed_address', 'feed_link', 'num_subscribers')
+        csv = djqscsv.render_to_csv_response(qs).content
+        f = open('feeds.csv', 'w+')
+        f.write(csv)
+        f.close()
+        
