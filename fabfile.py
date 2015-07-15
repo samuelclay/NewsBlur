@@ -704,11 +704,12 @@ def assemble_certificates():
         local('cat STAR_newsblur_com.crt EssentialSSLCA_2.crt ComodoUTNSGCCA.crt UTNAddTrustSGCCA.crt AddTrustExternalCARoot.crt > newsblur.com.crt')
         
 def copy_certificates():
-    cert_path = '%s/config/certificates/' % env.NEWSBLUR_PATH
+    cert_path = '%s/config/certificates' % env.NEWSBLUR_PATH
     run('mkdir -p %s' % cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
+    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
+    run('cat %s/newsblur.com.pem > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
 
 @parallel
@@ -760,7 +761,11 @@ def config_haproxy(debug=False):
     else:
         put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
             '/etc/haproxy/haproxy.cfg', use_sudo=True)
-    sudo('/etc/init.d/haproxy reload')
+    haproxy_check = run('haproxy -c -f /etc/haproxy/haproxy.cfg')
+    if haproxy_check.return_code == 0:
+        sudo('/etc/init.d/haproxy reload')
+    else:
+        print " !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code
 
 def upgrade_django():
     with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
