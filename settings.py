@@ -431,6 +431,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=12),
         'options': {'queue': 'beat_tasks'},
     },
+    'clean-spam': {
+        'task': 'clean-spam',
+        'schedule': datetime.timedelta(hours=12),
+        'options': {'queue': 'beat_tasks'},
+    },
     'premium-expire': {
         'task': 'premium-expire',
         'schedule': datetime.timedelta(hours=24),
