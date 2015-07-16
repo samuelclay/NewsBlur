@@ -771,10 +771,32 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void processVolumeKeyNavigationEvent(int keyCode) {
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT) ||
             (keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT)) {
-            overlayRight(overlayRight);
+            if (overlayNavigationSupported()) {
+                overlayRight(overlayRight);
+            } else {
+                int nextPosition = pager.getCurrentItem() + 1;
+                if (nextPosition < readingAdapter.getCount()) {
+                    pager.setCurrentItem(nextPosition);
+                }
+            }
         } else {
-            overlayLeft(overlayLeft);
+            if (overlayNavigationSupported()) {
+                overlayLeft(overlayLeft);
+            } else {
+                int nextPosition = pager.getCurrentItem() - 1;
+                if (nextPosition >= 0) {
+                    pager.setCurrentItem(nextPosition);
+                }
+            }
         }
+    }
+
+    /**
+     * Global shared, saved and read stories don't have overlays enabled for
+     * navigating between stories so we need to fall back to swipe left/right behaviour.
+     */
+    protected boolean overlayNavigationSupported() {
+        return true;
     }
 
     @Override

@@ -28,4 +28,8 @@ public class SavedStoriesReading extends Reading {
         super.onLoadFinished(loader, cursor);
     }
 
+    @Override
+    protected boolean overlayNavigationSupported() {
+        return false;
+    }
 }
