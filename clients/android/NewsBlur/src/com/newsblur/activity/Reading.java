@@ -771,7 +771,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void processVolumeKeyNavigationEvent(int keyCode) {
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT) ||
             (keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT)) {
-            if (overlayNavigationSupported()) {
+            if (unreadSearchingSupported()) {
                 overlayRight(overlayRight);
             } else {
                 int nextPosition = pager.getCurrentItem() + 1;
@@ -780,7 +780,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 }
             }
         } else {
-            if (overlayNavigationSupported()) {
+            if (unreadSearchingSupported()) {
                 overlayLeft(overlayLeft);
             } else {
                 int nextPosition = pager.getCurrentItem() - 1;
@@ -792,10 +792,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     /**
-     * Global shared, saved and read stories don't have overlays enabled for
-     * navigating between stories so we need to fall back to swipe left/right behaviour.
+     * Global shared, saved and read stories don't support searching for unreads so we need to
+     * fall back to swipe left/right behaviour.
      */
-    protected boolean overlayNavigationSupported() {
+    protected boolean unreadSearchingSupported() {
         return true;
     }
 

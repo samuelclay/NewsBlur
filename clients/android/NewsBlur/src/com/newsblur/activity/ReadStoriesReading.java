@@ -27,7 +27,7 @@ public class ReadStoriesReading extends Reading {
     }
 
     @Override
-    protected boolean overlayNavigationSupported() {
+    protected boolean unreadSearchingSupported() {
         return false;
     }
 }
