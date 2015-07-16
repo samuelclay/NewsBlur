@@ -774,18 +774,28 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             if (unreadSearchingSupported()) {
                 overlayRight(overlayRight);
             } else {
+                if (pager == null) return;
                 int nextPosition = pager.getCurrentItem() + 1;
                 if (nextPosition < readingAdapter.getCount()) {
-                    pager.setCurrentItem(nextPosition);
+                    try {
+                        pager.setCurrentItem(nextPosition);
+                    } catch (Exception e) {
+                        // Just in case cursor changes.
+                    }
                 }
             }
         } else {
             if (unreadSearchingSupported()) {
                 overlayLeft(overlayLeft);
             } else {
+                if (pager == null) return;
                 int nextPosition = pager.getCurrentItem() - 1;
                 if (nextPosition >= 0) {
-                    pager.setCurrentItem(nextPosition);
+                    try {
+                        pager.setCurrentItem(nextPosition);
+                    } catch (Exception e) {
+                        // Just in case cursor changes.
+                    }
                 }
             }
         }
