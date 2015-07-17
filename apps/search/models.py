@@ -5,7 +5,6 @@ import pyes
 import redis
 import celery
 import mongoengine as mongo
-from pyes.query import MatchQuery
 from django.conf import settings
 from django.contrib.auth.models import User
 from apps.search.tasks import IndexSubscriptionsForSearch
@@ -306,44 +305,25 @@ class SearchFeed:
         if delete:
             cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
         settings =  {
-            "index" : {
-                "analysis": {
-                    "analyzer": {
-                        "edgengram_analyzer": {
-                            "filter": ["edgengram"],
-                            "tokenizer": "lowercase",
-                            "type": "custom"
-                        },
-                        "ngram_analyzer": {
-                            "filter": ["ngram"],
-                            "tokenizer": "lowercase",
-                            "type": "custom"
-                        }
-                    },
-                    "filter": {
-                        "edgengram": {
-                            "max_gram": "15",
-                            "min_gram": "2",
-                            "type": "edgeNGram"
-                        },
-                        "ngram": {
-                            "max_gram": "15",
-                            "min_gram": "3",
-                            "type": "nGram"
-                        }
-                    },
-                    "tokenizer": {
-                        "edgengram_tokenizer": {
-                            "max_gram": "15",
-                            "min_gram": "2",
-                            "side": "front",
-                            "type": "edgeNGram"
-                        },
-                        "ngram_tokenizer": {
-                            "max_gram": "15",
-                            "min_gram": "3",
-                            "type": "nGram"
-                        }
+            "analysis": {
+                "filter" : {
+                    "stopwords_filter" : {
+                        "type" : "stop",
+                        "stopwords" : ["http", "https", "ftp", "www"]
+                    }
+                },
+                "analyzer" : {
+                    "my_edge_ngram_analyzer" : {
+                        "tokenizer" : "my_edge_ngram_tokenizer",
+                        "filter" : [ "stopwords_filter" ],
+                    }
+                },
+                "tokenizer" : {
+                    "my_edge_ngram_tokenizer" : {
+                        "type" : "edgeNGram",
+                        "min_gram" : "1",
+                        "max_gram" : "15",
+                        "token_chars": [ "letter", "digit" ]
                     }
                 }
             }
@@ -352,24 +332,22 @@ class SearchFeed:
 
         mapping = {
             "address": {
-                "analyzer": "edgengram_analyzer",
-                "store": True,
-                "term_vector": "with_positions_offsets",
+                "analyzer": "my_edge_ngram_analyzer",
+                "store": "no",
                 "type": "string"
             },
             "feed_id": {
-                "store": True,
-                "type": "string"
+                "store": "no",
+                "type": "integer"
             },
             "num_subscribers": {
                 "index": "analyzed",
-                "store": True,
+                "store": "no",
                 "type": "long"
             },
             "title": {
-                "analyzer": "edgengram_analyzer",
-                "store": True,
-                "term_vector": "with_positions_offsets",
+                "analyzer": "standard",
+                "store": "no",
                 "type": "string"
             }
         }
@@ -402,21 +380,9 @@ class SearchFeed:
             return []
         
         logging.info("~FGSearch ~FCfeeds~FG by address: ~SB%s" % text)
-        q = MatchQuery('address', text, operator="and", type="phrase")
+        q = pyes.query.MultiMatchQuery(['address', 'link^2', 'title^3'], text)
         results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
                                 doc_types=[cls.type_name()])
-
-        if not results.total:
-            logging.info("~FGSearch ~FCfeeds~FG by title: ~SB%s" % text)
-            q = MatchQuery('title', text, operator="and")
-            results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
-                                    doc_types=[cls.type_name()])
-            
-        if not results.total:
-            logging.info("~FGSearch ~FCfeeds~FG by link: ~SB%s" % text)
-            q = MatchQuery('link', text, operator="and")
-            results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
-                                    doc_types=[cls.type_name()])
             
         return results
     
