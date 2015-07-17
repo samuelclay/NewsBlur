@@ -202,28 +202,28 @@ class SearchStory:
                 'index': 'analyzed',
                 'store': 'no',
                 'type': 'string',
-                'analyzer': 'snowball',
+                'analyzer': 'standard',
             },
             'content': {
                 'boost': 1.0,
                 'index': 'analyzed',
                 'store': 'no',
                 'type': 'string',
-                'analyzer': 'snowball',
+                'analyzer': 'simple',
             },
             'tags': {
                 'boost': 2.0,
                 'index': 'analyzed',
                 'store': 'no',
                 'type': 'string',
-                'analyzer': 'snowball',
+                'analyzer': 'standard',
             },
             'author': {
                 'boost': 1.0,
                 'index': 'analyzed',
                 'store': 'no',
                 'type': 'string',   
-                'analyzer': 'keyword',
+                'analyzer': 'simple',
             },
             'feed_id': {
                 'store': 'no',
@@ -272,7 +272,7 @@ class SearchStory:
         cls.ES.indices.refresh()
         
         sort     = "date:desc" if order == "newest" else "date:asc"
-        string_q = pyes.query.StringQuery(query, default_operator="AND")
+        string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
         feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:1000])
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
         try:

@@ -27,7 +27,7 @@ mongoengine==0.8.2
 nltk==2.0.5
 oauth2==1.5.211
 psutil==2.1.0
-pyes==0.90.1
+pyes==0.99.5
 simplejson==3.4.0
 pyflakes==0.6.1
 pymongo==2.6
