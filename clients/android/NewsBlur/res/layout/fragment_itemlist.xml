@@ -30,7 +30,8 @@
             android:layout_below="@id/empty_view_text"
             android:layout_marginTop="15dp"
             android:layout_centerHorizontal="true"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:visibility="invisible" />
 
         <com.newsblur.view.ProgressThrobber
             android:id="@+id/empty_view_loading_throb"
