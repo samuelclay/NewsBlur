@@ -123,10 +123,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	public void hasUpdated() {
         if (isAdded()) {
-            getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
-            getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
-            getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
-            getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
+            try {
+                getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
+                getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
+                getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
+                getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
+            } catch (Exception e) {
+                // on heavily loaded devices, the time between isAdded() going false
+                // and the loader subsystem shutting down can be nontrivial, causing
+                // IllegalStateExceptions to be thrown here.
+            }
         }
 	}
 
