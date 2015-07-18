@@ -937,7 +937,7 @@ def setup_mongo_mms():
         sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
-    redis_version = '2.8.19'
+    redis_version = '3.0.3'
     with cd(env.VENDOR_PATH):
         run('wget http://download.redis.io/releases/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -960,6 +960,8 @@ def setup_redis(slave=False):
     sudo('chmod 644 /etc/sysctl.conf', pty=False)
     sudo("sysctl vm.overcommit_memory=1")
     put('config/redis_rclocal.txt', '/etc/rc.local', use_sudo=True)
+    sudo("chown root.root /etc/rc.local")
+    sudo("chmod a+x /etc/rc.local")
     sudo("su root -c \"echo \\\"never\\\" > /sys/kernel/mm/transparent_hugepage/enabled\"")
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
@@ -1142,7 +1144,10 @@ def copy_spam():
 # =========================
 
 def setup_do(name, size=2, image=None):
-    INSTANCE_SIZE = "%sGB" % size
+    if int(size) == 512:
+        INSTANCE_SIZE = "512MB"
+    else:
+        INSTANCE_SIZE = "%sGB" % size
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
