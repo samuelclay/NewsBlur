@@ -913,7 +913,10 @@ def profile(request):
 @json.json_view
 def load_user_profile(request):
     social_profile = MSocialProfile.get_user(request.user.pk)
-    social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+    try:
+        social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    except MSocialServices.DoesNotExist:
+        social_services = MSocialServices.objects.create(user_id=request.user.pk)
     
     logging.user(request, "~BB~FRLoading social profile and blurblog settings")
     

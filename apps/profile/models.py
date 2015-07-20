@@ -489,13 +489,16 @@ class Profile(models.Model):
         
         if not self.user.email:
             return
-
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='first_share')
         
-        if not created and not force:
-            return
-        
+        params = dict(receiver_user_id=self.user.pk, email_type='first_share')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+                
         social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
         params = {
             'shared_stories': MSharedStory.objects.filter(user_id=self.user.pk).count(),
@@ -528,12 +531,15 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         if not self.user.email or not self.send_emails:
             return
         
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='new_premium')
-        
-        if not created and not force:
-            return
-        
+        params = dict(receiver_user_id=self.user.pk, email_type='new_premium')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+
         user    = self.user
         text    = render_to_string('mail/email_new_premium.txt', locals())
         html    = render_to_string('mail/email_new_premium.xhtml', locals())
@@ -572,11 +578,15 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             print "Please provide an email address."
             return
         
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='new_user_queue')
-        if not created and not force:
-            return
-        
+        params = dict(receiver_user_id=self.user.pk, email_type='new_user_queue')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+
         user    = self.user
         text    = render_to_string('mail/email_new_user_queue.txt', locals())
         html    = render_to_string('mail/email_new_user_queue.xhtml', locals())
@@ -645,12 +655,15 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
             return
         
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='launch_social')
-        
-        if not created and not force:
-            logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
-            return
+        params = dict(receiver_user_id=self.user.pk, email_type='launch_social')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
         
         delta      = datetime.datetime.now() - self.last_seen_on
         months_ago = delta.days / 30

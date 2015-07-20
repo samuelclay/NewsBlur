@@ -31,7 +31,10 @@ class MStatistics(mongo.Document):
 
     @classmethod
     def set(cls, key, value):
-        obj, _ = cls.objects.get_or_create(key=key)
+        try:
+            obj = cls.objects.get(key=key)
+        except cls.DoesNotExist:
+            obj = cls.objects.create(key=key)
         obj.value = value
         obj.save()
     

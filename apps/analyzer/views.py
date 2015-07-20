@@ -71,9 +71,6 @@ def save_classifier(request):
                         'user_id': request.user.pk,
                         'feed_id': feed_id or 0,
                         'social_user_id': social_user_id or 0,
-                        'defaults': {
-                            'score': score
-                        }
                     }
                     if content_type in ('author', 'tag', 'title'):
                         classifier_dict.update({content_type: post_content})
@@ -81,7 +78,10 @@ def save_classifier(request):
                         if not post_content.startswith('social:'):
                             classifier_dict['feed_id'] = post_content
                     try:
-                        classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
+                        classifier = ClassifierCls.objects.get(**classifier_dict)
+                    except ClassifierCls.DoesNotExist:
+                        classifier_dict.update(dict(score=score))
+                        classifier = ClassifierCls.objects.create(**classifier_dict)
                     except NotUniqueError:
                         continue
                     if score == 0:
