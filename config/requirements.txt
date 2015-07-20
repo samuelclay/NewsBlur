@@ -30,7 +30,7 @@ psutil==2.1.0
 pyes==0.90.1
 simplejson==3.4.0
 pyflakes==0.6.1
-pymongo==3.0.4
+pymongo==3.0.3
 python-dateutil==2.1
 python-gflags==2.0
 pytz==2013b
