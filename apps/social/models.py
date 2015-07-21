@@ -1750,7 +1750,7 @@ class MSharedStory(mongo.Document):
             try:
                 shared_story = MSharedStory.objects.get(**story_values)
             except MSharedStory.DoesNotExist:
-                story_values.update(storydb)
+                story_values.update(story_db)
                 shared_story = MSharedStory.objects.create(**story_values)
                 shared_story.post_to_service('twitter')
                 shared += 1
@@ -2952,7 +2952,7 @@ class MInteraction(mongo.Document):
         try:
             cls.objects.get(**params)
         except cls.DoesNotExist:
-            cls.objects.create(**parmas)
+            cls.objects.create(**params)
         
         cls.publish_update_to_subscribers(comment_user_id)
 
