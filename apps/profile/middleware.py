@@ -21,7 +21,7 @@ class LastSeenMiddleware(object):
             and hasattr(request, 'user')
             and request.user.is_authenticated()): 
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
-            ip = request.META.get('HTTP_X_REAL_IP', None) or request.META['REMOTE_ADDR']
+            ip = request.META.get('X-Forwarded-For', None) or request.META['REMOTE_ADDR']
             # SUBSCRIBER_EXPIRE = datetime.datetime.utcnow() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
