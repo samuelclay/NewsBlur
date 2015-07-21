@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.1
-six==1.6.1
+six==1.6
 boto==2.8.0
 celery==3.0.17
 chardet==2.1.1
@@ -23,14 +23,14 @@ iconv==1.0
 isodate==0.5.1
 kombu==2.5.7
 lxml==3.3.5
-mongoengine==0.10.0
+mongoengine==0.8.2
 nltk==2.0.5
 oauth2==1.5.211
 psutil==2.1.0
 pyes==0.90.1
 simplejson==3.4.0
 pyflakes==0.6.1
-pymongo==3.0.3
+pymongo==2.6
 python-dateutil==2.1
 python-gflags==2.0
 pytz==2013b
