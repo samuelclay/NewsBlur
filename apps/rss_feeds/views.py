@@ -22,6 +22,7 @@ from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
 from utils.view_functions import required_params
 from vendor.timezones.utilities import localtime_for_timezone
+from utils.ratelimit import ratelimit
 
 
 IGNORE_AUTOCOMPLETE = [
@@ -149,6 +150,7 @@ def feed_autocomplete(request):
     else:
         return feeds
     
+@ratelimit(minutes=1, requests=10)
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
