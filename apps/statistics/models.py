@@ -29,6 +29,7 @@ class MStatistics(mongo.Document):
         if not obj:
             return default
         if obj.expiration_date and obj.expiration_date < datetime.datetime.now():
+            obj.delete()
             return default
         return obj.value
 
