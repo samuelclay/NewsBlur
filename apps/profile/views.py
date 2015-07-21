@@ -404,6 +404,7 @@ def payment_history(request):
     statistics = {
         "created_date": user.date_joined,
         "last_seen_date": user.profile.last_seen_on,
+        "last_seen_ip": user.profile.last_seen_ip,
         "timezone": unicode(user.profile.timezone),
         "stripe_id": user.profile.stripe_id,
         "profile": user.profile,
