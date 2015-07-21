@@ -34,7 +34,7 @@ class NBMuninGraph(MuninGraph):
 
         return {
             'feeds': feeds_count,
-            'subscriptions_count': subscriptions_count,
+            'subscriptions': subscriptions_count,
             'profiles': MSocialProfile.objects.count(),
             'social_subscriptions': MSocialSubscription.objects.count(),
         }

@@ -28,7 +28,14 @@ class LoginForm(forms.Form):
         username = self.cleaned_data.get('username', '').lower()
         password = self.cleaned_data.get('password', '')
         
-        user = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username))
+        if '@' in username:
+            user = User.objects.filter(email=username)
+            if not user:
+                user = User.objects.filter(email__iexact=username)
+        else:
+            user = User.objects.filter(username=username)
+            if not user:
+                user = User.objects.filter(username__iexact=username)
         if user:
             user = user[0]
         if username and user:
