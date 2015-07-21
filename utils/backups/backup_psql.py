@@ -15,7 +15,7 @@ db_name = 'newsblur'
 db_pass = settings.DATABASES['default']['PASSWORD']
 os.environ['PGPASSWORD'] = db_pass
 filename = 'backup_postgresql_%s.sql.gz' % time.strftime('%Y-%m-%d-%H-%M')
-cmd      = '/usr/lib/postgresql/9.2/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc %s > %s' % (db_name, filename)
+cmd      = '/usr/lib/postgresql/9.4/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc %s > %s' % (db_name, filename)
 print 'Backing up PostgreSQL: %s' % cmd
 os.system(cmd)
 

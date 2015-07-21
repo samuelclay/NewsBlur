@@ -877,11 +877,11 @@ def copy_postgres_to_standby(master='db01'):
     # Need to give postgres accounts keys in authroized_keys.
 
     # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
-    # sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
+    # sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.4/main postgres@%s:/var/lib/postgresql/9.4/ --exclude postmaster.pid\"' % slave, pty=False)
     # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
-    sudo('su postgres pg_basebackup -h %s -D /var/lib/postgresql/9.2/main -v -P -X fetch' % master)
-    sudo('cp /var/lib/postgresql/9.2/recovery.conf /var/lib/postgresql/9.2/main/')
+    sudo('su postgres pg_basebackup -h %s -D /var/lib/postgresql/9.4/main -v -P -X fetch' % master)
+    sudo('cp /var/lib/postgresql/9.4/recovery.conf /var/lib/postgresql/9.4/main/')
     
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
@@ -1451,8 +1451,8 @@ def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
-0 * * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +180 -delete"""
+0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
+0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
 
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
