@@ -870,6 +870,13 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
+def config_postgres(standby=False):
+    put('config/postgresql%s.conf' % (
+        ('_standby' if standby else ''),
+    ), '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
+
+    sudo('/etc/init.d/postgresql reload 9.4')
+    
 def copy_postgres_to_standby(master='db01'):
     # http://www.rassoc.com/gregr/weblog/2013/02/16/zero-to-postgresql-streaming-replication-in-10-mins/
     
