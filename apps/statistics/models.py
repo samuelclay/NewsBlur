@@ -12,7 +12,7 @@ from utils import db_functions
 class MStatistics(mongo.Document):
     key   = mongo.StringField(unique=True)
     value = mongo.DynamicField()
-    expiration_date = mongo.DateTimeField(null=True)
+    expiration_date = mongo.DateTimeField()
     
     meta = {
         'collection': 'statistics',
