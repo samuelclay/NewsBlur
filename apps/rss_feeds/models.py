@@ -1566,8 +1566,9 @@ class Feed(models.Model):
         random_factor = random.randint(0, total) / 4
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
-        
+        original_min_to_decay = self.min_to_decay
         self.min_to_decay = total
+        
         delta = self.next_scheduled_update - datetime.datetime.now()
         minutes_to_next_fetch = (delta.seconds + (delta.days * 24 * 3600)) / 60
         if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
@@ -1576,9 +1577,11 @@ class Feed(models.Model):
                 r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
             r.zrem('tasked_feeds', self.pk)
             r.srem('queued_feeds', self.pk)
-            
-        self.save(update_fields=['last_update', 'next_scheduled_update', 'min_to_decay'])
         
+        updated_fields = ['last_update', 'next_scheduled_update']
+        if self.min_to_decay != original_min_to_decay:
+            updated_fields.append('min_to_decay')
+        self.save(update_fields=updated_fields)
     
     @property
     def error_count(self):
