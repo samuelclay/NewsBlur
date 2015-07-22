@@ -895,7 +895,7 @@ class Feed(models.Model):
             self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
             if self.feed_link:
                 self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            self.save()
+            self.save(update_fields=['feed_address', 'feed_link'])
             
         options = {
             'verbose': kwargs.get('verbose'),
@@ -1557,7 +1557,7 @@ class Feed(models.Model):
             r.zrem('tasked_feeds', self.pk)
             r.srem('queued_feeds', self.pk)
             
-        self.save()
+        self.save(update_fields=['last_update', 'next_scheduled_update', 'min_to_decay'])
         
     
     @property
