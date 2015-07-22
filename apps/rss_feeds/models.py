@@ -494,9 +494,10 @@ class Feed(models.Model):
 
         if not last_story_date or seconds_timesince(last_story_date) < 0:
             last_story_date = datetime.datetime.now()
-
-        self.last_story_date = last_story_date
-        self.save()
+        
+        if last_story_date != self.last_story_date:
+            self.last_story_date = last_story_date
+            self.save(update_fields=['last_story_date'])
         
     @classmethod
     def setup_feeds_for_premium_subscribers(cls, feed_ids):
@@ -645,6 +646,7 @@ class Feed(models.Model):
         feed_ids = list(set(feed_ids))
 
         subs = UserSubscription.objects.filter(feed__in=feed_ids)
+        original_num_subscribers = self.num_subscribers
         self.num_subscribers = subs.count()
         
         active_subs = UserSubscription.objects.filter(
@@ -652,6 +654,7 @@ class Feed(models.Model):
             active=True,
             user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
         )
+        original_active_subs = self.active_subscribers
         self.active_subscribers = active_subs.count()
         
         premium_subs = UserSubscription.objects.filter(
@@ -659,6 +662,7 @@ class Feed(models.Model):
             active=True,
             user__profile__is_premium=True
         )
+        original_premium_subscribers = self.premium_subscribers
         self.premium_subscribers = premium_subs.count()
         
         active_premium_subscribers = UserSubscription.objects.filter(
@@ -667,9 +671,15 @@ class Feed(models.Model):
             user__profile__is_premium=True,
             user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
         )
+        original_active_premium_subscribers = self.active_premium_subscribers
         self.active_premium_subscribers = active_premium_subscribers.count()
         
-        self.save()
+        if (self.num_subscribers != original_num_subscribers or
+            self.active_subscribers != original_active_subs or
+            self.premium_subscribers != original_premium_subscribers or
+            self.active_premium_subscribers != original_active_premium_subscribers):
+            self.save(update_fields=['num_subscribers', 'active_subscribers', 
+                                     'premium_subscribers', 'active_premium_subscribers'])
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -753,9 +763,9 @@ class Feed(models.Model):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
                                             story_date__gte=month_ago).count()
-        self.stories_last_month = stories_last_month
-        
-        self.save()
+        if self.stories_last_month != stories_last_month:
+            self.stories_last_month = stories_last_month
+            self.save(update_fields=['stories_last_month'])
             
         if verbose:
             print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
@@ -828,13 +838,18 @@ class Feed(models.Model):
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
                         month_count += 1
+        original_story_count_history = self.data.story_count_history
         self.data.story_count_history = json.encode(months)
-        self.data.save()
+        if self.data.story_count_history != original_story_count_history:
+            self.data.save(update_fields=['story_count_history'])
+        
+        original_average_stories_per_month = self.average_stories_per_month
         if not total or not month_count:
             self.average_stories_per_month = 0
         else:
             self.average_stories_per_month = int(round(total / float(month_count)))
-        self.save()
+        if self.average_stories_per_month != original_average_stories_per_month:
+            self.save(update_fields=['average_stories_per_month'])
         
         
     def save_classifier_counts(self):
@@ -892,11 +907,14 @@ class Feed(models.Model):
         original_feed_id = int(self.pk)
 
         if getattr(settings, 'TEST_DEBUG', False):
+            original_feed_address = self.feed_address
+            original_feed_link = self.feed_link
             self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
             if self.feed_link:
                 self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            self.save(update_fields=['feed_address', 'feed_link'])
-            
+            if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
+                self.save(update_fields=['feed_address', 'feed_link'])
+
         options = {
             'verbose': kwargs.get('verbose'),
             'timeout': 10,
@@ -1139,8 +1157,9 @@ class Feed(models.Model):
         #       popular tags the size of a small planet. I'm looking at you
         #       Tumblr writers.
         if len(popular_tags) < 1024:
-            self.data.popular_tags = popular_tags
-            self.data.save()
+            if self.data.popular_tags != popular_tags:
+                self.data.popular_tags = popular_tags
+                self.data.save(update_fields=['popular_tags'])
             return
 
         tags_list = []
@@ -1160,8 +1179,9 @@ class Feed(models.Model):
 
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1023:
-            self.data.popular_authors = popular_authors
-            self.data.save()
+            if self.data.popular_authors != popular_authors:
+                self.data.popular_authors = popular_authors
+                self.data.save(update_fields=['popular_authors'])
             return
 
         if len(feed_authors) > 1:

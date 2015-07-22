@@ -386,7 +386,7 @@ class ProcessFeed:
             self.feed.data.feed_tagline = utf8encode(tagline)
             if self.feed.data.feed_tagline != original_tagline:
                 self.feed.data.save(update_fields=['feed_tagline'])
-        
+
         if not self.feed.feed_link_locked:
             new_feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
             if new_feed_link != self.feed.feed_link:
@@ -442,7 +442,7 @@ class ProcessFeed:
             # story_date__gte=start_date,
             # story_feed_id=self.feed.pk
         ))
-        
+
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'],
                                                   updates_off=self.options['updates_off'])
@@ -479,7 +479,7 @@ class ProcessFeed:
                               self.feed.title[:30]))
                 self.feed.is_push = False
                 self.feed = self.feed.save()
-        
+
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
                       '~FG~SB' if ret_values['new'] else '', ret_values['new'],
@@ -492,7 +492,7 @@ class ProcessFeed:
             self.feed.trim_feed()
             self.feed.expire_redis()
         self.feed.save_feed_history(200, "OK")
-        
+
         if self.options['verbose']:
             logging.debug(u'   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss' % (
                           self.feed.title[:30], time.time() - start))
@@ -643,6 +643,7 @@ class Dispatcher:
                 
             if not feed: continue
             feed = self.refresh_feed(feed.pk)
+            
             if ((self.options['force']) or 
                 (random.random() > .9) or
                 (fetched_feed and
@@ -672,7 +673,7 @@ class Dispatcher:
                     if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
                         settings.RAVEN_CLIENT):
                         settings.RAVEN_CLIENT.captureException()
-
+                
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
                 force = self.options['force']
@@ -722,7 +723,7 @@ class Dispatcher:
                                   total=total_duration, feed_code=feed_code)
             
             self.feed_stats[ret_feed] += 1
-                
+            
         if len(feed_queue) == 1:
             return feed
         
