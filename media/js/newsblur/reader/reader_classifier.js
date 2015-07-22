@@ -872,7 +872,7 @@ var classifier_prototype = {
     serialize_classifier: function() {
         var data = {};
         $('.NB-classifier', this.$modal).each(function() {
-            var value = _.string.trim($('.NB-classifier-input-like', this).val());
+            var value = $('.NB-classifier-input-like', this).val();
             if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
                 var name = $('input:checked', this).attr('name');
                 if (!data[name]) data[name] = [];
