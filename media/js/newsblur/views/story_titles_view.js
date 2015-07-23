@@ -280,6 +280,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             _.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;
             var scroll = story_title_view.$el.find('.NB-story-title').position().top;
+            if (options.scroll_to_comments) {
+                scroll = story_title_view.$el.find('.NB-feed-story-comments').position().top;
+            }
             var container = NEWSBLUR.reader.$s.$story_titles.scrollTop();
             var height = NEWSBLUR.reader.$s.$story_titles.outerHeight();
             var position = scroll+container-height/5;

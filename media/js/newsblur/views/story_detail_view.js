@@ -755,10 +755,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     scroll_to_comments: function() {
-        NEWSBLUR.app.story_list.scroll_to_selected_story(this.model, {
-            scroll_to_comments: true,
-            scroll_offset: -50
-        });
+        if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, {
+                scroll_to_comments: true,
+                scroll_offset: -50
+            });
+        } else {
+            NEWSBLUR.app.story_list.scroll_to_selected_story(this.model, {
+                scroll_to_comments: true,
+                scroll_offset: -50
+            });
+        }
     }
     
 
