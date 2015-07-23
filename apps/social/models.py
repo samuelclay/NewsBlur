@@ -2952,6 +2952,7 @@ class MInteraction(mongo.Document):
         try:
             cls.objects.get(**params)
         except cls.DoesNotExist:
+            params.update(dict(title=story_title, content=comments))
             cls.objects.create(**params)
         
         cls.publish_update_to_subscribers(comment_user_id)
