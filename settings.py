@@ -406,6 +406,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(minutes=1),
         'options': {'queue': 'beat_feeds_task'},
     },
+    'task-broken-feeds': {
+        'task': 'task-broken-feeds',
+        'schedule': datetime.timedelta(hours=6),
+        'options': {'queue': 'beat_feeds_task'},
+    },
     'freshen-homepage': {
         'task': 'freshen-homepage',
         'schedule': datetime.timedelta(hours=1),

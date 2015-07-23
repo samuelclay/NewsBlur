@@ -8,6 +8,8 @@ from utils import log as logging
 from utils import s3_utils as s3
 from django.conf import settings
 
+FEED_TASKING_MAX = 10000
+
 class TaskFeeds(Task):
     name = 'task-feeds'
 
@@ -33,14 +35,34 @@ class TaskFeeds(Task):
                         r.zcard('scheduled_updates')))
         
         # Regular feeds
-        if tasked_feeds_size < 10000:
-            feeds = r.srandmember('queued_feeds', 10000)
+        if tasked_feeds_size < FEED_TASKING_MAX:
+            feeds = r.srandmember('queued_feeds', FEED_TASKING_MAX)
             Feed.task_feeds(feeds, verbose=True)
             active_count = len(feeds)
         else:
             logging.debug(" ---> ~SN~FBToo many tasked feeds. ~SB%s~SN tasked." % tasked_feeds_size)
             active_count = 0
-        cp1 = time.time()
+        
+        logging.debug(" ---> ~SN~FBTasking %s feeds took ~SB%s~SN seconds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
+                        active_count,
+                        int((time.time() - start)),
+                        r.zcard('tasked_feeds'),
+                        r.scard('queued_feeds'),
+                        r.zcard('scheduled_updates')))
+
+class TaskBrokenFeeds(Task):
+    name = 'task-broken-feeds'
+    max_retries = 0
+    ignore_result = True
+    
+    def run(self, **kwargs):
+        from apps.rss_feeds.models import Feed        
+        settings.LOG_TO_STREAM = True
+        now = datetime.datetime.utcnow()
+        start = time.time()
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        
+        logging.debug(" ---> ~SN~FBQueuing broken feeds...")
         
         # Force refresh feeds
         refresh_feeds = Feed.objects.filter(
@@ -49,8 +71,10 @@ class TaskFeeds(Task):
             active_subscribers__gte=1
         ).order_by('?')[:100]
         refresh_count = refresh_feeds.count()
-        cp2 = time.time()
+        cp1 = time.time()
         
+        logging.debug(" ---> ~SN~FBFound %s active, unfetched broken feeds" % refresh_count)
+
         # Mistakenly inactive feeds
         hours_ago = (now - datetime.timedelta(minutes=10)).strftime('%s')
         old_tasked_feeds = r.zrangebyscore('tasked_feeds', 0, hours_ago)
@@ -62,11 +86,11 @@ class TaskFeeds(Task):
                 r.zincrby('error_feeds', feed_id, 1)
                 feed = Feed.get_by_id(feed_id)
                 feed.set_next_scheduled_update()
-            logging.debug(" ---> ~SN~FBRe-queuing ~SB%s~SN dropped feeds (~SB%s/%s~SN queued/tasked)" % (
-                            inactive_count,
-                            r.scard('queued_feeds'),
-                            r.zcard('tasked_feeds')))
-        cp3 = time.time()
+        logging.debug(" ---> ~SN~FBRe-queuing ~SB%s~SN dropped/broken feeds (~SB%s/%s~SN queued/tasked)" % (
+                        inactive_count,
+                        r.scard('queued_feeds'),
+                        r.zcard('tasked_feeds')))
+        cp2 = time.time()
         
         old = now - datetime.timedelta(days=1)
         old_feeds = Feed.objects.filter(
@@ -74,28 +98,25 @@ class TaskFeeds(Task):
             active_subscribers__gte=1
         ).order_by('?')[:500]
         old_count = old_feeds.count()
-        cp4 = time.time()
+        cp3 = time.time()
         
-        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB (~FC%s~FB/~FC%s~SN~FB) feeds... (%.4s/%.4s/%.4s/%.4s)" % (
-            active_count,
+        logging.debug(" ---> ~SN~FBTasking ~SBrefresh:~FC%s~FB inactive:~FC%s~FB old:~FC%s~SN~FB broken feeds... (%.4s/%.4s/%.4s)" % (
             refresh_count,
             inactive_count,
             old_count,
             cp1 - start,
             cp2 - cp1,
             cp3 - cp2,
-            cp4 - cp3
         ))
         
         Feed.task_feeds(refresh_feeds, verbose=False)
         Feed.task_feeds(old_feeds, verbose=False)
-
-        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
+        
+        logging.debug(" ---> ~SN~FBTasking broken feeds took ~SB%s~SN seconds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
                         int((time.time() - start)),
                         r.zcard('tasked_feeds'),
                         r.scard('queued_feeds'),
                         r.zcard('scheduled_updates')))
-
         
 class UpdateFeeds(Task):
     name = 'update-feeds'

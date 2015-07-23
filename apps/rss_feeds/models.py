@@ -434,7 +434,7 @@ class Feed(models.Model):
                 logging.debug(" ---> ~SN~FBTasking feed: ~SB%s" % feeds)
             feeds = [feeds.pk]
         elif verbose:
-            logging.debug(" ---> ~SN~FBTasking ~SB%s~SN feeds..." % len(feeds))
+            logging.debug(" ---> ~SN~FBTasking ~SB~FC%s~FB~SN feeds..." % len(feeds))
         
         if isinstance(feeds, QuerySet):
             feeds = [f.pk for f in feeds]
