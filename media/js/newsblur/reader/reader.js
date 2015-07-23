@@ -2340,6 +2340,20 @@
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
+        send_story_to_blogger: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://www.blogger.com/blog-this.g';
+            var blogger_url = [
+              url,
+              '?n=',
+              encodeURIComponent(story.get('story_title')),
+              '&source=newsblur&b=',
+              encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(blogger_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
         send_story_to_delicious: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.delicious.com/save';
@@ -3391,6 +3405,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_blogger'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-blogger'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Blogger').parent().addClass('NB-menu-manage-highlight-blogger');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-blogger');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-delicious'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Delicious').parent().addClass('NB-menu-manage-highlight-delicious');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -3456,6 +3475,8 @@
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {
                           this.send_story_to_tumblr(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-blogger')) {
+                          this.send_story_to_blogger(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-delicious')) {
                           this.send_story_to_delicious(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
