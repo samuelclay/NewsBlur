@@ -50,7 +50,7 @@ class NBMuninGraph(MuninGraph):
             push_feeds = PushSubscription.objects.filter(verified=True).count()
             MStatistics.set('munin:push_feeds', push_feeds, 60*60*12)
 
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         
         return {
             'scheduled_feeds': r.zcard('scheduled_updates'),

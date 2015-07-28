@@ -18,7 +18,7 @@ class TaskFeeds(Task):
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
         start = time.time()
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         tasked_feeds_size = r.zcard('tasked_feeds')
         
         hour_ago = now - datetime.timedelta(hours=1)
@@ -60,7 +60,7 @@ class TaskBrokenFeeds(Task):
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
         start = time.time()
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         
         logging.debug(" ---> ~SN~FBQueuing broken feeds...")
         
@@ -126,7 +126,7 @@ class UpdateFeeds(Task):
     def run(self, feed_pks, **kwargs):
         from apps.rss_feeds.models import Feed
         from apps.statistics.models import MStatistics
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         mongodb_replication_lag = int(MStatistics.get('mongodb_replication_lag', 0))
         compute_scores = bool(mongodb_replication_lag < 10)

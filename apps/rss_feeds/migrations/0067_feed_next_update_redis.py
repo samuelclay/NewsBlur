@@ -7,7 +7,7 @@ from apps.rss_feeds.models import Feed
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         start = 0
         for f in xrange(start, Feed.objects.latest('pk').pk, 1000):
             print " ---> %s" % f

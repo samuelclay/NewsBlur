@@ -427,7 +427,7 @@ class Feed(models.Model):
     @classmethod
     def task_feeds(cls, feeds, queue_size=12, verbose=True):
         if not feeds: return
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         if isinstance(feeds, Feed):
             if verbose:
@@ -452,7 +452,7 @@ class Feed(models.Model):
     
     @classmethod
     def drain_task_feeds(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         tasked_feeds = r.zrange('tasked_feeds', 0, -1)
         logging.debug(" ---> ~FRDraining %s tasked feeds..." % len(tasked_feeds))
@@ -903,7 +903,7 @@ class Feed(models.Model):
         
     def update(self, **kwargs):
         from utils import feed_fetcher
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
 
         if getattr(settings, 'TEST_DEBUG', False):
@@ -1551,7 +1551,7 @@ class Feed(models.Model):
         return total
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         total = self.get_next_scheduled_update(force=True, verbose=verbose)
         error_count = self.error_count
         
@@ -1585,13 +1585,13 @@ class Feed(models.Model):
     
     @property
     def error_count(self):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         fetch_errors = int(r.zscore('error_feeds', self.pk) or 0)
         
         return fetch_errors + self.errors_since_good
         
     def schedule_feed_fetch_immediately(self, verbose=True):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         if verbose:
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
             
@@ -1611,7 +1611,7 @@ class Feed(models.Model):
         self.save()
     
     def queue_pushed_feed_xml(self, xml, latest_push_date_delta=None):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         queue_size = r.llen("push_feeds")
         
         if latest_push_date_delta:

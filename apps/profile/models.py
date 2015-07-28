@@ -1074,28 +1074,28 @@ class RNewUserQueue:
         
     @classmethod
     def add_user(cls, user_id):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         now = time.time()
         
         r.zadd(cls.KEY, user_id, now)
     
     @classmethod
     def user_count(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         count = r.zcard(cls.KEY)
 
         return count
     
     @classmethod
     def user_position(cls, user_id):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         position = r.zrank(cls.KEY, user_id)
         if position >= 0:
             return position + 1
     
     @classmethod
     def pop_user(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         user = r.zrange(cls.KEY, 0, 0)[0]
         r.zrem(cls.KEY, user)
 
