@@ -34,7 +34,7 @@ class LastSeenMiddleware(object):
             # if request.user.profile.last_seen_on < SUBSCRIBER_EXPIRE:
                 # request.user.profile.refresh_stale_feeds()
             request.user.profile.last_seen_on = datetime.datetime.utcnow()
-            request.user.profile.last_seen_ip = ip
+            request.user.profile.last_seen_ip = ip[-15:]
             request.user.profile.save()
         
         return response
