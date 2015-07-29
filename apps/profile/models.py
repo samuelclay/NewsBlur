@@ -404,7 +404,7 @@ class Profile(models.Model):
         if feed_id:
             feed_ids = [feed_id]
         elif user_id:
-            feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user_id).values('feed_id')]
+            feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user_id, active=True).values('feed_id')]
         else:
             assert False, "feed_id or user_id required"
 
@@ -420,10 +420,12 @@ class Profile(models.Model):
             premium_key = 'sp:%s' % feed_id
             
             if user_id:
-                user_ids = [user_id]
+                active = UserSubscription.objects.get(feed_id=feed_id, user_id=user_id).only('active').active
+                user_ids = dict([(user_id, active)])
             else:
-                user_ids = [us['user_id'] for us in UserSubscription.objects.filter(feed_id=feed_id).values('user_id')]
-            profiles = Profile.objects.filter(user_id__in=user_ids).values('user_id', 'last_seen_on', 'is_premium')
+                user_ids = dict([(us.user_id, us.active) 
+                                 for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
+            profiles = Profile.objects.filter(user_id__in=user_ids.keys()).values('user_id', 'last_seen_on', 'is_premium')
             feed = Feed.get_by_id(feed_id)
 
             for profiles_group in chunks(profiles, 20):
@@ -437,7 +439,7 @@ class Profile(models.Model):
                         premium += 1
                     else:
                         pipeline.zrem(premium_key, profile['user_id'])
-                    if profile['last_seen_on'] > SUBSCRIBER_EXPIRE:
+                    if profile['last_seen_on'] > SUBSCRIBER_EXPIRE and user_ids[profile['user_id']]:
                         active += 1
                         if profile['is_premium']:
                             active_premium += 1
@@ -459,7 +461,7 @@ class Profile(models.Model):
         if not isinstance(user, User):
             user = User.objects.get(pk=user)
         
-        feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk).values('feed_id')]
+        feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk, active=True).values('feed_id')]
         logging.user(user, "~SN~FBRefreshing user last_login_on for ~SB%s subscriptions~SN" % len(feed_ids))
 
         for feeds_group in chunks(feed_ids, 20):
