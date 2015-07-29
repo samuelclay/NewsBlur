@@ -465,7 +465,7 @@ class Feed(models.Model):
         r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
-        recount = not self.counts_converted_to_redis:
+        recount = not self.counts_converted_to_redis
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
         
