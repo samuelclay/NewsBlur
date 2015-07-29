@@ -68,11 +68,14 @@ BANNED_URLS = [
 def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'www', 'debug']:
         username = request.subdomain
-        try:
-            if '.' in username:
-                username = username.split('.')[0]
-            user = User.objects.get(username__iexact=username)
-        except User.DoesNotExist:
+        if '.' in username:
+            username = username.split('.')[0]
+        user = User.objects.filter(username=username)
+        if not user:
+            user = User.objects.filter(username__iexact=username)
+        if user:
+            user = user[0]
+        if not user:
             return HttpResponseRedirect('http://%s%s' % (
                 Site.objects.get_current().domain,
                 reverse('index')))
