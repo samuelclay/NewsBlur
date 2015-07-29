@@ -633,7 +633,10 @@ class Feed(models.Model):
         
         return redirects, non_redirects
     
-    def count_subscribers(self, verbose=False):
+    def count_subscribers(self, recount=False, verbose=False):
+        if recount:
+            from apps.profile.models import Profile
+            Profile.count_feed_subscribers(feed_id=self.pk)
         SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         subscriber_expire = int(SUBSCRIBER_EXPIRE_DATE.strftime('%s'))
         now = int(datetime.datetime.now().strftime('%s'))
@@ -659,21 +662,22 @@ class Feed(models.Model):
             # For each branched feed, count different subscribers
             for feed_id in feed_ids:
                 pipeline = r.pipeline()
-
+                
+                # now-1 to correct for special `-1` feed_is_entirely_counted key when recounting
                 total_key = "s:%s" % feed_id
                 premium_key = "sp:%s" % feed_id
                 pipeline.zcard(total_key)
-                pipeline.zcount(total_key, subscriber_expire, now)
+                pipeline.zcount(total_key, subscriber_expire, now-1)
                 pipeline.zcard(premium_key)
-                pipeline.zcount(premium_key, subscriber_expire, now)
+                pipeline.zcount(premium_key, subscriber_expire, now-1)
 
                 results = pipeline.execute()
             
                 # -1 due to key=-1 signaling counts_converted_to_redis
                 total += results[0] - 1
-                active += results[1] - 1
+                active += results[1]
                 premium += results[2] - 1
-                active_premium += results[3] - 1
+                active_premium += results[3]
 
             # If any counts have changed, save them
             original_num_subscribers = self.num_subscribers

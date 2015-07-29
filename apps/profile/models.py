@@ -427,11 +427,18 @@ class Profile(models.Model):
                                  for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
             profiles = Profile.objects.filter(user_id__in=user_ids.keys()).values('user_id', 'last_seen_on', 'is_premium')
             feed = Feed.get_by_id(feed_id)
-
+            
+            if entire_feed_counted:
+                r.delete(key)
+                r.delete(premium_key)
+            
             for profiles_group in chunks(profiles, 20):
                 pipeline = r.pipeline()
                 for profile in profiles_group:
                     last_seen_on = int(profile['last_seen_on'].strftime('%s'))
+                    muted_feed = not bool(user_ids[profile['user_id']])
+                    if muted_feed:
+                        last_seen_on = 0
                     pipeline.zadd(key, profile['user_id'], last_seen_on)
                     total += 1
                     if profile['is_premium']:
@@ -439,7 +446,7 @@ class Profile(models.Model):
                         premium += 1
                     else:
                         pipeline.zrem(premium_key, profile['user_id'])
-                    if profile['last_seen_on'] > SUBSCRIBER_EXPIRE and user_ids[profile['user_id']]:
+                    if profile['last_seen_on'] > SUBSCRIBER_EXPIRE and not muted_feed:
                         active += 1
                         if profile['is_premium']:
                             active_premium += 1
@@ -461,22 +468,26 @@ class Profile(models.Model):
         if not isinstance(user, User):
             user = User.objects.get(pk=user)
         
-        feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk, active=True).values('feed_id')]
-        logging.user(user, "~SN~FBRefreshing user last_login_on for ~SB%s subscriptions~SN" % len(feed_ids))
+        active_feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk, active=True).values('feed_id')]
+        muted_feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk, active=False).values('feed_id')]
+        logging.user(user, "~SN~FBRefreshing user last_login_on for ~SB%s~SN/~SB%s subscriptions~SN" % 
+                     (len(active_feed_ids), len(muted_feed_ids)))
+        for feed_ids in [active_feed_ids, muted_feed_ids]:
+            for feeds_group in chunks(feed_ids, 20):
+                pipeline = r.pipeline()
+                for feed_id in feeds_group:
+                    key = 's:%s' % feed_id
+                    premium_key = 'sp:%s' % feed_id
 
-        for feeds_group in chunks(feed_ids, 20):
-            pipeline = r.pipeline()
-            for feed_id in feeds_group:
-                key = 's:%s' % feed_id
-                premium_key = 'sp:%s' % feed_id
-
-                last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
-                pipeline.zadd(key, user.pk, last_seen_on)
-                if user.profile.is_premium:
-                    pipeline.zadd(premium_key, user.pk, last_seen_on)
-                else:
-                    pipeline.zrem(premium_key, user.pk)
-            pipeline.execute()
+                    last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
+                    if feed_ids is muted_feed_ids:
+                        last_seen_on = 0
+                    pipeline.zadd(key, user.pk, last_seen_on)
+                    if user.profile.is_premium:
+                        pipeline.zadd(premium_key, user.pk, last_seen_on)
+                    else:
+                        pipeline.zrem(premium_key, user.pk)
+                pipeline.execute()
     
     def import_reader_starred_items(self, count=20):
         importer = GoogleReaderImporter(self.user)
