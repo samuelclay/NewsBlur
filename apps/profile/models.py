@@ -453,7 +453,7 @@ class Profile(models.Model):
                           (feed.title[:30], total, active, premium, active_premium))
 
     @classmethod
-    def count_user_subscribers(self, user):
+    def count_all_feed_subscribers_for_user(self, user):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
         if not isinstance(user, User):
@@ -467,7 +467,6 @@ class Profile(models.Model):
             for feed_id in feeds_group:
                 key = 's:%s' % feed_id
                 premium_key = 'sp:%s' % feed_id
-                feed = Feed.get_by_id(feed_id)
 
                 last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
                 pipeline.zadd(key, user.pk, last_seen_on)
