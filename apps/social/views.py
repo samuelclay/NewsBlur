@@ -482,9 +482,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'social_services': social_services,
     }
 
-    logging.user(request, "~FYLoading ~FMsocial page~FY: ~SB%s%s ~FB%s" % (
+    logging.user(request, "~FYLoading ~FMsocial page~FY: ~SB%s%s ~FM%s/%s" % (
         social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '',
-        request.META.get('HTTP_USER_AGENT', "")[:40]))
+        request.META.get('HTTP_USER_AGENT', "")[:40],
+        request.META.get('HTTP_X_FORWARDED_FOR', "")))
     if format == 'html':
         template = 'social/social_stories.xhtml'
     else:
