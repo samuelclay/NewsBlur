@@ -435,6 +435,8 @@ class Profile(models.Model):
                     if profile['is_premium']:
                         pipeline.zadd(premium_key, profile['user_id'], last_seen_on)
                         premium += 1
+                    else:
+                        pipeline.zrem(premium_key, profile['user_id'])
                     if profile['last_seen_on'] > SUBSCRIBER_EXPIRE:
                         active += 1
                         if profile['is_premium']:
@@ -449,6 +451,31 @@ class Profile(models.Model):
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
                           (feed.title[:30], total, active, premium, active_premium))
+
+    @classmethod
+    def count_user_subscribers(self, user):
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        if not isinstance(user, User):
+            user = User.objects.get(pk=user)
+        
+        feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk).values('feed_id')]
+        logging.user(user, "~SN~FBRefreshing user last_login_on for ~SB%s subscriptions~SN" % len(feed_ids))
+
+        for feeds_group in chunks(feed_ids, 20):
+            pipeline = r.pipeline()
+            for feed_id in feeds_group:
+                key = 's:%s' % feed_id
+                premium_key = 'sp:%s' % feed_id
+                feed = Feed.get_by_id(feed_id)
+
+                last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
+                pipeline.zadd(key, user.pk, last_seen_on)
+                if user.profile.is_premium:
+                    pipeline.zadd(premium_key, user.pk, last_seen_on)
+                else:
+                    pipeline.zrem(premium_key, user.pk)
+            pipeline.execute()
     
     def import_reader_starred_items(self, count=20):
         importer = GoogleReaderImporter(self.user)
