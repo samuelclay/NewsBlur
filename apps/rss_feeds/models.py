@@ -465,7 +465,7 @@ class Feed(models.Model):
         r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
-        self.count_subscribers()
+        self.count_subscribers(recount=bool(force or full))
         self.calculate_last_story_date()
         
         count_extra = False
@@ -633,7 +633,7 @@ class Feed(models.Model):
         
         return redirects, non_redirects
     
-    def count_subscribers(self, recount=False, verbose=False):
+    def count_subscribers(self, recount=True, verbose=False):
         if recount:
             from apps.profile.models import Profile
             Profile.count_feed_subscribers(feed_id=self.pk)
