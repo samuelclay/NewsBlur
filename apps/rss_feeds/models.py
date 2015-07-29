@@ -657,15 +657,15 @@ class Feed(models.Model):
         
         if counts_converted_to_redis:
             # For each branched feed, count different subscribers
-            pipeline = r.pipeline()
             for feed_id in feed_ids:
+                pipeline = r.pipeline()
+
                 total_key = "s:%s" % feed_id
                 premium_key = "sp:%s" % feed_id
-                print feed_id, total_key
                 pipeline.zcard(total_key)
-                pipeline.zcount(total_key, subscriber_expire, now-1)
+                pipeline.zcount(total_key, subscriber_expire, now)
                 pipeline.zcard(premium_key)
-                pipeline.zcount(premium_key, subscriber_expire, now-1)
+                pipeline.zcount(premium_key, subscriber_expire, now)
 
                 results = pipeline.execute()
             
