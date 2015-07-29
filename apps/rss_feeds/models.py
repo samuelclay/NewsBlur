@@ -634,9 +634,17 @@ class Feed(models.Model):
         return redirects, non_redirects
     
     def count_subscribers(self, verbose=False):
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
-        from apps.reader.models import UserSubscription
+        SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        subscriber_expire = int(SUBSCRIBER_EXPIRE_DATE.strftime('%s'))
+        now = int(datetime.datetime.now().strftime('%s'))
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        total = 0
+        active = 0
+        premium = 0
+        active_premium = 0
+        counts_converted_to_redis = False
         
+        # Include all branched feeds in counts
         if self.branch_from_feed:
             original_feed_id = self.branch_from_feed.pk
         else:
@@ -645,35 +653,73 @@ class Feed(models.Model):
         feed_ids.append(original_feed_id)
         feed_ids = list(set(feed_ids))
 
-        subs = UserSubscription.objects.filter(feed__in=feed_ids)
-        original_num_subscribers = self.num_subscribers
-        self.num_subscribers = subs.count()
+        counts_converted_to_redis = bool(r.zrank("s:%s" % original_feed_id, -1))
         
-        active_subs = UserSubscription.objects.filter(
-            feed__in=feed_ids, 
-            active=True,
-            user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
-        )
-        original_active_subs = self.active_subscribers
-        self.active_subscribers = active_subs.count()
+        if counts_converted_to_redis:
+            # For each branched feed, count different subscribers
+            pipeline = r.pipeline()
+            for feed_id in feed_ids:
+                total_key = "s:%s" % feed_id
+                premium_key = "sp:%s" % feed_id
+                print feed_id, total_key
+                pipeline.zcard(total_key)
+                pipeline.zcount(total_key, subscriber_expire, now-1)
+                pipeline.zcard(premium_key)
+                pipeline.zcount(premium_key, subscriber_expire, now-1)
+
+                results = pipeline.execute()
+            
+                # -1 due to key=-1 signaling counts_converted_to_redis
+                total += results[0] - 1
+                active += results[1] - 1
+                premium += results[2] - 1
+                active_premium += results[3] - 1
+
+            # If any counts have changed, save them
+            original_num_subscribers = self.num_subscribers
+            original_active_subs = self.active_subscribers
+            original_premium_subscribers = self.premium_subscribers
+            original_active_premium_subscribers = self.active_premium_subscribers
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
+                          (self.title[:30], total, active, premium, active_premium))
+        else:
+            from apps.reader.models import UserSubscription
+            
+            subs = UserSubscription.objects.filter(feed__in=feed_ids)
+            original_num_subscribers = self.num_subscribers
+            total = subs.count()
         
-        premium_subs = UserSubscription.objects.filter(
-            feed__in=feed_ids, 
-            active=True,
-            user__profile__is_premium=True
-        )
-        original_premium_subscribers = self.premium_subscribers
-        self.premium_subscribers = premium_subs.count()
+            active_subs = UserSubscription.objects.filter(
+                feed__in=feed_ids, 
+                active=True,
+                user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE_DATE
+            )
+            original_active_subs = self.active_subscribers
+            active = active_subs.count()
         
-        active_premium_subscribers = UserSubscription.objects.filter(
-            feed__in=feed_ids, 
-            active=True,
-            user__profile__is_premium=True,
-            user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
-        )
-        original_active_premium_subscribers = self.active_premium_subscribers
-        self.active_premium_subscribers = active_premium_subscribers.count()
+            premium_subs = UserSubscription.objects.filter(
+                feed__in=feed_ids, 
+                active=True,
+                user__profile__is_premium=True
+            )
+            original_premium_subscribers = self.premium_subscribers
+            premium = premium_subs.count()
         
+            active_premium_subscribers = UserSubscription.objects.filter(
+                feed__in=feed_ids, 
+                active=True,
+                user__profile__is_premium=True,
+                user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE_DATE
+            )
+            original_active_premium_subscribers = self.active_premium_subscribers
+            active_premium = active_premium_subscribers.count()
+            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
+                          (self.title[:30], total, active, premium, active_premium))
+        
+        self.num_subscribers = total
+        self.active_subscribers = active
+        self.premium_subscribers = premium
+        self.active_premium_subscribers = active_premium
         if (self.num_subscribers != original_num_subscribers or
             self.active_subscribers != original_active_subs or
             self.premium_subscribers != original_premium_subscribers or
@@ -691,7 +737,7 @@ class Feed(models.Model):
                     '' if self.num_subscribers == 1 else 's',
                     self.feed_title,
                 ),
-
+    
     def _split_favicon_color(self):
         color = self.favicon_color
         if color:

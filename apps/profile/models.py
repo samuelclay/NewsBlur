@@ -18,14 +18,14 @@ from django.core.mail import mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory, MStarredStory
-from apps.rss_feeds.tasks import NewFeeds
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.feed_import.models import GoogleReaderImporter, OPMLExporter
+from apps.reader.models import UserSubscription
 from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
+from utils.feed_functions import chunks
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
 from vendor.paypal.standard.ipn.signals import payment_was_flagged
@@ -156,16 +156,9 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
     
-    def check_if_spammer(self):
-        feed_opens = UserSubscription.objects.filter(user=self.user)\
-                     .aggregate(sum=Sum('feed_opens'))['sum']
-        feed_count = UserSubscription.objects.filter(user=self.user).count()
-        
-        if not feed_opens and not feed_count:
-            return True
-        
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
+
         EmailNewPremium.delay(user_id=self.user.pk)
         
         self.is_premium = True
@@ -190,7 +183,7 @@ class Profile(models.Model):
                      len(scheduled_feeds))
         SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
         
-        self.queue_new_feeds()
+        UserSubscription.queue_new_feeds(self.user)
         self.setup_premium_history()
         
         if never_expire:
@@ -400,34 +393,62 @@ class Profile(models.Model):
         
         return True
     
-    def queue_new_feeds(self, new_feeds=None):
-        if not new_feeds:
-            new_feeds = UserSubscription.objects.filter(user=self.user, 
-                                                        feed__fetched_once=False, 
-                                                        active=True).values('feed_id')
-            new_feeds = list(set([f['feed_id'] for f in new_feeds]))
-        logging.user(self.user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
-        size = 4
-        for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
-            NewFeeds.apply_async(args=(t,), queue="new_feeds")
-
-    def refresh_stale_feeds(self, exclude_new=False):
-        stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
-        stale_feeds  = UserSubscription.objects.filter(user=self.user, active=True, feed__last_update__lte=stale_cutoff)
-        if exclude_new:
-            stale_feeds = stale_feeds.filter(feed__fetched_once=True)
-        all_feeds    = UserSubscription.objects.filter(user=self.user, active=True)
+    @classmethod
+    def count_feed_subscribers(self, feed_id=None, user_id=None):
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        entire_feed_counted = False
         
-        logging.user(self.user, "~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
-            stale_feeds.count(), all_feeds.count()))
-
-        for sub in stale_feeds:
-            sub.feed.fetched_once = False
-            sub.feed.save()
+        logging.debug(" ---> ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed_id, user_id))
         
-        if stale_feeds:
-            stale_feeds = list(set([f.feed_id for f in stale_feeds]))
-            self.queue_new_feeds(new_feeds=stale_feeds)
+        if feed_id:
+            feed_ids = [feed_id]
+        elif user_id:
+            feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user_id).values('feed_id')]
+        else:
+            assert False, "feed_id or user_id required"
+
+        if feed_id and not user_id:
+            entire_feed_counted = True
+            
+        for feed_id in feed_ids:
+            total = 0
+            premium = 0
+            active = 0
+            active_premium = 0
+            key = 's:%s' % feed_id
+            premium_key = 'sp:%s' % feed_id
+            
+            if user_id:
+                user_ids = [user_id]
+            else:
+                user_ids = [us['user_id'] for us in UserSubscription.objects.filter(feed_id=feed_id).values('user_id')]
+            profiles = Profile.objects.filter(user_id__in=user_ids).values('user_id', 'last_seen_on', 'is_premium')
+            feed = Feed.get_by_id(feed_id)
+
+            for profiles_group in chunks(profiles, 20):
+                pipeline = r.pipeline()
+                for profile in profiles_group:
+                    last_seen_on = int(profile['last_seen_on'].strftime('%s'))
+                    pipeline.zadd(key, profile['user_id'], last_seen_on)
+                    total += 1
+                    if profile['is_premium']:
+                        pipeline.zadd(premium_key, profile['user_id'], last_seen_on)
+                        premium += 1
+                    if profile['last_seen_on'] > SUBSCRIBER_EXPIRE:
+                        active += 1
+                        if profile['is_premium']:
+                            active_premium += 1
+                
+                pipeline.execute()
+            
+            if entire_feed_counted:
+                now = int(datetime.datetime.now().strftime('%s'))
+                r.zadd(key, -1, now)
+                r.zadd(premium_key, -1, now)
+            
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
+                          (feed.title[:30], total, active, premium, active_premium))
     
     def import_reader_starred_items(self, count=20):
         importer = GoogleReaderImporter(self.user)

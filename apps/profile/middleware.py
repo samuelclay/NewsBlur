@@ -31,8 +31,6 @@ class LastSeenMiddleware(object):
                 logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
 
-            # if request.user.profile.last_seen_on < SUBSCRIBER_EXPIRE:
-                # request.user.profile.refresh_stale_feeds()
             request.user.profile.last_seen_on = datetime.datetime.utcnow()
             request.user.profile.last_seen_ip = ip[-15:]
             request.user.profile.save()

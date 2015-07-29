@@ -1948,8 +1948,8 @@ def save_feed_chooser(request):
         except Feed.DoesNotExist:
             pass
     
-    request.user.profile.queue_new_feeds()
-    request.user.profile.refresh_stale_feeds(exclude_new=True)
+    UserSubscription.queue_new_feeds(request.user)
+    UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
