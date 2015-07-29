@@ -465,8 +465,7 @@ class Feed(models.Model):
         r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
-        if random.random() < 0.001:
-            # TODO: Once redis cache is primed, this should check if feed isn't cached yet with no random factor.
+        if not self.counts_converted_to_redis:
             force = True
         self.count_subscribers(recount=force)
         self.calculate_last_story_date()
@@ -636,6 +635,18 @@ class Feed(models.Model):
         
         return redirects, non_redirects
     
+    @property
+    def original_feed_id(self):
+        if self.branch_from_feed:
+            return self.branch_from_feed.pk
+        else:
+            return self.pk
+    
+    @property
+    def counts_converted_to_redis(self):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        return bool(r.zrank("s:%s" % self.original_feed_id, -1))
+        
     def count_subscribers(self, recount=True, verbose=False):
         if recount:
             from apps.profile.models import Profile
@@ -648,20 +659,13 @@ class Feed(models.Model):
         active = 0
         premium = 0
         active_premium = 0
-        counts_converted_to_redis = False
         
         # Include all branched feeds in counts
-        if self.branch_from_feed:
-            original_feed_id = self.branch_from_feed.pk
-        else:
-            original_feed_id = self.pk
-        feed_ids = [f['id'] for f in Feed.objects.filter(branch_from_feed=original_feed_id).values('id')]
-        feed_ids.append(original_feed_id)
+        feed_ids = [f['id'] for f in Feed.objects.filter(branch_from_feed=self.original_feed_id).values('id')]
+        feed_ids.append(self.original_feed_id)
         feed_ids = list(set(feed_ids))
 
-        counts_converted_to_redis = bool(r.zrank("s:%s" % original_feed_id, -1))
-        
-        if counts_converted_to_redis:
+        if self.counts_converted_to_redis:
             # For each branched feed, count different subscribers
             for feed_id in feed_ids:
                 pipeline = r.pipeline()
