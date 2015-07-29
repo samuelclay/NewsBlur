@@ -29,6 +29,7 @@ import butterknife.OnGroupExpand;
 import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
+import com.newsblur.activity.Main;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
@@ -56,6 +57,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	public StateFilter currentState = StateFilter.SOME;
 	private SharedPreferences sharedPreferences;
     @FindView(R.id.folderfeed_list) ExpandableListView list;
+    private Main activity;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		adapter = new FolderListAdapter(getActivity(), currentState);
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
+        activity = (Main) getActivity();
 	}
 
     @Override
@@ -109,6 +112,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     throw new IllegalArgumentException("unknown loader created");
             }
             checkOpenFolderPreferences();
+            updateUnreadCounts();
         } catch (Exception e) {
             // for complex folder sets, these ops can take so long that they butt heads
             // with the destruction of the fragment and adapter. crashes can ensue.
@@ -261,7 +265,17 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         PrefsUtils.setStateFilter(getActivity(), state);
         adapter.changeState(state);
 		hasUpdated();
+        updateUnreadCounts();
 	}
+
+    /**
+     * Every time unread counts are updated in the adapter, ping the Main activity with
+     * the new data.  It is, unfortunately, quite expensive to compute given the current
+     * DB model, so having Main also load it would cause some lag.
+     */
+    private void updateUnreadCounts() {
+        activity.updateUnreadCounts(adapter.totalNeutCount, adapter.totalPosCount);
+    }
 
 	@OnGroupClick(R.id.folderfeed_list) boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         if (adapter.isFolderRoot(groupPosition)) {

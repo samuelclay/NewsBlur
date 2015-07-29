@@ -1,50 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipe_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
+    <!-- The all/unread/focus toggle. Despite being at the bottom, this needs
+         to be defined first so that other things can be placed above it. -->
+    <fragment
+        android:id="@+id/fragment_feedintelligenceselector"
+        android:name="com.newsblur.fragment.FeedIntelligenceSelectorFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:tag="feedIntelligenceSelector" />
 
+    <!-- A pane that sits behind the feed list, acting as a background, except
+         when the list is empty, and it shows through as an explainer. -->
     <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:id="@+id/folderfeedlist_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/fragment_feedintelligenceselector"
+        android:layout_alignParentTop="true"
+        style="?listBackground">
 
-        <fragment
-            android:id="@+id/fragment_feedintelligenceselector"
-            android:name="com.newsblur.fragment.FeedIntelligenceSelectorFragment"
-            android:layout_width="fill_parent"
+        <TextView
+            android:id="@+id/empty_view_text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:tag="feedIntelligenceSelector" />
+            android:layout_marginBottom="40dp"
+            android:gravity="center_horizontal"
+            style="?defaultText"
+            android:visibility="invisible"
+            android:textSize="16dp" />
+
+        <ImageView
+            android:id="@+id/empty_view_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/description_empty_list_image"
+            android:src="@drawable/world_big"
+            android:layout_above="@id/empty_view_text"
+            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitCenter"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+    <!-- The scrollable and pull-able feed list.  -->
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_feedintelligenceselector"
+        android:layout_alignParentTop="true" >
 
         <fragment
             android:id="@+id/fragment_folderfeedlist"
             android:name="com.newsblur.fragment.FolderListFragment"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_above="@id/fragment_feedintelligenceselector"
-            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:tag="folderFeedListFragment" />
 
-        <View
-            android:id="@+id/feedintelligenceselector_border"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/midgray"
-            android:layout_below="@id/fragment_folderfeedlist" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-        <TextView
-            android:id="@+id/main_sync_status"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/fragment_feedintelligenceselector"
-            android:padding="2dp"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:textColor="@color/status_overlay_text"
-            android:background="@color/status_overlay_background"
-            android:text="SYNC STATUS" />
+    <View
+        android:id="@+id/feedintelligenceselector_border"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/midgray"
+        android:layout_below="@id/swipe_container" />
 
-    </RelativeLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+    <TextView
+        android:id="@+id/main_sync_status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_feedintelligenceselector"
+        android:padding="2dp"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:textColor="@color/status_overlay_text"
+        android:background="@color/status_overlay_background"
+        android:text="SYNC STATUS" />
+
+</RelativeLayout>

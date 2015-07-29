@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -42,6 +43,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private SwipeRefreshLayout swipeLayout;
     private boolean wasSwipeEnabled = false;
     @FindView(R.id.main_sync_status) TextView overlayStatusText;
+    @FindView(R.id.empty_view_image) ImageView emptyViewImage;
+    @FindView(R.id.empty_view_text) TextView emptyViewText;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -168,6 +171,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     public void handleUpdateReady() {
         folderFeedList.startLoaders();
+    }
+
+    public void updateUnreadCounts(int neutCount, int posiCount) {
+        if ((neutCount+posiCount) <= 0) {
+            emptyViewImage.setVisibility(View.VISIBLE);
+        } else {
+            emptyViewImage.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void updateStatusIndicators() {

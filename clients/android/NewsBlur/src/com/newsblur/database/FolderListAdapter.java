@@ -59,9 +59,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     /** Positive counts for active feeds, indexed by feed ID. */
     private Map<String,Integer> feedPosCounts;
     /** Total neutral unreads for all feeds. */
-    private int totalNeutCount = 0;
+    public int totalNeutCount = 0;
     /** Total positive unreads for all feeds. */
-    private int totalPosCount = 0;
+    public int totalPosCount = 0;
 
     /** Folders, indexed by canonical name. */
     private Map<String,Folder> folders = Collections.emptyMap();
