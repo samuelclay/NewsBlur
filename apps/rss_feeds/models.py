@@ -685,7 +685,6 @@ class Feed(models.Model):
                 premium += results[2] - 1
                 active_premium += results[3]
 
-            # If any counts have changed, save them
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
             original_premium_subscribers = self.premium_subscribers
@@ -725,7 +724,8 @@ class Feed(models.Model):
             active_premium = active_premium_subscribers.count()
             logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
                           (self.title[:30], total, active, premium, active_premium))
-        
+
+        # If any counts have changed, save them
         self.num_subscribers = total
         self.active_subscribers = active
         self.premium_subscribers = premium
@@ -1544,28 +1544,38 @@ class Feed(models.Model):
         
         if premium_speed:
             self.active_premium_subscribers += 1
-            self.active_subscribers -= 1
         
-        upd  = self.stories_last_month / 30.0
+        spd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 
                 ((self.active_subscribers - self.active_premium_subscribers) / 10.0))
-        # UPD = 1  Subs > 1:  t = 5         # 11625  * 1440/5 =       3348000
-        # UPD = 1  Subs = 1:  t = 60        # 17231  * 1440/60 =      413544
-        # UPD < 1  Subs > 1:  t = 60        # 37904  * 1440/60 =      909696
-        # UPD < 1  Subs = 1:  t = 60 * 12   # 143012 * 1440/(60*12) = 286024
-        # UPD = 0  Subs > 1:  t = 60 * 3    # 28351  * 1440/(60*3) =  226808
-        # UPD = 0  Subs = 1:  t = 60 * 24   # 807690 * 1440/(60*24) = 807690
-        if upd >= 1:
-            if subs > 1:
-                total = 10
+        # Calculate sub counts: 
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 10 AND stories_last_month >= 30;
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND active_premium_subscribers < 10 AND stories_last_month >= 30;
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers = 1 AND stories_last_month >= 30;
+        # SpD > 1  Subs > 10: t = 6         # 4267   * 1440/6  =      1024080
+        # SpD > 1  Subs > 1:  t = 15        # 18973  * 1440/15 =      1821408
+        # SpD > 1  Subs = 1:  t = 60        # 65503  * 1440/60 =      1572072
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND stories_last_month < 30 AND stories_last_month > 0;
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers = 1 AND stories_last_month < 30 AND stories_last_month > 0;
+        # SpD < 1  Subs > 1:  t = 60        # 77618  * 1440/60 =      1862832
+        # SpD < 1  Subs = 1:  t = 60 * 12   # 282186 * 1440/(60*12) = 564372
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND stories_last_month = 0;
+        #   SELECT COUNT(*) FROM feeds WHERE active_subscribers > 0 AND active_premium_subscribers <= 1 AND stories_last_month = 0;
+        # SpD = 0  Subs > 1:  t = 60 * 3    # 30158  * 1440/(60*3) =  241264
+        # SpD = 0  Subs = 1:  t = 60 * 24   # 514131 * 1440/(60*24) = 514131
+        if spd >= 1:
+            if subs > 10:
+                total = 6
+            elif subs > 1:
+                total = 15
             else:
                 total = 60
-        elif upd > 0:
+        elif spd > 0:
             if subs > 1:
-                total = 60 - (upd * 60)
+                total = 60 - (spd * 60)
             else:
-                total = 60*12 - (upd * 60*12)
-        elif upd == 0:
+                total = 60*12 - (spd * 60*12)
+        elif spd == 0:
             if subs > 1:
                 total = 60 * 6
             else:
@@ -1594,16 +1604,16 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 3 day max
+        # 2 day max
         total = min(total, 60*24*2)
         
         if verbose:
-            logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories: %s" % (
+            logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
                                                 unicode(self)[:30], total, 
                                                 self.num_subscribers,
                                                 self.active_subscribers,
                                                 self.active_premium_subscribers,
-                                                upd))
+                                                spd))
         return total
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
