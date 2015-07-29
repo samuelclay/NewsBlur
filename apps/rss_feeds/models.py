@@ -465,11 +465,14 @@ class Feed(models.Model):
         r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
-        self.count_subscribers(recount=bool(force or full))
+        if random.random() < 0.001:
+            # TODO: Once redis cache is primed, this should check if feed isn't cached yet with no random factor.
+            force = True
+        self.count_subscribers(recount=force)
         self.calculate_last_story_date()
         
         count_extra = False
-        if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() < 0.01 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
         
         if force or full:

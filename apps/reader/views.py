@@ -1869,7 +1869,6 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    Profile.count_all_feed_subscribers_for_user(user)
     page = max(int(request.REQUEST.get('page', 0)), 0)
     logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
