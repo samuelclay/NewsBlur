@@ -394,12 +394,13 @@ class Profile(models.Model):
         return True
     
     @classmethod
-    def count_feed_subscribers(self, feed_id=None, user_id=None):
+    def count_feed_subscribers(self, feed_id=None, user_id=None, verbose=False):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
         entire_feed_counted = False
         
-        logging.debug(" ---> ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed_id, user_id))
+        if verbose:
+            logging.debug(" ---> ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed_id, user_id))
         
         if feed_id:
             feed_ids = [feed_id]

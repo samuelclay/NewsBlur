@@ -445,6 +445,7 @@ def setup_python():
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
+@parallel
 def pip():
     pull()
     with cd(env.NEWSBLUR_PATH):
