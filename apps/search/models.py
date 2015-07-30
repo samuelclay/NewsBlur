@@ -169,6 +169,8 @@ class MUserSearch(mongo.Document):
                 feed = sub.feed
             except Feed.DoesNotExist:
                 continue
+            if not feed.search_indexed:
+                continue
             feed.search_indexed = False
             feed.save()
             removed += 1
