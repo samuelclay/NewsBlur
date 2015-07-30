@@ -644,7 +644,7 @@ class Feed(models.Model):
     @property
     def counts_converted_to_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
-        return bool(r.zrank("s:%s" % self.original_feed_id, -1))
+        return r.zscore("s:%s" % self.original_feed_id, -1)
         
     def count_subscribers(self, recount=True, verbose=False):
         if recount:
@@ -669,22 +669,28 @@ class Feed(models.Model):
             for feed_id in feed_ids:
                 pipeline = r.pipeline()
                 
-                # now-1 to correct for special `-1` feed_is_entirely_counted key when recounting
+                # now+1 ensures `-1` flag will be corrected for later with - 1
                 total_key = "s:%s" % feed_id
                 premium_key = "sp:%s" % feed_id
                 pipeline.zcard(total_key)
-                pipeline.zcount(total_key, subscriber_expire, now-1)
+                pipeline.zcount(total_key, subscriber_expire, now+1)
                 pipeline.zcard(premium_key)
-                pipeline.zcount(premium_key, subscriber_expire, now-1)
+                pipeline.zcount(premium_key, subscriber_expire, now+1)
 
                 results = pipeline.execute()
             
                 # -1 due to key=-1 signaling counts_converted_to_redis
                 total += results[0] - 1
-                active += results[1]
+                active += results[1] - 1
                 premium += results[2] - 1
-                active_premium += results[3]
-
+                active_premium += results[3] - 1
+                
+                # Check for expired feeds with no active users who would ahve triggered a cleanup
+                if r.zscore(total_key, -1) < subscriber_expire:
+                    logging.info("    ***> ~SN~BW~FBFeed has expired redis subscriber counts, clearing...")
+                    r.delete(total_key, -1)
+                    r.delete(premium_key, -1)
+            
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
             original_premium_subscribers = self.premium_subscribers
