@@ -6,6 +6,8 @@
 
 {% block content %}
 
+<div class="NB-module">
+
 <table class="NB-status">
 
   <tr>
@@ -18,11 +20,12 @@
     <th>Premium</th>
     <th>Act. Prem</th>
     <th>Per Month</th>
+    <th>Last Month</th>
   </tr>
   {% for feed in feeds %}
     <tr>
       <td>{{ feed.pk }}</td>
-      <td><img class="NB-favicon" src="data:image/png;base64,{{ feed.icon.data }}" /> {{ feed.feed_title|truncatewords:4 }}</td>
+      <td><img class="NB-favicon" src="/rss_feeds/icon/{{ feed.pk }}" /> {{ feed.feed_title|truncatewords:4 }}</td>
       <td class="NB-status-update">
         {{ feed.last_update|date:"M j H:i:s" }}
         <br>
@@ -30,13 +33,16 @@
       </td>
       <td>{{ feed.min_to_decay }}</td>
       <td>{{ feed.num_subscribers }}</td>
-      <td {% if feed.active_subscribers == 0 %}style="color: lightgrey"{% endif %}>{{ feed.active_subscribers }}</td>
-      <td {% if feed.premium_subscribers == 0 %}style="color: lightgrey"{% endif %}>{{ feed.premium_subscribers }}</td>
-      <td {% if feed.active_premium_subscribers == 0 %}style="color: lightgrey"{% endif %}>{{ feed.active_premium_subscribers }}</td>
-      <td {% if feed.average_stories_per_month == 0 %}style="color: lightgrey"{% endif %}>{{ feed.average_stories_per_month }}</td>
+      <td style="color: {% if feed.active_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.active_subscribers }}</td>
+      <td style="color: {% if feed.premium_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.premium_subscribers }}</td>
+      <td style="color: {% if feed.active_premium_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.active_premium_subscribers }}</td>
+      <td style="color: {% if feed.average_stories_per_month == 0 %}lightgrey{% else %}{% endif %}">{{ feed.average_stories_per_month }}</td>
+      <td style="color: {% if feed.stories_last_month == 0 %}lightgrey{% else %}{% endif %}">{{ feed.stories_last_month }}</td>
     </tr>
   {% endfor %}
   
 </table>
+
+</div>
 
 {% endblock content %}

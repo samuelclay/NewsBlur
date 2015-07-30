@@ -427,14 +427,14 @@ class Feed(models.Model):
     @classmethod
     def task_feeds(cls, feeds, queue_size=12, verbose=True):
         if not feeds: return
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         if isinstance(feeds, Feed):
             if verbose:
                 logging.debug(" ---> ~SN~FBTasking feed: ~SB%s" % feeds)
             feeds = [feeds.pk]
         elif verbose:
-            logging.debug(" ---> ~SN~FBTasking ~SB%s~SN feeds..." % len(feeds))
+            logging.debug(" ---> ~SN~FBTasking ~SB~FC%s~FB~SN feeds..." % len(feeds))
         
         if isinstance(feeds, QuerySet):
             feeds = [f.pk for f in feeds]
@@ -452,7 +452,7 @@ class Feed(models.Model):
     
     @classmethod
     def drain_task_feeds(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         tasked_feeds = r.zrange('tasked_feeds', 0, -1)
         logging.debug(" ---> ~FRDraining %s tasked feeds..." % len(tasked_feeds))
@@ -465,11 +465,12 @@ class Feed(models.Model):
         r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
-        self.count_subscribers()
+        recount = not self.counts_converted_to_redis
+        self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
         
         count_extra = False
-        if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() < 0.01 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
         
         if force or full:
@@ -494,9 +495,10 @@ class Feed(models.Model):
 
         if not last_story_date or seconds_timesince(last_story_date) < 0:
             last_story_date = datetime.datetime.now()
-
-        self.last_story_date = last_story_date
-        self.save()
+        
+        if last_story_date != self.last_story_date:
+            self.last_story_date = last_story_date
+            self.save(update_fields=['last_story_date'])
         
     @classmethod
     def setup_feeds_for_premium_subscribers(cls, feed_ids):
@@ -632,44 +634,114 @@ class Feed(models.Model):
         
         return redirects, non_redirects
     
-    def count_subscribers(self, verbose=False):
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
-        from apps.reader.models import UserSubscription
-        
+    @property
+    def original_feed_id(self):
         if self.branch_from_feed:
-            original_feed_id = self.branch_from_feed.pk
+            return self.branch_from_feed.pk
         else:
-            original_feed_id = self.pk
-        feed_ids = [f['id'] for f in Feed.objects.filter(branch_from_feed=original_feed_id).values('id')]
-        feed_ids.append(original_feed_id)
+            return self.pk
+    
+    @property
+    def counts_converted_to_redis(self):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        return r.zscore("s:%s" % self.original_feed_id, -1)
+        
+    def count_subscribers(self, recount=True, verbose=False):
+        if recount:
+            from apps.profile.models import Profile
+            Profile.count_feed_subscribers(feed_id=self.pk)
+        SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        subscriber_expire = int(SUBSCRIBER_EXPIRE_DATE.strftime('%s'))
+        now = int(datetime.datetime.now().strftime('%s'))
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        total = 0
+        active = 0
+        premium = 0
+        active_premium = 0
+        
+        # Include all branched feeds in counts
+        feed_ids = [f['id'] for f in Feed.objects.filter(branch_from_feed=self.original_feed_id).values('id')]
+        feed_ids.append(self.original_feed_id)
         feed_ids = list(set(feed_ids))
 
-        subs = UserSubscription.objects.filter(feed__in=feed_ids)
-        self.num_subscribers = subs.count()
+        if self.counts_converted_to_redis:
+            # For each branched feed, count different subscribers
+            for feed_id in feed_ids:
+                pipeline = r.pipeline()
+                
+                # now+1 ensures `-1` flag will be corrected for later with - 1
+                total_key = "s:%s" % feed_id
+                premium_key = "sp:%s" % feed_id
+                pipeline.zcard(total_key)
+                pipeline.zcount(total_key, subscriber_expire, now+1)
+                pipeline.zcard(premium_key)
+                pipeline.zcount(premium_key, subscriber_expire, now+1)
+
+                results = pipeline.execute()
+            
+                # -1 due to key=-1 signaling counts_converted_to_redis
+                total += results[0] - 1
+                active += results[1] - 1
+                premium += results[2] - 1
+                active_premium += results[3] - 1
+                
+                # Check for expired feeds with no active users who would ahve triggered a cleanup
+                if r.zscore(total_key, -1) < subscriber_expire:
+                    logging.info("    ***> ~SN~BW~FBFeed has expired redis subscriber counts, clearing...")
+                    r.delete(total_key, -1)
+                    r.delete(premium_key, -1)
+            
+            original_num_subscribers = self.num_subscribers
+            original_active_subs = self.active_subscribers
+            original_premium_subscribers = self.premium_subscribers
+            original_active_premium_subscribers = self.active_premium_subscribers
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
+                          (self.title[:30], total, active, premium, active_premium))
+        else:
+            from apps.reader.models import UserSubscription
+            
+            subs = UserSubscription.objects.filter(feed__in=feed_ids)
+            original_num_subscribers = self.num_subscribers
+            total = subs.count()
         
-        active_subs = UserSubscription.objects.filter(
-            feed__in=feed_ids, 
-            active=True,
-            user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
-        )
-        self.active_subscribers = active_subs.count()
+            active_subs = UserSubscription.objects.filter(
+                feed__in=feed_ids, 
+                active=True,
+                user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE_DATE
+            )
+            original_active_subs = self.active_subscribers
+            active = active_subs.count()
         
-        premium_subs = UserSubscription.objects.filter(
-            feed__in=feed_ids, 
-            active=True,
-            user__profile__is_premium=True
-        )
-        self.premium_subscribers = premium_subs.count()
+            premium_subs = UserSubscription.objects.filter(
+                feed__in=feed_ids, 
+                active=True,
+                user__profile__is_premium=True
+            )
+            original_premium_subscribers = self.premium_subscribers
+            premium = premium_subs.count()
         
-        active_premium_subscribers = UserSubscription.objects.filter(
-            feed__in=feed_ids, 
-            active=True,
-            user__profile__is_premium=True,
-            user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
-        )
-        self.active_premium_subscribers = active_premium_subscribers.count()
-        
-        self.save()
+            active_premium_subscribers = UserSubscription.objects.filter(
+                feed__in=feed_ids, 
+                active=True,
+                user__profile__is_premium=True,
+                user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE_DATE
+            )
+            original_active_premium_subscribers = self.active_premium_subscribers
+            active_premium = active_premium_subscribers.count()
+            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
+                          (self.title[:30], total, active, premium, active_premium))
+
+        # If any counts have changed, save them
+        self.num_subscribers = total
+        self.active_subscribers = active
+        self.premium_subscribers = premium
+        self.active_premium_subscribers = active_premium
+        if (self.num_subscribers != original_num_subscribers or
+            self.active_subscribers != original_active_subs or
+            self.premium_subscribers != original_premium_subscribers or
+            self.active_premium_subscribers != original_active_premium_subscribers):
+            self.save(update_fields=['num_subscribers', 'active_subscribers', 
+                                     'premium_subscribers', 'active_premium_subscribers'])
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -681,7 +753,7 @@ class Feed(models.Model):
                     '' if self.num_subscribers == 1 else 's',
                     self.feed_title,
                 ),
-
+    
     def _split_favicon_color(self):
         color = self.favicon_color
         if color:
@@ -753,9 +825,9 @@ class Feed(models.Model):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
                                             story_date__gte=month_ago).count()
-        self.stories_last_month = stories_last_month
-        
-        self.save()
+        if self.stories_last_month != stories_last_month:
+            self.stories_last_month = stories_last_month
+            self.save(update_fields=['stories_last_month'])
             
         if verbose:
             print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
@@ -828,13 +900,18 @@ class Feed(models.Model):
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
                         month_count += 1
+        original_story_count_history = self.data.story_count_history
         self.data.story_count_history = json.encode(months)
-        self.data.save()
+        if self.data.story_count_history != original_story_count_history:
+            self.data.save(update_fields=['story_count_history'])
+        
+        original_average_stories_per_month = self.average_stories_per_month
         if not total or not month_count:
             self.average_stories_per_month = 0
         else:
             self.average_stories_per_month = int(round(total / float(month_count)))
-        self.save()
+        if self.average_stories_per_month != original_average_stories_per_month:
+            self.save(update_fields=['average_stories_per_month'])
         
         
     def save_classifier_counts(self):
@@ -888,15 +965,18 @@ class Feed(models.Model):
         
     def update(self, **kwargs):
         from utils import feed_fetcher
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
 
         if getattr(settings, 'TEST_DEBUG', False):
+            original_feed_address = self.feed_address
+            original_feed_link = self.feed_link
             self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
             if self.feed_link:
                 self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            self.save()
-            
+            if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
+                self.save(update_fields=['feed_address', 'feed_link'])
+
         options = {
             'verbose': kwargs.get('verbose'),
             'timeout': 10,
@@ -1139,8 +1219,9 @@ class Feed(models.Model):
         #       popular tags the size of a small planet. I'm looking at you
         #       Tumblr writers.
         if len(popular_tags) < 1024:
-            self.data.popular_tags = popular_tags
-            self.data.save()
+            if self.data.popular_tags != popular_tags:
+                self.data.popular_tags = popular_tags
+                self.data.save(update_fields=['popular_tags'])
             return
 
         tags_list = []
@@ -1160,8 +1241,9 @@ class Feed(models.Model):
 
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1023:
-            self.data.popular_authors = popular_authors
-            self.data.save()
+            if self.data.popular_authors != popular_authors:
+                self.data.popular_authors = popular_authors
+                self.data.save(update_fields=['popular_authors'])
             return
 
         if len(feed_authors) > 1:
@@ -1468,28 +1550,38 @@ class Feed(models.Model):
         
         if premium_speed:
             self.active_premium_subscribers += 1
-            self.active_subscribers -= 1
         
-        upd  = self.stories_last_month / 30.0
+        spd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 
                 ((self.active_subscribers - self.active_premium_subscribers) / 10.0))
-        # UPD = 1  Subs > 1:  t = 5         # 11625  * 1440/5 =       3348000
-        # UPD = 1  Subs = 1:  t = 60        # 17231  * 1440/60 =      413544
-        # UPD < 1  Subs > 1:  t = 60        # 37904  * 1440/60 =      909696
-        # UPD < 1  Subs = 1:  t = 60 * 12   # 143012 * 1440/(60*12) = 286024
-        # UPD = 0  Subs > 1:  t = 60 * 3    # 28351  * 1440/(60*3) =  226808
-        # UPD = 0  Subs = 1:  t = 60 * 24   # 807690 * 1440/(60*24) = 807690
-        if upd >= 1:
-            if subs > 1:
-                total = 10
+        # Calculate sub counts: 
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 10 AND stories_last_month >= 30;
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND active_premium_subscribers < 10 AND stories_last_month >= 30;
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers = 1 AND stories_last_month >= 30;
+        # SpD > 1  Subs > 10: t = 6         # 4267   * 1440/6  =      1024080
+        # SpD > 1  Subs > 1:  t = 15        # 18973  * 1440/15 =      1821408
+        # SpD > 1  Subs = 1:  t = 60        # 65503  * 1440/60 =      1572072
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND stories_last_month < 30 AND stories_last_month > 0;
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers = 1 AND stories_last_month < 30 AND stories_last_month > 0;
+        # SpD < 1  Subs > 1:  t = 60        # 77618  * 1440/60 =      1862832
+        # SpD < 1  Subs = 1:  t = 60 * 12   # 282186 * 1440/(60*12) = 564372
+        #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND stories_last_month = 0;
+        #   SELECT COUNT(*) FROM feeds WHERE active_subscribers > 0 AND active_premium_subscribers <= 1 AND stories_last_month = 0;
+        # SpD = 0  Subs > 1:  t = 60 * 3    # 30158  * 1440/(60*3) =  241264
+        # SpD = 0  Subs = 1:  t = 60 * 24   # 514131 * 1440/(60*24) = 514131
+        if spd >= 1:
+            if subs > 10:
+                total = 6
+            elif subs > 1:
+                total = 15
             else:
                 total = 60
-        elif upd > 0:
+        elif spd > 0:
             if subs > 1:
-                total = 60 - (upd * 60)
+                total = 60 - (spd * 60)
             else:
-                total = 60*12 - (upd * 60*12)
-        elif upd == 0:
+                total = 60*12 - (spd * 60*12)
+        elif spd == 0:
             if subs > 1:
                 total = 60 * 6
             else:
@@ -1518,20 +1610,20 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 3 day max
+        # 2 day max
         total = min(total, 60*24*2)
         
         if verbose:
-            logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories: %s" % (
+            logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
                                                 unicode(self)[:30], total, 
                                                 self.num_subscribers,
                                                 self.active_subscribers,
                                                 self.active_premium_subscribers,
-                                                upd))
+                                                spd))
         return total
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         total = self.get_next_scheduled_update(force=True, verbose=verbose)
         error_count = self.error_count
         
@@ -1546,8 +1638,9 @@ class Feed(models.Model):
         random_factor = random.randint(0, total) / 4
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
-        
+        original_min_to_decay = self.min_to_decay
         self.min_to_decay = total
+        
         delta = self.next_scheduled_update - datetime.datetime.now()
         minutes_to_next_fetch = (delta.seconds + (delta.days * 24 * 3600)) / 60
         if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
@@ -1556,19 +1649,21 @@ class Feed(models.Model):
                 r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
             r.zrem('tasked_feeds', self.pk)
             r.srem('queued_feeds', self.pk)
-            
-        self.save()
         
+        updated_fields = ['last_update', 'next_scheduled_update']
+        if self.min_to_decay != original_min_to_decay:
+            updated_fields.append('min_to_decay')
+        self.save(update_fields=updated_fields)
     
     @property
     def error_count(self):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         fetch_errors = int(r.zscore('error_feeds', self.pk) or 0)
         
         return fetch_errors + self.errors_since_good
         
     def schedule_feed_fetch_immediately(self, verbose=True):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         if verbose:
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
             
@@ -1588,7 +1683,7 @@ class Feed(models.Model):
         self.save()
     
     def queue_pushed_feed_xml(self, xml, latest_push_date_delta=None):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         queue_size = r.llen("push_feeds")
         
         if latest_push_date_delta:

@@ -59,6 +59,8 @@ class CleanupUser(Task):
     def run(self, user_id):
         UserSubscription.trim_user_read_stories(user_id)
         UserSubscription.verify_feeds_scheduled(user_id)
+        Profile.count_all_feed_subscribers_for_user(user_id)
+        # UserSubscription.refresh_stale_feeds(user_id)
         
         try:
             ss = MSocialServices.objects.get(user_id=user_id)

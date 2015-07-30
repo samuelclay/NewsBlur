@@ -1388,11 +1388,6 @@
                     NEWSBLUR.app.story_unread_counter.remove();
                 }
                 
-                if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
-                    NEWSBLUR.app.story_list.show_loading(options);
-                } else {
-                    NEWSBLUR.app.story_titles.show_loading(options);
-                }
                 NEWSBLUR.app.taskbar_info.hide_stories_error();
                 this.iframe_scroll = null;
                 this.set_correct_story_view_for_feed(feed.id);
@@ -1400,6 +1395,12 @@
                 this.switch_taskbar_view(this.story_view);
                 this.switch_story_layout();
                 
+                if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
+                    NEWSBLUR.app.story_list.show_loading(options);
+                } else {
+                    NEWSBLUR.app.story_titles.show_loading(options);
+                }
+
                 _.delay(_.bind(function() {
                     if (!options.delay || feed.id == self.next_feed) {
                         this.model.load_feed(feed.id, 1, true, $.rescope(this.post_open_feed, this), 
@@ -2336,6 +2337,20 @@
               encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(tumblr_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
+        send_story_to_blogger: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://www.blogger.com/blog-this.g';
+            var blogger_url = [
+              url,
+              '?n=',
+              encodeURIComponent(story.get('story_title')),
+              '&source=newsblur&b=',
+              encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(blogger_url, '_blank');
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
@@ -3390,6 +3405,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_blogger'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-blogger'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Blogger').parent().addClass('NB-menu-manage-highlight-blogger');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-blogger');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-delicious'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Delicious').parent().addClass('NB-menu-manage-highlight-delicious');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -3455,6 +3475,8 @@
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {
                           this.send_story_to_tumblr(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-blogger')) {
+                          this.send_story_to_blogger(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-delicious')) {
                           this.send_story_to_delicious(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {

@@ -445,6 +445,7 @@ def setup_python():
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
+@parallel
 def pip():
     pull()
     with cd(env.NEWSBLUR_PATH):
@@ -870,6 +871,13 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
+def config_postgres(standby=False):
+    put('config/postgresql%s.conf' % (
+        ('_standby' if standby else ''),
+    ), '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
+
+    sudo('/etc/init.d/postgresql reload 9.4')
+    
 def copy_postgres_to_standby(master='db01'):
     # http://www.rassoc.com/gregr/weblog/2013/02/16/zero-to-postgresql-streaming-replication-in-10-mins/
     
@@ -877,11 +885,11 @@ def copy_postgres_to_standby(master='db01'):
     # Need to give postgres accounts keys in authroized_keys.
 
     # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
-    # sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
+    # sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.4/main postgres@%s:/var/lib/postgresql/9.4/ --exclude postmaster.pid\"' % slave, pty=False)
     # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
-    sudo('su postgres pg_basebackup -h %s -D /var/lib/postgresql/9.2/main -v -P -X fetch' % master)
-    sudo('cp /var/lib/postgresql/9.2/recovery.conf /var/lib/postgresql/9.2/main/')
+    sudo('su postgres pg_basebackup -h %s -D /var/lib/postgresql/9.4/main -v -P -X fetch' % master)
+    sudo('cp /var/lib/postgresql/9.4/recovery.conf /var/lib/postgresql/9.4/main/')
     
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
@@ -937,7 +945,7 @@ def setup_mongo_mms():
         sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
-    redis_version = '2.8.19'
+    redis_version = '3.0.3'
     with cd(env.VENDOR_PATH):
         run('wget http://download.redis.io/releases/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -960,6 +968,8 @@ def setup_redis(slave=False):
     sudo('chmod 644 /etc/sysctl.conf', pty=False)
     sudo("sysctl vm.overcommit_memory=1")
     put('config/redis_rclocal.txt', '/etc/rc.local', use_sudo=True)
+    sudo("chown root.root /etc/rc.local")
+    sudo("chmod a+x /etc/rc.local")
     sudo("su root -c \"echo \\\"never\\\" > /sys/kernel/mm/transparent_hugepage/enabled\"")
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
@@ -1142,7 +1152,10 @@ def copy_spam():
 # =========================
 
 def setup_do(name, size=2, image=None):
-    INSTANCE_SIZE = "%sGB" % size
+    if int(size) == 512:
+        INSTANCE_SIZE = "512MB"
+    else:
+        INSTANCE_SIZE = "%sGB" % size
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
@@ -1446,8 +1459,8 @@ def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
-0 * * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +180 -delete"""
+0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
+0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
 
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')

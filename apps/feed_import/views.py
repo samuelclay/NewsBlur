@@ -92,7 +92,7 @@ def opml_export(request):
 
 
 def reader_authorize(request): 
-    ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META.get('REMOTE_ADDR', "")
     reader_importer = GoogleReaderImporter(request.user)
     if reader_importer.test():
         logging.user(request, "~BB~FW~SBSkipping Google Reader import, already tokened")
@@ -114,7 +114,7 @@ def reader_authorize(request):
         approval_prompt="force",
         )
     logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
-        request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', ""),
+        request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META.get('REMOTE_ADDR', ""),
     ))
 
     authorize_url = FLOW.step1_get_authorize_url(redirect_uri=STEP2_URI)
@@ -139,7 +139,7 @@ def reader_authorize(request):
     return response
 
 def reader_callback(request):
-    ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META.get('REMOTE_ADDR', "")
     domain = Site.objects.get_current().domain
     STEP2_URI = "http://%s%s" % (
         (domain + '.com') if not domain.endswith('.com') else domain,
@@ -244,7 +244,7 @@ def import_starred_stories_from_google_reader(request):
     return dict(code=code, delayed=delayed, feed_count=feed_count, starred_count=starred_count)
 
 def import_signup(request):
-    ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META.get('REMOTE_ADDR', "")
     
     if request.method == "POST":
         signup_form = SignupForm(prefix='signup', data=request.POST)

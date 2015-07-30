@@ -151,9 +151,12 @@ class MSocialProfile(mongo.Document):
     
     @classmethod
     def get_user(cls, user_id):
-        profile, created = cls.objects.get_or_create(user_id=user_id)
-        if created:
+        try:
+            profile = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            profile = cls.objects.create(user_id=user_id)
             profile.save()
+
         return profile
         
     def save(self, *args, **kwargs):
@@ -482,8 +485,11 @@ class MSocialProfile(mongo.Document):
             MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
             MActivity.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
         
-        socialsub, _ = MSocialSubscription.objects.get_or_create(user_id=self.user_id, 
-                                                                 subscription_user_id=user_id)
+        params = dict(user_id=self.user_id, subscription_user_id=user_id)
+        try:
+            socialsub = MSocialSubscription.objects.get(**params)
+        except MSocialSubscription.DoesNotExist:
+            socialsub = MSocialSubscription.objects.create(**params)
         socialsub.needs_unread_recalc = True
         socialsub.save()
         
@@ -1740,10 +1746,12 @@ class MSharedStory(mongo.Document):
             story_values = {
                 'user_id': popular_profile.user_id,
                 'story_guid': story_db['story_guid'],
-                'defaults': story_db,
             }
-            shared_story, created = MSharedStory.objects.get_or_create(**story_values)
-            if created:
+            try:
+                shared_story = MSharedStory.objects.get(**story_values)
+            except MSharedStory.DoesNotExist:
+                story_values.update(story_db)
+                shared_story = MSharedStory.objects.create(**story_values)
                 shared_story.post_to_service('twitter')
                 shared += 1
                 shared_feed_ids.append(story.story_feed_id)
@@ -2879,7 +2887,9 @@ class MInteraction(mongo.Document):
             'category': 'follow',
         }
         try:
-            cls.objects.get_or_create(**params)
+            cls.objects.get(**params)
+        except cls.DoesNotExist:
+            cls.objects.create(**params)
         except cls.MultipleObjectsReturned:
             dupes = cls.objects.filter(**params).order_by('-date')
             logging.debug(" ---> ~FRDeleting dupe follow interactions. %s found." % dupes.count())
@@ -2933,16 +2943,17 @@ class MInteraction(mongo.Document):
     
     @classmethod
     def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_feed_id, story_title, comments):
-        cls.objects.get_or_create(user_id=comment_user_id,
-                                  with_user_id=liking_user_id,
-                                  category="comment_like",
-                                  feed_id="social:%s" % comment_user_id,
-                                  story_feed_id=story_feed_id,
-                                  content_id=story_id,
-                                  defaults={
-                                    "title": story_title,
-                                    "content": comments,
-                                  })
+        params = dict(user_id=comment_user_id,
+                      with_user_id=liking_user_id,
+                      category="comment_like",
+                      feed_id="social:%s" % comment_user_id,
+                      story_feed_id=story_feed_id,
+                      content_id=story_id)
+        try:
+            cls.objects.get(**params)
+        except cls.DoesNotExist:
+            params.update(dict(title=story_title, content=comments))
+            cls.objects.create(**params)
         
         cls.publish_update_to_subscribers(comment_user_id)
 
@@ -3092,11 +3103,15 @@ class MActivity(mongo.Document):
             
     @classmethod
     def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
-        cls.objects.get_or_create(user_id=user_id,
-                                  category='star',
-                                  story_feed_id=story_feed_id,
-                                  content_id=story_id,
-                                  defaults=dict(content=story_title))
+        params = dict(user_id=user_id,
+                      category='star',
+                      story_feed_id=story_feed_id,
+                      content_id=story_id)
+        try:
+            cls.objects.get(**params)
+        except cls.DoesNotExist:
+            params.update(dict(content=story_title))
+            cls.objects.create(**params)
 
     @classmethod
     def remove_starred_story(cls, user_id, story_feed_id, story_id):
@@ -3117,7 +3132,10 @@ class MActivity(mongo.Document):
             "feed_id": feed_id,
         }
         try:
-            cls.objects.get_or_create(defaults=dict(content=feed_title), **params)
+            cls.objects.get(**params)
+        except cls.DoesNotExist:
+            params.update(dict(content=feed_title))
+            cls.objects.create(**params)
         except cls.MultipleObjectsReturned:
             dupes = cls.objects.filter(**params).order_by('-date')
             logging.debug(" ---> ~FRDeleting dupe feed subscription activities. %s found." % dupes.count())
@@ -3133,7 +3151,9 @@ class MActivity(mongo.Document):
             'category': 'follow',
         }
         try:
-            cls.objects.get_or_create(**params)
+            cls.objects.get(**params)
+        except cls.DoesNotExist:
+            cls.objects.create(**params)
         except cls.MultipleObjectsReturned:
             dupes = cls.objects.filter(**params).order_by('-date')
             logging.debug(" ---> ~FRDeleting dupe follow activities. %s found." % dupes.count())
@@ -3181,16 +3201,17 @@ class MActivity(mongo.Document):
             
     @classmethod
     def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_feed_id, story_title, comments):
-        cls.objects.get_or_create(user_id=liking_user_id,
-                                  with_user_id=comment_user_id,
-                                  category="comment_like",
-                                  feed_id="social:%s" % comment_user_id,
-                                  story_feed_id=story_feed_id,
-                                  content_id=story_id,
-                                  defaults={
-                                    "title": story_title,
-                                    "content": comments,
-                                  })
+        params = dict(user_id=liking_user_id,
+                      with_user_id=comment_user_id,
+                      category="comment_like",
+                      feed_id="social:%s" % comment_user_id,
+                      story_feed_id=story_feed_id,
+                      content_id=story_id)
+        try:
+            cls.objects.get(**params)
+        except cls.DoesNotExist:
+            params.update(dict(title=story_title, content=comments))
+            cls.objects.create(**params)
     
     @classmethod
     def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
@@ -3201,13 +3222,17 @@ class MActivity(mongo.Document):
             "story_feed_id": story_feed_id,
             "content_id": story_id,
         }
+        extradata = {'with_user_id': source_user_id,
+                     'title': story_title,
+                     'content': comments}
 
         try:
-            a, _ = cls.objects.get_or_create(defaults={
-                                                 'with_user_id': source_user_id,
-                                                 'title': story_title,
-                                                 'content': comments,
-                                             }, **data)
+            a = cls.objects.get(**data)
+        except cls.DoesNotExist:
+            merged = {}
+            merged.update(data)
+            merged.update(extradata)
+            a = cls.objects.create(**merged)
         except cls.MultipleObjectsReturned:
             dupes = cls.objects.filter(**data)
             logging.debug(" ---> ~FRDeleting dupe shared story activities. %s found." % dupes.count())
@@ -3243,9 +3268,12 @@ class MActivity(mongo.Document):
         
     @classmethod
     def new_signup(cls, user_id):
-        cls.objects.get_or_create(user_id=user_id,
-                                  with_user_id=user_id,
-                                  category="signup")
+        params = dict(user_id=user_id, with_user_id=user_id, category="signup")
+        try:
+            return cls.objects.get(**params)
+        except cls.DoesNotExist:
+            return cls.objects.create(**params)
+
 
 class MFollowRequest(mongo.Document):
     follower_user_id    = mongo.IntField(unique_with='followee_user_id')
@@ -3262,8 +3290,11 @@ class MFollowRequest(mongo.Document):
     
     @classmethod
     def add(cls, follower_user_id, followee_user_id):
-        cls.objects.get_or_create(follower_user_id=follower_user_id,
-                                  followee_user_id=followee_user_id)
+        params = dict(follower_user_id=follower_user_id, followee_user_id=followee_user_id)
+        try:
+            cls.objects.get(**params)
+        except cls.DoesNotExist:
+            cls.objects.create(**params)
     
     @classmethod
     def remove(cls, follower_user_id, followee_user_id):

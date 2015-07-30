@@ -152,7 +152,7 @@ else {
   }
 
   $sql = "select count(*) from pg_stat_activity ";
-  $sql   .= " where datname = ? and current_query like '<IDLE>%'";
+  $sql   .= " where datname = ? and state = 'idle'";
   print "# $sql\n" if $debug;
   $sth = $dbh->prepare($sql);
   $sth->execute($dbname);

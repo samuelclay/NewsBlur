@@ -24,10 +24,10 @@ def login(request):
     code = -1
     errors = None
     user_agent = request.environ.get('HTTP_USER_AGENT', '')
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
 
     if not user_agent or user_agent.lower() in ['nativehost']:
         errors = dict(user_agent="You must set a user agent to login.")
-        ip = request.META.get('HTTP_X_REAL_IP', None) or request.META['REMOTE_ADDR']
         logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s / %s" % (user_agent, ip))
     elif request.method == "POST":
         form = LoginForm(data=request.POST)
@@ -35,7 +35,7 @@ def login(request):
             errors = form.errors
         if form.is_valid():
             login_user(request, form.get_user())
-            logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s" % user_agent)
+            logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s / %s" % (user_agent, ip))
             code = 1
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
@@ -46,7 +46,8 @@ def login(request):
 def signup(request):
     code = -1
     errors = None
-    
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
+
     if request.method == "POST":
         form = SignupForm(data=request.POST)
         if form.errors:
@@ -54,7 +55,7 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s" % new_user.email)
+            logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s / %s" % (new_user.email, ip))
             code = 1
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)

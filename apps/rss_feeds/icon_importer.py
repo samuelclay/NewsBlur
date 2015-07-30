@@ -72,14 +72,15 @@ class IconImporter(object):
                 self.feed_icon.save()
                 if settings.BACKED_BY_AWS.get('icons_on_s3'):
                     self.save_to_s3(image_str)
-            self.feed.favicon_color     = color
-            self.feed.favicon_not_found = False
+            if self.feed.favicon_color != color:
+                self.feed.favicon_color     = color
+                self.feed.favicon_not_found = False
+                self.feed.save(update_fields=['favicon_color', 'favicon_not_found'])
 
         if not image:
             self.feed_icon.not_found = True
             self.feed.favicon_not_found = True
-            
-        self.feed.save()
+        
         return not self.feed.favicon_not_found
 
     def save_to_s3(self, image_str):

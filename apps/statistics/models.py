@@ -12,6 +12,7 @@ from utils import db_functions
 class MStatistics(mongo.Document):
     key   = mongo.StringField(unique=True)
     value = mongo.DynamicField()
+    expiration_date = mongo.DateTimeField()
     
     meta = {
         'collection': 'statistics',
@@ -27,12 +28,20 @@ class MStatistics(mongo.Document):
         obj = cls.objects.filter(key=key).first()
         if not obj:
             return default
+        if obj.expiration_date and obj.expiration_date < datetime.datetime.now():
+            obj.delete()
+            return default
         return obj.value
 
     @classmethod
-    def set(cls, key, value):
-        obj, _ = cls.objects.get_or_create(key=key)
+    def set(cls, key, value, expiration_sec=None):
+        try:
+            obj = cls.objects.get(key=key)
+        except cls.DoesNotExist:
+            obj = cls.objects.create(key=key)
         obj.value = value
+        if expiration_sec:
+            obj.expiration_date = datetime.datetime.now() + datetime.timedelta(seconds=expiration_sec)
         obj.save()
     
     @classmethod

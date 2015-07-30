@@ -93,6 +93,8 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $.make('dd', data.statistics.created_date),
                 $.make('dt', 'Last seen:'),
                 $.make('dd', data.statistics.last_seen_date),
+                $.make('dt', 'Last IP:'),
+                $.make('dd', data.statistics.last_seen_ip),
                 $.make('dt', 'Timezone:'),
                 $.make('dd', data.statistics.timezone),
                 $.make('dt', 'Email:'),
