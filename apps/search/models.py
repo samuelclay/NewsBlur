@@ -140,6 +140,12 @@ class MUserSearch(mongo.Document):
         
     @classmethod
     def remove_all(cls, drop_index=False):
+        # You only need to drop the index if there is data you want to clear.
+        # A new search server won't need this, as there isn't anything to drop.
+        if drop_index:
+            logging.info(" ---> ~FRRemoving stories search index...")
+            SearchStory.drop()
+            
         user_searches = cls.objects.all()
         logging.info(" ---> ~SN~FRRemoving ~SB%s~SN user searches..." % user_searches.count())
         for user_search in user_searches:
@@ -147,12 +153,6 @@ class MUserSearch(mongo.Document):
                 user_search.remove()
             except Exception, e:
                 print " ****> Error on search removal: %s" % e
-        
-        # You only need to drop the index if there is data you want to clear.
-        # A new search server won't need this, as there isn't anything to drop.
-        if drop_index:
-            logging.info(" ---> ~FRRemoving stories search index...")
-            SearchStory.drop()
         
     def remove(self):
         from apps.rss_feeds.models import Feed
