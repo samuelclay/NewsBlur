@@ -30,9 +30,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="15dp"
             android:gravity="center_horizontal"
-            style="?defaultText"
+            style="?explainerText"
             android:visibility="invisible"
             android:textSize="16dp" />
 
@@ -43,7 +43,7 @@
             android:contentDescription="@string/description_empty_list_image"
             android:src="@drawable/world_big"
             android:layout_above="@id/empty_view_text"
-            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
             android:layout_centerHorizontal="true"
             android:scaleType="fitCenter"
             android:visibility="invisible" />

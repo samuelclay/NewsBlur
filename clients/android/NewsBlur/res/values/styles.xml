@@ -259,4 +259,13 @@
     <style name="storyCommentDivider.dark">
         <item name="android:background">@color/dark_story_comment_divider</item>
     </style>
+
+    <style name="explainerText">
+        <item name="android:textColor">@color/midgray</item>
+    </style>
+
+    <style name="explainerText.dark">
+        <item name="android:textColor">@color/lightgray</item>
+    </style>
+
 </resources>

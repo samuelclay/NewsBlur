@@ -66,13 +66,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		adapter = new FolderListAdapter(getActivity(), currentState);
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
-        activity = (Main) getActivity();
 	}
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 		sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        activity = (Main) getActivity();
     }
 
 	@Override
@@ -112,7 +112,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     throw new IllegalArgumentException("unknown loader created");
             }
             checkOpenFolderPreferences();
-            updateUnreadCounts();
+            pushUnreadCounts();
         } catch (Exception e) {
             // for complex folder sets, these ops can take so long that they butt heads
             // with the destruction of the fragment and adapter. crashes can ensue.
@@ -265,7 +265,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         PrefsUtils.setStateFilter(getActivity(), state);
         adapter.changeState(state);
 		hasUpdated();
-        updateUnreadCounts();
 	}
 
     /**
@@ -273,7 +272,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      * the new data.  It is, unfortunately, quite expensive to compute given the current
      * DB model, so having Main also load it would cause some lag.
      */
-    private void updateUnreadCounts() {
+    public void pushUnreadCounts() {
         activity.updateUnreadCounts(adapter.totalNeutCount, adapter.totalPosCount);
     }
 

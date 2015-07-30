@@ -86,6 +86,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         FeedUtils.clearReadingSession();
 
         updateStatusIndicators();
+        folderFeedList.pushUnreadCounts();
         triggerSync();
 
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
@@ -176,8 +177,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     public void updateUnreadCounts(int neutCount, int posiCount) {
         if ((neutCount+posiCount) <= 0) {
             emptyViewImage.setVisibility(View.VISIBLE);
+            if (folderFeedList.currentState == StateFilter.BEST) {
+                emptyViewText.setText(R.string.empty_list_view_no_focus_stories);
+            } else {
+                emptyViewText.setText(R.string.empty_list_view_no_unread_stories);
+            }
+            emptyViewText.setVisibility(View.VISIBLE);
         } else {
             emptyViewImage.setVisibility(View.INVISIBLE);
+            emptyViewText.setVisibility(View.INVISIBLE);
         }
     }
 

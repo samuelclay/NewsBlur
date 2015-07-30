@@ -29,6 +29,7 @@
         <item name="itemHeaderDivider">@style/itemHeaderDivider</item>
         <item name="storyCommentDivider">@style/storyCommentDivider</item>
         <item name="activityDetailsPager">@style/activityDetailsPager</item>
+        <item name="explainerText">@style/explainerText</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -60,5 +61,6 @@
         <item name="itemHeaderDivider">@style/itemHeaderDivider.dark</item>
         <item name="storyCommentDivider">@style/storyCommentDivider.dark</item>
         <item name="activityDetailsPager">@style/activityDetailsPager.dark</item>
+        <item name="explainerText">@style/explainerText.dark</item>
     </style>
 </resources>
