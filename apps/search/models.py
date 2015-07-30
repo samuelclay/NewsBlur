@@ -313,6 +313,7 @@ class SearchFeed:
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
             cls.ES().indices.delete_index_if_exists(cls.index_name())
+
         settings =  {
             "index" : {
                 "analysis": {
@@ -393,7 +394,7 @@ class SearchFeed:
             return []
 
         logging.info("~FGSearch ~FCfeeds~FG: ~SB%s" % text)
-        q = pyes.query.MultiMatchQuery(['address', 'link^2', 'title'], text, minimum_should_match=100)
+        q = pyes.query.MultiMatchQuery(['address', 'link^2', 'title^3'], text, analyzer="standard")
         results = cls.ES().search(query=q, size=5, doc_types=[cls.type_name()])
 
         return results
