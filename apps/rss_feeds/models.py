@@ -688,7 +688,7 @@ class Feed(models.Model):
                 # Check for expired feeds with no active users who would ahve triggered a cleanup
                 last_recount = r.zscore(total_key, -1)
                 if last_recount and last_recount < subscriber_expire:
-                    logging.info("    ***> ~SN~BW~FBFeed has expired redis subscriber counts, clearing...")
+                    logging.info("    ***> ~SN~BW~FBFeed has expired redis subscriber counts (%s < %s), clearing..." % (last_recount, subscriber_expire))
                     r.delete(total_key, -1)
                     r.delete(premium_key, -1)
             
