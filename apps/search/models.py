@@ -396,9 +396,9 @@ class SearchFeed:
 
         logging.info("~FGSearch ~FCfeeds~FG: ~SB%s" % text)
         q = pyes.query.BoolQuery()
-        q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="50%"))
-        q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="50%"))
-        q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="50%"))
+        q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         results = cls.ES().search(query=q, size=5, doc_types=[cls.type_name()], sort="num_subscribers:desc")
 
         return results
