@@ -322,11 +322,6 @@ class SearchFeed:
                             "tokenizer": "lowercase",
                             "type": "custom"
                         },
-                        "ngram_analyzer": {
-                            "filter": ["ngram"],
-                            "tokenizer": "lowercase",
-                            "type": "custom"
-                        }
                     },
                     "filter": {
                         "edgengram": {
@@ -334,24 +329,6 @@ class SearchFeed:
                             "min_gram": "1",
                             "type": "edgeNGram"
                         },
-                        "ngram": {
-                            "max_gram": "15",
-                            "min_gram": "1",
-                            "type": "nGram"
-                        }
-                    },
-                    "tokenizer": {
-                        "edgengram_tokenizer": {
-                            "max_gram": "15",
-                            "min_gram": "1",
-                            "side": "front",
-                            "type": "edgeNGram"
-                        },
-                        "ngram_tokenizer": {
-                            "max_gram": "15",
-                            "min_gram": "1",
-                            "type": "nGram"
-                        }
                     }
                 }
             }
@@ -361,7 +338,7 @@ class SearchFeed:
         mapping = {
             "address": {
                 "analyzer": "edgengram_analyzer",
-                "store": True,
+                "store": False,
                 "term_vector": "with_positions_offsets",
                 "type": "string"
             },
@@ -376,13 +353,13 @@ class SearchFeed:
             },
             "title": {
                 "analyzer": "edgengram_analyzer",
-                "store": True,
+                "store": False,
                 "term_vector": "with_positions_offsets",
                 "type": "string"
             },
             "link": {
                 "analyzer": "edgengram_analyzer",
-                "store": True,
+                "store": False,
                 "term_vector": "with_positions_offsets",
                 "type": "string"
             }
@@ -416,7 +393,7 @@ class SearchFeed:
             return []
 
         logging.info("~FGSearch ~FCfeeds~FG: ~SB%s" % text)
-        q = pyes.query.MultiMatchQuery(['address', 'link^2', 'title^3'], text, operator = "and", minimum_should_match=100)
+        q = pyes.query.MultiMatchQuery(['address', 'link^2', 'title'], text, minimum_should_match=100)
         results = cls.ES().search(query=q, size=5, doc_types=[cls.type_name()])
 
         return results

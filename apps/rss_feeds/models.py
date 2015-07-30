@@ -243,7 +243,7 @@ class Feed(models.Model):
         return self
     
     @classmethod
-    def index_all_for_search(cls, offset=0):
+    def index_all_for_search(cls, offset=0, subscribers=2):
         if not offset:
             SearchFeed.create_elasticsearch_mapping(delete=True)
         
@@ -252,7 +252,7 @@ class Feed(models.Model):
             print " ---> %s / %s (%.2s%%)" % (f, last_pk, float(f)/last_pk*100)
             feeds = Feed.objects.filter(pk__in=range(f, f+1000), 
                                         active=True,
-                                        active_subscribers__gte=1)\
+                                        active_subscribers__gte=subscribers)\
                                 .values_list('pk')
             for feed_id, in feeds:
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
