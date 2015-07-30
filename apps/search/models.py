@@ -159,8 +159,7 @@ class MUserSearch(mongo.Document):
         from apps.reader.models import UserSubscription
 
         user = User.objects.get(pk=self.user_id)
-        subscriptions = UserSubscription.objects.filter(user=self.user_id, 
-                                                        feed__search_indexed=True)
+        subscriptions = UserSubscription.objects.filter(user=self.user_id)
         total = subscriptions.count()
         removed = 0
         
