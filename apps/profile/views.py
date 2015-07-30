@@ -205,6 +205,12 @@ def clear_view_setting(request):
         if view_setting_type == 'view' and 'v' in view_setting:
             del view_setting['v']
             removed += 1
+        if view_setting_type == 'order' and 'o' in view_setting:
+            del view_setting['o']
+            removed += 1
+        if view_setting_type == 'order' and 'r' in view_setting:
+            del view_setting['r']
+            removed += 1
         new_view_settings[feed_id] = view_setting
 
     request.user.profile.view_settings = json.encode(new_view_settings)
