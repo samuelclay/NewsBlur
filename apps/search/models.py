@@ -395,7 +395,7 @@ class SearchFeed:
 
         logging.info("~FGSearch ~FCfeeds~FG: ~SB%s" % text)
         q = pyes.query.MultiMatchQuery(['address', 'link^2', 'title^3'], text, analyzer="standard")
-        results = cls.ES().search(query=q, size=5, doc_types=[cls.type_name()])
+        results = cls.ES().search(query=q, size=5, doc_types=[cls.type_name()], sort="num_subscribers:desc")
 
         return results
     
