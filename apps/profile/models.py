@@ -6,6 +6,7 @@ import hashlib
 import redis
 import uuid
 import mongoengine as mongo
+from pprint import pprint
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -22,6 +23,7 @@ from apps.rss_feeds.models import Feed, MStory, MStarredStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.feed_import.models import GoogleReaderImporter, OPMLExporter
 from apps.reader.models import UserSubscription
+from apps.reader.models import RUserStory
 from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
@@ -393,6 +395,27 @@ class Profile(models.Model):
         
         return True
     
+    @classmethod
+    def clear_dead(self, days=30, confirm=False):
+        users = User.objects.filter(date_joined__gte=datetime.datetime.now()-datetime.timedelta(days=days)).order_by('-date_joined')
+        usernames = set()
+
+        for user in users:
+          opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
+          reads = RUserStory.read_story_count(user.pk)
+          if opens is None and not reads:
+             usernames.add(user.username)
+             print user.username, user.email, opens, reads
+        
+        if not confirm: return
+        
+        for username in usernames:
+            u = User.objects.get(username=username)
+            u.profile.delete_user(confirm=True)
+
+        RNewUserQueue.user_count()
+        RNewUserQueue.activate_all()
+        
     @classmethod
     def count_feed_subscribers(self, feed_id=None, user_id=None, verbose=False):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
