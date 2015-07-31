@@ -853,7 +853,7 @@ def setup_rabbitmq():
 #     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 2300047872
+    shmmax = 17672445952
     sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"') # You might have to run this manually
     sudo('wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
@@ -863,6 +863,7 @@ def setup_postgres(standby=False):
     ), '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
     sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
+    sudo('echo "\nvm.nr_hugepages = 9000\n" > /etc/sysctl.conf' % shmmax)
     sudo('sysctl -p')
 
     if standby:

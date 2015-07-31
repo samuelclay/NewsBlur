@@ -399,6 +399,7 @@ class SearchFeed:
         q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        q = pyes.Search(q, min_score=1)
         results = cls.ES().search(query=q, size=5, doc_types=[cls.type_name()], sort="num_subscribers:desc")
 
         return results

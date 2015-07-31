@@ -682,6 +682,8 @@ class UserSubscription(models.Model):
         ong = self.unread_count_negative
         ont = self.unread_count_neutral
         ops = self.unread_count_positive
+        oousd = self.oldest_unread_story_date
+        onur = self.needs_unread_recalc
         
         # if not self.feed.fetched_once:
         #     if not silent:
@@ -783,8 +785,15 @@ class UserSubscription(models.Model):
         self.oldest_unread_story_date = oldest_unread_story_date
         self.needs_unread_recalc = False
         
-        self.save()
-
+        update_fields = []
+        if self.unread_count_positive != ops: update_fields.append('unread_count_positive')
+        if self.unread_count_neutral != ont: update_fields.append('unread_count_neutral')
+        if self.unread_count_negative != ong: update_fields.append('unread_count_negative')
+        if self.oldest_unread_story_date != oousd: update_fields.append('oldest_unread_story_date')
+        if self.needs_unread_recalc != onur: update_fields.append('needs_unread_recalc')
+        if len(update_fields):
+            self.save(update_fields=update_fields)
+        
         if (self.unread_count_positive == 0 and 
             self.unread_count_neutral == 0):
             self.mark_feed_read()
