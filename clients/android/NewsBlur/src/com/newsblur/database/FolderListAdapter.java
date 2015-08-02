@@ -140,7 +140,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			((ImageView) v.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
 		} else if (isFolderRoot(groupPosition)) {
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
-            bindCountViews(v, totalNeutCount, totalPosCount, true);
         } else if (isRowReadStories(groupPosition)) {
             if (convertView == null) {
                 v = inflater.inflate(R.layout.row_read_stories, null, false);
