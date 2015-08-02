@@ -1,6 +1,7 @@
 package com.newsblur.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
@@ -48,6 +49,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @FindView(R.id.empty_view_image) ImageView emptyViewImage;
     @FindView(R.id.empty_view_text) TextView emptyViewText;
     @FindView(R.id.main_menu_button) Button menuButton;
+    @FindView(R.id.main_user_image) ImageView userImage;
+    @FindView(R.id.main_user_name) TextView userName;
+    @FindView(R.id.main_unread_count_neut_text) TextView unreadCountNeutText;
+    @FindView(R.id.main_unread_count_posi_text) TextView unreadCountPosiText;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +81,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
+
+        Bitmap userPicture = PrefsUtils.getUserImage(this);
+        if (userPicture != null) {
+            userPicture = UIUtils.roundCorners(userPicture, 5);
+            userImage.setImageBitmap(userPicture);
+        }
+        userName.setText(PrefsUtils.getUserDetails(this).username);
 	}
 
     @Override
@@ -114,6 +126,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
+        unreadCountNeutText.setText(Integer.toString(neutCount));
+        unreadCountPosiText.setText(Integer.toString(posiCount));
+
         if ((neutCount+posiCount) <= 0) {
             if (NBSyncService.isFeedCountSyncRunning()) {
                 emptyViewImage.setVisibility(View.INVISIBLE);

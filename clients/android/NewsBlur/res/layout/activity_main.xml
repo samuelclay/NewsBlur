@@ -8,15 +8,77 @@
     <RelativeLayout
         android:id="@+id/main_top_bar"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="50dp"
         android:layout_alignParentTop="true"
         style="?actionbarBackground" >
+
+        <ImageView
+            android:id="@+id/main_user_image"
+            android:src="@drawable/logo"
+            android:layout_height="41dp"
+            android:layout_width="41dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="4dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" />
+
+        <TextView
+            android:id="@+id/main_user_name"
+            android:layout_height="22dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginBottom="1dp"
+            android:layout_toRightOf="@id/main_user_image"
+            android:layout_alignParentTop="true"
+            android:textStyle="bold"
+            android:textSize="16dp" />
+
+        <ImageView
+            android:id="@+id/main_unread_count_neut_icon"
+            android:layout_width="11dp"
+            android:layout_height="11dp"
+            android:layout_below="@+id/main_user_name"
+            android:layout_toRightOf="@id/main_user_image"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/g_icn_unread" />
+
+        <TextView
+            android:id="@+id/main_unread_count_neut_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_user_name"
+            android:layout_toRightOf="@id/main_unread_count_neut_icon"
+            android:layout_marginLeft="3dp"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/main_unread_count_posi_icon"
+            android:layout_width="11dp"
+            android:layout_height="11dp"
+            android:layout_below="@+id/main_user_name"
+            android:layout_toRightOf="@id/main_unread_count_neut_text"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/g_icn_focus" />
+
+        <TextView
+            android:id="@+id/main_unread_count_posi_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_user_name"
+            android:layout_toRightOf="@id/main_unread_count_posi_icon"
+            android:layout_marginLeft="3dp"
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/main_profile_button"
             android:layout_width="34dp"
             android:layout_height="34dp"
-            android:layout_margin="5dp"
+            android:layout_margin="8dp"
             android:background="@drawable/ic_menu_profile"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true" />
