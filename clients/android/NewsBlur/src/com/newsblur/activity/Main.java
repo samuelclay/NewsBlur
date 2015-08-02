@@ -184,16 +184,16 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     public boolean onMenuItemClick(MenuItem item) {
 		if (item.getItemId() == R.id.menu_profile) {
-			Intent profileIntent = new Intent(this, Profile.class);
-			startActivity(profileIntent);
+			Intent i = new Intent(this, Profile.class);
+			startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_refresh) {
             NBSyncService.forceFeedsFolders();
 			triggerSync();
 			return true;
 		} else if (item.getItemId() == R.id.menu_add_feed) {
-			Intent intent = new Intent(this, SearchForFeeds.class);
-			startActivityForResult(intent, 0);
+			Intent i = new Intent(this, SearchForFeeds.class);
+            startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_logout) {
 			DialogFragment newFragment = new LogoutDialogFragment();
@@ -217,6 +217,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             return true;
         }
 		return false;
+    }
+
+    @OnClick(R.id.main_add_button) void onClickAddButton() {
+        Intent i = new Intent(this, SearchForFeeds.class);
+        startActivity(i);
     }
 
     @Override
