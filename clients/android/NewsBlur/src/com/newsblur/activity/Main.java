@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,11 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import butterknife.FindView;
+import butterknife.OnClick;
 
 import com.newsblur.R;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
@@ -35,7 +37,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener {
 
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
@@ -45,6 +47,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @FindView(R.id.main_sync_status) TextView overlayStatusText;
     @FindView(R.id.empty_view_image) ImageView emptyViewImage;
     @FindView(R.id.empty_view_text) TextView emptyViewText;
+    @FindView(R.id.main_menu_button) Button menuButton;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		getActionBar().hide();
 
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
         swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
@@ -94,70 +97,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem loginAsItem = menu.findItem(R.id.menu_loginas);
-        if (NBSyncService.isStaff == Boolean.TRUE) {
-            loginAsItem.setVisible(true);
-        } else {
-            loginAsItem.setVisible(false);
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-
-        MenuItem feedbackItem = menu.findItem(R.id.menu_feedback);
-        if (AppConstants.ENABLE_FEEDBACK) {
-            feedbackItem.setTitle(feedbackItem.getTitle() + " (v" + PrefsUtils.getVersion(this) + ")");
-        } else {
-            feedbackItem.setVisible(false);
-        }
-
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menu_profile) {
-			Intent profileIntent = new Intent(this, Profile.class);
-			startActivity(profileIntent);
-			return true;
-		} else if (item.getItemId() == R.id.menu_refresh) {
-            NBSyncService.forceFeedsFolders();
-			triggerSync();
-			return true;
-		} else if (item.getItemId() == R.id.menu_add_feed) {
-			Intent intent = new Intent(this, SearchForFeeds.class);
-			startActivityForResult(intent, 0);
-			return true;
-		} else if (item.getItemId() == R.id.menu_logout) {
-			DialogFragment newFragment = new LogoutDialogFragment();
-			newFragment.show(getFragmentManager(), "dialog");
-		} else if (item.getItemId() == R.id.menu_settings) {
-            Intent settingsIntent = new Intent(this, Settings.class);
-            startActivity(settingsIntent);
-            return true;
-        } else if (item.getItemId() == R.id.menu_feedback) {
-            try {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
-                startActivity(i);
-            } catch (Exception e) {
-                Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
-            }
-            return true;
-        } else if (item.getItemId() == R.id.menu_loginas) {
-            DialogFragment newFragment = new LoginAsDialogFragment();
-            newFragment.show(getFragmentManager(), "dialog");
-        }
-		return super.onOptionsItemSelected(item);
-	}
-	
 	@Override
 	public void changedState(StateFilter state) {
 		folderFeedList.changeState(state);
@@ -217,6 +156,67 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     public void onRefresh() {
         NBSyncService.forceFeedsFolders();
         triggerSync();
+    }
+
+    @OnClick(R.id.main_menu_button) void onClickMenuButton() {
+        PopupMenu pm = new PopupMenu(this, menuButton);
+        Menu menu = pm.getMenu();
+        pm.getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem loginAsItem = menu.findItem(R.id.menu_loginas);
+        if (NBSyncService.isStaff == Boolean.TRUE) {
+            loginAsItem.setVisible(true);
+        } else {
+            loginAsItem.setVisible(false);
+        }
+
+        MenuItem feedbackItem = menu.findItem(R.id.menu_feedback);
+        if (AppConstants.ENABLE_FEEDBACK) {
+            feedbackItem.setTitle(feedbackItem.getTitle() + " (v" + PrefsUtils.getVersion(this) + ")");
+        } else {
+            feedbackItem.setVisible(false);
+        }
+
+        pm.setOnMenuItemClickListener(this);
+        pm.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+		if (item.getItemId() == R.id.menu_profile) {
+			Intent profileIntent = new Intent(this, Profile.class);
+			startActivity(profileIntent);
+			return true;
+		} else if (item.getItemId() == R.id.menu_refresh) {
+            NBSyncService.forceFeedsFolders();
+			triggerSync();
+			return true;
+		} else if (item.getItemId() == R.id.menu_add_feed) {
+			Intent intent = new Intent(this, SearchForFeeds.class);
+			startActivityForResult(intent, 0);
+			return true;
+		} else if (item.getItemId() == R.id.menu_logout) {
+			DialogFragment newFragment = new LogoutDialogFragment();
+			newFragment.show(getFragmentManager(), "dialog");
+		} else if (item.getItemId() == R.id.menu_settings) {
+            Intent settingsIntent = new Intent(this, Settings.class);
+            startActivity(settingsIntent);
+            return true;
+        } else if (item.getItemId() == R.id.menu_feedback) {
+            try {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
+                startActivity(i);
+            } catch (Exception e) {
+                Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
+            }
+            return true;
+        } else if (item.getItemId() == R.id.menu_loginas) {
+            DialogFragment newFragment = new LoginAsDialogFragment();
+            newFragment.show(getFragmentManager(), "dialog");
+            return true;
+        }
+		return false;
     }
 
     @Override

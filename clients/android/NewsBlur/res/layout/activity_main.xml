@@ -11,9 +11,18 @@
         android:id="@+id/fragment_feedintelligenceselector"
         android:name="com.newsblur.fragment.FeedIntelligenceSelectorFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="44dp"
         android:layout_alignParentBottom="true"
         android:tag="feedIntelligenceSelector" />
+
+    <Button
+        android:id="@+id/main_menu_button"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_margin="5dp"
+        style="?menuButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
 
     <!-- A pane that sits behind the feed list, acting as a background, except
          when the list is empty, and it shows through as an explainer. -->
