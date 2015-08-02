@@ -20,7 +20,7 @@
         android:layout_width="34dp"
         android:layout_height="34dp"
         android:layout_margin="5dp"
-        style="?menuButton"
+        android:background="@drawable/ic_menu_moreoverflow"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" />
 

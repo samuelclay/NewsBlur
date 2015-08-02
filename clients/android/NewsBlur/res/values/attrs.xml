@@ -29,7 +29,6 @@
     <attr name="storyCommentDivider" format="string" />
     <attr name="activityDetailsPager" format="string" />
     <attr name="explainerText" format="string" />
-    <attr name="menuButton" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />

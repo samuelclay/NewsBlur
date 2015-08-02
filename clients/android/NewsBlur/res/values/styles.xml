@@ -268,12 +268,4 @@
         <item name="android:textColor">@color/lightgray</item>
     </style>
 
-    <style name="menuButton">
-        <item name="android:background">@drawable/ic_menu_moreoverflow_normal_holo_light</item>
-    </style>
-
-    <style name="menuButton.dark">
-        <item name="android:background">@drawable/ic_menu_moreoverflow_normal_holo_dark</item>
-    </style>
-
 </resources>
