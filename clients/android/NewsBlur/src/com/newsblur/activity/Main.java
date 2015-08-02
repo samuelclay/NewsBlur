@@ -224,6 +224,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         startActivity(i);
     }
 
+    @OnClick(R.id.main_profile_button) void onClickProfileButton() {
+        Intent i = new Intent(this, Profile.class);
+        startActivity(i);
+    }
+
     @Override
     public void onScrollStateChanged(AbsListView absListView, int i) {
         // not required

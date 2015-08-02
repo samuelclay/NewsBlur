@@ -5,6 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <RelativeLayout
+        android:id="@+id/main_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentTop="true"
+        style="?actionbarBackground" >
+
+        <Button
+            android:id="@+id/main_profile_button"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/ic_menu_profile"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" />
+
+
+    </RelativeLayout>
+
     <!-- The all/unread/focus toggle. Despite being at the bottom, this needs
          to be defined first so that other things can be placed above it. -->
     <fragment
@@ -26,9 +45,9 @@
 
     <Button
         android:id="@+id/main_add_button"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:layout_margin="5dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_margin="4dp"
         android:background="@drawable/ic_menu_add"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true" />
@@ -39,8 +58,8 @@
         android:id="@+id/folderfeedlist_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/main_top_bar"
         android:layout_above="@id/fragment_feedintelligenceselector"
-        android:layout_alignParentTop="true"
         style="?listBackground">
 
         <TextView
@@ -73,8 +92,8 @@
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/fragment_feedintelligenceselector"
-        android:layout_alignParentTop="true" >
+        android:layout_below="@id/main_top_bar"
+        android:layout_above="@id/fragment_feedintelligenceselector" >
 
         <fragment
             android:id="@+id/fragment_folderfeedlist"
@@ -84,6 +103,13 @@
             android:tag="folderFeedListFragment" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <View
+        android:id="@+id/top_bar_border"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/midgray"
+        android:layout_above="@id/swipe_container" />
 
     <View
         android:id="@+id/feedintelligenceselector_border"
