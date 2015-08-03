@@ -718,6 +718,10 @@ public class NBSyncService extends Service {
         return (HousekeepingRunning || ActionsRunning || RecountsRunning || FFSyncRunning || CleanupService.running() || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
     }
 
+    public static boolean isFeedCountSyncRunning() {
+        return (HousekeepingRunning || RecountsRunning || FFSyncRunning);
+    }
+
     /**
      * Is there a sync for a given FeedSet running?
      */

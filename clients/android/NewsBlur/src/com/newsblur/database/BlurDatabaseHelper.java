@@ -678,6 +678,16 @@ public class BlurDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_STARRED, starred);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
+
+        // since local star/unstar operations are, so far, never retried or done automatically,
+        // we don't do the complex transactional accounting done with counts as with read/unread
+        // operations. Though this could get off by 1 in very loaded circumstances, the count will
+        // get refreshed on the next feed/folder sync. Unfortunately, we also can't do local
+        // counting like with unreads, since we never get a full set of starred stories.
+        String operator = (starred ? " + 1" : " - 1");
+        StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
+        q.append(" SET ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(" = ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(operator);
+        synchronized (RW_MUTEX) {dbRW.execSQL(q.toString());}
     }
 
     public void setStoryShared(String hash) {

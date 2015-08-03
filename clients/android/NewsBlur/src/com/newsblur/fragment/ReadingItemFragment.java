@@ -542,21 +542,39 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }
 	}
 
+    private static final Pattern altSniff1 = Pattern.compile("<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*alt=(['\"])((?:(?!\\3).)*)\\3[^>]*>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern altSniff2 = Pattern.compile("<img[^>]*alt=(['\"])((?:(?!\\1).)*)\\1[^>]*src=(['\"])((?:(?!\\3).)*)\\3[^>]*>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern altSniff3 = Pattern.compile("<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*title=(['\"])((?:(?!\\3).)*)\\3[^>]*>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern altSniff4 = Pattern.compile("<img[^>]*title=(['\"])((?:(?!\\1).)*)\\1[^>]*src=(['\"])((?:(?!\\3).)*)\\3[^>]*>", Pattern.CASE_INSENSITIVE);
+
     private void sniffAltTexts(String html) {
         // Find images with alt tags and cache the text for use on long-press
         //   NOTE: if doing this via regex has a smell, you have a good nose!  This method is far from perfect
         //   and may miss valid cases or trucate tags, but it works for popular feeds (read: XKCD) and doesn't
         //   require us to import a proper parser lib of hundreds of kilobytes just for this one feature.
         imageAltTexts = new HashMap<String,String>();
+        // sniff for alts first
+        Matcher imgTagMatcher = altSniff1.matcher(html);
+        while (imgTagMatcher.find()) {
+            imageAltTexts.put(imgTagMatcher.group(2), imgTagMatcher.group(4));
+        }
+        imgTagMatcher = altSniff2.matcher(html);
+        while (imgTagMatcher.find()) {
+            imageAltTexts.put(imgTagMatcher.group(4), imgTagMatcher.group(2));
+        }
+        // then sniff for 'title' tags, so they will overwrite alts and take precedence
+        imgTagMatcher = altSniff3.matcher(html);
+        while (imgTagMatcher.find()) {
+            imageAltTexts.put(imgTagMatcher.group(2), imgTagMatcher.group(4));
+        }
+        imgTagMatcher = altSniff4.matcher(html);
+        while (imgTagMatcher.find()) {
+            imageAltTexts.put(imgTagMatcher.group(4), imgTagMatcher.group(2));
+        }
+
+        // while were are at it, create a place where we can later cache offline image remaps so that when
+        // we do an alt-text lookup, we can search for the right URL key.
         imageUrlRemaps = new HashMap<String,String>();
-        Matcher imgTagMatcher1 = Pattern.compile("<img[^>]*src=\"([^\"]*)\"[^>]*alt=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
-        while (imgTagMatcher1.find()) {
-            imageAltTexts.put(imgTagMatcher1.group(1), imgTagMatcher1.group(2));
-        }
-        Matcher imgTagMatcher2 = Pattern.compile("<img[^>]*alt=\"([^\"]*)\"[^>]*src=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
-        while (imgTagMatcher2.find()) {
-            imageAltTexts.put(imgTagMatcher2.group(2), imgTagMatcher2.group(1));
-        }
     }
 
     private String swapInOfflineImages(String html) {
