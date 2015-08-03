@@ -549,11 +549,11 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         //   require us to import a proper parser lib of hundreds of kilobytes just for this one feature.
         imageAltTexts = new HashMap<String,String>();
         imageUrlRemaps = new HashMap<String,String>();
-        Matcher imgTagMatcher1 = Pattern.compile("<img[^>]*src=\"([^\"]*)\"[^>]*alt=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
+        Matcher imgTagMatcher1 = Pattern.compile("<img[^>]*src=\"([^\"]*)\"[^>]*title=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
         while (imgTagMatcher1.find()) {
             imageAltTexts.put(imgTagMatcher1.group(1), imgTagMatcher1.group(2));
         }
-        Matcher imgTagMatcher2 = Pattern.compile("<img[^>]*alt=\"([^\"]*)\"[^>]*src=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
+        Matcher imgTagMatcher2 = Pattern.compile("<img[^>]*title=\"([^\"]*)\"[^>]*src=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
         while (imgTagMatcher2.find()) {
             imageAltTexts.put(imgTagMatcher2.group(2), imgTagMatcher2.group(1));
         }
