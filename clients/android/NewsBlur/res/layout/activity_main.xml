@@ -43,7 +43,7 @@
             android:layout_below="@+id/main_user_name"
             android:layout_toRightOf="@id/main_user_image"
             android:layout_marginLeft="6dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="5dp"
             android:src="@drawable/g_icn_unread" />
 
         <TextView
@@ -62,7 +62,7 @@
             android:layout_below="@+id/main_user_name"
             android:layout_toRightOf="@id/main_unread_count_neut_text"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="5dp"
             android:src="@drawable/g_icn_focus" />
 
         <TextView
