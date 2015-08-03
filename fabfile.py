@@ -436,7 +436,7 @@ def setup_python():
     #     sudo('python setup.py install')
 
     with settings(warn_only=True):
-        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
+        sudo('echo "import sys; sys.setdefaultencoding(\"utf-8\")" | sudo tee /usr/lib/python2.7/sitecustomize.py')
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
@@ -468,14 +468,14 @@ def setup_supervisor():
 @parallel
 def setup_hosts():
     put(os.path.join(env.SECRETS_PATH, 'configs/hosts'), '/etc/hosts', use_sudo=True)
-    sudo('echo "\n\n127.0.0.1   `hostname`" >> /etc/hosts')
+    sudo('echo "\n\n127.0.0.1   `hostname`" | sudo tee -a /etc/hosts')
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', 'pgbouncer.conf')
     sudo('mv pgbouncer.conf /etc/pgbouncer/pgbouncer.ini')
     put(os.path.join(env.SECRETS_PATH, 'configs/pgbouncer_auth.conf'), 'userlist.txt')
     sudo('mv userlist.txt /etc/pgbouncer/userlist.txt')
-    sudo('echo "START=1" > /etc/default/pgbouncer')
+    sudo('echo "START=1" | sudo tee /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer -e')
@@ -492,27 +492,27 @@ def bounce_pgbouncer():
 
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
-    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('echo "START=yes" | sudo tee /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_node():
     put('config/monit_node.conf', '/etc/monit/conf.d/node.conf', use_sudo=True)
-    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('echo "START=yes" | sudo tee /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_original():
     put('config/monit_original.conf', '/etc/monit/conf.d/node_original.conf', use_sudo=True)
-    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('echo "START=yes" | sudo tee /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_app():
     put('config/monit_app.conf', '/etc/monit/conf.d/gunicorn.conf', use_sudo=True)
-    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('echo "START=yes" | sudo tee /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_work():
     put('config/monit_work.conf', '/etc/monit/conf.d/work.conf', use_sudo=True)
-    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('echo "START=yes" | sudo tee /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_redis():
@@ -521,7 +521,7 @@ def config_monit_redis():
     put('config/monit_debug.sh', '/etc/monit/monit_debug.sh', use_sudo=True)
     sudo('chmod a+x /etc/monit/monit_debug.sh')
     put('config/monit_redis.conf', '/etc/monit/conf.d/redis.conf', use_sudo=True)
-    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('echo "START=yes" | sudo tee /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def setup_mongoengine_repo():
@@ -581,15 +581,11 @@ def setup_ulimit():
     run('export FILEMAX=`sysctl -n fs.file-max`', pty=False)
     sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak', pty=False)
     sudo('touch /etc/security/limits.conf', pty=False)
-    sudo('chmod 666 /etc/security/limits.conf', pty=False)
-    run('echo "root soft nofile 100000" >> /etc/security/limits.conf', pty=False)
-    run('echo "root hard nofile 100000" >> /etc/security/limits.conf', pty=False)
-    run('echo "* soft nofile 100000" >> /etc/security/limits.conf', pty=False)
-    run('echo "* hard nofile 100090" >> /etc/security/limits.conf', pty=False)
-    sudo('chmod 644 /etc/security/limits.conf', pty=False)
-    sudo('chmod 666 /etc/sysctl.conf', pty=False)
-    run('echo "fs.file-max = 100000" >> /etc/sysctl.conf', pty=False)
-    sudo('chmod 644 /etc/sysctl.conf', pty=False)
+    run('echo "root soft nofile 100000\n" | sudo tee -a /etc/security/limits.conf', pty=False)
+    run('echo "root hard nofile 100000\n" | sudo tee -a /etc/security/limits.conf', pty=False)
+    run('echo "* soft nofile 100000\n" | sudo tee -a /etc/security/limits.conf', pty=False)
+    run('echo "* hard nofile 100090\n" | sudo tee -a /etc/security/limits.conf', pty=False)
+    run('echo "fs.file-max = 100000\n" | sudo tee -a /etc/sysctl.conf', pty=False)
     sudo('sysctl -p')
     sudo('ulimit -n 100000')
     connections.connect(env.host_string)
@@ -603,11 +599,11 @@ def setup_ulimit():
     # sudo chmod 644 /etc/sysctl.conf
 
 def setup_syncookies():
-    sudo('echo 1 > /proc/sys/net/ipv4/tcp_syncookies')
+    sudo('echo 1 | sudo tee /proc/sys/net/ipv4/tcp_syncookies')
     sudo('sudo /sbin/sysctl -w net.ipv4.tcp_syncookies=1')
 
 def setup_sudoers(user=None):
-    sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
+    sudo('echo "%s ALL=(ALL) NOPASSWD: ALL\n" | sudo tee -a /etc/sudoers"' % (user or env.user))
 
 def setup_nginx():
     NGINX_VERSION = '1.6.2'
@@ -745,7 +741,7 @@ def setup_haproxy(debug=False):
     else:
         put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
             '/etc/haproxy/haproxy.cfg', use_sudo=True)
-    sudo('echo "ENABLED=1" > /etc/default/haproxy')
+    sudo('echo "ENABLED=1" | sudo tee /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
@@ -839,7 +835,7 @@ def setup_db_firewall():
     sudo('ufw --force enable')
 
 def setup_rabbitmq():
-    sudo('echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.list')
+    sudo('echo "deb http://www.rabbitmq.com/debian/ testing main" | sudo tee -a /etc/apt/sources.list')
     run('wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc')
     sudo('apt-key add rabbitmq-signing-key-public.asc')
     run('rm rabbitmq-signing-key-public.asc')
@@ -854,16 +850,16 @@ def setup_rabbitmq():
 
 def setup_postgres(standby=False):
     shmmax = 17672445952
-    sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"') # You might have to run this manually
+    hugepages = 9000
+    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list')
     sudo('wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
     sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
-    put('config/postgresql%s.conf' % (
-        ('_standby' if standby else ''),
-    ), '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
-    sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
-    sudo('echo "\nvm.nr_hugepages = 9000\n" > /etc/sysctl.conf' % shmmax)
+    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
+    put('config/postgresql_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
+    sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
+    sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
+    sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
     sudo('sysctl -p')
 
     if standby:
@@ -873,9 +869,7 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql start')
 
 def config_postgres(standby=False):
-    put('config/postgresql%s.conf' % (
-        ('_standby' if standby else ''),
-    ), '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
+    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
 
     sudo('/etc/init.d/postgresql reload 9.4')
     
@@ -889,13 +883,13 @@ def copy_postgres_to_standby(master='db01'):
     # sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.4/main postgres@%s:/var/lib/postgresql/9.4/ --exclude postmaster.pid\"' % slave, pty=False)
     # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
-    sudo('su postgres pg_basebackup -h %s -D /var/lib/postgresql/9.4/main -v -P -X fetch' % master)
-    sudo('cp /var/lib/postgresql/9.4/recovery.conf /var/lib/postgresql/9.4/main/')
+    # sudo('su postgres -c "pg_basebackup -h %s -D /var/lib/postgresql/9.4/main -v -P -X fetch"' % master)
+    put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
-    sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
+    sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
@@ -941,8 +935,8 @@ def setup_mongo_mms():
         run('rm mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
         put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_config.txt'),
             'mongo_mms_config.txt')
-        sudo("echo \"\n\" >> /etc/mongodb-mms/monitoring-agent.config")
-        sudo('cat mongo_mms_config.txt >> /etc/mongodb-mms/monitoring-agent.config')
+        sudo("echo \"\n\" | sudo tee -a /etc/mongodb-mms/monitoring-agent.config")
+        sudo('cat mongo_mms_config.txt | sudo tee -a /etc/mongodb-mms/monitoring-agent.config')
         sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
@@ -963,15 +957,13 @@ def setup_redis(slave=False):
     # sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
     # run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
     # sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
-    sudo("su root -c \"echo \\\"1\\\" > /proc/sys/vm/overcommit_memory\"")
-    sudo('chmod 666 /etc/sysctl.conf', pty=False)
-    run('echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf', pty=False)
-    sudo('chmod 644 /etc/sysctl.conf', pty=False)
+    sudo("echo 1 | sudo tee /proc/sys/vm/overcommit_memory\"")
+    sudo('echo "vm.overcommit_memory = 1" | sudo tee -a /etc/sysctl.conf')
     sudo("sysctl vm.overcommit_memory=1")
     put('config/redis_rclocal.txt', '/etc/rc.local', use_sudo=True)
     sudo("chown root.root /etc/rc.local")
     sudo("chmod a+x /etc/rc.local")
-    sudo("su root -c \"echo \\\"never\\\" > /sys/kernel/mm/transparent_hugepage/enabled\"")
+    sudo('echo "never" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled')
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')

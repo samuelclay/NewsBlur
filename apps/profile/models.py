@@ -396,7 +396,7 @@ class Profile(models.Model):
         return True
     
     @classmethod
-    def clear_dead(self, days=30, confirm=False):
+    def clear_dead_spammers(self, days=30, confirm=False):
         users = User.objects.filter(date_joined__gte=datetime.datetime.now()-datetime.timedelta(days=days)).order_by('-date_joined')
         usernames = set()
 
