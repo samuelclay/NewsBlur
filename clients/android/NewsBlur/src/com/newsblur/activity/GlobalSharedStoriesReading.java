@@ -25,9 +25,4 @@ public class GlobalSharedStoriesReading extends Reading {
         menu.removeItem(R.id.menu_reading_markunread);
         return true;
     }
-
-    @Override
-    protected boolean unreadSearchingSupported() {
-        return false;
-    }
 }

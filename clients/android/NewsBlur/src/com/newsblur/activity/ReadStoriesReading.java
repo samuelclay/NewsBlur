@@ -6,7 +6,6 @@ import android.content.Loader;
 
 import com.newsblur.R;
 import com.newsblur.database.MixedFeedsReadingAdapter;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
 public class ReadStoriesReading extends Reading {
@@ -24,10 +23,5 @@ public class ReadStoriesReading extends Reading {
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         super.onLoadFinished(loader, cursor);
-    }
-
-    @Override
-    protected boolean unreadSearchingSupported() {
-        return false;
     }
 }
