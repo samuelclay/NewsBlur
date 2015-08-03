@@ -133,6 +133,7 @@ public class APIResponse {
             try {
                 T response = classOfT.newInstance();
                 response.message = this.errorMessage;
+                response.isProtocolError = true;
                 return ((T) response);
             } catch (Exception e) {
                 // this should never fail unless the constructor of the base response bean fails

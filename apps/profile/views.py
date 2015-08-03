@@ -52,7 +52,7 @@ def set_preference(request):
             setattr(request.user.profile, preference_name, preference_value)
         elif preference_name in SPECIAL_PREFERENCES:
             if preference_name == 'autofollow_friends':
-                social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+                social_services = MSocialServices.get_user(request.user.pk)
                 social_services.autofollow = preference_value
                 social_services.save()
             elif preference_name == 'dashboard_date':
@@ -204,6 +204,12 @@ def clear_view_setting(request):
             removed += 1
         if view_setting_type == 'view' and 'v' in view_setting:
             del view_setting['v']
+            removed += 1
+        if view_setting_type == 'order' and 'o' in view_setting:
+            del view_setting['o']
+            removed += 1
+        if view_setting_type == 'order' and 'r' in view_setting:
+            del view_setting['r']
             removed += 1
         new_view_settings[feed_id] = view_setting
 
@@ -404,6 +410,7 @@ def payment_history(request):
     statistics = {
         "created_date": user.date_joined,
         "last_seen_date": user.profile.last_seen_on,
+        "last_seen_ip": user.profile.last_seen_ip,
         "timezone": unicode(user.profile.timezone),
         "stripe_id": user.profile.stripe_id,
         "profile": user.profile,

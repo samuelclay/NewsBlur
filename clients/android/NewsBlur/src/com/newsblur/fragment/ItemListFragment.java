@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -21,6 +22,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -85,6 +87,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                                      getResources().getColor(R.color.refresh_4));
         itemList.addHeaderView(headerView, null, false);
         itemList.setHeaderDividersEnabled(false);
+
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
         footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
@@ -93,6 +96,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                                      getResources().getColor(R.color.refresh_4));
         itemList.addFooterView(footerView, null, false);
         itemList.setFooterDividersEnabled(false);
+
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
         setupBezelSwipeDetector(itemList);
         itemList.setOnScrollListener(this);
@@ -157,12 +161,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         View emptyView = itemList.getEmptyView();
         TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
+        ImageView imageView = (ImageView) emptyView.findViewById(R.id.empty_view_image);
 
         boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
         if (isLoading || (!cursorSeenYet)) {
             textView.setText(R.string.empty_list_view_loading);
+            textView.setTypeface(null, Typeface.ITALIC);
+            imageView.setVisibility(View.INVISIBLE);
         } else {
             textView.setText(R.string.empty_list_view_no_stories);
+            textView.setTypeface(null, Typeface.NORMAL);
+            imageView.setVisibility(View.VISIBLE);
         }
     }
 

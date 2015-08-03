@@ -50,6 +50,8 @@ class Command(BaseCommand):
             feeds = Feed.objects.all()
         elif options['username']:
             feeds = Feed.objects.filter(subscribers__user=User.objects.get(username=options['username']))
+        elif options['feed']:
+            feeds = Feed.objects.filter(pk=options['feed'])
         else:
             feeds = Feed.objects.filter(next_scheduled_update__lte=now, active=True)
         

@@ -26,7 +26,7 @@ class NBMuninGraph(MuninGraph):
     def calculate_metrics(self):
         from django.conf import settings
     
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         return {
             'update_queue': r.scard("queued_feeds"),

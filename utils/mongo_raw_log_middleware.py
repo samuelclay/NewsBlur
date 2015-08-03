@@ -30,12 +30,12 @@ class MongoDumpMiddleware(object):
             # self.orig_rs_send_message_with_response = \
             #         MongoReplicaSetClient._send_message_with_response
             # instrument methods to record messages
-            MongoClient._send_message = \
-                    self._instrument(MongoClient._send_message)
+            # MongoClient._send_message = \
+            #         self._instrument(MongoClient._send_message)
             MongoClient._send_message_with_response = \
                     self._instrument(MongoClient._send_message_with_response)
-            MongoReplicaSetClient._send_message = \
-                    self._instrument(MongoReplicaSetClient._send_message)
+            # MongoReplicaSetClient._send_message = \
+            #         self._instrument(MongoReplicaSetClient._send_message)
             MongoReplicaSetClient._send_message_with_response = \
                     self._instrument(MongoReplicaSetClient._send_message_with_response)
         return None
@@ -55,6 +55,8 @@ class MongoDumpMiddleware(object):
 
     def _instrument(self, original_method):
         def instrumented_method(*args, **kwargs):
+            # query = args[1].get_message(False, False)
+            # message = _mongodb_decode_wire_protocol(query[1])
             message = _mongodb_decode_wire_protocol(args[1][1])
             if not message or message['msg_id'] in self._used_msg_ids:
                 return original_method(*args, **kwargs)

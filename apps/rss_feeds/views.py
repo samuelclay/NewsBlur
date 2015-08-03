@@ -22,6 +22,7 @@ from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
 from utils.view_functions import required_params
 from vendor.timezones.utilities import localtime_for_timezone
+from utils.ratelimit import ratelimit
 
 
 IGNORE_AUTOCOMPLETE = [
@@ -149,6 +150,7 @@ def feed_autocomplete(request):
     else:
         return feeds
     
+@ratelimit(minutes=1, requests=10)
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
@@ -242,16 +244,29 @@ def exception_retry(request):
         raise Http404
     
     feed.schedule_feed_fetch_immediately()
-    feed.has_page_exception = False
-    feed.has_feed_exception = False
-    feed.active = True
+    changed = False
+    if feed.has_page_exception:
+        changed = True
+        feed.has_page_exception = False
+    if feed.has_feed_exception:
+        changed = True
+        feed.has_feed_exception = False
+    if not feed.active:
+        changed = True
+        feed.active = True
+    if changed:
+        feed.save(update_fields=['has_page_exception', 'has_feed_exception', 'active'])
+    
+    original_fetched_once = feed.fetched_once
     if reset_fetch:
         logging.user(request, "~FRRefreshing exception feed: ~SB%s" % (feed))
         feed.fetched_once = False
     else:
         logging.user(request, "~FRForcing refreshing feed: ~SB%s" % (feed))
+        
         feed.fetched_once = True
-    feed.save()
+    if feed.fetched_once != original_fetched_once:
+        feed.save(update_fields=['fetched_once'])
 
     feed = feed.update(force=True, compute_scores=False, verbose=True)
     feed = Feed.get_by_id(feed.pk)
@@ -439,7 +454,7 @@ def status(request):
         logging.user(request, "~SKNON-STAFF VIEWING RSS FEEDS STATUS!")
         assert False
         return HttpResponseForbidden()
-    minutes  = int(request.GET.get('minutes', 10))
+    minutes  = int(request.GET.get('minutes', 1))
     now      = datetime.datetime.now()
     hour_ago = now - datetime.timedelta(minutes=minutes)
     feeds    = Feed.objects.filter(last_update__gte=hour_ago).order_by('-last_update')

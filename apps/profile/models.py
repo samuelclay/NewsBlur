@@ -6,6 +6,7 @@ import hashlib
 import redis
 import uuid
 import mongoengine as mongo
+from pprint import pprint
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -18,14 +19,15 @@ from django.core.mail import mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory, MStarredStory
-from apps.rss_feeds.tasks import NewFeeds
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.feed_import.models import GoogleReaderImporter, OPMLExporter
+from apps.reader.models import UserSubscription
+from apps.reader.models import RUserStory
 from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
+from utils.feed_functions import chunks
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
 from vendor.paypal.standard.ipn.signals import payment_was_flagged
@@ -156,16 +158,9 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
     
-    def check_if_spammer(self):
-        feed_opens = UserSubscription.objects.filter(user=self.user)\
-                     .aggregate(sum=Sum('feed_opens'))['sum']
-        feed_count = UserSubscription.objects.filter(user=self.user).count()
-        
-        if not feed_opens and not feed_count:
-            return True
-        
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
+
         EmailNewPremium.delay(user_id=self.user.pk)
         
         self.is_premium = True
@@ -190,7 +185,7 @@ class Profile(models.Model):
                      len(scheduled_feeds))
         SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
         
-        self.queue_new_feeds()
+        UserSubscription.queue_new_feeds(self.user)
         self.setup_premium_history()
         
         if never_expire:
@@ -400,34 +395,123 @@ class Profile(models.Model):
         
         return True
     
-    def queue_new_feeds(self, new_feeds=None):
-        if not new_feeds:
-            new_feeds = UserSubscription.objects.filter(user=self.user, 
-                                                        feed__fetched_once=False, 
-                                                        active=True).values('feed_id')
-            new_feeds = list(set([f['feed_id'] for f in new_feeds]))
-        logging.user(self.user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
-        size = 4
-        for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
-            NewFeeds.apply_async(args=(t,), queue="new_feeds")
+    @classmethod
+    def clear_dead_spammers(self, days=30, confirm=False):
+        users = User.objects.filter(date_joined__gte=datetime.datetime.now()-datetime.timedelta(days=days)).order_by('-date_joined')
+        usernames = set()
 
-    def refresh_stale_feeds(self, exclude_new=False):
-        stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
-        stale_feeds  = UserSubscription.objects.filter(user=self.user, active=True, feed__last_update__lte=stale_cutoff)
-        if exclude_new:
-            stale_feeds = stale_feeds.filter(feed__fetched_once=True)
-        all_feeds    = UserSubscription.objects.filter(user=self.user, active=True)
+        for user in users:
+          opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
+          reads = RUserStory.read_story_count(user.pk)
+          if opens is None and not reads:
+             usernames.add(user.username)
+             print user.username, user.email, opens, reads
         
-        logging.user(self.user, "~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
-            stale_feeds.count(), all_feeds.count()))
+        if not confirm: return
+        
+        for username in usernames:
+            u = User.objects.get(username=username)
+            u.profile.delete_user(confirm=True)
 
-        for sub in stale_feeds:
-            sub.feed.fetched_once = False
-            sub.feed.save()
+        RNewUserQueue.user_count()
+        RNewUserQueue.activate_all()
         
-        if stale_feeds:
-            stale_feeds = list(set([f.feed_id for f in stale_feeds]))
-            self.queue_new_feeds(new_feeds=stale_feeds)
+    @classmethod
+    def count_feed_subscribers(self, feed_id=None, user_id=None, verbose=False):
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        entire_feed_counted = False
+        
+        if verbose:
+            logging.debug(" ---> ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed_id, user_id))
+        
+        if feed_id:
+            feed_ids = [feed_id]
+        elif user_id:
+            feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user_id, active=True).values('feed_id')]
+        else:
+            assert False, "feed_id or user_id required"
+
+        if feed_id and not user_id:
+            entire_feed_counted = True
+            
+        for feed_id in feed_ids:
+            total = 0
+            premium = 0
+            active = 0
+            active_premium = 0
+            key = 's:%s' % feed_id
+            premium_key = 'sp:%s' % feed_id
+            
+            if user_id:
+                active = UserSubscription.objects.get(feed_id=feed_id, user_id=user_id).only('active').active
+                user_ids = dict([(user_id, active)])
+            else:
+                user_ids = dict([(us.user_id, us.active) 
+                                 for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
+            profiles = Profile.objects.filter(user_id__in=user_ids.keys()).values('user_id', 'last_seen_on', 'is_premium')
+            feed = Feed.get_by_id(feed_id)
+            
+            if entire_feed_counted:
+                r.delete(key)
+                r.delete(premium_key)
+            
+            for profiles_group in chunks(profiles, 20):
+                pipeline = r.pipeline()
+                for profile in profiles_group:
+                    last_seen_on = int(profile['last_seen_on'].strftime('%s'))
+                    muted_feed = not bool(user_ids[profile['user_id']])
+                    if muted_feed:
+                        last_seen_on = 0
+                    pipeline.zadd(key, profile['user_id'], last_seen_on)
+                    total += 1
+                    if profile['is_premium']:
+                        pipeline.zadd(premium_key, profile['user_id'], last_seen_on)
+                        premium += 1
+                    else:
+                        pipeline.zrem(premium_key, profile['user_id'])
+                    if profile['last_seen_on'] > SUBSCRIBER_EXPIRE and not muted_feed:
+                        active += 1
+                        if profile['is_premium']:
+                            active_premium += 1
+                
+                pipeline.execute()
+            
+            if entire_feed_counted:
+                now = int(datetime.datetime.now().strftime('%s'))
+                r.zadd(key, -1, now)
+                r.zadd(premium_key, -1, now)
+            
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
+                          (feed.title[:30], total, active, premium, active_premium))
+
+    @classmethod
+    def count_all_feed_subscribers_for_user(self, user):
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
+        if not isinstance(user, User):
+            user = User.objects.get(pk=user)
+        
+        active_feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk, active=True).values('feed_id')]
+        muted_feed_ids = [us['feed_id'] for us in UserSubscription.objects.filter(user=user.pk, active=False).values('feed_id')]
+        logging.user(user, "~SN~FBRefreshing user last_login_on for ~SB%s~SN/~SB%s subscriptions~SN" % 
+                     (len(active_feed_ids), len(muted_feed_ids)))
+        for feed_ids in [active_feed_ids, muted_feed_ids]:
+            for feeds_group in chunks(feed_ids, 20):
+                pipeline = r.pipeline()
+                for feed_id in feeds_group:
+                    key = 's:%s' % feed_id
+                    premium_key = 'sp:%s' % feed_id
+
+                    last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
+                    if feed_ids is muted_feed_ids:
+                        last_seen_on = 0
+                    pipeline.zadd(key, user.pk, last_seen_on)
+                    if user.profile.is_premium:
+                        pipeline.zadd(premium_key, user.pk, last_seen_on)
+                    else:
+                        pipeline.zrem(premium_key, user.pk)
+                pipeline.execute()
     
     def import_reader_starred_items(self, count=20):
         importer = GoogleReaderImporter(self.user)
@@ -489,13 +573,16 @@ class Profile(models.Model):
         
         if not self.user.email:
             return
-
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='first_share')
         
-        if not created and not force:
-            return
-        
+        params = dict(receiver_user_id=self.user.pk, email_type='first_share')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+                
         social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
         params = {
             'shared_stories': MSharedStory.objects.filter(user_id=self.user.pk).count(),
@@ -528,12 +615,15 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         if not self.user.email or not self.send_emails:
             return
         
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='new_premium')
-        
-        if not created and not force:
-            return
-        
+        params = dict(receiver_user_id=self.user.pk, email_type='new_premium')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+
         user    = self.user
         text    = render_to_string('mail/email_new_premium.txt', locals())
         html    = render_to_string('mail/email_new_premium.xhtml', locals())
@@ -572,11 +662,15 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             print "Please provide an email address."
             return
         
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='new_user_queue')
-        if not created and not force:
-            return
-        
+        params = dict(receiver_user_id=self.user.pk, email_type='new_user_queue')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+
         user    = self.user
         text    = render_to_string('mail/email_new_user_queue.txt', locals())
         html    = render_to_string('mail/email_new_user_queue.xhtml', locals())
@@ -645,12 +739,15 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
             return
         
-        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
-                                                               email_type='launch_social')
-        
-        if not created and not force:
-            logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
-            return
+        params = dict(receiver_user_id=self.user.pk, email_type='launch_social')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
         
         delta      = datetime.datetime.now() - self.last_seen_on
         months_ago = delta.days / 30
@@ -1061,28 +1158,28 @@ class RNewUserQueue:
         
     @classmethod
     def add_user(cls, user_id):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         now = time.time()
         
         r.zadd(cls.KEY, user_id, now)
     
     @classmethod
     def user_count(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         count = r.zcard(cls.KEY)
 
         return count
     
     @classmethod
     def user_position(cls, user_id):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         position = r.zrank(cls.KEY, user_id)
         if position >= 0:
             return position + 1
     
     @classmethod
     def pop_user(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         user = r.zrange(cls.KEY, 0, 0)[0]
         r.zrem(cls.KEY, user)
 

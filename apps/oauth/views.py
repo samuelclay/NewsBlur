@@ -61,7 +61,7 @@ def twitter_connect(request):
             except User.DoesNotExist:
                 existing_user.delete()
 
-        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+        social_services = MSocialServices.get_user(request.user.pk)
         social_services.twitter_uid = unicode(twitter_user.id)
         social_services.twitter_access_key = access_token.key
         social_services.twitter_access_secret = access_token.secret
@@ -125,7 +125,7 @@ def facebook_connect(request):
             except User.DoesNotExist:
                 existing_user.delete()
 
-        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+        social_services = MSocialServices.get_user(request.user.pk)
         social_services.facebook_uid = uid
         social_services.facebook_access_token = access_token
         social_services.syncing_facebook = True
@@ -184,7 +184,7 @@ def appdotnet_connect(request):
             except User.DoesNotExist:
                 existing_user.delete()
         
-        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+        social_services = MSocialServices.get_user(request.user.pk)
         social_services.appdotnet_uid = unicode(adn_userid)
         social_services.appdotnet_access_token = access_token
         social_services.syncing_appdotnet = True

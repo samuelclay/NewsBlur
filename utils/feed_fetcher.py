@@ -353,27 +353,40 @@ class ProcessFeed:
                 
         # the feed has changed (or it is the first time we parse it)
         # saving the etag and last_modified fields
+        original_etag = self.feed.etag
         self.feed.etag = self.fpf.get('etag')
         if self.feed.etag:
             self.feed.etag = self.feed.etag[:255]
         # some times this is None (it never should) *sigh*
         if self.feed.etag is None:
             self.feed.etag = ''
-
+        if self.feed.etag != original_etag:
+            self.feed.save(update_fields=['etag'])
+            
+        original_last_modified = self.feed.last_modified
         try:
             self.feed.last_modified = mtime(self.fpf.modified)
         except:
             self.feed.last_modified = None
             pass
+        if self.feed.last_modified != original_last_modified:
+            self.feed.save(update_fields=['last_modified'])
         
         self.fpf.entries = self.fpf.entries[:100]
         
+        original_title = self.feed.feed_title
         if self.fpf.feed.get('title'):
             self.feed.feed_title = strip_tags(self.fpf.feed.get('title'))
+        if self.feed.feed_title != original_title:
+            self.feed.save(update_fields=['feed_title'])
+        
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
+            original_tagline = self.feed.data.feed_tagline
             self.feed.data.feed_tagline = utf8encode(tagline)
-            self.feed.data.save()
+            if self.feed.data.feed_tagline != original_tagline:
+                self.feed.data.save(update_fields=['feed_tagline'])
+
         if not self.feed.feed_link_locked:
             new_feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
             if new_feed_link != self.feed.feed_link:
@@ -382,8 +395,7 @@ class ProcessFeed:
                 self.feed.save_page_history(301, "HTTP Redirect (%s to go)" % (20-len(redirects)))
                 if len(redirects) >= 20 or len(non_redirects) == 0:
                     self.feed.feed_link = new_feed_link
-
-        self.feed = self.feed.save()
+                    self.feed.save(update_fields=['feed_link'])
         
         # Determine if stories aren't valid and replace broken guids
         guids_seen = set()
@@ -430,7 +442,7 @@ class ProcessFeed:
             # story_date__gte=start_date,
             # story_feed_id=self.feed.pk
         ))
-        
+
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'],
                                                   updates_off=self.options['updates_off'])
@@ -467,7 +479,7 @@ class ProcessFeed:
                               self.feed.title[:30]))
                 self.feed.is_push = False
                 self.feed = self.feed.save()
-        
+
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
                       '~FG~SB' if ret_values['new'] else '', ret_values['new'],
@@ -480,7 +492,7 @@ class ProcessFeed:
             self.feed.trim_feed()
             self.feed.expire_redis()
         self.feed.save_feed_history(200, "OK")
-        
+
         if self.options['verbose']:
             logging.debug(u'   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss' % (
                           self.feed.title[:30], time.time() - start))
@@ -631,6 +643,7 @@ class Dispatcher:
                 
             if not feed: continue
             feed = self.refresh_feed(feed.pk)
+            
             if ((self.options['force']) or 
                 (random.random() > .9) or
                 (fetched_feed and
@@ -660,7 +673,7 @@ class Dispatcher:
                     if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
                         settings.RAVEN_CLIENT):
                         settings.RAVEN_CLIENT.captureException()
-
+                
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
                 force = self.options['force']
@@ -692,7 +705,7 @@ class Dispatcher:
             feed.last_load_time = round(delta)
             feed.fetched_once = True
             try:
-                feed = feed.save()
+                feed = feed.save(update_fields=['last_load_time', 'fetched_once'])
             except IntegrityError:
                 logging.debug("   ---> [%-30s] ~FRIntegrityError on feed: %s" % (feed.title[:30], feed.feed_address,))
             
@@ -710,7 +723,7 @@ class Dispatcher:
                                   total=total_duration, feed_code=feed_code)
             
             self.feed_stats[ret_feed] += 1
-                
+            
         if len(feed_queue) == 1:
             return feed
         

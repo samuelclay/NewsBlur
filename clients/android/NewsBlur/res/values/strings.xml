@@ -33,6 +33,8 @@
 	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
 	<string name="description_follow_button">Follow or unfollow a user</string>
 	<string name="description_comment_user">Comment user image</string>
+	<string name="description_empty_list_image">Empty list placeholder</string>
+    <string name="description_menu">Menu</string>
 	
 	<string name="reading_shared_count">%s shares</string>
 	<string name="reading_comment_count">%s comments</string>
@@ -147,6 +149,9 @@
 
     <string name="empty_list_view_loading">Loading…</string>
     <string name="empty_list_view_no_stories">No stories to read</string>
+
+    <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
+    <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
     
     <string name="login_registration_register">Register</string>
     <string name="get_started">Let\'s get started</string>

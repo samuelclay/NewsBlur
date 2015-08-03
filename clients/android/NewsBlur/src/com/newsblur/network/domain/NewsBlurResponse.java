@@ -10,6 +10,10 @@ import java.util.regex.Pattern;
  */
 public class NewsBlurResponse {
 
+    // not part of the response schema, but populated by the API manager to indicate
+    // that we never got *any* valid JSON back
+    public boolean isProtocolError = false;
+
 	public boolean authenticated;
 	public int code;
     public String message;

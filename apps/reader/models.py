@@ -17,6 +17,7 @@ from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
+from apps.rss_feeds.tasks import NewFeeds
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.tfidf import tfidf
@@ -422,6 +423,49 @@ class UserSubscription(models.Model):
         return feeds
     
     @classmethod
+    def queue_new_feeds(cls, user, new_feeds=None):
+        if not isinstance(user, User):
+            user = User.objects.get(pk=user)
+        
+        if not new_feeds:
+            new_feeds = cls.objects.filter(user=user, 
+                                           feed__fetched_once=False, 
+                                           active=True).values('feed_id')
+            new_feeds = list(set([f['feed_id'] for f in new_feeds]))
+        
+        if not new_feeds:
+            return
+        
+        logging.user(user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
+        size = 4
+        for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
+            NewFeeds.apply_async(args=(t,), queue="new_feeds")
+    
+    @classmethod
+    def refresh_stale_feeds(cls, user, exclude_new=False):
+        if not isinstance(user, User):
+            user = User.objects.get(pk=user)
+
+        stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+
+        # TODO: Refactor below using last_update from REDIS_FEED_UPDATE_POOL
+        stale_feeds  = UserSubscription.objects.filter(user=user, active=True, feed__last_update__lte=stale_cutoff)
+        if exclude_new:
+            stale_feeds = stale_feeds.filter(feed__fetched_once=True)
+        all_feeds    = UserSubscription.objects.filter(user=user, active=True)
+        
+        logging.user(user, "~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
+            stale_feeds.count(), all_feeds.count()))
+
+        for sub in stale_feeds:
+            sub.feed.fetched_once = False
+            sub.feed.save()
+        
+        if stale_feeds:
+            stale_feeds = list(set([f.feed_id for f in stale_feeds]))
+            cls.queue_new_feeds(user, new_feeds=stale_feeds)
+            
+    @classmethod
     def identify_deleted_feed_users(cls, old_feed_id):
         users = UserSubscriptionFolders.objects.filter(folders__contains=old_feed_id).only('user')
         user_ids = [usf.user_id for usf in users]
@@ -638,6 +682,9 @@ class UserSubscription(models.Model):
         ong = self.unread_count_negative
         ont = self.unread_count_neutral
         ops = self.unread_count_positive
+        oousd = self.oldest_unread_story_date
+        onur = self.needs_unread_recalc
+        oit = self.is_trained
         
         # if not self.feed.fetched_once:
         #     if not silent:
@@ -739,8 +786,16 @@ class UserSubscription(models.Model):
         self.oldest_unread_story_date = oldest_unread_story_date
         self.needs_unread_recalc = False
         
-        self.save()
-
+        update_fields = []
+        if self.unread_count_positive != ops: update_fields.append('unread_count_positive')
+        if self.unread_count_neutral != ont: update_fields.append('unread_count_neutral')
+        if self.unread_count_negative != ong: update_fields.append('unread_count_negative')
+        if self.oldest_unread_story_date != oousd: update_fields.append('oldest_unread_story_date')
+        if self.needs_unread_recalc != onur: update_fields.append('needs_unread_recalc')
+        if self.is_trained != oit: update_fields.append('is_trained')
+        if len(update_fields):
+            self.save(update_fields=update_fields)
+        
         if (self.unread_count_positive == 0 and 
             self.unread_count_neutral == 0):
             self.mark_feed_read()
@@ -847,7 +902,7 @@ class UserSubscription(models.Model):
     
     @classmethod
     def verify_feeds_scheduled(cls, user_id):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         user = User.objects.get(pk=user_id)
         subs = cls.objects.filter(user=user)
         feed_ids = [sub.feed.pk for sub in subs]

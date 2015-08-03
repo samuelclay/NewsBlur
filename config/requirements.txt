@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.1
-six==1.6.1
+six==1.6
 boto==2.8.0
 celery==3.0.17
 chardet==2.1.1
@@ -27,7 +27,7 @@ mongoengine==0.8.2
 nltk==2.0.5
 oauth2==1.5.211
 psutil==2.1.0
-pyes==0.90.1
+pyes==0.99.5
 simplejson==3.4.0
 pyflakes==0.6.1
 pymongo==2.6
@@ -36,8 +36,8 @@ python-gflags==2.0
 pytz==2013b
 raven==3.1.17
 readline==6.2.4.1
-redis==2.8.0
-hiredis==0.1.1
+redis==2.10.3
+hiredis==0.2.0
 requests==2.5.2
 seacucumber==1.5
 South==0.7.6

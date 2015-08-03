@@ -64,7 +64,7 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
         stringBuilder.append(String.format(nowFollowingYou, userString));
 
         stringBuilder.setSpan(linkColor, 0, activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(contentColor, activity.user.username.length() + 1, activity.user.username.length() + 1 + nowFollowingYou.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(contentColor, activity.user.username.length() + 1, stringBuilder.length() - 0, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }
 

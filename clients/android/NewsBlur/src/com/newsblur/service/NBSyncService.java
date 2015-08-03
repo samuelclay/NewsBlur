@@ -324,19 +324,20 @@ public class NBSyncService extends Service {
                     
                 NewsBlurResponse response = ra.doRemote(apiManager);
 
-                // if we attempted a call and it failed, do not mark the action as done
-                if (response != null) {
-                    if (response.isError()) {
-                        if (response.isUserError()) {
-                            Log.d(this.getClass().getName(), "Discarding reading action with user error.");
-                        } else {
-                            continue actionsloop;
-                        }
-                    }
+                if (response == null) {
+                    Log.e(this.getClass().getName(), "Discarding reading action with internal API error.");
+                    dbHelper.clearAction(id);
+                } else if (response.isProtocolError) {
+                    // the network failed or we got a non-200, so be sure we retry
+                    continue actionsloop;
+                } else if (response.isError()) {
+                    Log.e(this.getClass().getName(), "Discarding reading action with user error.");
+                    dbHelper.clearAction(id);
+                } else {
+                    // success!
+                    dbHelper.clearAction(id);
+                    FollowupActions.add(ra);
                 }
-
-                dbHelper.clearAction(id);
-                FollowupActions.add(ra);
             }
         } finally {
             closeQuietly(c);
@@ -580,10 +581,6 @@ public class NBSyncService extends Service {
             
                 if (! isStoryResponseGood(apiResponse)) return;
 
-                // if any reading activities happened during the API call, the result is now stale.
-                // discard it and start again
-                if (dbHelper.getActions(false).getCount() > 0) return;
-
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
                 FeedStoriesSeen.put(fs, totalStoriesSeen);
@@ -719,6 +716,10 @@ public class NBSyncService extends Service {
      */
     public static boolean isFeedFolderSyncRunning() {
         return (HousekeepingRunning || ActionsRunning || RecountsRunning || FFSyncRunning || CleanupService.running() || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
+    }
+
+    public static boolean isFeedCountSyncRunning() {
+        return (HousekeepingRunning || RecountsRunning || FFSyncRunning);
     }
 
     /**

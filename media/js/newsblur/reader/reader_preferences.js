@@ -421,7 +421,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Default story order',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site and per-folder basis.')
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site and per-folder basis.'),
+                            $.make('div', { className: 'NB-clear-overrides-order NB-preference-sublabel-link NB-splash-link' }, "Clear all overrides")
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
@@ -656,6 +657,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-option', title: 'Tumblr' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-tumblr', name: 'story_share_tumblr' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-tumblr' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Blogger' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-blogger', name: 'story_share_blogger' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-blogger' })
                             ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Delicious' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-delicious', name: 'story_share_delicious' }),
@@ -1352,6 +1357,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $.targetIs(e, { tagSelector: '.NB-clear-overrides-view' }, function($t, $p) {
             e.preventDefault();
             self.clear_overrides('view');
+        });
+        $.targetIs(e, { tagSelector: '.NB-clear-overrides-order' }, function($t, $p) {
+            e.preventDefault();
+            self.clear_overrides('order');
         });
         $.targetIs(e, { tagSelector: '.NB-clear-overrides-layout' }, function($t, $p) {
             e.preventDefault();

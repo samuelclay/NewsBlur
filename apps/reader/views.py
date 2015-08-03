@@ -68,11 +68,14 @@ BANNED_URLS = [
 def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'www', 'debug']:
         username = request.subdomain
-        try:
-            if '.' in username:
-                username = username.split('.')[0]
-            user = User.objects.get(username__iexact=username)
-        except User.DoesNotExist:
+        if '.' in username:
+            username = username.split('.')[0]
+        user = User.objects.filter(username=username)
+        if not user:
+            user = User.objects.filter(username__iexact=username)
+        if user:
+            user = user[0]
+        if not user:
             return HttpResponseRedirect('http://%s%s' % (
                 Site.objects.get_current().domain,
                 reverse('index')))
@@ -1948,8 +1951,8 @@ def save_feed_chooser(request):
         except Feed.DoesNotExist:
             pass
     
-    request.user.profile.queue_new_feeds()
-    request.user.profile.refresh_stale_feeds(exclude_new=True)
+    UserSubscription.queue_new_feeds(request.user)
+    UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
