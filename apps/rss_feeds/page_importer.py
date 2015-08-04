@@ -36,6 +36,7 @@ BROKEN_PAGE_URLS = [
     'stackexchange.com',
     'twitter.com',
     'rankexploits',
+    'gamespot.com',
 ]
 
 class PageImporter(object):
