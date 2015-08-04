@@ -17,6 +17,7 @@
 
 ### Server-side
 
+ * [Python 2.7+](http://www.python.org): The language of choice.
  * [Django](http://www.djangoproject.com): Web framework written in Python, used 
    to serve all pages.
  * [Celery](http://ask.github.com/celery) & [RabbitMQ](http://www.rabbitmq.com): 
