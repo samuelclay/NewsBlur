@@ -37,7 +37,7 @@ class TextImporter:
         }
     
     def fetch(self, skip_save=False, return_document=False):
-        if any(broken_url in self.story_url for broken_url in BROKEN_URLS):
+        if self.story_url and any(broken_url in self.story_url for broken_url in BROKEN_URLS):
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: banned")
             return
             
