@@ -464,19 +464,19 @@ class Feed(models.Model):
         r.sadd('queued_feeds', *errored_feeds)
         r.zremrangebyrank('error_feeds', 0, -1)
         
-    def update_all_statistics(self, full=True, force=False):
-        recount = not self.counts_converted_to_redis
-        self.count_subscribers(recount=recount)
-        self.calculate_last_story_date()
-        
+    def update_all_statistics(self, has_new_stories=False, force=False):
+        recount = not self.counts_converted_to_redis        
         count_extra = False
         if random.random() < 0.01 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
         
-        if force or full:
+        self.count_subscribers(recount=recount)
+        self.calculate_last_story_date()
+        
+        if force or has_new_stories:
             self.save_feed_stories_last_month()
 
-        if force or (full and count_extra):
+        if force or (has_new_stories and count_extra):
             self.save_popular_authors()
             self.save_popular_tags()
             self.save_feed_story_history_statistics()        
@@ -643,11 +643,26 @@ class Feed(models.Model):
     
     @property
     def counts_converted_to_redis(self):
+        SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        subscriber_expire = int(SUBSCRIBER_EXPIRE_DATE.strftime('%s'))
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
-        return r.zscore("s:%s" % self.original_feed_id, -1)
+        total_key = "s:%s" % self.original_feed_id
+        premium_key = "sp:%s" % self.original_feed_id
+        last_recount = r.zscore(total_key, -1)
+
+        # Check for expired feeds with no active users who would have triggered a cleanup
+        if last_recount and last_recount > subscriber_expire:
+            return True
+        elif last_recount:
+            logging.info("   ---> [%-30s] ~SN~BW~FBFeed has expired redis subscriber counts (%s < %s), clearing..." % (
+                         self.title[:30], last_recount, subscriber_expire))
+            r.delete(total_key, -1)
+            r.delete(premium_key, -1)
+            
+        return False
         
     def count_subscribers(self, recount=True, verbose=False):
-        if recount:
+        if recount or not self.counts_converted_to_redis:
             from apps.profile.models import Profile
             Profile.count_feed_subscribers(feed_id=self.pk)
         SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
@@ -685,13 +700,6 @@ class Feed(models.Model):
                 premium += results[2] - 1
                 active_premium += results[3] - 1
                 
-                # Check for expired feeds with no active users who would ahve triggered a cleanup
-                last_recount = r.zscore(total_key, -1)
-                if last_recount and last_recount < subscriber_expire:
-                    logging.info("    ***> ~SN~BW~FBFeed has expired redis subscriber counts (%s < %s), clearing..." % (last_recount, subscriber_expire))
-                    # r.delete(total_key, -1)
-                    # r.delete(premium_key, -1)
-            
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
             original_premium_subscribers = self.premium_subscribers
@@ -1910,9 +1918,6 @@ class MStory(mongo.Document):
         return self
     
     def delete(self, *args, **kwargs):
-        feed = Feed.get_by_id(self.story_feed_id)
-        logging.debug('   ---> [%-30s] ~FRDeleting story: %s / %s / %s' %
-                          (unicode(feed)[:30], self.story_title[:48], self.story_feed_id, self.story_date))
         self.remove_from_redis()
         self.remove_from_search_index()
         

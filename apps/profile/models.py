@@ -417,7 +417,7 @@ class Profile(models.Model):
         RNewUserQueue.activate_all()
         
     @classmethod
-    def count_feed_subscribers(self, feed_id=None, user_id=None, verbose=False):
+    def count_feed_subscribers(self, feed_id=None, user_id=None, verbose=True):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
         entire_feed_counted = False

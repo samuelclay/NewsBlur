@@ -487,7 +487,7 @@ class ProcessFeed:
                       '~SB' if ret_values['same'] else '', ret_values['same'],
                       '~FR~SB' if ret_values['error'] else '', ret_values['error'],
                       len(self.fpf.entries)))
-        self.feed.update_all_statistics(full=bool(ret_values['new']), force=self.options['force'])
+        self.feed.update_all_statistics(has_new_stories=bool(ret_values['new']), force=self.options['force'])
         if ret_values['new']:
             self.feed.trim_feed()
             self.feed.expire_redis()
