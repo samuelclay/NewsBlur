@@ -603,7 +603,8 @@ def setup_syncookies():
     sudo('sudo /sbin/sysctl -w net.ipv4.tcp_syncookies=1')
 
 def setup_sudoers(user=None):
-    sudo('echo "%s ALL=(ALL) NOPASSWD: ALL\n" | sudo tee -a /etc/sudoers"' % (user or env.user))
+    sudo('echo "%s ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/sclay' % (user or env.user))
+    sudo('chmod 0440 /etc/sudoers.d/sclay')
 
 def setup_nginx():
     NGINX_VERSION = '1.6.2'
