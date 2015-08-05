@@ -1912,7 +1912,7 @@ class MStory(mongo.Document):
     def delete(self, *args, **kwargs):
         feed = Feed.get_by_id(self.story_feed_id)
         logging.debug('   ---> [%-30s] ~FRDeleting story: %s / %s / %s' %
-                          (unicode(feed)[:30], self, story.story_feed_id, self.story_date))
+                          (unicode(feed)[:30], self, self.story_feed_id, self.story_date))
         self.remove_from_redis()
         self.remove_from_search_index()
         
