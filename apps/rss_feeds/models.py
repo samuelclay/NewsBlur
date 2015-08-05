@@ -655,7 +655,7 @@ class Feed(models.Model):
             return True
         elif last_recount:
             logging.info("   ---> [%-30s] ~SN~BW~FBFeed has expired redis subscriber counts (%s < %s), clearing..." % (
-                         self.title[:30], last_recount, subscriber_expire))
+                         unicode(self)[:30], last_recount, subscriber_expire))
             r.delete(total_key, -1)
             r.delete(premium_key, -1)
             
