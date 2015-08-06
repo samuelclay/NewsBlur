@@ -2245,11 +2245,13 @@
 
             this.model.mark_feed_as_read([feed_id], cutoff_timestamp, direction, 
                                          feed_id == this.active_feed,  _.bind(function() {
-                if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed') {
-                    this.show_next_feed(1);
-                }
                 this.feeds_unread_count(feed_id);
             }, this));
+
+            if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed' && 
+                NEWSBLUR.reader.active_feed == feed_id) {
+                this.show_next_feed(1);
+            }
         },
         
         mark_folder_as_read: function(folder, days_back, direction) {
@@ -2267,10 +2269,12 @@
                 if (!this.socket || !this.socket.socket || !this.socket.socket.connected) {
                     this.force_feeds_refresh(null, false, feeds);
                 }
-                if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed') {
-                    this.show_next_feed(1);
-                }
             }, this));
+
+            if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed' &&
+                NEWSBLUR.reader.active_folder == folder) {
+                this.show_next_feed(1);
+            }
         },
         
         open_story_trainer: function(story_id, feed_id, options) {
