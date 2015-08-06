@@ -243,6 +243,7 @@ class UserAgentBanMiddleware:
         
         if 'profile' in request.path: return
         if 'haproxy' in request.path: return
+        if 'dbcheck' in request.path: return
         if 'account' in request.path: return
         if 'push' in request.path: return
         if getattr(settings, 'TEST_DEBUG'): return
