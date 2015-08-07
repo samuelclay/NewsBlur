@@ -7,7 +7,7 @@ class NBMuninGraph(MuninGraph):
 
     def __init__(self, *args, **kwargs):
         super(NBMuninGraph, self).__init__(*args, **kwargs)
-        self.host = os.environ["REDIS_HOST"]
+        self.host = os.environ.get("REDIS_HOST", "localhost")
     
     @property
     def graph_config(self):
