@@ -547,8 +547,8 @@ class UserSubscription(models.Model):
             logging.user(user, "~FBTrimming all read stories, ~SBnone found~SN.")
             return
 
-        r.sunionstore("%s:backup" % key, key)
-        r.expire("%s:backup" % key, 60*60*24)
+        # r.sunionstore("%s:backup" % key, key)
+        # r.expire("%s:backup" % key, 60*60*24)
         r.sunionstore(key, *["%s:%s" % (key, f) for f in feeds])
         new_rs = r.smembers(key)        
         
