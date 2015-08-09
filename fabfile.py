@@ -181,7 +181,7 @@ def ec2():
 
 def all():
     do()
-    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work']
+    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work', 'www']
 
 # =============
 # = Bootstrap =
@@ -793,8 +793,9 @@ def downgrade_pil():
 def setup_db_monitor():
     pull()
     with cd(env.NEWSBLUR_PATH):
-        sudo('pip install -r flask/requirements.txt')
         sudo('apt-get install -y python-mysqldb')
+        sudo('apt-get install -y libpq-dev python-dev')
+        sudo('pip install -r flask/requirements.txt')
         put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
         sudo('supervisorctl reread')
         sudo('supervisorctl update')
