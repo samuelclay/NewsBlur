@@ -70,8 +70,9 @@ def db_check_mongo():
 
 @app.route("/db_check/redis")
 def db_check_redis():
+    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis'})
     try:
-        r = redis.Redis(settings.REDIS['host'], db=0)
+        r = redis.Redis(redis_host['host'], db=0)
     except:
         abort(502)
     
@@ -83,8 +84,9 @@ def db_check_redis():
 
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
+    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_story'})
     try:
-        r = redis.Redis(settings.REDIS_STORY['host'], db=1)
+        r = redis.Redis(redis_host['host'], db=1)
     except:
         abort(502)
     
@@ -96,8 +98,9 @@ def db_check_redis_story():
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
+    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_sessions'})
     try:
-        r = redis.Redis(settings.REDIS_SESSIONS['host'], db=5)
+        r = redis.Redis(redis_host['host'], db=5)
     except:
         abort(502)
     
@@ -109,8 +112,9 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
+    es_host = getattr(settings, ELASTICSEARCH_FEED_HOSTS, ['db_search_feed:9200'])
     try:
-        conn = pyes.ES(settings.ELASTICSEARCH_FEED_HOSTS)
+        conn = pyes.ES(es_host)
     except:
         abort(502)
     

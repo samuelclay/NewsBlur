@@ -794,7 +794,8 @@ def setup_db_monitor():
     pull()
     with cd(env.NEWSBLUR_PATH):
         sudo('pip install -r flask/requirements.txt')
-        put('flask/supervisor_db_montior.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
+        sudo('apt-get install -y python-mysqldb')
+        put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
         sudo('supervisorctl reread')
         sudo('supervisorctl update')
         
