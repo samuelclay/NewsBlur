@@ -112,7 +112,7 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
-    es_host = getattr(settings, ELASTICSEARCH_FEED_HOSTS, ['db_search_feed:9200'])
+    es_host = getattr(settings, 'ELASTICSEARCH_FEED_HOSTS', ['db_search_feed:9200'])
     try:
         conn = pyes.ES(es_host)
     except:
