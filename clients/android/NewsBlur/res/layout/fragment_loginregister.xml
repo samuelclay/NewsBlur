@@ -7,7 +7,6 @@
     android:outAnimation="@android:anim/fade_out" >
    
     <RelativeLayout
-        android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
     	android:paddingBottom="20dp">
@@ -39,7 +38,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/login_field_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/login_button_container"
@@ -68,7 +66,6 @@
     </RelativeLayout>
     
     <RelativeLayout
-        android:id="@+id/registration_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
     	android:paddingBottom="20dp">
