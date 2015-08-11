@@ -273,7 +273,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      * DB model, so having Main also load it would cause some lag.
      */
     public void pushUnreadCounts() {
-        activity.updateUnreadCounts(adapter.totalNeutCount, adapter.totalPosCount);
+        activity.updateUnreadCounts((adapter.totalNeutCount+adapter.totalSocialNeutCount), (adapter.totalPosCount+adapter.totalSocialPosiCount));
     }
 
 	@OnGroupClick(R.id.folderfeed_list) boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
