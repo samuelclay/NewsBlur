@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -77,10 +76,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     @FindView(R.id.reading_item_authors) TextView itemAuthors;
 	@FindView(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
-	private FlowLayout tagContainer;
+	@FindView(R.id.reading_item_tags) FlowLayout tagContainer;
 	private View view;
 	private UserDetails user;
-	private ImageView feedIcon;
     private Reading activity;
     private DefaultFeedView selectedFeedView;
     @FindView(R.id.save_story_button) Button saveButton;
@@ -308,7 +306,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
         TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
         TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-        feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
+        ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
 		if (TextUtils.equals(feedColor, "#null") || TextUtils.equals(feedFade, "#null")) {
             feedColor = "#303030";
@@ -352,7 +350,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }
 
         if (story.tags.length <= 0) {
-            tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
             tagContainer.setVisibility(View.GONE);
         }
 
@@ -391,7 +388,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
 	private void setupTags() {
-		tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
         ViewUtils.setupTags(getActivity());
 		for (String tag : story.tags) {
 			View v = ViewUtils.createTagView(inflater, getFragmentManager(), tag, classifier, this, story.feedId);
