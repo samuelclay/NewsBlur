@@ -248,9 +248,7 @@ def setup_db(engine=None, skip_common=False):
         setup_db_firewall()
     setup_motd('db')
     copy_db_settings()
-    if engine == "memcached":
-        setup_memcached()
-    elif engine == "postgres":
+    if engine == "postgres":
         setup_postgres(standby=False)
         setup_postgres_backups()
     elif engine == "postgres_slave":
@@ -815,6 +813,7 @@ def setup_db_firewall():
         # 11211,  # Memcached
         3060,   # Node original page server
         9200,   # Elasticsearch
+        5000,   # DB Monitor
     ]
     sudo('ufw --force reset')
     sudo('ufw default deny')
