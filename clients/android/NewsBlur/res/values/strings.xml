@@ -79,8 +79,6 @@
     <string name="profile_following">FOLLOWING</string>
     <string name="profile_followers">FOLLOWERS</string>
     <string name="profile_shared">SHARED STORIES</string>
-    <string name="profile_no_bio">No bio included</string>
-    <string name="profile_no_location">Location not set</string>
     <string name="profile_ago">AGO</string>
     <string name="profile_recent_actvity">Activities</string>
     <string name="profile_recent_interactions">Interactions</string>
