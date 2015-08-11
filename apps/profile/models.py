@@ -480,7 +480,9 @@ class Profile(models.Model):
             if entire_feed_counted:
                 now = int(datetime.datetime.now().strftime('%s'))
                 r.zadd(key, -1, now)
+                r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
                 r.zadd(premium_key, -1, now)
+                r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
                           (feed.title[:30], total, active, premium, active_premium))
