@@ -267,6 +267,7 @@ def setup_db(engine=None, skip_common=False):
         setup_db_search()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
+    setup_db_monitor()
     setup_usage_monitor()
     done()
 
@@ -434,7 +435,7 @@ def setup_python():
     #     sudo('python setup.py install')
 
     with settings(warn_only=True):
-        sudo('echo "import sys; sys.setdefaultencoding(\"utf-8\")" | sudo tee /usr/lib/python2.7/sitecustomize.py')
+        sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
@@ -974,6 +975,7 @@ def setup_redis(slave=False):
     sudo("chown root.root /etc/rc.local")
     sudo("chmod a+x /etc/rc.local")
     sudo('echo "never" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled')
+    run('echo "\nnet.core.somaxconn=65535\n" | sudo tee -a /etc/sysctl.conf', pty=False)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')

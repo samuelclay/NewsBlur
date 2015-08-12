@@ -550,7 +550,7 @@ class UserSubscription(models.Model):
         # r.sunionstore("%s:backup" % key, key)
         # r.expire("%s:backup" % key, 60*60*24)
         r.sunionstore(key, *["%s:%s" % (key, f) for f in feeds])
-        new_rs = r.smembers(key)        
+        new_rs = r.smembers(key)
         
         missing_rs = []
         missing_count = 0
