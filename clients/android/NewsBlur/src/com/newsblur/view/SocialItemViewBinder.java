@@ -59,8 +59,6 @@ public class SocialItemViewBinder implements ViewBinder {
             } else {
                 view.setBackgroundDrawable(null);
             }
-
-			((TextView) view).setText("");
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {
 			String authors = cursor.getString(columnIndex);
