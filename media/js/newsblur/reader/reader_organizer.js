@@ -178,6 +178,10 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         return $folders;
     },
     
+    replace_folders: function() {
+        $(".NB-folders", this.$modal).replaceWith(NEWSBLUR.utils.make_folders());
+    },
+    
     // =============
     // = Selecting =
     // =============
@@ -281,6 +285,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             NEWSBLUR.assets.feeds.trigger('reset');
             $move.text('Moved!');
             if (self._open_folder) self.toggle_folder_add();
+            self.replace_folders();
         }, function(error) {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
