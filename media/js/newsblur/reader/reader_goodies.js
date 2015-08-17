@@ -58,6 +58,22 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://reederapp.com/ios'
+              }, 'Download for iPhone and iPad'),
+              $.make('div', { className: 'NB-goodies-reeder-ios' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Reeder for iOS')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://supertop.co/unread/'
+              }, 'Download for iPhone and iPad'),
+              $.make('div', { className: 'NB-goodies-unread-ios' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Unread for iOS')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'https://market.android.com/details?id=bitwrit.Blar'
               }, 'View in Android Market'),
               $.make('div', { className: 'NB-goodies-android' }),
@@ -133,6 +149,22 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://reederapp.com/mac'
+              }, 'Download Reeder for Mac'),
+              $.make('div', { className: 'NB-goodies-reeder-mac' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Reeder for Mac')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CB8QFjAAahUKEwio9f6u_bDHAhXLOIgKHdRdAuY&url=https%3A%2F%2Fitunes.apple.com%2Fus%2Fapp%2Fleaf-rss-news-reader%2Fid576338668%3Fmt%3D12&ei=IUfSVejgIcvxoATUu4mwDg&usg=AFQjCNGAqtn9qxkLqh5LfjPUZ0QFKr1mLg&sig2=yreuovrI2rRrWvzUkB4ydw&bvm=bv.99804247,d.cGU'
+              }, 'Download Leaf for Mac'),
+              $.make('div', { className: 'NB-goodies-leaf' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Leaf for Mac')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'http://www.tafitiapp.com/mx/'
               }, 'Download Tafiti for Windows 8'),
               $.make('div', { className: 'NB-goodies-tafiti' }),
@@ -158,6 +190,15 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register NewsBlur as an RSS reader')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://addons.mozilla.org/en-US/firefox/addon/newsblurcom-notifier/'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-firefox' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: NewsBlur Notifier'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, 'Shows a button with the number of unread articles.')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('div', { className: 'NB-goodies-firefox' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Open links to background tab'),
               $.make('div', { className: 'NB-goodies-subtitle' }, [
@@ -177,14 +218,6 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
-                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
-                  href: '#'
-              }, 'Download'),
-              $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: NewsBlur Chrome Web App')
-            ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
                   className: 'NB-modal-submit-button NB-modal-submit-green',
                   href: 'https://chrome.google.com/webstore/detail/rss-subscription-extensio/nlbjncdgjeocebhnmkbbbdekmmmcbfjd/details?hl=en'
               }, 'Add to Chrome'),
@@ -193,6 +226,24 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-subtitle' }, [
                 'To use this extension, use the custom add site URL below.'
               ])
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/rss-subscription-extensio/bmjffnfcokiodbeiamclanljnaheeoke'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: NewsBlur Chrome Web App'),
+              $.make('div', { className: 'NB-goodies-subtitle'}, 'Adds one-click subscription to your toolbar.')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur unread count notifier'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, 'Shows the unread count from your NewsBlur account.')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
@@ -237,18 +288,11 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-safari-notifier NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://menakite.eu/~anaconda/safari/NewsBlur-Counter/NewsBlur-Counter.safariextz'
+                  href: 'https://github.com/anaconda/NewsBlur-Counter'
               }, 'Download'),
               $.make('div', { className: 'NB-goodies-safari' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Safari: NewsBlur unread count notifier')
-            ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
-              }, 'Download'),
-              $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur unread count notifier')
+              $.make('div', { className: 'NB-goodies-title' }, 'Safari: NewsBlur unread count notifier'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, 'Safari extension to show on the toolbar how many unread stories are waiting for you on NewsBlur.')
             ]),
             
             $.make('fieldset', [
@@ -295,12 +339,6 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             navigator.registerContentHandler("application/rss+xml",
                                              host + "?url=%s",
                                              "NewsBlur");
-        });
-
-        $.targetIs(e, { tagSelector: '.NB-goodies-chrome-link' }, function($t, $p) {
-            e.preventDefault();
-
-            window.location.href = 'https://chrome.google.com/webstore/detail/rss-subscription-extensio/bmjffnfcokiodbeiamclanljnaheeoke';
         });
 
         $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function($t, $p) {

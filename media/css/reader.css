@@ -9211,6 +9211,38 @@ form.opml_import_form input {
   background: transparent url('/media/img/mobile/tafiti.png') no-repeat 0 0;
   background-size: 28px;
 }
+.NB-modal-goodies .NB-goodies-reeder-ios {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('/media/img/mobile/icon_reeder_ios.png') no-repeat 0 0;
+  background-size: 28px;
+}
+.NB-modal-goodies .NB-goodies-reeder-mac {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('/media/img/mobile/icon_reeder_mac.png') no-repeat 0 0;
+  background-size: 28px;
+}
+.NB-modal-goodies .NB-goodies-leaf {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('/media/img/mobile/icon_leaf.png') no-repeat 0 0;
+  background-size: 28px;
+}
+.NB-modal-goodies .NB-goodies-unread-ios {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('/media/img/mobile/icon_unread.png') no-repeat 0 0;
+  background-size: 28px;
+}
 .NB-modal-goodies .NB-goodies-bluree {
   float: right;
   width: 28px;
