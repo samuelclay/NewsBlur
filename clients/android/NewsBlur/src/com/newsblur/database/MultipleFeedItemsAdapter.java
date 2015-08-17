@@ -105,18 +105,6 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
         if (!PrefsUtils.isShowContentPreviews(context)) {
             v.findViewById(R.id.row_item_content).setVisibility(View.GONE);
         }
-
-        // our RelativeLayout tries to make row_item_favicon_borderbar_[12] fill the parent, but the height
-        // is wrap_content, so the height won't be known until after layout.
-        v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int height = v.getMeasuredHeight();
-                v.findViewById(R.id.row_item_favicon_borderbar_1).setMinimumHeight(height);
-                v.findViewById(R.id.row_item_favicon_borderbar_2).setMinimumHeight(height);
-                v.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-            }
-        });
 	}
 	
 }

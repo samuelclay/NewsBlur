@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     style="?selectorStoryBackground" >
+
+<!--
+    This RelativeLayout really should be the top-most parent with a full width and wraped height. However,
+    due to this being used in a scrollable ListView, the height of the favicon_borderbar would never be
+    set, since the height of each row is calculated very lazily.  Wrapping the whole thing in an otherwise
+    useless LinearLayout forces the heights to be calculated correctly every time.  If the lazy layout
+    bug in scrolling ListViews can ever be fixed, the extra layout can be removed.
+-->
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <View
         android:id="@+id/row_item_favicon_borderbar_1"
@@ -94,3 +105,5 @@
         android:textSize="11sp" />
 
 </RelativeLayout>
+
+</LinearLayout>
