@@ -637,7 +637,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         Collections.sort(list, CustomComparator);
     }
 
-    private static Comparator<String> CustomComparator = new Comparator<String>() {
+    private final static Comparator<String> CustomComparator = new Comparator<String>() {
         @Override
         public int compare(String s1, String s2) {
             if (TextUtils.equals(s1, s2)) return 0;
