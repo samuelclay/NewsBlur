@@ -168,7 +168,7 @@
             var self = this;
         
             this.$modal.modal({
-                'minWidth': 800,
+                'minWidth': $(window).width() - 80,
                 'maxWidth': 800,
                 'overlayClose': true,
                 'onOpen': function (dialog) {

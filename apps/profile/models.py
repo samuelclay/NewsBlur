@@ -1012,7 +1012,7 @@ class PaymentHistory(models.Model):
         }
     
     @classmethod
-    def report(cls, months=24):
+    def report(cls, months=25):
         def _counter(start_date, end_date):
             payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
             payments = payments.aggregate(avg=Avg('payment_amount'), 

@@ -432,3 +432,21 @@
     line-height: 12px;
     color: #505050;
 }
+
+/* ========== */
+/* = Mobile = */
+/* ========== */
+
+@media screen and (max-width: 680px) {
+    .NB-bookmarklet .NB-bookmarklet-main {
+        position: static;
+        float: none;
+        width: auto;
+    }
+    .NB-bookmarklet .NB-bookmarklet-comment-input textarea {
+        width: auto;
+    }
+    .NB-bookmarklet .NB-bookmarklet-side {
+        width: 90%;
+    }
+}
