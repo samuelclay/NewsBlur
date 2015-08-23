@@ -124,11 +124,20 @@ NEWSBLUR.Modal.prototype = {
     initialize_feed: function(feed_id) {
         this.feed_id = feed_id;
         this.feed = this.model.get_feed(feed_id);
-        this.options.social_feed = this.feed.is_social();
+        this.options.social_feed = this.feed && this.feed.is_social();
         
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
-        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
+        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true)).show();
+    },
+    
+    initialize_folder: function(folder_title) {
+        this.folder_title = folder_title;
+        this.folder = this.model.get_folder(folder_title);
+        
+        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_folder.png');
+        $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.folder_title);
+        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).hide();
     },
     
     switch_tab: function(newtab) {
