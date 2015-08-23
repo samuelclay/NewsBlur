@@ -953,8 +953,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
     
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
-    print feed_ids, folder_title, usersubs
-    if feed_ids:
+    if feed_ids and user.profile.is_premium:
         params = {
             "user_id": user.pk, 
             "feed_ids": feed_ids,
@@ -995,7 +994,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         feed = Feed.get_by_id(story.story_feed_id)
         story_content = (story.story_content_z and
                          zlib.decompress(story.story_content_z))
-        story_content = """<img src="//%s/rss_feeds/icon/%s" style="vertical-align:middle"> %s <br><br> %s""" % (
+        story_content = """<img src="//%s/rss_feeds/icon/%s"> %s <br><br> %s""" % (
             Site.objects.get_current().domain,
             story.story_feed_id,
             feed.feed_title if feed else "",
@@ -1011,7 +1010,15 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             'pubdate': localtime_for_timezone(story.story_date, user.profile.timezone),
         }
         rss.add_item(**story_data)
-        
+    
+    if not user.profile.is_premium:
+        rss.add_item({
+            'title': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
+            'link': 'https://%s' % Site.objects.get_current().domain,
+            'unique_id': 'premium_only',
+            'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),
+        })
+    
     logging.user(request, "~FBGenerating ~SB%s~SN's folder RSS feed (%s, %s stories): ~FM%s" % (
         user.username,
         folder_title,
