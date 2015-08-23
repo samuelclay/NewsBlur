@@ -261,6 +261,30 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ]))
                 ])
             ])),
+            (this.folder && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-feed NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-meta' }),
+                    'Folder RSS Feed Address'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', { className: 'NB-exception-input-wrapper' }, [
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('label', { 'for': 'NB-exception-input-unread', className: 'NB-exception-label' }, [
+                            $.make('div', { className: 'NB-folder-icon' }),
+                            'Unread+Focus:'
+                        ]),
+                        $.make('input', { type: 'text', id: 'NB-exception-input-unread', className: 'NB-exception-input-unread NB-input', name: 'folder_rss_unread_url', value: this.folder.rss_url('unread') })
+                    ]),
+                    $.make('div', { className: 'NB-exception-input-wrapper' }, [
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('label', { 'for': 'NB-exception-input-focus', className: 'NB-exception-label' }, [
+                            $.make('div', { className: 'NB-folder-icon' }),
+                            'Only Focus:'
+                        ]),
+                        $.make('input', { type: 'text', id: 'NB-exception-input-focus', className: 'NB-exception-input-focus NB-input', name: 'folder_rss_focus_url', value: this.folder.rss_url('focus') })
+                    ])
+                ])
+            ])),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-exception-block-only NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 4:'),
