@@ -3013,10 +3013,10 @@
             NEWSBLUR.organizer = new NEWSBLUR.ReaderOrganizer(options);
         },
         
-        open_feed_exception_modal: function(feed_id) {
+        open_feed_exception_modal: function(feed_id, options) {
             feed_id = feed_id || this.active_feed;
             
-            NEWSBLUR.feed_exception = new NEWSBLUR.ReaderFeedException(feed_id);
+            NEWSBLUR.feed_exception = new NEWSBLUR.ReaderFeedException(feed_id, options);
         },
         
         open_feed_statistics_modal: function(feed_id) {
@@ -3325,6 +3325,11 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subfolder' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Create a new subfolder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-settings' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Folder settings')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move' }, [
@@ -5579,6 +5584,18 @@
                 if (!$t.hasClass('NB-disabled')) {
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');                    
                     self.open_feed_exception_modal(feed_id);
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-settings' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var folder_title = $t.parents('.NB-menu-manage').data('folder_name');
+                    var $folder = $t.parents('.NB-menu-manage').data('$folder');
+
+                    self.open_feed_exception_modal(folder_title, {
+                        folder_title: folder_title, 
+                        $folder: $folder
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-reload' }, function($t, $p){

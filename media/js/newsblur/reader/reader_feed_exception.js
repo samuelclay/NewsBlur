@@ -9,7 +9,9 @@ NEWSBLUR.ReaderFeedException = function(feed_id, options) {
     this.model   = NEWSBLUR.assets;
     this.feed_id = feed_id;
     this.feed    = this.model.get_feed(feed_id);
-
+    this.folder_title  = this.options.folder_title;
+    this.folder  = this.folder_title && NEWSBLUR.assets.get_folder(this.folder_title);
+    
     this.runner();
 };
 
@@ -19,7 +21,11 @@ NEWSBLUR.ReaderFeedException.prototype.constructor = NEWSBLUR.ReaderFeedExceptio
 _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     
     runner: function() {
-        NEWSBLUR.Modal.prototype.initialize_feed.call(this, this.feed_id);
+        if (this.folder) {
+            NEWSBLUR.Modal.prototype.initialize_folder.call(this, this.folder_title);
+        } else {
+            NEWSBLUR.Modal.prototype.initialize_feed.call(this, this.feed_id);            
+        }
         this.make_modal();
         this.show_recommended_options_meta();
         this.handle_cancel();
@@ -36,11 +42,18 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
     initialize_feed: function(feed_id) {
         var view_setting = this.model.view_setting(feed_id, 'view');
+        var story_layout = this.model.view_setting(feed_id, 'layout');
         NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
         $('input[name=feed_link]', this.$modal).val(this.feed.get('feed_link'));
         $('input[name=feed_address]', this.$modal).val(this.feed.get('feed_address'));
         $('input[name=view_settings]', this.$modal).each(function() {
             if ($(this).val() == view_setting) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=story_layout]', this.$modal).each(function() {
+            if ($(this).val() == story_layout) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -92,10 +105,10 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $.make('h2', { className: 'NB-modal-title NB-exception-block-only' }, 'Fix a misbehaving site'),
             $.make('h2', { className: 'NB-modal-title' }, 'Site settings'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon' }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
-                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    (this.feed.get('num_subscribers') && $.make('span', { className: 'NB-modal-feed-subscribers' },Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true)))
+                    $.make('span', { className: 'NB-modal-feed-title' }),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' })
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-view NB-modal-submit NB-settings-only' }, [
@@ -138,7 +151,40 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                                     $.make("div", { className: "NB-view-title" }, "Story")
                                 ])
                             ])
-                        ])                      
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Story layout'
+                        ]),
+                        $.make('div', { className: 'NB-preference-options NB-view-settings' }, [
+                            $.make('div', { className: "" }, [
+                                $.make('label', { 'for': 'NB-preference-layout-1' }, [
+                                    $.make('input', { id: 'NB-preference-layout-1', type: 'radio', name: 'story_layout', value: 'full' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_full_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Full")
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-2' }, [
+                                    $.make('input', { id: 'NB-preference-layout-2', type: 'radio', name: 'story_layout', value: 'split' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_split_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Split")
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-3' }, [
+                                    $.make('input', { id: 'NB-preference-layout-3', type: 'radio', name: 'story_layout', value: 'list' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_list_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "List")
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-4' }, [
+                                    $.make('input', { id: 'NB-preference-layout-4', type: 'radio', name: 'story_layout', value: 'grid' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_grid_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Grid")
+                                ])
+                            ])
+                        ])                                                  
                     ])
                 ])
             ]),
@@ -416,6 +462,21 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         });
     },
     
+    animate_saved: function() {
+        var $status = $('.NB-exception-option-view .NB-exception-option-status', this.$modal);
+        $status.text('Saved').animate({
+            'opacity': 1
+        }, {
+            'queue': false,
+            'duration': 600,
+            'complete': function() {
+                _.delay(function() {
+                    $status.animate({'opacity': 0}, {'queue': false, 'duration': 1000});
+                }, 300);
+            }
+        });
+    },
+    
     handle_change: function(elem, e) {
         var self = this;
         
@@ -428,19 +489,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         
         $.targetIs(e, { tagSelector: 'input[name=view_settings]' }, function($t, $p){
             self.model.view_setting(self.feed_id, {'view': $t.val()});
-
-            var $status = $('.NB-exception-option-view .NB-exception-option-status', self.$modal);
-            $status.text('Saved').animate({
-                'opacity': 1
-            }, {
-                'queue': false,
-                'duration': 600,
-                'complete': function() {
-                    _.delay(function() {
-                        $status.animate({'opacity': 0}, {'queue': false, 'duration': 1000});
-                    }, 300);
-                }
-            });
+            self.animate_saved();
+        });
+        $.targetIs(e, { tagSelector: 'input[name=story_layout]' }, function($t, $p){
+            self.model.view_setting(self.feed_id, {'layout': $t.val()});
+            self.animate_saved();
         });
     }
     
