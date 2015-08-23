@@ -327,8 +327,8 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         var url = NEWSBLUR.URLs['folder_rss'];
         url = url.replace('{user_id}', NEWSBLUR.Globals.user_id);
         url = url.replace('{secret_token}', NEWSBLUR.Globals.secret_token);
-        url = url.replace('{folder_title}', encodeURIComponent(this.options.title));
-        url = url + "?filter=" + filter;
+        url = url.replace('{unread_filter}', filter);
+        url = url.replace('{folder_title}', Inflector.sluggify(this.options.title));
         console.log(['rss_url', this]);
         
         return "https://" + NEWSBLUR.URLs.domain + url;

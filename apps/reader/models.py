@@ -13,6 +13,7 @@ from django.db.models import Count
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.template.defaultfilters import slugify
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
 from apps.reader.managers import UserSubscriptionManager
@@ -260,7 +261,7 @@ class UserSubscription(models.Model):
     @classmethod
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
                      order='newest', read_filter='all', usersubs=None, cutoff_date=None,
-                     all_feed_ids=None):
+                     all_feed_ids=None, cache_prefix=""):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
         across_all_feeds = False
         
@@ -277,8 +278,8 @@ class UserSubscription(models.Model):
         
         # feeds_string = ""
         feeds_string = ','.join(str(f) for f in sorted(all_feed_ids))[:30]
-        ranked_stories_keys         = 'zU:%s:feeds:%s'  % (user_id, feeds_string)
-        unread_ranked_stories_keys  = 'zhU:%s:feeds:%s' % (user_id, feeds_string)
+        ranked_stories_keys         = '%szU:%s:feeds:%s'  % (cache_prefix, user_id, feeds_string)
+        unread_ranked_stories_keys  = '%szhU:%s:feeds:%s' % (cache_prefix, user_id, feeds_string)
         stories_cached = rt.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached and unreads_cached:
@@ -1479,7 +1480,32 @@ class UserSubscriptionFolders(models.Model):
             return feeds
 
         return _flat(folders)
-    
+        
+    def feed_ids_under_folder_slug(self, slug):
+        folders = json.decode(self.folders)
+        
+        def _feeds(folder, found=False, folder_title=None):
+            feeds = []
+            local_found = False
+            for item in folder:
+                if isinstance(item, int) and item not in feeds and found:
+                    feeds.append(item)
+                elif isinstance(item, dict):
+                    for f_k, f_v in item.items():
+                        if slugify(f_k) == slug:
+                            print "Found slug: ", slug, f_k, folder_title
+                            found = True
+                            local_found = True
+                            folder_title = f_k
+                        found_feeds, folder_title = _feeds(f_v, found, folder_title)
+                        feeds.extend(found_feeds)
+                        if local_found:
+                            found = False
+                            local_found = False
+            return feeds, folder_title
+
+        return _feeds(folders)
+        
     @classmethod
     def add_all_missing_feeds(cls):
         usf = cls.objects.all().order_by('pk')
