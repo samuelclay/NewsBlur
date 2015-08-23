@@ -8579,22 +8579,27 @@ form.opml_import_form input {
 .NB-modal-exception .NB-exception-block-only {
     display: block;
 }
-.NB-modal-exception.NB-modal-feed-settings .NB-modal-title {
+.NB-modal-exception.NB-modal-feed-settings .NB-modal-title,
+.NB-modal-exception.NB-modal-folder-settings .NB-modal-title {
     display: block;
 }
 .NB-modal-exception .NB-modal-title.NB-exception-block-only {
     display: block;
 }
+.NB-modal-exception.NB-modal-folder-settings .NB-exception-block-only,
 .NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
     display: none;
 }
 .NB-modal-exception.NB-modal-feed-settings .NB-exception-only,
-.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+.NB-modal-exception.NB-modal-folder-settings .NB-exception-only,
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only,
+.NB-modal-exception.NB-modal-folder-settings .NB-exception-block-only {
     display: none;
 }
 .NB-modal-exception .NB-settings-only {
     display: none;
 }
+.NB-modal-exception.NB-modal-folder-settings .NB-settings-only,
 .NB-modal-exception.NB-modal-feed-settings .NB-settings-only {
     display: block;
 }
@@ -8653,20 +8658,23 @@ form.opml_import_form input {
 .NB-modal-exception .NB-fieldset-fields .NB-error {
     padding: 6px 0 6px 4px;
 }
-.NB-modal-feed-settings .NB-exception-option-status {
+.NB-modal-feed-settings .NB-exception-option-status,
+.NB-modal-folder-settings .NB-exception-option-status {
     color: #3945C0;
     font-weight: bold;
     text-transform: uppercase;
     opacity: 0;
 }
 
-.NB-modal-feed-settings .NB-preference-label {
+.NB-modal-feed-settings .NB-preference-label,
+.NB-modal-folder-settings .NB-preference-label {
     float: left;
     margin: 10px 0;
     width: 102px;
     clear: both;
 }
-.NB-modal-feed-settings .NB-preference-options {
+.NB-modal-feed-settings .NB-preference-options,
+.NB-modal-folder-settings .NB-preference-options {
     margin: 6px 0;
     float: left;
     overflow: hidden;
