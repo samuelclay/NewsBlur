@@ -27,14 +27,15 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             NEWSBLUR.Modal.prototype.initialize_feed.call(this, this.feed_id);            
         }
         this.make_modal();
-        this.show_recommended_options_meta();
+        if (this.feed) {
+            this.show_recommended_options_meta();
+            _.delay(_.bind(function() {
+                this.get_feed_settings();
+            }, this), 50);
+        }
         this.handle_cancel();
         this.open_modal();
         this.initialize_feed(this.feed_id);
-        
-        _.delay(_.bind(function() {
-            this.get_feed_settings();
-        }, this), 50);
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
@@ -43,9 +44,17 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     initialize_feed: function(feed_id) {
         var view_setting = this.model.view_setting(feed_id, 'view');
         var story_layout = this.model.view_setting(feed_id, 'layout');
-        NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
-        $('input[name=feed_link]', this.$modal).val(this.feed.get('feed_link'));
-        $('input[name=feed_address]', this.$modal).val(this.feed.get('feed_address'));
+
+        if (this.feed) {
+            NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
+            $('input[name=feed_link]', this.$modal).val(this.feed.get('feed_link'));
+            $('input[name=feed_address]', this.$modal).val(this.feed.get('feed_address'));
+            $(".NB-exception-option-page", this.$modal).toggle(this.feed.is_feed() || this.feed.is_social());
+            $(".NB-view-setting-original", this.$modal).toggle(this.feed.is_feed() || this.feed.is_social());
+        } else if (this.folder) {
+            NEWSBLUR.Modal.prototype.initialize_folder.call(this, feed_id);
+        }
+        
         $('input[name=view_settings]', this.$modal).each(function() {
             if ($(this).val() == view_setting) {
                 $(this).attr('checked', true);
@@ -59,14 +68,20 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }
         });
         
-        $(".NB-exception-option-page", this.$modal).toggle(this.feed.is_feed() || this.feed.is_social());
-        $(".NB-view-setting-original", this.$modal).toggle(this.feed.is_feed() || this.feed.is_social());
-        if (this.feed.get('exception_type')) {
+        if (this.folder) {
+            this.$modal.addClass('NB-modal-folder-settings');
             this.$modal.removeClass('NB-modal-feed-settings');
+            $(".NB-modal-title", this.$modal).text("Folder Settings");
+        } else if (this.feed.get('exception_type')) {
+            this.$modal.removeClass('NB-modal-folder-settings');
+            this.$modal.removeClass('NB-modal-feed-settings');
+            $(".NB-modal-title", this.$modal).text("Fix a misbehaving site");
         } else {
+            this.$modal.removeClass('NB-modal-folder-settings');
             this.$modal.addClass('NB-modal-feed-settings');
+            $(".NB-modal-title", this.$modal).text("Site Settings");
         }
-        
+
         this.resize();
     },
     
@@ -202,7 +217,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-feed NB-modal-submit' }, [
+            (this.feed && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-feed NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 2:'),
@@ -223,8 +238,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         $.make('div', { className: 'NB-exception-feed-history' })
                     ]))
                 ])
-            ]),
-            ($.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-page NB-modal-submit' }, [
+            ])),
+            (this.feed && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-page NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 3:'),
@@ -488,11 +503,19 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         });
         
         $.targetIs(e, { tagSelector: 'input[name=view_settings]' }, function($t, $p){
-            self.model.view_setting(self.feed_id, {'view': $t.val()});
+            if (self.folder) {
+                self.folder.view_setting({'view': $t.val()});
+            } else {
+                NEWSBLUR.assets.view_setting(self.feed_id, {'view': $t.val()});
+            }
             self.animate_saved();
         });
         $.targetIs(e, { tagSelector: 'input[name=story_layout]' }, function($t, $p){
-            self.model.view_setting(self.feed_id, {'layout': $t.val()});
+            if (self.folder) {
+                self.folder.view_setting({'layout': $t.val()});
+            } else {
+                NEWSBLUR.assets.view_setting(self.feed_id, {'layout': $t.val()});
+            }
             self.animate_saved();
         });
     }
