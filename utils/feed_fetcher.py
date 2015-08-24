@@ -172,7 +172,7 @@ class FetchFeed:
             try:
                 username = channel['items'][0]['snippet']['title']
                 description = channel['items'][0]['snippet']['description']
-            except IndexError:
+            except (IndexError, KeyError):
                 return
         elif list_id:
             playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s" %
@@ -181,7 +181,7 @@ class FetchFeed:
             try:
                 username = playlist['items'][0]['snippet']['title']
                 description = playlist['items'][0]['snippet']['description']
-            except IndexError:
+            except (IndexError, KeyError):
                 return
             channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
@@ -196,7 +196,7 @@ class FetchFeed:
             playlist = json.decode(playlist_json.content)
             try:
                 video_ids = [video['snippet']['resourceId']['videoId'] for video in playlist['items']]
-            except IndexError:
+            except (IndexError, KeyError):
                 return
         else:    
             if video_ids_xml.status_code != 200:
