@@ -113,9 +113,9 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-exception NB-modal' }, [
-            $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
+            (this.feed && $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
                 this.make_feed_chooser()
-            ]),
+            ])),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title NB-exception-block-only' }, 'Fix a misbehaving site'),
             $.make('h2', { className: 'NB-modal-title' }, 'Site settings'),
