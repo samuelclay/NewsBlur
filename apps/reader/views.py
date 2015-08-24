@@ -944,6 +944,8 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
 
 def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
+    domain = Site.objects.get_current().domain
+    
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
@@ -1012,8 +1014,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         
     data = {}
     data['title'] = "%s from %s (%s sites)" % (folder_title, user.username, len(feed_ids))
-    data['link'] = "%s%s" % (
-        settings.NEWSBLUR_URL,
+    data['link'] = "https://%s/%s" % (
+        domain,
         reverse('folder', kwargs=dict(folder_name=folder_title)))
     data['description'] = "Unread stories in %s on NewsBlur. From %s's account and contains %s sites." % (
         folder_title,
@@ -1042,19 +1044,20 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             'title': story['story_title'],
             'link': story['story_permalink'],
             'description': story_content,
-            'author_name': story['story_authors'],
             'categories': story['story_tags'],
-            'unique_id': story['guid_hash'],
+            'unique_id': 'https://%s/site/%s/%s/' % (domain, story['story_feed_id'], story['guid_hash']),
             'pubdate': localtime_for_timezone(story['story_date'], user.profile.timezone),
         }
+        if story['story_authors']:
+            story_data['author_name'] = story['story_authors']
         rss.add_item(**story_data)
     
     if not user.profile.is_premium:
         story_data = {
             'title': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
-            'link': 'https://%s' % Site.objects.get_current().domain,
+            'link': "https://%s" % domain,
             'description': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
-            'unique_id': 'premium_only',
+            'unique_id': "https://%s/premium_only" % domain,
             'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),
         }
         rss.add_item(**story_data)
