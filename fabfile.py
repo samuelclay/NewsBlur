@@ -260,8 +260,10 @@ def setup_db(engine=None, skip_common=False):
     elif engine == "redis":
         setup_redis()
         setup_redis_backups()
+        setup_redis_monitor()
     elif engine == "redis_slave":
         setup_redis(slave=True)
+        setup_redis_monitor()
     elif engine == "elasticsearch":
         setup_elasticsearch()
         setup_db_search()
@@ -1103,6 +1105,11 @@ def setup_db_search():
 def setup_usage_monitor():
     sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
     sudo('/etc/cron.daily/monitor_disk_usage')
+    
+@parallel
+def setup_redis_monitor():
+    sudo('ln -fs %s/utils/monitor_redis_bgsave.py /etc/cron.daily/monitor_redis_bgsave' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.daily/monitor_redis_bgsave')
     
 # ================
 # = Setup - Task =

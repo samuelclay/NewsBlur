@@ -9004,9 +9004,6 @@ form.opml_import_form input {
 .NB-modal-feedchooser .feed.NB-highlighted .feed_counts .unread_count_negative {
     display: none;
 }
-.NB-modal-feedchooser .NB-feedlist .folder_title {
-  cursor: default;
-}
 .NB-modal-feedchooser .NB-feedlist .folder_title .feed_counts_floater {
   display: none;
 }
