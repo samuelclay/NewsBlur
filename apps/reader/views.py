@@ -1014,7 +1014,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         
     data = {}
     data['title'] = "%s from %s (%s sites)" % (folder_title, user.username, len(feed_ids))
-    data['link'] = "https://%s/%s" % (
+    data['link'] = "https://%s%s" % (
         domain,
         reverse('folder', kwargs=dict(folder_name=folder_title)))
     data['description'] = "Unread stories in %s on NewsBlur. From %s's account and contains %s sites." % (
@@ -1025,8 +1025,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
     data['docs'] = None
     data['author_name'] = user.username
-    data['feed_url'] = "%s%s" % (
-        settings.NEWSBLUR_URL,
+    data['feed_url'] = "https://%s%s" % (
+        domain,
         reverse('folder-rss-feed', 
                 kwargs=dict(user_id=user_id, secret_token=secret_token, unread_filter=unread_filter, folder_slug=folder_slug)),
     )
