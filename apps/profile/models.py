@@ -423,7 +423,8 @@ class Profile(models.Model):
         entire_feed_counted = False
         
         if verbose:
-            logging.debug(" ---> ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed_id, user_id))
+            feed = Feed.get_by_id(feed_id)
+            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed.title[:30], feed_id, user_id))
         
         if feed_id:
             feed_ids = [feed_id]
