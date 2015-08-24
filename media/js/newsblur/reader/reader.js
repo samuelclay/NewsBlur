@@ -4391,6 +4391,17 @@
             this.slide_intelligence_slider(value);
         },
         
+        toggle_read_filter: function() {
+            var read_filter = NEWSBLUR.assets.view_setting(this.active_feed, 'read_filter');
+            var setting = {
+                'read_filter': (read_filter == 'unread' ? 'all' : 'unread')
+            };
+            var changed = NEWSBLUR.assets.view_setting(this.active_feed, setting);
+            if (!changed) return;
+        
+            NEWSBLUR.reader.reload_feed(setting);
+        },
+        
         switch_feed_view_unread_view: function(unread_view) {
             if (!_.isNumber(unread_view)) unread_view = this.get_unread_view_score();
             var $sidebar               = this.$s.$sidebar;
@@ -6420,6 +6431,10 @@
             $document.bind('keypress', '-', function(e) {
                 e.preventDefault();
                 self.move_intelligence_slider(-1);
+            });
+            $document.bind('keypress', 'shift+l', function(e) {
+                e.preventDefault();
+                self.toggle_read_filter();
             });
             $document.bind('keypress', 'shift+d', function(e) {
                 e.preventDefault();
