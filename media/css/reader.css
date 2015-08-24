@@ -8679,7 +8679,18 @@ form.opml_import_form input {
     float: left;
     overflow: hidden;
 }
-
+.NB-modal-folder-settings .NB-premium-only .NB-premium-only-divider {
+  background: transparent url(/media/embed/reader/separator_small.png) no-repeat 50% 100%;
+  height: 20px;
+  width: 100%;
+  margin: 4px 0 0;
+}
+.NB-modal-folder-settings .NB-premium-only .NB-premium-only-text {
+  text-align: center;
+  margin: 6px 0 8px 0;
+  color: #707070;
+  font-size: 11px;
+}
 
 /* ===================== */
 /* = Feedchooser Modal = */

@@ -1493,7 +1493,6 @@ class UserSubscriptionFolders(models.Model):
                 elif isinstance(item, dict):
                     for f_k, f_v in item.items():
                         if slugify(f_k) == slug:
-                            print "Found slug: ", slug, f_k, folder_title
                             found = True
                             local_found = True
                             folder_title = f_k

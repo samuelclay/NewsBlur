@@ -1050,12 +1050,14 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         rss.add_item(**story_data)
     
     if not user.profile.is_premium:
-        rss.add_item({
+        story_data = {
             'title': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
             'link': 'https://%s' % Site.objects.get_current().domain,
+            'description': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
             'unique_id': 'premium_only',
             'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),
-        })
+        }
+        rss.add_item(**story_data)
     
     logging.user(request, "~FBGenerating ~SB%s~SN's folder RSS feed (%s, %s stories): ~FM%s" % (
         user.username,

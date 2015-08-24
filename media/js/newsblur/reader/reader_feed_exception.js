@@ -282,7 +282,15 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                             'Only Focus:'
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-focus', className: 'NB-exception-input-focus NB-input', name: 'folder_rss_focus_url', value: this.folder.rss_url('focus') })
-                    ])
+                    ]),
+                    (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-only' }, [
+                        $.make('div', { className: 'NB-premium-only-divider'}),
+                        $.make('div', { className: 'NB-premium-only-text'}, [
+                            'RSS feeds for folders is a ',
+                            $.make('a', { href: '#', className: 'NB-premium-only-link NB-splash-link' }, 'premium feature'),
+                            '.'
+                        ])
+                    ]))
                 ])
             ])),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-exception-block-only NB-modal-submit' }, [
@@ -498,6 +506,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             e.preventDefault();
             
             self.change_feed_link();
+        });
+        $.targetIs(e, { tagSelector: '.NB-premium-only-link' }, function($t, $p){
+            e.preventDefault();
+            
+            self.close(function() {
+                NEWSBLUR.reader.open_feedchooser_modal({premium_only: true});
+            });
         });
     },
     
