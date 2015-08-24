@@ -968,8 +968,48 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         story_hashes = []
         unread_feed_story_hashes = []
 
-    stories = MStory.objects(story_hash__in=story_hashes).order_by('-story_date')
+    mstories = MStory.objects(story_hash__in=story_hashes).order_by('-story_date')
+    stories = Feed.format_stories(mstories)
     
+    filtered_stories = []
+    found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
+    trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
+    found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))    
+    if found_trained_feed_ids:
+        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
+                                                        feed_id__in=found_trained_feed_ids,
+                                                        social_user_id=0))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+                                                            feed_id__in=found_trained_feed_ids))
+        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+                                                          feed_id__in=found_trained_feed_ids))
+        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
+                                                      feed_id__in=found_trained_feed_ids))
+    else:
+        classifier_feeds = []
+        classifier_authors = []
+        classifier_titles = []
+        classifier_tags = []
+    classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
+                                           classifier_feeds=classifier_feeds,
+                                           classifier_authors=classifier_authors,
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
+    for story in stories:
+        story['intelligence'] = {
+            'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
+            'author': apply_classifier_authors(classifier_authors, story),
+            'tags':   apply_classifier_tags(classifier_tags, story),
+            'title':  apply_classifier_titles(classifier_titles, story),
+        }
+        story['score'] = UserSubscription.score_story(story['intelligence'])
+        if unread_filter == 'focus' and story['score'] >= 1:
+            filtered_stories.append(story)
+        elif unread_filter == 'unread' and story['score'] >= 0:
+            filtered_stories.append(story)
+
+    stories = filtered_stories
+        
     data = {}
     data['title'] = "%s from %s (%s sites)" % (folder_title, user.username, len(feed_ids))
     data['link'] = "%s%s" % (
@@ -991,23 +1031,21 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     rss = feedgenerator.Atom1Feed(**data)
 
     for story in stories:
-        feed = Feed.get_by_id(story.story_feed_id)
-        story_content = (story.story_content_z and
-                         zlib.decompress(story.story_content_z))
+        feed = Feed.get_by_id(story['story_feed_id'])
         story_content = """<img src="//%s/rss_feeds/icon/%s"> %s <br><br> %s""" % (
             Site.objects.get_current().domain,
-            story.story_feed_id,
+            story['story_feed_id'],
             feed.feed_title if feed else "",
-            story_content
+            story['story_content']
             )
         story_data = {
-            'title': story.story_title,
-            'link': story.story_permalink,
+            'title': story['story_title'],
+            'link': story['story_permalink'],
             'description': story_content,
-            'author_name': story.story_author_name,
-            'categories': story.story_tags,
-            'unique_id': story.story_guid,
-            'pubdate': localtime_for_timezone(story.story_date, user.profile.timezone),
+            'author_name': story['story_authors'],
+            'categories': story['story_tags'],
+            'unique_id': story['guid_hash'],
+            'pubdate': localtime_for_timezone(story['story_date'], user.profile.timezone),
         }
         rss.add_item(**story_data)
     
