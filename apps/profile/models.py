@@ -3,6 +3,7 @@ import datetime
 import dateutil
 import stripe
 import hashlib
+import re
 import redis
 import uuid
 import mongoengine as mongo
@@ -399,11 +400,12 @@ class Profile(models.Model):
     def clear_dead_spammers(self, days=30, confirm=False):
         users = User.objects.filter(date_joined__gte=datetime.datetime.now()-datetime.timedelta(days=days)).order_by('-date_joined')
         usernames = set()
-
+        numerics = re.compile(r'[0-9]+')
         for user in users:
           opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
           reads = RUserStory.read_story_count(user.pk)
-          if opens is None and not reads:
+          has_numbers = numerics.search(user.username)
+          if opens is None and not reads and has_numbers:
              usernames.add(user.username)
              print user.username, user.email, opens, reads
         
