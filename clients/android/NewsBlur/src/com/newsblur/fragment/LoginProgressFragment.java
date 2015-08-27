@@ -23,7 +23,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -69,7 +69,7 @@ public class LoginProgressFragment extends Fragment {
 		return v;
 	}
 
-	private class LoginTask extends AsyncTask<Void, Void, NewsBlurResponse> {
+	private class LoginTask extends AsyncTask<Void, Void, LoginResponse> {
 		@Override
 		protected void onPreExecute() {
 			Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
@@ -77,14 +77,14 @@ public class LoginProgressFragment extends Fragment {
 		}
 
 		@Override
-		protected NewsBlurResponse doInBackground(Void... params) {
-			NewsBlurResponse response = apiManager.login(username, password);
+		protected LoginResponse doInBackground(Void... params) {
+			LoginResponse response = apiManager.login(username, password);
 			apiManager.updateUserProfile();
 			return response;
 		}
 
 		@Override
-		protected void onPostExecute(NewsBlurResponse result) {
+		protected void onPostExecute(LoginResponse result) {
             Context c = getActivity();
             if (c == null) return; // we might have run past the lifecycle of the activity
 			if (!result.isError()) {
@@ -104,7 +104,7 @@ public class LoginProgressFragment extends Fragment {
                 Intent startMain = new Intent(getActivity(), Main.class);
                 c.startActivity(startMain);
 			} else {
-                UIUtils.safeToast(c, result.getErrorMessage(), Toast.LENGTH_LONG);
+                UIUtils.safeToast(c, result.getErrorMessage(c.getString(R.string.login_message_error)), Toast.LENGTH_LONG);
 				startActivity(new Intent(c, Login.class));
 			}
 		}

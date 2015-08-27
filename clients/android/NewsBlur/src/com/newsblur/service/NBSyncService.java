@@ -325,10 +325,11 @@ public class NBSyncService extends Service {
                 NewsBlurResponse response = ra.doRemote(apiManager);
 
                 if (response == null) {
-                    Log.e(this.getClass().getName(), "Discarding reading action with internal API error.");
+                    Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
                     dbHelper.clearAction(id);
                 } else if (response.isProtocolError) {
                     // the network failed or we got a non-200, so be sure we retry
+                    Log.i(this.getClass().getName(), "Holding reading action with server-side or network error.");
                     continue actionsloop;
                 } else if (response.isError()) {
                     Log.e(this.getClass().getName(), "Discarding reading action with user error.");

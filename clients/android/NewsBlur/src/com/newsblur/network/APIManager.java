@@ -30,6 +30,7 @@ import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.InteractionsResponse;
+import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
@@ -87,7 +88,7 @@ public class APIManager {
 		this.httpClient = new OkHttpClient();
 	}
 
-	public NewsBlurResponse login(final String username, final String password) {
+	public LoginResponse login(final String username, final String password) {
         // This call should be pretty rare, but is expensive on the server side.  Log it
         // at an above-debug level so it will be noticed if it ever gets called too often.
         Log.i(this.getClass().getName(), "calling login API");
@@ -95,7 +96,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		final APIResponse response = post(APIConstants.URL_LOGIN, values);
-        NewsBlurResponse loginResponse = response.getResponse(gson);
+        LoginResponse loginResponse = response.getLoginResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
 		} 
@@ -167,22 +168,14 @@ public class APIManager {
         }
 
 		APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values);
-        // TODO: these calls use a different return format than others: the errors field is an array, not an object
-        //return response.getResponse(gson, NewsBlurResponse.class);
-        NewsBlurResponse nbr = new NewsBlurResponse();
-        if (response.isError()) nbr.message = "err";
-        return nbr;
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 	
 	private NewsBlurResponse markAllAsRead() {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
 		APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values);
-        // TODO: these calls use a different return format than others: the errors field is an array, not an object
-        //return response.getResponse(gson, NewsBlurResponse.class);
-        NewsBlurResponse nbr = new NewsBlurResponse();
-        if (response.isError()) nbr.message = "err";
-        return nbr;
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
     public NewsBlurResponse markStoryAsRead(String storyHash) {
@@ -375,7 +368,8 @@ public class APIManager {
 		APIResponse response = get(APIConstants.URL_FEEDS, params);
 
 		if (response.isError()) {
-            Log.e(this.getClass().getName(), "Error fetching feeds: " + response.getErrorMessage());
+            // we can't use the magic polymorphism of NewsBlurResponse because this result uses
+            // a custom parser below. let the caller know the action failed.
             return null;
         }
 

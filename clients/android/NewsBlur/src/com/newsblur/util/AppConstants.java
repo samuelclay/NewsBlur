@@ -24,7 +24,7 @@ public class AppConstants {
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
 
     // how long to wait before auto-syncing the feed/folder list
-    public static final long AUTO_SYNC_TIME_MILLIS = 15L * 60L * 1000L;
+    public static final long AUTO_SYNC_TIME_MILLIS = 20L * 60L * 1000L;
 
     // how often to rebuild the DB
     public static final long VACUUM_TIME_MILLIS = 12L * 60L * 60L * 1000L;
@@ -40,7 +40,7 @@ public class AppConstants {
     public static final int MAX_API_TRIES = 3;
 
     // the base amount for how long to sleep during exponential API failure backoff
-    public static final long API_BACKOFF_BASE_MILLIS = 500L;
+    public static final long API_BACKOFF_BASE_MILLIS = 750L;
 
     // when generating a request for multiple feeds, limit the total number requested to prevent
     // unworkably long URLs
