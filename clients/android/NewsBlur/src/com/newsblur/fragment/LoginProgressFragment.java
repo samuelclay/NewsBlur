@@ -79,7 +79,8 @@ public class LoginProgressFragment extends Fragment {
 		@Override
 		protected LoginResponse doInBackground(Void... params) {
 			LoginResponse response = apiManager.login(username, password);
-			apiManager.updateUserProfile();
+            // pre-load the profile iff the login was good
+			if (!response.isError()) apiManager.updateUserProfile();
 			return response;
 		}
 

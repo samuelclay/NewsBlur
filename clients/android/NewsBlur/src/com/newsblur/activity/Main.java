@@ -122,7 +122,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public void handleUpdateReady() {
-        folderFeedList.startLoaders();
+        try {
+            folderFeedList.startLoaders();
+        } catch (IllegalStateException ex) {
+            ; // this might be called multiple times, and startLoaders is *not* idempotent
+        }
     }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
