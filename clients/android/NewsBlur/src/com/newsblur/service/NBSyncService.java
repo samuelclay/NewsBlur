@@ -138,6 +138,10 @@ public class NBSyncService extends Service {
     BlurDatabaseHelper dbHelper;
     private int lastStartIdCompleted = -1;
 
+    /** The time of the last hard API failure we encountered. Used to implement back-off so that the sync
+        service doesn't spin in the background chewing up battery when the API is unavailable. */
+    private static long lastAPIFailure = 0;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -302,6 +306,7 @@ public class NBSyncService extends Service {
      */
     private void syncActions() {
         if (stopSync()) return;
+        if (backoffBackgroundCalls()) return;
 
         Cursor c = null;
         try {
@@ -330,6 +335,7 @@ public class NBSyncService extends Service {
                 } else if (response.isProtocolError) {
                     // the network failed or we got a non-200, so be sure we retry
                     Log.i(this.getClass().getName(), "Holding reading action with server-side or network error.");
+                    noteHardAPIFailure();
                     continue actionsloop;
                 } else if (response.isError()) {
                     Log.e(this.getClass().getName(), "Discarding reading action with user error.");
@@ -379,6 +385,7 @@ public class NBSyncService extends Service {
         }
 
         if (stopSync()) return;
+        if (backoffBackgroundCalls()) return;
         if (ActMode != ActivationMode.ALL) return;
 
         FFSyncRunning = true;
@@ -399,6 +406,7 @@ public class NBSyncService extends Service {
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
 
             if (feedResponse == null) {
+                noteHardAPIFailure();
                 return;
             }
 
@@ -698,6 +706,17 @@ public class NBSyncService extends Service {
 
     boolean stopSync() {
         return stopSync(this);
+    }
+
+    private void noteHardAPIFailure() {
+        lastAPIFailure = System.currentTimeMillis();
+    }
+
+    private boolean backoffBackgroundCalls() {
+        if (NbActivity.getActiveActivityCount() > 0) return false;
+        if (System.currentTimeMillis() > (lastAPIFailure + AppConstants.API_BACKGROUND_BACKOFF_MILLIS)) return false;
+        Log.i(this.getClass().getName(), "abandoning background sync due to recent API failures.");
+        return true;
     }
 
     public void onTrimMemory (int level) {

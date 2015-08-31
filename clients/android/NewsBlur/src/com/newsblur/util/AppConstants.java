@@ -42,6 +42,9 @@ public class AppConstants {
     // the base amount for how long to sleep during exponential API failure backoff
     public static final long API_BACKOFF_BASE_MILLIS = 750L;
 
+    // for how long to back off from background syncs after a hard API failure
+    public static final long API_BACKGROUND_BACKOFF_MILLIS = 5L * 60L * 1000L;
+
     // when generating a request for multiple feeds, limit the total number requested to prevent
     // unworkably long URLs
     public static final int MAX_FEED_LIST_SIZE = 250;
