@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 import java.util.ArrayList;
 
@@ -121,6 +123,18 @@ public class NbActivity extends Activity {
         synchronized (AllActivities) {
             for (NbActivity activity : AllActivities) {
                 activity._handleUpdate(updateType);
+            }
+        }
+    }
+
+    public static void toastError(final String message) {
+        synchronized (AllActivities) {
+            for (final NbActivity activity : AllActivities) {
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        UIUtils.safeToast(activity, message, Toast.LENGTH_SHORT);
+                    }
+                });
             }
         }
     }

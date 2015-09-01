@@ -340,6 +340,8 @@ public class NBSyncService extends Service {
                 } else if (response.isError()) {
                     Log.e(this.getClass().getName(), "Discarding reading action with user error.");
                     dbHelper.clearAction(id);
+                    String message = response.getErrorMessage(null);
+                    if (message != null) NbActivity.toastError(message);
                 } else {
                     // success!
                     dbHelper.clearAction(id);
