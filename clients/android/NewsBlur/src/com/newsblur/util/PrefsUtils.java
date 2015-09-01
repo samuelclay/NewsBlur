@@ -81,6 +81,7 @@ public class PrefsUtils {
         s.append("%0Aapp version: ").append(getVersion(context));
         s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE);
         s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
+        s.append("%0Asqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("%0Ausername: ").append(getUserDetails(context).username);
         s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
         s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());

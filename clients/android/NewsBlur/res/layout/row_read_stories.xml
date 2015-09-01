@@ -16,7 +16,6 @@
         android:src="@drawable/g_icn_unread" />
 
     <TextView
-        android:id="@+id/row_read_stories_text"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"

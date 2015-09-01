@@ -48,7 +48,7 @@ public class ViewUtils {
 
 	public static ImageView createSharebarImage(final Context context, final ImageLoader imageLoader, final String photoUrl, final String userId) {
 		ImageView image = new ImageView(context);
-		int imageLength = UIUtils.convertDPsToPixels(context, 15);
+		int imageLength = UIUtils.dp2px(context, 15);
 		image.setMaxHeight(imageLength);
 		image.setMaxWidth(imageLength);
 		

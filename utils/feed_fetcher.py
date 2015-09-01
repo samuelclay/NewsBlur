@@ -172,7 +172,7 @@ class FetchFeed:
             try:
                 username = channel['items'][0]['snippet']['title']
                 description = channel['items'][0]['snippet']['description']
-            except IndexError:
+            except (IndexError, KeyError):
                 return
         elif list_id:
             playlist_json = requests.get("https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s" %
@@ -181,7 +181,7 @@ class FetchFeed:
             try:
                 username = playlist['items'][0]['snippet']['title']
                 description = playlist['items'][0]['snippet']['description']
-            except IndexError:
+            except (IndexError, KeyError):
                 return
             channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
@@ -196,7 +196,7 @@ class FetchFeed:
             playlist = json.decode(playlist_json.content)
             try:
                 video_ids = [video['snippet']['resourceId']['videoId'] for video in playlist['items']]
-            except IndexError:
+            except (IndexError, KeyError):
                 return
         else:    
             if video_ids_xml.status_code != 200:
@@ -487,7 +487,7 @@ class ProcessFeed:
                       '~SB' if ret_values['same'] else '', ret_values['same'],
                       '~FR~SB' if ret_values['error'] else '', ret_values['error'],
                       len(self.fpf.entries)))
-        self.feed.update_all_statistics(full=bool(ret_values['new']), force=self.options['force'])
+        self.feed.update_all_statistics(has_new_stories=bool(ret_values['new']), force=self.options['force'])
         if ret_values['new']:
             self.feed.trim_feed()
             self.feed.expire_redis()

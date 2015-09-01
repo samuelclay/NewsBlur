@@ -1,9 +1,12 @@
 import os
 import yaml
+import redis
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from apps.rss_feeds.models import Feed, MStory
+from apps.search.models import SearchFeed
 from utils import log as logging
 
 def about(request):
@@ -65,3 +68,35 @@ def ios_ipa(request):
 
 def haproxy_check(request):
     return HttpResponse("OK")
+
+def postgres_check(request):
+    feed = Feed.objects.latest('pk').pk
+    if feed:
+        return HttpResponse(unicode(feed))
+    assert False, "Cannot read from postgres database"
+
+def mongo_check(request):
+    stories = MStory.objects.count()
+    if stories:
+        return HttpResponse(unicode(stories))
+    assert False, "Cannot read from mongo database"
+
+def elasticsearch_check(request):
+    client = SearchFeed.ES()
+    if client.indices.exists_index(SearchFeed.index_name()):
+        return HttpResponse(SearchFeed.index_name())
+    assert False, "Cannot read from elasticsearch database"
+
+def redis_check(request):
+    pool = request.GET['pool']
+    if pool == 'main':
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    elif pool == 'story':
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    elif pool == 'sessions':
+        r = redis.Redis(connection_pool=settings.REDIS_SESSION_POOL)
+        
+    key = r.randomkey()
+    if key:
+        return HttpResponse(unicode(key))
+    assert False, "Cannot read from redis-%s database" % pool

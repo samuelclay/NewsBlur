@@ -11,7 +11,7 @@
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
     <string name="login_button_login">Log In</string>
-    <string name="login_message_error">There was problem connecting to NewsBlur. Check your internet connection.</string>
+    <string name="login_message_error">There was problem logging in to NewsBlur.</string>
     <string name="login_logging_in">Logging in…</string>
     <string name="login_logged_in">Logged in!</string>
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
@@ -79,8 +79,6 @@
     <string name="profile_following">FOLLOWING</string>
     <string name="profile_followers">FOLLOWERS</string>
     <string name="profile_shared">SHARED STORIES</string>
-    <string name="profile_no_bio">No bio included</string>
-    <string name="profile_no_location">Location not set</string>
     <string name="profile_ago">AGO</string>
     <string name="profile_recent_actvity">Activities</string>
     <string name="profile_recent_interactions">Interactions</string>
@@ -127,13 +125,8 @@
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_fullscreen">Full screen</string>
     
-    <string name="toast_marked_stories_as_read">Stories marked as read</string>
-
     <string name="toast_story_unread">Story marked as unread</string>
 
-    <string name="toast_feed_deleted">Feed deleted</string>
-    <string name="toast_unfollowed">Unfollowed</string>
-    
     <string name="logout_warning">Are you sure you want to log out?</string>
     
     <string name="feed_search_hint">Search for new feeds</string>

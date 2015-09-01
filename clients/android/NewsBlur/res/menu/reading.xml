@@ -9,12 +9,10 @@
         android:visible="false"/>
     <item
         android:id="@+id/menu_reading_sharenewsblur"
-        android:icon="@drawable/newsblur_share"
         android:showAsAction="never"
         android:title="@string/menu_sharenewsblur"/>
     <item
         android:id="@+id/menu_reading_original"
-        android:icon="@drawable/website"
         android:showAsAction="never"
         android:title="@string/menu_original"/>
     <item

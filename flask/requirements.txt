@@ -1,0 +1,5 @@
+flask==0.10.1
+pymongo==2.6
+psycopg2==2.5.4
+redis==2.8.0
+pyes==0.90.1

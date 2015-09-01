@@ -99,7 +99,8 @@
       'opml-export'             : "{% url "opml-export" %}",
       'domain'                  : "{% current_domain %}",
       'favicon'                 : "/rss_feeds/icon/{id}",
-      'delete-account'          : "{% url "profile-delete-account" %}"
+      'delete-account'          : "{% url "profile-delete-account" %}",
+      'folder_rss'              : "/reader/folder_rss/{user_id}/{secret_token}/{unread_filter}/{folder_title}"
     };
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};

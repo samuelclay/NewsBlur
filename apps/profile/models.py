@@ -3,6 +3,7 @@ import datetime
 import dateutil
 import stripe
 import hashlib
+import re
 import redis
 import uuid
 import mongoengine as mongo
@@ -399,11 +400,12 @@ class Profile(models.Model):
     def clear_dead_spammers(self, days=30, confirm=False):
         users = User.objects.filter(date_joined__gte=datetime.datetime.now()-datetime.timedelta(days=days)).order_by('-date_joined')
         usernames = set()
-
+        numerics = re.compile(r'[0-9]+')
         for user in users:
           opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
           reads = RUserStory.read_story_count(user.pk)
-          if opens is None and not reads:
+          has_numbers = numerics.search(user.username)
+          if opens is None and not reads and has_numbers:
              usernames.add(user.username)
              print user.username, user.email, opens, reads
         
@@ -417,13 +419,14 @@ class Profile(models.Model):
         RNewUserQueue.activate_all()
         
     @classmethod
-    def count_feed_subscribers(self, feed_id=None, user_id=None, verbose=False):
+    def count_feed_subscribers(self, feed_id=None, user_id=None, verbose=True):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
         entire_feed_counted = False
         
         if verbose:
-            logging.debug(" ---> ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed_id, user_id))
+            feed = Feed.get_by_id(feed_id)
+            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed.title[:30], feed_id, user_id))
         
         if feed_id:
             feed_ids = [feed_id]
@@ -480,7 +483,9 @@ class Profile(models.Model):
             if entire_feed_counted:
                 now = int(datetime.datetime.now().strftime('%s'))
                 r.zadd(key, -1, now)
+                r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
                 r.zadd(premium_key, -1, now)
+                r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
                           (feed.title[:30], total, active, premium, active_premium))
@@ -1010,7 +1015,7 @@ class PaymentHistory(models.Model):
         }
     
     @classmethod
-    def report(cls, months=24):
+    def report(cls, months=25):
         def _counter(start_date, end_date):
             payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
             payments = payments.aggregate(avg=Avg('payment_amount'), 

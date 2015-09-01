@@ -86,6 +86,20 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbWrapper.dropAndRecreateTables();}
     }
 
+    public String getEngineVersion() {
+        String engineVersion = "";
+        try {
+            Cursor c = dbRO.rawQuery("SELECT sqlite_version() AS sqlite_version", null);
+            if (c.moveToFirst()) {
+                engineVersion = c.getString(0);
+            }
+            c.close();
+        } catch (Exception e) {
+            // this is only debug code, do not rais a failure
+        }
+        return engineVersion;
+    }
+
     public Set<String> getAllFeeds() {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;

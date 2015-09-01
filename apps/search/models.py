@@ -386,21 +386,24 @@ class SearchFeed:
             logging.debug(" ***> ~FRNo search server available.")
 
     @classmethod
-    def query(cls, text):
+    def query(cls, text, max_subscribers=5):
         try:
             cls.ES().default_indices = cls.index_name()
             cls.ES().indices.refresh()
         except pyes.exceptions.NoServerAvailable:
             logging.debug(" ***> ~FRNo search server available.")
             return []
-
+        
+        if settings.DEBUG:
+            max_subscribers = 1
+        
         logging.info("~FGSearch ~FCfeeds~FG: ~SB%s" % text)
         q = pyes.query.BoolQuery()
         q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         q = pyes.Search(q, min_score=1)
-        results = cls.ES().search(query=q, size=5, doc_types=[cls.type_name()], sort="num_subscribers:desc")
+        results = cls.ES().search(query=q, size=max_subscribers, doc_types=[cls.type_name()], sort="num_subscribers:desc")
 
         return results
     

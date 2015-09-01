@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,7 +22,6 @@ import com.newsblur.util.ThemeUtils;
 
 public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
-	private Cursor cursor;
 	private ImageLoader imageLoader;
 	private int storyTitleUnread, storyContentUnread, storyAuthorUnread, storyTitleRead, storyContentRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
     private boolean ignoreReadStatus;
@@ -29,7 +29,6 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, boolean ignoreReadStatus) {
 		super(context, layout, c, from, to);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
-		this.cursor = c;
 
         storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
         storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
@@ -50,18 +49,7 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
     }
 
 	@Override
-	public int getCount() {
-		return cursor.getCount();
-	}
-
-	@Override
-	public Cursor swapCursor(Cursor c) {
-		this.cursor = c;
-		return super.swapCursor(c);
-	}
-
-	@Override
-	public void bindView(View v, Context context, Cursor cursor) {
+	public void bindView(final View v, Context context, Cursor cursor) {
         super.bindView(v, context, cursor);
         
 		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
@@ -119,10 +107,4 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
         }
 	}
 	
-	@Override
-	public Story getStory(int position) {
-        cursor.moveToPosition(position);
-        return Story.fromCursor(cursor);
-    }
-
 }

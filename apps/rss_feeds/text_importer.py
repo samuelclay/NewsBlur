@@ -10,6 +10,10 @@ from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 
+BROKEN_URLS = [
+    "gamespot.com",
+]
+
 class TextImporter:
     
     def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
@@ -33,6 +37,10 @@ class TextImporter:
         }
     
     def fetch(self, skip_save=False, return_document=False):
+        if self.story_url and any(broken_url in self.story_url for broken_url in BROKEN_URLS):
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: banned")
+            return
+            
         try:
             resp = self.fetch_request()
         except TimeoutError:

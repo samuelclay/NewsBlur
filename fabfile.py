@@ -181,7 +181,7 @@ def ec2():
 
 def all():
     do()
-    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work']
+    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work', 'www']
 
 # =============
 # = Bootstrap =
@@ -248,9 +248,7 @@ def setup_db(engine=None, skip_common=False):
         setup_db_firewall()
     setup_motd('db')
     copy_db_settings()
-    if engine == "memcached":
-        setup_memcached()
-    elif engine == "postgres":
+    if engine == "postgres":
         setup_postgres(standby=False)
         setup_postgres_backups()
     elif engine == "postgres_slave":
@@ -262,13 +260,16 @@ def setup_db(engine=None, skip_common=False):
     elif engine == "redis":
         setup_redis()
         setup_redis_backups()
+        setup_redis_monitor()
     elif engine == "redis_slave":
         setup_redis(slave=True)
+        setup_redis_monitor()
     elif engine == "elasticsearch":
         setup_elasticsearch()
         setup_db_search()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
+    setup_db_monitor()
     setup_usage_monitor()
     done()
 
@@ -436,7 +437,7 @@ def setup_python():
     #     sudo('python setup.py install')
 
     with settings(warn_only=True):
-        sudo('echo "import sys; sys.setdefaultencoding(\"utf-8\")" | sudo tee /usr/lib/python2.7/sitecustomize.py')
+        sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
@@ -603,7 +604,8 @@ def setup_syncookies():
     sudo('sudo /sbin/sysctl -w net.ipv4.tcp_syncookies=1')
 
 def setup_sudoers(user=None):
-    sudo('echo "%s ALL=(ALL) NOPASSWD: ALL\n" | sudo tee -a /etc/sudoers"' % (user or env.user))
+    sudo('echo "%s ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/sclay' % (user or env.user))
+    sudo('chmod 0440 /etc/sudoers.d/sclay')
 
 def setup_nginx():
     NGINX_VERSION = '1.6.2'
@@ -789,6 +791,16 @@ def downgrade_pil():
         sudo('supervisorctl reload')
         # kill()
 
+def setup_db_monitor():
+    pull()
+    with cd(env.NEWSBLUR_PATH):
+        sudo('apt-get install -y python-mysqldb')
+        sudo('apt-get install -y libpq-dev python-dev')
+        sudo('pip install -r flask/requirements.txt')
+        put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
+        sudo('supervisorctl reread')
+        sudo('supervisorctl update')
+        
 # ==============
 # = Setup - DB =
 # ==============
@@ -804,6 +816,7 @@ def setup_db_firewall():
         # 11211,  # Memcached
         3060,   # Node original page server
         9200,   # Elasticsearch
+        5000,   # DB Monitor
     ]
     sudo('ufw --force reset')
     sudo('ufw default deny')
@@ -957,13 +970,14 @@ def setup_redis(slave=False):
     # sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
     # run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
     # sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
-    sudo("echo 1 | sudo tee /proc/sys/vm/overcommit_memory\"")
+    sudo("echo 1 | sudo tee /proc/sys/vm/overcommit_memory")
     sudo('echo "vm.overcommit_memory = 1" | sudo tee -a /etc/sysctl.conf')
     sudo("sysctl vm.overcommit_memory=1")
     put('config/redis_rclocal.txt', '/etc/rc.local', use_sudo=True)
     sudo("chown root.root /etc/rc.local")
     sudo("chmod a+x /etc/rc.local")
     sudo('echo "never" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled')
+    run('echo "\nnet.core.somaxconn=65535\n" | sudo tee -a /etc/sysctl.conf', pty=False)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')
@@ -1091,6 +1105,11 @@ def setup_db_search():
 def setup_usage_monitor():
     sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
     sudo('/etc/cron.daily/monitor_disk_usage')
+    
+@parallel
+def setup_redis_monitor():
+    sudo('ln -fs %s/utils/monitor_redis_bgsave.py /etc/cron.daily/monitor_redis_bgsave' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.daily/monitor_redis_bgsave')
     
 # ================
 # = Setup - Task =

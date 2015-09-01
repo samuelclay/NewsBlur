@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -28,7 +29,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -36,6 +36,7 @@ import butterknife.FindView;
 import butterknife.OnClick;
 
 import com.newsblur.R;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
@@ -77,10 +78,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     @FindView(R.id.reading_item_authors) TextView itemAuthors;
 	@FindView(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
-	private FlowLayout tagContainer;
+	@FindView(R.id.reading_item_tags) FlowLayout tagContainer;
 	private View view;
 	private UserDetails user;
-	private ImageView feedIcon;
     private Reading activity;
     private DefaultFeedView selectedFeedView;
     @FindView(R.id.save_story_button) Button saveButton;
@@ -195,6 +195,16 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
 
+        // the share/save buttons us compound drawables for layout speed, but they
+        // cannot correctly compute padding.  hard resize the icons to use padding.
+        int iconSizePx = UIUtils.dp2px(this.activity, 30);
+        Drawable shareButtonIcon = shareButton.getCompoundDrawables()[0];
+        shareButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
+        shareButton.setCompoundDrawables(shareButtonIcon, null, null, null);
+        Drawable saveButtonIcon = saveButton.getCompoundDrawables()[0];
+        saveButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
+        saveButton.setCompoundDrawables(saveButtonIcon, null, null, null);
+
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
         web.setWebviewWrapperLayout(fragmentScrollview);
@@ -308,7 +318,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
         TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
         TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-        feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
+        ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
 		if (TextUtils.equals(feedColor, "#null") || TextUtils.equals(feedFade, "#null")) {
             feedColor = "#303030";
@@ -352,7 +362,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }
 
         if (story.tags.length <= 0) {
-            tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
             tagContainer.setVisibility(View.GONE);
         }
 
@@ -391,7 +400,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
 	private void setupTags() {
-		tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
         ViewUtils.setupTags(getActivity());
 		for (String tag : story.tags) {
 			View v = ViewUtils.createTagView(inflater, getFragmentManager(), tag, classifier, this, story.feedId);
@@ -453,11 +461,17 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         this.story = story;
     }
 
-    public void handleUpdate() {
-        updateSaveButton();
-        updateShareButton();
-        reloadStoryContent();
-        setupItemCommentsAndShares();
+    public void handleUpdate(int updateType) {
+        if ((updateType & NbActivity.UPDATE_STORY) != 0) {
+            updateSaveButton();
+            updateShareButton();
+        }
+        if ((updateType & NbActivity.UPDATE_TEXT) != 0) {
+            reloadStoryContent();
+        }
+        if ((updateType & NbActivity.UPDATE_SOCIAL) != 0) {
+            setupItemCommentsAndShares();
+        }
     }
 
     private void loadOriginalText() {

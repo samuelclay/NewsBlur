@@ -36,6 +36,7 @@ BROKEN_PAGE_URLS = [
     'stackexchange.com',
     'twitter.com',
     'rankexploits',
+    'gamespot.com',
 ]
 
 class PageImporter(object):
@@ -93,7 +94,7 @@ class PageImporter(object):
                         response.connection.close()
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
-                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error), e:
+                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError), e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
                         self.save_no_page()
                         return

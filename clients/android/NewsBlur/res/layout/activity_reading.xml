@@ -8,12 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <View
-        android:id="@+id/reading_divider"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_alignParentTop="true" />
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

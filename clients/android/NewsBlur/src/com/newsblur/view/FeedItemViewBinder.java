@@ -61,8 +61,6 @@ public class FeedItemViewBinder implements ViewBinder {
 			}
             icon.mutate().setAlpha(hasBeenRead == 0 ? 255 : 127);
             view.setBackgroundDrawable(icon);
-			
-			((TextView) view).setText("");
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
             ((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));

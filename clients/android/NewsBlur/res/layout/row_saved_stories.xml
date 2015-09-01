@@ -16,7 +16,6 @@
         android:src="@drawable/clock" />
 
     <TextView
-        android:id="@+id/row_saved_stories_text"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"

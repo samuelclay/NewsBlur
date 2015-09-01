@@ -943,6 +943,133 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     ))
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
 
+def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
+    domain = Site.objects.get_current().domain
+    
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404
+    
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=user)
+    feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
+    
+    usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
+    if feed_ids and user.profile.is_premium:
+        params = {
+            "user_id": user.pk, 
+            "feed_ids": feed_ids,
+            "offset": 0,
+            "limit": 20,
+            "order": 'newest',
+            "read_filter": 'all',
+            "cache_prefix": "RSS:"
+        }
+        story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+    else:
+        story_hashes = []
+        unread_feed_story_hashes = []
+
+    mstories = MStory.objects(story_hash__in=story_hashes).order_by('-story_date')
+    stories = Feed.format_stories(mstories)
+    
+    filtered_stories = []
+    found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
+    trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
+    found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))    
+    if found_trained_feed_ids:
+        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
+                                                        feed_id__in=found_trained_feed_ids,
+                                                        social_user_id=0))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+                                                            feed_id__in=found_trained_feed_ids))
+        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+                                                          feed_id__in=found_trained_feed_ids))
+        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
+                                                      feed_id__in=found_trained_feed_ids))
+    else:
+        classifier_feeds = []
+        classifier_authors = []
+        classifier_titles = []
+        classifier_tags = []
+    classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
+                                           classifier_feeds=classifier_feeds,
+                                           classifier_authors=classifier_authors,
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
+    for story in stories:
+        story['intelligence'] = {
+            'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
+            'author': apply_classifier_authors(classifier_authors, story),
+            'tags':   apply_classifier_tags(classifier_tags, story),
+            'title':  apply_classifier_titles(classifier_titles, story),
+        }
+        story['score'] = UserSubscription.score_story(story['intelligence'])
+        if unread_filter == 'focus' and story['score'] >= 1:
+            filtered_stories.append(story)
+        elif unread_filter == 'unread' and story['score'] >= 0:
+            filtered_stories.append(story)
+
+    stories = filtered_stories
+        
+    data = {}
+    data['title'] = "%s from %s (%s sites)" % (folder_title, user.username, len(feed_ids))
+    data['link'] = "https://%s%s" % (
+        domain,
+        reverse('folder', kwargs=dict(folder_name=folder_title)))
+    data['description'] = "Unread stories in %s on NewsBlur. From %s's account and contains %s sites." % (
+        folder_title,
+        user.username,
+        len(feed_ids))
+    data['lastBuildDate'] = datetime.datetime.utcnow()
+    data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
+    data['docs'] = None
+    data['author_name'] = user.username
+    data['feed_url'] = "https://%s%s" % (
+        domain,
+        reverse('folder-rss-feed', 
+                kwargs=dict(user_id=user_id, secret_token=secret_token, unread_filter=unread_filter, folder_slug=folder_slug)),
+    )
+    rss = feedgenerator.Atom1Feed(**data)
+
+    for story in stories:
+        feed = Feed.get_by_id(story['story_feed_id'])
+        story_content = """<img src="//%s/rss_feeds/icon/%s"> %s <br><br> %s""" % (
+            Site.objects.get_current().domain,
+            story['story_feed_id'],
+            feed.feed_title if feed else "",
+            story['story_content']
+            )
+        story_data = {
+            'title': story['story_title'],
+            'link': story['story_permalink'],
+            'description': story_content,
+            'categories': story['story_tags'],
+            'unique_id': 'https://%s/site/%s/%s/' % (domain, story['story_feed_id'], story['guid_hash']),
+            'pubdate': localtime_for_timezone(story['story_date'], user.profile.timezone),
+        }
+        if story['story_authors']:
+            story_data['author_name'] = story['story_authors']
+        rss.add_item(**story_data)
+    
+    if not user.profile.is_premium:
+        story_data = {
+            'title': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
+            'link': "https://%s" % domain,
+            'description': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
+            'unique_id': "https://%s/premium_only" % domain,
+            'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),
+        }
+        rss.add_item(**story_data)
+    
+    logging.user(request, "~FBGenerating ~SB%s~SN's folder RSS feed (%s, %s stories): ~FM%s" % (
+        user.username,
+        folder_title,
+        len(stories),
+        request.META.get('HTTP_USER_AGENT', "")[:24]
+    ))
+    return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
+
 @json.json_view
 def load_read_stories(request):
     user   = get_user(request)

@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
@@ -85,8 +84,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	public void markItemListAsRead() {
         FeedUtils.markFeedsRead(fs, null, null, this);
-        Toast.makeText(this, R.string.toast_marked_stories_as_read, Toast.LENGTH_SHORT).show();
-        setResult(RESULT_OK);
         finish();
     }
 	
@@ -126,10 +123,14 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     protected abstract DefaultFeedView getDefaultFeedView();
 	
     @Override
-	public void handleUpdate(boolean freshData) {
-        updateStatusIndicators();
-		if (freshData && (itemListFragment != null)) {
-			itemListFragment.hasUpdated();
+	public void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_STATUS) != 0) {
+            updateStatusIndicators();
+        }
+		if ((updateType & UPDATE_STORY) != 0) {
+            if (itemListFragment != null) {
+			    itemListFragment.hasUpdated();
+            }
         }
     }
 

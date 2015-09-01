@@ -2,92 +2,90 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="?selectorStoryBackground"
-    android:orientation="horizontal" >
+    style="?selectorStoryBackground" >
 
-    <RelativeLayout
+<!--
+    This RelativeLayout really should be the top-most parent with a full width and wraped height. However,
+    due to this being used in a scrollable ListView, the height of the favicon_borderbar would never be
+    set, since the height of each row is calculated very lazily.  Wrapping the whole thing in an otherwise
+    useless LinearLayout forces the heights to be calculated correctly every time.  If the lazy layout
+    bug in scrolling ListViews can ever be fixed, the extra layout can be removed.
+-->
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <View
+        android:id="@+id/row_item_favicon_borderbar_1"
+        android:layout_width="6dp"
+        android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/row_item_favicon_borderbar_2"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/row_item_favicon_borderbar_1" />
+
+    <View
+        android:id="@+id/row_item_sidebar"
+        android:layout_width="9dp"
+        android:layout_height="9dp"
+        android:layout_toRightOf="@id/row_item_favicon_borderbar_2"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_centerVertical="true" />
+
+    <TextView
+        android:id="@+id/row_item_title"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_marginTop="2dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:paddingRight="4dp"
+        android:textSize="14sp" />
 
-        <View
-            android:id="@+id/row_item_favicon_borderbar_1"
-            android:layout_width="6dp"
-            android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/row_item_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_below="@id/row_item_title"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:paddingBottom="4dp"
+        android:paddingRight="4dp"
+        android:textSize="14sp" />
 
-        <View
-            android:id="@+id/row_item_favicon_borderbar_2"
-            android:layout_width="6dp"
-            android:layout_height="match_parent"
-            android:layout_toRightOf="@id/row_item_favicon_borderbar_1" />
+    <TextView
+        android:id="@+id/row_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/row_item_content"
+        android:paddingBottom="4dp"
+        android:paddingRight="8dp"
+        android:textColor="@color/darkgray"
+        android:textSize="11sp" />
 
-        <RelativeLayout
-            android:id="@+id/row_item_title_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/row_item_favicon_borderbar_2"
-            android:layout_marginTop="4dp">
+    <TextView
+        android:id="@+id/row_item_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row_item_content"
+        android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_toLeftOf="@id/row_item_date"
+        android:layout_alignLeft="@id/row_item_content"
+        android:paddingBottom="4dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/darkgray"
+        android:textSize="11sp" />
 
-            <TextView
-                    android:id="@+id/row_item_sidebar"
-                    android:layout_width="9dp"
-                    android:layout_height="9dp"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginRight="7dp"
-                    android:layout_centerVertical="true"/>
-
-            <TextView
-                    android:id="@+id/row_item_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
-                    android:layout_toRightOf="@id/row_item_sidebar"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:gravity="left"
-                    android:paddingBottom="4dp"
-                    android:paddingTop="4dp"
-                    android:textSize="14sp"/>
-
-            <TextView
-                    android:id="@+id/row_item_content"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
-                    android:layout_toRightOf="@id/row_item_sidebar"
-                    android:layout_below="@+id/row_item_title"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:gravity="left"
-                    android:paddingBottom="4dp"
-                    android:paddingTop="0dp"
-                    android:textSize="14sp"/>
-
-        </RelativeLayout>
-
-        <TextView
-                android:id="@+id/row_item_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/row_item_title_container"
-                android:layout_marginRight="12dp"
-                android:paddingBottom="4dp"
-                android:textColor="@color/darkgray"
-                android:textSize="11dp" />
-
-        <TextView
-            android:id="@+id/row_item_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/row_item_title_container"
-            android:paddingBottom="4dp"
-            android:layout_marginLeft="24dp"
-            android:layout_toLeftOf="@id/row_item_date"
-            android:layout_alignLeft="@id/row_item_title_container"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="@color/darkgray"
-            android:textSize="11dp" />
-    </RelativeLayout>
+</RelativeLayout>
 
 </LinearLayout>
+
