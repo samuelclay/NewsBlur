@@ -32,7 +32,10 @@ public class ImagePrefetchService extends SubService {
 
         gotWork();
 
-        while ((ImageQueue.size() > 0) && PrefsUtils.isImagePrefetchEnabled(parent)) {
+        while (ImageQueue.size() > 0) {
+            if (! PrefsUtils.isImagePrefetchEnabled(parent)) return;
+            if (! PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
+
             startExpensiveCycle();
             // on each batch, re-query the DB for images associated with yet-unread stories
             // this is a bit expensive, but we are running totally async at a really low priority
