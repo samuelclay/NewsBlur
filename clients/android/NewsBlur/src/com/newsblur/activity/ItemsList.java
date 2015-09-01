@@ -85,8 +85,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
 	public void markItemListAsRead() {
         FeedUtils.markFeedsRead(fs, null, null, this);
-        Toast.makeText(this, R.string.toast_marked_stories_as_read, Toast.LENGTH_SHORT).show();
-        setResult(RESULT_OK);
         finish();
     }
 	
