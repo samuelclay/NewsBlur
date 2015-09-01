@@ -134,7 +134,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         unreadCountPosiText.setText(Integer.toString(posiCount));
 
         if ((neutCount+posiCount) <= 0) {
-            if (NBSyncService.isFeedCountSyncRunning()) {
+            if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 emptyViewImage.setVisibility(View.INVISIBLE);
                 emptyViewText.setText(R.string.loading);
                 emptyViewText.setVisibility(View.VISIBLE);

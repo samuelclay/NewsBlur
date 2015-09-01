@@ -58,6 +58,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	private SharedPreferences sharedPreferences;
     @FindView(R.id.folderfeed_list) ExpandableListView list;
     private Main activity;
+    public boolean firstCursorSeenYet = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -104,6 +105,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     break;
                 case FEEDS_LOADER:
                     adapter.setFeedCursor(cursor);
+                    firstCursorSeenYet = true;
                     break;
                 case SAVEDCOUNT_LOADER:
                     adapter.setSavedCountCursor(cursor);
