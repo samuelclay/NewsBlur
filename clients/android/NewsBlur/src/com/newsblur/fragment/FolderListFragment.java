@@ -164,8 +164,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         list.setIndicatorBounds(
-                display.getWidth() - UIUtils.convertDPsToPixels(getActivity(), 20),
-                display.getWidth() - UIUtils.convertDPsToPixels(getActivity(), 10));
+                display.getWidth() - UIUtils.dp2px(getActivity(), 20),
+                display.getWidth() - UIUtils.dp2px(getActivity(), 10));
 
         list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
         list.setAdapter(adapter);

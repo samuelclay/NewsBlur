@@ -48,7 +48,7 @@ public class FlowLayout extends ViewGroup {
 
     public FlowLayout(Context context) {
         super(context);
-        defaultImageLength = UIUtils.convertDPsToPixels(context, 25);
+        defaultImageLength = UIUtils.dp2px(context, 25);
     }
 
     public FlowLayout(Context context, AttributeSet attrs) {
@@ -57,7 +57,7 @@ public class FlowLayout extends ViewGroup {
         TypedArray styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
         String flowAttribute = styledAttributes.getString(R.styleable.FlowLayout_flow);
         int defaultImageSizeAttribute = styledAttributes.getInt(R.styleable.FlowLayout_defaultImageSize, 25);
-        defaultImageLength = UIUtils.convertDPsToPixels(context, defaultImageSizeAttribute);
+        defaultImageLength = UIUtils.dp2px(context, defaultImageSizeAttribute);
         
         if (!TextUtils.isEmpty(flowAttribute) && TextUtils.equals(flowAttribute, "left")) { 
         	flowDirection = FLOW_LEFT;	
@@ -134,7 +134,7 @@ public class FlowLayout extends ViewGroup {
 
     @Override
     protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
-    	int defaultPadding = UIUtils.convertDPsToPixels(getContext(), 3);
+    	int defaultPadding = UIUtils.dp2px(getContext(), 3);
         return new LayoutParams(defaultPadding, defaultPadding);
     }
 

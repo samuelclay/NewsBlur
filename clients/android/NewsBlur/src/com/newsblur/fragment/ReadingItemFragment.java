@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -193,6 +194,16 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
+
+        // the share/save buttons us compound drawables for layout speed, but they
+        // cannot correctly compute padding.  hard resize the icons to use padding.
+        int iconSizePx = UIUtils.dp2px(this.activity, 30);
+        Drawable shareButtonIcon = shareButton.getCompoundDrawables()[0];
+        shareButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
+        shareButton.setCompoundDrawables(shareButtonIcon, null, null, null);
+        Drawable saveButtonIcon = saveButton.getCompoundDrawables()[0];
+        saveButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
+        saveButton.setCompoundDrawables(saveButtonIcon, null, null, null);
 
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);

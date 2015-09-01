@@ -160,8 +160,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
         // this value is expensive to compute but doesn't change during a single runtime
-        this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
-        this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
+        this.overlayRangeTopPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP);
+        this.overlayRangeBotPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP);
 
         this.pageHistory = new ArrayList<Story>();
 
@@ -264,7 +264,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private void setupPager() {
         pager = (ViewPager) findViewById(R.id.reading_pager);
-		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
+		pager.setPageMargin(UIUtils.dp2px(getApplicationContext(), 1));
         if (PrefsUtils.isLightThemeSelected(this)) {
             pager.setPageMarginDrawable(R.drawable.divider_light);
         } else {
