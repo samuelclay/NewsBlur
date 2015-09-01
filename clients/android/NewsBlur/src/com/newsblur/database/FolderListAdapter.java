@@ -112,7 +112,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 public void onClick(View v) {
                     Intent i = new Intent(context, GlobalSharedStoriesItemsList.class);
                     i.putExtra(GlobalSharedStoriesItemsList.EXTRA_STATE, currentState);
-                    ((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
+                    context.startActivity(i);
                 }
             });
         } else if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
@@ -122,7 +122,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				public void onClick(View v) {
 					Intent i = new Intent(context, AllSharedStoriesItemsList.class);
 					i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
-					((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
+					context.startActivity(i);
 				}
 			});
             if (currentState == StateFilter.BEST || (totalSocialNeutCount == 0)) {
@@ -164,7 +164,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 					Intent i = new Intent(v.getContext(), FolderItemsList.class);
 					i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
 					i.putExtra(FolderItemsList.EXTRA_STATE, currentState);
-					((Activity) context).startActivity(i);
+					context.startActivity(i);
 				}
 			});
             int countPosition = convertGroupPositionToActiveFolderIndex(groupPosition);
