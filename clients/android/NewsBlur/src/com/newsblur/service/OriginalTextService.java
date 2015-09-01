@@ -2,6 +2,7 @@ package com.newsblur.service;
 
 import android.util.Log;
 
+import com.newsblur.activity.NbActivity;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
@@ -53,7 +54,7 @@ public class OriginalTextService extends SubService {
                 fetchedHashes.add(hash);
             }
         } finally {
-            gotData();
+            gotData(NbActivity.UPDATE_TEXT);
             hashes.removeAll(fetchedHashes);
         }
     }

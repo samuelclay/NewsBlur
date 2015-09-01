@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -20,14 +21,12 @@ import com.newsblur.util.ThemeUtils;
 
 public class FeedItemsAdapter extends StoryItemsAdapter {
 
-	private Cursor cursor;
 	private final Feed feed;
 	private int storyTitleUnread, storyTitleRead, storyContentUnread, storyContentRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
 
 	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to) {
 		super(context, layout, c, from, to);
 		this.feed = feed;
-		this.cursor = c;
 
         storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
         storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
@@ -40,18 +39,7 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 	}
 
 	@Override
-	public int getCount() {
-		return cursor.getCount();
-	}
-
-	@Override
-	public Cursor swapCursor(Cursor c) {
-		this.cursor = c;
-		return super.swapCursor(c);
-	}
-
-	@Override
-	public void bindView(View v, Context context, Cursor cursor) {
+	public void bindView(final View v, Context context, Cursor cursor) {
         super.bindView(v, context, cursor);
 
 		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
@@ -94,12 +82,6 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
         if (!PrefsUtils.isShowContentPreviews(context)) {
             v.findViewById(R.id.row_item_content).setVisibility(View.GONE);
         }
-	}
-	
-	@Override
-	public Story getStory(int position) {
-		cursor.moveToPosition(position);
-		return Story.fromCursor(cursor);
 	}
 	
 }

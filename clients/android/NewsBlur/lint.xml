@@ -3,4 +3,5 @@
     <issue id="StringFormatMatches" severity="ignore" />
     <issue id="RtlHardcoded" severity="ignore" />
     <issue id="RtlSymmetry" severity="ignore" />
+    <issue id="IconLocation" severity="ignore" />
 </lint>

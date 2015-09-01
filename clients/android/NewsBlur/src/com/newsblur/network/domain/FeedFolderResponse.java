@@ -43,7 +43,9 @@ public class FeedFolderResponse {
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
 
         this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
-        this.isStaff = asJsonObject.get("is_staff").getAsBoolean();
+        if (asJsonObject.has("is_staff")) {
+            this.isStaff = asJsonObject.get("is_staff").getAsBoolean();
+        }
 
         JsonElement userProfile = asJsonObject.get("user_profile");
         if (userProfile != null) {

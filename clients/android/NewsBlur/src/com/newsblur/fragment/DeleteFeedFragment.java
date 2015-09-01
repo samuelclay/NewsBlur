@@ -1,7 +1,8 @@
 package com.newsblur.fragment;
 
 import com.newsblur.R;
-import com.newsblur.activity.Main;
+import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.network.APIManager;
@@ -59,14 +60,12 @@ public class DeleteFeedFragment extends DialogFragment {
                 } else {
                     FeedUtils.deleteSocialFeed(getArguments().getString(FEED_ID), getActivity(), new APIManager(getActivity()));
                 }
-                // if called from main view then refresh otherwise it was
-                // called from the feed view so finish
+                // if called from a feed view, end it
                 Activity activity = DeleteFeedFragment.this.getActivity();
-                if (activity instanceof Main) {
-                    ((Main)activity).handleUpdate(true);
-                } else {
+                if (activity instanceof ItemsList) {
                     activity.finish();
                 }
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 DeleteFeedFragment.this.dismiss();
             }
         });

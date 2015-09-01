@@ -160,8 +160,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
         // this value is expensive to compute but doesn't change during a single runtime
-        this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
-        this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
+        this.overlayRangeTopPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP);
+        this.overlayRangeBotPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP);
 
         this.pageHistory = new ArrayList<Story>();
 
@@ -264,7 +264,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private void setupPager() {
         pager = (ViewPager) findViewById(R.id.reading_pager);
-		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
+		pager.setPageMargin(UIUtils.dp2px(getApplicationContext(), 1));
         if (PrefsUtils.isLightThemeSelected(this)) {
             pager.setPageMarginDrawable(R.drawable.divider_light);
         } else {
@@ -356,10 +356,19 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
     @Override
-	protected void handleUpdate(boolean freshData) {
-        enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
-        updateOverlayNav();
-        if (freshData) updateCursor();
+	protected void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_STATUS) != 0) {
+            enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
+        }
+        if ((updateType & UPDATE_STORY) != 0) {    
+            updateCursor();
+            updateOverlayNav();
+        }
+        
+        ReadingItemFragment item = getReadingFragment();
+        if (item != null) {
+            item.handleUpdate(updateType);
+        }
     }
 
     private void updateCursor() {
@@ -495,7 +504,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         invalidateOptionsMenu();
     }
 
-    private void updateOverlayText() {
+     private void updateOverlayText() {
         if (overlayText == null) return;
         runOnUiThread(new Runnable() {
             public void run() {
@@ -508,7 +517,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                     overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
                     overlayText.setText(R.string.overlay_story);
                 }
-                item.handleUpdate();
             }
         });
     }

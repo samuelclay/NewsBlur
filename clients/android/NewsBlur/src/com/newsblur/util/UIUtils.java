@@ -65,9 +65,9 @@ public class UIUtils {
 	 * used throughout Android. 
 	 * See: http://bit.ly/MfsAUZ (Romain Guy's comment)  
 	 */
-	public static int convertDPsToPixels(Context context, final int dps) {
-		final float scale = context.getResources().getDisplayMetrics().density;
-		return (int) (dps * scale + 0.5f);
+	public static int dp2px(Context context, int dp) {
+		float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dp * scale + 0.5f);
 	}
 
     public static float px2dp(Context context, int px) {

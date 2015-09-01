@@ -61,7 +61,7 @@ public abstract class SubService {
         } finally {
             if (isRunning()) {
                 setRunning(false);
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
             }
         }
     }
@@ -83,11 +83,11 @@ public abstract class SubService {
 
     protected void gotWork() {
         setRunning(true);
-        NbActivity.updateAllActivities(false);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
     }
 
-    protected void gotData() {
-        NbActivity.updateAllActivities(true);
+    protected void gotData(int updateType) {
+        NbActivity.updateAllActivities(updateType);
     }
 
     protected abstract void setRunning(boolean running);

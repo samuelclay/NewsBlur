@@ -120,7 +120,6 @@
     <!-- A pane that sits behind the feed list, acting as a background, except
          when the list is empty, and it shows through as an explainer. -->
     <RelativeLayout
-        android:id="@+id/folderfeedlist_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/main_top_bar"
@@ -161,7 +160,6 @@
         android:layout_above="@id/fragment_feedintelligenceselector" >
 
         <fragment
-            android:id="@+id/fragment_folderfeedlist"
             android:name="com.newsblur.fragment.FolderListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -169,15 +167,15 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <!-- top_bar_border -->
     <View
-        android:id="@+id/top_bar_border"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@color/midgray"
         android:layout_above="@id/swipe_container" />
 
+    <!-- feedintelligenceselector_border -->
     <View
-        android:id="@+id/feedintelligenceselector_border"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@color/midgray"

@@ -2,7 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item android:id="@+id/menu_refresh"
-          android:icon="@drawable/barbutton_refresh"
           android:title="@string/menu_refresh"
           android:showAsAction="never" />
     
@@ -11,7 +10,6 @@
           android:showAsAction="never" />
     
     <item android:id="@+id/menu_add_feed"
-          android:icon="@drawable/plus"
           android:title="@string/menu_add_feed"
           android:showAsAction="never" />
     

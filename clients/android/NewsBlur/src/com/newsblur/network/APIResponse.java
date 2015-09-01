@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import org.apache.http.HttpStatus;
 
 import com.newsblur.R;
+import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.util.AppConstants;
 import com.squareup.okhttp.OkHttpClient;
@@ -20,12 +21,12 @@ import com.squareup.okhttp.Response;
  * A JSON-encoded response from the API servers.  This class encodes the possible outcomes of
  * an attempted API call, including total failure, online failures, and successful responses.
  * In the latter case, the GSON reader used to look for errors is left open so that the expected
- * response can be read.  Instances of this class should be closed after use.
+ * response can be read.
  */
 public class APIResponse {
 	
     private boolean isError;
-    private String errorMessage;
+    private int responseCode;
 	private String cookie;
     private String responseBody;
     public long connectTime;
@@ -45,61 +46,49 @@ public class APIResponse {
      */
     public APIResponse(Context context, OkHttpClient httpClient, Request request, int expectedReturnCode) {
 
-        this.errorMessage = context.getResources().getString(R.string.error_unset_message);
-
         try {
             long startTime = System.currentTimeMillis();
             Response response = httpClient.newCall(request).execute();
             connectTime = System.currentTimeMillis() - startTime;
-            if (response.isSuccessful()) {
+            this.responseCode = response.code();
 
-                if (response.code() != expectedReturnCode) {
-                    Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.urlString() + ". Expected " + expectedReturnCode);
-                    this.isError = true;
-                    this.errorMessage = context.getResources().getString(R.string.error_http_connection);
-                    return;
-                }
+            if (responseCode != expectedReturnCode) {
+                Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.urlString() + " - expected " + expectedReturnCode);
+                this.isError = true;
+                return;
+            }
 
-                this.cookie = response.header("Set-Cookie");
+            this.cookie = response.header("Set-Cookie");
 
-                try {
-                    startTime = System.currentTimeMillis();
-                    this.responseBody = response.body().string();
-                    readTime = System.currentTimeMillis() - startTime;
-                } catch (Exception e) {
-                    Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.urlString(), e);
-                    this.isError = true;
-                    this.errorMessage = context.getResources().getString(R.string.error_read_connection);
-                    return;
-                }
+            try {
+                startTime = System.currentTimeMillis();
+                this.responseBody = response.body().string();
+                readTime = System.currentTimeMillis() - startTime;
+            } catch (Exception e) {
+                Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.urlString(), e);
+                this.isError = true;
+                return;
+            }
 
-                if (AppConstants.VERBOSE_LOG_NET) {
-                    // the default kernel truncates log lines. split by something we probably have, like a json delim
-                    if (responseBody.length() < 2048) {
-                        Log.d(this.getClass().getName(), "API response: \n" + this.responseBody);
-                    } else {
-                        Log.d(this.getClass().getName(), "API response: ");
-                        for (String s : TextUtils.split(responseBody, "\\}")) {
-                            Log.d(this.getClass().getName(), s + "}");
-                        }
+            if (AppConstants.VERBOSE_LOG_NET) {
+                // the default kernel truncates log lines. split by something we probably have, like a json delim
+                if (responseBody.length() < 2048) {
+                    Log.d(this.getClass().getName(), "API response: \n" + this.responseBody);
+                } else {
+                    Log.d(this.getClass().getName(), "API response: ");
+                    for (String s : TextUtils.split(responseBody, "\\}")) {
+                        Log.d(this.getClass().getName(), s + "}");
                     }
                 }
+            }
 
-                if (AppConstants.VERBOSE_LOG_NET) {
-                    Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.urlString(), connectTime, readTime, responseBody.length()));
-                }
-
-            } else {
-                Log.e(this.getClass().getName(), "API call unsuccessful, error code" + response.code());
-                this.isError = true;
-                this.errorMessage = context.getResources().getString(R.string.error_http_connection);
-                return;
+            if (AppConstants.VERBOSE_LOG_NET) {
+                Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.urlString(), connectTime, readTime, responseBody.length()));
             }
 
         } catch (IOException ioe) {
             Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.urlString(), ioe);
             this.isError = true;
-            this.errorMessage = context.getResources().getString(R.string.error_read_connection);
             return;
         }
     }
@@ -109,15 +98,10 @@ public class APIResponse {
      */
     public APIResponse(Context context) {
         this.isError = true;
-        this.errorMessage = context.getResources().getString(R.string.error_offline);
     }
 
     public boolean isError() {
         return this.isError;
-    }
-
-    public String getErrorMessage() {
-        return this.errorMessage;
     }
 
     /**
@@ -132,7 +116,6 @@ public class APIResponse {
             // it's message field
             try {
                 T response = classOfT.newInstance();
-                response.message = this.errorMessage;
                 response.isProtocolError = true;
                 return ((T) response);
             } catch (Exception e) {
@@ -149,8 +132,19 @@ public class APIResponse {
         }
     }
 
-    public NewsBlurResponse getResponse(Gson gson) {
-        return getResponse(gson, NewsBlurResponse.class);
+    /**
+     * Special binder for LoginResponses, since they can't inherit from NewsBlurResponse due to
+     * the design of the API fields.
+     */ 
+    public LoginResponse getLoginResponse(Gson gson) {
+        if (this.isError) {
+            LoginResponse response = new LoginResponse();
+            response.isProtocolError = true;
+            return response;
+        } else {
+            LoginResponse response = gson.fromJson(this.responseBody, LoginResponse.class);
+            return response;
+        }
     }
 
     public String getResponseBody() {

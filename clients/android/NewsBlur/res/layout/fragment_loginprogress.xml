@@ -4,7 +4,6 @@
     android:layout_height="match_parent">
     
     <LinearLayout
-        android:id="@+id/login_status"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_horizontal"

@@ -13,15 +13,15 @@
             android:id="@+id/share_story_button"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             style="?storyButtons"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:drawableLeft="@drawable/share_icon"
             android:text="@string/share_this" />
         
@@ -29,115 +29,110 @@
             android:id="@+id/save_story_button"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             style="?storyButtons"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:drawableLeft="@drawable/clock"
             android:text="@string/save_this" />
 
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/reading_shared_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp" >
 
         <LinearLayout
-                android:id="@+id/reading_friend_comment_header"
-                android:layout_alignParentTop="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
+            android:id="@+id/reading_friend_comment_header"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
 
             <View
-                    android:id="@+id/reading_friend_header_top_border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/lightgray"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/lightgray"/>
 
             <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:id="@+id/reading_friend_comment_total"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:textStyle="bold"
-                    android:textSize="10sp"
-                    style="?commentsHeader"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:id="@+id/reading_friend_comment_total"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                style="?commentsHeader"/>
 
             <View
-                    android:id="@+id/reading_friend_header_bottom_border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/reading_friend_comment_total"
-                    android:background="@color/lightgray"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/reading_friend_comment_total"
+                android:background="@color/lightgray"/>
 
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/reading_friend_comment_container"
-                android:layout_below="@id/reading_friend_comment_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:orientation="vertical"/>
+            android:id="@+id/reading_friend_comment_container"
+            android:layout_below="@id/reading_friend_comment_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:orientation="vertical"/>
 
         <LinearLayout
-                android:id="@+id/reading_friend_emptyshare_header"
-                android:layout_below="@id/reading_friend_comment_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
+            android:id="@+id/reading_friend_emptyshare_header"
+            android:layout_below="@id/reading_friend_comment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
 
             <View
-                    android:id="@+id/reading_friend_share_header_top_border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/lightgray"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/lightgray"/>
 
             <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:id="@+id/reading_friend_emptyshare_total"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:textStyle="bold"
-                    android:textSize="10sp"
-                    style="?commentsHeader"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:id="@+id/reading_friend_emptyshare_total"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                style="?commentsHeader"/>
 
             <View
-                    android:id="@+id/reading_friend_share_header_bottom_border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/reading_friend_comment_total"
-                    android:background="@color/lightgray"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/reading_friend_comment_total"
+                android:background="@color/lightgray"/>
 
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/reading_friend_emptyshare_container"
-                android:layout_below="@id/reading_friend_emptyshare_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:orientation="vertical"/>
+            android:id="@+id/reading_friend_emptyshare_container"
+            android:layout_below="@id/reading_friend_emptyshare_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:orientation="vertical"/>
 
         <LinearLayout
                 android:id="@+id/reading_public_comment_header"
@@ -148,42 +143,39 @@
                 android:orientation="vertical">
 
             <View
-                    android:id="@+id/reading_public_header_top_border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/lightgray"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/lightgray"/>
 
             <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:textStyle="bold"
-                    android:textSize="10sp"
-                    style="?commentsHeader"
-                    android:id="@+id/reading_public_comment_total" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                style="?commentsHeader"
+                android:id="@+id/reading_public_comment_total" />
 
             <View
-                    android:id="@+id/reading_public_header_bottom_border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/reading_public_comment_total"
-                    android:background="@color/lightgray"/>
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/reading_public_comment_total"
+                android:background="@color/lightgray"/>
 
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/reading_public_comment_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:layout_below="@id/reading_public_comment_header"
-                android:orientation="vertical"/>
-
+            android:id="@+id/reading_public_comment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_below="@id/reading_public_comment_header"
+            android:orientation="vertical"/>
 		
     </RelativeLayout>
 </merge>

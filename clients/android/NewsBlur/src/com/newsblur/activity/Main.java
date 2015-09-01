@@ -115,22 +115,28 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 	
     @Override
-	public void handleUpdate(boolean freshData) {
-        updateStatusIndicators();
-		if (freshData) folderFeedList.hasUpdated();
+	public void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_DB_READY) != 0) {
+            try {
+                folderFeedList.startLoaders();
+            } catch (IllegalStateException ex) {
+                ; // this might be called multiple times, and startLoaders is *not* idempotent
+            }
+        }
+        if ((updateType & UPDATE_STATUS) != 0) {
+            updateStatusIndicators();
+        }
+		if ((updateType & UPDATE_METADATA) != 0) {
+            folderFeedList.hasUpdated();
+        }
 	}
-
-    @Override
-    public void handleUpdateReady() {
-        folderFeedList.startLoaders();
-    }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
         unreadCountNeutText.setText(Integer.toString(neutCount));
         unreadCountPosiText.setText(Integer.toString(posiCount));
 
         if ((neutCount+posiCount) <= 0) {
-            if (NBSyncService.isFeedCountSyncRunning()) {
+            if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 emptyViewImage.setVisibility(View.INVISIBLE);
                 emptyViewText.setText(R.string.loading);
                 emptyViewText.setVisibility(View.VISIBLE);
@@ -240,6 +246,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     @OnClick(R.id.main_profile_button) void onClickProfileButton() {
+        Intent i = new Intent(this, Profile.class);
+        startActivity(i);
+    }
+
+    @OnClick(R.id.main_user_image) void onClickUserButton() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
     }

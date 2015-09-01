@@ -17,7 +17,6 @@
         android:layout_below="@id/profile_details">
 
         <android.support.v4.view.PagerTitleStrip
-            android:id="@+id/activity_details_title_strip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"

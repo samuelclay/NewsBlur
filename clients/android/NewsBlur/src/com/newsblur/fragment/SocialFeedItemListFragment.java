@@ -45,7 +45,7 @@ public class SocialFeedItemListFragment extends ItemListFragment {
         if ((adapter == null) && (cursor != null)) {
             String[] groupFroms = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.SUM_STORY_TOTAL};
             int[] groupTos = new int[] { R.id.row_item_title, R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_content, R.id.row_item_date, R.id.row_item_author, R.id.row_item_sidebar};
-            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFroms, groupTos);
+            adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFroms, groupTos);
             adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
             itemList.setAdapter(adapter);
         }
