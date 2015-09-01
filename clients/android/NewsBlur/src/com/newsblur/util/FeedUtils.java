@@ -67,7 +67,6 @@ public class FeedUtils {
                 // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                 dbHelper.deleteFeed(feedId);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
-                Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }
@@ -84,7 +83,6 @@ public class FeedUtils {
                 // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                 dbHelper.deleteSocialFeed(userId);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
-                Toast.makeText(context, R.string.toast_unfollowed, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }
