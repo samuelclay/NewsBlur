@@ -48,7 +48,7 @@ public class FeedUtils {
             protected Void doInBackground(Void... arg) {
                 ReadingAction ra = (saved ? ReadingAction.saveStory(story.storyHash) : ReadingAction.unsaveStory(story.storyHash));
                 ra.doLocal(dbHelper);
-                NbActivity.updateAllActivities(true);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
                 dbHelper.enqueueAction(ra);
                 triggerSync(context);
                 return null;
@@ -66,7 +66,7 @@ public class FeedUtils {
             protected void onPostExecute(NewsBlurResponse result) {
                 // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                 dbHelper.deleteFeed(feedId);
-                NbActivity.updateAllActivities();
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
             }
         }.execute();
@@ -83,7 +83,7 @@ public class FeedUtils {
             protected void onPostExecute(Void result) {
                 // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                 dbHelper.deleteSocialFeed(userId);
-                NbActivity.updateAllActivities();
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 Toast.makeText(context, R.string.toast_unfollowed, Toast.LENGTH_SHORT).show();
             }
         }.execute();
@@ -147,7 +147,7 @@ public class FeedUtils {
         
         // update unread state and unread counts in the local DB
         Set<FeedSet> impactedFeeds = dbHelper.setStoryReadState(story, read);
-        NbActivity.updateAllActivities();
+        NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
 
         // tell the sync service we need to mark read
         ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
@@ -159,7 +159,7 @@ public class FeedUtils {
     public static void markFeedsRead(final FeedSet fs, final Long olderThan, final Long newerThan, final Context context) {
         dbHelper.markStoriesRead(fs, olderThan, newerThan);
         dbHelper.updateLocalFeedCounts(fs);
-        NbActivity.updateAllActivities();
+        NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
@@ -219,7 +219,7 @@ public class FeedUtils {
         ReadingAction ra = ReadingAction.shareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
-        NbActivity.updateAllActivities(true);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
         triggerSync(context);
     }
 
@@ -227,7 +227,7 @@ public class FeedUtils {
         ReadingAction ra = ReadingAction.likeComment(story.id, commentUserId, story.feedId);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
-        NbActivity.updateAllActivities(true);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
         triggerSync(context);
     }
 
@@ -235,7 +235,7 @@ public class FeedUtils {
         ReadingAction ra = ReadingAction.unlikeComment(story.id, commentUserId, story.feedId);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
-        NbActivity.updateAllActivities(true);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
         triggerSync(context);
     }
     
@@ -243,7 +243,7 @@ public class FeedUtils {
         ReadingAction ra = ReadingAction.replyToComment(storyId, feedId, commentUserId, replyText);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
-        NbActivity.updateAllActivities(true);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
         triggerSync(context);
     }
 

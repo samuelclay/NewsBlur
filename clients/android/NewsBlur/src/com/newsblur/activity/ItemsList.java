@@ -124,10 +124,14 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     protected abstract DefaultFeedView getDefaultFeedView();
 	
     @Override
-	public void handleUpdate(boolean freshData) {
-        updateStatusIndicators();
-		if (freshData && (itemListFragment != null)) {
-			itemListFragment.hasUpdated();
+	public void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_STATUS) != 0) {
+            updateStatusIndicators();
+        }
+		if ((updateType & UPDATE_STORY) != 0) {
+            if (itemListFragment != null) {
+			    itemListFragment.hasUpdated();
+            }
         }
     }
 

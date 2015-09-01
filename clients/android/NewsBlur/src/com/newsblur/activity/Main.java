@@ -115,19 +115,21 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 	
     @Override
-	public void handleUpdate(boolean freshData) {
-        updateStatusIndicators();
-		if (freshData) folderFeedList.hasUpdated();
-	}
-
-    @Override
-    public void handleUpdateReady() {
-        try {
-            folderFeedList.startLoaders();
-        } catch (IllegalStateException ex) {
-            ; // this might be called multiple times, and startLoaders is *not* idempotent
+	public void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_DB_READY) != 0) {
+            try {
+                folderFeedList.startLoaders();
+            } catch (IllegalStateException ex) {
+                ; // this might be called multiple times, and startLoaders is *not* idempotent
+            }
         }
-    }
+        if ((updateType & UPDATE_STATUS) != 0) {
+            updateStatusIndicators();
+        }
+		if ((updateType & UPDATE_METADATA) != 0) {
+            folderFeedList.hasUpdated();
+        }
+	}
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
         unreadCountNeutText.setText(Integer.toString(neutCount));

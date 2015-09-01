@@ -219,7 +219,7 @@ public class NBSyncService extends Service {
 
             if (OfflineNow) {
                 OfflineNow = false;   
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
             }
 
             // do this even if background syncs aren't enabled, because it absolutely must happen
@@ -233,7 +233,7 @@ public class NBSyncService extends Service {
             }
 
             // ping activities to indicate that housekeeping is done, and the DB is safe to use
-            NbActivity.updateAllActivitiesReady();
+            NbActivity.updateAllActivities(NbActivity.UPDATE_DB_READY);
 
             originalTextService.start(startId);
 
@@ -270,10 +270,10 @@ public class NBSyncService extends Service {
             boolean upgraded = PrefsUtils.checkForUpgrade(this);
             if (upgraded) {
                 HousekeepingRunning = true;
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
                 // wipe the local DB
                 dbHelper.dropAndRecreateTables();
-                NbActivity.updateAllActivities(true);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 // in case this is the first time we have run since moving the cache to the new location,
                 // blow away the old version entirely. This line can be removed some time well after
                 // v61+ is widely deployed
@@ -287,7 +287,7 @@ public class NBSyncService extends Service {
             
             if (upgraded || autoVac) {
                 HousekeepingRunning = true;
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
                 Log.i(this.getClass().getName(), "rebuilding DB . . .");
                 dbHelper.vacuum();
                 Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
@@ -296,7 +296,7 @@ public class NBSyncService extends Service {
         } finally {
             if (HousekeepingRunning) {
                 HousekeepingRunning = false;
-                NbActivity.updateAllActivities(true);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
             }
         }
     }
@@ -314,7 +314,7 @@ public class NBSyncService extends Service {
             if (c.getCount() < 1) return;
 
             ActionsRunning = true;
-            NbActivity.updateAllActivities(false);
+            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
             actionsloop : while (c.moveToNext()) {
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
@@ -350,7 +350,7 @@ public class NBSyncService extends Service {
             closeQuietly(c);
             if (ActionsRunning) {
                 ActionsRunning = false;
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
             }
         }
     }
@@ -369,7 +369,7 @@ public class NBSyncService extends Service {
         if (PendingFeed == null) {
             FollowupActions.clear();
         }
-        NbActivity.updateAllActivities(false);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
     }
 
     /**
@@ -389,7 +389,7 @@ public class NBSyncService extends Service {
         if (ActMode != ActivationMode.ALL) return;
 
         FFSyncRunning = true;
-        NbActivity.updateAllActivities(false);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
         // there is a rare issue with feeds that have no folder.  capture them for workarounds.
         Set<String> debugFeedIds = new HashSet<String>();
@@ -473,7 +473,7 @@ public class NBSyncService extends Service {
 
         } finally {
             FFSyncRunning = false;
-            NbActivity.updateAllActivities(true);
+            NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
         }
 
     }
@@ -488,7 +488,7 @@ public class NBSyncService extends Service {
             if (RecountCandidates.size() < 1) return;
 
             RecountsRunning = true;
-            NbActivity.updateAllActivities(false);
+            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
             // of all candidate feeds that were touched, now check to see if
             // any of them have mismatched local and remote counts we need to reconcile
@@ -540,7 +540,7 @@ public class NBSyncService extends Service {
         } finally {
             if (RecountsRunning) {
                 RecountsRunning = false;
-                NbActivity.updateAllActivities(true);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
             }
             FlushRecounts = false;
         }
@@ -583,7 +583,7 @@ public class NBSyncService extends Service {
                 }
 
                 StorySyncRunning = true;
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
                 pageNumber++;
                 StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
@@ -601,7 +601,7 @@ public class NBSyncService extends Service {
                     ModeCutoff = apiResponse.stories[0].timestamp;
                 }
                 insertStories(apiResponse, fs);
-                NbActivity.updateAllActivities(true);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
             
                 if (apiResponse.stories.length == 0) {
                     ExhaustedFeeds.add(fs);
@@ -614,7 +614,7 @@ public class NBSyncService extends Service {
         } finally {
             if (StorySyncRunning) {
                 StorySyncRunning = false;
-                NbActivity.updateAllActivities(false);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
             }
             synchronized (PENDING_FEED_MUTEX) {
                 if (finished && fs.equals(PendingFeed)) PendingFeed = null;

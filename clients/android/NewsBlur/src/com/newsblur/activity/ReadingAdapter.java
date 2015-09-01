@@ -125,7 +125,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
             ReadingItemFragment rif = frag.get();
             if (rif == null) continue;
             rif.offerStoryUpdate(getStory(i));
-            rif.handleUpdate();
+            rif.handleUpdate(NbActivity.UPDATE_STORY);
         }
     }
 }

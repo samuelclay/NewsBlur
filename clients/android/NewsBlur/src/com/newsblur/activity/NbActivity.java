@@ -17,6 +17,13 @@ import java.util.ArrayList;
  */
 public class NbActivity extends Activity {
 
+    public static final int UPDATE_DB_READY = (1<<0);
+    public static final int UPDATE_METADATA = (1<<1);
+    public static final int UPDATE_STORY    = (1<<2);
+    public static final int UPDATE_SOCIAL   = (1<<3);
+    public static final int UPDATE_STATUS   = (1<<5);
+    public static final int UPDATE_TEXT     = (1<<6);
+
 	private final static String UNIQUE_LOGIN_KEY = "uniqueLoginKey";
 	private String uniqueLoginKey;
 
@@ -89,17 +96,19 @@ public class NbActivity extends Activity {
 	}
 
     /**
-     * Called on each NB activity after the DB has been updated by the sync service. This method
-     * should return as quickly as possible.
+     * Called on each NB activity after the DB has been updated by the sync service.
+     *
+     * @param updateType one or more of the UPDATE_* flags in this class to indicate the
+     *        type of update being broadcast.
      */
-    protected void handleUpdate(boolean freshData) {
+    protected void handleUpdate(int updateType) {
         Log.w(this.getClass().getName(), "activity doesn't implement handleUpdate");
     }
 
-    private void _handleUpdate(final boolean freshData) {
+    private void _handleUpdate(final int updateType) {
         runOnUiThread(new Runnable() {
             public void run() {
-                handleUpdate(freshData);
+                handleUpdate(updateType);
             }
         });
     }
@@ -108,30 +117,10 @@ public class NbActivity extends Activity {
      * Notify all activities in the app that the DB has been updated. Should only be called
      * by the sync service, which owns updating the DB.
      */
-    public static void updateAllActivities(boolean freshData) {
+    public static void updateAllActivities(int updateType) {
         synchronized (AllActivities) {
             for (NbActivity activity : AllActivities) {
-                activity._handleUpdate(freshData);
-            }
-        }
-    }
-
-    public static void updateAllActivities() {
-        Log.w(NbActivity.class.getName(), "legacy handleUpdate used");
-        NbActivity.updateAllActivities(true);
-    }
-
-    /**
-     * Called on each NB activity after the DB is initialised by the sync service. This method
-     * should return as quickly as possible.
-     */
-    protected void handleUpdateReady() {
-    }
-
-    public static void updateAllActivitiesReady() {
-        synchronized (AllActivities) {
-            for (NbActivity activity : AllActivities) {
-                activity.handleUpdateReady();
+                activity._handleUpdate(updateType);
             }
         }
     }

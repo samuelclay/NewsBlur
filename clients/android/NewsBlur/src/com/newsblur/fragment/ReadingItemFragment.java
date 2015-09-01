@@ -35,6 +35,7 @@ import butterknife.FindView;
 import butterknife.OnClick;
 
 import com.newsblur.R;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
@@ -449,11 +450,17 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         this.story = story;
     }
 
-    public void handleUpdate() {
-        updateSaveButton();
-        updateShareButton();
-        reloadStoryContent();
-        setupItemCommentsAndShares();
+    public void handleUpdate(int updateType) {
+        if ((updateType & NbActivity.UPDATE_STORY) != 0) {
+            updateSaveButton();
+            updateShareButton();
+        }
+        if ((updateType & NbActivity.UPDATE_TEXT) != 0) {
+            reloadStoryContent();
+        }
+        if ((updateType & NbActivity.UPDATE_SOCIAL) != 0) {
+            setupItemCommentsAndShares();
+        }
     }
 
     private void loadOriginalText() {
