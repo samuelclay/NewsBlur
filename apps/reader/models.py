@@ -121,8 +121,10 @@ class UserSubscription(models.Model):
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
                 return story_hashes
-
-        read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
+        
+        read_dates = dict()
+        for us in usersubs:
+            read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
@@ -146,7 +148,7 @@ class UserSubscription(models.Model):
                     pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
                     expire_unread_stories_key = True
                 else:
-                    min_score = unread_timestamp
+                    min_score = 0
                     unread_stories_key = stories_key
 
                 if order == 'oldest':
@@ -211,12 +213,11 @@ class UserSubscription(models.Model):
         
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
             if read_filter == "unread":
-                cutoff_date = self.mark_read_date
+                cutoff_date = max(cutoff_date, self.mark_read_date)
             elif default_cutoff_date:
                 cutoff_date = default_cutoff_date
-            else:
-                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if order == 'oldest':
             byscorefunc = rt.zrangebyscore
@@ -292,7 +293,7 @@ class UserSubscription(models.Model):
         else:
             rt.delete(ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
-        
+
         story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                         read_filter=read_filter, order=order, 
                                         include_timestamps=True,

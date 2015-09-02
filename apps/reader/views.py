@@ -639,7 +639,9 @@ def load_single_feed(request, feed_id):
         story['long_parsed_date'] = format_story_link_date__long(story_date, nowtz)
         if usersub:
             story['read_status'] = 1
-            if (read_filter == 'all' or query) and usersub:
+            if story['story_date'] < user.profile.unread_cutoff:
+                story['read_status'] = 1
+            elif (read_filter == 'all' or query) and usersub:
                 story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
             elif read_filter == 'unread' and usersub:
                 story['read_status'] = 0
