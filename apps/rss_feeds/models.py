@@ -882,9 +882,11 @@ class Feed(models.Model):
         res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, output='inline')
         for r in res:
             dates[r.key] = r.value
-            year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
-            if year < min_year and year > 2000:
-                min_year = year
+            year_found = re.findall(r"(\d{4})-\d{1,2}", r.key)
+            if year_found and len(year_found):
+                year = int(year_found[0])
+                if year < min_year and year > 2000:
+                    min_year = year
                 
         # Add on to existing months, always amending up, never down. (Current month
         # is guaranteed to be accurate, since trim_feeds won't delete it until after
