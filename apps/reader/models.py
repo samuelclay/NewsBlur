@@ -684,6 +684,7 @@ class UserSubscription(models.Model):
         ont = self.unread_count_neutral
         ops = self.unread_count_positive
         oousd = self.oldest_unread_story_date
+        ucu = self.unread_count_updated
         onur = self.needs_unread_recalc
         oit = self.is_trained
         
@@ -791,6 +792,7 @@ class UserSubscription(models.Model):
         if self.unread_count_positive != ops: update_fields.append('unread_count_positive')
         if self.unread_count_neutral != ont: update_fields.append('unread_count_neutral')
         if self.unread_count_negative != ong: update_fields.append('unread_count_negative')
+        if self.unread_count_updated != ucu: update_fields.append('unread_count_updated')
         if self.oldest_unread_story_date != oousd: update_fields.append('oldest_unread_story_date')
         if self.needs_unread_recalc != onur: update_fields.append('needs_unread_recalc')
         if self.is_trained != oit: update_fields.append('is_trained')

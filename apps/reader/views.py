@@ -401,6 +401,7 @@ def load_feeds_flat(request):
 @never_cache
 @json.json_view
 def refresh_feeds(request):
+    start = datetime.datetime.now()
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
@@ -412,20 +413,21 @@ def refresh_feeds(request):
     if feed_ids or (not social_feed_ids and not feed_ids):
         feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, 
                                                            check_fetch_status=check_fetch_status)
+    checkpoint1 = datetime.datetime.now()
     social_feeds = {}
     if social_feed_ids or (not social_feed_ids and not feed_ids):
         social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
+    checkpoint2 = datetime.datetime.now()
     
     favicons_fetching = [int(f) for f in favicons_fetching if f]
     feed_icons = {}
     if favicons_fetching:
         feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
-    
-    for feed_id, feed in feeds.items():
-        if feed_id in favicons_fetching and feed_id in feed_icons:
-            feeds[feed_id]['favicon'] = feed_icons[feed_id].data
-            feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
-            feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
+        for feed_id, feed in feeds.items():
+            if feed_id in favicons_fetching and feed_id in feed_icons:
+                feeds[feed_id]['favicon'] = feed_icons[feed_id].data
+                feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
+                feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
 
     user_subs = UserSubscription.objects.filter(user=user, active=True).only('feed')
     sub_feed_ids = [s.feed_id for s in user_subs]
@@ -449,8 +451,16 @@ def refresh_feeds(request):
     interactions_count = MInteraction.user_unread_count(user.pk)
 
     if True or settings.DEBUG or check_fetch_status:
-        logging.user(request, "~FBRefreshing %s feeds (%s/%s)" % (
-            len(feeds.keys()), check_fetch_status, len(favicons_fetching)))
+        end = datetime.datetime.now()
+        extra_fetch = ""
+        if check_fetch_status or favicons_fetching:
+            extra_fetch = "(%s/%s)" % (check_fetch_status, len(favicons_fetching))
+        logging.user(request, "~FBRefreshing %s+%s feeds %s (%.4s/%.4s/%.4s)" % (
+            len(feeds.keys()), len(social_feeds.keys()), extra_fetch, 
+            (checkpoint1-start).total_seconds(),
+            (checkpoint2-start).total_seconds(),
+            (end-start).total_seconds(),
+            ))
 
     return {
         'feeds': feeds, 
