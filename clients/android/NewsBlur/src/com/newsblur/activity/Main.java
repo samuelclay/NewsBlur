@@ -138,8 +138,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if ((neutCount+posiCount) <= 0) {
             if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 emptyViewImage.setVisibility(View.INVISIBLE);
-                emptyViewText.setText(R.string.loading);
-                emptyViewText.setVisibility(View.VISIBLE);
+                emptyViewText.setVisibility(View.INVISIBLE);
             } else {
                 emptyViewImage.setVisibility(View.VISIBLE);
                 if (folderFeedList.currentState == StateFilter.BEST) {
