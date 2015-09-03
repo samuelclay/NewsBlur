@@ -3013,10 +3013,10 @@
             NEWSBLUR.organizer = new NEWSBLUR.ReaderOrganizer(options);
         },
         
-        open_feed_exception_modal: function(feed_id) {
+        open_feed_exception_modal: function(feed_id, options) {
             feed_id = feed_id || this.active_feed;
             
-            NEWSBLUR.feed_exception = new NEWSBLUR.ReaderFeedException(feed_id);
+            NEWSBLUR.feed_exception = new NEWSBLUR.ReaderFeedException(feed_id, options);
         },
         
         open_feed_statistics_modal: function(feed_id) {
@@ -3325,6 +3325,11 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subfolder' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Create a new subfolder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-settings' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Folder settings')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move' }, [
@@ -4389,6 +4394,17 @@
             if (!this.model.preference('hide_read_feeds')) unread_view = -1;
             var value = unread_view + direction;
             this.slide_intelligence_slider(value);
+        },
+        
+        toggle_read_filter: function() {
+            var read_filter = NEWSBLUR.assets.view_setting(this.active_feed, 'read_filter');
+            var setting = {
+                'read_filter': (read_filter == 'unread' ? 'all' : 'unread')
+            };
+            var changed = NEWSBLUR.assets.view_setting(this.active_feed, setting);
+            if (!changed) return;
+        
+            NEWSBLUR.reader.reload_feed(setting);
         },
         
         switch_feed_view_unread_view: function(unread_view) {
@@ -5570,6 +5586,18 @@
                     self.open_feed_exception_modal(feed_id);
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-settings' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var folder_title = $t.parents('.NB-menu-manage').data('folder_name');
+                    var $folder = $t.parents('.NB-menu-manage').data('$folder');
+
+                    self.open_feed_exception_modal(folder_title, {
+                        folder_title: folder_title, 
+                        $folder: $folder
+                    });
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-reload' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
@@ -6420,6 +6448,10 @@
             $document.bind('keypress', '-', function(e) {
                 e.preventDefault();
                 self.move_intelligence_slider(-1);
+            });
+            $document.bind('keypress', 'shift+l', function(e) {
+                e.preventDefault();
+                self.toggle_read_filter();
             });
             $document.bind('keypress', 'shift+d', function(e) {
                 e.preventDefault();

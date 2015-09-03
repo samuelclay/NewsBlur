@@ -119,6 +119,10 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         
         return this.folders.has_unreads(options);
     },
+
+    rss_url: function(filter) {
+        return this.folders.rss_url(filter);
+    },
     
     view_setting: function(setting) {
         if (this.is_folder()) {
@@ -317,6 +321,17 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
                 item.folders.update_all_folder_visibility();
             }
         });
+    },
+    
+    rss_url: function(filter) {
+        var url = NEWSBLUR.URLs['folder_rss'];
+        url = url.replace('{user_id}', NEWSBLUR.Globals.user_id);
+        url = url.replace('{secret_token}', NEWSBLUR.Globals.secret_token);
+        url = url.replace('{unread_filter}', filter);
+        url = url.replace('{folder_title}', Inflector.sluggify(this.options.title));
+        console.log(['rss_url', this]);
+        
+        return "https://" + NEWSBLUR.URLs.domain + url;
     },
     
     view_setting: function(setting) {

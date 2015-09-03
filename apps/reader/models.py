@@ -13,6 +13,7 @@ from django.db.models import Count
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.template.defaultfilters import slugify
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
 from apps.reader.managers import UserSubscriptionManager
@@ -120,8 +121,10 @@ class UserSubscription(models.Model):
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
                 return story_hashes
-
-        read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
+        
+        read_dates = dict()
+        for us in usersubs:
+            read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
@@ -145,7 +148,7 @@ class UserSubscription(models.Model):
                     pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
                     expire_unread_stories_key = True
                 else:
-                    min_score = unread_timestamp
+                    min_score = 0
                     unread_stories_key = stories_key
 
                 if order == 'oldest':
@@ -210,12 +213,11 @@ class UserSubscription(models.Model):
         
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
             if read_filter == "unread":
-                cutoff_date = self.mark_read_date
+                cutoff_date = max(cutoff_date, self.mark_read_date)
             elif default_cutoff_date:
                 cutoff_date = default_cutoff_date
-            else:
-                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if order == 'oldest':
             byscorefunc = rt.zrangebyscore
@@ -260,7 +262,7 @@ class UserSubscription(models.Model):
     @classmethod
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
                      order='newest', read_filter='all', usersubs=None, cutoff_date=None,
-                     all_feed_ids=None):
+                     all_feed_ids=None, cache_prefix=""):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
         across_all_feeds = False
         
@@ -277,8 +279,8 @@ class UserSubscription(models.Model):
         
         # feeds_string = ""
         feeds_string = ','.join(str(f) for f in sorted(all_feed_ids))[:30]
-        ranked_stories_keys         = 'zU:%s:feeds:%s'  % (user_id, feeds_string)
-        unread_ranked_stories_keys  = 'zhU:%s:feeds:%s' % (user_id, feeds_string)
+        ranked_stories_keys         = '%szU:%s:feeds:%s'  % (cache_prefix, user_id, feeds_string)
+        unread_ranked_stories_keys  = '%szhU:%s:feeds:%s' % (cache_prefix, user_id, feeds_string)
         stories_cached = rt.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached and unreads_cached:
@@ -291,7 +293,7 @@ class UserSubscription(models.Model):
         else:
             rt.delete(ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
-        
+
         story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                         read_filter=read_filter, order=order, 
                                         include_timestamps=True,
@@ -550,7 +552,7 @@ class UserSubscription(models.Model):
         # r.sunionstore("%s:backup" % key, key)
         # r.expire("%s:backup" % key, 60*60*24)
         r.sunionstore(key, *["%s:%s" % (key, f) for f in feeds])
-        new_rs = r.smembers(key)        
+        new_rs = r.smembers(key)
         
         missing_rs = []
         missing_count = 0
@@ -683,6 +685,7 @@ class UserSubscription(models.Model):
         ont = self.unread_count_neutral
         ops = self.unread_count_positive
         oousd = self.oldest_unread_story_date
+        ucu = self.unread_count_updated
         onur = self.needs_unread_recalc
         oit = self.is_trained
         
@@ -790,6 +793,7 @@ class UserSubscription(models.Model):
         if self.unread_count_positive != ops: update_fields.append('unread_count_positive')
         if self.unread_count_neutral != ont: update_fields.append('unread_count_neutral')
         if self.unread_count_negative != ong: update_fields.append('unread_count_negative')
+        if self.unread_count_updated != ucu: update_fields.append('unread_count_updated')
         if self.oldest_unread_story_date != oousd: update_fields.append('oldest_unread_story_date')
         if self.needs_unread_recalc != onur: update_fields.append('needs_unread_recalc')
         if self.is_trained != oit: update_fields.append('is_trained')
@@ -1479,7 +1483,31 @@ class UserSubscriptionFolders(models.Model):
             return feeds
 
         return _flat(folders)
-    
+        
+    def feed_ids_under_folder_slug(self, slug):
+        folders = json.decode(self.folders)
+        
+        def _feeds(folder, found=False, folder_title=None):
+            feeds = []
+            local_found = False
+            for item in folder:
+                if isinstance(item, int) and item not in feeds and found:
+                    feeds.append(item)
+                elif isinstance(item, dict):
+                    for f_k, f_v in item.items():
+                        if slugify(f_k) == slug:
+                            found = True
+                            local_found = True
+                            folder_title = f_k
+                        found_feeds, folder_title = _feeds(f_v, found, folder_title)
+                        feeds.extend(found_feeds)
+                        if local_found:
+                            found = False
+                            local_found = False
+            return feeds, folder_title
+
+        return _feeds(folders)
+        
     @classmethod
     def add_all_missing_feeds(cls):
         usf = cls.objects.all().order_by('pk')

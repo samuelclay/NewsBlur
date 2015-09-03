@@ -779,9 +779,25 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void processVolumeKeyNavigationEvent(int keyCode) {
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT) ||
             (keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT)) {
-            overlayRight(overlayRight);
+            if (pager == null) return;
+            int nextPosition = pager.getCurrentItem() + 1;
+            if (nextPosition < readingAdapter.getCount()) {
+                try {
+                    pager.setCurrentItem(nextPosition);
+                } catch (Exception e) {
+                    // Just in case cursor changes.
+                }
+            }
         } else {
-            overlayLeft(overlayLeft);
+            if (pager == null) return;
+            int nextPosition = pager.getCurrentItem() - 1;
+            if (nextPosition >= 0) {
+                try {
+                    pager.setCurrentItem(nextPosition);
+                } catch (Exception e) {
+                    // Just in case cursor changes.
+                }
+            }
         }
     }
 

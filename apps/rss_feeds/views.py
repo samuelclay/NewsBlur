@@ -311,8 +311,9 @@ def exception_change_feed_address(request):
             new_feed.schedule_feed_fetch_immediately()
             new_feed.has_feed_exception = False
             new_feed.active = True
-            new_feed.save()
-            merge_feeds(new_feed.pk, feed.pk)
+            new_feed = new_feed.save()
+            if new_feed.pk != feed.pk:
+                merge_feeds(new_feed.pk, feed.pk)
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
@@ -324,7 +325,7 @@ def exception_change_feed_address(request):
             except Feed.DoesNotExist:
                 feed.branch_from_feed = original_feed
             feed.feed_address_locked = True
-            feed.save()
+            feed = feed.save()
 
     feed = feed.update()
     feed = Feed.get_by_id(feed.pk)

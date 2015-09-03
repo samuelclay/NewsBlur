@@ -95,9 +95,11 @@ if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-f", "--find", dest="find")
     parser.add_option("-p", "--path", dest="path")
+    parser.add_option("-r", "--role", dest="role")
     (options, args) = parser.parse_args()
 
     path = options.path
     find = options.find
+    role = options.role or 'app'
     command = "zgrep \"%s\"" % find
-    main(role="app", command=command, path=path)
+    main(role=role, command=command, path=path)

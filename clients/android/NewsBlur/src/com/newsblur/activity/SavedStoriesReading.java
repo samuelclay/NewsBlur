@@ -27,5 +27,4 @@ public class SavedStoriesReading extends Reading {
         FeedUtils.dbHelper.markSavedReadingSession();
         super.onLoadFinished(loader, cursor);
     }
-
 }

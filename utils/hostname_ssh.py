@@ -11,7 +11,6 @@ if __name__ == '__main__':
     doapi = dop.client.Client(settings.DO_CLIENT_KEY, settings.DO_API_KEY)
     droplets = doapi.show_active_droplets()
     for droplet in droplets:
-        if sys.argv[1] in droplet.name:
+        if sys.argv[1] == droplet.name:
             print droplet.ip_address
             break
-

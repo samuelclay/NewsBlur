@@ -6,7 +6,8 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
         "keyup .NB-module-search-sites input"    : "search_sites",
         "keyup .NB-module-search-people input"   : "search_people",
         "click .NB-module-search-sites .NB-search-close" : "clear_site",
-        "click .NB-module-search-people .NB-search-close" : "clear_person"
+        "click .NB-module-search-people .NB-search-close" : "clear_person",
+        "click .NB-module-search-add-url"        : "add_url"
     },
     
     initialize: function() {
@@ -46,18 +47,23 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
 
             if (!data || !data.feeds || !data.feeds.length) {
                 this.$results.html($.make('div', { 
-                    className: 'NB-friends-search-badges-empty' 
+                    className: 'NB-friends-search-badges-empty NB-feed-badge' 
                 }, [
                     $.make('div', { className: 'NB-raquo' }, '&raquo;'),
                     'Sorry, nothing matches "'+query+'".'
                 ]));
-                return;
-            }            
-
-            this.$results.html($.make('div', _.map(data.feeds, function(feed) {
-                var model = new NEWSBLUR.Models.Feed(feed);
-                return new NEWSBLUR.Views.FeedBadge({model: model});
-            })));
+            } else {
+                this.$results.html($.make('div', _.map(data.feeds, function(feed) {
+                    var model = new NEWSBLUR.Models.Feed(feed);
+                    return new NEWSBLUR.Views.FeedBadge({model: model});
+                })));
+            }
+            
+            if (query.indexOf('.') != -1) {
+                this.$results.append($.make('div', { className: 'NB-feed-badge' }, [
+                    $.make('div', { className: 'NB-module-search-add-url NB-badge-action-add NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to ' + query)
+                ]));
+            }
         }, this));
     },
     
@@ -109,6 +115,12 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
         this.$person_input.val('');
         this.$results.empty();
         this.$person.removeClass('NB-active');
+    },
+    
+    add_url: function() {
+        var query = this.$site_input.val();
+
+        NEWSBLUR.reader.open_add_feed_modal({url: query});
     }
     
 });

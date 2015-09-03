@@ -117,9 +117,13 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 ]),
                 $.make('li', { className: 'NB-7' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Text view conveniently extracts the story'
+                  'Custom RSS feeds for folders and saved stories'
                 ]),
                 $.make('li', { className: 'NB-8' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'Text view conveniently extracts the story'
+                ]),
+                $.make('li', { className: 'NB-9' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                   'You feed Shiloh, my poor, hungry dog, for ',
                   $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),

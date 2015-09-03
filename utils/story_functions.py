@@ -82,6 +82,9 @@ def pre_process_story(entry):
     else:
         entry['published'] = datetime.datetime.utcnow()
     
+    if entry['published'] < datetime.datetime(2000, 1, 1):
+        entry['published'] = datetime.datetime.utcnow()
+    
     if entry['published'] > datetime.datetime.now() + datetime.timedelta(days=1):
         entry['published'] = datetime.datetime.now()
     
