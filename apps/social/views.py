@@ -132,7 +132,9 @@ def load_social_stories(request, user_id, username=None):
         story['long_parsed_date'] = format_story_link_date__long(shared_date, nowtz)
         
         story['read_status'] = 1
-        if (read_filter == 'all' or query) and socialsub:
+        if story['story_date'] < user.profile.unread_cutoff:
+            story['read_status'] = 1
+        elif (read_filter == 'all' or query) and socialsub:
             story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
         elif read_filter == 'unread' and socialsub:
             story['read_status'] = 0
