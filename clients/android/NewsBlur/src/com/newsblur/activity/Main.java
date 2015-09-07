@@ -70,6 +70,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 		getActionBar().hide();
 
+        // set the status bar to an generic loading message when the activity is first created so
+        // that something is displayed while the service warms up
+        overlayStatusText.setText(R.string.loading);
+        overlayStatusText.setVisibility(View.VISIBLE);
+
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
         swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
         swipeLayout.setOnRefreshListener(this);

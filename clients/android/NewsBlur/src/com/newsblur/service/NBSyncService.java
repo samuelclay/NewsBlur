@@ -350,10 +350,8 @@ public class NBSyncService extends Service {
             }
         } finally {
             closeQuietly(c);
-            if (ActionsRunning) {
-                ActionsRunning = false;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
-            }
+            ActionsRunning = false;
+            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
         }
     }
 
@@ -371,7 +369,6 @@ public class NBSyncService extends Service {
         if (PendingFeed == null) {
             FollowupActions.clear();
         }
-        NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
     }
 
     /**
