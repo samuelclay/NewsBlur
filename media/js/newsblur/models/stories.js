@@ -132,7 +132,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             background = false;
         }
 
-        if (background && !$.browser.mozilla && trueSafari) {
+        if (background && !$.browser.mozilla) {
             var anchor, event;
 
             anchor = document.createElement("a");
