@@ -652,7 +652,23 @@
                 NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
-        }        
+        }
+        
+        if ([[story objectForKey:@"comment_count_friends"] intValue] > 0 ) {
+            NSString *commentHeader = [NSString stringWithFormat:@
+                                       "<div class=\"NB-story-comments-friends-header-wrapper\">"
+                                       "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
+                                       "</div>",
+                                       [[story objectForKey:@"comment_count_friends"] intValue],
+                                       [[story objectForKey:@"comment_count_friends"] intValue] == 1 ? @"" : @"s"];
+            comments = [comments stringByAppendingString:commentHeader];
+            
+            // add friends comments
+            for (int i = 0; i < friendsCommentsArray.count; i++) {
+                NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
+                comments = [comments stringByAppendingString:comment];
+            }
+        }
         
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"show_public_comments"] boolValue] &&
             [[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
