@@ -8,8 +8,6 @@ import java.util.Map;
 
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
 
@@ -49,23 +47,6 @@ public class ValueMultimap implements Serializable {
 		return TextUtils.join("&", parameters);
 	}
 	
-	public String getJsonString() {
-		ArrayList<String> parameters = new ArrayList<String>();
-		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-		for (String key : multimap.keySet()) {
-			StringBuilder builder = new StringBuilder();
-			builder.append("\"" + key + "\"");
-			builder.append(": ");
-			builder.append(gson.toJson(multimap.get(key)));
-			parameters.add(builder.toString());
-		}
-		final StringBuilder builder = new StringBuilder();
-		builder.append("{");
-		builder.append(TextUtils.join(",", parameters));
-		builder.append("}");
-		return builder.toString();
-	}
-
 	public RequestBody asFormEncodedRequestBody() {
 		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
 		for (String key : multimap.keySet()) {
