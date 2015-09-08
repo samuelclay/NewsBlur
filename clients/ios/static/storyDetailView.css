@@ -837,6 +837,9 @@ a.NB-show-profile {
     min-height: 72px;
     box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
 }
+#story_pane .NB-story-comment-friend-shares .NB-story-comment {
+    min-height: inherit;
+}
 #story_pane .NB-story-comment:last-child {
     border-bottom: none;
 }
@@ -876,8 +879,26 @@ a.NB-show-profile {
     height: 36px;
     width: 36px;
 }
+#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar {
+    left: 12px;
+    top: 14px;
+}
+#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    top: 10px;
+}
+#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar img {
+    height: 24px;
+    width: 24px;
+    margin-left: 6px;
+}
+#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
+    margin-left: 0;
+}
 #story_pane .NB-story-comment .NB-story-comment-author-container {
     padding: 8px 0 0;
+}
+#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-comment-author-container {
+    padding-top: 10px;
 }
 #story_pane .NB-story-comment .NB-story-comment-reshares {
     position: absolute;
@@ -947,7 +968,9 @@ a.NB-show-profile {
     margin: 3px 0 6px;
     line-height: 12px;
 }
-
+#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-comment-location {
+    margin-top: 0;
+}
 #story_pane .NB-story-comment .NB-button-wrapper {
     overflow: hidden;
     white-space: nowrap;
