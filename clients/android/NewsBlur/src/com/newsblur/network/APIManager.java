@@ -615,9 +615,17 @@ public class APIManager {
 			return new APIResponse(context);
 		}
 
-		if (AppConstants.VERBOSE_LOG) {
+		if (AppConstants.VERBOSE_LOG_NET) {
 			Log.d(this.getClass().getName(), "API POST " + urlString);
-			Log.d(this.getClass().getName(), "post body: " + formBody.toString());
+            String body = "";
+            try {
+                okio.Buffer buffer = new okio.Buffer();
+                formBody.writeTo(buffer);
+                body = buffer.readUtf8();
+            } catch (Exception e) {
+                ; // this is debug code, do not raise
+            }
+			Log.d(this.getClass().getName(), "post body: " + body);
 		}
 
 		Request.Builder requestBuilder = new Request.Builder().url(urlString);
