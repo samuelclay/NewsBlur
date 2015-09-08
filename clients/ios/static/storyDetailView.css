@@ -1017,7 +1017,8 @@ a.NB-show-profile {
 }
 #story_pane .NB-story-comments-public-teaser-wrapper,
 #story_pane .NB-story-comments-public-header-wrapper,
-#story_pane .NB-story-comments-friends-header-wrapper {
+#story_pane .NB-story-comments-friends-header-wrapper,
+#story_pane .NB-story-comments-friend-shares-header-wrapper {
     clear: both;
     padding: 1px 0;
 }

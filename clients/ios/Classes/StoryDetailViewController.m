@@ -636,7 +636,8 @@
         
         NSDictionary *story = self.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
-        NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
+        NSArray *friendsShareArray =  [story objectForKey:@"friend_shares"];
+        NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];
         
         if ([[story objectForKey:@"comment_count_friends"] intValue] > 0 ) {
             NSString *commentHeader = [NSString stringWithFormat:@
@@ -654,18 +655,19 @@
             }
         }
         
-        if ([[story objectForKey:@"comment_count_friends"] intValue] > 0 ) {
+        NSInteger sharedByFriendsCount = [[story objectForKey:@"shared_by_friends"] count];
+        if (sharedByFriendsCount > 0 ) {
             NSString *commentHeader = [NSString stringWithFormat:@
-                                       "<div class=\"NB-story-comments-friends-header-wrapper\">"
-                                       "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
+                                       "<div class=\"NB-story-comments-friend-shares-header-wrapper\">"
+                                       "  <div class=\"NB-story-comments-friends-header\">%ld share%@</div>"
                                        "</div>",
-                                       [[story objectForKey:@"comment_count_friends"] intValue],
-                                       [[story objectForKey:@"comment_count_friends"] intValue] == 1 ? @"" : @"s"];
+                                       (long)sharedByFriendsCount,
+                                       sharedByFriendsCount == 1 ? @"" : @"s"];
             comments = [comments stringByAppendingString:commentHeader];
             
             // add friends comments
-            for (int i = 0; i < friendsCommentsArray.count; i++) {
-                NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
+            for (int i = 0; i < friendsShareArray.count; i++) {
+                NSString *comment = [self getComment:[friendsShareArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
         }
