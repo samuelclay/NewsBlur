@@ -891,8 +891,12 @@ a.NB-show-profile {
     width: 24px;
     margin-left: 6px;
 }
+#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-share-profile .NB-user-avatar img {
+    margin-left: 0;
+}
 #story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
     margin-left: 0;
+    margin-top: 12px;
 }
 #story_pane .NB-story-comment .NB-story-comment-author-container {
     padding: 8px 0 0;
