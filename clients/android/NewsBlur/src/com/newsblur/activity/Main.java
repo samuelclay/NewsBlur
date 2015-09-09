@@ -122,6 +122,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	
     @Override
 	public void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_REBUILD) != 0) {
+            folderFeedList.reset();
+        }
         if ((updateType & UPDATE_DB_READY) != 0) {
             try {
                 folderFeedList.startLoaders();

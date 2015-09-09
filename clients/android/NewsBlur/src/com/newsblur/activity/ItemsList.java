@@ -70,6 +70,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
     @Override
     protected void onResume() {
         super.onResume();
+        if (NBSyncService.isHousekeepingRunning()) finish();
         updateStatusIndicators();
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
@@ -124,6 +125,9 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	
     @Override
 	public void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_REBUILD) != 0) {
+            finish();
+        }
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
         }

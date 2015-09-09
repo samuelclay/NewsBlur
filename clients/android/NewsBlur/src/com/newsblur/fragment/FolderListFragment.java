@@ -154,6 +154,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         }
     }
 
+    public void reset() {
+        if (adapter != null) adapter.reset();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);

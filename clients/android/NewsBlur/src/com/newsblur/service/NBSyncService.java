@@ -270,7 +270,7 @@ public class NBSyncService extends Service {
             boolean upgraded = PrefsUtils.checkForUpgrade(this);
             if (upgraded) {
                 HousekeepingRunning = true;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS | NbActivity.UPDATE_REBUILD);
                 // wipe the local DB
                 dbHelper.dropAndRecreateTables();
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
@@ -739,6 +739,10 @@ public class NBSyncService extends Service {
 
     public static boolean isFeedCountSyncRunning() {
         return (HousekeepingRunning || RecountsRunning || FFSyncRunning);
+    }
+
+    public static boolean isHousekeepingRunning() {
+        return HousekeepingRunning;
     }
 
     /**

@@ -506,6 +506,30 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
     }
 
+    public synchronized void reset() {
+        socialFeeds = Collections.emptyMap();
+        socialFeedsOrdered = Collections.emptyList();
+        totalSocialNeutCount = 0;
+        totalSocialPosiCount = 0;
+
+        folders = Collections.emptyMap();
+        flatFolders = Collections.emptyMap();
+        activeFolderNames.clear();
+        activeFolderChildren.clear();
+        folderNeutCounts.clear();
+        folderPosCounts.clear();
+
+        feeds = Collections.emptyMap();
+        feedNeutCounts.clear();
+        feedPosCounts.clear();
+        totalNeutCount = 0;
+        totalPosCount = 0;
+
+        closedFolders.clear();
+
+        savedStoriesCount = 0;
+    }
+
     public Feed getFeed(String feedId) {
         return feeds.get(feedId);
     }

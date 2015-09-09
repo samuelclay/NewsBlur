@@ -193,6 +193,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     protected void onResume() {
         super.onResume();
+        if (NBSyncService.isHousekeepingRunning()) finish();
         // this view shows stories, it is not safe to perform cleanup
         this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
@@ -357,6 +358,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
 	protected void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_REBUILD) != 0) {
+            finish();
+        }
         if ((updateType & UPDATE_STATUS) != 0) {
             enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
         }
