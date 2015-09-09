@@ -258,7 +258,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         // in addition to the real folders returned by the /reader/feeds API, there are virtual folders
         // for global shared stories, social feeds and saved stories
         if (activeFolderNames == null) return 0;
-		return (activeFolderNames.size() + 4);
+        // two types of group (folder and All Stories are represented as folders, and don't count, so -2)
+		return (activeFolderNames.size() + (GroupType.values().length - 2));
 	}
 
 	@Override
