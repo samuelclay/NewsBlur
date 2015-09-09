@@ -181,7 +181,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      * database.  The list widget likes to default all folders to closed, so open them up
      * unless expressly collapsed at some point.
      */
-	private void checkOpenFolderPreferences() {
+	public void checkOpenFolderPreferences() {
         // make sure we didn't beat construction
         if ((this.list == null) || (this.sharedPreferences == null)) return;
 

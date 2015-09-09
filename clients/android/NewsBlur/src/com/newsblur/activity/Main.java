@@ -107,6 +107,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         updateStatusIndicators();
         folderFeedList.pushUnreadCounts();
+        folderFeedList.checkOpenFolderPreferences();
         triggerSync();
 
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
