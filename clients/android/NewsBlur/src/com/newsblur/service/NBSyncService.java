@@ -539,7 +539,7 @@ public class NBSyncService extends Service {
         } finally {
             if (RecountsRunning) {
                 RecountsRunning = false;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA | NbActivity.UPDATE_STATUS);
             }
             FlushRecounts = false;
         }
