@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
 public class SocialFeedReading extends Reading {
@@ -36,7 +35,7 @@ public class SocialFeedReading extends Reading {
         // If we have navigated from the profile we want to ignore the StateFilter and ReadFilter settings
         // for the feed to ensure we can find the story.
         if (openedFromProfile) {
-            return FeedUtils.dbHelper.getAllStoriesLoader(fs, StateFilter.ALL);
+            return FeedUtils.dbHelper.getAllStoriesLoader(fs);
         } else {
             return super.onCreateLoader(loaderId, bundle);
         }
