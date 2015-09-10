@@ -856,13 +856,25 @@ public class BlurDatabaseHelper {
 
     public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getStoriesCursor(fs, stateFilter, cancellationSignal);}
+            protected Cursor createCursor() {
+                ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
+                return getStoriesCursor(fs, stateFilter, readFilter, cancellationSignal);
+            }
         };
     }
 
-    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, CancellationSignal cancellationSignal) {
+    /**
+     * When navigating to a social story from an interaction/activity we want to ignore
+     * the any state so we can be sure we find the selected story.
+     */
+    public Loader<Cursor> getAllStoriesLoader(final FeedSet fs) {
+        return new QueryCursorLoader(context) {
+            protected Cursor createCursor() {return getStoriesCursor(fs, StateFilter.ALL, ReadFilter.ALL, cancellationSignal);}
+        };
+    }
+
+    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, CancellationSignal cancellationSignal) {
         if (fs == null) return null;
-        ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return getStoriesCursor(fs, stateFilter, readFilter, order, cancellationSignal);
     }

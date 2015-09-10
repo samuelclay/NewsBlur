@@ -168,6 +168,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                 i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
                 i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
                 i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, socialFeedId));
+                i.putExtra(SocialFeedReading.EXTRA_NAVIGATE_FROM_PROFILE, true);
                 context.startActivity(i);
             }
         }
