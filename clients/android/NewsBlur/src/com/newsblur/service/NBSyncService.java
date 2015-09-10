@@ -390,8 +390,9 @@ public class NBSyncService extends Service {
         FFSyncRunning = true;
         NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
-        // there is a rare issue with feeds that have no folder.  capture them for workarounds.
-        Set<String> debugFeedIds = new HashSet<String>();
+        // there is an issue with feeds that have no folder or folders that list feeds that do not exist.  capture them for workarounds.
+        Set<String> debugFeedIdsFromFolders = new HashSet<String>();
+        Set<String> debugFeedIdsFromFeeds = new HashSet<String>();
         orphanFeedIds = new HashSet<String>();
 
         try {
@@ -427,21 +428,20 @@ public class NBSyncService extends Service {
             // clean out the feed / folder tables
             dbHelper.cleanupFeedsFolders();
 
-            // data for the folder and folder-feed-mapping tables
-            List<ContentValues> folderValues = new ArrayList<ContentValues>();
+            // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
-                folderValues.add(folder.getValues());
-                // note all feeds that belong to some folder
-                debugFeedIds.addAll(folder.feedIds);
+                debugFeedIdsFromFolders.addAll(folder.feedIds);
             }
 
             // data for the feeds table
             List<ContentValues> feedValues = new ArrayList<ContentValues>();
             feedaddloop: for (Feed feed : feedResponse.feeds) {
+                // note all feeds for which the API returned data
+                debugFeedIdsFromFeeds.add(feed.feedId);
                 // sanity-check that the returned feeds actually exist in a folder or at the root
                 // if they do not, they should neither display nor count towards unread numbers
-                if (! debugFeedIds.contains(feed.feedId)) {
-                    Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feed.feedId );
+                if (! debugFeedIdsFromFolders.contains(feed.feedId)) {
+                    Log.w(this.getClass().getName(), "Found and ignoring orphan feed (in feeds but not folders): " + feed.feedId );
                     orphanFeedIds.add(feed.feedId);
                     continue feedaddloop;
                 }
@@ -451,7 +451,23 @@ public class NBSyncService extends Service {
                 }
                 feedValues.add(feed.getValues());
             }
+
+            // prune out missiong feed IDs from folders
+            for (String id : debugFeedIdsFromFolders) {
+                if (! debugFeedIdsFromFeeds.contains(id)) {
+                    Log.w(this.getClass().getName(), "Found and ignoring orphan feed (in folders but not feeds): " + id );
+                    orphanFeedIds.add(id);
+                }
+            }
             
+            // data for the folder table
+            List<ContentValues> folderValues = new ArrayList<ContentValues>();
+            for (Folder folder : feedResponse.folders) {
+                // prune out orphans before pushing to the DB
+                folder.removeOrphanFeedIds(orphanFeedIds);
+                folderValues.add(folder.getValues());
+            }
+
             // data for the the social feeds table
             List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
             for (SocialFeed feed : feedResponse.socialFeeds) {
