@@ -909,14 +909,16 @@ class MSocialSubscription(mongo.Document):
             subscription_user_ids = [sub.subscription_user_id for sub in socialsubs]
             if not subscription_user_ids:
                 return story_hashes
-
-        read_dates = dict((us.subscription_user_id, 
-                           int(us.mark_read_date.strftime('%s'))) for us in socialsubs)
+        
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         unread_timestamp = int(time.mktime(cutoff_date.timetuple()))-1000
         feed_counter = 0
+
+        read_dates = dict()
+        for us in socialsubs:
+            read_dates[us.subscription_user_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))            
 
         for sub_user_id_group in chunks(subscription_user_ids, 20):
             pipeline = r.pipeline()

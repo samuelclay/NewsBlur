@@ -16,7 +16,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, UnreadablePostError
 from django.conf import settings
 from django.core.mail import mail_admins
 from django.core.validators import email_re
@@ -1480,7 +1480,10 @@ def mark_story_as_read(request):
 @json.json_view
 def mark_story_hashes_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    story_hashes = request.REQUEST.getlist('story_hash')
+    try:
+        story_hashes = request.REQUEST.getlist('story_hash')
+    except UnreadablePostError:
+        return HttpResponse(status=400)
     
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
     

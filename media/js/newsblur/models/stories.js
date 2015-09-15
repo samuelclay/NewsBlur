@@ -123,6 +123,14 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     open_story_in_new_tab: function(background) {
         this.mark_read({skip_delay: true});
 
+        // Safari browser on Linux is an impossibility, and thus we're actually
+        // on a WebKit-based browser (WebKitGTK or QTWebKit). These can't handle
+        // background tabs. Work around it by disabling backgrounding if we
+        // think we're on Safari and we're also on X11 or Linux
+        if ($.browser.safari && /(\(X11|Linux)/.test(navigator.userAgent)) {
+            background = false;
+        }
+
         if (background && !$.browser.mozilla) {
             var anchor, event;
 

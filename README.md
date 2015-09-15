@@ -22,7 +22,7 @@
    to serve all pages.
  * [Celery](http://ask.github.com/celery) & [RabbitMQ](http://www.rabbitmq.com): 
    Asynchronous queueing server, used to fetch and parse RSS feeds.
- * [MongoDB](http://www.mongodb.com), [Pymongo](http://www.mongodb.com/pymongo), & 
+ * [MongoDB](http://www.mongodb.com), [Pymongo](https://pypi.python.org/pypi/pymongo), & 
    [Mongoengine](http://www.github.com/hmarr/mongoengine): Non-relational database, 
    used to store stories, read stories, feed/page fetch histories, and proxied sites.
  * [PostgreSQL](http://www.postgresql.com): Relational database, used to store feeds, 
@@ -31,7 +31,7 @@
 ### Client-side and design
 
  * [jQuery](http://www.jquery.com): Cross-browser compliant JavaScript code. IE works without effort.
- * [Underscore.js](http://documentcloud.github.com/underscore/): Functional programming for JavaScript. 
+ * [Underscore.js](http://underscorejs.org/): Functional programming for JavaScript. 
    Indispensible.
  * Miscellaneous jQuery Plugins: Everything from resizable layouts, to progress 
    bars, sortables, date handling, colors, corners, JSON, animations. 

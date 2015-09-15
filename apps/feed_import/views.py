@@ -83,7 +83,7 @@ def opml_export(request):
     opml     = exporter.process()
     
     response = HttpResponse(opml, mimetype='text/xml')
-    response['Content-Disposition'] = 'attachment; filename=NewsBlur Subscriptions - %s - %s' % (
+    response['Content-Disposition'] = 'attachment; filename=NewsBlur-%s-%s' % (
         user.username,
         now.strftime('%Y-%m-%d')
     )

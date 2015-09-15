@@ -122,14 +122,15 @@ class UserSubscription(models.Model):
             if not feed_ids:
                 return story_hashes
         
-        read_dates = dict()
-        for us in usersubs:
-            read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         unread_timestamp = int(time.mktime(cutoff_date.timetuple()))-1000
         feed_counter = 0
+
+        read_dates = dict()
+        for us in usersubs:
+            read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
 
         for feed_id_group in chunks(feed_ids, 20):
             pipeline = r.pipeline()

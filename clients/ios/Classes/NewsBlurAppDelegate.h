@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
-#import "OvershareKit.h"
 #import "EventWindow.h"
 #import "WYPopoverController.h"
 
@@ -49,7 +48,7 @@
 @class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations, OSKPresentationStyle, WYPopoverControllerDelegate>  {
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, WYPopoverControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
@@ -269,7 +268,6 @@
              title:(NSString *)title
          feedTitle:(NSString *)title
             images:(NSArray *)images;
-- (void)showSendToManagement;
 - (void)showFindFriends;
 - (void)showPreferences;
 

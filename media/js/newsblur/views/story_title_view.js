@@ -214,18 +214,53 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
 
     watch_grid_image: function() {
         var self = this;
+        if (this.load_youtube_embeds()) {
+            return;
+        }
+        
         $('<img>').load(function() {
             // console.log(['Loaded', this, this.width, self.model.image_url(), self.$(".NB-storytitles-story-image")]);
             if (this.width > 100) {
                 self.$(".NB-storytitles-story-image").css({
                     'display': 'block',
-                    'background-image': "url(" + self.model.image_url() + ")"
+                    'background-image': "none, url(" + self.model.image_url() + ")"
                 });
             }
         }).attr('src', this.model.image_url()).each(function() {
             // fail-safe for cached images which sometimes don't trigger "load" events
             if (this.complete) $(this).load();
         });
+    },
+    
+    select_regex: function(query, url) {
+        if (url == null) {
+            return;
+        }
+        var results = query.exec(url);
+        if (results && results.length) {
+            return results[1];
+        } else {
+            return;
+        }
+    },
+    
+    load_youtube_embeds: function() {
+        var text = this.model.get('story_content');
+        var g = /youtube\.com\/embed\/([A-Za-z0-9\-_]+)/gi;
+        var f = /youtube\.com\/v\/([A-Za-z0-9\-_]+)/gi;
+        var e = /ytimg\.com\/vi\/([A-Za-z0-9\-_]+)/gi;
+        var d = /youtube\.com\/watch\?v=([A-Za-z0-9\-_]+)/gi;
+        var i = this.select_regex(g, text) || 
+                this.select_regex(f, text) || 
+                this.select_regex(e, text) || 
+                this.select_regex(d, text);
+        if (i) {
+            this.$(".NB-storytitles-story-image").css({
+                'display': 'block',
+                'background-image': "url("+NEWSBLUR.Globals.MEDIA_URL+"img/reader/youtube_play.png), url(" + "http://img.youtube.com/vi/" + i + "/0.jpg" + ")"
+            });
+            return true;
+        }
     },
     
     toggle_classes: function() {

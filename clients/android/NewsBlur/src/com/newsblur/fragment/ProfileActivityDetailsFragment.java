@@ -156,7 +156,9 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME));
             context.startActivity(i);
         } else if (isSocialFeedCategory(activity)) {
-            SocialFeed feed = FeedUtils.getSocialFeed(activity.withUserId);
+            // Strip the social: prefix from feedId
+            String socialFeedId = activity.feedId.substring(7);
+            SocialFeed feed = FeedUtils.getSocialFeed(socialFeedId);
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_do_not_follow, Toast.LENGTH_SHORT).show();
             } else {
@@ -165,7 +167,8 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                 i.putExtra(Reading.EXTRA_SOCIAL_FEED, feed);
                 i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
                 i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
-                i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, activity.withUserId));
+                i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, socialFeedId));
+                i.putExtra(SocialFeedReading.EXTRA_NAVIGATE_FROM_PROFILE, true);
                 context.startActivity(i);
             }
         }

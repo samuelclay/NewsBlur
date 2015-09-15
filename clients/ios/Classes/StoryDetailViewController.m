@@ -27,7 +27,6 @@
 #import "StringHelper.h"
 #import "StoriesCollection.h"
 #import "UIWebView+Offsets.h"
-#import "UIViewController+OSKUtilities.h"
 #import "UIView+ViewController.h"
 
 @implementation StoryDetailViewController
@@ -636,9 +635,11 @@
         
         NSDictionary *story = self.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
-        NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
+        NSArray *friendsShareArray =  [story objectForKey:@"friend_shares"];
+        NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];
         
         if ([[story objectForKey:@"comment_count_friends"] intValue] > 0 ) {
+            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comment-friend-comments\">"];
             NSString *commentHeader = [NSString stringWithFormat:@
                                        "<div class=\"NB-story-comments-friends-header-wrapper\">"
                                        "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
@@ -652,10 +653,31 @@
                 NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
-        }        
+            comments = [comments stringByAppendingString:@"</div>"];
+        }
+        
+        NSInteger sharedByFriendsCount = [[story objectForKey:@"shared_by_friends"] count];
+        if (sharedByFriendsCount > 0 ) {
+            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comment-friend-shares\">"];
+            NSString *commentHeader = [NSString stringWithFormat:@
+                                       "<div class=\"NB-story-comments-friend-shares-header-wrapper\">"
+                                       "  <div class=\"NB-story-comments-friends-header\">%ld share%@</div>"
+                                       "</div>",
+                                       (long)sharedByFriendsCount,
+                                       sharedByFriendsCount == 1 ? @"" : @"s"];
+            comments = [comments stringByAppendingString:commentHeader];
+            
+            // add friends comments
+            for (int i = 0; i < friendsShareArray.count; i++) {
+                NSString *comment = [self getComment:[friendsShareArray objectAtIndex:i]];
+                comments = [comments stringByAppendingString:comment];
+            }
+            comments = [comments stringByAppendingString:@"</div>"];
+        }
         
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"show_public_comments"] boolValue] &&
             [[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
+            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comment-public-comments\">"];
             NSString *publicCommentHeader = [NSString stringWithFormat:@
                                              "<div class=\"NB-story-comments-public-header-wrapper\">"
                                              "  <div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
@@ -672,6 +694,7 @@
                 NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
+            comments = [comments stringByAppendingString:@"</div>"];
         }
 
 
@@ -753,7 +776,6 @@
 }
 
 - (NSString *)getComment:(NSDictionary *)commentDict {
-    
     NSDictionary *user = [appDelegate getUser:[[commentDict objectForKey:@"user_id"] intValue]];
     NSString *userAvatarClass = @"NB-user-avatar";
     NSString *userReshareString = @"";
@@ -1275,25 +1297,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 //        NSLog(@"Link clicked, views: %@ = %@", appDelegate.navigationController.topViewController, appDelegate.masterContainerViewController.childViewControllers);
-        if (appDelegate.isPresentingActivities) return NO;
-        NSArray *subviews;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            subviews = [UIViewController
-                        osk_parentMostViewControllerForPresentingViewController:
-                        appDelegate.storyPageControl].view.subviews;
-        } else {
-            subviews = [UIViewController
-                        osk_parentMostViewControllerForPresentingViewController:
-                        appDelegate.storyPageControl].view.subviews;
-        }
-        for (UIView *view in subviews) {
-//            NSLog(@" View? %@ - %d - %@", view, [view isFirstResponder], [view firstAvailableUIViewController]);
-            if ([[view firstAvailableUIViewController]
-                 isKindOfClass:[OSKActivitySheetViewController class]]) {
-                return NO;
-            }
-        }
-        
+        if (appDelegate.isPresentingActivities) return NO;        
         [appDelegate showOriginalStory:url];
         return NO;
     }
