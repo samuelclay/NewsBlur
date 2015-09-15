@@ -27,7 +27,6 @@
 #import "StringHelper.h"
 #import "StoriesCollection.h"
 #import "UIWebView+Offsets.h"
-#import "UIViewController+OSKUtilities.h"
 #import "UIView+ViewController.h"
 
 @implementation StoryDetailViewController
@@ -1298,25 +1297,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 //        NSLog(@"Link clicked, views: %@ = %@", appDelegate.navigationController.topViewController, appDelegate.masterContainerViewController.childViewControllers);
-        if (appDelegate.isPresentingActivities) return NO;
-        NSArray *subviews;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            subviews = [UIViewController
-                        osk_parentMostViewControllerForPresentingViewController:
-                        appDelegate.storyPageControl].view.subviews;
-        } else {
-            subviews = [UIViewController
-                        osk_parentMostViewControllerForPresentingViewController:
-                        appDelegate.storyPageControl].view.subviews;
-        }
-        for (UIView *view in subviews) {
-//            NSLog(@" View? %@ - %d - %@", view, [view isFirstResponder], [view firstAvailableUIViewController]);
-            if ([[view firstAvailableUIViewController]
-                 isKindOfClass:[OSKActivitySheetViewController class]]) {
-                return NO;
-            }
-        }
-        
+        if (appDelegate.isPresentingActivities) return NO;        
         [appDelegate showOriginalStory:url];
         return NO;
     }

@@ -11,7 +11,7 @@
 @implementation NBActivityItemProvider
 
 - (instancetype)initWithUrl:(NSURL *)_url authorName:(NSString *)_authorName text:(NSString *)_text title:(NSString *)_title feedTitle:(NSString *)_feedTitle images:(NSArray *)_images {
-    if (self = [self init]) {
+    if (self = [self initWithUrl:_url authorName:_authorName text:_text title:_title feedTitle:_feedTitle images:_images]) {
         url = _url;
         authorName = _authorName;
         text = _text;

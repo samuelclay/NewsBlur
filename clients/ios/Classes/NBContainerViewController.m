@@ -24,7 +24,6 @@
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"
-#import "OvershareKit.h"
 #import "StoriesCollection.h"
 #import "UserTagsViewController.h"
 

@@ -37,7 +37,6 @@
     if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
-                                            [@"Sharing Accounts" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString],
                                             [@"Login as..." uppercaseString],
@@ -45,7 +44,6 @@
     } else {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
-                                            [@"Sharing Accounts" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString], nil];
     }
@@ -101,11 +99,11 @@
     if (indexPath.row == 0) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_preferences.png"];
     } else if (indexPath.row == 1) {
-        cell.imageView.image = [UIImage imageNamed:@"barbutton_sendto.png"];
-    } else if (indexPath.row == 2) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_followers.png"];
-    } else if (indexPath.row == 3) {
+    } else if (indexPath.row == 2) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
+    } else if (indexPath.row == 3) {
+        cell.imageView.image = [UIImage imageNamed:@"barbutton_sendto.png"];
     }
     
     return cell;
@@ -120,12 +118,10 @@
     if (indexPath.row == 0) {
         [appDelegate showPreferences];
     } else if (indexPath.row == 1) {
-        [appDelegate showSendToManagement];
-    } else if (indexPath.row == 2) {
         [appDelegate showFindFriends];
-    } else if (indexPath.row == 3) {
+    } else if (indexPath.row == 2) {
         [appDelegate confirmLogout];
-    } else if (indexPath.row == 4) {
+    } else if (indexPath.row == 3) {
         [self showLoginAsDialog];
     }
     
