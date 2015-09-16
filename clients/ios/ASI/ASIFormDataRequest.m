@@ -15,8 +15,8 @@
 - (void)buildURLEncodedPostBody;
 - (void)appendPostString:(NSString *)string;
 
-@property (retain) NSMutableArray *postData;
-@property (retain) NSMutableArray *fileData;
+@property (atomic, retain) NSMutableArray *postData;
+@property (atomic, retain) NSMutableArray *fileData;
 
 #if DEBUG_FORM_DATA_REQUEST
 - (void)addToDebugBody:(NSString *)string;

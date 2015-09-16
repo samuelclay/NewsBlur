@@ -133,7 +133,7 @@
 	if (![operation isKindOfClass:[ASIHTTPRequest class]]) {
 		[NSException raise:@"AttemptToAddInvalidRequest" format:@"Attempted to add an object that was not an ASIHTTPRequest to an ASINetworkQueue"];
 	}
-    
+		
 	[self setRequestsCount:[self requestsCount]+1];
 	
 	ASIHTTPRequest *request = (ASIHTTPRequest *)operation;
@@ -159,7 +159,7 @@
 			}
 		}
 		[request buildPostBody];
-		[self request:nil incrementUploadSizeBy:[request postLength]];
+		[self request:nil incrementUploadSizeBy:(long long)[request postLength]];
 
 
 	} else {
@@ -233,7 +233,7 @@
 
 - (void)request:(ASIHTTPRequest *)request didReceiveBytes:(long long)bytes
 {
-	[self setBytesDownloadedSoFar:[self bytesDownloadedSoFar]+bytes];
+	[self setBytesDownloadedSoFar:[self bytesDownloadedSoFar]+(unsigned long long)bytes];
 	if ([self downloadProgressDelegate]) {
 		[ASIHTTPRequest updateProgressIndicator:&downloadProgressDelegate withProgress:[self bytesDownloadedSoFar] ofTotal:[self totalBytesToDownload]];
 	}
@@ -241,7 +241,7 @@
 
 - (void)request:(ASIHTTPRequest *)request didSendBytes:(long long)bytes
 {
-	[self setBytesUploadedSoFar:[self bytesUploadedSoFar]+bytes];
+	[self setBytesUploadedSoFar:[self bytesUploadedSoFar]+(unsigned long long)bytes];
 	if ([self uploadProgressDelegate]) {
 		[ASIHTTPRequest updateProgressIndicator:&uploadProgressDelegate withProgress:[self bytesUploadedSoFar] ofTotal:[self totalBytesToUpload]];
 	}
@@ -249,12 +249,12 @@
 
 - (void)request:(ASIHTTPRequest *)request incrementDownloadSizeBy:(long long)newLength
 {
-	[self setTotalBytesToDownload:[self totalBytesToDownload]+newLength];
+	[self setTotalBytesToDownload:[self totalBytesToDownload]+(unsigned long long)newLength];
 }
 
 - (void)request:(ASIHTTPRequest *)request incrementUploadSizeBy:(long long)newLength
 {
-	[self setTotalBytesToUpload:[self totalBytesToUpload]+newLength];
+	[self setTotalBytesToUpload:[self totalBytesToUpload]+(unsigned long long)newLength];
 }
 
 

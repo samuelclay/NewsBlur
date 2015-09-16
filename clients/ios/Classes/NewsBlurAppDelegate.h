@@ -363,7 +363,7 @@
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;
-- (BOOL)isReachabileForOffline;
+- (BOOL)isReachableForOffline;
 - (void)storeUserProfiles:(NSArray *)userProfiles;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
 - (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;

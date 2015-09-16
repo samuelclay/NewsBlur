@@ -21,7 +21,7 @@
 #import "NSString+HTML.h"
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
-#import "JSON.h"
+#import "SBJson4.h"
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
@@ -173,7 +173,7 @@
     // back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
                                    initWithTitle:@"All Sites"
-                                   style:UIBarButtonItemStyleBordered
+                                   style:UIBarButtonItemStylePlain
                                    target:self
                                    action:@selector(transitionFromFeedDetail)];
     self.buttonBack = backButton;

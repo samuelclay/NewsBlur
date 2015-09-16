@@ -81,7 +81,7 @@
 	zStream.avail_in = (unsigned int)length;
 	zStream.avail_out = 0;
 
-	NSInteger bytesProcessedAlready = zStream.total_out;
+	NSUInteger bytesProcessedAlready = zStream.total_out;
 	while (zStream.avail_out == 0) {
 		
 		if (zStream.total_out-bytesProcessedAlready >= [outputData length]) {
@@ -174,7 +174,7 @@
 		}
 		
 		// Attempt to deflate the chunk of data
-		outputData = [compressor compressBytes:inputData length:readLength error:&theError shouldFinish:readLength < DATA_CHUNK_SIZE ];
+		outputData = [compressor compressBytes:inputData length:(NSUInteger)readLength error:&theError shouldFinish:readLength < DATA_CHUNK_SIZE];
 		if (theError) {
 			if (err) {
 				*err = theError;
@@ -212,7 +212,7 @@
 
 + (NSError *)deflateErrorWithCode:(int)code
 {
-	return [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Compression of data failed with code %hi",(short)code],NSLocalizedDescriptionKey,nil]];
+	return [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Compression of data failed with code %d",code],NSLocalizedDescriptionKey,nil]];
 }
 
 @synthesize streamReady;

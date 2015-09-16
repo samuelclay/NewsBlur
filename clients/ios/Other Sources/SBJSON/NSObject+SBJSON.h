@@ -27,24 +27,42 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <Foundation/Foundation.h>
+
+
 /**
- @mainpage A strict JSON parser and generator for Objective-C
-
- JSON (JavaScript Object Notation) is a lightweight data-interchange
- format. This framework provides two apis for parsing and generating
- JSON. One standard object-based and a higher level api consisting of
- categories added to existing Objective-C classes.
-
- Learn more on the http://code.google.com/p/json-framework project site.
+ @brief Adds JSON generation to Foundation classes
  
- This framework does its best to be as strict as possible, both in what it
- accepts and what it generates. For example, it does not support trailing commas
- in arrays or objects. Nor does it support embedded comments, or
- anything else not in the JSON specification. This is considered a feature. 
- 
-*/
+ This is a category on NSObject that adds methods for returning JSON representations
+ of standard objects to the objects themselves. This means you can call the
+ -JSONRepresentation method on an NSArray object and it'll do what you want.
+ */
+@interface NSObject (NSObject_SBJSON)
 
-#import "SBJSON.h"
-#import "NSObject+SBJSON.h"
-#import "NSString+SBJSON.h"
+/**
+ @brief Returns a string containing the receiver encoded as a JSON fragment.
+ 
+ This method is added as a category on NSObject but is only actually
+ supported for the following objects:
+ @li NSDictionary
+ @li NSArray
+ @li NSString
+ @li NSNumber (also used for booleans)
+ @li NSNull 
+ 
+ @deprecated Given we bill ourselves as a "strict" JSON library, this method should be removed.
+ */
+//- (NSString *)JSONFragment;
+
+/**
+ @brief Returns a string containing the receiver encoded in JSON.
+
+ This method is added as a category on NSObject but is only actually
+ supported for the following objects:
+ @li NSDictionary
+ @li NSArray
+ */
+- (NSString *)JSONRepresentation;
+
+@end
 

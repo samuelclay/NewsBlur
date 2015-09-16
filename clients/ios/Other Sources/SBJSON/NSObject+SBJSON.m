@@ -28,26 +28,23 @@
  */
 
 #import "NSObject+SBJSON.h"
-#import "SBJsonWriter.h"
+#import "SBJson4Writer.h"
 
 @implementation NSObject (NSObject_SBJSON)
 
-- (NSString *)JSONFragment {
-    SBJsonWriter *jsonWriter = [SBJsonWriter new];
-    NSString *json = [jsonWriter stringWithFragment:self];    
-    if (!json)
-        NSLog(@"-JSONFragment failed. Error trace is: %@", [jsonWriter errorTrace]);
-    [jsonWriter release];
-    return json;
-}
-
 - (NSString *)JSONRepresentation {
-    SBJsonWriter *jsonWriter = [SBJsonWriter new];    
-    NSString *json = [jsonWriter stringWithObject:self];
-    if (!json)
-        NSLog(@"-JSONRepresentation failed. Error trace is: %@", [jsonWriter errorTrace]);
-    [jsonWriter release];
-    return json;
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&error];
+    if (!jsonData) {
+        NSLog(@"-JSONFragment failed. Error trace is: %@", error);
+        return nil;
+    }
+
+    NSString *requestJson = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    return requestJson;
 }
 
 @end

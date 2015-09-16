@@ -23,7 +23,7 @@
 #import "NSString+HTML.h"
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
-#import "JSON.h"
+#import "SBJson4.h"
 #import "StringHelper.h"
 #import "StoriesCollection.h"
 #import "UIWebView+Offsets.h"

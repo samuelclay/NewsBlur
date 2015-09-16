@@ -38,5 +38,5 @@
 // If deflating finishes or fails, this method will be called automatically
 - (NSError *)closeStream;
 
-@property (assign, readonly) BOOL streamReady;
+@property (atomic, assign, readonly) BOOL streamReady;
 @end

@@ -26,6 +26,7 @@
 #define kIASKKey                              @"Key"
 #define kIASKFile                             @"File"
 #define kIASKDefaultValue                     @"DefaultValue"
+#define kIASKDisplaySortedByTitle             @"DisplaySortedByTitle"
 #define kIASKMinimumValue                     @"MinimumValue"
 #define kIASKMaximumValue                     @"MaximumValue"
 #define kIASKTrueValue                        @"TrueValue"

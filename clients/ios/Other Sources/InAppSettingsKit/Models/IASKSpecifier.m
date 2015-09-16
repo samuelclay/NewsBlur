@@ -69,12 +69,87 @@
 		[multipleValuesDict setObject:titles forKey:kIASKTitles];
 	}
     
-    if (shortTitles) {
+    if (shortTitles.count) {
 		[multipleValuesDict setObject:shortTitles forKey:kIASKShortTitles];
 	}
     
     [self setMultipleValuesDict:multipleValuesDict];
 }
+
+- (void)sortIfNeeded {
+    if (self.displaySortedByTitle) {
+        NSArray *values = [_specifierDict objectForKey:kIASKValues];
+        NSArray *titles = [_specifierDict objectForKey:kIASKTitles];
+        NSArray *shortTitles = [_specifierDict objectForKey:kIASKShortTitles];
+
+        NSAssert(values.count == titles.count, @"Malformed multi-value specifier found in settings bundle. Number of values and titles differ.");
+        NSAssert(shortTitles == nil || shortTitles.count == values.count, @"Malformed multi-value specifier found in settings bundle. Number of short titles and values differ.");
+
+        NSMutableDictionary *multipleValuesDict = [NSMutableDictionary new];
+
+        NSMutableArray *temporaryMappingsForSort = [NSMutableArray arrayWithCapacity:titles.count];
+
+        static NSString *const titleKey = @"title";
+        static NSString *const shortTitleKey = @"shortTitle";
+        static NSString *const localizedTitleKey = @"localizedTitle";
+        static NSString *const valueKey = @"value";
+        IASKSettingsReader *strongSettingsReader = self.settingsReader;
+        [titles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSString *localizedTitle = [strongSettingsReader titleForStringId:obj];
+            [temporaryMappingsForSort addObject:@{titleKey : obj,
+                                                  valueKey : values[idx],
+                                                  localizedTitleKey : localizedTitle,
+                                                  shortTitleKey : (shortTitles[idx] ?: [NSNull null]),
+                                                  }];
+        }];
+        
+        NSArray *sortedTemporaryMappings = [temporaryMappingsForSort sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            NSString *localizedTitle1 = obj1[localizedTitleKey];
+            NSString *localizedTitle2 = obj2[localizedTitleKey];
+
+            if ([localizedTitle1 isKindOfClass:[NSString class]] && [localizedTitle2 isKindOfClass:[NSString class]]) {
+                return [localizedTitle1 localizedCompare:localizedTitle2];
+            } else {
+                return NSOrderedSame;
+            }
+        }];
+        
+        NSMutableArray *sortedTitles = [NSMutableArray arrayWithCapacity:sortedTemporaryMappings.count];
+        NSMutableArray *sortedShortTitles = [NSMutableArray arrayWithCapacity:sortedTemporaryMappings.count];
+        NSMutableArray *sortedValues = [NSMutableArray arrayWithCapacity:sortedTemporaryMappings.count];
+
+        [sortedTemporaryMappings enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSDictionary *mapping = obj;
+            sortedTitles[idx] = mapping[titleKey];
+            sortedValues[idx] = mapping[valueKey];
+            if (mapping[shortTitleKey] != [NSNull null]) {
+                sortedShortTitles[idx] = mapping[shortTitleKey];
+            }
+        }];
+        titles = [sortedTitles copy];
+        values = [sortedValues copy];
+        shortTitles = [sortedShortTitles copy];
+        
+        if (values) {
+            [multipleValuesDict setObject:values forKey:kIASKValues];
+        }
+        
+        if (titles) {
+            [multipleValuesDict setObject:titles forKey:kIASKTitles];
+        }
+        
+        if (shortTitles.count) {
+            [multipleValuesDict setObject:shortTitles forKey:kIASKShortTitles];
+        }
+        
+        [self setMultipleValuesDict:multipleValuesDict];
+    }
+}
+
+- (BOOL)displaySortedByTitle {
+    return [[_specifierDict objectForKey:kIASKDisplaySortedByTitle] boolValue];
+}
+
 - (NSString*)localizedObjectForKey:(NSString*)key {
 	IASKSettingsReader *settingsReader = self.settingsReader;
 	return [settingsReader titleForStringId:[_specifierDict objectForKey:key]];
@@ -139,9 +214,9 @@
 - (NSString*)titleForCurrentValue:(id)currentValue {
 	NSArray *values = [self multipleValues];
 	NSArray *titles = [self multipleShortTitles];
-    if (!titles)
+	if (!titles) {
         titles = [self multipleTitles];
-
+	}
 	if (values.count != titles.count) {
 		return nil;
 	}

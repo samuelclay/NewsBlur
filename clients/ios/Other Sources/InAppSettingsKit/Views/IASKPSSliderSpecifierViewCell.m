@@ -88,6 +88,7 @@
 }	
 
 - (void)prepareForReuse {
+	[super prepareForReuse];
 	_minImage.image = nil;
 	_maxImage.image = nil;
 }

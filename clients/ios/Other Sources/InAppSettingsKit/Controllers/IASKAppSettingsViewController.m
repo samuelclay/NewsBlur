@@ -92,7 +92,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)setFile:(NSString *)file {
     _file = [file copy];
-    self.tableView.contentOffset = CGPointMake(0, 0);
+    self.tableView.contentOffset = CGPointMake(0, -self.tableView.contentInset.top);
     self.settingsReader = nil; // automatically initializes itself
     if (!_reloadDisabled) {
 		[self.tableView reloadData];
@@ -131,28 +131,41 @@ CGRect IASKCGRectSwap(CGRect rect);
     return [self initWithStyle:UITableViewStyleGrouped];
 }
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
+- (id)initWithStyle:(UITableViewStyle)style {
     if (style != UITableViewStyleGrouped) {
-        NSLog(@"only UITableViewStyleGrouped style is supported, forcing it.");
+        NSLog(@"WARNING: only UITableViewStyleGrouped style is supported by InAppSettingsKit.");
     }
-    self = [super initWithStyle:UITableViewStyleGrouped];
-    if (self) {
-        _reloadDisabled = NO;
-        _showDoneButton = YES;
-        // If set to YES, will display credits for InAppSettingsKit creators
-        _showCreditsFooter = YES;
+    if ((self = [super initWithStyle:style])) {
+		[self configure];
     }
     return self;
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    if (!nibNameOrNil) {
-        return [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    }
-    NSLog (@"%@ is now deprecated, we are moving away from nibs.", NSStringFromSelector(_cmd));
-    return [self initWithStyle:UITableViewStyleGrouped];
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    if (nibNameOrNil) {
+		NSLog (@"%@ is now deprecated, we are moving away from nibs.", NSStringFromSelector(_cmd));
+		self = [super initWithStyle:UITableViewStyleGrouped];
+	} else {
+		self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	}
+	if (self) {
+		[self configure];
+	}
+	return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+	if ((self = [super initWithCoder:aDecoder])) {
+		[self configure];
+		_showDoneButton = NO;
+	}
+	return self;
+}
+
+- (void)configure {
+	_reloadDisabled = NO;
+	_showDoneButton = YES;
+	_showCreditsFooter = YES; // display credits for InAppSettingsKit creators
 }
 
 - (void)viewDidLoad {
@@ -191,7 +204,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 	
 	if ([self.settingsStore isKindOfClass:[IASKSettingsStoreUserDefaults class]]) {
 		NSNotificationCenter *dc = NSNotificationCenter.defaultCenter;
-		[dc addObserver:self selector:@selector(userDefaultsDidChange) name:NSUserDefaultsDidChangeNotification object:[NSUserDefaults standardUserDefaults]];
+		IASKSettingsStoreUserDefaults *udSettingsStore = (id)self.settingsStore;
+		[dc addObserver:self selector:@selector(userDefaultsDidChange) name:NSUserDefaultsDidChangeNotification object:udSettingsStore.defaults];
 		[dc addObserver:self selector:@selector(didChangeSettingViaIASK:) name:kIASKAppSettingChanged object:nil];
 		[self userDefaultsDidChange]; // force update in case of changes while we were hidden
 	}
@@ -225,8 +239,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)viewDidDisappear:(BOOL)animated {
 	NSNotificationCenter *dc = [NSNotificationCenter defaultCenter];
-	[dc removeObserver:self name:NSUserDefaultsDidChangeNotification object:[NSUserDefaults standardUserDefaults]];
-	[dc removeObserver:self name:kIASKAppSettingChanged object:self];
+	if ([self.settingsStore isKindOfClass:[IASKSettingsStoreUserDefaults class]]) {
+		IASKSettingsStoreUserDefaults *udSettingsStore = (id)self.settingsStore;
+		[dc removeObserver:self name:NSUserDefaultsDidChangeNotification object:udSettingsStore.defaults];
+		[dc removeObserver:self name:kIASKAppSettingChanged object:self];
+	}
 	[dc removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:[UIApplication sharedApplication]];
 	[dc removeObserver:self name:UIApplicationWillEnterForegroundNotification object:[UIApplication sharedApplication]];
 	[dc removeObserver:self name:UIApplicationWillTerminateNotification object:[UIApplication sharedApplication]];
@@ -327,6 +344,12 @@ CGRect IASKCGRectSwap(CGRect rect);
     if([childViewController respondsToSelector:@selector(setHiddenKeys:animated:)]) {
         [(id)childViewController setHiddenKeys:theHiddenKeys animated:animated];
     }
+}
+
+- (void)setNeverShowPrivacySettings:(BOOL)neverShowPrivacySettings {
+	_neverShowPrivacySettings = neverShowPrivacySettings;
+	self.settingsReader = nil;
+	[self reload];
 }
 
 
@@ -432,8 +455,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
 	if ([self tableView:tableView viewForHeaderInSection:section] && [self.delegate respondsToSelector:@selector(settingsViewController:tableView:heightForHeaderForSection:)]) {
-		CGFloat result;
-		if ((result = [self.delegate settingsViewController:self tableView:tableView heightForHeaderForSection:section])) {
+		CGFloat result = [self.delegate settingsViewController:self tableView:tableView heightForHeaderForSection:section];
+		if (result > 0) {
 			return result;
 		}
 		
@@ -729,7 +752,10 @@ CGRect IASKCGRectSwap(CGRect rect);
         } else if ([self.delegate respondsToSelector:@selector(settingsViewController:buttonTappedForKey:)]) {
             // deprecated, provided for backward compatibility
             NSLog(@"InAppSettingsKit Warning: -settingsViewController:buttonTappedForKey: is deprecated. Please use -settingsViewController:buttonTappedForSpecifier:");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [self.delegate settingsViewController:self buttonTappedForKey:[specifier key]];
+#pragma clang diagnostic pop
         } else {
             // legacy code, provided for backward compatibility
             // the delegate mechanism above is much cleaner and doesn't leak
@@ -868,7 +894,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 static NSDictionary *oldUserDefaults = nil;
 - (void)userDefaultsDidChange {
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		NSDictionary *currentDict = [NSUserDefaults standardUserDefaults].dictionaryRepresentation;
+		IASKSettingsStoreUserDefaults *udSettingsStore = (id)self.settingsStore;
+		NSDictionary *currentDict = udSettingsStore.defaults.dictionaryRepresentation;
 		NSMutableArray *indexPathsToUpdate = [NSMutableArray array];
 		for (NSString *key in currentDict.allKeys) {
 			if (oldUserDefaults && ![[oldUserDefaults valueForKey:key] isEqual:[currentDict valueForKey:key]]) {

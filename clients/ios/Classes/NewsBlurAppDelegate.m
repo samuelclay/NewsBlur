@@ -43,7 +43,8 @@
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
 #import "FMDatabaseAdditions.h"
-#import "JSON.h"
+#import "SBJson4.h"
+#import "NSObject+SBJSON.h"
 #import "IASKAppSettingsViewController.h"
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
@@ -203,7 +204,7 @@
                                              (unsigned long)NULL), ^(void) {
         [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
         [self.feedsViewController loadOfflineFeeds:NO];
-//        [self setupReachability];
+        [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
@@ -2623,7 +2624,7 @@
     [offlineQueue addOperation:operationFetchImages];
 }
 
-- (BOOL)isReachabileForOffline {
+- (BOOL)isReachableForOffline {
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     NetworkStatus remoteHostStatus = [reachability currentReachabilityStatus];
     

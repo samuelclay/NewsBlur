@@ -12,7 +12,8 @@
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "AFJSONRequestOperation.h"
-#import "JSON.h"
+#import "SBJson4.h"
+#import "NSObject+SBJSON.h"
 
 @implementation OfflineFetchStories
 
@@ -37,7 +38,7 @@
     BOOL offlineAllowed = [[[NSUserDefaults standardUserDefaults]
                             objectForKey:@"offline_allowed"] boolValue];
     if (!offlineAllowed ||
-        ![appDelegate isReachabileForOffline]) {
+        ![appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
