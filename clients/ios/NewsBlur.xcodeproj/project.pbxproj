@@ -388,12 +388,6 @@
 		FFCDD90117F65A71000C6483 /* NBSwipeableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCDD90017F65A71000C6483 /* NBSwipeableCell.m */; };
 		FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1D7301459B63500E46F89 /* BaseViewController.m */; };
 		FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */; };
-		FFDCA0AF16E80866000D8E0C /* DEComposeRuledView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0A516E80866000D8E0C /* DEComposeRuledView.m */; };
-		FFDCA0B016E80866000D8E0C /* DEComposeTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0A716E80866000D8E0C /* DEComposeTextView.m */; };
-		FFDCA0B116E80866000D8E0C /* REComposeBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0A916E80866000D8E0C /* REComposeBackgroundView.m */; };
-		FFDCA0B216E80866000D8E0C /* REComposeSheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0AB16E80866000D8E0C /* REComposeSheetView.m */; };
-		FFDCA0B316E80866000D8E0C /* REComposeViewController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFDCA0AC16E80866000D8E0C /* REComposeViewController.bundle */; };
-		FFDCA0B416E80866000D8E0C /* REComposeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0AE16E80866000D8E0C /* REComposeViewController.m */; };
 		FFDCA0BB16E80877000D8E0C /* GCOAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0B716E80877000D8E0C /* GCOAuth.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0B916E80877000D8E0C /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FFDCA0BF16E80944000D8E0C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFDCA0BE16E80944000D8E0C /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -986,17 +980,6 @@
 		FFD1D7301459B63500E46F89 /* BaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteAutocompleteCell.h; sourceTree = "<group>"; };
 		FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteAutocompleteCell.m; sourceTree = "<group>"; };
-		FFDCA0A416E80866000D8E0C /* DEComposeRuledView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEComposeRuledView.h; sourceTree = "<group>"; };
-		FFDCA0A516E80866000D8E0C /* DEComposeRuledView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DEComposeRuledView.m; sourceTree = "<group>"; };
-		FFDCA0A616E80866000D8E0C /* DEComposeTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEComposeTextView.h; sourceTree = "<group>"; };
-		FFDCA0A716E80866000D8E0C /* DEComposeTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DEComposeTextView.m; sourceTree = "<group>"; };
-		FFDCA0A816E80866000D8E0C /* REComposeBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REComposeBackgroundView.h; sourceTree = "<group>"; };
-		FFDCA0A916E80866000D8E0C /* REComposeBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REComposeBackgroundView.m; sourceTree = "<group>"; };
-		FFDCA0AA16E80866000D8E0C /* REComposeSheetView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REComposeSheetView.h; sourceTree = "<group>"; };
-		FFDCA0AB16E80866000D8E0C /* REComposeSheetView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REComposeSheetView.m; sourceTree = "<group>"; };
-		FFDCA0AC16E80866000D8E0C /* REComposeViewController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = REComposeViewController.bundle; sourceTree = "<group>"; };
-		FFDCA0AD16E80866000D8E0C /* REComposeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REComposeViewController.h; sourceTree = "<group>"; };
-		FFDCA0AE16E80866000D8E0C /* REComposeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REComposeViewController.m; sourceTree = "<group>"; };
 		FFDCA0B616E80877000D8E0C /* GCOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCOAuth.h; sourceTree = "<group>"; };
 		FFDCA0B716E80877000D8E0C /* GCOAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCOAuth.m; sourceTree = "<group>"; };
 		FFDCA0B816E80877000D8E0C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -1211,7 +1194,6 @@
 				FFDCA0C016E8094F000D8E0C /* Accounts.framework */,
 				FFDCA0BE16E80944000D8E0C /* Social.framework */,
 				FFDCA0B516E80877000D8E0C /* cocoa-oauth */,
-				FFDCA0A316E80866000D8E0C /* REComposeViewController */,
 				43F6A7A815B0E1ED0092EE91 /* CoreText.framework */,
 				FFAD4970144A386100BA6919 /* libz.dylib */,
 				78095E3E128EF35400230C8E /* CFNetwork.framework */,
@@ -2031,24 +2013,6 @@
 			path = "Other Sources/MCSwipeTableViewCell";
 			sourceTree = "<group>";
 		};
-		FFDCA0A316E80866000D8E0C /* REComposeViewController */ = {
-			isa = PBXGroup;
-			children = (
-				FFDCA0A416E80866000D8E0C /* DEComposeRuledView.h */,
-				FFDCA0A516E80866000D8E0C /* DEComposeRuledView.m */,
-				FFDCA0A616E80866000D8E0C /* DEComposeTextView.h */,
-				FFDCA0A716E80866000D8E0C /* DEComposeTextView.m */,
-				FFDCA0A816E80866000D8E0C /* REComposeBackgroundView.h */,
-				FFDCA0A916E80866000D8E0C /* REComposeBackgroundView.m */,
-				FFDCA0AA16E80866000D8E0C /* REComposeSheetView.h */,
-				FFDCA0AB16E80866000D8E0C /* REComposeSheetView.m */,
-				FFDCA0AC16E80866000D8E0C /* REComposeViewController.bundle */,
-				FFDCA0AD16E80866000D8E0C /* REComposeViewController.h */,
-				FFDCA0AE16E80866000D8E0C /* REComposeViewController.m */,
-			);
-			path = REComposeViewController;
-			sourceTree = "<group>";
-		};
 		FFDCA0B516E80877000D8E0C /* cocoa-oauth */ = {
 			isa = PBXGroup;
 			children = (
@@ -2091,7 +2055,7 @@
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = U92APKK285;
+						DevelopmentTeam = 6B75VSYAUJ;
 					};
 				};
 			};
@@ -2348,7 +2312,6 @@
 				FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */,
 				FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */,
 				FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */,
-				FFDCA0B316E80866000D8E0C /* REComposeViewController.bundle in Resources */,
 				FFDD845C16E8871A000AA0A2 /* menu_icn_delete.png in Resources */,
 				FFDD845D16E8871A000AA0A2 /* menu_icn_delete@2x.png in Resources */,
 				FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */,
@@ -2550,11 +2513,6 @@
 				FF22FE5F16E53ADC0046165A /* Underscore.m in Sources */,
 				FF22FE6016E53ADC0046165A /* USArrayWrapper.m in Sources */,
 				FF22FE6116E53ADC0046165A /* USDictionaryWrapper.m in Sources */,
-				FFDCA0AF16E80866000D8E0C /* DEComposeRuledView.m in Sources */,
-				FFDCA0B016E80866000D8E0C /* DEComposeTextView.m in Sources */,
-				FFDCA0B116E80866000D8E0C /* REComposeBackgroundView.m in Sources */,
-				FFDCA0B216E80866000D8E0C /* REComposeSheetView.m in Sources */,
-				FFDCA0B416E80866000D8E0C /* REComposeViewController.m in Sources */,
 				FFDCA0BB16E80877000D8E0C /* GCOAuth.m in Sources */,
 				FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */,
 				FF753CCE175858FC00344EC9 /* FMDatabase.m in Sources */,
@@ -2611,7 +2569,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2637,7 +2595,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "45143eee-33c3-4c7b-82e2-4b3ac0eb2170";
 				STRIP_INSTALLED_PRODUCT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2651,7 +2609,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2675,7 +2633,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "45143eee-33c3-4c7b-82e2-4b3ac0eb2170";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

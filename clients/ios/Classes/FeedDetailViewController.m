@@ -567,7 +567,7 @@
             }
         }
     }];
-    [cacheImagesOperation setThreadPriority:0];
+    [cacheImagesOperation setQualityOfService:NSQualityOfServiceBackground];
     [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
     [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
 }

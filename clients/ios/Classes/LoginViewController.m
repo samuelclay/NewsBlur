@@ -59,7 +59,7 @@
     //[self.onePasswordButton setHidden:![[OnePasswordExtension sharedExtension] isAppExtensionAvailable]];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
             self.logInView.frame = CGRectMake(134, 180, 500, 300); 
             self.signUpView.frame = CGRectMake(902, 180, 500, 300); 
             self.selectLoginButton.frame = CGRectMake(134, 80, 250, 50);
@@ -324,7 +324,7 @@
     self.selectSignUpButton.selected = YES;
     self.selectLoginButton.selected = NO;
     [self.errorLabel setHidden:YES];
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         [UIView animateWithDuration:0.35 animations:^{
             self.logInView.frame = CGRectMake(-634, 180, 500, 300);    
             self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
@@ -345,7 +345,7 @@
     self.selectSignUpButton.selected = NO;
     self.selectLoginButton.selected = YES;
     [self.errorLabel setHidden:YES];
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         [UIView animateWithDuration:0.35 animations:^{
             self.logInView.frame = CGRectMake(134, 180, 500, 300);   
             self.signUpView.frame = CGRectMake(902, 180, 500, 300); 
