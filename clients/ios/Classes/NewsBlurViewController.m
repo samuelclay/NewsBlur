@@ -677,14 +677,17 @@ static UIFont *userLabelFont;
     }
     
     // test for latest version of app
-    NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
-    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-    
-    float serveriPhoneVersionFloat = [serveriPhoneVersion floatValue];
-    float currentiPhoneVersionFloat = [currentiPhoneVersion floatValue];
+    NSString *serveriPhoneBuild = [results objectForKey:@"latest_ios_build"];
+    NSString *currentiPhoneBuild = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
+    NSString *serveriPhoneVersion = [results objectForKey:@"latest_ios_version"];
+    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    BOOL unseenBuild = [serveriPhoneBuild integerValue] > [userPreferences integerForKey:@"last_seen_latest_ios_build"];
 
-    if (currentiPhoneVersionFloat < serveriPhoneVersionFloat) {
-        NSLog(@"Version: %f - %f", serveriPhoneVersionFloat, currentiPhoneVersionFloat);
+    if ([currentiPhoneBuild integerValue] < [serveriPhoneBuild integerValue] && unseenBuild) {
+        NSLog(@"Build: %ld - %@ (seen: %ld)", (long)[serveriPhoneBuild integerValue], currentiPhoneBuild, (long)[userPreferences integerForKey:@"last_seen_latest_ios_build"]);
+        [userPreferences setInteger:[serveriPhoneBuild integerValue] forKey:@"last_seen_latest_ios_build"];
+        [userPreferences synchronize];
+        
         NSString *title = [NSString stringWithFormat:@
                            "You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", 
                            serveriPhoneVersion, 

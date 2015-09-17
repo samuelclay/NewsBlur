@@ -872,7 +872,9 @@
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
                             NEWSBLUR_URL,
-                            [storiesCollection.activeFolderFeeds componentsJoinedByString:@"&f="],
+                            [[storiesCollection.activeFolderFeeds
+                              subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
+                             componentsJoinedByString:@"&f="],
                             storiesCollection.feedPage];
     }
     
