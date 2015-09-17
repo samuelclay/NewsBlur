@@ -1232,7 +1232,7 @@ def remove_like_comment(request):
                                             story_guid=story_id)
     shared_story.remove_liking_user(request.user.pk)
     comment, profiles = shared_story.comment_with_author_and_profiles()
-    
+    print comment
     comment_user = User.objects.get(pk=shared_story.user_id)
     logging.user(request, "~BB~FMRemoving like on comment by ~SB%s~SN: %s" % (
         comment_user.username, 

@@ -622,7 +622,7 @@ del {
 }
 #story_pane .NB-story-comment-reply .NB-show-profile {
     float: left;
-    left: -42px;
+    left: -34px;
 }
 .NB-story-comment:last-child {
             border-bottom: 1px solid #A6A6A6;
@@ -993,16 +993,15 @@ a.NB-show-profile {
 
 #story_pane .NB-story-comment-reply {
     border-top: 1px solid #EAECE8;
-    padding: 4px 0;
     overflow: hidden;
     clear: both;
     position: relative;
-    padding: 8px 0 4px 42px;
+    padding: 8px 0 4px 34px;
     line-height: 18px;
 }
 #story_pane .NB-story-comment-reply .NB-story-comment-reply-photo {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border-radius: 3px;
     position: absolute;
     left: 0px;
