@@ -594,8 +594,8 @@ del {
     clear: both !important;
     max-width: none !important;
 }
-.NB-feed-story-comments:last-child {
-    border-bottom: 1px solid #EAECE8;   
+.NB-story-comments-group:last-child {
+    border-bottom: 1px solid #EAECE8;
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -879,29 +879,31 @@ a.NB-show-profile {
     height: 36px;
     width: 36px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar {
     left: 12px;
     top: 14px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare {
+    left: 18px;
     top: 10px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar img {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar img,
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
     height: 24px;
     width: 24px;
     margin-left: 6px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-share-profile .NB-user-avatar img {
+#story_pane .NB-story-comment-friend-shares .NB-story-share-profile .NB-user-avatar img {
     margin-left: 0;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
     margin-left: 0;
     margin-top: 12px;
 }
 #story_pane .NB-story-comment .NB-story-comment-author-container {
     padding: 8px 0 0;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-comment-author-container {
+#story_pane .NB-story-comment-friend-shares .NB-story-comment-author-container {
     padding-top: 10px;
 }
 #story_pane .NB-story-comment .NB-story-comment-reshares {
@@ -972,7 +974,7 @@ a.NB-show-profile {
     margin: 3px 0 6px;
     line-height: 12px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-comment-location {
+#story_pane .NB-story-comment-friend-shares .NB-story-comment-location {
     margin-top: 0;
 }
 #story_pane .NB-story-comment .NB-button-wrapper {
@@ -1047,7 +1049,6 @@ a.NB-show-profile {
 #story_pane .NB-story-comments-friends-header-wrapper,
 #story_pane .NB-story-comments-friend-shares-header-wrapper {
     clear: both;
-    padding: 1px 0;
 }
 #story_pane .NB-story-comments-shares-teaser-wrapper {
     border-top: 0;
@@ -1063,7 +1064,6 @@ a.NB-show-profile {
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 2px 12px;
     overflow: hidden;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F6F2), to(#E5E6E0));
     padding: 6px 12px 6px;

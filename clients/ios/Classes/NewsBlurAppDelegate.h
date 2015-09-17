@@ -342,7 +342,8 @@
 - (NSDictionary *)getStory:(NSString *)storyHash;
 
 + (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
-+ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
++ (UIColor *)faviconColor:(NSString *)colorString;
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;

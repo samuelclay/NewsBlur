@@ -301,7 +301,7 @@ class MSocialProfile(mongo.Document):
         for user_id in self.following_user_ids:
             self.follow_user(user_id, force=force)
         
-        self.follow_user(self.user_id)
+        self.follow_user(self.user_id, force=force)
     
     @property
     def title(self):

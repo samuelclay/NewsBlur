@@ -36,29 +36,21 @@ NEWSBLUR.utils = {
             return '0 1px 0 #222';
         }
         
-        var r = parseInt(color.substr(0, 2), 16);
-        var g = parseInt(color.substr(2, 2), 16);
-        var b = parseInt(color.substr(4, 2), 16);
-        
+        var r, g, b;
         if (feed.is_light()) {
-            return [
-                '0 1px 0 ',
-                'rgb(',
-                [r+35, g+35, b+35].join(','),
-                ')'
-            ].join('');
+            color = feed.get('favicon_fade');
         } else {
-            return [
-                '0 1px 0 ',
-                'rgb(',
-                [
-                    parseInt(r*(6/8), 10),
-                    parseInt(g*(6/8), 10),
-                    parseInt(b*(6/8), 10)
-                ].join(','),
-                ')'
-            ].join('');
+            color = feed.get('favicon_border');
         }
+        r = parseInt(color.substr(0, 2), 16);
+        g = parseInt(color.substr(2, 2), 16);
+        b = parseInt(color.substr(4, 2), 16);
+        return [
+            '0 1px 0 ',
+            'rgb(',
+            [r, g, b].join(','),
+            ')'
+        ].join('');
     }, function(feed) {
         return "" + feed.id;
     }),
@@ -66,19 +58,27 @@ NEWSBLUR.utils = {
     generate_gradient: _.memoize(function(feed, type) {
         if (!feed) return '';
         var color = feed.get('favicon_color');
+        var colorFade = feed.get('favicon_fade');
+        var colorBorder = feed.get('favicon_border');
         if (!color) return '';
     
         var r = parseInt(color.substr(0, 2), 16);
         var g = parseInt(color.substr(2, 2), 16);
         var b = parseInt(color.substr(4, 2), 16);
+        var rF = parseInt(colorFade.substr(0, 2), 16);
+        var gF = parseInt(colorFade.substr(2, 2), 16);
+        var bF = parseInt(colorFade.substr(4, 2), 16);
         
         if (type == 'border') {
+            r = parseInt(colorBorder.substr(0, 2), 16);
+            g = parseInt(colorBorder.substr(2, 2), 16);
+            b = parseInt(colorBorder.substr(4, 2), 16);
             return [
                 (type == 'border' ? '1px solid ' : '') + 'rgb(',
                 [
-                    parseInt(r*(6/8), 10),
-                    parseInt(g*(6/8), 10),
-                    parseInt(b*(6/8), 10)
+                    r,
+                    g,
+                    b
                 ].join(','),
                 ')'
             ].join('');
@@ -98,9 +98,9 @@ NEWSBLUR.utils = {
                 ')),',
                 'color-stop(1, rgba(',
                 [
-                    r+35,
-                    g+35,
-                    b+35,
+                    rF,
+                    gF,
+                    bF,
                     255
                 ].join(','),
                 ')))'
@@ -118,9 +118,9 @@ NEWSBLUR.utils = {
                 ') 0%,',
                 'rgb(',
                 [
-                    r+35,
-                    g+35,
-                    b+35
+                    rF,
+                    gF,
+                    bF
                 ].join(','),
                 ') 100%)'
             ].join('');

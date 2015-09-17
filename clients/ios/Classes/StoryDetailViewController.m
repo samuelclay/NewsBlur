@@ -402,10 +402,6 @@
                               withRect:CGRectMake(0, -1, self.view.frame.size.width, 21)]; // 1024 hack for self.webView.frame.size.width
     
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
-    [self.feedTitleGradient.layer setShadowColor:[[UIColor blackColor] CGColor]];
-    [self.feedTitleGradient.layer setShadowOffset:CGSizeMake(0, 0)];
-    [self.feedTitleGradient.layer setShadowOpacity:0];
-    [self.feedTitleGradient.layer setShadowRadius:12.0];
     
     for (UIView *subview in self.webView.subviews) {
         if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
@@ -628,18 +624,17 @@
 }
 
 - (NSString *)getComments {
-    NSString *comments = @"<div class=\"NB-feed-story-comments\">";
+    NSString *comments = @"";
 
-    if ([self.activeStory objectForKey:@"comment_count"] != [NSNull null] &&
-        [[self.activeStory objectForKey:@"comment_count"] intValue] > 0) {
-        
+    if ([self.activeStory objectForKey:@"share_count"] != [NSNull null] &&
+        [[self.activeStory objectForKey:@"share_count"] intValue] > 0) {
         NSDictionary *story = self.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
         NSArray *friendsShareArray =  [story objectForKey:@"friend_shares"];
         NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];
         
         if ([[story objectForKey:@"comment_count_friends"] intValue] > 0 ) {
-            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comment-friend-comments\">"];
+            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comments-group NB-story-comment-friend-comments\">"];
             NSString *commentHeader = [NSString stringWithFormat:@
                                        "<div class=\"NB-story-comments-friends-header-wrapper\">"
                                        "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
@@ -649,16 +644,18 @@
             comments = [comments stringByAppendingString:commentHeader];
             
             // add friends comments
+            comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
             for (int i = 0; i < friendsCommentsArray.count; i++) {
                 NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
             comments = [comments stringByAppendingString:@"</div>"];
+            comments = [comments stringByAppendingString:@"</div>"];
         }
         
         NSInteger sharedByFriendsCount = [[story objectForKey:@"shared_by_friends"] count];
         if (sharedByFriendsCount > 0 ) {
-            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comment-friend-shares\">"];
+            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comments-group NB-story-comment-friend-shares\">"];
             NSString *commentHeader = [NSString stringWithFormat:@
                                        "<div class=\"NB-story-comments-friend-shares-header-wrapper\">"
                                        "  <div class=\"NB-story-comments-friends-header\">%ld share%@</div>"
@@ -667,17 +664,19 @@
                                        sharedByFriendsCount == 1 ? @"" : @"s"];
             comments = [comments stringByAppendingString:commentHeader];
             
-            // add friends comments
+            // add friend shares
+            comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
             for (int i = 0; i < friendsShareArray.count; i++) {
                 NSString *comment = [self getComment:[friendsShareArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
             comments = [comments stringByAppendingString:@"</div>"];
+            comments = [comments stringByAppendingString:@"</div>"];
         }
         
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"show_public_comments"] boolValue] &&
             [[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
-            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comment-public-comments\">"];
+            comments = [comments stringByAppendingString:@"<div class=\"NB-story-comments-group NB-story-comment-public-comments\">"];
             NSString *publicCommentHeader = [NSString stringWithFormat:@
                                              "<div class=\"NB-story-comments-public-header-wrapper\">"
                                              "  <div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
@@ -696,9 +695,6 @@
             }
             comments = [comments stringByAppendingString:@"</div>"];
         }
-
-
-        comments = [comments stringByAppendingString:@"</div>"];
     }
     
     return comments;

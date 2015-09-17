@@ -303,7 +303,7 @@
 }
 
 - (void)reachabilityChanged:(id)something {
-    NSLog(@"Reachability changed: %@", something);
+//    NSLog(@"Reachability changed: %@", something);
     Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
 
     if (reach.isReachable && feedsViewController.isOffline) {
@@ -2001,25 +2001,30 @@
     UIGraphicsPopContext();
 }
 
-+ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
++ (UIColor *)faviconColor:(NSString *)colorString {
+    if ([colorString class] == [NSNull class]) {
+        colorString = @"505050";
+    }
+    unsigned int color = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:colorString];
+    [scanner scanHexInt:&color];
+
+    return UIColorFromRGB(color);
+}
+
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor {
     UIView *gradientView = [[UIView alloc] initWithFrame:rect];
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
     gradient.opacity = 0.7;
-    unsigned int color = 0;
-    unsigned int colorFade = 0;
     if ([start class] == [NSNull class]) {
         start = @"505050";
     }
     if ([end class] == [NSNull class]) {
         end = @"303030";
     }
-    NSScanner *scanner = [NSScanner scannerWithString:start];
-    [scanner scanHexInt:&color];
-    NSScanner *scannerFade = [NSScanner scannerWithString:end];
-    [scannerFade scanHexInt:&colorFade];
-    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
+    gradient.colors = [NSArray arrayWithObjects:(id)[[self faviconColor:start] CGColor], (id)[[self faviconColor:end] CGColor], nil];
     
     CALayer *whiteBackground = [CALayer layer];
     whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
@@ -2030,13 +2035,13 @@
     
     CALayer *topBorder = [CALayer layer];
     topBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
-    topBorder.backgroundColor = [UIColorFromRGB(colorFade) colorWithAlphaComponent:0.7].CGColor;
+    topBorder.backgroundColor = [[self faviconColor:borderColor] colorWithAlphaComponent:0.7].CGColor;
     topBorder.opacity = 1;
     [gradientView.layer addSublayer:topBorder];
     
     CALayer *bottomBorder = [CALayer layer];
     bottomBorder.frame = CGRectMake(0, rect.size.height-1, rect.size.width, 1);
-    bottomBorder.backgroundColor = [UIColorFromRGB(colorFade) colorWithAlphaComponent:0.7].CGColor;
+    bottomBorder.backgroundColor = [[self faviconColor:borderColor] colorWithAlphaComponent:0.7].CGColor;
     bottomBorder.opacity = 1;
     [gradientView.layer addSublayer:bottomBorder];
     
@@ -2053,8 +2058,9 @@
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_fade"] 
-                        endColor:[feed objectForKey:@"favicon_color"]];
-        
+                        endColor:[feed objectForKey:@"favicon_color"]
+                        borderColor:[feed objectForKey:@"favicon_border"]];
+
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.text = [feed objectForKey:@"feed_title"];
         titleLabel.backgroundColor = [UIColor clearColor];
@@ -2064,14 +2070,15 @@
         titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
-            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] 
-                                    isEqualToString:@"white"] ?
+            BOOL lightText = [[feed objectForKey:@"favicon_text_color"]
+                              isEqualToString:@"white"];
+            UIColor *fadeColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_fade"]];
+            UIColor *borderColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_border"]];
+
+            titleLabel.textColor = lightText ?
             [UIColor whiteColor] :
             [UIColor blackColor];            
-            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] 
-                                      isEqualToString:@"white"] ?
-            UIColorFromRGB(0x202020) :
-            UIColorFromRGB(0xd0d0d0);
+            titleLabel.shadowColor = lightText ? borderColor : fadeColor;
         } else {
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
@@ -2090,8 +2097,9 @@
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:CGRectMake(0, -1, rect.size.width, 10)
                         // hard coding the 1024 as a hack for window.frame.size.width
-                        startColor:[feed objectForKey:@"favicon_fade"] 
-                        endColor:[feed objectForKey:@"favicon_color"]];
+                        startColor:[feed objectForKey:@"favicon_fade"]
+                        endColor:[feed objectForKey:@"favicon_color"]
+                        borderColor:[feed objectForKey:@"favicon_border"]];
     }
     
     gradientView.opaque = YES;

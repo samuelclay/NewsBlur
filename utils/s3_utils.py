@@ -68,9 +68,21 @@ if __name__ == '__main__':
 class S3Store:
     
     def __init__(self, bucket_name=settings.S3_AVATARS_BUCKET_NAME):
+        if settings.DEBUG:
+            import ssl
+
+            try:
+                _create_unverified_https_context = ssl._create_unverified_context
+            except AttributeError:
+                # Legacy Python that doesn't verify HTTPS certificates by default
+                pass
+            else:
+                # Handle target environment that doesn't support HTTPS verification
+                ssl._create_default_https_context = _create_unverified_https_context
+
         self.s3 = S3Connection(ACCESS_KEY, SECRET)
         self.bucket = self.create_bucket(bucket_name)
-    
+        
     def create_bucket(self, bucket_name):
         return self.s3.create_bucket(bucket_name)
         
