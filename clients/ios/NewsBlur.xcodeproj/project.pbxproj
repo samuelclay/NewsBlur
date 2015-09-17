@@ -115,7 +115,6 @@
 		43B8F027156603180008733D /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01D156603170008733D /* MainWindow.xib */; };
 		43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01E156603170008733D /* MoveSiteViewController.xib */; };
 		43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01F156603170008733D /* NewsBlurViewController.xib */; };
-		43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F020156603170008733D /* OriginalStoryViewController.xib */; };
 		43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F021156603170008733D /* StoryDetailViewController.xib */; };
 		43BC458915D9F75700205B69 /* twitter_button_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 43BC458515D9F75700205B69 /* twitter_button_on.png */; };
 		43BC458A15D9F75700205B69 /* twitter_button_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43BC458615D9F75700205B69 /* twitter_button_on@2x.png */; };
@@ -595,7 +594,6 @@
 		43B8F01D156603170008733D /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		43B8F01E156603170008733D /* MoveSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MoveSiteViewController.xib; sourceTree = "<group>"; };
 		43B8F01F156603170008733D /* NewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsBlurViewController.xib; sourceTree = "<group>"; };
-		43B8F020156603170008733D /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
 		43B8F021156603170008733D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
 		43BC458515D9F75700205B69 /* twitter_button_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twitter_button_on.png; sourceTree = "<group>"; };
 		43BC458615D9F75700205B69 /* twitter_button_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "twitter_button_on@2x.png"; sourceTree = "<group>"; };
@@ -1643,7 +1641,6 @@
 				43B8F01D156603170008733D /* MainWindow.xib */,
 				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
 				43B8F01F156603170008733D /* NewsBlurViewController.xib */,
-				43B8F020156603170008733D /* OriginalStoryViewController.xib */,
 				43081E2115AFE84200B24D7A /* ShareViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 				FF6A23361644903900E15989 /* StoryPageControl.xib */,
@@ -2135,7 +2132,6 @@
 				43B8F027156603180008733D /* MainWindow.xib in Resources */,
 				43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */,
 				43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */,
-				43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */,
 				FF03AFF219F87F2E0063002A /* safari~iPad@2x.png in Resources */,
 				FF62820E1A1160DD00271FDB /* add_tag.png in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,

@@ -42,7 +42,7 @@ UIGestureRecognizerDelegate> {
 - (IBAction)webViewGoBack:(id)sender;
 - (IBAction)webViewGoForward:(id)sender;
 - (IBAction)webViewRefresh:(id)sender;
-- (void)updateTitle:(UIWebView*)aWebView;
+- (void)updateTitle:(WKWebView*)aWebView;
 - (void)closeOriginalView;
 
 @end

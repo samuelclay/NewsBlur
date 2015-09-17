@@ -1310,6 +1310,10 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else {
+        if (!originalStoryViewController) {
+            originalStoryViewController = [[OriginalStoryViewController alloc] init];
+        }
+        
         self.activeOriginalStoryURL = url;
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
