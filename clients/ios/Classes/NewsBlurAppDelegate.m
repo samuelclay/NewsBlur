@@ -61,7 +61,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 34
+#define CURRENT_DB_VERSION 35
 
 @synthesize window;
 
@@ -2428,6 +2428,14 @@
 #pragma mark -
 #pragma mark Storing Stories for Offline
 
+// Returns the URL to the application's Documents directory.
+- (NSURL *)applicationDocumentsDirectory
+{
+    NSLog(@" ---> DB dir: %@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory  inDomains:NSUserDomainMask] lastObject]);
+    
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db {
     int version = 0;
     FMResultSet *resultSet = [db executeQuery:@"PRAGMA user_version"];
@@ -2466,6 +2474,7 @@
     NSString *dbPath = [cachePaths objectAtIndex:0];
     NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_HOST];
     NSString *path = [dbPath stringByAppendingPathComponent:dbName];
+    [self applicationDocumentsDirectory];
     
     database = [FMDatabaseQueue databaseQueueWithPath:path];
     [database inDatabase:^(FMDatabase *db) {
@@ -2529,7 +2538,18 @@
     [db executeUpdate:createStoryTable];
     NSString *indexStoriesFeed = @"CREATE INDEX IF NOT EXISTS stories_story_feed_id ON stories (story_feed_id)";
     [db executeUpdate:indexStoriesFeed];
-    NSString *indexStoriesHash = @"CREATE INDEX IF NOT EXISTS stories_story_hash ON stories (story_hash)";
+    
+    
+    NSString *createStoryScrollsTable = [NSString stringWithFormat:@"create table if not exists story_scrolls "
+                                  "("
+                                  " story_feed_id varchar(20),"
+                                  " story_hash varchar(24),"
+                                  " story_timestamp number,"
+                                  " scroll number,"
+                                  " UNIQUE(story_hash) ON CONFLICT REPLACE"
+                                  ")"];
+    [db executeUpdate:createStoryScrollsTable];
+    NSString *indexStoriesHash = @"CREATE INDEX IF NOT EXISTS story_scrolls_story_hash ON story_scrolls (story_hash)";
     [db executeUpdate:indexStoriesHash];
     
     NSString *createUnreadHashTable = [NSString stringWithFormat:@"create table if not exists unread_hashes "
@@ -2673,13 +2693,18 @@
     });
 }
 
-- (void)markScrollPosition:(NSInteger)position inStory:(NSString *)storyHash {
-    NSLog(@"Scrolled %ld in %@", position, storyHash);
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+- (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story {
+    if (position <= 0) return;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
-        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            [db executeQuery:@"UPDATE stories SET scroll = ? WHERE story_hash = ?",
-             [NSString stringWithFormat:@"%ld", (long)position], storyHash];
+        [self.database inDatabase:^(FMDatabase *db) {
+            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
+            [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
+             [story objectForKey:@"story_feed_id"],
+             [story objectForKey:@"story_hash"],
+             [story objectForKey:@"story_timestamp"],
+             [NSNumber numberWithInteger:position]];
         }];
     });
 }

@@ -213,6 +213,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
+    [self storeScrollPosition:NO];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -391,21 +392,34 @@
 //    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
-    [self scrollToLastPosition];
 }
 
 - (void)scrollToLastPosition {
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
-    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [appDelegate.database inDatabase:^(FMDatabase *db) {
         __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-        if (!strongSelf) return;
-        FMResultSet *cursor = [db executeQuery:@"SELECT scroll FROM stories s WHERE s.story_hash = ? LIMIT 1", storyHash];
+        if (!strongSelf) {
+            NSLog(@" !!! Lost strong reference to story detail vc");
+            return;
+        }
+        FMResultSet *cursor = [db executeQuery:@"SELECT scroll, story_hash FROM story_scrolls s WHERE s.story_hash = ? LIMIT 1", storyHash];
         
         while ([cursor next]) {
             NSDictionary *story = [cursor resultDictionary];
-            NSInteger position = (NSInteger)[story objectForKey:@"scroll"];
-            NSLog(@"Scrolled %ld", (long)position);
+            id scroll = [story objectForKey:@"scroll"];
+            if ([scroll isKindOfClass:[NSNull class]]) {
+                // No scroll found
+                continue;
+            }
+            NSInteger position = [scroll integerValue];
+            NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
+            if (position > maxPosition) {
+                NSLog(@"Position too far, scaling back to max position: %ld > %ld", position, maxPosition);
+                position = maxPosition;
+            }
+            NSLog(@"Scrolling to %ld (%f+%f) on %@-%@", (long)position, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
+            [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:YES];
         }
         [cursor close];
 
@@ -1169,18 +1183,29 @@
                                                                          tvf.size.width, tvf.size.height);
         }
         
-        __weak __typeof(&*self)weakSelf = self;
-        NSInteger position = self.webView.scrollView.contentOffset.y;
-        if (position > 0) {
-            __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
-            NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", storyHash];
+        [self storeScrollPosition:YES];
+    }
+}
+
+- (void)storeScrollPosition:(BOOL)queue {
+    __weak __typeof(&*self)weakSelf = self;
+    __block NSInteger position = self.webView.scrollView.contentOffset.y;
+    if (position > 0) {
+        __block NSDictionary *story = self.activeStory;
+        NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", [story objectForKey:@"story_hash"]];
+        if (queue) {
             NSTimeInterval interval = 2;
             [JNWThrottledBlock runBlock:^{
                 __strong __typeof(&*weakSelf)strongSelf = weakSelf;
                 if (!strongSelf) return;
                 NSInteger updatedPos = strongSelf.webView.scrollView.contentOffset.y;
-                [appDelegate markScrollPosition:updatedPos inStory:storyHash];
+                [appDelegate markScrollPosition:updatedPos inStory:story];
             } withIdentifier:storyIdentifier throttle:interval];
+        } else {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                     (unsigned long)NULL), ^(void) {
+                [appDelegate markScrollPosition:position inStory:story];
+            });
         }
     }
 }
@@ -1421,6 +1446,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                        dispatch_get_main_queue(), ^{
             [self checkTryFeedStory];
         });
+    }
+
+    if ([[self.webView stringByEvaluatingJavaScriptFromString:@"document.readyState"] isEqualToString:@"complete"]) {
+        [self scrollToLastPosition];
     }
 }
 

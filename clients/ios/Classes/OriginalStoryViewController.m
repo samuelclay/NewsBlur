@@ -26,8 +26,18 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+        [webView setNavigationDelegate:self];
+        [webView setUIDelegate:self];
     }
     return self;
+}
+
+- (void)dealloc {
+    [webView removeObserver:self forKeyPath:@"estimatedProgress"];
+    
+    // if you have set either WKWebView delegate also set these to nil here
+    [webView setNavigationDelegate:nil];
+    [webView setUIDelegate:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -123,12 +133,8 @@
                                                 separatorBarButton,
                                                 backBarButton
                                                 ];
-    
-    progressProxy = [[NJKWebViewProgress alloc] init]; // instance variable
-    webView.delegate = progressProxy;
-    progressProxy.webViewProxyDelegate = self;
-    progressProxy.progressDelegate = self;
-    
+    [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
+
     CGFloat progressBarHeight = 2.f;
     CGRect navigaitonBarBounds = self.navigationController.navigationBar.bounds;
     CGRect barFrame = CGRectMake(0, navigaitonBarBounds.size.height - progressBarHeight, navigaitonBarBounds.size.width, progressBarHeight);
@@ -143,6 +149,26 @@
     }
     
     [self.webView loadHTMLString:@"" baseURL:nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"estimatedProgress"] && object == self.webView) {
+        NSLog(@"%f", webView.estimatedProgress);
+        [progressView setProgress:webView.estimatedProgress animated:YES];
+        
+        if (webView.estimatedProgress == NJKInteractiveProgressValue) {
+            // The web view has finished parsing the document,
+            // but is still loading sub-resources
+        }
+        
+        if (webView.estimatedProgress == NJKFinalProgressValue) {
+            finishedLoading = YES;
+        }
+    }
+    else {
+        // Make sure to call the superclass's implementation in the else block in case it is also implementing KVO
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -361,9 +387,8 @@
 
 - (IBAction)doOpenActionSheet:(id)sender {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
-    NSURL *url = [NSURL URLWithString:self.webView.request.URL.absoluteString];
-    NSString *title = [[webView stringByEvaluatingJavaScriptFromString:@"document.title"]
-                       stringByDecodingHTMLEntities];
+    NSURL *url = [NSURL URLWithString:webView.URL.absoluteString];
+    NSString *title = webView.title;
     
     [appDelegate showSendTo:self
                      sender:sender
@@ -377,20 +402,6 @@
 
 - (void)closeOriginalView {
     [appDelegate closeOriginalStory];
-}
-
--(void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress {
-//    NSLog(@"Progress: %f", progress);
-    [progressView setProgress:progress animated:YES];
-    
-    if (progress == NJKInteractiveProgressValue) {
-        // The web view has finished parsing the document,
-        // but is still loading sub-resources
-    }
-    
-    if (progress == NJKFinalProgressValue) {
-        finishedLoading = YES;
-    }
 }
 
 @end

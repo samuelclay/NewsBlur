@@ -366,7 +366,7 @@
 - (void)startOfflineFetchImages;
 - (BOOL)isReachableForOffline;
 - (void)storeUserProfiles:(NSArray *)userProfiles;
-- (void)markScrollPosition:(NSInteger)position inStory:(NSString *)storyHash;
+- (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
 - (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;

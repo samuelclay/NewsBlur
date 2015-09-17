@@ -11,27 +11,27 @@
 //#import "SloppySwiper.h"
 #import "NJKWebViewProgressView.h"
 #import "NJKWebViewProgress.h"
+#import <WebKit/WebKit.h>
 
 @class NewsBlurAppDelegate;
 
 @interface OriginalStoryViewController : BaseViewController
-<UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate,
-UIGestureRecognizerDelegate, NJKWebViewProgressDelegate> {
+<UIActionSheetDelegate, UITextFieldDelegate, WKNavigationDelegate, WKUIDelegate,
+UIGestureRecognizerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
     NSString *activeUrl;
     NSMutableArray *visitedUrls;
-    UIWebView *webView;
+    WKWebView *webView;
     UIBarButtonItem *backBarButton;
     UILabel *titleView;
     UIBarButtonItem *closeButton;
-    NJKWebViewProgress *progressProxy;
     NJKWebViewProgressView *progressView;
     BOOL finishedLoading;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet UIWebView *webView;
+@property (nonatomic) IBOutlet WKWebView *webView;
 //@property (strong, nonatomic) SloppySwiper *swiper;
 @property (nonatomic) NJKWebViewProgressView *progressView;
 

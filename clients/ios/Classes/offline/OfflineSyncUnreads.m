@@ -97,6 +97,7 @@
 //            NSLog(@"Deleting stories over limit: %ld - %d", (long)offlineLimit, offlineLimitTimestamp);
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM stories WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
+//            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM story_scrolls WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]]; // Don't cleanup story scrolls just yet
         }
     }];
     
