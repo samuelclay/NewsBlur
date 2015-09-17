@@ -61,7 +61,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 33
+#define CURRENT_DB_VERSION 34
 
 @synthesize window;
 
@@ -2469,6 +2469,7 @@
     
     database = [FMDatabaseQueue databaseQueueWithPath:path];
     [database inDatabase:^(FMDatabase *db) {
+//        db.traceExecution = YES;
         [self setupDatabase:db];
     }];
 }
@@ -2522,11 +2523,14 @@
                                   " story_hash varchar(24),"
                                   " story_timestamp number,"
                                   " story_json text,"
+                                  " scroll number,"
                                   " UNIQUE(story_hash) ON CONFLICT REPLACE"
                                   ")"];
     [db executeUpdate:createStoryTable];
     NSString *indexStoriesFeed = @"CREATE INDEX IF NOT EXISTS stories_story_feed_id ON stories (story_feed_id)";
     [db executeUpdate:indexStoriesFeed];
+    NSString *indexStoriesHash = @"CREATE INDEX IF NOT EXISTS stories_story_hash ON stories (story_hash)";
+    [db executeUpdate:indexStoriesHash];
     
     NSString *createUnreadHashTable = [NSString stringWithFormat:@"create table if not exists unread_hashes "
                                        "("
@@ -2665,6 +2669,17 @@
                  [user JSONRepresentation]
                  ];
             }
+        }];
+    });
+}
+
+- (void)markScrollPosition:(NSInteger)position inStory:(NSString *)storyHash {
+    NSLog(@"Scrolled %ld in %@", position, storyHash);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [db executeQuery:@"UPDATE stories SET scroll = ? WHERE story_hash = ?",
+             [NSString stringWithFormat:@"%ld", (long)position], storyHash];
         }];
     });
 }

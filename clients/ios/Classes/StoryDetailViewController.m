@@ -23,11 +23,13 @@
 #import "NSString+HTML.h"
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
+#import "FMDatabase.h"
 #import "SBJson4.h"
 #import "StringHelper.h"
 #import "StoriesCollection.h"
 #import "UIWebView+Offsets.h"
 #import "UIView+ViewController.h"
+#import "JNWThrottledBlock.h"
 
 @implementation StoryDetailViewController
 
@@ -389,6 +391,25 @@
 //    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
+    [self scrollToLastPosition];
+}
+
+- (void)scrollToLastPosition {
+    __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+    __weak __typeof(&*self)weakSelf = self;
+    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+        if (!strongSelf) return;
+        FMResultSet *cursor = [db executeQuery:@"SELECT scroll FROM stories s WHERE s.story_hash = ? LIMIT 1", storyHash];
+        
+        while ([cursor next]) {
+            NSDictionary *story = [cursor resultDictionary];
+            NSInteger position = (NSInteger)[story objectForKey:@"scroll"];
+            NSLog(@"Scrolled %ld", (long)position);
+        }
+        [cursor close];
+
+    }];
 }
 
 - (void)drawFeedGradient {
@@ -1146,6 +1167,20 @@
             appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
                                                                          (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
                                                                          tvf.size.width, tvf.size.height);
+        }
+        
+        __weak __typeof(&*self)weakSelf = self;
+        NSInteger position = self.webView.scrollView.contentOffset.y;
+        if (position > 0) {
+            __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+            NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", storyHash];
+            NSTimeInterval interval = 2;
+            [JNWThrottledBlock runBlock:^{
+                __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+                if (!strongSelf) return;
+                NSInteger updatedPos = strongSelf.webView.scrollView.contentOffset.y;
+                [appDelegate markScrollPosition:updatedPos inStory:storyHash];
+            } withIdentifier:storyIdentifier throttle:interval];
         }
     }
 }
