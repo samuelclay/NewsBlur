@@ -332,6 +332,7 @@
 		FF8D1ED11BAA311000725D8A /* SBJson4StreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC91BAA311000725D8A /* SBJson4StreamWriterState.m */; settings = {ASSET_TAGS = (); }; };
 		FF8D1ED21BAA311000725D8A /* SBJson4Writer.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ECB1BAA311000725D8A /* SBJson4Writer.m */; settings = {ASSET_TAGS = (); }; };
 		FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ED71BAA33BA00725D8A /* NSObject+SBJSON.m */; settings = {ASSET_TAGS = (); }; };
+		FF8D1EDB1BAA3CCD00725D8A /* JNWThrottledBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */; settings = {ASSET_TAGS = (); }; };
 		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
 		FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */; };
 		FFA045B419CA49D700618DC4 /* SloppySwiper.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045AF19CA49D700618DC4 /* SloppySwiper.m */; };
@@ -552,7 +553,7 @@
 		43A4C3BE15B00966008787B5 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GTMDefines.h; path = "Other Sources/GTMDefines.h"; sourceTree = "<group>"; };
 		43A4C3BF15B00966008787B5 /* GTMNString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "GTMNString+HTML.h"; path = "Other Sources/GTMNString+HTML.h"; sourceTree = "<group>"; };
 		43A4C3C015B00966008787B5 /* GTMNString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "GTMNString+HTML.m"; path = "Other Sources/GTMNString+HTML.m"; sourceTree = "<group>"; };
-		43A4C3C215B00966008787B5 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "Other Sources/main.m"; sourceTree = "<group>"; };
+		43A4C3C215B00966008787B5 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "../Other Sources/main.m"; sourceTree = "<group>"; };
 		43A4C3C315B00966008787B5 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = "Other Sources/MBProgressHUD.h"; sourceTree = "<group>"; };
 		43A4C3C415B00966008787B5 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = "Other Sources/MBProgressHUD.m"; sourceTree = "<group>"; };
 		43A4C3CC15B00966008787B5 /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+HTML.h"; path = "Other Sources/NSString+HTML.h"; sourceTree = "<group>"; };
@@ -916,6 +917,8 @@
 		FF8D1ECB1BAA311000725D8A /* SBJson4Writer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJson4Writer.m; sourceTree = "<group>"; };
 		FF8D1ED61BAA33BA00725D8A /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
 		FF8D1ED71BAA33BA00725D8A /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
+		FF8D1ED91BAA3CCD00725D8A /* JNWThrottledBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JNWThrottledBlock.h; path = "Other Sources/JNWThrottledBlock.h"; sourceTree = "<group>"; };
+		FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JNWThrottledBlock.m; path = "Other Sources/JNWThrottledBlock.m"; sourceTree = "<group>"; };
 		FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBBarButtonItem.h; sourceTree = "<group>"; };
 		FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBBarButtonItem.m; sourceTree = "<group>"; };
 		FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios7_back_button@2x.png"; sourceTree = "<group>"; };
@@ -1159,7 +1162,8 @@
 				43A4C3BE15B00966008787B5 /* GTMDefines.h */,
 				43A4C3BF15B00966008787B5 /* GTMNString+HTML.h */,
 				43A4C3C015B00966008787B5 /* GTMNString+HTML.m */,
-				43A4C3C215B00966008787B5 /* main.m */,
+				FF8D1ED91BAA3CCD00725D8A /* JNWThrottledBlock.h */,
+				FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */,
 				43A4C3C315B00966008787B5 /* MBProgressHUD.h */,
 				43A4C3C415B00966008787B5 /* MBProgressHUD.m */,
 				43A4C3CC15B00966008787B5 /* NSString+HTML.h */,
@@ -1758,6 +1762,7 @@
 		FF22FE5216E52BAD0046165A /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
+				43A4C3C215B00966008787B5 /* main.m */,
 				FFEA5AE719D33FB400ED87A0 /* Launch Screen.xib */,
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
@@ -2453,6 +2458,7 @@
 				FF2EB7B01AA65504002549A7 /* IASKAppSettingsViewController.m in Sources */,
 				431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */,
 				431B856E15A0D91E00DCE497 /* UserProfileViewController.m in Sources */,
+				FF8D1EDB1BAA3CCD00725D8A /* JNWThrottledBlock.m in Sources */,
 				FF2EB7B31AA65504002549A7 /* IASKSpecifierValuesViewController.m in Sources */,
 				431B858115A23C6B00DCE497 /* ProfileBadge.m in Sources */,
 				437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */,

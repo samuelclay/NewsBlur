@@ -203,7 +203,6 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
-        [self.feedsViewController loadOfflineFeeds:NO];
         [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -304,11 +303,13 @@
 }
 
 - (void)reachabilityChanged:(id)something {
-//    NSLog(@"Reachability changed: %@", something);
+    NSLog(@"Reachability changed: %@", something);
     Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
 
     if (reach.isReachable && feedsViewController.isOffline) {
-        [feedsViewController fetchFeedList:NO];
+        [feedsViewController loadOfflineFeeds:NO];
+    } else {
+        [feedsViewController loadOfflineFeeds:NO];
     }
 }
 
@@ -646,7 +647,9 @@
         [self.masterContainerViewController presentViewController:loginViewController animated:NO completion:nil];
     } else {
         [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
-        [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
+        if (navigationController.isViewLoaded && navigationController.view.window) {
+            [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
+        }
     }
 }
 
@@ -800,7 +803,7 @@
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
                                           initWithTitle: @"All"
-                                          style: UIBarButtonItemStyleBordered
+                                          style: UIBarButtonItemStylePlain
                                           target: nil
                                           action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];

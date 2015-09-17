@@ -1190,7 +1190,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [action isEqualToString:@"like-comment"] ||
             [action isEqualToString:@"unlike-comment"]) {
 
-            // search for the comment from friends comments
+            // search for the comment from friends comments and shares
             NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
             for (int i = 0; i < friendComments.count; i++) {
                 NSString *userId = [NSString stringWithFormat:@"%@", 
@@ -1198,6 +1198,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                 if([userId isEqualToString:[NSString stringWithFormat:@"%@", 
                                             [urlComponents objectAtIndex:2]]]){
                     appDelegate.activeComment = [friendComments objectAtIndex:i];
+                }
+            }
+            
+            
+            NSArray *friendShares = [self.activeStory objectForKey:@"friend_shares"];
+            for (int i = 0; i < friendShares.count; i++) {
+                NSString *userId = [NSString stringWithFormat:@"%@",
+                                    [[friendShares objectAtIndex:i] objectForKey:@"user_id"]];
+                if([userId isEqualToString:[NSString stringWithFormat:@"%@",
+                                            [urlComponents objectAtIndex:2]]]){
+                    appDelegate.activeComment = [friendShares objectAtIndex:i];
                 }
             }
             
@@ -1537,6 +1548,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // test to see if the user has commented
     // search for the comment from friends comments
     NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
+    
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     for (int i = 0; i < friendComments.count; i++) {
         NSString *userId = [NSString stringWithFormat:@"%@",
