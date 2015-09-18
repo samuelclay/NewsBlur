@@ -4,6 +4,8 @@
 <dict>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>newsblur</string>
+		<string>opera-http</string>
 		<string>googlechrome-x-callback</string>
 	</array>
 	<key>NSAppTransportSecurity</key>

@@ -1305,6 +1305,11 @@
                    
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
+    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
+        SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
+                                                             entersReaderIfAvailable:NO];
+        safari.delegate = self;
+        [navigationController pushViewController:safari animated:YES];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -1327,6 +1332,17 @@
     }
 }
 
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    [navigationController popViewControllerAnimated:YES];
+}
+
+- (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if ([viewController isKindOfClass:[SFSafariViewController class]]) {
+        [_navigationController setNavigationBarHidden:YES animated:YES];
+    } else {
+        [_navigationController setNavigationBarHidden:NO animated:YES];
+    }
+}
 - (void)closeOriginalStory {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromOriginalView];
