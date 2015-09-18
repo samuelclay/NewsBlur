@@ -492,25 +492,23 @@
     if (url) [activityItems addObject:url];
     NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
     if (text) text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
-//    if (images) [activityItems addObject:images];
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
-    [activityItems addObject:[[NBActivityItemProvider alloc] initWithUrl:(NSURL *)url
-                                                          authorName:(NSString *)authorName
-                                                                text:(NSString *)text
-                                                               title:(NSString *)title
-                                                           feedTitle:(NSString *)feedTitle
-                                                              images:(NSArray *)images]];
+//    [activityItems addObject:[[NBActivityItemProvider alloc] initWithUrl:(NSURL *)url
+//                                                          authorName:(NSString *)authorName
+//                                                                text:(NSString *)text
+//                                                               title:(NSString *)title
+//                                                           feedTitle:(NSString *)feedTitle]];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
     if (url) [appActivities addObject:[[ARChromeActivity alloc]
                                        initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
-                                                        initWithActivityItems:activityItems
+                                                        initWithActivityItems:@[title, url, text]
                                                         applicationActivities:appActivities];
     [activityViewController setTitle:title];
-    void (^completion)(NSString *, BOOL) = ^void(NSString *activityType, BOOL completed){
+    [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
         self.isPresentingActivities = NO;
-
+        
         NSString *_completedString;
         NSLog(@"activityType: %@", activityType);
         if (!activityType) return;
@@ -545,8 +543,7 @@
             storyHUD.labelText = _completedString;
             [storyHUD hide:YES afterDelay:1];
         }
-    };
-    [activityViewController setCompletionHandler:completion];
+    }];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
@@ -575,7 +572,7 @@
             //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
     } else {
-        [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
+        [self.navigationController presentViewController:activityViewController animated:YES completion:^{}];
     }
     self.isPresentingActivities = YES;
 }

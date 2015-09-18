@@ -2068,7 +2068,7 @@
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = 6B75VSYAUJ;
+						DevelopmentTeam = U92APKK285;
 					};
 				};
 			};
@@ -2584,7 +2584,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2610,7 +2610,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "45143eee-33c3-4c7b-82e2-4b3ac0eb2170";
+				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2624,7 +2624,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2648,7 +2648,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "45143eee-33c3-4c7b-82e2-4b3ac0eb2170";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

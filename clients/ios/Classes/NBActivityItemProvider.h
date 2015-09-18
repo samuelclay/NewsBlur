@@ -14,13 +14,11 @@
     NSString *text;
     NSString *title;
     NSString *feedTitle;
-    NSArray *images;
 }
 
 - (instancetype)initWithUrl:(NSURL *)url
                  authorName:(NSString *)authorName
                        text:(NSString *)text
                       title:(NSString *)title
-                  feedTitle:(NSString *)feedTitle
-                     images:(NSArray *)images;
+                  feedTitle:(NSString *)feedTitle;
 @end

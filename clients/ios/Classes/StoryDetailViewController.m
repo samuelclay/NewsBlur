@@ -397,33 +397,38 @@
 - (void)scrollToLastPosition {
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
-        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-        if (!strongSelf) {
-            NSLog(@" !!! Lost strong reference to story detail vc");
-            return;
-        }
-        FMResultSet *cursor = [db executeQuery:@"SELECT scroll, story_hash FROM story_scrolls s WHERE s.story_hash = ? LIMIT 1", storyHash];
-        
-        while ([cursor next]) {
-            NSDictionary *story = [cursor resultDictionary];
-            id scroll = [story objectForKey:@"scroll"];
-            if ([scroll isKindOfClass:[NSNull class]]) {
-                // No scroll found
-                continue;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inDatabase:^(FMDatabase *db) {
+            __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+            if (!strongSelf) {
+                NSLog(@" !!! Lost strong reference to story detail vc");
+                return;
             }
-            NSInteger position = [scroll integerValue];
-            NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
-            if (position > maxPosition) {
-                NSLog(@"Position too far, scaling back to max position: %ld > %ld", position, maxPosition);
-                position = maxPosition;
+            FMResultSet *cursor = [db executeQuery:@"SELECT scroll, story_hash FROM story_scrolls s WHERE s.story_hash = ? LIMIT 1", storyHash];
+            
+            while ([cursor next]) {
+                NSDictionary *story = [cursor resultDictionary];
+                id scroll = [story objectForKey:@"scroll"];
+                if ([scroll isKindOfClass:[NSNull class]]) {
+                    // No scroll found
+                    continue;
+                }
+                NSInteger position = [scroll integerValue];
+                NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
+                if (position > maxPosition) {
+                    NSLog(@"Position too far, scaling back to max position: %ld > %ld", position, maxPosition);
+                    position = maxPosition;
+                }
+                NSLog(@"Scrolling to %ld (%f+%f) on %@-%@", (long)position, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:YES];
+                });
             }
-            NSLog(@"Scrolling to %ld (%f+%f) on %@-%@", (long)position, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
-            [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:YES];
-        }
-        [cursor close];
+            [cursor close];
 
-    }];
+        }];
+    });
 }
 
 - (void)drawFeedGradient {
