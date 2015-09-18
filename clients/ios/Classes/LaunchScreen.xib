@@ -28,8 +28,12 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="xvc-Dc-4wh" secondAttribute="bottom" id="1EC-OJ-ctU"/>
+                <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="7zy-Xp-KcX"/>
                 <constraint firstItem="xvc-Dc-4wh" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="90r-eM-tnt"/>
+                <constraint firstItem="xvc-Dc-4wh" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="VO6-bI-gz3"/>
+                <constraint firstItem="F6J-Zv-31D" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="aHc-Mu-cdP"/>
                 <constraint firstAttribute="centerX" secondItem="F6J-Zv-31D" secondAttribute="centerX" id="bCi-qG-7NA"/>
+                <constraint firstItem="xvc-Dc-4wh" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="cGD-zW-jpz"/>
                 <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="xvc-Dc-4wh" secondAttribute="centerX" id="gwZ-51-bjl"/>
                 <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="xvc-Dc-4wh" secondAttribute="centerX" id="h3d-Co-zO4"/>
                 <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="o8H-zd-mhr"/>
