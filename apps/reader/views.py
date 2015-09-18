@@ -325,7 +325,7 @@ def load_feeds_flat(request):
     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     scheduled_feeds = []
     iphone_version = "2.1" # Preserved forever. Don't change.
-    latest_ios_build = "53"
+    latest_ios_build = "50"
     latest_ios_version = "5.0.0"
     
     if include_favicons == 'false': include_favicons = False

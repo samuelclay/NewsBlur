@@ -417,7 +417,7 @@
                 NSInteger position = [scroll integerValue];
                 NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
                 if (position > maxPosition) {
-                    NSLog(@"Position too far, scaling back to max position: %ld > %ld", position, maxPosition);
+                    NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, maxPosition);
                     position = maxPosition;
                 }
                 NSLog(@"Scrolling to %ld (%f+%f) on %@-%@", (long)position, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);

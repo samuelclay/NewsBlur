@@ -190,7 +190,8 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 }
 
 + (NSString *)suffixForDayInDate:(NSDate *)date {
-    NSInteger day = [[[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] components:NSDayCalendarUnit fromDate:date] day];
+    NSInteger day = [[[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian]
+                      components:NSCalendarUnitDay fromDate:date] day];
     if (day == 11 || day == 12 || day == 13) {
         return @"th";
     } else if (day % 10 == 1) {

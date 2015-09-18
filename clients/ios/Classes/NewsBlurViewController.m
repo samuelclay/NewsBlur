@@ -866,7 +866,7 @@ static UIFont *userLabelFont;
             return;
         } else {
             //  this doesn't work in simulator!!! because simulator has no app store
-            NSURL *url = [NSURL URLWithString:@"http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=463981119&mt=8"];
+            NSURL *url = [NSURL URLWithString:@"itms://itunes.apple.com/us/app/mensa-essen/id463981119?ls=1&mt=8"];
             [[UIApplication sharedApplication] openURL:url];
         }
     }
@@ -1880,10 +1880,12 @@ heightForHeaderInSection:(NSInteger)section {
     [avatarRequest setTimeoutInterval:30.0];
     avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
     CGSize avatarSize = avatarImageView.frame.size;
+    typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        typeof(weakSelf) __strong strongSelf = weakSelf;
         image = [Utilities imageWithImage:image convertToSize:CGSizeMake(avatarSize.width*2, avatarSize.height*2)];
         image = [Utilities roundCorneredImage:image radius:6];
-        [(UIButton *)userAvatarButton.customView setImage:image forState:UIControlStateNormal];
+        [(UIButton *)strongSelf.userAvatarButton.customView setImage:image forState:UIControlStateNormal];
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
     }];
