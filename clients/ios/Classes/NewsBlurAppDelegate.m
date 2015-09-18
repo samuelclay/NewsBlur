@@ -488,22 +488,21 @@
     
     // iOS 8+
     NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-//        if (title) [activityItems addObject:title];
+    if (title) [activityItems addObject:title];
     if (url) [activityItems addObject:url];
-    NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
-    if (text) text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
+    if (text) {
+        NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
+        text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
+        [activityItems addObject:text];
+    }
+
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
-//    [activityItems addObject:[[NBActivityItemProvider alloc] initWithUrl:(NSURL *)url
-//                                                          authorName:(NSString *)authorName
-//                                                                text:(NSString *)text
-//                                                               title:(NSString *)title
-//                                                           feedTitle:(NSString *)feedTitle]];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
     if (url) [appActivities addObject:[[ARChromeActivity alloc]
                                        initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
-                                                        initWithActivityItems:@[title, url, text]
+                                                        initWithActivityItems:activityItems
                                                         applicationActivities:appActivities];
     [activityViewController setTitle:title];
     [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
