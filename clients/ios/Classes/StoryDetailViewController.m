@@ -17,7 +17,7 @@
 #import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
-#import "AFImageRequestOperation.h"
+#import "AFHTTPRequestOperation.h"
 #import "Base64.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
@@ -1820,7 +1820,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                                @"Copying..." : @"Saving..."];
     
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
-    AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc] initWithRequest:urlRequest];
+    AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc]
+                                                initWithRequest:urlRequest];
+    [requestOperation setResponseSerializer:[AFImageResponseSerializer serializer]];
     [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         UIImage *image = responseObject;
         if (buttonIndex == actionSheetCopyImageIndex) {

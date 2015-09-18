@@ -31,7 +31,7 @@
 #import "NBBarButtonItem.h"
 #import "UIImage+Resize.h"
 #import "TMCache.h"
-#import "AFImageRequestOperation.h"
+#import "AFHTTPRequestOperation.h"
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
 
@@ -542,12 +542,13 @@
                                             requestWithURL:[NSURL URLWithString:storyImageUrl]];
             [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
             [request setTimeoutInterval:5.0];
-            AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc]
-                                                         initWithRequest:request];
+            AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc]
+                                                        initWithRequest:request];
+            [requestOperation setResponseSerializer:[AFImageResponseSerializer serializer]];
             [requestOperation start];
             [requestOperation waitUntilFinished];
             
-            UIImage *image = requestOperation.responseImage;
+            UIImage *image = (UIImage *)requestOperation.responseObject;
             
             if (!image || image.size.height < 50 || image.size.width < 50) {
                 [appDelegate.cachedStoryImages setObject:[NSNull null]

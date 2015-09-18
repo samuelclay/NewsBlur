@@ -79,29 +79,33 @@
         NSURL *url = [NSURL URLWithString:[NSString
                                            stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
                                            NEWSBLUR_URL, feedId]];
-        AFJSONRequestOperation *request = [AFJSONRequestOperation
-            JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
-            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                NSDictionary *results = [JSON objectAtIndex:0];
-                NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-                [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
-                                                  forKey:feedId];
-                appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
-                appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
-                [self renderTrainer];
-            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                NSLog(@"Failed fetch trainer.");
-                [self informError:@"Could not load trainer"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
-                               dispatch_get_main_queue(), ^{
-                    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                        [appDelegate.masterContainerViewController hidePopover];
-                    } else {
-                        [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
-                    }
-                });
-            }];
+
+        __weak __typeof(&*self)weakSelf = self;
+        AFHTTPRequestOperation *request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];
+        [request setResponseSerializer:[AFJSONResponseSerializer serializer]];
+        [request setCompletionBlockWithSuccess:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+            __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+            if (!strongSelf) return;
+            [MBProgressHUD hideHUDForView:strongSelf.view animated:YES];
+            NSDictionary *results = [responseObject objectAtIndex:0];
+            NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
+            [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
+                                                                forKey:feedId];
+            appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
+            appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+            [self renderTrainer];
+        } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+            NSLog(@"Failed fetch trainer: %@", error);
+            [self informError:@"Could not load trainer"];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
+                           dispatch_get_main_queue(), ^() {
+                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                    [appDelegate.masterContainerViewController hidePopover];
+                } else {
+                    [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+                }
+            });
+        }];
         [request start];
     } else {
         [self renderTrainer];

@@ -21,6 +21,7 @@
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
+#import "AFHTTPRequestOperation.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
@@ -89,6 +90,7 @@ static UIFont *userLabelFont;
 @synthesize notifier;
 @synthesize isOffline;
 @synthesize interactiveFeedDetailTransition;
+@synthesize avatarImageView;
 
 #pragma mark -
 #pragma mark Globals
@@ -1872,17 +1874,21 @@ heightForHeaderInSection:(NSInteger)section {
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
-    
-    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
-    [avatarRequest setHTTPShouldHandleCookies:NO];
-    [avatarRequest setHTTPShouldUsePipelining:YES];
-    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
+
+    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
+    [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    [avatarRequest setTimeoutInterval:30.0];
+    avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
     CGSize avatarSize = avatarImageView.frame.size;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         image = [Utilities imageWithImage:image convertToSize:CGSizeMake(avatarSize.width*2, avatarSize.height*2)];
         image = [Utilities roundCorneredImage:image radius:6];
         [(UIButton *)userAvatarButton.customView setImage:image forState:UIControlStateNormal];
-    } failure:nil];
+    } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
+        NSLog(@"Could not fetch user avatar: %@", error);
+    }];
+    
+    
     //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
     
     //    [userInfoView addSubview:userAvatarButton];

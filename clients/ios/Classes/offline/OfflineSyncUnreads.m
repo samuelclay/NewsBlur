@@ -11,7 +11,7 @@
 #import "NewsBlurViewController.h"
 #import "FMResultSet.h"
 #import "FMDatabase.h"
-#import "AFJSONRequestOperation.h"
+#import "AFHTTPRequestOperation.h"
 
 @implementation OfflineSyncUnreads
 
@@ -26,20 +26,32 @@
         [appDelegate.feedsViewController showSyncingNotifier];
     });
 
+    __block NSCondition *lock = [NSCondition new];
+    __weak __typeof(&*self)weakSelf = self;
+    [lock lock];
+
     NSURL *url = [NSURL URLWithString:[NSString
                                        stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
                                        NEWSBLUR_URL]];
-    request = [AFJSONRequestOperation
-               JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
-               success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                   [self storeUnreadHashes:JSON];
-               } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                   NSLog(@"Failed fetch all story hashes.");                                           
-               }];
-    request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                                             (unsigned long)NULL);
+    request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];
+    [request setResponseSerializer:[AFJSONResponseSerializer serializer]];
+    [request setCompletionBlockWithSuccess:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+        NSLog(@"Syncing stories success: %@-%@", weakSelf, strongSelf);
+        if (!strongSelf) return;
+        [strongSelf storeUnreadHashes:responseObject];
+        [lock signal];
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        NSLog(@"Failed fetch all story hashes: %@", error);
+        [lock signal];
+    }];
+    [request setCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL)];
     [request start];
-    [request waitUntilFinished];
+
+    [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
+    [lock unlock];
+
+    NSLog(@"Finished syncing stories");
 }
 
 - (void)storeUnreadHashes:(NSDictionary *)results {

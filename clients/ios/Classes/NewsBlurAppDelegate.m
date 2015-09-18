@@ -25,7 +25,7 @@
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
-#import "AFJSONRequestOperation.h"
+#import "AFHTTPRequestOperation.h"
 #import "ASINetworkQueue.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
@@ -1103,7 +1103,7 @@
     
     if (feedDetailView == feedDetailViewController) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
-                                                                          style: UIBarButtonItemStyleBordered
+                                                                          style: UIBarButtonItemStylePlain
                                                                          target: nil
                                                                          action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
