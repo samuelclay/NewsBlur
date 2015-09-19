@@ -867,7 +867,7 @@ public class BlurDatabaseHelper {
      * When navigating to a social story from an interaction/activity we want to ignore
      * the any state so we can be sure we find the selected story.
      */
-    public Loader<Cursor> getAllStoriesLoader(final FeedSet fs) {
+    public Loader<Cursor> getStoriesLoaderIgnoreFilters(final FeedSet fs) {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getStoriesCursor(fs, StateFilter.ALL, ReadFilter.ALL, cancellationSignal);}
         };

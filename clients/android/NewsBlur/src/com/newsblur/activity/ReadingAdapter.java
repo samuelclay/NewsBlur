@@ -59,6 +59,9 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
     public synchronized void swapCursor(Cursor cursor) {
         this.stories = cursor;
+        if (cursor != null) {
+            notifyDataSetChanged();
+        }
     }
         
 	protected abstract ReadingItemFragment getReadingItemFragment(Story story);

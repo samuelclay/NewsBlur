@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.newsblur.R;
 import com.newsblur.activity.Reading;
@@ -48,11 +47,10 @@ public class ReadStoriesItemListFragment extends ItemListFragment {
     }
 
 	@Override
-	public void onItemClick_(AdapterView<?> parent, View view, int position, long id) {
-        if (getActivity().isFinishing()) return;
+	public void onItemClick_(String storyHash) {
 		Intent i = new Intent(getActivity(), ReadStoriesReading.class);
+        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(FeedReading.EXTRA_POSITION, position);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}

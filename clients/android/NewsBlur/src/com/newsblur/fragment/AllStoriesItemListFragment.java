@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.content.Loader;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllStoriesReading;
@@ -44,11 +43,10 @@ public class AllStoriesItemListFragment extends ItemListFragment {
 	}
 
 	@Override
-	public void onItemClick_(AdapterView<?> parent, View view, int position, long id) {
-        if (getActivity().isFinishing()) return;
+	public void onItemClick_(String storyHash) {
 		Intent i = new Intent(getActivity(), AllStoriesReading.class);
+        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
         i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);

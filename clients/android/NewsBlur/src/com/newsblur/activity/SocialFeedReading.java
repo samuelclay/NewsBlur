@@ -35,7 +35,7 @@ public class SocialFeedReading extends Reading {
         // If we have navigated from the profile we want to ignore the StateFilter and ReadFilter settings
         // for the feed to ensure we can find the story.
         if (openedFromProfile) {
-            return FeedUtils.dbHelper.getAllStoriesLoader(fs);
+            return FeedUtils.dbHelper.getStoriesLoaderIgnoreFilters(fs);
         } else {
             return super.onCreateLoader(loaderId, bundle);
         }
