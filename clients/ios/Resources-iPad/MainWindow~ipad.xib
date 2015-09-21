@@ -29,7 +29,6 @@
                 <outlet property="masterContainerViewController" destination="264" id="266"/>
                 <outlet property="moveSiteViewController" destination="124" id="126"/>
                 <outlet property="navigationController" destination="173" id="185"/>
-                <outlet property="originalStoryViewController" destination="113" id="116"/>
                 <outlet property="shareViewController" destination="168" id="272"/>
                 <outlet property="storyDetailViewController" destination="92" id="93"/>
                 <outlet property="storyPageControl" destination="290" id="292"/>
@@ -152,13 +151,6 @@
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="109"/>
-            </connections>
-        </viewController>
-        <viewController nibName="OriginalStoryViewController" id="113" customClass="OriginalStoryViewController">
-            <extendedEdge key="edgesForExtendedLayout"/>
-            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
-            <connections>
-                <outlet property="appDelegate" destination="3" id="114"/>
             </connections>
         </viewController>
         <viewController id="168" customClass="ShareViewController">

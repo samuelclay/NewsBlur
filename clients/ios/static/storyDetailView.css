@@ -494,6 +494,9 @@ div + p {
 .NB-story div {
     max-width: 100% !important;
 }
+.NB-story figure {
+    margin: 0;
+}
 .NB-story img {
     margin: 20px auto;
     height: auto !important;

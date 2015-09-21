@@ -144,7 +144,7 @@
     UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
     self.shareNavigationController = shareNav;
     self.shareNavigationController.navigationBar.translucent = NO;
-    
+
     UINavigationController *originalNav = [[UINavigationController alloc]
                                            initWithRootViewController:originalViewController];
     self.originalNavigationController = originalNav;
@@ -723,14 +723,11 @@
 
 - (void)transitionToOriginalView:(BOOL)resetLayout {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (UIInterfaceOrientationIsPortrait(orientation)) {
-        
-    }
-
     CGRect vb = [self.view bounds];
     
     self.originalViewIsVisible = YES;
-    
+    self.originalViewController = appDelegate.originalStoryViewController;
+
     if (resetLayout) {
         [self addChildViewController:self.originalNavigationController];
         [self.originalNavigationController.view setHidden:NO];
