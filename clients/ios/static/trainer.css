@@ -53,7 +53,7 @@
 }
 
 .NB-trainer-title .NB-trainer-section-body {
-    padding: 0 12px 12px;
+/*    padding: 0 12px 12px;*/
 }
 .NB-trainer-title .NB-title-trainer {
     font-size: 18px;
@@ -65,7 +65,7 @@
 }
 .NB-trainer-title .NB-title-trainer span {
     display: block;
-    padding: 18px 0 18px;
+    padding: 6px 0 18px;
     min-height: 36px;
 }
 .NB-trainer-title .NB-title-trainer .NB-spacer {

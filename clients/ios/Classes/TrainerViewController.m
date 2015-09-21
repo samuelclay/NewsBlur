@@ -203,7 +203,7 @@
 - (NSString *)makeTrainerSections {
     NSString *storyAuthor = self.feedTrainer ? [self makeFeedAuthors] : [self makeStoryAuthor];
     NSString *storyTags = self.feedTrainer ? [self makeFeedTags] : [self makeStoryTags];
-    NSString *storyTitle = self.feedTrainer ? @"" : [self makeTitle];
+    NSString *storyTitle = self.feedTrainer ? [self makeFeedTitles] : [self makeTitle];
     NSString *storyPublisher = [self makePublisher];
     
     NSString *htmlString = [NSString stringWithFormat:@
@@ -488,6 +488,37 @@
                               "</div>", storyTitle, titleClassifiers];
     return titleTrainer;
 }
+
+- (NSString *)makeFeedTitles {
+    NSString *feedId = [self feedId];
+    NSMutableDictionary *classifiers = [[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
+                                        objectForKey:@"titles"];
+    NSMutableArray *titleStrings = [NSMutableArray array];
+    for (NSString *title in classifiers) {
+        int titleScore = [[classifiers objectForKey:title] intValue];
+        NSString *titleClassifier = [NSString stringWithFormat:@
+                                     "<div class=\"NB-classifier-container\">"
+                                     "  <a href=\"http://ios.newsblur.com/classify-title/%@\" "
+                                     "     class=\"NB-story-title NB-story-title-%@\">%@</a>"
+                                     "</div>",
+                                     title,
+                                     titleScore > 0 ? @"positive" : titleScore < 0 ? @"negative" : @"",
+                                     [self makeClassifier:title withType:@"title" score:titleScore]];
+        [titleStrings addObject:titleClassifier];
+    }
+    
+    NSString *titleClassifiers = [titleStrings componentsJoinedByString:@""];
+    NSString *titleTrainer = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
+                              "  <div class=\"NB-trainer-section-title\">Story Titles</div>"
+                              "  <div class=\"NB-trainer-section-body\">"
+                              "    <div class=\"NB-story-titles\">"
+                              "      %@"
+                              "    </div>"
+                              "  </div>"
+                              "</div>", titleClassifiers];
+    return titleTrainer;
+}
+
 
 - (NSString *)makeClassifier:(NSString *)classifierName withType:(NSString *)classifierType score:(int)score {
     NSString *classifier = [NSString stringWithFormat:@"<span class=\"NB-classifier NB-classifier-%@ NB-classifier-%@\">"
