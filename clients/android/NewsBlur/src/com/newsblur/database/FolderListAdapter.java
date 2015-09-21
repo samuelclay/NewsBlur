@@ -1,6 +1,7 @@
 package com.newsblur.database;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -514,18 +515,18 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
         folders = Collections.emptyMap();
         flatFolders = Collections.emptyMap();
-        activeFolderNames.clear();
-        activeFolderChildren.clear();
-        folderNeutCounts.clear();
-        folderPosCounts.clear();
+        safeClear(activeFolderNames);
+        safeClear(activeFolderChildren);
+        safeClear(folderNeutCounts);
+        safeClear(folderPosCounts);
 
         feeds = Collections.emptyMap();
-        feedNeutCounts.clear();
-        feedPosCounts.clear();
+        safeClear(feedNeutCounts);
+        safeClear(feedPosCounts);
         totalNeutCount = 0;
         totalPosCount = 0;
 
-        closedFolders.clear();
+        safeClear(closedFolders);
 
         savedStoriesCount = 0;
     }
@@ -673,5 +674,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
         }
     };
+
+    public void safeClear(Collection c) {
+        if (c != null) c.clear();
+    }
+
+    public void safeClear(Map m) {
+        if (m != null) m.clear();
+    }
 
 }
