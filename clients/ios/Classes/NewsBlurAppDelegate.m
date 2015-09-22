@@ -57,6 +57,8 @@
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
@@ -171,6 +173,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    [Fabric with:@[[Crashlytics class]]];
+
     [self registerDefaultsFromSettingsBundle];
     
     self.navigationController.delegate = self;

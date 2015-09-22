@@ -139,10 +139,6 @@
     self.navigationController.delegate = appDelegate;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
 - (void)resetProgressBar {
     if (finishedLoading) return;
     

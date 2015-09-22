@@ -1,0 +1,13 @@
+framework module Crashlytics {
+    header "Crashlytics.h"
+    header "Answers.h"
+    header "CLSLogging.h"
+    header "CLSReport.h"
+    header "CLSStackFrame.h"
+    header "CLSAttributes.h"
+
+    export *
+
+    link "z"
+    link "c++"
+}

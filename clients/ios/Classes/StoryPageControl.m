@@ -193,19 +193,6 @@
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
 }
 
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
-- (BOOL)automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers {
-    return YES;
-}
-
-- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
-    return YES;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -320,6 +307,8 @@
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         [self layoutForInterfaceOrientation:orientation];
@@ -328,7 +317,6 @@
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         
     }];
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -513,18 +501,18 @@
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
-		CGRect pageFrame = pageController.view.frame;
+		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
-		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
-        pageFrame.size.height = self.scrollView.frame.size.height;
+		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
 //        NSLog(@"Out of bounds: was %d, now %d", pageController.pageIndex, newIndex);
-		CGRect pageFrame = pageController.view.frame;
-		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
-		pageFrame.origin.y = self.scrollView.frame.size.height;
-        pageFrame.size.height = self.scrollView.frame.size.height;
+		CGRect pageFrame = pageController.view.bounds;
+		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
+		pageFrame.origin.y = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
