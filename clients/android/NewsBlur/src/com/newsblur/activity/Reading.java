@@ -70,7 +70,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /** The minimum screen width (in DP) needed to show all the overlay controls. */
     private static final int OVERLAY_MIN_WIDTH_DP = 355;
 
-	protected int passedPosition;
 	protected StateFilter currentState;
     protected StoryOrder storyOrder;
     protected ReadFilter readFilter;
@@ -78,8 +77,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
     private String storyHash;
-    private boolean storyHashSearchActive = false;
-    private boolean storyHashSearchStarted = false;
 
     protected final Object STORIES_MUTEX = new Object();
 	protected Cursor stories;
@@ -127,11 +124,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
 
-        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_POSITION)) {
-            passedPosition = savedInstanceBundle.getInt(BUNDLE_POSITION);
-        } else {
-            passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        }
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
@@ -140,7 +132,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // recreated due to rotation etc.
         if (savedInstanceBundle == null) {
             storyHash = getIntent().getStringExtra(EXTRA_STORY_HASH);
-            storyHashSearchActive = storyHash != null;
+        } else {
+            storyHash = savedInstanceBundle.getString(EXTRA_STORY_HASH);
         }
 
 		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
@@ -176,7 +169,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (pager != null) {
-            outState.putInt(BUNDLE_POSITION, pager.getCurrentItem());
+            int currentItem = pager.getCurrentItem();
+            Story story = readingAdapter.getStory(currentItem);
+            outState.putString(EXTRA_STORY_HASH, story.storyHash);
         }
 
         if (startingUnreadCount != 0) {
@@ -196,6 +191,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     protected void onResume() {
         super.onResume();
+        if (NBSyncService.isHousekeepingRunning()) finish();
         // this view shows stories, it is not safe to perform cleanup
         this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
@@ -232,6 +228,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 setupPager();
             }
 
+            // see if we are just starting and need to jump to a target story
+            skipPagerToStoryHash();
+
             try {
                 readingAdapter.notifyDataSetChanged();
             } catch (IllegalStateException ise) {
@@ -244,18 +243,37 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 // now that we have more stories, look again.
                 nextUnread();
             }
-
-            if (storyHashSearchActive) {
-                findStoryByHash();
-            }
             checkStoryCount(pager.getCurrentItem());
             updateOverlayNav();
             updateOverlayText();
         }
 	}
 
+    private void skipPagerToStoryHash() {
+        // if we already started and found our target story, this will be unset
+        if (storyHash == null) return;
+        stories.moveToPosition(-1);
+        while (stories.moveToNext()) {
+            if (stopLoading) return;
+            Story story = Story.fromCursor(stories);
+            if (story.storyHash.equals(storyHash)) {
+                // now that the pager is getting the right story, make it visible
+                pager.setVisibility(View.VISIBLE);
+                pager.setCurrentItem(stories.getPosition(), false);
+                this.onPageSelected(stories.getPosition());
+                storyHash = null;
+                return;
+            }
+        }
+        // if the story wasn't found, try to get more stories into the cursor
+        FeedUtils.activateAllStories();
+        this.checkStoryCount(readingAdapter.getCount()+1);
+    }
+
     private void setupPager() {
         pager = (ViewPager) findViewById(R.id.reading_pager);
+        // since it might start on the wrong story, create the pager as invisible
+        pager.setVisibility(View.INVISIBLE);
 		pager.setPageMargin(UIUtils.dp2px(getApplicationContext(), 1));
         if (PrefsUtils.isLightThemeSelected(this)) {
             pager.setPageMarginDrawable(R.drawable.divider_light);
@@ -266,10 +284,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		pager.setOnPageChangeListener(this);
 		pager.setAdapter(readingAdapter);
 
-		pager.setCurrentItem(passedPosition, false);
-        // setCurrentItem sometimes fails to pass the first page to the callback, so call it manually
-        // for the first one.
-        this.onPageSelected(passedPosition); 
+        // if the first story in the list was "viewed" before the page change listener was set,
+        // the calback was probably missed
+        if (storyHash == null) {
+            this.onPageSelected(pager.getCurrentItem());
+        }
 
         updateOverlayNav();
         enableOverlays();
@@ -349,6 +368,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
 	protected void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_REBUILD) != 0) {
+            finish();
+        }
         if ((updateType & UPDATE_STATUS) != 0) {
             enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
         }
@@ -638,15 +660,45 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // let either finish. search will happen when the cursor is pushed.
         if ((pager == null) || (readingAdapter == null)) return;
 
-        boolean unreadFound = searchForStory(new UnreadStorySearchMatcher());
-
-        if (this.stopLoading) {
-            // this activity was ended before we finished. just stop.
-            unreadSearchActive = false;
-            return;
+        boolean unreadFound = false;
+        // start searching just after the current story
+        int candidate = pager.getCurrentItem() + 1;
+        unreadSearch:while (!unreadFound) {
+            // if we've reached the end of the list, loop back to the beginning
+            if (candidate >= readingAdapter.getCount()) {
+                candidate = 0;
+            }
+            // if we have looped all the way around to the story we are on, there aren't any left
+            if (candidate == pager.getCurrentItem()) {
+                break unreadSearch;
+            }
+            Story story = readingAdapter.getStory(candidate);
+            if (this.stopLoading) {
+                // this activity was ended before we finished. just stop.
+                unreadSearchActive = false;
+                return;
+            } 
+            // iterate through the stories in our cursor until we find an unread one
+            if (story != null) {
+                if (story.read) {
+                    candidate++;
+                    continue unreadSearch;
+                } else {
+                    unreadFound = true;
+                }
+            }
+            // if we didn't continue or break, the cursor probably changed out from under us, so stop.
+            break unreadSearch;
         }
 
         if (unreadFound) {
+            // jump to the story we found
+            final int page = candidate;
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    pager.setCurrentItem(page, true);
+                }
+            });
             // disable the search flag, as we are done
             unreadSearchActive = false;
         } else {
@@ -655,87 +707,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             // between marking an earlier one and double-checking counts.
             if (getUnreadCount() <= 0) {
                 unreadSearchActive = false;
-            } else {
-                // trigger a check to see if there are any more to search before proceeding. By leaving the
-                // unreadSearchActive flag high, this method will be called again when a new cursor is loaded
-                this.checkStoryCount(readingAdapter.getCount()+1);
-            }
-        }
-    }
-
-    private boolean searchForStory(StorySearchMatcher matcher) {
-        boolean storyFound = false;
-        // start searching just after the current story
-        int candidate = pager.getCurrentItem() + 1;
-        storySearch:while (!storyFound) {
-            // if we've reached the end of the list, loop back to the beginning
-            if (candidate >= readingAdapter.getCount()) {
-                candidate = 0;
-            }
-            // if we have looped all the way around to the story we are on, there aren't any left
-            if (candidate == pager.getCurrentItem()) {
-                break storySearch;
-            }
-            Story story = readingAdapter.getStory(candidate);
-            if (this.stopLoading) {
-                // this activity was ended before we finished. just stop.
-                return false;
-            }
-            // iterate through the stories in our cursor until we find one that matches
-            if (story != null) {
-                if (matcher.matches(story)) {
-                    storyFound = true;
-                } else {
-                    candidate++;
-                    continue storySearch;
-                }
-            }
-            // if we didn't continue or break, the cursor probably changed out from under us, so stop.
-            break storySearch;
-        }
-
-        if (storyFound) {
-            // jump to the story we found
-            final int page = candidate;
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    pager.setCurrentItem(page, true);
-                }
-            });
-        }
-
-        return storyFound;
-    }
-
-    private void findStoryByHash() {
-        // the first time an story hash search is triggered, also trigger an activation of unreads, so
-        // we don't search for a story that doesn't exist in the cursor
-        if (!storyHashSearchStarted) {
-            FeedUtils.activateAllStories();
-            storyHashSearchStarted = true;
-        }
-
-        // if we somehow got tapped before construction or are running during destruction, stop and
-        // let either finish. search will happen when the cursor is pushed.
-        if ((pager == null) || (readingAdapter == null)) return;
-
-        boolean storyFound = searchForStory(new StoryHashSearchMatcher(storyHash));
-
-        if (this.stopLoading) {
-            // this activity was ended before we finished. just stop.
-            storyHashSearchActive = false;
-            return;
-        }
-
-        if (storyFound) {
-            // disable the search flag, as we are done
-            storyHashSearchActive = false;
-        } else {
-            // We didn't find a story, so we should trigger a check to see if the API can load any more.
-            // First, though, double check that there are even any left, as there may have been a delay
-            // between marking an earlier one and double-checking counts.
-            if (getUnreadCount() <= 0) {
-                storyHashSearchActive = false;
             } else {
                 // trigger a check to see if there are any more to search before proceeding. By leaving the
                 // unreadSearchActive flag high, this method will be called again when a new cursor is loaded
@@ -851,31 +822,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             return true;
         } else {
             return super.onKeyUp(keyCode, event);
-        }
-    }
-
-    private interface StorySearchMatcher {
-        boolean matches(Story story);
-    }
-
-    private class UnreadStorySearchMatcher implements StorySearchMatcher {
-
-        @Override
-        public boolean matches(Story story) {
-            return !story.read;
-        }
-    }
-
-    private class StoryHashSearchMatcher implements StorySearchMatcher {
-        private String hash;
-
-        public StoryHashSearchMatcher(String hash) {
-            this.hash = hash;
-        }
-
-        @Override
-        public boolean matches(Story story) {
-            return this.hash.equals(story.storyHash);
         }
     }
 }

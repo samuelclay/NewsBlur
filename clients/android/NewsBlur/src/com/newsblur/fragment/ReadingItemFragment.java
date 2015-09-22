@@ -532,9 +532,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             
             sniffAltTexts(storyText);
 
-            if (PrefsUtils.isImagePrefetchEnabled(getActivity())) {
-                storyText = swapInOfflineImages(storyText);
-            } 
+            storyText = swapInOfflineImages(storyText);
 
             float currentSize = PrefsUtils.getTextSize(getActivity());
 

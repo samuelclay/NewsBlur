@@ -20,8 +20,6 @@ public class NewsBlurResponse {
 	public String[] errors;
     public long readTime;
 
-    public static final Pattern KnownUserErrors = Pattern.compile("cannot mark as unread");
-
     public boolean isError() {
         if (isProtocolError) return true;
         if ((message != null) && (!message.equals(""))) {
@@ -31,18 +29,6 @@ public class NewsBlurResponse {
         if ((errors != null) && (errors.length > 0) && (errors[0] != null)) {
             Log.d(this.getClass().getName(), "Response interpreted as error due to 'errors' field: " + errors[0]);
             return true;
-        }
-        return false;
-    }
-
-    // TODO: can we add a canonical flag of some sort to 100% of API responses that differentiates
-    //       between user and server errors? Until then, we have to sniff known bad ones, since all
-    //       user errors have a 200 response rather than a 4xx.
-    public boolean isUserError() {
-        String err = getErrorMessage(null);
-        if (err != null) {
-            Matcher m = KnownUserErrors.matcher(err);
-            if (m.find()) return true;
         }
         return false;
     }

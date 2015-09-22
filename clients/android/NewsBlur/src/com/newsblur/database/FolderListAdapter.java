@@ -1,6 +1,7 @@
 package com.newsblur.database;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -258,7 +259,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         // in addition to the real folders returned by the /reader/feeds API, there are virtual folders
         // for global shared stories, social feeds and saved stories
         if (activeFolderNames == null) return 0;
-		return (activeFolderNames.size() + 4);
+        // two types of group (folder and All Stories are represented as folders, and don't count, so -2)
+		return (activeFolderNames.size() + (GroupType.values().length - 2));
 	}
 
 	@Override
@@ -505,6 +507,30 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
     }
 
+    public synchronized void reset() {
+        socialFeeds = Collections.emptyMap();
+        socialFeedsOrdered = Collections.emptyList();
+        totalSocialNeutCount = 0;
+        totalSocialPosiCount = 0;
+
+        folders = Collections.emptyMap();
+        flatFolders = Collections.emptyMap();
+        safeClear(activeFolderNames);
+        safeClear(activeFolderChildren);
+        safeClear(folderNeutCounts);
+        safeClear(folderPosCounts);
+
+        feeds = Collections.emptyMap();
+        safeClear(feedNeutCounts);
+        safeClear(feedPosCounts);
+        totalNeutCount = 0;
+        totalPosCount = 0;
+
+        safeClear(closedFolders);
+
+        savedStoriesCount = 0;
+    }
+
     public Feed getFeed(String feedId) {
         return feeds.get(feedId);
     }
@@ -648,5 +674,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
         }
     };
+
+    public void safeClear(Collection c) {
+        if (c != null) c.clear();
+    }
+
+    public void safeClear(Map m) {
+        if (m != null) m.clear();
+    }
 
 }

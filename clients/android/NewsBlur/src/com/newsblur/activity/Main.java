@@ -70,6 +70,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 		getActionBar().hide();
 
+        // set the status bar to an generic loading message when the activity is first created so
+        // that something is displayed while the service warms up
+        overlayStatusText.setText(R.string.loading);
+        overlayStatusText.setVisibility(View.VISIBLE);
+
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
         swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
         swipeLayout.setOnRefreshListener(this);
@@ -102,6 +107,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         updateStatusIndicators();
         folderFeedList.pushUnreadCounts();
+        folderFeedList.checkOpenFolderPreferences();
         triggerSync();
 
         if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
@@ -116,6 +122,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	
     @Override
 	public void handleUpdate(int updateType) {
+        if ((updateType & UPDATE_REBUILD) != 0) {
+            folderFeedList.reset();
+        }
         if ((updateType & UPDATE_DB_READY) != 0) {
             try {
                 folderFeedList.startLoaders();
@@ -138,8 +147,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if ((neutCount+posiCount) <= 0) {
             if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 emptyViewImage.setVisibility(View.INVISIBLE);
-                emptyViewText.setText(R.string.loading);
-                emptyViewText.setVisibility(View.VISIBLE);
+                emptyViewText.setVisibility(View.INVISIBLE);
             } else {
                 emptyViewImage.setVisibility(View.VISIBLE);
                 if (folderFeedList.currentState == StateFilter.BEST) {

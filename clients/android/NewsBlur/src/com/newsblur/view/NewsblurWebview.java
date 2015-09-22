@@ -40,8 +40,7 @@ public class NewsblurWebview extends WebView {
 		getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		getSettings().setDomStorageEnabled(true);
 		getSettings().setSupportZoom(true);
-		getSettings().setAppCacheMaxSize(1024*1024*8);
-		getSettings().setAppCachePath("/data/data/com.newsblur/cache");
+		getSettings().setAppCachePath(context.getCacheDir().getAbsolutePath());
 		getSettings().setAllowFileAccess(true);
 		getSettings().setAppCacheEnabled(true);
 

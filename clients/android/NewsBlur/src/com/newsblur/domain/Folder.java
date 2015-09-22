@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.newsblur.database.DatabaseConstants;
@@ -63,6 +64,10 @@ public class Folder {
         }
         builder.append(name);
         return builder.toString();
+    }
+
+    public void removeOrphanFeedIds(Collection<String> orphanFeedIds) {
+        feedIds.removeAll(orphanFeedIds);
     }
 	
 	@Override

@@ -316,12 +316,14 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     }
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	public synchronized void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         int truePosition = position - 1;
-        onItemClick_(parent, view, truePosition, id);
+        Story story = adapter.getStory(truePosition);
+        if (getActivity().isFinishing()) return;
+        onItemClick_(story.storyHash);
     }
 
-	public abstract void onItemClick_(AdapterView<?> parent, View view, int position, long id);
+	public abstract void onItemClick_(String storyHash);
 
     protected void setupBezelSwipeDetector(View v) {
         final GestureDetector gestureDetector = new GestureDetector(getActivity(), new BezelSwipeDetector());

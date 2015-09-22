@@ -25,6 +25,7 @@ public class NbActivity extends Activity {
     public static final int UPDATE_SOCIAL   = (1<<3);
     public static final int UPDATE_STATUS   = (1<<5);
     public static final int UPDATE_TEXT     = (1<<6);
+    public static final int UPDATE_REBUILD  = (1<<7);
 
 	private final static String UNIQUE_LOGIN_KEY = "uniqueLoginKey";
 	private String uniqueLoginKey;
