@@ -331,31 +331,6 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    
-//        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
-//        NSLog(@"Scrolling to %2.2f%% of %.0f", scrollPct*100, currentPage.webView.scrollView.contentSize.height);
-//        
-//        [currentPage.webView.scrollView setContentOffset:scrollPosition animated:YES];
-    inRotation = NO;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                         duration:(NSTimeInterval)duration {
-    inRotation = YES;
-    
-    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        NSLog(@"Rotating to portrait: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
-        
-    } else if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
-        NSLog(@"Rotating to landscape: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
-    }
-    
-    [self layoutForInterfaceOrientation:toInterfaceOrientation];
-    [self adjustDragBar:toInterfaceOrientation];
-//    [self reorientPages:toInterfaceOrientation];
-}
-
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
 //        appDelegate.masterContainerViewController.originalViewIsVisible) {
