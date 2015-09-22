@@ -319,9 +319,12 @@
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {        
-        [appDelegate adjustStoryDetailWebView];
-        
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [appDelegate adjustStoryDetailWebView];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    
 //        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
 //        NSLog(@"Scrolling to %2.2f%% of %.0f", scrollPct*100, currentPage.webView.scrollView.contentSize.height);
 //        
@@ -342,7 +345,7 @@
     
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
     [self adjustDragBar:toInterfaceOrientation];
-    [self reorientPages:toInterfaceOrientation];
+//    [self reorientPages:toInterfaceOrientation];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

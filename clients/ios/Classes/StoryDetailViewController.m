@@ -295,7 +295,7 @@
         lineSpacingClass = [lineSpacingClass stringByAppendingString:@"medium"];
     }
     
-    int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
+    int contentWidth = CGRectGetWidth(self.appDelegate.storyPageControl.view.bounds);
     NSString *contentWidthClass;
     
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -336,7 +336,7 @@
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
+                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%ld, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
@@ -1960,8 +1960,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
-//    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
-    int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
+    NSLog(@"changeWebViewWidth: %@ / %@", NSStringFromCGRect(self.view.bounds), NSStringFromCGRect(self.view.frame));
+    int contentWidth = CGRectGetWidth(self.appDelegate.storyPageControl.view.bounds);
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     NSString *contentWidthClass;
 
