@@ -182,7 +182,6 @@
                                                    currentiPhoneVersion]];
         [window addSubview:self.masterContainerViewController.view];
         self.window.rootViewController = self.masterContainerViewController;
-        [self.masterContainerViewController didRotateFromInterfaceOrientation:nil];
     } else {
         [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPhone App v%@",
                                                    currentiPhoneVersion]];
@@ -2710,7 +2709,7 @@
 }
 
 - (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story {
-    if (position <= 0) return;
+    if (position < 0) return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {

@@ -223,6 +223,15 @@
     }
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        [self changeWebViewWidth];
+        [self drawFeedGradient];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        
+    }];
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     preRotateSize = webView.scrollView.contentSize;
     NSLog(@"Height is %@ (Offset is %@)", @(preRotateSize.height), @(webView.scrollView.contentOffset.y));
@@ -336,7 +345,7 @@
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%ld, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
+                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%d, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
@@ -411,6 +420,7 @@
                 NSDictionary *story = [cursor resultDictionary];
                 id scroll = [story objectForKey:@"scroll"];
                 if ([scroll isKindOfClass:[NSNull class]]) {
+                    NSLog(@"No scroll found for story: %@", [strongSelf.activeStory objectForKey:@"story_title"]);
                     // No scroll found
                     continue;
                 }
@@ -1081,7 +1091,6 @@
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    
     if ([keyPath isEqual:@"contentOffset"]) {
         if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.scrollIndicatorInsets.top)) {
             // Pulling
@@ -1193,25 +1202,26 @@
 }
 
 - (void)storeScrollPosition:(BOOL)queue {
-    __weak __typeof(&*self)weakSelf = self;
     __block NSInteger position = self.webView.scrollView.contentOffset.y;
-    if (position > 0) {
-        __block NSDictionary *story = self.activeStory;
-        NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", [story objectForKey:@"story_hash"]];
-        if (queue) {
-            NSTimeInterval interval = 2;
-            [JNWThrottledBlock runBlock:^{
-                __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-                if (!strongSelf) return;
-                NSInteger updatedPos = strongSelf.webView.scrollView.contentOffset.y;
-                [appDelegate markScrollPosition:updatedPos inStory:story];
-            } withIdentifier:storyIdentifier throttle:interval];
-        } else {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                                     (unsigned long)NULL), ^(void) {
-                [appDelegate markScrollPosition:position inStory:story];
-            });
-        }
+    __block NSDictionary *story = self.activeStory;
+    __weak __typeof(&*self)weakSelf = self;
+
+    if (position < 0) return;
+    
+    NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", [story objectForKey:@"story_hash"]];
+    if (queue) {
+        NSTimeInterval interval = 2;
+        [JNWThrottledBlock runBlock:^{
+            __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+            if (!strongSelf) return;
+            NSInteger updatedPos = strongSelf.webView.scrollView.contentOffset.y;
+            [appDelegate markScrollPosition:updatedPos inStory:story];
+        } withIdentifier:storyIdentifier throttle:interval];
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                 (unsigned long)NULL), ^(void) {
+            [appDelegate markScrollPosition:position inStory:story];
+        });
     }
 }
 
@@ -1960,9 +1970,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
-    NSLog(@"changeWebViewWidth: %@ / %@", NSStringFromCGRect(self.view.bounds), NSStringFromCGRect(self.view.frame));
-    int contentWidth = CGRectGetWidth(self.appDelegate.storyPageControl.view.bounds);
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.bounds));
+    NSInteger contentWidth = CGRectGetWidth(self.view.bounds);
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     NSString *contentWidthClass;
 
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -1986,10 +1996,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSString *jsString = [[NSString alloc] initWithFormat:
                           @"$('body').attr('class', '%@ %@');"
-                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%i;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
+                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
                           riverClass,
-                          contentWidth];
+                          (long)contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
 //    self.webView.hidden = NO;

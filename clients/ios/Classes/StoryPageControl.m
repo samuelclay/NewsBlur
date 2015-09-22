@@ -319,10 +319,6 @@
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [appDelegate adjustStoryDetailWebView];
-}
-
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     
 //        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
