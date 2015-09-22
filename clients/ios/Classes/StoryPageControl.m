@@ -319,6 +319,18 @@
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        [self layoutForInterfaceOrientation:orientation];
+        [self adjustDragBar:orientation];
+        [self reorientPages];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        
+    }];
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     
 //        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
@@ -436,7 +448,7 @@
     //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
-- (void)reorientPages:(UIInterfaceOrientation)fromOrientation {
+- (void)reorientPages {
     [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
     [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
     [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];

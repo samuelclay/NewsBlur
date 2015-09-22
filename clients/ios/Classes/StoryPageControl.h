@@ -87,7 +87,7 @@
 - (void)resetPages;
 - (void)hidePages;
 - (void)refreshPages;
-- (void)reorientPages:(UIInterfaceOrientation)fromOrientation;
+- (void)reorientPages;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;

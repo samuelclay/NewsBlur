@@ -227,7 +227,7 @@
         [self layoutFeedDetailScreen];
     }
     if (self.feedDetailIsVisible) {
-        [self.storyPageControl reorientPages:fromInterfaceOrientation];
+        [self.storyPageControl reorientPages];
     }
 }
 
