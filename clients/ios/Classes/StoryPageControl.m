@@ -312,7 +312,6 @@
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
-        [appDelegate adjustStoryDetailWebView];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         

@@ -77,7 +77,8 @@
     
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
-    
+    [self.webView.scrollView setAutoresizesSubviews:(UIViewAutoresizingFlexibleWidth |
+                                                     UIViewAutoresizingFlexibleHeight)];
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
@@ -225,8 +226,7 @@
         [self changeWebViewWidth];
         [self drawFeedGradient];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        [self changeWebViewWidth];
-        [self drawFeedGradient];
+
     }];
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
@@ -1960,7 +1960,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
-    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.bounds));
+    NSLog(@"changeWebViewWidth: %@ / %@", NSStringFromCGRect(webView.scrollView.bounds), NSStringFromCGSize(webView.scrollView.contentSize));
+    [webView.scrollView setContentSize:webView.scrollView.bounds.size];
+
     NSInteger contentWidth = CGRectGetWidth(self.view.bounds);
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     NSString *contentWidthClass;
@@ -1986,7 +1988,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSString *jsString = [[NSString alloc] initWithFormat:
                           @"$('body').attr('class', '%@ %@');"
-                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
+                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li;initial-scale=1; minimum-scale=1.0; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
                           riverClass,
                           (long)contentWidth];
