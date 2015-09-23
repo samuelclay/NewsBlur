@@ -197,8 +197,6 @@
     [super viewWillAppear:animated];
     
     [self setNextPreviousButtons];
-    [appDelegate adjustStoryDetailWebView];
-    [self reorientPages];
     [self setTextButton];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -263,15 +261,15 @@
     self.traverseView.alpha = 1;
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self layoutForInterfaceOrientation:orientation];
-    [self adjustDragBar:orientation];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@" "
                                              style:UIBarButtonItemStylePlain
                                              target:nil action:nil];
-
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
+    [self adjustDragBar:orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -314,6 +312,7 @@
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
+        [appDelegate adjustStoryDetailWebView];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         
@@ -350,9 +349,9 @@
         self.bottomSize.hidden = NO;
     }
     
-    self.scrollView.frame = scrollViewFrame;
-    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
-    self.traverseView.frame = traverseViewFrame;
+//    self.scrollView.frame = scrollViewFrame;
+//    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
+//    self.traverseView.frame = traverseViewFrame;
 }
 
 - (void)highlightButton:(UIButton *)b {
@@ -627,11 +626,12 @@
     // Stick to bottom
     CGRect tvf = self.traverseView.frame;
     traversePinned = YES;
-    [UIView animateWithDuration:.3 delay:0
+    [UIView animateWithDuration:.24 delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
+                         [self.traverseView setNeedsLayout];
                          self.traverseView.frame = CGRectMake(tvf.origin.x,
-                                                              self.scrollView.frame.size.height - tvf.size.height,
+                                                              self.view.bounds.size.height - tvf.size.height,
                                                               tvf.size.width, tvf.size.height);
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
