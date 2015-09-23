@@ -198,6 +198,7 @@
     
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
+    [self reorientPages];
     [self setTextButton];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];

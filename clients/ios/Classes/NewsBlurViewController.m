@@ -163,8 +163,6 @@ static UIFont *userLabelFont;
     self.feedTitlesTable.backgroundColor = bgColor;
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
-    [self layoutHeaderCounts:nil];
-    
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
     
@@ -322,19 +320,16 @@ static UIFont *userLabelFont;
     [super viewWillDisappear:animated];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return YES;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                         duration:(NSTimeInterval)duration {
-    [self layoutForInterfaceOrientation:toInterfaceOrientation];
-    [self.notifier setNeedsLayout];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self.feedTitlesTable reloadData];
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        [self layoutForInterfaceOrientation:orientation];
+        [self.notifier setNeedsLayout];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        [self.feedTitlesTable reloadData];
+    }];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -379,7 +374,7 @@ static UIFont *userLabelFont;
 
 -(void)fetchFeedList:(BOOL)showLoader {
     NSURL *urlFeedList;
-    
+    NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
     
     if (self.inPullToRefresh_) {
@@ -429,6 +424,7 @@ static UIFont *userLabelFont;
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
+        NSLog(@"Showing login");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] >= 400) {
         [pull finishedLoading];
@@ -741,7 +737,7 @@ static UIFont *userLabelFont;
 - (void)loadOfflineFeeds:(BOOL)failed {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
-//    NSLog(@"loadOfflineFeeds: %d", failed);
+    NSLog(@"Loading offline feeds: %d", failed);
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if (!appDelegate.activeUsername) {
         appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
@@ -1741,6 +1737,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
+        NSLog(@"Showing login after refresh");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] == 503) {
         [pull finishedLoading];

@@ -2077,7 +2077,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSMutableDictionary *newActiveStory = [self.activeStory mutableCopy];
     [newActiveStory setObject:[results objectForKey:@"original_text"] forKey:@"original_text"];
-    appDelegate.activeStory = newActiveStory;
+    if ([[self.activeStory objectForKey:@"story_hash"] isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
+        appDelegate.activeStory = newActiveStory;
+    }
     self.activeStory = newActiveStory;
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];

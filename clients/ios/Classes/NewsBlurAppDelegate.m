@@ -206,6 +206,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
+        [feedsViewController loadOfflineFeeds:NO];
         [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -296,24 +297,25 @@
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
                                                object:nil];
-//    reach.reachableBlock = ^(Reachability *reach) {
-//        NSLog(@"Reachable: %@", reach);
-//    };
-//    reach.unreachableBlock = ^(Reachability *reach) {
-//        NSLog(@"Un-Reachable: %@", reach);
-//    };
+    reach.reachableBlock = ^(Reachability *reach) {
+        NSLog(@"Reachable: %@", reach);
+    };
+    reach.unreachableBlock = ^(Reachability *reach) {
+        NSLog(@"Un-Reachable: %@", reach);
+        [feedsViewController loadOfflineFeeds:NO];
+    };
     [reach startNotifier];
 }
 
 - (void)reachabilityChanged:(id)something {
-//    NSLog(@"Reachability changed: %@", something);
-    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+    NSLog(@"Reachability changed: %@", something);
+//    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
 
-    if (reach.isReachable && feedsViewController.isOffline) {
-        [feedsViewController loadOfflineFeeds:NO];
-    } else {
-        [feedsViewController loadOfflineFeeds:NO];
-    }
+//    if (reach.isReachable && feedsViewController.isOffline) {
+//        [feedsViewController loadOfflineFeeds:NO];
+////    } else {
+////        [feedsViewController loadOfflineFeeds:NO];
+//    }
 }
 
 #pragma mark -
