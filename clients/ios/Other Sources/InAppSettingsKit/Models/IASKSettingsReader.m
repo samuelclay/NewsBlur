@@ -127,6 +127,7 @@
     for (NSDictionary *specifierDictionary in preferenceSpecifiers) {
         IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary];
         newSpecifier.settingsReader = self;
+        [newSpecifier sortIfNeeded];
 
         if ([self.hiddenKeys containsObject:newSpecifier.key]) {
             continue;
@@ -144,6 +145,7 @@
                     IASKSpecifier *valueSpecifier =
                         [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary radioGroupValue:value];
                     valueSpecifier.settingsReader = self;
+                    [valueSpecifier sortIfNeeded];
                     [newArray addObject:valueSpecifier];
                 }
             }

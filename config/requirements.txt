@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.1
-six==1.6
+six==1.4.1
 boto==2.8.0
 celery==3.0.17
 chardet==2.1.1
@@ -14,7 +14,7 @@ django-redis-cache==0.9.7
 django-ses==0.4.1
 django-subdomains==2.0.3
 Django>=1.5,<1.6
-dop==0.1.4
+python-digitalocean==1.6
 Fabric==1.8.3
 gunicorn==19.1.1
 # psycopg2==2.5.2
@@ -38,7 +38,7 @@ raven==3.1.17
 readline==6.2.4.1
 redis==2.10.3
 hiredis==0.2.0
-requests==2.5.2
+requests==2.7.0
 seacucumber==1.5
 South==0.7.6
 stripe==1.12.2

@@ -87,6 +87,7 @@ UIActionSheetDelegate> {
 @property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 @property (nonatomic, retain) NBNotifier *notifier;
+@property (nonatomic, retain) UIImageView *avatarImageView;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)returnToApp;

@@ -78,7 +78,7 @@
 	zStream.avail_in = (unsigned int)length;
 	zStream.avail_out = 0;
 	
-	NSInteger bytesProcessedAlready = zStream.total_out;
+	NSUInteger bytesProcessedAlready = zStream.total_out;
 	while (zStream.avail_in != 0) {
 		
 		if (zStream.total_out-bytesProcessedAlready >= [outputData length]) {
@@ -155,7 +155,7 @@
     while ([decompressor streamReady]) {
 		
 		// Read some data from the file
-		readLength = [inputStream read:inputData maxLength:DATA_CHUNK_SIZE]; 
+		readLength = [inputStream read:inputData maxLength:DATA_CHUNK_SIZE];
 		
 		// Make sure nothing went wrong
 		if ([inputStream streamStatus] == NSStreamStatusError) {
@@ -171,7 +171,7 @@
 		}
 
 		// Attempt to inflate the chunk of data
-		outputData = [decompressor uncompressBytes:inputData length:readLength error:&theError];
+		outputData = [decompressor uncompressBytes:inputData length:(NSUInteger)readLength error:&theError];
 		if (theError) {
 			if (err) {
 				*err = theError;
@@ -211,7 +211,7 @@
 
 + (NSError *)inflateErrorWithCode:(int)code
 {
-	return [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Decompression of data failed with code %hi",(short)code],NSLocalizedDescriptionKey,nil]];
+	return [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Decompression of data failed with code %d",code],NSLocalizedDescriptionKey,nil]];
 }
 
 @synthesize streamReady;

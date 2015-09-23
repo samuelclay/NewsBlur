@@ -324,7 +324,9 @@ def load_feeds_flat(request):
     feeds = {}
     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     scheduled_feeds = []
-    iphone_version = "2.1"
+    iphone_version = "2.1" # Preserved forever. Don't change.
+    latest_ios_build = "51"
+    latest_ios_version = "5.0.0"
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -391,6 +393,8 @@ def load_feeds_flat(request):
         "is_staff": user.is_staff,
         "user_profile": user.profile,
         "iphone_version": iphone_version,
+        "latest_ios_build": latest_ios_build,
+        "latest_ios_version": latest_ios_version,
         "categories": categories,
         'starred_count': starred_count,
         'starred_counts': starred_counts,
@@ -1410,6 +1414,7 @@ def unread_story_hashes(request):
                                                  order=order, read_filter=read_filter,
                                                  include_timestamps=include_timestamps,
                                                  cutoff_date=user.profile.unread_cutoff)
+
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
     return dict(unread_feed_story_hashes=story_hashes)

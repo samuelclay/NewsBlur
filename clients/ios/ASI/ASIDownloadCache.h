@@ -41,6 +41,6 @@
 
 @property (assign, nonatomic) ASICachePolicy defaultCachePolicy;
 @property (retain, nonatomic) NSString *storagePath;
-@property (retain) NSRecursiveLock *accessLock;
-@property (assign) BOOL shouldRespectCacheControlHeaders;
+@property (atomic, retain) NSRecursiveLock *accessLock;
+@property (atomic, assign) BOOL shouldRespectCacheControlHeaders;
 @end

@@ -9,12 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "NewsBlurAppDelegate.h"
 #import "FMDatabaseQueue.h"
-#import "AFJSONRequestOperation.h"
+#import "AFHTTPRequestOperation.h"
 
 @interface OfflineSyncUnreads : NSOperation
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) AFJSONRequestOperation *request;
+@property (nonatomic) AFHTTPRequestOperation *request;
 
 - (void)storeUnreadHashes:(NSDictionary *)results;
 

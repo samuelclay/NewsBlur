@@ -9,16 +9,7 @@
     NSInteger _checkedIndex;
 }
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(userDefaultsDidChange)
-                                                     name:NSUserDefaultsDidChangeNotification
-                                                   object:[NSUserDefaults standardUserDefaults]];
-    }
-    return self;
-}
+@synthesize settingsStore = _settingsStore;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSUserDefaultsDidChangeNotification object:nil];
@@ -44,9 +35,26 @@
 
 - (id<IASKSettingsStore>)settingsStore {
     if (_settingsStore == nil) {
-        _settingsStore = [[IASKSettingsStoreUserDefaults alloc] init];
+        self.settingsStore = [[IASKSettingsStoreUserDefaults alloc] init];
     }
     return _settingsStore;
+}
+
+- (void)setSettingsStore:(id<IASKSettingsStore>)settingsStore {
+	if ([_settingsStore isKindOfClass:IASKSettingsStoreUserDefaults.class]) {
+		IASKSettingsStoreUserDefaults *udSettingsStore = (id)_settingsStore;
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:NSUserDefaultsDidChangeNotification object:udSettingsStore.defaults];
+	}
+	
+	_settingsStore = settingsStore;
+	
+	if ([settingsStore isKindOfClass:IASKSettingsStoreUserDefaults.class]) {
+		IASKSettingsStoreUserDefaults *udSettingsStore = (id)settingsStore;
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(userDefaultsDidChange)
+													 name:NSUserDefaultsDidChangeNotification
+												   object:udSettingsStore.defaults];
+	}
 }
 
 #pragma mark - selection

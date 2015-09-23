@@ -25,13 +25,13 @@
 .NB-large .NB-story,
 .NB-large .NB-story-comment,
 .NB-large .NB-header {
-    font-size: 16px;
+    font-size: 17px;
 }
 
 .NB-xl .NB-story,
 .NB-xl .NB-story-comment,
 .NB-xl .NB-header {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 /* Font name */
@@ -66,10 +66,10 @@
     line-height: 1.5em;
 }
 .NB-line-spacing-large .NB-story {
-    line-height: 1.65em;
+    line-height: 1.75em;
 }
 .NB-line-spacing-xl .NB-story {
-    line-height: 1.8em;
+    line-height: 2.0em;
 }
 
 /**
@@ -207,8 +207,7 @@
 body {
     text-rendering: optimizeLegibility;
     margin: 0;
-
-    -webkit-text-size-adjust: none; 
+    -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
     font-size: 14px;
     line-height: 120%;
     overflow: hidden;
@@ -218,6 +217,10 @@ body {
 body.NB-iphone {
     line-height: 110%;
 }
+
+/** {*/
+/*    box-sizing: border-box;*/
+/*}*/
 
 
 /* ========== */
@@ -264,7 +267,7 @@ body.NB-iphone {
     margin-top: 7px;
 }
 .NB-xl .NB-story-unread {
-    margin-top: 8px;
+    margin-top: 9px;
 }
 .NB-story-unread.NB-positive {
     background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAJCSURBVDiNfZO9a1NhFMZ/733vvWnTSoZULBkqltBiHRxKsYOLUdvFpc6COAkGEUv9KwJ1kAacRGexg6MaijgInVw6FcWAWqu1ps3n/TjHIR9NVPrAgXd4z/M85zkcw1+4v56bMYY8Sg7DJADKRwwlVdYeLpW2+v+b7mN5PedjKKiSB+zfxB3ExrCG8mB1qRT0CJbXc77CS5QFgIlTWSZSM4z4KQBqQYVyZYvy9+22quEVcG11qRQ4ACJaUGVheDTBfHaRqfQsvk0QxA2CuIFvE0ylZ5nPLjI8mkCUqyJaADD3nl86B3wA7Fw2R9I7QSwRsUaoSkfRwRoX67jUw0M2t0sAEcp51xjuqGLHT2ZwHY9acEAsIaIxinaCMjjGYh0Pz/qMj2XY+fnVNQ55V2LNAaSTGRrhIWEc9NT7CbouIvFJj2T4tvsFhZyrwqRx2hE3wipRn7pqh8CYnotIAlzrt7crTLqKghhaUZ0wDo6sd5qPFt4miSTElZBOPIELfFLR6WrrN45jB6wPQI9GaUV1VBQMZRfhjcL0fmOX1FD6/839RjBUmnsoYJQNR0SLKhpX91o0o1p7hcdUM6pR3WuhorGIFu3mi88/5q6fHgMuBK0QO9QOTZF/KpQmB79qbfuwVrzx9pkLUNsPVpIp72wUxFf2d6okRl2GRjys8VAU0YhmLaRVjbqTvK5XwpXeLQDcfDTvJ1NeAY4/JqBYr4QrT+++DwYIurj95OKMY01elcvAGZQAKBuHDYl17fGtdwPn/AezNkQDSAjjKwAAAABJRU5ErkJggg==") no-repeat center center;
@@ -494,6 +497,9 @@ div + p {
 .NB-story div {
     max-width: 100% !important;
 }
+.NB-story figure {
+    margin: 0;
+}
 .NB-story img {
     margin: 20px auto;
     height: auto !important;
@@ -594,8 +600,8 @@ del {
     clear: both !important;
     max-width: none !important;
 }
-.NB-feed-story-comments:last-child {
-    border-bottom: 1px solid #EAECE8;   
+.NB-story-comments-group:last-child {
+    border-bottom: 1px solid #EAECE8;
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -622,7 +628,7 @@ del {
 }
 #story_pane .NB-story-comment-reply .NB-show-profile {
     float: left;
-    left: -42px;
+    left: -34px;
 }
 .NB-story-comment:last-child {
             border-bottom: 1px solid #A6A6A6;
@@ -879,29 +885,31 @@ a.NB-show-profile {
     height: 36px;
     width: 36px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar {
     left: 12px;
     top: 14px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare {
+    left: 18px;
     top: 10px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar img {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar img,
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
     height: 24px;
     width: 24px;
     margin-left: 6px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-share-profile .NB-user-avatar img {
+#story_pane .NB-story-comment-friend-shares .NB-story-share-profile .NB-user-avatar img {
     margin-left: 0;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
+#story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
     margin-left: 0;
     margin-top: 12px;
 }
 #story_pane .NB-story-comment .NB-story-comment-author-container {
     padding: 8px 0 0;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-comment-author-container {
+#story_pane .NB-story-comment-friend-shares .NB-story-comment-author-container {
     padding-top: 10px;
 }
 #story_pane .NB-story-comment .NB-story-comment-reshares {
@@ -972,7 +980,7 @@ a.NB-show-profile {
     margin: 3px 0 6px;
     line-height: 12px;
 }
-#story_pane .NB-story-comment-friend-shares .NB-story-comment .NB-story-comment-location {
+#story_pane .NB-story-comment-friend-shares .NB-story-comment-location {
     margin-top: 0;
 }
 #story_pane .NB-story-comment .NB-button-wrapper {
@@ -991,16 +999,15 @@ a.NB-show-profile {
 
 #story_pane .NB-story-comment-reply {
     border-top: 1px solid #EAECE8;
-    padding: 4px 0;
     overflow: hidden;
     clear: both;
     position: relative;
-    padding: 8px 0 4px 42px;
+    padding: 8px 0 4px 34px;
     line-height: 18px;
 }
 #story_pane .NB-story-comment-reply .NB-story-comment-reply-photo {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border-radius: 3px;
     position: absolute;
     left: 0px;
@@ -1047,7 +1054,6 @@ a.NB-show-profile {
 #story_pane .NB-story-comments-friends-header-wrapper,
 #story_pane .NB-story-comments-friend-shares-header-wrapper {
     clear: both;
-    padding: 1px 0;
 }
 #story_pane .NB-story-comments-shares-teaser-wrapper {
     border-top: 0;
@@ -1063,7 +1069,6 @@ a.NB-show-profile {
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 2px 12px;
     overflow: hidden;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F6F2), to(#E5E6E0));
     padding: 6px 12px 6px;

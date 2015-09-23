@@ -16,9 +16,9 @@ import sys
 import re
 
 try:
-    import dop.client
+    import digitalocean
 except ImportError:
-    print "Digital Ocean's API not loaded"
+    print "Digital Ocean's API not loaded. Install python-digitalocean."
 
 
 django.settings_module('settings')
@@ -60,8 +60,8 @@ except:
     }
 
 def do_roledefs(split=False):
-    doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
-    droplets = doapi.show_active_droplets()
+    doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
+    droplets = doapi.get_all_droplets()
     hostnames = {}
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
@@ -82,26 +82,21 @@ def list_do():
     droplets = do(split=True)
     pprint(droplets)
     
-    doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
-    droplets = doapi.show_active_droplets()
-    sizes = doapi.sizes()
-    sizes = dict((size.id, re.split(r"([^0-9]+)", size.name)[0]) for size in sizes)
+    doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
+    droplets = doapi.get_all_droplets()
+    sizes = doapi.get_all_sizes()
+    sizes = dict((size.slug, size.price_monthly) for size in sizes)
     role_costs = defaultdict(int)
     total_cost = 0
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
-        size = int(sizes.get(droplet.size_id, 96))
-        if size == 512:
-            size = .5
-        cost = int(size * 10)
+        cost = droplet.size['price_monthly']
         role_costs[roledef] += cost
         total_cost += cost
     
     print "\n\n Costs:"
     pprint(dict(role_costs))
     print " ---> Total cost: $%s/month" % total_cost
-        
-    
     
 def host(*names):
     env.hosts = []
@@ -1165,13 +1160,15 @@ def copy_spam():
 
 def setup_do(name, size=2, image=None):
     if int(size) == 512:
-        INSTANCE_SIZE = "512MB"
+        INSTANCE_SIZE = "512mb"
     else:
-        INSTANCE_SIZE = "%sGB" % size
-    doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
-    sizes = dict((s.name, s.id) for s in doapi.sizes())
+        INSTANCE_SIZE = "%sgb" % size
+    doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
+    droplets = doapi.get_all_droplets()
+    sizes = dict((s.slug, s.slug) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
-    ssh_key_ids = [str(k.id) for k in doapi.all_ssh_keys()]
+    ssh_key_ids = [str(k.id) for k in doapi.get_ssh_keys()]
+    # Sorry but this needs to be rewritten for new digitalocean API.
     region_id = doapi.regions()[0].id
     if not image:
         IMAGE_NAME = "14.04 x64"

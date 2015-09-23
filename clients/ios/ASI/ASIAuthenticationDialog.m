@@ -41,7 +41,7 @@ static const NSUInteger kDomainSection = 1;
 - (void)orientationChanged:(NSNotification *)notification;
 - (void)cancelAuthenticationFromDialog:(id)sender;
 - (void)loginWithCredentialsFromDialog:(id)sender;
-@property (retain) UITableView *tableView;
+@property (atomic, retain) UITableView *tableView;
 @end
 
 @implementation ASIAuthenticationDialog
@@ -193,7 +193,7 @@ static const NSUInteger kDomainSection = 1;
 - (UITextField *)textFieldInRow:(NSUInteger)row section:(NSUInteger)section
 {
 	return [[[[[self tableView] cellForRowAtIndexPath:
-			   [NSIndexPath indexPathForRow:row inSection:section]]
+			   [NSIndexPath indexPathForRow:(NSInteger)row inSection:(NSInteger)section]]
 			  contentView] subviews] objectAtIndex:0];
 }
 
@@ -216,10 +216,24 @@ static const NSUInteger kDomainSection = 1;
 
 + (void)dismiss
 {
-	[[sharedDialog parentViewController] dismissViewControllerAnimated:YES completion:nil];
+    UIViewController* dismisser = nil;
+    if ([sharedDialog respondsToSelector:@selector(presentingViewController)]){
+        dismisser = [sharedDialog presentingViewController];
+    }else{
+        dismisser = [sharedDialog parentViewController];
+    }
+    if([dismisser respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]){
+        [dismisser dismissViewControllerAnimated:YES completion:nil];
+    }else{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [dismisser dismissModalViewControllerAnimated:YES];
+#pragma clang diagnostic pop
+    }
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
+- (void)viewDidDisappear:(BOOL)animated
+{
     [super viewDidDisappear:animated];
 	[self retain];
 	[sharedDialog release];
@@ -233,7 +247,20 @@ static const NSUInteger kDomainSection = 1;
 	if (self == sharedDialog) {
 		[[self class] dismiss];
 	} else {
-		[[self parentViewController] dismissViewControllerAnimated:YES completion:nil];
+        UIViewController* dismisser = nil;
+		if ([self respondsToSelector:@selector(presentingViewController)]){
+            dismisser = [self presentingViewController];
+        }else{
+            dismisser = [self parentViewController];
+        }
+        if([dismisser respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]){
+            [dismisser dismissViewControllerAnimated:YES completion:nil];
+        }else{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            [dismisser dismissModalViewControllerAnimated:YES];
+#pragma clang diagnostic pop
+        }
 	}
 }
 
@@ -309,7 +336,14 @@ static const NSUInteger kDomainSection = 1;
 	}
 #endif
 
-	[[self presentingController] dismissViewControllerAnimated:self completion:nil];
+    if([[self presentingController] respondsToSelector:@selector(presentViewController:animated:completion:)]){
+        [[self presentingController] presentViewController:self animated:YES completion:nil];
+    }else{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[self presentingController] presentModalViewController:self animated:YES];
+#pragma clang diagnostic pop
+    }
 }
 
 #pragma mark button callbacks
@@ -438,8 +472,8 @@ static const NSUInteger kDomainSection = 1;
 	[textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 
-	NSUInteger s = [indexPath section];
-	NSUInteger r = [indexPath row];
+	NSInteger s = [indexPath section];
+	NSInteger r = [indexPath row];
 
 	if (s == kUsernameSection && r == kUsernameRow) {
 		[textField setPlaceholder:@"User"];

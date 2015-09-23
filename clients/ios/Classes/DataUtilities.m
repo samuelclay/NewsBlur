@@ -61,10 +61,24 @@
         }
     }
     
+    BOOL foundShare = NO;
+    NSArray *friendShares = [appDelegate.activeStory objectForKey:@"friend_shares"];
+    NSMutableArray *newFriendsShares = [[NSMutableArray alloc] init];
+    for (int i = 0; i < friendShares.count; i++) {
+        NSString *userId = [NSString stringWithFormat:@"%@",
+                            [[friendShares objectAtIndex:i] objectForKey:@"user_id"]];
+        if([userId isEqualToString:commentUserId]){
+            [newFriendsShares addObject:comment];
+            foundShare = YES;
+        } else {
+            [newFriendsShares addObject:[friendShares objectAtIndex:i]];
+        }
+    }
+    
     // make mutable copy
     NSMutableDictionary *newActiveStory = [appDelegate.activeStory mutableCopy];
     
-    if (!foundComment) {
+    if (!foundComment && !foundShare) {
         NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
         NSMutableArray *newPublicComments = [[NSMutableArray alloc] init];
         for (int i = 0; i < publicComments.count; i++) {
@@ -78,8 +92,10 @@
         }
         
         [newActiveStory setValue:[NSArray arrayWithArray:newPublicComments] forKey:@"public_comments"];
-    } else {
+    } else if (foundComment) {
         [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
+    } else if (foundShare) {
+        [newActiveStory setValue:[NSArray arrayWithArray:newFriendsShares] forKey:@"friend_shares"];
     }
     
     NSDictionary *newStory = [NSDictionary dictionaryWithDictionary:newActiveStory];

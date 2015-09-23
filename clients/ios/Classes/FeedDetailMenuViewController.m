@@ -77,18 +77,6 @@
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (BOOL)automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers {
-    return YES;
-}
-
-- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
-    return YES;
-}
-
 - (void)buildMenuOptions {
     BOOL everything = appDelegate.storiesCollection.isRiverView &&
                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];

@@ -88,21 +88,21 @@
 @property (assign, nonatomic, setter=setUploadProgressDelegate:) id uploadProgressDelegate;
 @property (assign, nonatomic, setter=setDownloadProgressDelegate:) id downloadProgressDelegate;
 
-@property (assign) SEL requestDidStartSelector;
-@property (assign) SEL requestDidReceiveResponseHeadersSelector;
-@property (assign) SEL requestWillRedirectSelector;
-@property (assign) SEL requestDidFinishSelector;
-@property (assign) SEL requestDidFailSelector;
-@property (assign) SEL queueDidFinishSelector;
-@property (assign) BOOL shouldCancelAllRequestsOnFailure;
-@property (assign) id delegate;
-@property (assign) BOOL showAccurateProgress;
-@property (assign, readonly) int requestsCount;
-@property (retain) NSDictionary *userInfo;
+@property (assign, atomic) SEL requestDidStartSelector;
+@property (assign, atomic) SEL requestDidReceiveResponseHeadersSelector;
+@property (assign, atomic) SEL requestWillRedirectSelector;
+@property (assign, atomic) SEL requestDidFinishSelector;
+@property (assign, atomic) SEL requestDidFailSelector;
+@property (assign, atomic) SEL queueDidFinishSelector;
+@property (assign, atomic) BOOL shouldCancelAllRequestsOnFailure;
+@property (assign, atomic) id delegate;
+@property (assign, atomic) BOOL showAccurateProgress;
+@property (assign, atomic, readonly) int requestsCount;
+@property (retain, atomic) NSDictionary *userInfo;
 
-@property (assign) unsigned long long bytesUploadedSoFar;
-@property (assign) unsigned long long totalBytesToUpload;
-@property (assign) unsigned long long bytesDownloadedSoFar;
-@property (assign) unsigned long long totalBytesToDownload;
+@property (assign, atomic) unsigned long long bytesUploadedSoFar;
+@property (assign, atomic) unsigned long long totalBytesToUpload;
+@property (assign, atomic) unsigned long long bytesDownloadedSoFar;
+@property (assign, atomic) unsigned long long totalBytesToDownload;
 
 @end

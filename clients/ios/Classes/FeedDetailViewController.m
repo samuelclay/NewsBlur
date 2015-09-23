@@ -18,7 +18,8 @@
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
-#import "JSON.h"
+#import "SBJson4.h"
+#import "NSObject+SBJSON.h"
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "WYPopoverController.h"
@@ -30,7 +31,7 @@
 #import "NBBarButtonItem.h"
 #import "UIImage+Resize.h"
 #import "TMCache.h"
-#import "AFImageRequestOperation.h"
+#import "AFHTTPRequestOperation.h"
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
 
@@ -251,21 +252,17 @@
     [self.storyTitlesTable reloadData];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation 
-                                         duration:(NSTimeInterval)duration {
-    [self setUserAvatarLayout:toInterfaceOrientation];
-    [self.notifier setNeedsLayout];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self checkScroll];
-    NSLog(@"Feed detail did re-orient.");
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        [self setUserAvatarLayout:orientation];
+        [self.notifier setNeedsLayout];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        [self checkScroll];
+        NSLog(@"Feed detail did re-orient.");
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -541,12 +538,13 @@
                                             requestWithURL:[NSURL URLWithString:storyImageUrl]];
             [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
             [request setTimeoutInterval:5.0];
-            AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc]
-                                                         initWithRequest:request];
+            AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc]
+                                                        initWithRequest:request];
+            [requestOperation setResponseSerializer:[AFImageResponseSerializer serializer]];
             [requestOperation start];
             [requestOperation waitUntilFinished];
             
-            UIImage *image = requestOperation.responseImage;
+            UIImage *image = (UIImage *)requestOperation.responseObject;
             
             if (!image || image.size.height < 50 || image.size.width < 50) {
                 [appDelegate.cachedStoryImages setObject:[NSNull null]
@@ -567,7 +565,7 @@
             }
         }
     }];
-    [cacheImagesOperation setThreadPriority:0];
+    [cacheImagesOperation setQualityOfService:NSQualityOfServiceBackground];
     [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
     [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
 }
@@ -871,7 +869,9 @@
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
                             NEWSBLUR_URL,
-                            [storiesCollection.activeFolderFeeds componentsJoinedByString:@"&f="],
+                            [[storiesCollection.activeFolderFeeds
+                              subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
+                             componentsJoinedByString:@"&f="],
                             storiesCollection.feedPage];
     }
     
@@ -1534,9 +1534,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
         }
     }
     return fontDescriptor;

@@ -59,7 +59,7 @@
         return NO;
     }
 
-    if (![appDelegate isReachabileForOffline]) {
+    if (![appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];

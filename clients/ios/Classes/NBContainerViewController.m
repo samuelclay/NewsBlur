@@ -144,7 +144,7 @@
     UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
     self.shareNavigationController = shareNav;
     self.shareNavigationController.navigationBar.translucent = NO;
-    
+
     UINavigationController *originalNav = [[UINavigationController alloc]
                                            initWithRootViewController:originalViewController];
     self.originalNavigationController = originalNav;
@@ -193,42 +193,38 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    self.rotatingToOrientation = toInterfaceOrientation;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    self.rotatingToOrientation = UIDeviceOrientationUnknown;
-//    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
-    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation) && !self.storyTitlesOnLeft) {
-        leftBorder.hidden = YES;
-    } else {
-        leftBorder.hidden = NO;
-    }
-    
-    if (!self.feedDetailIsVisible) {
-        [self layoutDashboardScreen];
-    } else if (!self.originalViewIsVisible) {
-        [self layoutFeedDetailScreen];
-    }
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-//    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
-
-    if (!self.feedDetailIsVisible) {
-        [self layoutDashboardScreen];
-    } else if (!self.originalViewIsVisible) {
-        [self layoutFeedDetailScreen];
-    }
-    if (self.feedDetailIsVisible) {
-        [self.storyPageControl reorientPages:fromInterfaceOrientation];
-    }
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        self.rotatingToOrientation = orientation;
+        //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
+        
+        if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+            leftBorder.hidden = YES;
+        } else {
+            leftBorder.hidden = NO;
+        }
+        
+        if (!self.feedDetailIsVisible) {
+            [self layoutDashboardScreen];
+        } else if (!self.originalViewIsVisible) {
+            [self layoutFeedDetailScreen];
+        }
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
+        
+        if (!self.feedDetailIsVisible) {
+            [self layoutDashboardScreen];
+        } else if (!self.originalViewIsVisible) {
+            [self layoutFeedDetailScreen];
+        }
+        if (self.feedDetailIsVisible) {
+            [self.storyPageControl reorientPages];
+        }
+    }];
 }
 
 - (NSInteger)masterWidth {
@@ -723,14 +719,11 @@
 
 - (void)transitionToOriginalView:(BOOL)resetLayout {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (UIInterfaceOrientationIsPortrait(orientation)) {
-        
-    }
-
     CGRect vb = [self.view bounds];
     
     self.originalViewIsVisible = YES;
-    
+    self.originalViewController = appDelegate.originalStoryViewController;
+
     if (resetLayout) {
         [self addChildViewController:self.originalNavigationController];
         [self.originalNavigationController.view setHidden:NO];

@@ -8,7 +8,8 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "StoriesCollection.h"
-#import "JSON.h"
+#import "SBJson4.h"
+#import "NSObject+SBJSON.h"
 #import "FMDatabase.h"
 #import "Utilities.h"
 

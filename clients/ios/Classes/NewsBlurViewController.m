@@ -21,10 +21,12 @@
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
+#import "AFHTTPRequestOperation.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
-#import "JSON.h"
+#import "SBJson4.h"
+#import "NSObject+SBJSON.h"
 #import "NBNotifier.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+Image.h"
@@ -88,6 +90,7 @@ static UIFont *userLabelFont;
 @synthesize notifier;
 @synthesize isOffline;
 @synthesize interactiveFeedDetailTransition;
+@synthesize avatarImageView;
 
 #pragma mark -
 #pragma mark Globals
@@ -159,8 +162,6 @@ static UIFont *userLabelFont;
     UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
     self.feedTitlesTable.backgroundColor = bgColor;
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
-    
-    [self layoutHeaderCounts:nil];
     
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
@@ -319,19 +320,16 @@ static UIFont *userLabelFont;
     [super viewWillDisappear:animated];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return YES;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                         duration:(NSTimeInterval)duration {
-    [self layoutForInterfaceOrientation:toInterfaceOrientation];
-    [self.notifier setNeedsLayout];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self.feedTitlesTable reloadData];
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        [self layoutForInterfaceOrientation:orientation];
+        [self.notifier setNeedsLayout];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        [self.feedTitlesTable reloadData];
+    }];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -376,7 +374,7 @@ static UIFont *userLabelFont;
 
 -(void)fetchFeedList:(BOOL)showLoader {
     NSURL *urlFeedList;
-    
+    NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
     
     if (self.inPullToRefresh_) {
@@ -426,6 +424,7 @@ static UIFont *userLabelFont;
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
+        NSLog(@"Showing login");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] >= 400) {
         [pull finishedLoading];
@@ -676,14 +675,17 @@ static UIFont *userLabelFont;
     }
     
     // test for latest version of app
-    NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
-    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-    
-    float serveriPhoneVersionFloat = [serveriPhoneVersion floatValue];
-    float currentiPhoneVersionFloat = [currentiPhoneVersion floatValue];
+    NSString *serveriPhoneBuild = [results objectForKey:@"latest_ios_build"];
+    NSString *currentiPhoneBuild = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
+    NSString *serveriPhoneVersion = [results objectForKey:@"latest_ios_version"];
+    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    BOOL unseenBuild = [serveriPhoneBuild integerValue] > [userPreferences integerForKey:@"last_seen_latest_ios_build"];
 
-    if (currentiPhoneVersionFloat < serveriPhoneVersionFloat) {
-        NSLog(@"Version: %f - %f", serveriPhoneVersionFloat, currentiPhoneVersionFloat);
+    if ([currentiPhoneBuild integerValue] < [serveriPhoneBuild integerValue] && unseenBuild) {
+        NSLog(@"Build: %ld - %@ (seen: %ld)", (long)[serveriPhoneBuild integerValue], currentiPhoneBuild, (long)[userPreferences integerForKey:@"last_seen_latest_ios_build"]);
+        [userPreferences setInteger:[serveriPhoneBuild integerValue] forKey:@"last_seen_latest_ios_build"];
+        [userPreferences synchronize];
+        
         NSString *title = [NSString stringWithFormat:@
                            "You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", 
                            serveriPhoneVersion, 
@@ -735,7 +737,7 @@ static UIFont *userLabelFont;
 - (void)loadOfflineFeeds:(BOOL)failed {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
-//    NSLog(@"loadOfflineFeeds: %d", failed);
+    NSLog(@"Loading offline feeds: %d", failed);
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if (!appDelegate.activeUsername) {
         appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
@@ -860,7 +862,7 @@ static UIFont *userLabelFont;
             return;
         } else {
             //  this doesn't work in simulator!!! because simulator has no app store
-            NSURL *url = [NSURL URLWithString:@"http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=463981119&mt=8"];
+            NSURL *url = [NSURL URLWithString:@"itms://itunes.apple.com/us/app/mensa-essen/id463981119?ls=1&mt=8"];
             [[UIApplication sharedApplication] openURL:url];
         }
     }
@@ -1735,6 +1737,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
+        NSLog(@"Showing login after refresh");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] == 503) {
         [pull finishedLoading];
@@ -1868,17 +1871,23 @@ heightForHeaderInSection:(NSInteger)section {
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
-    
-    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
-    [avatarRequest setHTTPShouldHandleCookies:NO];
-    [avatarRequest setHTTPShouldUsePipelining:YES];
-    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
+
+    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
+    [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    [avatarRequest setTimeoutInterval:30.0];
+    avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
     CGSize avatarSize = avatarImageView.frame.size;
+    typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        typeof(weakSelf) __strong strongSelf = weakSelf;
         image = [Utilities imageWithImage:image convertToSize:CGSizeMake(avatarSize.width*2, avatarSize.height*2)];
         image = [Utilities roundCorneredImage:image radius:6];
-        [(UIButton *)userAvatarButton.customView setImage:image forState:UIControlStateNormal];
-    } failure:nil];
+        [(UIButton *)strongSelf.userAvatarButton.customView setImage:image forState:UIControlStateNormal];
+    } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
+        NSLog(@"Could not fetch user avatar: %@", error);
+    }];
+    
+    
     //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
     
     //    [userInfoView addSubview:userAvatarButton];

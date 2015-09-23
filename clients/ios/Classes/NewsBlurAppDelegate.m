@@ -25,7 +25,7 @@
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
-#import "AFJSONRequestOperation.h"
+#import "AFHTTPRequestOperation.h"
 #import "ASINetworkQueue.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
@@ -35,6 +35,7 @@
 #import "FirstTimeUserAddNewsBlurViewController.h"
 #import "TUSafariActivity.h"
 #import "ARChromeActivity.h"
+#import "NBCopyLinkActivity.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
@@ -43,7 +44,8 @@
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
 #import "FMDatabaseAdditions.h"
-#import "JSON.h"
+#import "SBJson4.h"
+#import "NSObject+SBJSON.h"
 #import "IASKAppSettingsViewController.h"
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
@@ -56,11 +58,13 @@
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 33
+#define CURRENT_DB_VERSION 35
 
 @synthesize window;
 
@@ -170,6 +174,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+//    [Fabric with:@[[Crashlytics class]]];
+
     [self registerDefaultsFromSettingsBundle];
     
     self.navigationController.delegate = self;
@@ -181,7 +187,6 @@
                                                    currentiPhoneVersion]];
         [window addSubview:self.masterContainerViewController.view];
         self.window.rootViewController = self.masterContainerViewController;
-        [self.masterContainerViewController didRotateFromInterfaceOrientation:nil];
     } else {
         [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPhone App v%@",
                                                    currentiPhoneVersion]];
@@ -202,8 +207,8 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
-        [self.feedsViewController loadOfflineFeeds:NO];
-//        [self setupReachability];
+        [feedsViewController loadOfflineFeeds:NO];
+        [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
@@ -293,22 +298,25 @@
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
                                                object:nil];
-//    reach.reachableBlock = ^(Reachability *reach) {
-//        NSLog(@"Reachable: %@", reach);
-//    };
-//    reach.unreachableBlock = ^(Reachability *reach) {
-//        NSLog(@"Un-Reachable: %@", reach);
-//    };
+    reach.reachableBlock = ^(Reachability *reach) {
+        NSLog(@"Reachable: %@", reach);
+    };
+    reach.unreachableBlock = ^(Reachability *reach) {
+        NSLog(@"Un-Reachable: %@", reach);
+        [feedsViewController loadOfflineFeeds:NO];
+    };
     [reach startNotifier];
 }
 
 - (void)reachabilityChanged:(id)something {
-//    NSLog(@"Reachability changed: %@", something);
-    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+    NSLog(@"Reachability changed: %@", something);
+//    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
 
-    if (reach.isReachable && feedsViewController.isOffline) {
-        [feedsViewController fetchFeedList:NO];
-    }
+//    if (reach.isReachable && feedsViewController.isOffline) {
+//        [feedsViewController loadOfflineFeeds:NO];
+////    } else {
+////        [feedsViewController loadOfflineFeeds:NO];
+//    }
 }
 
 #pragma mark -
@@ -486,29 +494,27 @@
     
     // iOS 8+
     NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-//        if (title) [activityItems addObject:title];
+    if (title) [activityItems addObject:title];
     if (url) [activityItems addObject:url];
-    NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
-    if (text) text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
-//    if (images) [activityItems addObject:images];
+    if (text) {
+        NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
+        text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
+        [activityItems addObject:text];
+    }
+
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
-    [activityItems addObject:[[NBActivityItemProvider alloc] initWithUrl:(NSURL *)url
-                                                          authorName:(NSString *)authorName
-                                                                text:(NSString *)text
-                                                               title:(NSString *)title
-                                                           feedTitle:(NSString *)feedTitle
-                                                              images:(NSArray *)images]];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
     if (url) [appActivities addObject:[[ARChromeActivity alloc]
                                        initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
+    if (url) [appActivities addObject:[[NBCopyLinkActivity alloc] init]];
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
                                                         initWithActivityItems:activityItems
                                                         applicationActivities:appActivities];
     [activityViewController setTitle:title];
-    void (^completion)(NSString *, BOOL) = ^void(NSString *activityType, BOOL completed){
+    [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
         self.isPresentingActivities = NO;
-
+        
         NSString *_completedString;
         NSLog(@"activityType: %@", activityType);
         if (!activityType) return;
@@ -531,6 +537,8 @@
             return;
         } else if ([activityType isEqualToString:@"ARChromeActivity"]) {
             return;
+        } else if ([activityType isEqualToString:@"NBCopyLinkActivity"]) {
+            _completedString = @"Copied";
         } else {
             _completedString = @"Saved";
         }
@@ -543,8 +551,7 @@
             storyHUD.labelText = _completedString;
             [storyHUD hide:YES afterDelay:1];
         }
-    };
-    [activityViewController setCompletionHandler:completion];
+    }];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
@@ -573,7 +580,7 @@
             //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
     } else {
-        [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
+        [self.navigationController presentViewController:activityViewController animated:YES completion:^{}];
     }
     self.isPresentingActivities = YES;
 }
@@ -645,7 +652,9 @@
         [self.masterContainerViewController presentViewController:loginViewController animated:NO completion:nil];
     } else {
         [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
-        [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
+        if (navigationController.isViewLoaded && navigationController.view.window) {
+            [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
+        }
     }
 }
 
@@ -799,7 +808,7 @@
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
                                           initWithTitle: @"All"
-                                          style: UIBarButtonItemStyleBordered
+                                          style: UIBarButtonItemStylePlain
                                           target: nil
                                           action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
@@ -1103,7 +1112,7 @@
     
     if (feedDetailView == feedDetailViewController) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
-                                                                          style: UIBarButtonItemStyleBordered
+                                                                          style: UIBarButtonItemStylePlain
                                                                          target: nil
                                                                          action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
@@ -1305,7 +1314,16 @@
                    
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
+    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
+        SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
+                                                             entersReaderIfAvailable:NO];
+        safari.delegate = self;
+        [navigationController pushViewController:safari animated:YES];
     } else {
+        if (!originalStoryViewController) {
+            originalStoryViewController = [[OriginalStoryViewController alloc] init];
+        }
+        
         self.activeOriginalStoryURL = url;
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -1323,6 +1341,17 @@
     }
 }
 
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    [navigationController popViewControllerAnimated:YES];
+}
+
+- (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if ([viewController isKindOfClass:[SFSafariViewController class]]) {
+        [_navigationController setNavigationBarHidden:YES animated:YES];
+    } else {
+        [_navigationController setNavigationBarHidden:NO animated:YES];
+    }
+}
 - (void)closeOriginalStory {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromOriginalView];
@@ -1997,25 +2026,30 @@
     UIGraphicsPopContext();
 }
 
-+ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
++ (UIColor *)faviconColor:(NSString *)colorString {
+    if ([colorString class] == [NSNull class]) {
+        colorString = @"505050";
+    }
+    unsigned int color = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:colorString];
+    [scanner scanHexInt:&color];
+
+    return UIColorFromRGB(color);
+}
+
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor {
     UIView *gradientView = [[UIView alloc] initWithFrame:rect];
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
     gradient.opacity = 0.7;
-    unsigned int color = 0;
-    unsigned int colorFade = 0;
     if ([start class] == [NSNull class]) {
         start = @"505050";
     }
     if ([end class] == [NSNull class]) {
         end = @"303030";
     }
-    NSScanner *scanner = [NSScanner scannerWithString:start];
-    [scanner scanHexInt:&color];
-    NSScanner *scannerFade = [NSScanner scannerWithString:end];
-    [scannerFade scanHexInt:&colorFade];
-    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
+    gradient.colors = [NSArray arrayWithObjects:(id)[[self faviconColor:start] CGColor], (id)[[self faviconColor:end] CGColor], nil];
     
     CALayer *whiteBackground = [CALayer layer];
     whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
@@ -2026,13 +2060,13 @@
     
     CALayer *topBorder = [CALayer layer];
     topBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
-    topBorder.backgroundColor = [UIColorFromRGB(colorFade) colorWithAlphaComponent:0.7].CGColor;
+    topBorder.backgroundColor = [[self faviconColor:borderColor] colorWithAlphaComponent:0.7].CGColor;
     topBorder.opacity = 1;
     [gradientView.layer addSublayer:topBorder];
     
     CALayer *bottomBorder = [CALayer layer];
     bottomBorder.frame = CGRectMake(0, rect.size.height-1, rect.size.width, 1);
-    bottomBorder.backgroundColor = [UIColorFromRGB(colorFade) colorWithAlphaComponent:0.7].CGColor;
+    bottomBorder.backgroundColor = [[self faviconColor:borderColor] colorWithAlphaComponent:0.7].CGColor;
     bottomBorder.opacity = 1;
     [gradientView.layer addSublayer:bottomBorder];
     
@@ -2049,8 +2083,9 @@
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_fade"] 
-                        endColor:[feed objectForKey:@"favicon_color"]];
-        
+                        endColor:[feed objectForKey:@"favicon_color"]
+                        borderColor:[feed objectForKey:@"favicon_border"]];
+
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.text = [feed objectForKey:@"feed_title"];
         titleLabel.backgroundColor = [UIColor clearColor];
@@ -2060,14 +2095,15 @@
         titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
-            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] 
-                                    isEqualToString:@"white"] ?
+            BOOL lightText = [[feed objectForKey:@"favicon_text_color"]
+                              isEqualToString:@"white"];
+            UIColor *fadeColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_fade"]];
+            UIColor *borderColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_border"]];
+
+            titleLabel.textColor = lightText ?
             [UIColor whiteColor] :
             [UIColor blackColor];            
-            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] 
-                                      isEqualToString:@"white"] ?
-            UIColorFromRGB(0x202020) :
-            UIColorFromRGB(0xd0d0d0);
+            titleLabel.shadowColor = lightText ? borderColor : fadeColor;
         } else {
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
@@ -2086,8 +2122,9 @@
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:CGRectMake(0, -1, rect.size.width, 10)
                         // hard coding the 1024 as a hack for window.frame.size.width
-                        startColor:[feed objectForKey:@"favicon_fade"] 
-                        endColor:[feed objectForKey:@"favicon_color"]];
+                        startColor:[feed objectForKey:@"favicon_fade"]
+                        endColor:[feed objectForKey:@"favicon_color"]
+                        borderColor:[feed objectForKey:@"favicon_border"]];
     }
     
     gradientView.opaque = YES;
@@ -2416,6 +2453,14 @@
 #pragma mark -
 #pragma mark Storing Stories for Offline
 
+// Returns the URL to the application's Documents directory.
+- (NSURL *)applicationDocumentsDirectory
+{
+    NSLog(@" ---> DB dir: %@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory  inDomains:NSUserDomainMask] lastObject]);
+    
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db {
     int version = 0;
     FMResultSet *resultSet = [db executeQuery:@"PRAGMA user_version"];
@@ -2454,9 +2499,11 @@
     NSString *dbPath = [cachePaths objectAtIndex:0];
     NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_HOST];
     NSString *path = [dbPath stringByAppendingPathComponent:dbName];
+    [self applicationDocumentsDirectory];
     
     database = [FMDatabaseQueue databaseQueueWithPath:path];
     [database inDatabase:^(FMDatabase *db) {
+//        db.traceExecution = YES;
         [self setupDatabase:db];
     }];
 }
@@ -2510,11 +2557,25 @@
                                   " story_hash varchar(24),"
                                   " story_timestamp number,"
                                   " story_json text,"
+                                  " scroll number,"
                                   " UNIQUE(story_hash) ON CONFLICT REPLACE"
                                   ")"];
     [db executeUpdate:createStoryTable];
     NSString *indexStoriesFeed = @"CREATE INDEX IF NOT EXISTS stories_story_feed_id ON stories (story_feed_id)";
     [db executeUpdate:indexStoriesFeed];
+    
+    
+    NSString *createStoryScrollsTable = [NSString stringWithFormat:@"create table if not exists story_scrolls "
+                                  "("
+                                  " story_feed_id varchar(20),"
+                                  " story_hash varchar(24),"
+                                  " story_timestamp number,"
+                                  " scroll number,"
+                                  " UNIQUE(story_hash) ON CONFLICT REPLACE"
+                                  ")"];
+    [db executeUpdate:createStoryScrollsTable];
+    NSString *indexStoriesHash = @"CREATE INDEX IF NOT EXISTS story_scrolls_story_hash ON story_scrolls (story_hash)";
+    [db executeUpdate:indexStoriesHash];
     
     NSString *createUnreadHashTable = [NSString stringWithFormat:@"create table if not exists unread_hashes "
                                        "("
@@ -2623,7 +2684,7 @@
     [offlineQueue addOperation:operationFetchImages];
 }
 
-- (BOOL)isReachabileForOffline {
+- (BOOL)isReachableForOffline {
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     NetworkStatus remoteHostStatus = [reachability currentReachabilityStatus];
     
@@ -2653,6 +2714,22 @@
                  [user JSONRepresentation]
                  ];
             }
+        }];
+    });
+}
+
+- (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story {
+    if (position < 0) return;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inDatabase:^(FMDatabase *db) {
+//            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
+            [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
+             [story objectForKey:@"story_feed_id"],
+             [story objectForKey:@"story_hash"],
+             [story objectForKey:@"story_timestamp"],
+             [NSNumber numberWithInteger:position]];
         }];
     });
 }

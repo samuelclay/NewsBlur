@@ -28,11 +28,11 @@
 }
 
 - (void)sendEvent:(UIEvent *)event {
-    NSSet *touches = [event touchesForWindow:self];
-    
     [super sendEvent:event];    // Call super to make sure the event is processed as usual
     
     if (!tapDetectingView) return;
+
+    NSSet *touches = [event touchesForWindow:self];
     
     if ([touches count] == 1) { // We're only interested in one-finger events
         UITouch *touch = [touches anyObject];

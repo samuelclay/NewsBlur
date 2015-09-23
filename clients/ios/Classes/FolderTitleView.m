@@ -267,9 +267,9 @@
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
             fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:12.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:14.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:15.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:16.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:17.0f];
         }
     }
     

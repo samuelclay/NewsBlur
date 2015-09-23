@@ -57,6 +57,7 @@
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIView *bottomSize;
+@property (nonatomic) IBOutlet NSLayoutConstraint *bottomSizeHeightConstraint;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
@@ -87,7 +88,7 @@
 - (void)resetPages;
 - (void)hidePages;
 - (void)refreshPages;
-- (void)reorientPages:(UIInterfaceOrientation)fromOrientation;
+- (void)reorientPages;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;

@@ -11,8 +11,9 @@
 #import "NewsBlurViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
-#import "AFJSONRequestOperation.h"
-#import "JSON.h"
+#import "AFHTTPRequestOperation.h"
+#import "SBJson4.h"
+#import "NSObject+SBJSON.h"
 
 @implementation OfflineFetchStories
 
@@ -37,7 +38,7 @@
     BOOL offlineAllowed = [[[NSUserDefaults standardUserDefaults]
                             objectForKey:@"offline_allowed"] boolValue];
     if (!offlineAllowed ||
-        ![appDelegate isReachabileForOffline]) {
+        ![appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
@@ -71,20 +72,20 @@
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?include_hidden=true&page=0&h=%@",
                                        NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
     if (request) request = nil;
-    request = [AFJSONRequestOperation
-               JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
-               success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                   __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-                   if (!strongSelf) return;
-                   [strongSelf storeAllUnreadStories:JSON withHashes:hashes];
-                   
-                   [lock signal];
-               } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                   NSLog(@"Failed fetch all unreads.");
-                   [lock signal];
-               }];
-    request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
-                                                             (unsigned long)NULL);
+
+    request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];
+    [request setResponseSerializer:[AFJSONResponseSerializer serializer]];
+    [request setCompletionBlockWithSuccess:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf storeAllUnreadStories:responseObject withHashes:hashes];
+        [lock signal];
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        NSLog(@"Failed fetch all unreads: %@", error);
+        [lock signal];
+    }];
+    [request setCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, (unsigned long)NULL)];
+
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [request start];
     [request waitUntilFinished];

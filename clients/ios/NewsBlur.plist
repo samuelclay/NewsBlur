@@ -34,8 +34,6 @@
 			<dict>
 				<key>bundle-identifier</key>
 				<string>com.newsblur.NewsBlur</string>
-				<key>bundle-version</key>
-				<string>4.6.2</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>

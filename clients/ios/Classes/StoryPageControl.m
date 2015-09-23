@@ -21,7 +21,7 @@
 #import "NSString+HTML.h"
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
-#import "JSON.h"
+#import "SBJson4.h"
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
@@ -44,6 +44,7 @@
 @synthesize subscribeButton;
 @synthesize buttonBack;
 @synthesize bottomSize;
+@synthesize bottomSizeHeightConstraint;
 @synthesize popoverController;
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
@@ -173,7 +174,7 @@
     // back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
                                    initWithTitle:@"All Sites"
-                                   style:UIBarButtonItemStyleBordered
+                                   style:UIBarButtonItemStylePlain
                                    target:self
                                    action:@selector(transitionFromFeedDetail)];
     self.buttonBack = backButton;
@@ -193,26 +194,12 @@
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
 }
 
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
-- (BOOL)automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers {
-    return YES;
-}
-
-- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
-    return YES;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     [self setNextPreviousButtons];
-    [appDelegate adjustStoryDetailWebView];
     [self setTextButton];
-    
+
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
@@ -275,15 +262,15 @@
     self.traverseView.alpha = 1;
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self layoutForInterfaceOrientation:orientation];
-    [self adjustDragBar:orientation];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@" "
                                              style:UIBarButtonItemStylePlain
                                              target:nil action:nil];
-
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
+    [self adjustDragBar:orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -299,6 +286,11 @@
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self reorientPages];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -319,30 +311,17 @@
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {        
-        [appDelegate adjustStoryDetailWebView];
-        
-//        CGPoint scrollPosition = CGPointMake(0, scrollPct * currentPage.webView.scrollView.contentSize.height);
-//        NSLog(@"Scrolling to %2.2f%% of %.0f", scrollPct*100, currentPage.webView.scrollView.contentSize.height);
-//        
-//        [currentPage.webView.scrollView setContentOffset:scrollPosition animated:YES];
-    inRotation = NO;
-}
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                         duration:(NSTimeInterval)duration {
-    inRotation = YES;
-    
-    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        NSLog(@"Rotating to portrait: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        [self layoutForInterfaceOrientation:orientation];
+        [self adjustDragBar:orientation];
+        [self reorientPages];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         
-    } else if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
-        NSLog(@"Rotating to landscape: %.0f,%.0f",self.view.frame.size.width,self.view.frame.size.height);
-    }
-    
-    [self layoutForInterfaceOrientation:toInterfaceOrientation];
-    [self adjustDragBar:toInterfaceOrientation];
-    [self reorientPages:toInterfaceOrientation];
+    }];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -363,21 +342,23 @@
 }
 
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
-    CGRect scrollViewFrame = self.scrollView.frame;
-    CGRect traverseViewFrame = self.traverseView.frame;
+//    CGRect scrollViewFrame = self.scrollView.frame;
+//    CGRect traverseViewFrame = self.traverseView.frame;
 
     if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ||
         UIInterfaceOrientationIsLandscape(orientation)) {
-        scrollViewFrame.size.height = self.view.frame.size.height;
-        self.bottomSize.hidden = YES;
+//        scrollViewFrame.size.height = self.view.bounds.size.height;
+//        self.bottomSize.hidden = YES;
+        [self.bottomSizeHeightConstraint setConstant:0];
     } else {
-        scrollViewFrame.size.height = self.view.frame.size.height - 12;
-        self.bottomSize.hidden = NO;
+//        scrollViewFrame.size.height = self.view.bounds.size.height - 12;
+//        self.bottomSize.hidden = NO;
+        [self.bottomSizeHeightConstraint setConstant:12];
     }
     
-    self.scrollView.frame = scrollViewFrame;
-    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
-    self.traverseView.frame = traverseViewFrame;
+//    self.scrollView.frame = scrollViewFrame;
+//    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
+//    self.traverseView.frame = traverseViewFrame;
 }
 
 - (void)highlightButton:(UIButton *)b {
@@ -437,7 +418,7 @@
     //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
-- (void)reorientPages:(UIInterfaceOrientation)fromOrientation {
+- (void)reorientPages {
     [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
     [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
     [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
@@ -527,18 +508,18 @@
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
-		CGRect pageFrame = pageController.view.frame;
+		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
-		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
-        pageFrame.size.height = self.scrollView.frame.size.height;
+		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
 //        NSLog(@"Out of bounds: was %d, now %d", pageController.pageIndex, newIndex);
-		CGRect pageFrame = pageController.view.frame;
-		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
-		pageFrame.origin.y = self.scrollView.frame.size.height;
-        pageFrame.size.height = self.scrollView.frame.size.height;
+		CGRect pageFrame = pageController.view.bounds;
+		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
+		pageFrame.origin.y = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
@@ -652,11 +633,12 @@
     // Stick to bottom
     CGRect tvf = self.traverseView.frame;
     traversePinned = YES;
-    [UIView animateWithDuration:.3 delay:0
+    [UIView animateWithDuration:.24 delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
+                         [self.traverseView setNeedsLayout];
                          self.traverseView.frame = CGRectMake(tvf.origin.x,
-                                                              self.scrollView.frame.size.height - tvf.size.height,
+                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant,
                                                               tvf.size.width, tvf.size.height);
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
@@ -824,7 +806,7 @@
 - (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
-    [self.view setNeedsLayout];
+//    [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:

@@ -31,6 +31,8 @@ UIActionSheetDelegate> {
     NSInteger actionSheetCopyImageIndex;
     NSInteger actionSheetSaveImageIndex;
     CGSize preRotateSize;
+
+    UIInterfaceOrientation _orientation;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;

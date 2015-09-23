@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SafariServices/SafariServices.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
 #import "EventWindow.h"
@@ -48,7 +49,8 @@
 @class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, WYPopoverControllerDelegate>  {
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, WYPopoverControllerDelegate,
+SFSafariViewControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
@@ -342,7 +344,8 @@
 - (NSDictionary *)getStory:(NSString *)storyHash;
 
 + (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
-+ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
++ (UIColor *)faviconColor:(NSString *)colorString;
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
@@ -363,8 +366,9 @@
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;
-- (BOOL)isReachabileForOffline;
+- (BOOL)isReachableForOffline;
 - (void)storeUserProfiles:(NSArray *)userProfiles;
+- (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
 - (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;

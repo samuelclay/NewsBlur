@@ -23,11 +23,84 @@
 //@synthesize swiper;
 @synthesize progressView;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
 
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+    self.view.layer.masksToBounds = NO;
+    self.view.layer.shadowRadius = 5;
+    self.view.layer.shadowOpacity = 0.5;
+    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
+    
+    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
+                                                                     target:nil
+                                                                     action:nil];
+    [separatorBarButton setEnabled:NO];
+    
+    UIBarButtonItem *sendToBarButton = [UIBarButtonItem
+                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto.png"]
+                                        target:self
+                                        action:@selector(doOpenActionSheet:)];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
+                                                 target:self
+                                                 action:@selector(closeOriginalView)];
+        self.navigationItem.leftBarButtonItem = closeButton;
     }
-    return self;
+    
+    backBarButton = [UIBarButtonItem
+                     barItemWithImage:[UIImage imageNamed:@"barbutton_back.png"]
+                     target:self
+                     action:@selector(webViewGoBack:)];
+    backBarButton.enabled = NO;
+    
+    titleView = [[UILabel alloc] init];
+    titleView.textColor = UIColorFromRGB(0x303030);
+    titleView.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    titleView.text = @"Loading...";
+    [titleView sizeToFit];
+    titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.navigationItem.titleView = titleView;
+    
+    self.navigationItem.rightBarButtonItems = @[sendToBarButton,
+                                                separatorBarButton,
+                                                backBarButton
+                                                ];
+
+    webView = [[WKWebView alloc] initWithFrame:self.view.frame];
+    [webView sizeToFit];
+    webView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [webView setNavigationDelegate:self];
+    [webView setUIDelegate:self];
+    
+    [self.view addSubview:webView];
+    [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
+    
+    CGFloat progressBarHeight = 2.f;
+    CGRect navigaitonBarBounds = self.navigationController.navigationBar.bounds;
+    CGRect barFrame = CGRectMake(0, navigaitonBarBounds.origin.y + navigaitonBarBounds.size.height - progressBarHeight, navigaitonBarBounds.size.width, progressBarHeight);
+    progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
+    progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
+                                           initWithTarget:self action:@selector(handlePanGesture:)];
+        gesture.delegate = self;
+        [self.webView.scrollView addGestureRecognizer:gesture];
+    }
+    
+    [self.webView loadHTMLString:@"" baseURL:nil];
+}
+
+- (void)dealloc {
+    [webView removeObserver:self forKeyPath:@"estimatedProgress"];
+    
+    // if you have set either WKWebView delegate also set these to nil here
+    [webView setNavigationDelegate:nil];
+    [webView setUIDelegate:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -66,10 +139,6 @@
     self.navigationController.delegate = appDelegate;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
 - (void)resetProgressBar {
     if (finishedLoading) return;
     
@@ -78,71 +147,23 @@
     [progressView setProgress:NJKInitialProgressValue animated:YES];
 }
 
-- (void)viewDidLoad {
-//    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
-    [super viewDidLoad];
-    
-    self.view.layer.masksToBounds = NO;
-    self.view.layer.shadowRadius = 5;
-    self.view.layer.shadowOpacity = 0.5;
-    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
-
-    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
-    UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
-                                                                     target:nil
-                                                                     action:nil];
-    [separatorBarButton setEnabled:NO];
-    
-    UIBarButtonItem *sendToBarButton = [UIBarButtonItem
-                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto.png"]
-                                        target:self
-                                        action:@selector(doOpenActionSheet:)];
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
-                                                 target:self
-                                                 action:@selector(closeOriginalView)];
-        self.navigationItem.leftBarButtonItem = closeButton;
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"estimatedProgress"] && object == self.webView) {
+        [progressView setProgress:webView.estimatedProgress animated:YES];
+        
+        if (webView.estimatedProgress == NJKInteractiveProgressValue) {
+            // The web view has finished parsing the document,
+            // but is still loading sub-resources
+        }
+        
+        if (webView.estimatedProgress == NJKFinalProgressValue) {
+            finishedLoading = YES;
+        }
     }
-    
-    backBarButton = [UIBarButtonItem
-                     barItemWithImage:[UIImage imageNamed:@"barbutton_back.png"]
-                     target:self
-                     action:@selector(webViewGoBack:)];
-    backBarButton.enabled = NO;
-    
-    titleView = [[UILabel alloc] init];
-    titleView.textColor = UIColorFromRGB(0x303030);
-    titleView.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
-    titleView.text = @"Loading...";
-    [titleView sizeToFit];
-    titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.navigationItem.titleView = titleView;
-    
-    self.navigationItem.rightBarButtonItems = @[sendToBarButton,
-                                                separatorBarButton,
-                                                backBarButton
-                                                ];
-    
-    progressProxy = [[NJKWebViewProgress alloc] init]; // instance variable
-    webView.delegate = progressProxy;
-    progressProxy.webViewProxyDelegate = self;
-    progressProxy.progressDelegate = self;
-    
-    CGFloat progressBarHeight = 2.f;
-    CGRect navigaitonBarBounds = self.navigationController.navigationBar.bounds;
-    CGRect barFrame = CGRectMake(0, navigaitonBarBounds.size.height - progressBarHeight, navigaitonBarBounds.size.width, progressBarHeight);
-    progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
-    progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
-                                           initWithTarget:self action:@selector(handlePanGesture:)];
-        gesture.delegate = self;
-        [self.webView.scrollView addGestureRecognizer:gesture];
+    else {
+        // Make sure to call the superclass's implementation in the else block in case it is also implementing KVO
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
-    
-    [self.webView loadHTMLString:@"" baseURL:nil];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -239,21 +260,23 @@
 
 - (void)loadInitialStory {
     finishedLoading = NO;
-    [self loadAddress:nil];
+    activeUrl = nil;
     
-    titleView.text = [[[appDelegate activeStory] objectForKey:@"story_title"]
-                      stringByDecodingHTMLEntities];
-    [titleView sizeToFit];
-
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"On its way...";
     [HUD hide:YES afterDelay:2];
     HUD.userInteractionEnabled = NO;
+    
+    [self loadAddress:nil];
 }
 
 - (IBAction)webViewGoBack:(id)sender {
+    for (WKBackForwardListItem *item in webView.backForwardList.backList) {
+        NSLog(@"%@", item.URL);
+    }
     [webView goBack];
+    NSLog(@" Current: %@", webView.URL);
 }
 
 - (IBAction)webViewGoForward:(id)sender {
@@ -267,40 +290,23 @@
 # pragma mark: -
 # pragma mark: UIWebViewDelegate protocol
 
-- (BOOL)webView:(UIWebView *)aWebView
-        shouldStartLoadWithRequest:(NSURLRequest *)request 
-        navigationType:(UIWebViewNavigationType)navigationType {
-
-    if ([aWebView canGoBack]) {
+- (void)webView:(UIWebView *)aWebView didCommitNavigation:(null_unspecified WKNavigation *)navigation {
+    if ([webView canGoBack]) {
         [backBarButton setEnabled:YES];
     } else {
         [backBarButton setEnabled:NO];
     }
     
-    if ([[[request URL] scheme] isEqual:@"mailto"]) {
-        [[UIApplication sharedApplication] openURL:[request URL]];
-        return NO;
-    } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        activeUrl = [[request URL] absoluteString];
-        [self loadAddress:nil];
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)aWebView
-{
+    activeUrl = [[webView URL] absoluteString];
     finishedLoading = NO;
 
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)aWebView
-{
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    [self updateTitle:aWebView];
+    [self updateTitle:self.webView];
     finishedLoading = YES;
 }
 
@@ -319,7 +325,7 @@
 
 - (void)updateTitle:(UIWebView*)aWebView
 {
-    NSString *pageTitleValue = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
+    NSString *pageTitleValue = webView.title;
     titleView.text = [pageTitleValue stringByDecodingHTMLEntities];
     [titleView sizeToFit];
 }
@@ -328,6 +334,15 @@
     if (!activeUrl) {
         activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
     }
+    
+    if (![[appDelegate.activeStory objectForKey:@"story_permalink"] isEqualToString:activeUrl]) {
+        titleView.text = @"Loading...";
+    } else {
+        titleView.text = [[[appDelegate activeStory] objectForKey:@"story_title"]
+                          stringByDecodingHTMLEntities];
+    }
+    [titleView sizeToFit];
+
     NSString* urlString = activeUrl;
     NSURL* url = [NSURL URLWithString:urlString];
 //    if ([urlString containsString:@"story_images"]) {
@@ -348,8 +363,6 @@
 //    }
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:request];
-    titleView.text = @"Loading...";
-    [titleView sizeToFit];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -361,9 +374,8 @@
 
 - (IBAction)doOpenActionSheet:(id)sender {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
-    NSURL *url = [NSURL URLWithString:self.webView.request.URL.absoluteString];
-    NSString *title = [[webView stringByEvaluatingJavaScriptFromString:@"document.title"]
-                       stringByDecodingHTMLEntities];
+    NSURL *url = [NSURL URLWithString:webView.URL.absoluteString];
+    NSString *title = webView.title;
     
     [appDelegate showSendTo:self
                      sender:sender
@@ -377,20 +389,6 @@
 
 - (void)closeOriginalView {
     [appDelegate closeOriginalStory];
-}
-
--(void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress {
-//    NSLog(@"Progress: %f", progress);
-    [progressView setProgress:progress animated:YES];
-    
-    if (progress == NJKInteractiveProgressValue) {
-        // The web view has finished parsing the document,
-        // but is still loading sub-resources
-    }
-    
-    if (progress == NJKFinalProgressValue) {
-        finishedLoading = YES;
-    }
 }
 
 @end
