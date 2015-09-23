@@ -35,6 +35,7 @@
 #import "FirstTimeUserAddNewsBlurViewController.h"
 #import "TUSafariActivity.h"
 #import "ARChromeActivity.h"
+#import "NBCopyLinkActivity.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
@@ -505,6 +506,7 @@
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
     if (url) [appActivities addObject:[[ARChromeActivity alloc]
                                        initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]]];
+    if (url) [appActivities addObject:[[NBCopyLinkActivity alloc] init]];
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
                                                         initWithActivityItems:activityItems
@@ -535,6 +537,8 @@
             return;
         } else if ([activityType isEqualToString:@"ARChromeActivity"]) {
             return;
+        } else if ([activityType isEqualToString:@"NBCopyLinkActivity"]) {
+            _completedString = @"Copied";
         } else {
             _completedString = @"Saved";
         }
