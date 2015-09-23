@@ -53,9 +53,13 @@ public class NewsblurWebview extends WebView {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Uri uri = Uri.parse(url);
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(uri);
-                context.startActivity(i);
+                try {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(uri);
+                    context.startActivity(i);
+                } catch (Exception e) {
+                    Log.wtf(this.getClass().getName(), "device cannot open URLs");
+                }
                 return true;
             }
         });
