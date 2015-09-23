@@ -115,6 +115,8 @@
                                              selector:@selector(tapAndHold:)
                                                  name:@"TapAndHoldNotification"
                                                object:nil];
+
+    _orientation = [UIApplication sharedApplication].statusBarOrientation;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -221,14 +223,29 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if (_orientation != [UIApplication sharedApplication].statusBarOrientation) {
+        _orientation = [UIApplication sharedApplication].statusBarOrientation;
+        NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
+        [self.view setNeedsLayout];
+        [self.view layoutIfNeeded];
+        [self changeWebViewWidth];
+        [self drawFeedGradient];
+    }
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        _orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self changeWebViewWidth];
         [self drawFeedGradient];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 
     }];
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 #pragma mark -
@@ -1960,10 +1977,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
-    NSLog(@"changeWebViewWidth: %@ / %@", NSStringFromCGRect(webView.scrollView.bounds), NSStringFromCGSize(webView.scrollView.contentSize));
+    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
     [webView.scrollView setContentSize:webView.scrollView.bounds.size];
 
-    NSInteger contentWidth = CGRectGetWidth(self.view.bounds);
+    NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     NSString *contentWidthClass;
 
@@ -1978,7 +1995,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
-                         contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
+                         contentWidthClass, (int)floorf(CGRectGetWidth(webView.scrollView.bounds))];
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||

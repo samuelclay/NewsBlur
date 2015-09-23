@@ -46,6 +46,10 @@
 	
 	// Scan and find all tags
 	NSMutableString *result = [[NSMutableString alloc] initWithCapacity:self.length];
+    if (!self) {
+        NSLog(@"nil NSScanner");
+        return self;
+    }
 	NSScanner *scanner = [[NSScanner alloc] initWithString:self];
 	[scanner setCharactersToBeSkipped:nil];
 	[scanner setCaseSensitive:YES];
@@ -157,6 +161,10 @@
 	//	Paragraph Separator, U+2029
 	
 	// Scanner
+    if (!self) {
+        NSLog(@"nil NSScanner");
+        return self;
+    }
 	NSScanner *scanner = [[NSScanner alloc] initWithString:self];
 	[scanner setCharactersToBeSkipped:nil];
 	NSMutableString *result = [[NSMutableString alloc] init];
@@ -216,6 +224,10 @@
 	//	Paragraph Separator, U+2029
 	
 	// Scanner
+    if (!self) {
+        NSLog(@"nil NSScanner");
+        return self;
+    }
 	NSScanner *scanner = [[NSScanner alloc] initWithString:self];
 	[scanner setCharactersToBeSkipped:nil];
 	NSMutableString *result = [[NSMutableString alloc] init];
@@ -274,7 +286,11 @@
 	if (ampIndex == NSNotFound) {
 		return [NSString stringWithString:self]; // return copy of string as no tags found
 	}
-	
+    if (!self) {
+        NSLog(@"nil NSScanner");
+        return self;
+    }
+
 	// Scan and find all tags
 	NSScanner *scanner = [NSScanner scannerWithString:self];
 	[scanner setCharactersToBeSkipped:nil];
@@ -297,6 +313,10 @@
 	} while (![scanner isAtEnd]);
 	
 	// Strings
+    if (!self) {
+        NSLog(@"nil NSScanner");
+        return self;
+    }
 	NSMutableString *result = [[NSMutableString alloc] initWithString:self];
 	NSString *finalString;
 	
