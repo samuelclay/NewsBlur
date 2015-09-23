@@ -115,6 +115,15 @@
 	[super viewDidUnload];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    if ([self presentedViewController]) {
+        [[self presentedViewController] viewWillTransitionToSize:size
+                                       withTransitionCoordinator:coordinator];
+    }
+}
+
 #pragma mark -
 #pragma mark Memory management
 

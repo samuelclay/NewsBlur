@@ -218,9 +218,9 @@ body.NB-iphone {
     line-height: 110%;
 }
 
-* {
-    box-sizing: border-box;
-}
+/** {*/
+/*    box-sizing: border-box;*/
+/*}*/
 
 
 /* ========== */

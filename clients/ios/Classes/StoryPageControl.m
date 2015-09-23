@@ -44,6 +44,7 @@
 @synthesize subscribeButton;
 @synthesize buttonBack;
 @synthesize bottomSize;
+@synthesize bottomSizeHeightConstraint;
 @synthesize popoverController;
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
@@ -198,7 +199,7 @@
     
     [self setNextPreviousButtons];
     [self setTextButton];
-    
+
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
@@ -287,6 +288,11 @@
     previousPage.view.hidden = NO;
 }
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self reorientPages];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
@@ -336,16 +342,18 @@
 }
 
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
-    CGRect scrollViewFrame = self.scrollView.frame;
-    CGRect traverseViewFrame = self.traverseView.frame;
+//    CGRect scrollViewFrame = self.scrollView.frame;
+//    CGRect traverseViewFrame = self.traverseView.frame;
 
     if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ||
         UIInterfaceOrientationIsLandscape(orientation)) {
-        scrollViewFrame.size.height = self.view.frame.size.height;
-        self.bottomSize.hidden = YES;
+//        scrollViewFrame.size.height = self.view.bounds.size.height;
+//        self.bottomSize.hidden = YES;
+        [self.bottomSizeHeightConstraint setConstant:0];
     } else {
-        scrollViewFrame.size.height = self.view.frame.size.height - 12;
-        self.bottomSize.hidden = NO;
+//        scrollViewFrame.size.height = self.view.bounds.size.height - 12;
+//        self.bottomSize.hidden = NO;
+        [self.bottomSizeHeightConstraint setConstant:12];
     }
     
 //    self.scrollView.frame = scrollViewFrame;
@@ -630,7 +638,7 @@
                      animations:^{
                          [self.traverseView setNeedsLayout];
                          self.traverseView.frame = CGRectMake(tvf.origin.x,
-                                                              self.view.bounds.size.height - tvf.size.height,
+                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant,
                                                               tvf.size.width, tvf.size.height);
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
@@ -798,7 +806,7 @@
 - (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
-    [self.view setNeedsLayout];
+//    [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
