@@ -1160,39 +1160,39 @@ def copy_spam():
 
 def setup_do(name, size=2, image=None):
     if int(size) == 512:
-        INSTANCE_SIZE = "512mb"
+        instance_size = "512mb"
     else:
-        INSTANCE_SIZE = "%sgb" % size
+        instance_size = "%sgb" % size
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
-    sizes = dict((s.slug, s.slug) for s in doapi.sizes())
-    size_id = sizes[INSTANCE_SIZE]
-    ssh_key_ids = [str(k.id) for k in doapi.get_ssh_keys()]
-    # Sorry but this needs to be rewritten for new digitalocean API.
-    region_id = doapi.regions()[0].id
+    # sizes = dict((s.slug, s.slug) for s in doapi.get_all_sizes())
+    ssh_key_ids = [k.id for k in doapi.get_all_sshkeys()]
     if not image:
-        IMAGE_NAME = "14.04 x64"
-        images = dict((s.name, s.id) for s in doapi.images())
-        print images
-        image_id = images[IMAGE_NAME]
+        image = "ubuntu-14-04-x64"
     else:
+        images = dict((s.name, s.id) for s in doapi.get_all_images())
+        print images
         if image == "task": 
-            image = "task_07-2015"
-        IMAGE_NAME = image
-        images = dict((s.name, s.id) for s in doapi.images(show_all=False))
-        image_id = images[IMAGE_NAME]
+            image = images["task_07-2015"]
+        elif image == "app":
+            image = images[image]
+        else:
+            images = dict((s.name, s.id) for s in doapi.get_all_images())
+            print images
+            
     name = do_name(name)
     env.doname = name
     print "Creating droplet: %s" % name
-    instance = doapi.create_droplet(name=name,
-                                    size_id=size_id,
-                                    image_id=image_id,
-                                    region_id=region_id,
-                                    ssh_key_ids=ssh_key_ids,
-                                    virtio=True)
-    print "Booting droplet: %s/%s (size: %s)" % (instance.id, IMAGE_NAME, INSTANCE_SIZE)
+    instance = digitalocean.Droplet(token=django_settings.DO_TOKEN_FABRIC,
+                                    name=name,
+                                    size_slug=instance_size,
+                                    image=image,
+                                    region='nyc1',
+                                    ssh_keys=ssh_key_ids)
+    instance.create()
+    print "Booting droplet: %s/%s (size: %s)" % (instance.id, image, instance_size)
 
-    instance = doapi.show_droplet(instance.id)
+    instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
     i = 0
     while True:
         if instance.status == 'active':
@@ -1202,7 +1202,7 @@ def setup_do(name, size=2, image=None):
         elif instance.status == 'new':
             print ".",
             sys.stdout.flush()
-            instance = doapi.show_droplet(instance.id)
+            instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
             i += 1
             time.sleep(i)
         else:
