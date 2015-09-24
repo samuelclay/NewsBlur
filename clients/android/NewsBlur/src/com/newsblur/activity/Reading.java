@@ -168,10 +168,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if (pager != null) {
-            int currentItem = pager.getCurrentItem();
-            Story story = readingAdapter.getStory(currentItem);
-            outState.putString(EXTRA_STORY_HASH, story.storyHash);
+        if (storyHash != null) {
+            outState.putString(EXTRA_STORY_HASH, storyHash);
+        } else {
+            if (pager != null) {
+                int currentItem = pager.getCurrentItem();
+                Story story = readingAdapter.getStory(currentItem);
+                if (story != null ) {
+                    outState.putString(EXTRA_STORY_HASH, story.storyHash);
+                }
+            }
         }
 
         if (startingUnreadCount != 0) {
