@@ -24,7 +24,7 @@
             <rect key="frame" x="0.0" y="44" width="414" height="692"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" pagingEnabled="YES" delaysContentTouches="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="750" alwaysBounceHorizontal="YES" pagingEnabled="YES" delaysContentTouches="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="680"/>
                     <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -231,7 +231,7 @@
             <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="A4p-mh-u6O"/>
-                <constraint firstItem="YKz-PZ-s0t" firstAttribute="top" secondItem="5" secondAttribute="bottom" id="AOS-qV-fjZ"/>
+                <constraint firstItem="5" firstAttribute="bottom" secondItem="YKz-PZ-s0t" secondAttribute="top" id="AOS-qV-fjZ"/>
                 <constraint firstItem="YKz-PZ-s0t" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="G7a-2g-nwC"/>
                 <constraint firstItem="5" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="Pnz-qi-mdZ"/>
                 <constraint firstAttribute="bottom" secondItem="YKz-PZ-s0t" secondAttribute="bottom" id="VJX-b2-ors"/>

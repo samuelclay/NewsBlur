@@ -684,6 +684,7 @@ static UIFont *userLabelFont;
     if ([currentiPhoneBuild integerValue] < [serveriPhoneBuild integerValue] && unseenBuild) {
         NSLog(@"Build: %ld - %@ (seen: %ld)", (long)[serveriPhoneBuild integerValue], currentiPhoneBuild, (long)[userPreferences integerForKey:@"last_seen_latest_ios_build"]);
         [userPreferences setInteger:[serveriPhoneBuild integerValue] forKey:@"last_seen_latest_ios_build"];
+        [userPreferences setObject:serveriPhoneVersion forKey:@"last_seen_latest_ios_version"];
         [userPreferences synchronize];
         
         NSString *title = [NSString stringWithFormat:@
@@ -733,6 +734,26 @@ static UIFont *userLabelFont;
     }
 }
 
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 2) {
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            NSURL *url;
+            NSString *currentVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+            NSString *serverVersion = [userPreferences stringForKey:@"last_seen_latest_ios_version"];
+
+            if ([currentVersion containsString:@"b"] && [serverVersion containsString:@"b"]) {
+                url = [NSURL URLWithString:@"https://www.newsblur.com/ios/download"];
+            } else {
+                //  this doesn't work in simulator!!! because simulator has no app store
+                url = [NSURL URLWithString:@"itms://itunes.apple.com/us/app/mensa-essen/id463981119?ls=1&mt=8"];
+            }
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }
+}
 
 - (void)loadOfflineFeeds:(BOOL)failed {
     __block __typeof__(self) _self = self;
@@ -853,19 +874,6 @@ static UIFont *userLabelFont;
 
     [appDelegate.dashboardViewController refreshInteractions];
     [appDelegate.dashboardViewController refreshActivity];
-}
-
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 2) {
-        if (buttonIndex == 0) {
-            return;
-        } else {
-            //  this doesn't work in simulator!!! because simulator has no app store
-            NSURL *url = [NSURL URLWithString:@"itms://itunes.apple.com/us/app/mensa-essen/id463981119?ls=1&mt=8"];
-            [[UIApplication sharedApplication] openURL:url];
-        }
-    }
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
