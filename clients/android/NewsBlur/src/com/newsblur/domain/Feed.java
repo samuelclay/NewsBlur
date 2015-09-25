@@ -29,9 +29,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 	@SerializedName("favicon_border")
 	public String faviconBorder;
 
-	@SerializedName("favicon")
-	public String favicon;
-	
 	@SerializedName("favicon_url")
 	public String faviconUrl;
 
@@ -74,7 +71,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, negativeCount);
         values.put(DatabaseConstants.FEED_FAVICON_FADE, "#" + faviconFade);
         values.put(DatabaseConstants.FEED_FAVICON_TEXT, faviconText);
-		values.put(DatabaseConstants.FEED_FAVICON, favicon);
 		values.put(DatabaseConstants.FEED_FAVICON_URL, faviconUrl);
 		values.put(DatabaseConstants.FEED_LINK, feedLink);
 		values.put(DatabaseConstants.FEED_SUBSCRIBERS, subscribers);
@@ -90,7 +86,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 		Feed feed = new Feed();
 		feed.active = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)));
 		feed.address = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
-		feed.favicon = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON));
 		feed.faviconColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
         feed.faviconFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
         feed.faviconBorder = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
@@ -106,6 +101,20 @@ public class Feed implements Comparable<Feed>, Serializable {
 		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
 		return feed;
 	}
+
+    /**
+     * Creates an returns the implicit zero-id feed that NewsBlur uses for feedless stories.
+     */
+    public static Feed getZeroFeed() {
+        Feed feed = new Feed();
+        feed.active = false;
+        feed.faviconUrl = "https://www.newsblur.com/rss_feeds/icon/0";
+        feed.feedId = "0";
+        feed.negativeCount = 0;
+        feed.neutralCount = 0;
+        feed.positiveCount = 0;
+        return feed;
+    }
 	
 	@Override
 	public boolean equals(Object o) {
