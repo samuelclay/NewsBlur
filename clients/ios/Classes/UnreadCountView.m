@@ -174,8 +174,8 @@ const int COUNT_HEIGHT = 15;
 }
 
 - (void)calculateOffsets:(int)ps nt:(int)nt {
-    psWidth = ps == 0 ? 0 : ps < 10 ? 14 : ps < 100 ? 22 : 28;
-    ntWidth = nt == 0 ? 0 : nt < 10 ? 14 : nt < 100 ? 22 : 28;
+    psWidth = ps == 0 ? 0 : ps < 10 ? 14 : ps < 100 ? 22 : ps < 1000 ? 28 : ps < 10000 ? 34 : 40;
+    ntWidth = nt == 0 ? 0 : nt < 10 ? 14 : nt < 100 ? 22 : nt < 1000 ? 28 : nt < 10000 ? 34 : 40;
     
     psPadding = ps == 0 ? 0 : 2;
     ntPadding = nt == 0 ? 0 : 2;
