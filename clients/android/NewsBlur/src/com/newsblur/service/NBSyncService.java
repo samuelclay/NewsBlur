@@ -451,6 +451,8 @@ public class NBSyncService extends Service {
                 }
                 feedValues.add(feed.getValues());
             }
+            // also add the implied zero-id feed
+            feedValues.add(Feed.getZeroFeed().getValues());
 
             // prune out missiong feed IDs from folders
             for (String id : debugFeedIdsFromFolders) {

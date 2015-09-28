@@ -1106,6 +1106,9 @@ public class BlurDatabaseHelper {
      * only if the device's platform provides support.
      */
     private Cursor rawQuery(String sql, String[] selectionArgs, CancellationSignal cancellationSignal) {
+        if (AppConstants.VERBOSE_LOG_DB) {
+            Log.d(this.getClass().getName(), String.format("DB rawQuery: '%s' with args: %s", sql, java.util.Arrays.toString(selectionArgs)));
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             return dbRO.rawQuery(sql, selectionArgs, cancellationSignal);
         } else {

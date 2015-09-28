@@ -203,9 +203,11 @@ public class PrefsUtils {
 			File imageFile = new File(file.getPath() + "/userProfilePicture");
 			bitmap.compress(CompressFormat.PNG, 100, new FileOutputStream(imageFile));
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        } catch (Exception e) {
+            // this can fail for a huge number of reasons, from storage problems to
+            // missing image codecs. if it fails, a placeholder will be used
+            Log.e(PrefsUtils.class.getName(), "couldn't save user profile image", e);
+        }
 	}
 
 	public static Bitmap getUserImage(final Context context) {
