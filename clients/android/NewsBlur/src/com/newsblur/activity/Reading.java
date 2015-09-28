@@ -213,6 +213,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        if (fs == null) {
+            Log.e(this.getClass().getName(), "can't create activity, no feedset ready");
+            // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
+            finish();
+            return null;
+        }
         return FeedUtils.dbHelper.getStoriesLoader(fs, currentState);
     }
 

@@ -211,6 +211,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        FeedSet fs = getFeedSet();
+        if (fs == null) {
+            Log.e(this.getClass().getName(), "can't create fragment, no feedset ready");
+            // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
+            try { getActivity().finish(); } catch (Exception e) {;}
+            return null;
+        }
 		return FeedUtils.dbHelper.getStoriesLoader(getFeedSet(), currentState);
 	}
 
