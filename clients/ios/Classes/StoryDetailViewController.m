@@ -250,9 +250,9 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
     [self changeWebViewWidth];
     [self drawFeedGradient];
+    NSLog(@"viewWillLayoutSubviews: %.2f", self.webView.scrollView.bounds.size.width);
 }
 
 #pragma mark -
