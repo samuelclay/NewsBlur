@@ -1652,6 +1652,12 @@ a img {
 .NB-view-river .NB-story-pane-west #story_titles .NB-story-title {
     padding-left: 48px;
 }
+#story_titles .NB-story-title.NB-has-image {
+    padding-right: 90px;
+}
+.NB-story-pane-west #story_titles .NB-story-title.NB-has-image {
+    padding-right: 90px;
+}
 #story_titles .NB-story-title .NB-storytitles-feed-border-inner,
 #story_titles .NB-story-title .NB-storytitles-feed-border-outer {
     position: absolute;
@@ -1675,6 +1681,18 @@ a img {
     height: 20px;
     left: 0;
     top: 2px;
+}
+#story_titles .NB-story-title .NB-storytitles-story-image {
+    position: absolute;
+    right: 0;
+    width: 86px;
+    height: 100%;
+    background-size: 40%, cover;
+    background-position: 50% 50%, 50% 30%;
+    background-repeat: no-repeat;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .NB-story-pane-west #story_titles .NB-story-title .NB-storytitles-sentiment {
     left: 4px;
@@ -1742,7 +1760,7 @@ a img {
     text-decoration: none;
     color: #272727;
     display: block;
-    padding: 5px 4px 4px;
+    padding: 5px 142px 4px 4px;
     float: left;
     position: relative;
     width: 100%;
@@ -1750,6 +1768,10 @@ a img {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+.NB-story-pane-west #story_titles .NB-story-title a.story_title {
+    padding-right: 4px;
+}
+
 #story_titles .NB-story-title.read a.story_title {
     color: #969696;
 }
@@ -1974,7 +1996,7 @@ a img {
 
 #story_titles .NB-story-title .story_date {
     position: absolute;
-    right: 4px;
+    right: 32px;
     width: 200px;
     top: 5px;
     font-size: 11px;
@@ -2008,6 +2030,7 @@ a img {
 #story_titles .NB-story-title.read .story_date {
     color: #B6B6B6;
 }
+
 
 #story_titles .NB-story-title.NB-selected,
 .NB-interaction:hover:not(.NB-disabled) {
@@ -2112,6 +2135,9 @@ a img {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+#story_titles .NB-story-grid.NB-story-title-hide-preview {
+    height: 296px;
+}
 #story_titles.NB-layout-grid.NB-grid-columns-1 .NB-story-grid,
 #story_titles.NB-extra-narrow-content .NB-story-grid {
     width: 94%;
@@ -2178,6 +2204,7 @@ a img {
 }
 #story_titles .NB-story-grid .NB-storytitles-story-image {
     display: none;
+    position: inherit;
     width: 100%;
     height: 186px;
     background-size: 64px 64px, cover;

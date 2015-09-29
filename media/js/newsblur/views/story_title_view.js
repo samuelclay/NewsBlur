@@ -38,15 +38,21 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.toggle_read_status();
         this.color_feedbar();
         if (this.options.is_grid) this.watch_grid_image();
+        if (!this.options.is_grid) this.watch_grid_image();
         
         return this;
     },
                             
     template: _.template('\
-        <div class="NB-story-title">\
+        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (story.image_url()) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <div class="NB-storytitles-sentiment"></div>\
+            <% if (story.image_url()) { %>\
+                <div class="NB-storytitles-story-image-container">\
+                    <div class="NB-storytitles-story-image"></div>\
+                </div>\
+            <% } %>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
@@ -76,7 +82,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
     
     grid_template: _.template('\
-        <div class="NB-story-title NB-story-grid">\
+        <div class="NB-story-title NB-story-grid <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %>">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <% if (story.image_url()) { %>\
@@ -182,11 +188,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     show_content_preview: function() {
+        var preference = NEWSBLUR.assets.preference('show_content_preview');
+        if (!preference) return preference;
+
         if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
             var pruned_description = this.model.content_preview('story_content', 500);
         } else {
-            var preference = NEWSBLUR.assets.preference('show_content_preview');
-            if (!preference) return preference;
             var pruned_description = this.model.content_preview();
         }
         
