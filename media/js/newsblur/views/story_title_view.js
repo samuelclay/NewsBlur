@@ -31,24 +31,25 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             feed     : (NEWSBLUR.reader.flags.river_view || NEWSBLUR.reader.flags.social_view) &&
                         NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
             options  : this.options,
-            show_content_preview : this.show_content_preview()
+            show_content_preview : this.show_content_preview(),
+            show_image_preview : this.show_image_preview()
         }));
         this.$st = this.$(".NB-story-title");
         this.toggle_classes();
         this.toggle_read_status();
         this.color_feedbar();
         if (this.options.is_grid) this.watch_grid_image();
-        if (!this.options.is_grid) this.watch_grid_image();
+        if (!this.options.is_grid && this.show_image_preview()) this.watch_grid_image();
         
         return this;
     },
                             
     template: _.template('\
-        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (story.image_url()) { %>NB-has-image<% } %> ">\
+        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <div class="NB-storytitles-sentiment"></div>\
-            <% if (story.image_url()) { %>\
+            <% if (show_image_preview) { %>\
                 <div class="NB-storytitles-story-image-container">\
                     <div class="NB-storytitles-story-image"></div>\
                 </div>\
@@ -203,6 +204,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (pruned_description.length < 30) return false;
         
         return pruned_description;
+    },
+    
+    show_image_preview: function() {
+        return NEWSBLUR.assets.preference('show_image_preview') && this.model.image_url();
     },
     
     // ============
