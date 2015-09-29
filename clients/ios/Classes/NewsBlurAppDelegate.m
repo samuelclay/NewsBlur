@@ -1260,6 +1260,8 @@
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
         [self.storyPageControl view];
+        [self.storyPageControl.view setNeedsLayout];
+        [self.storyPageControl.view layoutIfNeeded];
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
         [self.storyPageControl animateIntoPlace:YES];
     }
@@ -2027,7 +2029,7 @@
 }
 
 + (UIColor *)faviconColor:(NSString *)colorString {
-    if ([colorString class] == [NSNull class]) {
+    if ([colorString class] == [NSNull class] || !colorString) {
         colorString = @"505050";
     }
     unsigned int color = 0;
@@ -2043,10 +2045,10 @@
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
     gradient.opacity = 0.7;
-    if ([start class] == [NSNull class]) {
+    if ([start class] == [NSNull class] || !start) {
         start = @"505050";
     }
-    if ([end class] == [NSNull class]) {
+    if ([end class] == [NSNull class] || !end) {
         end = @"303030";
     }
     gradient.colors = [NSArray arrayWithObjects:(id)[[self faviconColor:start] CGColor], (id)[[self faviconColor:end] CGColor], nil];
@@ -2724,7 +2726,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [self.database inDatabase:^(FMDatabase *db) {
-//            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
+            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
             [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
              [story objectForKey:@"story_feed_id"],
              [story objectForKey:@"story_hash"],

@@ -478,30 +478,33 @@ static int EscapeMapCompare(const void *ucharVoid, const void *mapVoid) {
 				if (char2 == 'x' || char2 == 'X') {
 					// Hex escape squences &#xa3;
 					NSString *hexSequence = [escapeString substringWithRange:NSMakeRange(3, length - 4)];
-					NSScanner *scanner = [NSScanner scannerWithString:hexSequence];
-					unsigned value;
-					if ([scanner scanHexInt:&value] && 
-						value < USHRT_MAX &&
-						value > 0 
-						&& [scanner scanLocation] == length - 4) {
-						unichar uchar = value;
-						NSString *charString = [NSString stringWithCharacters:&uchar length:1];
-						[finalString replaceCharactersInRange:escapeRange withString:charString];
-					}
-					
+                    if (hexSequence) {
+                        NSScanner *scanner = [NSScanner scannerWithString:hexSequence];
+                        unsigned value;
+                        if ([scanner scanHexInt:&value] && 
+                            value < USHRT_MAX &&
+                            value > 0 
+                            && [scanner scanLocation] == length - 4) {
+                            unichar uchar = value;
+                            NSString *charString = [NSString stringWithCharacters:&uchar length:1];
+                            [finalString replaceCharactersInRange:escapeRange withString:charString];
+                        }
+                    }
 				} else {
 					// Decimal Sequences &#123;
 					NSString *numberSequence = [escapeString substringWithRange:NSMakeRange(2, length - 3)];
-					NSScanner *scanner = [NSScanner scannerWithString:numberSequence];
-					int value;
-					if ([scanner scanInt:&value] && 
-						value < USHRT_MAX &&
-						value > 0 
-						&& [scanner scanLocation] == length - 3) {
-						unichar uchar = value;
-						NSString *charString = [NSString stringWithCharacters:&uchar length:1];
-						[finalString replaceCharactersInRange:escapeRange withString:charString];
-					}
+                    if (numberSequence) {
+                        NSScanner *scanner = [NSScanner scannerWithString:numberSequence];
+                        int value;
+                        if ([scanner scanInt:&value] && 
+                            value < USHRT_MAX &&
+                            value > 0 
+                            && [scanner scanLocation] == length - 3) {
+                            unichar uchar = value;
+                            NSString *charString = [NSString stringWithCharacters:&uchar length:1];
+                            [finalString replaceCharactersInRange:escapeRange withString:charString];
+                        }
+                    }
 				}
 			} else {
 				// "standard" sequences

@@ -31,7 +31,8 @@ UIActionSheetDelegate> {
     NSInteger actionSheetCopyImageIndex;
     NSInteger actionSheetSaveImageIndex;
     CGSize preRotateSize;
-
+    CGFloat scrollPct;
+    
     UIInterfaceOrientation _orientation;
 }
 

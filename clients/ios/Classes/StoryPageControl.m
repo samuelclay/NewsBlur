@@ -332,9 +332,6 @@
 //    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
-        scrollPct = currentPage.webView.scrollView.contentOffset.y / currentPage.webView.scrollView.contentSize.height;
-        NSLog(@"Current scroll is %2.2f%% (offset %.0f - height %.0f)", scrollPct*100, currentPage.webView.scrollView.contentOffset.y,
-              currentPage.webView.scrollView.contentSize.height);
         if (currentPage.pageIndex == 0) {
             previousPage.view.hidden = YES;
         }
@@ -356,6 +353,7 @@
         [self.bottomSizeHeightConstraint setConstant:12];
     }
     
+    [self.view layoutIfNeeded];
 //    self.scrollView.frame = scrollViewFrame;
 //    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
 //    self.traverseView.frame = traverseViewFrame;

@@ -221,31 +221,38 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
+
+    if (_orientation != [UIApplication sharedApplication].statusBarOrientation) {
+        _orientation = [UIApplication sharedApplication].statusBarOrientation;
+        NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    if (_orientation != [UIApplication sharedApplication].statusBarOrientation) {
-        _orientation = [UIApplication sharedApplication].statusBarOrientation;
-        NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
-        [self.view setNeedsLayout];
-        [self.view layoutIfNeeded];
-        [self changeWebViewWidth];
-        [self drawFeedGradient];
-    }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
+    scrollPct = self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height;
+    NSLog(@"Current scroll is %2.2f%% (offset %.0f - height %.0f)", scrollPct*100, self.webView.scrollView.contentOffset.y,
+          self.webView.scrollView.contentSize.height);
+
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         _orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self changeWebViewWidth];
         [self drawFeedGradient];
+        [self scrollToLastPosition:NO];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-
     }];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    [self changeWebViewWidth];
+    [self drawFeedGradient];
 }
 
 #pragma mark -
@@ -276,6 +283,7 @@
     }
 
     [self drawFeedGradient];
+    scrollPct = 0;
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
@@ -304,8 +312,9 @@
         lineSpacingClass = [lineSpacingClass stringByAppendingString:@"medium"];
     }
     
-    int contentWidth = CGRectGetWidth(self.appDelegate.storyPageControl.view.bounds);
+    int contentWidth = CGRectGetWidth(self.webView.scrollView.bounds);
     NSString *contentWidthClass;
+    NSLog(@"Drawing story: %d", contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
@@ -408,6 +417,11 @@
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    
+    if (self.feedTitleGradient) {
+        [self.feedTitleGradient removeFromSuperview];
+        self.feedTitleGradient = nil;
+    }
     
     self.feedTitleGradient = [appDelegate
                               makeFeedTitleGradient:feed
@@ -1111,6 +1125,7 @@
                 
             }];
         } else if (singlePage) {
+            appDelegate.storyPageControl.traverseView.alpha = 1;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
             if (bottomPosition > 0) {
                 appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
@@ -1193,7 +1208,7 @@
     }
 }
 
-- (void)scrollToLastPosition {
+- (void)scrollToLastPosition:(BOOL)animated {
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -1209,21 +1224,21 @@
             while ([cursor next]) {
                 NSDictionary *story = [cursor resultDictionary];
                 id scroll = [story objectForKey:@"scroll"];
-                if ([scroll isKindOfClass:[NSNull class]]) {
+                if ([scroll isKindOfClass:[NSNull class]] && !scrollPct) {
                     NSLog(@"No scroll found for story: %@", [strongSelf.activeStory objectForKey:@"story_title"]);
                     // No scroll found
                     continue;
                 }
-                CGFloat scrollPct = [scroll floatValue] / 1000.f;
+                if (!scrollPct) scrollPct = [scroll floatValue] / 1000.f;
                 NSInteger position = floor(scrollPct * strongSelf.webView.scrollView.contentSize.height);
                 NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
                 if (position > maxPosition) {
                     NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, maxPosition);
                     position = maxPosition;
                 }
-//                NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
+                NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:YES];
+                    [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
                 });
             }
             [cursor close];
@@ -1471,7 +1486,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 
     if ([[self.webView stringByEvaluatingJavaScriptFromString:@"document.readyState"] isEqualToString:@"complete"]) {
-        [self scrollToLastPosition];
+        [self scrollToLastPosition:YES];
     }
 }
 
@@ -1977,8 +1992,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
+    [webView setNeedsLayout];
+    [webView layoutIfNeeded];
+    
     NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
-    [webView.scrollView setContentSize:webView.scrollView.bounds.size];
 
     NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
