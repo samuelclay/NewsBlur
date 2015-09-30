@@ -493,14 +493,17 @@
             images:(NSArray *)images {
     
     // iOS 8+
-    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-    if (title) [activityItems addObject:title];
-    if (url) [activityItems addObject:url];
     if (text) {
         NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
         text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
-        [activityItems addObject:text];
+//        [activityItems addObject:text];
     }
+
+    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+    if (title) [activityItems addObject:title];
+    if (url) [activityItems addObject:url];
+    NBActivityItemProvider *activityItemProvider = [[NBActivityItemProvider alloc] initWithUrl:url authorName:authorName text:text title:title feedTitle:feedTitle];
+    [activityItems addObject:activityItemProvider];
 
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
