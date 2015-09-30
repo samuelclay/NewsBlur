@@ -1992,10 +1992,13 @@ a img {
 
 #story_titles .NB-story-title .story_date {
     position: absolute;
-    width: 232px;
+    width: 172px;
     top: 5px;
     right: 0;
     font-size: 11px;
+}
+#story_titles .NB-story-title.NB-has-image .story_date {
+    width: 236px;
 }
 .NB-theme-feed-size-xs #story_titles .NB-story-title .story_date {
     font-size: 10px;

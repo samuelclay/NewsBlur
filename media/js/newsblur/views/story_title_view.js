@@ -207,7 +207,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     show_image_preview: function() {
-        return NEWSBLUR.assets.preference('show_image_preview') && this.model.image_url();
+        if (!NEWSBLUR.assets.preference('show_image_preview')) {
+            return false;
+        }
+        return this.model.image_url() || true;
     },
     
     // ============
