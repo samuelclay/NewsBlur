@@ -398,6 +398,7 @@ def load_feeds_flat(request):
         "categories": categories,
         'starred_count': starred_count,
         'starred_counts': starred_counts,
+        'share_token': user.profile.secret_token
     }
     return data
 

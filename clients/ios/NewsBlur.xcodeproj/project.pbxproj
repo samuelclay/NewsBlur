@@ -314,6 +314,9 @@
 		FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */; };
 		FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */; };
 		FF88F10E1811BAEC007FEE78 /* unread_green.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10C1811BAEC007FEE78 /* unread_green.png */; };
+		FF8C49861BBC893B0010D894 /* ActionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8C49851BBC893B0010D894 /* ActionViewController.m */; };
+		FF8C498D1BBC893B0010D894 /* NewsBlur Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FF8C49821BBC893A0010D894 /* NewsBlur Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FF8C49941BBCA4810010D894 /* NewsBlur_Prefix.pch in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3E615B0099B008787B5 /* NewsBlur_Prefix.pch */; };
 		FF8D1EA71BAA304E00725D8A /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EA61BAA304E00725D8A /* Reachability.m */; settings = {ASSET_TAGS = (); }; };
 		FF8D1ECC1BAA311000725D8A /* SBJson4Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EBF1BAA311000725D8A /* SBJson4Parser.m */; settings = {ASSET_TAGS = (); }; };
 		FF8D1ECD1BAA311000725D8A /* SBJson4StreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC11BAA311000725D8A /* SBJson4StreamParser.m */; settings = {ASSET_TAGS = (); }; };
@@ -450,6 +453,30 @@
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
 		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FF8C498B1BBC893B0010D894 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF8C49811BBC893A0010D894;
+			remoteInfo = "NewsBlur Share Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FF8C49911BBC893B0010D894 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FF8C498D1BBC893B0010D894 /* NewsBlur Share Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
@@ -882,6 +909,12 @@
 		FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-blurblogs.png"; sourceTree = "<group>"; };
 		FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_green@2x.png"; sourceTree = "<group>"; };
 		FF88F10C1811BAEC007FEE78 /* unread_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_green.png; sourceTree = "<group>"; };
+		FF8C49821BBC893A0010D894 /* NewsBlur Share Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NewsBlur Share Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF8C49841BBC893B0010D894 /* ActionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActionViewController.h; sourceTree = "<group>"; };
+		FF8C49851BBC893B0010D894 /* ActionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActionViewController.m; sourceTree = "<group>"; };
+		FF8C498A1BBC893B0010D894 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF8C49921BBC9D140010D894 /* NewsBlur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = NewsBlur.entitlements; path = NewsBlur/NewsBlur.entitlements; sourceTree = "<group>"; };
+		FF8C49931BBCA3390010D894 /* NewsBlur Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "NewsBlur Share Extension.entitlements"; sourceTree = "<group>"; };
 		FF8D1EA51BAA304E00725D8A /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		FF8D1EA61BAA304E00725D8A /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		FF8D1EBD1BAA311000725D8A /* SBJson4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson4.h; sourceTree = "<group>"; };
@@ -1094,6 +1127,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF8C497F1BBC893A0010D894 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1128,6 +1168,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* NewsBlur.app */,
+				FF8C49821BBC893A0010D894 /* NewsBlur Share Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1140,8 +1181,10 @@
 				43D0451C1565BC090085F811 /* Resources-iPad */,
 				43B8F017156603170008733D /* Resources-iPhone */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				FF8C49831BBC893A0010D894 /* NewsBlur Share Extension */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				FF8C49921BBC9D140010D894 /* NewsBlur.entitlements */,
 				8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */,
 			);
 			name = CustomTemplate;
@@ -1932,6 +1975,17 @@
 			name = Offline;
 			sourceTree = "<group>";
 		};
+		FF8C49831BBC893A0010D894 /* NewsBlur Share Extension */ = {
+			isa = PBXGroup;
+			children = (
+				FF8C49931BBCA3390010D894 /* NewsBlur Share Extension.entitlements */,
+				FF8C49841BBC893B0010D894 /* ActionViewController.h */,
+				FF8C49851BBC893B0010D894 /* ActionViewController.m */,
+				FF8C498A1BBC893B0010D894 /* Info.plist */,
+			);
+			path = "NewsBlur Share Extension";
+			sourceTree = "<group>";
+		};
 		FF8D1EA41BAA304E00725D8A /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
@@ -2074,15 +2128,34 @@
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				FFAEA9921BB202F000A8324E /* ShellScript */,
+				FF8C49911BBC893B0010D894 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FF8C498C1BBC893B0010D894 /* PBXTargetDependency */,
 			);
 			name = NewsBlur;
 			productName = NewsBlur;
 			productReference = 1D6058910D05DD3D006BFB54 /* NewsBlur.app */;
 			productType = "com.apple.product-type.application";
+		};
+		FF8C49811BBC893A0010D894 /* NewsBlur Share Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF8C498E1BBC893B0010D894 /* Build configuration list for PBXNativeTarget "NewsBlur Share Extension" */;
+			buildPhases = (
+				FF8C497E1BBC893A0010D894 /* Sources */,
+				FF8C497F1BBC893A0010D894 /* Frameworks */,
+				FF8C49801BBC893A0010D894 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "NewsBlur Share Extension";
+			productName = "NewsBlur Share Extension";
+			productReference = FF8C49821BBC893A0010D894 /* NewsBlur Share Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -2095,6 +2168,20 @@
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = U92APKK285;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					FF8C49811BBC893A0010D894 = {
+						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = U92APKK285;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -2137,6 +2224,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* NewsBlur */,
+				FF8C49811BBC893A0010D894 /* NewsBlur Share Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -2429,6 +2517,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF8C49801BBC893A0010D894 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -2593,7 +2688,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF8C497E1BBC893A0010D894 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF8C49941BBCA4810010D894 /* NewsBlur_Prefix.pch in Sources */,
+				FF8C49861BBC893B0010D894 /* ActionViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FF8C498C1BBC893B0010D894 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF8C49811BBC893A0010D894 /* NewsBlur Share Extension */;
+			targetProxy = FF8C498B1BBC893B0010D894 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		FF2EB7951AA65504002549A7 /* IASKLocalizable.strings */ = {
@@ -2627,8 +2739,9 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_ENTITLEMENTS = NewsBlur/NewsBlur.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2656,7 +2769,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "ca3e3dd7-8eb5-4b4a-93e7-f66666a8cdab";
+				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2669,8 +2782,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_ENTITLEMENTS = NewsBlur/NewsBlur.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2696,7 +2810,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "ca3e3dd7-8eb5-4b4a-93e7-f66666a8cdab";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2747,6 +2861,96 @@
 			};
 			name = Release;
 		};
+		FF8C498F1BBC893B0010D894 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = BrandAsset;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "NewsBlur Share Extension/NewsBlur Share Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "NewsBlur Share Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		FF8C49901BBC893B0010D894 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = BrandAsset;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "NewsBlur Share Extension/NewsBlur Share Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "NewsBlur Share Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2764,6 +2968,15 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF8C498E1BBC893B0010D894 /* Build configuration list for PBXNativeTarget "NewsBlur Share Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF8C498F1BBC893B0010D894 /* Debug */,
+				FF8C49901BBC893B0010D894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
