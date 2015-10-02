@@ -552,12 +552,15 @@
         if (self.isDraggingScrollview ||
             self.scrollingToPage < 0 ||
             ABS(newIndex - self.scrollingToPage) <= 1) {
-            [pageController initStory];
-            [pageController drawStory];
-//            NSLog(@"In text view render? %d", appDelegate.inTextView);
-            if (appDelegate.inTextView) {
-                [pageController fetchTextView];
-            }
+            [pageController drawFeedGradient];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul), ^{
+                [pageController initStory];
+                [pageController drawStory];
+                //            NSLog(@"In text view render? %d", appDelegate.inTextView);
+                if (appDelegate.inTextView) {
+                    [pageController fetchTextView];
+                }                
+            });
         } else {
 //            [pageController clearStory];
 //            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);

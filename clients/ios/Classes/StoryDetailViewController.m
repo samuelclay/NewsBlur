@@ -282,7 +282,6 @@
 //        return;
     }
 
-    [self drawFeedGradient];
     scrollPct = 0;
     
     NSString *shareBarString = [self getShareBar];
@@ -403,9 +402,11 @@
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
-    [self.webView setMediaPlaybackRequiresUserAction:NO];
-    [self.webView loadHTMLString:htmlString baseURL:baseURL];
-    [appDelegate.storyPageControl setTextButton:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.webView setMediaPlaybackRequiresUserAction:NO];
+        [self.webView loadHTMLString:htmlString baseURL:baseURL];
+        [appDelegate.storyPageControl setTextButton:self];
+    });
 
 //    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
 
@@ -1201,7 +1202,7 @@
             [appDelegate markScrollPosition:updatedPos inStory:story];
         } withIdentifier:storyIdentifier throttle:interval];
     } else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                  (unsigned long)NULL), ^(void) {
             [appDelegate markScrollPosition:position inStory:story];
         });
@@ -1211,7 +1212,7 @@
 - (void)scrollToLastPosition:(BOOL)animated {
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [appDelegate.database inDatabase:^(FMDatabase *db) {
             __strong __typeof(&*weakSelf)strongSelf = weakSelf;
@@ -1233,13 +1234,15 @@
                 NSInteger position = floor(scrollPct * strongSelf.webView.scrollView.contentSize.height);
                 NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
                 if (position > maxPosition) {
-                    NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, maxPosition);
+                    NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, (long)maxPosition);
                     position = maxPosition;
                 }
-                NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
-                });
+                if (position > 0) {
+                    NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
+                    });
+                }
             }
             [cursor close];
             
@@ -2067,9 +2070,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (!self.activeStoryId || !self.activeStory) return;
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
-    [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-    HUD.labelText = @"Fetching text...";
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [MBProgressHUD hideHUDForView:self.webView animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+        HUD.labelText = @"Fetching text...";
+    });
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
                            NEWSBLUR_URL];

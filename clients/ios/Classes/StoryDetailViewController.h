@@ -54,6 +54,7 @@ UIActionSheetDelegate> {
 - (void)hideNoStoryMessage;
 - (void)drawStory;
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
+- (void)drawFeedGradient;
 - (void)showStory;
 - (void)clearStory;
 - (void)hideStory;

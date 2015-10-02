@@ -718,10 +718,13 @@
     self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
                                                     entersReaderIfAvailable:NO];
     self.safariViewController.delegate = self;
-    [self.storyNavigationController pushViewController:self.safariViewController animated:YES];
+//    self.navigationController.navigationBar.translucent = YES;
+    [self.storyNavigationController presentViewController:self.safariViewController animated:YES completion:nil];
+//    [self.storyNavigationController pushViewController:self.safariViewController animated:YES];
 }
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+//    self.storyNavigationController.navigationBar.translucent = NO;
     [self.storyNavigationController popViewControllerAnimated:YES];
 }
 
