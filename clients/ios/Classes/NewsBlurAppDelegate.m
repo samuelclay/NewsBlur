@@ -1320,10 +1320,14 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
-        SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController transitionToSafariView:url];
+        } else {
+            SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
                                                              entersReaderIfAvailable:NO];
-        safari.delegate = self;
-        [navigationController pushViewController:safari animated:YES];
+            safari.delegate = self;
+            [navigationController pushViewController:safari animated:YES];
+        }
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];

@@ -48,6 +48,7 @@
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
 @property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
+@property (nonatomic, strong) SFSafariViewController *safariViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
 @property (readwrite) int storyTitlesYCoordinate;
@@ -711,6 +712,17 @@
             [appDelegate.masterContainerViewController transitionToOriginalView:NO];
         }
     }
+}
+
+- (void)transitionToSafariView:(NSURL *)url {
+    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
+                                                    entersReaderIfAvailable:NO];
+    self.safariViewController.delegate = self;
+    [self.storyNavigationController pushViewController:self.safariViewController animated:YES];
+}
+
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    [self.storyNavigationController popViewControllerAnimated:YES];
 }
 
 - (void)transitionToOriginalView {
