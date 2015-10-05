@@ -96,7 +96,6 @@ SFSafariViewControllerDelegate>  {
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
     BOOL inStoryDetail;
-    BOOL inTextView;
     BOOL inFindingStoryMode;
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
@@ -131,6 +130,7 @@ SFSafariViewControllerDelegate>  {
     NSDictionary * dictUserProfile;
     NSDictionary * dictSocialServices;
     NSMutableDictionary * dictUnreadCounts;
+    NSMutableDictionary * dictTextFeeds;
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
@@ -200,7 +200,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
-@property (nonatomic, readwrite) BOOL inTextView;
 @property (nonatomic, readwrite) BOOL isPresentingActivities;
 @property (readwrite) NSDictionary * activeStory;
 @property (readwrite) NSURL * activeOriginalStoryURL;
@@ -234,6 +233,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
+@property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
@@ -306,6 +306,10 @@ SFSafariViewControllerDelegate>  {
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)refreshUserProfile:(void(^)())callback;
 - (void)refreshFeedCount:(id)feedId;
+
+- (void)populateDictTextFeeds;
+- (BOOL)isFeedInTextView:(id)feedId;
+- (void)toggleFeedTextView:(id)feedId;
 
 - (void)populateDictUnreadCounts;
 - (NSInteger)unreadCount;

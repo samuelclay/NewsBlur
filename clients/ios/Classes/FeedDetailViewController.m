@@ -369,8 +369,6 @@
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
 
-    appDelegate.inTextView = [appDelegate.storiesCollection.activeStoryView isEqualToString:@"text"];
-
 //    [self testForTryFeed];
 }
 

@@ -259,10 +259,13 @@
 #pragma mark Story setup
 
 - (void)initStory {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [self.activeStory
+                            objectForKey:@"story_feed_id"]];
     appDelegate.inStoryDetail = YES;
     self.noStoryMessage.hidden = YES;
     self.webView.hidden = NO;
-    self.inTextView = appDelegate.inTextView;
+    self.inTextView = NO;
 
     [appDelegate hideShareView:NO];
 }
@@ -1995,8 +1998,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
-    [webView setNeedsLayout];
-    [webView layoutIfNeeded];
+//    [webView setNeedsLayout];
+//    [webView layoutIfNeeded];
     
     NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
 
@@ -2058,6 +2061,20 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark -
 #pragma mark Text view
+
+- (void)showTextOrStoryView {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [self.activeStory objectForKey:@"story_feed_id"]];
+    if ([appDelegate isFeedInTextView:feedIdStr]) {
+        if (!self.inTextView) {
+            [self fetchTextView];
+        }
+    } else {
+        if (self.inTextView) {
+            [self showStoryView];
+        }
+    }
+}
 
 - (void)showStoryView {
     self.inTextView = NO;

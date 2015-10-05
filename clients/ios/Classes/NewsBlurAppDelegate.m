@@ -118,7 +118,6 @@
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize inStoryDetail;
-@synthesize inTextView;
 @synthesize isPresentingActivities;
 @synthesize activeComment;
 @synthesize activeShareType;
@@ -147,6 +146,7 @@
 @synthesize dictUserProfile;
 @synthesize dictSocialServices;
 @synthesize dictUnreadCounts;
+@synthesize dictTextFeeds;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -640,6 +640,7 @@
     self.userActivitiesArray = nil;
     self.userInteractionsArray = nil;
     self.dictUnreadCounts = nil;
+    self.dictTextFeeds = nil;
     
     [self.feedsViewController.feedTitlesTable reloadData];
     [self.feedsViewController resetToolbar];
@@ -1377,6 +1378,35 @@
     } else {
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+
+#pragma mark - Text View
+
+- (void)populateDictTextFeeds {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSDictionary *textFeeds = [preferences dictionaryForKey:@"feeds:text"];
+    if (!textFeeds) {
+        self.dictTextFeeds = [[NSMutableDictionary alloc] init];
+    } else {
+        self.dictTextFeeds = [textFeeds mutableCopy];
+    }
+    
+}
+
+- (BOOL)isFeedInTextView:(id)feedId {
+    return [self.dictTextFeeds objectForKey:feedId];
+}
+
+- (void)toggleFeedTextView:(id)feedId {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if ([self.dictTextFeeds objectForKey:feedId]) {
+        [self.dictTextFeeds removeObjectForKey:feedId];
+    } else {
+        [self.dictTextFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedId];
+    }
+    
+    [preferences setObject:self.dictTextFeeds forKey:@"feeds:text"];
+    [preferences synchronize];
 }
 
 #pragma mark - Unread Counts

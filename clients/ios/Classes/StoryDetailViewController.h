@@ -89,6 +89,7 @@ UIActionSheetDelegate> {
 
 - (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer;
 
+- (void)showTextOrStoryView;
 - (void)showStoryView;
 - (void)fetchTextView;
 - (void)finishFetchTextView:(ASIHTTPRequest *)request;
