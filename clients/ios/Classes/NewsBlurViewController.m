@@ -595,6 +595,7 @@ static UIFont *userLabelFont;
     // set up dictFeeds
     appDelegate.dictFeeds = [[results objectForKey:@"feeds"] mutableCopy];
     [appDelegate populateDictUnreadCounts];
+    [appDelegate populateDictTextFeeds];
     
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];

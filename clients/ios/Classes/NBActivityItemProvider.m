@@ -11,17 +11,32 @@
 @implementation NBActivityItemProvider
 
 - (instancetype)initWithUrl:(NSURL *)_url authorName:(NSString *)_authorName text:(NSString *)_text title:(NSString *)_title feedTitle:(NSString *)_feedTitle {
-    url = _url;
-    authorName = _authorName;
-    text = _text;
-    title = _title;
-    feedTitle = _feedTitle;
+    if (self = [super initWithPlaceholderItem:_url]) {
+        url = _url;
+        authorName = _authorName;
+        text = _text;
+        title = _title;
+        feedTitle = _feedTitle;
+    }
     
     return self;
 }
 
 - (id)item {
-    return [NSDictionary dictionary];
+    if ([self.placeholderItem isKindOfClass:[NSString class]]) {
+        if ([self.activityType isEqualToString:UIActivityTypeMessage]) {
+            return [NSString stringWithFormat:@"%@\n%@", title, url];
+        } else if ([self.activityType isEqualToString:UIActivityTypePostToFacebook] ||
+            [self.activityType isEqualToString:UIActivityTypeMail]) {
+            
+            return [NSString stringWithFormat:@"%@\n%@\n%@", title, url, text];
+            
+        } else {
+            return [NSString stringWithFormat:@"%@\n%@", title, url];
+        }
+    }
+    
+    return [NSString stringWithFormat:@"%@\n%@", title, url];
 }
 
 -(id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType {
@@ -31,9 +46,9 @@
     } else if ([activityType isEqualToString:UIActivityTypePostToTwitter] ||
                [activityType isEqualToString:UIActivityTypePostToFacebook] ||
                [activityType isEqualToString:UIActivityTypePostToWeibo]) {
-        return title;
+        return [NSString stringWithFormat:@"%@\n%@", title, url];
     }
-    return title;
+    return [NSString stringWithFormat:@"%@\n%@", title, url];
 }
 
 - (NSString *)activityViewController:(UIActivityViewController *)activityViewController subjectForActivityType:(NSString *)activityType {

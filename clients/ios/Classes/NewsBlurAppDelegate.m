@@ -118,7 +118,6 @@
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize inStoryDetail;
-@synthesize inTextView;
 @synthesize isPresentingActivities;
 @synthesize activeComment;
 @synthesize activeShareType;
@@ -147,6 +146,7 @@
 @synthesize dictUserProfile;
 @synthesize dictSocialServices;
 @synthesize dictUnreadCounts;
+@synthesize dictTextFeeds;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -493,14 +493,17 @@
             images:(NSArray *)images {
     
     // iOS 8+
-    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-    if (title) [activityItems addObject:title];
-    if (url) [activityItems addObject:url];
     if (text) {
         NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
         text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
-        [activityItems addObject:text];
     }
+
+    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+//    if (title) [activityItems addObject:title];
+//    if (url) [activityItems addObject:url];
+//    if (text) [activityItems addObject:text];
+    NBActivityItemProvider *activityItemProvider = [[NBActivityItemProvider alloc] initWithUrl:url authorName:authorName text:text title:title feedTitle:feedTitle];
+    [activityItems addObject:activityItemProvider];
 
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
@@ -637,6 +640,7 @@
     self.userActivitiesArray = nil;
     self.userInteractionsArray = nil;
     self.dictUnreadCounts = nil;
+    self.dictTextFeeds = nil;
     
     [self.feedsViewController.feedTitlesTable reloadData];
     [self.feedsViewController resetToolbar];
@@ -1317,10 +1321,14 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
-        SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController transitionToSafariView:url];
+        } else {
+            SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
                                                              entersReaderIfAvailable:NO];
-        safari.delegate = self;
-        [navigationController pushViewController:safari animated:YES];
+            safari.delegate = self;
+            [navigationController pushViewController:safari animated:YES];
+        }
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -1370,6 +1378,35 @@
     } else {
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+
+#pragma mark - Text View
+
+- (void)populateDictTextFeeds {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSDictionary *textFeeds = [preferences dictionaryForKey:@"feeds:text"];
+    if (!textFeeds) {
+        self.dictTextFeeds = [[NSMutableDictionary alloc] init];
+    } else {
+        self.dictTextFeeds = [textFeeds mutableCopy];
+    }
+    
+}
+
+- (BOOL)isFeedInTextView:(id)feedId {
+    return [self.dictTextFeeds objectForKey:feedId];
+}
+
+- (void)toggleFeedTextView:(id)feedId {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if ([self.dictTextFeeds objectForKey:feedId]) {
+        [self.dictTextFeeds removeObjectForKey:feedId];
+    } else {
+        [self.dictTextFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedId];
+    }
+    
+    [preferences setObject:self.dictTextFeeds forKey:@"feeds:text"];
+    [preferences synchronize];
 }
 
 #pragma mark - Unread Counts

@@ -268,7 +268,7 @@ viewForHeaderInSection:(NSInteger)section {
     return 140;
 }
 
-- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
+- (void)searchDisplayController:(UISearchController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
     tableView.rowHeight = 140.0f;
 }
 
