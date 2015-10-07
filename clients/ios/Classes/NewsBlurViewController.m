@@ -205,7 +205,7 @@ static UIFont *userLabelFont;
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
 //        [self.feedTitlesTable reloadData];
-        [self refreshHeaderCounts];
+//        [self refreshHeaderCounts];
         [self redrawUnreadCounts];
 //        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
 //                                          animated:NO 
@@ -224,7 +224,9 @@ static UIFont *userLabelFont;
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
-    
+    [self layoutHeaderCounts:nil];
+    [self refreshHeaderCounts];
+
     self.interactiveFeedDetailTransition = NO;
 }
 
@@ -1982,7 +1984,8 @@ heightForHeaderInSection:(NSInteger)section {
                                      greenIcon.frame.origin.y - 3, 100, 16);
     [positiveCount sizeToFit];
     
-    [userInfoBarButton.customView sizeToFit];
+    NSLog(@"User info size pre: %@", NSStringFromCGRect(userInfoBarButton.customView.frame));
+    NSLog(@"User info size post: %@", NSStringFromCGRect(userInfoBarButton.customView.frame));
 }
 
 - (void)showRefreshNotifier {
