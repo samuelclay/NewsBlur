@@ -2656,7 +2656,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "ca3e3dd7-8eb5-4b4a-93e7-f66666a8cdab";
+				PROVISIONING_PROFILE = "a33bf1f3-82b0-4761-a144-cb612ef478e9";
 				STRIP_INSTALLED_PRODUCT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2696,7 +2696,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur;
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "ca3e3dd7-8eb5-4b4a-93e7-f66666a8cdab";
+				PROVISIONING_PROFILE = "a33bf1f3-82b0-4761-a144-cb612ef478e9";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

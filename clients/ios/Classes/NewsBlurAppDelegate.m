@@ -963,6 +963,7 @@
                                        NEWSBLUR_URL]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
+    [request setValidatesSecureCertificate:NO];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
     [request setFailedBlock:^(void) {
@@ -1001,6 +1002,7 @@
             NSURL *url = [NSURL URLWithString:urlS];
             
             __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            [request setValidatesSecureCertificate:NO];
             [request setDelegate:self];
             [request setResponseEncoding:NSUTF8StringEncoding];
             [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -1793,7 +1795,7 @@
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
-             isEqualToString:[story objectForKey:@"story_hash"]]) {
+             isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
             [storyPageControl refreshHeaders];
         }

@@ -553,10 +553,16 @@
             self.scrollingToPage < 0 ||
             ABS(newIndex - self.scrollingToPage) <= 1) {
             [pageController drawFeedGradient];
+            NSString *originalStoryId = pageController.activeStoryId;
+            __block StoryDetailViewController *blockPageController = pageController;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul), ^{
-                [pageController initStory];
-                [pageController drawStory];
-                [pageController showTextOrStoryView];
+                if (blockPageController.activeStoryId && ![blockPageController.activeStoryId isEqualToString:originalStoryId]) {
+                    NSLog(@"Stale story, already drawn. Was: %@, Now: %@", originalStoryId, blockPageController.activeStoryId);
+                    return;
+                }
+                [blockPageController initStory];
+                [blockPageController drawStory];
+                [blockPageController showTextOrStoryView];
             });
         } else {
 //            [pageController clearStory];

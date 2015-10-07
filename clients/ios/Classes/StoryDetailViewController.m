@@ -259,9 +259,6 @@
 #pragma mark Story setup
 
 - (void)initStory {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                           [self.activeStory
-                            objectForKey:@"story_feed_id"]];
     appDelegate.inStoryDetail = YES;
     self.noStoryMessage.hidden = YES;
     self.webView.hidden = NO;
@@ -280,12 +277,13 @@
 }
 
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
-    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"story_hash"]) {
-        NSLog(@"Already drawn story.");
+    if (!force && [self.activeStoryId isEqualToString:[self.activeStory objectForKey:@"story_hash"]]) {
+        NSLog(@"Already drawn story, drawing anyway: %@", [self.activeStory objectForKey:@"story_title"]);
 //        return;
     }
 
     scrollPct = 0;
+    hasScrolled = NO;
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
@@ -316,7 +314,7 @@
     
     int contentWidth = CGRectGetWidth(self.webView.scrollView.bounds);
     NSString *contentWidthClass;
-    NSLog(@"Drawing story: %d", contentWidth);
+    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
@@ -406,12 +404,12 @@
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self.webView setMediaPlaybackRequiresUserAction:NO];
         [self.webView loadHTMLString:htmlString baseURL:baseURL];
         [appDelegate.storyPageControl setTextButton:self];
     });
 
-//    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
 }
@@ -458,6 +456,7 @@
 
 - (void)clearStory {
     self.activeStoryId = nil;
+    if (self.activeStory) self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
 }
@@ -1111,7 +1110,8 @@
         }
         
         if (appDelegate.storyPageControl.currentPage != self) return;
-        
+        if (!hasScrolled) hasScrolled = YES;
+
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.webView.scrollView.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
@@ -1213,6 +1213,9 @@
 }
 
 - (void)scrollToLastPosition:(BOOL)animated {
+    if (hasScrolled) return;
+    hasScrolled = YES;
+    
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,

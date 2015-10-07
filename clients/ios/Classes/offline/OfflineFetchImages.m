@@ -75,6 +75,7 @@
         NSString *storyTimestamp = [urlArray objectAtIndex:2];
         
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setValidatesSecureCertificate:NO];
         [request setUserInfo:@{@"story_hash": storyHash, @"story_timestamp": storyTimestamp}];
         [request setDelegate:self];
         [request setDidFinishSelector:@selector(storeCachedImage:)];
