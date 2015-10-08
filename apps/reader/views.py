@@ -2020,7 +2020,8 @@ def add_feature(request):
 def load_features(request):
     user = get_user(request)
     page = max(int(request.REQUEST.get('page', 0)), 0)
-    logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
+    if page > 1:
+        logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
         'description': f['description'], 
