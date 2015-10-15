@@ -409,7 +409,7 @@ class Profile(models.Model):
              usernames.add(user.username)
              print user.username, user.email, opens, reads
         
-        if not confirm: return
+        if not confirm: return usernames
         
         for username in usernames:
             u = User.objects.get(username=username)
