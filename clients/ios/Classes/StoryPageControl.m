@@ -290,7 +290,7 @@
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    [self reorientPages];
+//    [self reorientPages];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -552,12 +552,18 @@
         if (self.isDraggingScrollview ||
             self.scrollingToPage < 0 ||
             ABS(newIndex - self.scrollingToPage) <= 1) {
-            [pageController initStory];
-            [pageController drawStory];
-//            NSLog(@"In text view render? %d", appDelegate.inTextView);
-            if (appDelegate.inTextView) {
-                [pageController fetchTextView];
-            }
+            [pageController drawFeedGradient];
+            NSString *originalStoryId = pageController.activeStoryId;
+            __block StoryDetailViewController *blockPageController = pageController;
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul), ^{
+                if (blockPageController.activeStoryId && ![blockPageController.activeStoryId isEqualToString:originalStoryId]) {
+                    NSLog(@"Stale story, already drawn. Was: %@, Now: %@", originalStoryId, blockPageController.activeStoryId);
+                    return;
+                }
+                [blockPageController initStory];
+                [blockPageController drawStory];
+                [blockPageController showTextOrStoryView];
+            });
         } else {
 //            [pageController clearStory];
 //            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
@@ -993,28 +999,13 @@
 
 - (IBAction)toggleTextView:(id)sender {
     [self endTouchDown:sender];
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL failedText = [appDelegate.storiesCollection.activeStoryView isEqualToString:@"text"] &&
-                      !currentPage.inTextView;
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    [appDelegate toggleFeedTextView:feedIdStr];
     
-    if (!currentPage.inTextView) {
-        if (!failedText) {
-            // Only lock in Text view if not a failed text fetch
-            [userPreferences setObject:@"text" forKey:[appDelegate.storiesCollection storyViewKey]];
-        }
-        appDelegate.inTextView = YES;
-        [self.currentPage fetchTextView];
-        [self.nextPage fetchTextView];
-        [self.previousPage fetchTextView];
-    } else {
-        [userPreferences setObject:@"story" forKey:[appDelegate.storiesCollection storyViewKey]];
-        appDelegate.inTextView = NO;
-        [self.currentPage showStoryView];
-        [self.nextPage showStoryView];
-        [self.previousPage showStoryView];
-    }
-    
-    [userPreferences synchronize];
+    [self.currentPage showTextOrStoryView];
+    [self.nextPage showTextOrStoryView];
+    [self.previousPage showTextOrStoryView];
 }
 
 #pragma mark -

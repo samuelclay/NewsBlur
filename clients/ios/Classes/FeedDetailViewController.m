@@ -369,8 +369,6 @@
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
 
-    appDelegate.inTextView = [appDelegate.storiesCollection.activeStoryView isEqualToString:@"text"];
-
 //    [self testForTryFeed];
 }
 
@@ -678,6 +676,7 @@
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setValidatesSecureCertificate:NO];
     [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage]}];
     [request setFailedBlock:^(void) {
         NSLog(@"in failed block %@", request);
@@ -890,6 +889,7 @@
 
     [self cancelRequests];
     __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -2053,10 +2053,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)changeActiveFeedDetailRow {
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-    int offset = 1;
+    NSInteger offset = 1;
     if ([[self.storyTitlesTable visibleCells] count] <= 4) {
         offset = 0;
     }
+    if (offset > rowIndex) offset = rowIndex;
                     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
@@ -2119,6 +2120,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            [storiesCollection.activeFeed objectForKey:@"id"]];
     [self cancelRequests];
     ASIHTTPRequest *request = [self requestWithURL:urlString];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];

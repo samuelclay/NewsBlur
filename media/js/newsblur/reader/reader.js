@@ -4976,6 +4976,9 @@
             
             this.model.get_features_page(this.counts['feature_page']+direction, function(features) {
                 $module.removeClass('NB-loading');
+
+                if (!features) return;
+                
                 self.counts['feature_page'] += direction;
                 
                 var $table = $.make('table', { className: 'NB-features', cellSpacing: 0, cellPadding: 0 });
@@ -5005,6 +5008,8 @@
                     $previous.addClass('NB-disabled');
                 }
                 
+            }, function() {
+                $module.removeClass('NB-loading');
             });
         },
         
@@ -5416,10 +5421,11 @@
             if (NEWSBLUR.Globals.debug) return;
             
             // Reload feedback module every 10 minutes.
-            var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
+            var reload_interval = NEWSBLUR.Globals.is_staff ? 30*1000 : 5*60*1000;
             clearInterval(this.locks.load_feedback_table);
             this.locks.load_feedback_table = setInterval(_.bind(function() {
                 this.load_feedback_table();
+                this.load_feature_page(0);
             }, this), reload_interval * (Math.random() * (1.25 - 0.75) + 0.75));
         },
         
@@ -5429,8 +5435,8 @@
             $module.addClass('NB-loading');
             
             this.model.load_feedback_table(function(resp) {
-                if (!resp) return;
                 $module.removeClass('NB-loading');
+                if (!resp) return;
                 $module.replaceWith(resp);
                 self.load_javascript_elements_on_page();
             }, function() {

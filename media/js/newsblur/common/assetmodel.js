@@ -1270,9 +1270,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
     },
     
-    get_features_page: function(page, callback) {
-        this.make_request('/reader/features', {'page': page}, callback, callback, {
-            'ajax_group': 'statistics',
+    get_features_page: function(page, callback, error_callback) {
+        this.make_request('/reader/features', {'page': page}, callback, error_callback, {
+            'ajax_group': 'queue',
             request_type: 'GET'
         });
     },
@@ -1283,7 +1283,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'refresh'      : refresh,
             'unmoderated'  : unmoderated
         }, callback, error_callback, {
-            'ajax_group': 'statistics',
+            'ajax_group': 'queue',
             request_type: 'GET'
         });
     },
@@ -1340,7 +1340,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     load_feedback_table: function(callback, error_callback) {
         this.make_request('/statistics/feedback_table', {}, callback, error_callback, {
-            'ajax_group': 'statistics',
+            'ajax_group': 'queue',
             request_type: 'GET'
         });
     },

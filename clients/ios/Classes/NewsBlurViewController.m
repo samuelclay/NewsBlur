@@ -205,7 +205,7 @@ static UIFont *userLabelFont;
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
 //        [self.feedTitlesTable reloadData];
-        [self refreshHeaderCounts];
+//        [self refreshHeaderCounts];
         [self redrawUnreadCounts];
 //        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
 //                                          animated:NO 
@@ -224,7 +224,9 @@ static UIFont *userLabelFont;
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
-    
+    [self layoutHeaderCounts:nil];
+    [self refreshHeaderCounts];
+
     self.interactiveFeedDetailTransition = NO;
 }
 
@@ -390,6 +392,7 @@ static UIFont *userLabelFont;
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -595,6 +598,7 @@ static UIFont *userLabelFont;
     // set up dictFeeds
     appDelegate.dictFeeds = [[results objectForKey:@"feeds"] mutableCopy];
     [appDelegate populateDictUnreadCounts];
+    [appDelegate populateDictTextFeeds];
     
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
@@ -1724,6 +1728,7 @@ heightForHeaderInSection:(NSInteger)section {
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -1980,8 +1985,6 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
                                      greenIcon.frame.origin.y - 3, 100, 16);
     [positiveCount sizeToFit];
-    
-    [userInfoBarButton.customView sizeToFit];
 }
 
 - (void)showRefreshNotifier {

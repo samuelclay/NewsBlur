@@ -7,7 +7,8 @@
 #pragma mark HTTP requests
 
 - (ASIHTTPRequest*) requestWithURL:(NSString*) s {
-	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:s]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:s]];
+    [request setValidatesSecureCertificate:NO];
 	[self addRequest:request];
 	return request;
 }

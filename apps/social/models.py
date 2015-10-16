@@ -184,7 +184,7 @@ class MSocialProfile(mongo.Document):
             
     @property
     def blurblog_url(self):
-        return "http://%s.%s" % (
+        return "http://%s.%s/" % (
             self.username_slug,
             Site.objects.get_current().domain.replace('www.', ''))
     

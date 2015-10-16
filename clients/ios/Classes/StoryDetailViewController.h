@@ -26,6 +26,7 @@ UIActionSheetDelegate> {
     BOOL pullingScrollview;
     BOOL inTextView;
     BOOL inDoubleTap;
+    BOOL hasScrolled;
     NSURL *activeLongPressUrl;
     NSInteger actionSheetViewImageIndex;
     NSInteger actionSheetCopyImageIndex;
@@ -54,6 +55,7 @@ UIActionSheetDelegate> {
 - (void)hideNoStoryMessage;
 - (void)drawStory;
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
+- (void)drawFeedGradient;
 - (void)showStory;
 - (void)clearStory;
 - (void)hideStory;
@@ -88,6 +90,7 @@ UIActionSheetDelegate> {
 
 - (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer;
 
+- (void)showTextOrStoryView;
 - (void)showStoryView;
 - (void)fetchTextView;
 - (void)finishFetchTextView:(ASIHTTPRequest *)request;
