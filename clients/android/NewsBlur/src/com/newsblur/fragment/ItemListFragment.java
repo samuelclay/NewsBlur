@@ -114,6 +114,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
     public synchronized void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        stopLoading = false;
         if (getLoaderManager().getLoader(ITEMLIST_LOADER) == null) {
             getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
         }
@@ -124,9 +125,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         if (gotSome) triggerSync();
     }
 
+    /**
+     * Signal that all futher cursor loads should be ignored
+     */
     public void stopLoader() {
         stopLoading = true;
-        getLoaderManager().destroyLoader(ITEMLIST_LOADER);
     }
 
     /**
