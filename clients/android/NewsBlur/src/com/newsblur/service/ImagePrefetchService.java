@@ -6,6 +6,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageCache;
 import com.newsblur.util.PrefsUtils;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class ImagePrefetchService extends SubService {
 
     /** URLs of images contained in recently fetched stories that are candidates for prefetch. */
     static Set<String> ImageQueue;
-    static { ImageQueue = new HashSet<String>(); }
+    static { ImageQueue = Collections.synchronizedSet(new HashSet<String>()); }
 
     public ImagePrefetchService(NBSyncService parent) {
         super(parent);
