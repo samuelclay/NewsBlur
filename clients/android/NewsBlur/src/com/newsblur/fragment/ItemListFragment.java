@@ -54,6 +54,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StateFilter currentState;
     private boolean cursorSeenYet = false;
     private boolean firstStorySeenYet = false;
+    private boolean stopLoading = false;
     
     // loading indicator for when stories are present but stale (at top of list)
     protected ProgressThrobber headerProgressView;
@@ -121,6 +122,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     private void triggerRefresh(int desiredStoryCount, int totalSeen) {
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
         if (gotSome) triggerSync();
+    }
+
+    public void stopLoader() {
+        stopLoading = true;
+        getLoaderManager().destroyLoader(ITEMLIST_LOADER);
     }
 
     /**
@@ -223,6 +229,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
     @Override
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (stopLoading) return;
 		if (cursor != null) {
             cursorSeenYet = true;
             if (cursor.getCount() < 1) {
