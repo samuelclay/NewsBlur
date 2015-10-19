@@ -363,9 +363,12 @@ public class NBSyncService extends Service {
         if (HaltNow) return;
         if (FollowupActions.size() < 1) return;
 
+        int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
-            ra.doLocal(dbHelper);
+            int impact = ra.doLocal(dbHelper);
+            impactFlags |= impact;
         }
+        NbActivity.updateAllActivities(impactFlags);
         if (PendingFeed == null) {
             FollowupActions.clear();
         }
