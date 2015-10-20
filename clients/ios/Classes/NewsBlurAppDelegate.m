@@ -541,7 +541,7 @@
         } else if ([activityType isEqualToString:@"ARChromeActivity"]) {
             return;
         } else if ([activityType isEqualToString:@"NBCopyLinkActivity"]) {
-            _completedString = @"Copied";
+            _completedString = @"Copied Link";
         } else {
             _completedString = @"Saved";
         }
