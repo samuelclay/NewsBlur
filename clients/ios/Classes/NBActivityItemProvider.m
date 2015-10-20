@@ -37,6 +37,8 @@
         } else {
             return [NSString stringWithFormat:@"%@\n%@", title, url];
         }
+    } else if ([self.placeholderItem isKindOfClass:[NSURL class]]) {
+        return url;
     }
     
     return [NSString stringWithFormat:@"%@\n%@", title, url];
