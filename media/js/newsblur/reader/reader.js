@@ -3389,6 +3389,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
                     ])),
+                    (!story.get('read_status') && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-read' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
+                    ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-star' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
@@ -5950,6 +5954,13 @@
                 var story_id = $t.closest('.NB-menu-manage').data('story_id');
                 var story = self.model.get_story(story_id);
                 NEWSBLUR.assets.stories.mark_unread(story);
+            });  
+            
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-read' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.closest('.NB-menu-manage').data('story_id');
+                var story = self.model.get_story(story_id);
+                NEWSBLUR.assets.stories.mark_read(story);
             });  
             
             $.targetIs(e, { tagSelector: '.task_view_page:not(.NB-task-return)' }, function($t, $p){
