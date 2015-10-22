@@ -10,6 +10,7 @@
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
+#import "NewsBlurViewController.h"
 #import "FeedDetailTableCell.h"
 #import "ASIFormDataRequest.h"
 #import "UserProfileViewController.h"
@@ -1428,6 +1429,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < storiesCollection.storyLocationsCount) {
         // mark the cell as read
+        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
         if (self.isDashboardModule) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
