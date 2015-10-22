@@ -661,6 +661,10 @@
 - (NSDictionary *)markStory:(NSDictionary *)story asSaved:(BOOL)saved {
     BOOL firstSaved = NO;
     NSMutableDictionary *newStory = [story mutableCopy];
+    BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
+    if (isSaved == saved) {
+        return newStory;
+    }
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved && ![newStory objectForKey:@"starred_date"]) {
         [newStory setObject:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
