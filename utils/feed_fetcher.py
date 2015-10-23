@@ -237,7 +237,7 @@ class FetchFeed:
                 minutes = duration_sec / 60
                 seconds = duration_sec - (minutes*60)
                 duration = "%s:%s" % ('{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
-            content = """<div class="NB-youtube-player"><iframe allowfullscreen="true" src="%s"></iframe></div>
+            content = """<div class="NB-youtube-player"><iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe></div>
                          <div class="NB-youtube-stats"><small>
                              <b>From:</b> <a href="%s">%s</a><br />
                              <b>Duration:</b> %s<br />
