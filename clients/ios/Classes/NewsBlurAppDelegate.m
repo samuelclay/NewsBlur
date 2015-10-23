@@ -1354,6 +1354,7 @@
 }
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    controller.delegate = nil;
     [navigationController popViewControllerAnimated:YES];
 }
 
