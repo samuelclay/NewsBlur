@@ -726,7 +726,7 @@
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
 //    self.storyNavigationController.navigationBar.translucent = NO;
     controller.delegate = nil;
-    [self.storyNavigationController popViewControllerAnimated:YES];
+    [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)transitionToOriginalView {
