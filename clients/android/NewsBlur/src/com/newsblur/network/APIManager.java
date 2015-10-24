@@ -137,7 +137,13 @@ public class APIManager {
         if (fs.getSingleFeed() != null) {
             values.put(APIConstants.PARAMETER_FEEDID, fs.getSingleFeed());
         } else if (fs.getMultipleFeeds() != null) {
-            for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDID, feedId);
+            for (String feedId : fs.getMultipleFeeds()) {
+                // the API isn't supposed to care if the zero-id pseudo feed gets mentioned, but it seems to
+                // error out for some users
+                if (!feedId.equals("0")) {
+                    values.put(APIConstants.PARAMETER_FEEDID, feedId);
+                }
+            }
         } else if (fs.getSingleSocialFeed() != null) {
             values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + fs.getSingleSocialFeed().getKey());
         } else if (fs.getMultipleSocialFeeds() != null) {
