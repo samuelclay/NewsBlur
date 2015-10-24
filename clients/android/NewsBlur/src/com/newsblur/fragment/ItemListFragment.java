@@ -41,6 +41,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
@@ -76,12 +77,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
         ButterKnife.bind(this, v);
 
+        // disable the throbbers if animations are going to have a zero time scale
+        boolean isDisableAnimations = ViewUtils.isPowerSaveMode(activity);
+
+        emptyProgressView.setEnabled(!isDisableAnimations);
         emptyProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                     getResources().getColor(R.color.refresh_2),
                                     getResources().getColor(R.color.refresh_3),
                                     getResources().getColor(R.color.refresh_4));
         View headerView = inflater.inflate(R.layout.row_loading_throbber, null);
         headerProgressView = (ProgressThrobber) headerView.findViewById(R.id.itemlist_loading_throb);
+        headerProgressView.setEnabled(!isDisableAnimations);
         headerProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                      getResources().getColor(R.color.refresh_2),
                                      getResources().getColor(R.color.refresh_3),
@@ -91,6 +97,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
+        footerProgressView.setEnabled(!isDisableAnimations);
         footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                      getResources().getColor(R.color.refresh_2),
                                      getResources().getColor(R.color.refresh_3),
