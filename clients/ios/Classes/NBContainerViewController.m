@@ -15,6 +15,8 @@
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
+#import "NBSafariViewController.h"
+#import "NBModalPushPopTransition.h"
 #import "InteractionCell.h"
 #import "ActivityCell.h"
 #import "FeedTableCell.h"
@@ -48,7 +50,8 @@
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
 @property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
-@property (nonatomic, strong) SFSafariViewController *safariViewController;
+@property (nonatomic, strong) NBSafariViewController *safariViewController;
+@property (nonatomic, strong) NBModalPushPopTransition *safariAnimator;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
 @property (readwrite) int storyTitlesYCoordinate;
@@ -715,11 +718,17 @@
 }
 
 - (void)transitionToSafariView:(NSURL *)url {
-    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
+    self.safariAnimator = [NBModalPushPopTransition new];
+    self.safariViewController = [[NBSafariViewController alloc] initWithURL:url
                                                     entersReaderIfAvailable:NO];
     self.safariViewController.delegate = self;
+    self.safariViewController.transitioningDelegate = self;
 //    self.navigationController.navigationBar.translucent = YES;
-    [self.storyNavigationController presentViewController:self.safariViewController animated:YES completion:nil];
+    [self.storyNavigationController presentViewController:self.safariViewController animated:YES completion:^{
+        UIScreenEdgePanGestureRecognizer *recognizer = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+        recognizer.edges = UIRectEdgeLeft;
+        [self.safariViewController.edgeView addGestureRecognizer:recognizer];
+    }];
 //    [self.storyNavigationController pushViewController:self.safariViewController animated:YES];
 }
 
@@ -727,6 +736,41 @@
 //    self.storyNavigationController.navigationBar.translucent = NO;
     controller.delegate = nil;
     [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)recognizer {
+    self.safariAnimator.percentageDriven = YES;
+    CGFloat percentComplete = [recognizer locationInView:self.view].x / self.view.bounds.size.width / 2.0;
+    
+    switch (recognizer.state) {
+        case UIGestureRecognizerStateBegan:
+            [self dismissViewControllerAnimated:YES completion:nil];
+            break;
+        case UIGestureRecognizerStateChanged:
+            [self.safariAnimator updateInteractiveTransition:percentComplete > 0.99 ? 0.99 : percentComplete];
+            break;
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+            ([recognizer velocityInView:self.view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
+            self.safariAnimator.percentageDriven = NO;
+            break;
+        default:
+            break;
+    }
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    self.safariAnimator.dismissing = NO;
+    return self.safariAnimator;
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    self.safariAnimator.dismissing = YES;
+    return self.safariAnimator;
+}
+
+- (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator {
+    return self.safariAnimator.percentageDriven ? self.safariAnimator : nil;
 }
 
 - (void)transitionToOriginalView {

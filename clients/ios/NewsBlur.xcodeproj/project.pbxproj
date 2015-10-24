@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
 		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
+		17F1566C1BDAB0930092EBFD /* NBSafariViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */; settings = {ASSET_TAGS = (); }; };
+		17F1566F1BDAB14F0092EBFD /* NBModalPushPopTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F1566E1BDAB14F0092EBFD /* NBModalPushPopTransition.m */; settings = {ASSET_TAGS = (); }; };
+		17F156711BDABBF60092EBFD /* safari_shadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F156701BDABBF60092EBFD /* safari_shadow@2x.png */; settings = {ASSET_TAGS = (); }; };
 		1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -455,6 +458,11 @@
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
 		010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnePasswordExtension.h; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.h"; sourceTree = "<group>"; };
 		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
+		17F1566A1BDAB0930092EBFD /* NBSafariViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBSafariViewController.h; sourceTree = "<group>"; };
+		17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBSafariViewController.m; sourceTree = "<group>"; };
+		17F1566D1BDAB14F0092EBFD /* NBModalPushPopTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBModalPushPopTransition.h; sourceTree = "<group>"; };
+		17F1566E1BDAB14F0092EBFD /* NBModalPushPopTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBModalPushPopTransition.m; sourceTree = "<group>"; };
+		17F156701BDABBF60092EBFD /* safari_shadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari_shadow@2x.png"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NewsBlurAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1546,6 +1554,7 @@
 				FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */,
 				43A4C42415B00A26008787B5 /* logo_background.png */,
 				43A4C42615B00A26008787B5 /* logo_newsblur_blur.png */,
+				17F156701BDABBF60092EBFD /* safari_shadow@2x.png */,
 				43A4C43F15B00A26008787B5 /* warning.gif */,
 				43A4C44015B00A26008787B5 /* warning.png */,
 				43A4C44115B00A26008787B5 /* world.png */,
@@ -1774,6 +1783,10 @@
 				FFA0483D19CA5B8400618DC4 /* EventWindow.m */,
 				FF1C4E151A3FB1F4000995E3 /* NBActivityItemProvider.h */,
 				FF1C4E161A3FB1F4000995E3 /* NBActivityItemProvider.m */,
+				17F1566D1BDAB14F0092EBFD /* NBModalPushPopTransition.h */,
+				17F1566E1BDAB14F0092EBFD /* NBModalPushPopTransition.m */,
+				17F1566A1BDAB0930092EBFD /* NBSafariViewController.h */,
+				17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */,
 			);
 			name = Foundation;
 			sourceTree = "<group>";
@@ -2288,6 +2301,7 @@
 				FF3964BC192BED0A004BEE1A /* tag.png in Resources */,
 				FF29708B16DD7AA400E92F85 /* segment_active.png in Resources */,
 				FF29708C16DD7AA400E92F85 /* segment_inactive.png in Resources */,
+				17F156711BDABBF60092EBFD /* safari_shadow@2x.png in Resources */,
 				FF29708E16DD7C8A00E92F85 /* segment_left_selected.png in Resources */,
 				FF29709016DD7FD800E92F85 /* segment_unselected.png in Resources */,
 				FF03B00319F881380063002A /* ARChromeActivity~ipad.png in Resources */,
@@ -2484,6 +2498,7 @@
 				FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */,
 				FF1F13D818AAC97900FDA816 /* UIImage+Resize.m in Sources */,
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
+				17F1566F1BDAB14F0092EBFD /* NBModalPushPopTransition.m in Sources */,
 				FF62820A1A098EA800271FDB /* WYPopoverController.m in Sources */,
 				FF8D1ECD1BAA311000725D8A /* SBJson4StreamParser.m in Sources */,
 				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
@@ -2532,6 +2547,7 @@
 				FF2EB7BE1AA65504002549A7 /* IASKTextField.m in Sources */,
 				FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */,
 				FFD660641BACA46D006E4B8D /* AFNetworkReachabilityManager.m in Sources */,
+				17F1566C1BDAB0930092EBFD /* NBSafariViewController.m in Sources */,
 				FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */,
 				FF2EB7B11AA65504002549A7 /* IASKAppSettingsWebViewController.m in Sources */,
 				FF1F13D418A9C2BE00FDA816 /* TMDiskCache.m in Sources */,

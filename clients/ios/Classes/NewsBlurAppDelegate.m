@@ -37,6 +37,7 @@
 #import "ARChromeActivity.h"
 #import "NBCopyLinkActivity.h"
 #import "MBProgressHUD.h"
+#import "NBSafariViewController.h"
 #import "Utilities.h"
 #import "StringHelper.h"
 #import "AuthorizeServicesViewController.h"
@@ -1326,7 +1327,7 @@
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.masterContainerViewController transitionToSafariView:url];
         } else {
-            SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
+            NBSafariViewController *safari = [[NBSafariViewController alloc] initWithURL:url
                                                              entersReaderIfAvailable:NO];
             safari.delegate = self;
             [navigationController pushViewController:safari animated:YES];
