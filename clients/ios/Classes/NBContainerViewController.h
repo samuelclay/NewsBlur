@@ -35,7 +35,6 @@
 
 - (void)transitionToFeedDetail;
 - (void)transitionToFeedDetail:(BOOL)resetLayout;
-- (void)transitionToSafariView:(NSURL *)url;
 - (void)transitionToOriginalView;
 - (void)transitionToOriginalView:(BOOL)resetLayout;
 - (void)transitionFromOriginalView;
