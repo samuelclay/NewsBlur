@@ -244,11 +244,11 @@ const NSInteger kHeaderHeight = 24;
         NSMutableArray *newUserTags = [[story objectForKey:@"user_tags"] mutableCopy];
         [newUserTags removeObject:tagName];
         [story setObject:newUserTags forKey:@"user_tags"];
-        [appDelegate.storiesCollection markStory:story asSaved:YES];
+        [appDelegate.storiesCollection markStory:story asSaved:YES forceUpdate:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
         NSInteger newCount = [appDelegate adjustSavedStoryCount:tagName direction:-1];
-        
         NSInteger row = [[self arrayUserTagsNotInStory] indexOfObject:tagName];
+        
         [tagsTableView beginUpdates];
         [tagsTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:indexPath.row inSection:0]]
                              withRowAnimation:UITableViewRowAnimationTop];
@@ -269,7 +269,7 @@ const NSInteger kHeaderHeight = 24;
         NSInteger otherTagRow = [[self arrayUserTagsNotInStory] indexOfObject:tagName];
 
         [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
-        [appDelegate.storiesCollection markStory:story asSaved:YES];
+        [appDelegate.storiesCollection markStory:story asSaved:YES forceUpdate:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
         [appDelegate adjustSavedStoryCount:tagName direction:1];
         
@@ -291,7 +291,7 @@ const NSInteger kHeaderHeight = 24;
         NSInteger storyTagRow = [[self arrayStoryTags] indexOfObject:tagName];
 
         [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
-        [appDelegate.storiesCollection markStory:story asSaved:YES];
+        [appDelegate.storiesCollection markStory:story asSaved:YES forceUpdate:YES];
         [appDelegate.storiesCollection syncStoryAsSaved:story];
         [appDelegate adjustSavedStoryCount:tagName direction:1];
         
@@ -318,7 +318,7 @@ const NSInteger kHeaderHeight = 24;
     NSMutableDictionary *story = [appDelegate.activeStory mutableCopy];
     
     [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
-    [appDelegate.storiesCollection markStory:story asSaved:YES];
+    [appDelegate.storiesCollection markStory:story asSaved:YES forceUpdate:YES];
     [appDelegate.storiesCollection syncStoryAsSaved:story];
     [appDelegate adjustSavedStoryCount:tagName direction:1];
     

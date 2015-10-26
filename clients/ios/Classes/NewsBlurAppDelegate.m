@@ -775,7 +775,7 @@
         }
         
         [self.userTagsViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count]+0.5))];
+        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count] + [self.activeStory[@"user_tags"] count] + 1))];
         CGRect frame = [sender CGRectValue];
         [self.popoverController presentPopoverFromRect:frame
                                                 inView:self.storyPageControl.currentPage.view

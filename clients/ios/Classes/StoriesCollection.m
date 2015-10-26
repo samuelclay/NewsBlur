@@ -659,10 +659,14 @@
 }
 
 - (NSDictionary *)markStory:(NSDictionary *)story asSaved:(BOOL)saved {
+    return [self markStory:story asSaved:saved forceUpdate:NO];
+}
+    
+- (NSDictionary *)markStory:(NSDictionary *)story asSaved:(BOOL)saved forceUpdate:(BOOL)forceUpdate {
     BOOL firstSaved = NO;
     NSMutableDictionary *newStory = [story mutableCopy];
     BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
-    if (isSaved == saved) {
+    if (isSaved == saved && !forceUpdate) {
         return newStory;
     }
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
