@@ -20,7 +20,6 @@
 @property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic) IBOutlet UILabel *instructionLabel;
 @property (nonatomic) IBOutlet UITableView *categoriesTable;
-@property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 
 - (IBAction)tapNextButton;
 - (void)tapGoogleReaderButton;

@@ -31,7 +31,6 @@
 @synthesize activityIndicator;
 @synthesize instructionLabel;
 @synthesize categoriesTable;
-@synthesize scrollView;
 @synthesize googleReaderButtonWrapper;
 @synthesize importedFeedCount_;
 @synthesize currentButton_;
@@ -83,16 +82,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    CGFloat width = CGRectGetWidth(self.view.frame);
-    
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
     [self.categoriesTable reloadData];
-    [self.scrollView setContentSize:CGSizeMake(width, self.tableViewHeight + 40)];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.categoriesTable.frame = CGRectMake((width - 300)/2, 30, self.categoriesTable.frame.size.width, self.tableViewHeight);
-    } else {
-        self.categoriesTable.frame = CGRectMake(10, 30, width-10*2, self.tableViewHeight);
-    }
     
     NSLog(@"%f height", self.tableViewHeight);
 }
@@ -103,7 +94,6 @@
     [self setInstructionLabel:nil];
     [self setCategoriesTable:nil];
     [self setGoogleReaderButton:nil];
-    [self setScrollView:nil];
     [self setNextButton:nil];
 }
 
@@ -305,22 +295,18 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 26;
+    return 26.0;
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (section == 0) {
-        return 28.0;
-    }
-    return 54.0;
+    return 30.0;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    CGFloat width = CGRectGetWidth(self.view.frame) - 20;
-
     if (section == 0) {
-        UIView* categoryTitleView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 20.0, width, 34.0)];
-        UILabel *categoryTitleLabel = [[UILabel alloc] initWithFrame:categoryTitleView.frame];
+        UIView* categoryTitleView = [UIView new];
+        UILabel *categoryTitleLabel = [UILabel new];
+        categoryTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         categoryTitleLabel.text = @"You can always add your own individual sites.";
         categoryTitleLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
         [categoryTitleView addSubview:categoryTitleLabel];
@@ -329,21 +315,24 @@
         categoryTitleView.backgroundColor = [UIColor clearColor];
         categoryTitleLabel.textAlignment = NSTextAlignmentCenter;
         
+        [NSLayoutConstraint constraintWithItem:categoryTitleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:categoryTitleView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0].active = YES;
+        [NSLayoutConstraint constraintWithItem:categoryTitleLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:categoryTitleView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0].active = YES;
+        
         return categoryTitleView;
     }
     
     // create the parent view that will hold header Label
-    UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, width, 34.0)];
+    UIView* customView = [UIView new];
     customView.tag = section;
     
     UIImage *buttonImage =[[UIImage imageNamed:@"google.png"]
                            stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
     UIButton *headerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    headerBtn.translatesAutoresizingMaskIntoConstraints = NO;
     headerBtn.tag = section + 1000;
     [headerBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
     headerBtn.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
     
-    headerBtn.frame = CGRectMake(0, 20.0, width, 34.0);
     headerBtn.titleLabel.shadowColor = UIColorFromRGB(0x1E5BDB);
     headerBtn.titleLabel.shadowOffset = CGSizeMake(0, 1);
     NSString *categoryTitle;
@@ -353,22 +342,31 @@
     BOOL inSelect = [self.selectedCategories_
                      containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
     NSLog(@"inselected %i", inSelect);
+    
     if (inSelect) {
         headerBtn.selected = YES;
         UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
         UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-        checkmarkView.frame = CGRectMake(headerBtn.frame.origin.x + headerBtn.frame.size.width - 24,
-                                         8,
-                                         16,
-                                         16);
+        checkmarkView.translatesAutoresizingMaskIntoConstraints = NO;
         checkmarkView.tag = 100;
         [headerBtn addSubview:checkmarkView];
+        
+        NSDictionary *views = @{@"checkmark" : checkmarkView};
+        
+        [NSLayoutConstraint activateConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[checkmark(16)]-10-|" options:0 metrics:nil views:views]];
+        [NSLayoutConstraint activateConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[checkmark(16)]" options:0 metrics:nil views:views]];
+        [NSLayoutConstraint constraintWithItem:checkmarkView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:headerBtn attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0].active = YES;
     }
     
     [headerBtn setTitle:categoryTitle forState:UIControlStateNormal];
     [headerBtn addTarget:self action:@selector(addCategory:) forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:headerBtn];
-
+    
+    NSDictionary *views = @{@"button" : headerBtn, @"customView" : customView};
+    
+    [NSLayoutConstraint activateConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[button]-0-|" options:0 metrics:nil views:views]];
+    [NSLayoutConstraint activateConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[button]-0-|" options:0 metrics:nil views:views]];
+    
     return customView;
 }
 
