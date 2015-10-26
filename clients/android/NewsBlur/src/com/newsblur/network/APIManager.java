@@ -2,6 +2,7 @@ package com.newsblur.network;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,8 +57,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-
-import org.apache.http.HttpStatus;
 
 public class APIManager {
 
@@ -138,7 +137,13 @@ public class APIManager {
         if (fs.getSingleFeed() != null) {
             values.put(APIConstants.PARAMETER_FEEDID, fs.getSingleFeed());
         } else if (fs.getMultipleFeeds() != null) {
-            for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDID, feedId);
+            for (String feedId : fs.getMultipleFeeds()) {
+                // the API isn't supposed to care if the zero-id pseudo feed gets mentioned, but it seems to
+                // error out for some users
+                if (!feedId.equals("0")) {
+                    values.put(APIConstants.PARAMETER_FEEDID, feedId);
+                }
+            }
         } else if (fs.getSingleSocialFeed() != null) {
             values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + fs.getSingleSocialFeed().getKey());
         } else if (fs.getMultipleSocialFeeds() != null) {
@@ -551,7 +556,7 @@ public class APIManager {
         int tryCount = 0;
         do {
             backoffSleep(tryCount++);
-            response = get_single(urlString, HttpStatus.SC_OK);
+            response = get_single(urlString, HttpURLConnection.HTTP_OK);
         } while ((response.isError()) && (tryCount < AppConstants.MAX_API_TRIES));
         return response;
     }

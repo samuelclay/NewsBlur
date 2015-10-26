@@ -41,6 +41,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
 
 public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
@@ -54,6 +55,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StateFilter currentState;
     private boolean cursorSeenYet = false;
     private boolean firstStorySeenYet = false;
+    private boolean stopLoading = false;
     
     // loading indicator for when stories are present but stale (at top of list)
     protected ProgressThrobber headerProgressView;
@@ -75,12 +77,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
         ButterKnife.bind(this, v);
 
+        // disable the throbbers if animations are going to have a zero time scale
+        boolean isDisableAnimations = ViewUtils.isPowerSaveMode(activity);
+
+        emptyProgressView.setEnabled(!isDisableAnimations);
         emptyProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                     getResources().getColor(R.color.refresh_2),
                                     getResources().getColor(R.color.refresh_3),
                                     getResources().getColor(R.color.refresh_4));
         View headerView = inflater.inflate(R.layout.row_loading_throbber, null);
         headerProgressView = (ProgressThrobber) headerView.findViewById(R.id.itemlist_loading_throb);
+        headerProgressView.setEnabled(!isDisableAnimations);
         headerProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                      getResources().getColor(R.color.refresh_2),
                                      getResources().getColor(R.color.refresh_3),
@@ -90,6 +97,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
+        footerProgressView.setEnabled(!isDisableAnimations);
         footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
                                      getResources().getColor(R.color.refresh_2),
                                      getResources().getColor(R.color.refresh_3),
@@ -113,6 +121,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
     public synchronized void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        stopLoading = false;
         if (getLoaderManager().getLoader(ITEMLIST_LOADER) == null) {
             getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
         }
@@ -121,6 +130,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     private void triggerRefresh(int desiredStoryCount, int totalSeen) {
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
         if (gotSome) triggerSync();
+    }
+
+    /**
+     * Signal that all futher cursor loads should be ignored
+     */
+    public void stopLoader() {
+        stopLoading = true;
     }
 
     /**
@@ -223,6 +239,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
     @Override
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (stopLoading) return;
 		if (cursor != null) {
             cursorSeenYet = true;
             if (cursor.getCount() < 1) {

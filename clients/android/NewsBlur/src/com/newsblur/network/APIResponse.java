@@ -1,13 +1,13 @@
 package com.newsblur.network;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import org.apache.http.HttpStatus;
 
 import com.newsblur.R;
 import com.newsblur.network.domain.LoginResponse;
@@ -37,7 +37,7 @@ public class APIResponse {
      * info we might need.
      */
     public APIResponse(Context context, OkHttpClient httpClient, Request request) {
-        this(context, httpClient, request, HttpStatus.SC_OK);
+        this(context, httpClient, request, HttpURLConnection.HTTP_OK);
     }
 
     /**
