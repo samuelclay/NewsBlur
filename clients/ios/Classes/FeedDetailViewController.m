@@ -341,7 +341,7 @@
     }
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self fadeSelectedCell];
+        [self fadeSelectedCell:NO];
     }
     
     [self.notifier setNeedsLayout];
@@ -391,6 +391,10 @@
         self.isDashboardModule) {
         [self.storyTitlesTable reloadData];
     }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self fadeSelectedCell:YES];
+    }
 
     [self.notifier setNeedsLayout];
 }
@@ -437,7 +441,7 @@
                                            animated:NO
                                      scrollPosition:UITableViewScrollPositionMiddle];
         if (deselect) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.4 * NSEC_PER_SEC),
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
                 [self.storyTitlesTable deselectRowAtIndexPath:indexPath
                                                      animated:YES];
