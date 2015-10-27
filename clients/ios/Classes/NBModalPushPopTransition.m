@@ -22,7 +22,7 @@
 }
 
 - (CGFloat)transitionDuration:(id <UIViewControllerContextTransitioning>)transitionContext {
-    return 0.75;
+    return 0.35;
 }
 
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
@@ -56,7 +56,7 @@
     shadowView.transform = self.dismissing ? CGAffineTransformMakeScale(0.01, 1.0) : CGAffineTransformIdentity;
     shadowView.alpha = self.dismissing ? 1.0 : 0.0;
     
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 usingSpringWithDamping:0.9 initialSpringVelocity:1.0 options:self.animationOpts animations:^{
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:[self animationOpts] animations:^{
         topView.transform = self.dismissing ? CGAffineTransformMakeTranslation(offset, 0.0) : CGAffineTransformIdentity;
         shadowView.transform = self.dismissing ? CGAffineTransformIdentity : CGAffineTransformMakeScale(0.01, 1.0);
         shadowView.alpha = self.dismissing ? 0.0 : 1.0;
@@ -68,7 +68,9 @@
 }
 
 - (UIViewAnimationOptions)animationOpts {
-    return UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionLayoutSubviews;
+    UIViewAnimationOptions opts = self.percentageDriven ? UIViewAnimationOptionCurveLinear : UIViewAnimationOptionCurveEaseInOut;
+    
+    return opts | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionLayoutSubviews;
 }
 
 @end

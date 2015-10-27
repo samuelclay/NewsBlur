@@ -1371,7 +1371,7 @@
 
 - (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)recognizer {
     self.safariAnimator.percentageDriven = YES;
-    CGFloat percentComplete = [recognizer locationInView:self.view].x / self.view.bounds.size.width / 2.0;
+    CGFloat percentComplete = [recognizer locationInView:self.view].x / self.view.bounds.size.width;
     
     switch (recognizer.state) {
         case UIGestureRecognizerStateBegan:
