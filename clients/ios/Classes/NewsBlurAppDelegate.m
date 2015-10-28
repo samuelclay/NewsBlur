@@ -1371,7 +1371,8 @@
 
 - (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)recognizer {
     self.safariAnimator.percentageDriven = YES;
-    CGFloat percentComplete = [recognizer locationInView:self.view].x / self.view.bounds.size.width;
+    UIView *view = self.window.rootViewController.view;
+    CGFloat percentComplete = [recognizer locationInView:view].x / view.bounds.size.width;
     
     switch (recognizer.state) {
         case UIGestureRecognizerStateBegan:
@@ -1383,7 +1384,7 @@
             break;
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled:
-            ([recognizer velocityInView:self.view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
+            ([recognizer velocityInView:view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
             self.safariAnimator.percentageDriven = NO;
             break;
         default:

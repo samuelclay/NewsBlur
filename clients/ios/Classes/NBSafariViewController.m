@@ -28,7 +28,7 @@
         
         NSDictionary *bindings = @{@"edgeView" : _edgeView};
         NSLayoutFormatOptions options = 0;
-        NSArray *hConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[edgeView(10)]" options:options metrics:nil views:bindings];
+        NSArray *hConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[edgeView(20)]" options:options metrics:nil views:bindings];
         NSArray *vConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[edgeView]-0-|" options:options metrics:nil views:bindings];
         
         [NSLayoutConstraint activateConstraints:hConstraints];
