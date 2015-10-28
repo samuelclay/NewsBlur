@@ -205,6 +205,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    [self clearStory];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -225,6 +226,10 @@
     if (_orientation != [UIApplication sharedApplication].statusBarOrientation) {
         _orientation = [UIApplication sharedApplication].statusBarOrientation;
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
+    }
+    
+    if ([self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+        [self drawStory];
     }
 }
 
