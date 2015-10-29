@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -59,8 +58,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.HashSet;
-import java.util.Set;
 
 public class ReadingItemFragment extends NbFragment implements ClassifierDialogFragment.TagUpdateCallback {
 

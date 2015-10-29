@@ -2,16 +2,12 @@ package com.newsblur.util;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.text.TextUtils;
 
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.APIManager;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ReadingAction {
 

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 

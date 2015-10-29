@@ -1,6 +1,5 @@
 package com.newsblur.fragment;
 
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,14 +8,8 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 
 import com.newsblur.R;
-import com.newsblur.activity.FeedReading;
-import com.newsblur.activity.GlobalSharedStoriesReading;
-import com.newsblur.activity.ItemsList;
-import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.MultipleFeedItemsAdapter;
-import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.StateFilter;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class GlobalSharedStoriesItemListFragment extends ItemListFragment {

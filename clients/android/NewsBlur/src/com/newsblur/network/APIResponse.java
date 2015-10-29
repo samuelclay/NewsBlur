@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import com.newsblur.R;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.util.AppConstants;

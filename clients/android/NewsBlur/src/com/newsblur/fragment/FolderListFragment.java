@@ -30,7 +30,6 @@ import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.Main;
-import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;

@@ -1,22 +1,13 @@
 package com.newsblur.fragment;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.content.Loader;
-import android.view.View;
 
 import com.newsblur.R;
-import com.newsblur.activity.FeedReading;
-import com.newsblur.activity.ItemsList;
-import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.domain.Feed;
-import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.StateFilter;
-import com.newsblur.util.StoryOrder;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment {

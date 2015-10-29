@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.newsblur.R;
 import com.newsblur.domain.FeedResult;
-import com.newsblur.util.UIUtils;
 
 import android.app.Activity;
 import android.content.Context;

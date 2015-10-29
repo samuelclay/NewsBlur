@@ -4,14 +4,11 @@ import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.fragment.ReadStoriesItemListFragment;
-import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;

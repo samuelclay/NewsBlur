@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.provider.BaseColumns;
 
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;

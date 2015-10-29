@@ -10,9 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -28,11 +26,9 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
-import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.activity.NewsBlurApplication;
-import static com.newsblur.database.DatabaseConstants.getStr;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;

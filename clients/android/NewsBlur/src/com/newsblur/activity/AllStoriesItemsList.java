@@ -8,18 +8,14 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.AllStoriesItemListFragment;
-import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
-import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
 public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogListener {

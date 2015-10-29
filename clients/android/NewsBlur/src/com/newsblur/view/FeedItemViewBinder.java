@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.domain.Story;
 import com.newsblur.util.StoryUtils;
 
 import java.util.Date;

@@ -1,13 +1,10 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.app.FragmentManager;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -16,7 +13,6 @@ import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.service.NBSyncService;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
