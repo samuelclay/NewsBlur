@@ -2104,9 +2104,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
     dispatch_async(dispatch_get_main_queue(), ^{
-        [MBProgressHUD hideHUDForView:self.webView animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-        HUD.labelText = @"Fetching text...";
+//        [MBProgressHUD hideHUDForView:self.webView animated:YES];
+//        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+//        HUD.labelText = @"Fetching text...";
+        [self.appDelegate.storyPageControl showFetchingTextNotifier];
     });
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
@@ -2122,6 +2123,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)failedFetchText:(ASIHTTPRequest *)request {
+    [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     [self informError:@"Could not fetch text"];
     self.inTextView = NO;
@@ -2144,6 +2146,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (![[request.userInfo objectForKey:@"storyId"]
           isEqualToString:[self.activeStory objectForKey:@"id"]]) {
+        [self.appDelegate.storyPageControl hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
         [appDelegate.storyPageControl setTextButton:self];
@@ -2157,6 +2160,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     self.activeStory = newActiveStory;
     
+    [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     
     self.inTextView = YES;

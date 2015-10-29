@@ -11,6 +11,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "WYPopoverController.h"
 #import "THCircularProgressView.h"
+#import "NBNotifier.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
@@ -75,6 +76,7 @@
 @property (assign) BOOL isAnimatedIntoPlace;
 @property (assign) BOOL waitingForNextUnreadFromServer;
 @property (nonatomic) MBProgressHUD *storyHUD;
+@property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
 
 @property (nonatomic, strong) WYPopoverController *popoverController;
@@ -114,6 +116,8 @@
 - (void)changeFontSize:(NSString *)fontSize;
 - (void)changeLineSpacing:(NSString *)lineSpacing;
 - (void)showShareHUD:(NSString *)msg;
+- (void)showFetchingTextNotifier;
+- (void)hideNotifier;
 
 - (IBAction)showOriginalSubview:(id)sender;
 

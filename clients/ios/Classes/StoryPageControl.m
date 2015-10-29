@@ -179,6 +179,11 @@
                                    action:@selector(transitionFromFeedDetail)];
     self.buttonBack = backButton;
     
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
+                                               inView:self.view
+                                           withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
+    [self.view addSubview:self.notifier];
+    [self.notifier hideNow];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
@@ -413,6 +418,7 @@
     previousPage.pageIndex = -2;
     [self changePage:pageIndex animated:NO];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [self.notifier hide];
     //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
@@ -431,6 +437,7 @@
     [self.scrollView scrollRectToVisible:frame animated:NO];
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [self.notifier hide];
 }
 
 - (void)refreshHeaders {
@@ -1064,6 +1071,17 @@
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
     [[self currentPage] flashCheckmarkHud:messageType];
+}
+
+- (void)showFetchingTextNotifier {
+    self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"Fetching text...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)hideNotifier {
+    [self.notifier hide];
 }
 
 #pragma mark -
