@@ -1,4 +1,5 @@
 build.xml
+custom_rules.xml
 local.properties
 *.java.swo
 *.java.swp
