@@ -32,24 +32,11 @@ public class AllStoriesItemListFragment extends ItemListFragment {
         super.onLoadFinished(loader, cursor);
     }
 
-	public static ItemListFragment newInstance(StateFilter currentState, DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance() {
 		ItemListFragment everythingFragment = new AllStoriesItemListFragment();
 		Bundle arguments = new Bundle();
-		arguments.putSerializable("currentState", currentState);
-        arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);
-
 		return everythingFragment;
-	}
-
-	@Override
-	public void onItemClick_(String storyHash) {
-		Intent i = new Intent(getActivity(), AllStoriesReading.class);
-        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
-        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
-		startActivity(i);
 	}
 
 }

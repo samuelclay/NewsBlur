@@ -28,7 +28,7 @@ public class SavedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = SavedStoriesItemListFragment.newInstance(getDefaultFeedView());
+			itemListFragment = SavedStoriesItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SavedStoriesItemListFragment.class.getName());
@@ -52,11 +52,6 @@ public class SavedStoriesItemsList extends ItemsList {
         inflater.inflate(R.menu.savedstories_itemslist, menu);
         return true;
 	}
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.SAVED_STORIES_FOLDER_NAME);
-    }
 
     @Override
     public void defaultFeedViewChanged(DefaultFeedView value) {

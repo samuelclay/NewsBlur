@@ -283,7 +283,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@OnGroupClick(R.id.folderfeed_list) boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         if (adapter.isFolderRoot(groupPosition)) {
 			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
-			i.putExtra(ItemsList.EXTRA_STATE, currentState);
 			startActivity(i);
 			return true;
         } else if (adapter.isRowReadStories(groupPosition)) {
@@ -345,7 +344,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             SocialFeed socialFeed = adapter.getSocialFeed(childName);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
 			intent.putExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED, socialFeed);
-			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivity(intent);
 		} else {
             Feed feed = adapter.getFeed(childName);
@@ -353,7 +351,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			Intent intent = new Intent(getActivity(), FeedItemsList.class);
 			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
 			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
-			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivity(intent);
 		}
 		return true;

@@ -35,7 +35,7 @@ public class SocialFeedItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
 		
 		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance(socialFeed, currentState, getDefaultFeedView());
+			itemListFragment = SocialFeedItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SocialFeedItemListFragment.class.getName());
@@ -74,11 +74,6 @@ public class SocialFeedItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFeed(this, socialFeed.userId);
-    }
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFeed(this, socialFeed.userId);
     }
 
     @Override

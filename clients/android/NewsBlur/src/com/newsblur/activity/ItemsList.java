@@ -21,16 +21,15 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
-import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbActivity implements StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
-	public static final String EXTRA_STATE = "currentIntelligenceState";
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
@@ -39,7 +38,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
     private TextView overlayStatusText;
-	protected StateFilter currentState;
+	protected StateFilter intelState;
 
     private FeedSet fs;
 	
@@ -49,8 +48,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 
-        // our intel state is entirely determined by the state of the Main view
-		currentState = (StateFilter) getIntent().getSerializableExtra(EXTRA_STATE);
+		intelState = PrefsUtils.getStateFilter(this);
         this.fs = createFeedSet();
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -59,6 +57,12 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 		fragmentManager = getFragmentManager();
 
         this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
+
+        if (PrefsUtils.isAutoOpenFirstUnread(this)) {
+            if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
+                ;
+            }
+        }
 	}
 
     protected abstract FeedSet createFeedSet();
@@ -113,7 +117,7 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
             readFilter.show(getFragmentManager(), READ_FILTER);
             return true;
         } else if (item.getItemId() == R.id.menu_default_view) {
-            DefaultFeedView currentValue = getDefaultFeedView();
+            DefaultFeedView currentValue = PrefsUtils.getDefaultFeedView(this, fs);
             DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
             readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
             return true;
@@ -127,8 +131,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
 	
 	protected abstract ReadFilter getReadFilter();
 
-    protected abstract DefaultFeedView getDefaultFeedView();
-	
     @Override
 	public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
@@ -161,11 +163,6 @@ public abstract class ItemsList extends NbActivity implements StateChangedListen
         }
     }
 
-	@Override
-	public void changedState(StateFilter state) {
-		itemListFragment.changeState(state);
-	}
-	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);

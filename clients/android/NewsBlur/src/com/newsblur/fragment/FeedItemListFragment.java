@@ -23,15 +23,11 @@ public class FeedItemListFragment extends ItemListFragment {
 
 	private Feed feed;
 
-    public static FeedItemListFragment newInstance(Feed feed, StateFilter currentState, DefaultFeedView defaultFeedView) {
+    public static FeedItemListFragment newInstance(Feed feed) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
-
 		Bundle args = new Bundle();
-		args.putSerializable("currentState", currentState);
 		args.putSerializable("feed", feed);
-        args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
-
 		return feedItemFragment;
 	}
 
@@ -52,16 +48,5 @@ public class FeedItemListFragment extends ItemListFragment {
        }
        super.onLoadFinished(loader, cursor);
     }
-
-	@Override
-	public void onItemClick_(String storyHash) {
-		Intent i = new Intent(getActivity(), FeedReading.class);
-        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
-        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(Reading.EXTRA_FEED, feed);
-		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
-		startActivity(i);
-	}
 
 }

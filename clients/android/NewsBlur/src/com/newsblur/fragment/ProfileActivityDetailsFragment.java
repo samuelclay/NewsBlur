@@ -32,6 +32,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 import com.newsblur.view.ActivityDetailsAdapter;
 import com.newsblur.view.ProgressThrobber;
 
@@ -146,15 +147,10 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             } else {
                 Intent intent = new Intent(context, FeedItemsList.class);
                 intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
-                intent.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
                 context.startActivity(intent);
             }
         } else if (activity.category == Category.STAR) {
-            Intent i = new Intent(context, SavedStoriesReading.class);
-            i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.allSaved());
-            i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
-            i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME));
-            context.startActivity(i);
+            UIUtils.startReadingActivity(FeedSet.allSaved(), activity.storyHash, context, false);
         } else if (isSocialFeedCategory(activity)) {
             // Strip the social: prefix from feedId
             String socialFeedId = activity.feedId.substring(7);
@@ -162,14 +158,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_do_not_follow, Toast.LENGTH_SHORT).show();
             } else {
-                Intent i = new Intent(context, SocialFeedReading.class);
-                i.putExtra(Reading.EXTRA_FEEDSET, FeedSet.singleSocialFeed(feed.userId, feed.username));
-                i.putExtra(Reading.EXTRA_SOCIAL_FEED, feed);
-                i.putExtra(ItemsList.EXTRA_STATE, PrefsUtils.getStateFilter(context));
-                i.putExtra(Reading.EXTRA_STORY_HASH, activity.storyHash);
-                i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, PrefsUtils.getDefaultFeedViewForFeed(context, socialFeedId));
-                i.putExtra(SocialFeedReading.EXTRA_NAVIGATE_FROM_PROFILE, true);
-                context.startActivity(i);
+                UIUtils.startReadingActivity(FeedSet.singleSocialFeed(feed.userId, feed.username), activity.storyHash, context, true);
             }
         }
     }

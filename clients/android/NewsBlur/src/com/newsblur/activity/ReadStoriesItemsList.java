@@ -28,7 +28,7 @@ public class ReadStoriesItemsList extends ItemsList {
 
 		itemListFragment = (ReadStoriesItemListFragment) fragmentManager.findFragmentByTag(ReadStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = ReadStoriesItemListFragment.newInstance(getDefaultFeedView());
+			itemListFragment = ReadStoriesItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, ReadStoriesItemListFragment.class.getName());
@@ -52,11 +52,6 @@ public class ReadStoriesItemsList extends ItemsList {
         inflater.inflate(R.menu.readstories_itemslist, menu);
         return true;
 	}
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.READ_STORIES_FOLDER_NAME);
-    }
 
     @Override
     public void defaultFeedViewChanged(DefaultFeedView value) {

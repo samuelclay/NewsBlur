@@ -20,24 +20,11 @@ import com.newsblur.view.FeedItemViewBinder;
 
 public class FolderItemListFragment extends ItemListFragment {
 
-	private String folderName;
-	
-	public static FolderItemListFragment newInstance(String folderName, StateFilter currentState, DefaultFeedView defaultFeedView) {
+	public static FolderItemListFragment newInstance() {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
-
 		Bundle args = new Bundle();
-		args.putSerializable("currentState", currentState);
-		args.putString("folderName", folderName);
-        args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
-
 		return feedItemFragment;
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		folderName = getArguments().getString("folderName");
 	}
 
     @Override
@@ -51,16 +38,5 @@ public class FolderItemListFragment extends ItemListFragment {
        }
        super.onLoadFinished(loader, cursor);
     }
-
-	@Override
-	public void onItemClick_(String storyHash) {
-		Intent i = new Intent(getActivity(), FolderReading.class);
-        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
-        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(FeedReading.EXTRA_FOLDERNAME, folderName);
-		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
-		startActivity(i);
-	}
 
 }

@@ -21,11 +21,9 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class GlobalSharedStoriesItemListFragment extends ItemListFragment {
 
-	public static ItemListFragment newInstance(DefaultFeedView defaultFeedView, StateFilter currentState) {
+	public static ItemListFragment newInstance() {
 		ItemListFragment fragment = new GlobalSharedStoriesItemListFragment();
         Bundle args = new Bundle();
-        args.putSerializable("defaultFeedView", defaultFeedView);
-        args.putSerializable("currentState", currentState);
         fragment.setArguments(args);
 		return fragment;
 	}
@@ -41,16 +39,6 @@ public class GlobalSharedStoriesItemListFragment extends ItemListFragment {
        }
        super.onLoadFinished(loader, cursor);
     }
-
-	@Override
-	public void onItemClick_(String storyHash) {
-		Intent i = new Intent(getActivity(), GlobalSharedStoriesReading.class);
-        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
-        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
-        i.putExtra(ItemsList.EXTRA_STATE, currentState);
-		startActivity(i);
-	}
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

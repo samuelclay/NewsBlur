@@ -44,7 +44,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FolderItemListFragment.newInstance(folderName, currentState, getDefaultFeedView());
+			itemListFragment = FolderItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FolderItemListFragment.class.getName());
@@ -93,11 +93,6 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, folderName);
-    }
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFolder(this, folderName);
     }
 
     @Override

@@ -20,21 +20,9 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class SocialFeedItemListFragment extends ItemListFragment {
 
-	private SocialFeed socialFeed;
-
-    @Override
-	public void onCreate(Bundle savedInstanceState) {
-        socialFeed = (SocialFeed) getArguments().getSerializable("social_feed");
-		super.onCreate(savedInstanceState);
-		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-	}
-
-	public static SocialFeedItemListFragment newInstance(SocialFeed socialFeed, StateFilter currentState, DefaultFeedView defaultFeedView) {
+	public static SocialFeedItemListFragment newInstance() {
 	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
 		Bundle args = new Bundle();
-        args.putSerializable("currentState", currentState);
-        args.putSerializable("social_feed", socialFeed);
-        args.putSerializable("defaultFeedView", defaultFeedView);
         fragment.setArguments(args);
         return fragment;
 	}
@@ -50,16 +38,5 @@ public class SocialFeedItemListFragment extends ItemListFragment {
         }
         super.onLoadFinished(loader, cursor);
     }
-
-	@Override
-	public void onItemClick_(String storyHash) {
-		Intent i = new Intent(getActivity(), SocialFeedReading.class);
-        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
-        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-		i.putExtra(Reading.EXTRA_SOCIAL_FEED, socialFeed);
-		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
-		startActivity(i);
-	}
 
 }

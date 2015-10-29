@@ -112,7 +112,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(context, GlobalSharedStoriesItemsList.class);
-                    i.putExtra(GlobalSharedStoriesItemsList.EXTRA_STATE, currentState);
                     context.startActivity(i);
                 }
             });
@@ -122,7 +121,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent(context, AllSharedStoriesItemsList.class);
-					i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 					context.startActivity(i);
 				}
 			});
@@ -164,7 +162,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				public void onClick(View v) {
 					Intent i = new Intent(v.getContext(), FolderItemsList.class);
 					i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
-					i.putExtra(FolderItemsList.EXTRA_STATE, currentState);
 					context.startActivity(i);
 				}
 			});
