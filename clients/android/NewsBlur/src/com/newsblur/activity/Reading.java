@@ -311,7 +311,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private int getUnreadCount() {
         // saved stories and global shared stories don't have unreads
         if (fs.isAllSaved() || fs.isGlobalShared()) return 0;
-        return FeedUtils.dbHelper.getUnreadCount(fs, intelState);
+        int result = FeedUtils.dbHelper.getUnreadCount(fs, intelState);
+        if (result < 0) return 0;
+        return result;
     }
 
 	@Override
