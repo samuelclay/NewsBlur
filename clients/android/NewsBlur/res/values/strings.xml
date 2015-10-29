@@ -222,6 +222,10 @@
         <item>Mark entire folder read</item>
         <item>Cancel</item>
     </string-array>
+
+    <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
+    <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
+
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>
