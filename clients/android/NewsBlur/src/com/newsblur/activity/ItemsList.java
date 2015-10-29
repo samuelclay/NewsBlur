@@ -27,6 +27,7 @@ import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
+import com.newsblur.util.UIUtils;
 
 public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
@@ -60,7 +61,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
-                ;
+                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this, false);
             }
         }
 	}

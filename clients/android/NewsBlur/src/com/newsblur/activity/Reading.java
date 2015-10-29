@@ -59,6 +59,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private static final String BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView";
     private static final String BUNDLE_IS_FULLSCREEN = "is_fullscreen";
 
+    /** special value for starting story hash that jumps to the first unread. */
+    public static final String FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD";
+
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
 
@@ -263,7 +266,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         while (stories.moveToNext()) {
             if (stopLoading) return;
             Story story = Story.fromCursor(stories);
-            if (story.storyHash.equals(storyHash)) {
+            if ( ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read)) ||
+                 (story.storyHash.equals(storyHash)) ) {
                 // now that the pager is getting the right story, make it visible
                 pager.setVisibility(View.VISIBLE);
                 pager.setCurrentItem(stories.getPosition(), false);
