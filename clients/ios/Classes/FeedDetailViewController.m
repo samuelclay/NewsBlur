@@ -1722,15 +1722,25 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSMutableArray *feedIds = [NSMutableArray array];
     
     if (storiesCollection.isRiverView) {
-        for (id feed_id in [appDelegate.dictFolders objectForKey:storiesCollection.activeFolder]) {
-            [feedIds addObject:[NSString stringWithFormat:@"%@", feed_id]];
+        if ([storiesCollection.activeFolder isEqual:@"everything"]) {
+            for (NSString *folderName in appDelegate.dictFoldersArray) {
+                for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
+                    if (![feedId isKindOfClass:[NSString class]] || ![feedId startsWith:@"saved:"]) {
+                        [feedIds addObject:feedId];
+                    }
+                }
+            }
+        } else {
+            for (id feedId in [appDelegate.dictFolders objectForKey:storiesCollection.activeFolder]) {
+                [feedIds addObject:feedId];
+            }
         }
     } else {
-        [feedIds addObject:[NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]]];
+        [feedIds addObject:[storiesCollection.activeFeed objectForKey:@"id"]];
     }
     
-    for (id feed_id in feedIds) {
-        [request addPostValue:feed_id forKey:@"feed_id"];
+    for (id feedId in feedIds) {
+        [request addPostValue:feedId forKey:@"feed_id"];
     }
     
     NSString *direction = older ? @"older" : @"newest";

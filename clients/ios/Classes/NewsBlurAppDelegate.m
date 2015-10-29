@@ -1721,7 +1721,8 @@
 
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older {
     for (NSString *feedId in feedIds) {
-        NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedId];
+        NSString *feedIdString = [NSString stringWithFormat:@"%@", feedId];
+        NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdString];
         NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
         NSMutableArray *stories = [NSMutableArray array];
         NSString *direction = older ? @"<" : @">";
@@ -1730,7 +1731,7 @@
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "
                              "INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash "
                              "WHERE s.story_feed_id = %@ AND s.story_timestamp %@ %ld",
-                             feedId, direction, (long)cutoff];
+                             feedIdString, direction, (long)cutoff];
             FMResultSet *cursor = [db executeQuery:sql];
             
             while ([cursor next]) {
@@ -1756,7 +1757,7 @@
                 int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] - 1);
                 [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
             }
-            [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedId];
+            [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdString];
         }
         
         [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -1772,13 +1773,13 @@
                                    stringWithFormat:@"DELETE FROM unread_hashes "
                                    "WHERE story_feed_id = \"%@\" "
                                    "AND story_timestamp < %ld",
-                                   feedId, (long)cutoff];
+                                   feedIdString, (long)cutoff];
             [db executeUpdate:deleteSql];
             [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
              [newUnreadCounts objectForKey:@"ps"],
              [newUnreadCounts objectForKey:@"nt"],
              [newUnreadCounts objectForKey:@"ng"],
-             feedId];
+             feedIdString];
         }];
     }
 }
