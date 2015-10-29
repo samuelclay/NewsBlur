@@ -205,8 +205,7 @@ public class FeedUtils {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title));
         final String shareString = context.getResources().getString(R.string.share);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[]{Html.fromHtml(story.title),
-                story.permalink}));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[]{Html.fromHtml(story.title), story.permalink}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 

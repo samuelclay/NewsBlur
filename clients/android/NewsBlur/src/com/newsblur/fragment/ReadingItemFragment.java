@@ -325,7 +325,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
         int[] colors = {
             Color.parseColor(feedColor),
-            Color.parseColor(feedFade)
+            Color.parseColor(feedFade),
         };
         GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
                 colors);
