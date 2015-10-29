@@ -39,8 +39,9 @@
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
 #define kTableViewShortRowDifference 17;
-#define kMarkReadActionSheet 1;
-#define kSettingsActionSheet 2;
+#define kMarkReadActionSheet 1
+#define kSettingsActionSheet 2
+#define kMarkOlderNewerActionSheet 3
 
 @interface FeedDetailViewController ()
 
@@ -1657,7 +1658,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
-    if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
+    
+    if (p.x < 30.0) {
+        appDelegate.activeStory = story;
+        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath];
+    } else if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
         appDelegate.activeStory = story;
         [appDelegate showSendTo:self sender:cell];
     } else if ([longPressStoryTitle isEqualToString:@"mark_unread"]) {
@@ -1671,6 +1676,71 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
         [appDelegate openTrainStory:cell];
     }
+}
+
+- (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath {
+    // already displaying action sheet?
+    if (self.actionSheet_) {
+        [self.actionSheet_ dismissWithClickedButtonIndex:-1 animated:YES];
+        self.actionSheet_ = nil;
+        return;
+    }
+    
+    NSString *title = storiesCollection.isRiverView ? storiesCollection.activeFolder : [storiesCollection.activeFeed objectForKey:@"feed_title"];
+    UIActionSheet *options = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+    
+    self.actionSheet_ = options;
+    [storiesCollection calculateStoryLocations];
+    
+    if ([storiesCollection isStoryUnread:story]) {
+        [options addButtonWithTitle:@"Mark as read"];
+    } else {
+        [options addButtonWithTitle:@"Mark as unread"];
+    }
+    
+    if ([storiesCollection.activeOrder isEqualToString:@"newest"]) {
+        [options addButtonWithTitle:@"Mark newer stories read"];
+        [options addButtonWithTitle:@"Mark older stories read"];
+    } else {
+        [options addButtonWithTitle:@"Mark older stories read"];
+        [options addButtonWithTitle:@"Mark newer stories read"];
+    }
+    
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    options.tag = kMarkOlderNewerActionSheet;
+    
+    CGRect rect = [self.storyTitlesTable rectForRowAtIndexPath:indexPath];
+    rect.size.width = 30.0;
+    [options showFromRect:rect inView:self.storyTitlesTable animated:YES];
+}
+
+- (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableArray *feedIds = [NSMutableArray array];
+    
+    if (storiesCollection.isRiverView) {
+        for (id feed_id in [appDelegate.dictFolders objectForKey:storiesCollection.activeFolder]) {
+            [feedIds addObject:[NSString stringWithFormat:@"%@", feed_id]];
+        }
+    } else {
+        [feedIds addObject:[NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]]];
+    }
+    
+    for (id feed_id in feedIds) {
+        [request addPostValue:feed_id forKey:@"feed_id"];
+    }
+    
+    NSString *direction = older ? @"older" : @"newest";
+    [request setPostValue:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
+    [request setPostValue:direction forKey:@"direction"];
+    [request setDidFinishSelector:@selector(finishMarkOlderNewerAsRead:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setUserInfo:@{@"feeds" : feedIds, @"cutoffTimestamp" : @(cutoffTimestamp), @"older" : @(older)}];
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
@@ -1758,6 +1828,22 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
 }
 
+- (void)finishMarkOlderNewerAsRead:(ASIFormDataRequest *)request {
+    if (request.responseStatusCode != 200) {
+        [self requestFailed:request];
+        return;
+    }
+    
+    if ([request.userInfo objectForKey:@"feeds"]) {
+        [appDelegate markFeedReadInCache:request.userInfo[@"feeds"] cutoffTimestamp:[request.userInfo[@"cutoffTimestamp"] integerValue] older:[request.userInfo[@"older"] boolValue]];
+    }
+    
+    // is there a better way to refresh the detail view?
+    [self reloadStories];
+//    [appDelegate reloadFeedsView:YES];
+//    [appDelegate loadFeedDetailView];
+}
+
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
     // already displaying action sheet?
     if (self.actionSheet_) {
@@ -1827,7 +1913,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 //    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
-    if (actionSheet.tag == 1) {
+    if (actionSheet.tag == kMarkReadActionSheet) {
         NSInteger visibleUnreadCount = storiesCollection.visibleUnreadCount;
         NSInteger totalUnreadCount = [appDelegate unreadCount];
         BOOL showVisible = YES;
@@ -1851,13 +1937,23 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                 [self markFeedsReadWithAllStories:YES];
             }
         }
-    } else if (actionSheet.tag == 2) {
+    } else if (actionSheet.tag == kSettingsActionSheet) {
         if (buttonIndex == 0) {
             [self confirmDeleteSite];
         } else if (buttonIndex == 1) {
             [self openMoveView];
         } else if (buttonIndex == 2) {
             [self instafetchFeed];
+        }
+    } else if (actionSheet.tag == kMarkOlderNewerActionSheet) {
+        if (buttonIndex == 0) {
+            [storiesCollection toggleStoryUnread];
+            [self.storyTitlesTable reloadData];
+        } else if (buttonIndex == 1 || buttonIndex == 2) {
+            NSInteger timestamp = [[appDelegate.activeStory objectForKey:@"story_timestamp"] integerValue];
+            BOOL older = [storiesCollection.activeOrder isEqualToString:@"newest"] ? buttonIndex == 2 : buttonIndex == 1;
+            
+            [self markFeedsReadFromTimestamp:timestamp andOlder:older];
         }
     }
 }

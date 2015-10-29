@@ -1716,16 +1716,21 @@
 }
 
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff {
+    [self markFeedReadInCache:feedIds cutoffTimestamp:cutoff older:YES];
+}
+
+- (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older {
     for (NSString *feedId in feedIds) {
         NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedId];
         NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
         NSMutableArray *stories = [NSMutableArray array];
+        NSString *direction = older ? @"<" : @">";
         
         [self.database inDatabase:^(FMDatabase *db) {
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "
                              "INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash "
-                             "WHERE s.story_feed_id = %@ AND s.story_timestamp < %ld",
-                             feedId, (long)cutoff];
+                             "WHERE s.story_feed_id = %@ AND s.story_timestamp %@ %ld",
+                             feedId, direction, (long)cutoff];
             FMResultSet *cursor = [db executeQuery:sql];
             
             while ([cursor next]) {
