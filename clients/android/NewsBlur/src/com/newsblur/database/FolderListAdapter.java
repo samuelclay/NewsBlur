@@ -28,7 +28,6 @@ import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
-import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;

@@ -18,7 +18,6 @@
         android:icon="@drawable/logo"
         android:label="@string/newsblur"
         android:theme="@style/NewsBlurTheme"
-        android:name=".activity.NewsBlurApplication"
         android:hardwareAccelerated="true" >
         
         <activity

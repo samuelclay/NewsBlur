@@ -36,7 +36,6 @@ import butterknife.OnClick;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
-import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;

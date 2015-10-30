@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
-import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryUtils;
