@@ -18,7 +18,8 @@
         android:icon="@drawable/logo"
         android:label="@string/newsblur"
         android:theme="@style/NewsBlurTheme"
-        android:hardwareAccelerated="true" >
+        android:hardwareAccelerated="true"
+        android:fullBackupContent="@xml/backupscheme" >
         
         <activity
             android:name=".activity.Login"
