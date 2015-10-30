@@ -32,8 +32,8 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.ImageLoader;
 import com.newsblur.util.StateFilter;
 
 /**
@@ -86,16 +86,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private int savedStoriesCount;
 
 	private Context context;
-
 	private LayoutInflater inflater;
-    private ImageLoader imageLoader;
-
 	private StateFilter currentState;
 
 	public FolderListAdapter(Context context, StateFilter currentState) {
 		this.context = context;
         this.currentState = currentState;
-		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -187,7 +183,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			}
             SocialFeed f = socialFeedsOrdered.get(childPosition);
             ((TextView) v.findViewById(R.id.row_socialfeed_name)).setText(f.feedTitle);
-            imageLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), false);
+            FeedUtils.imageLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -210,7 +206,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				v = convertView;
 			}
             ((TextView) v.findViewById(R.id.row_feedname)).setText(f.title);
-            imageLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), false);
+            FeedUtils.imageLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.util.ImageLoader;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryUtils;
 
 import java.util.Date;
@@ -21,12 +21,10 @@ import java.util.Date;
 public class SocialItemViewBinder implements ViewBinder {
 
     private final Context context;
-	private ImageLoader imageLoader;
     private boolean ignoreIntel;
 
 	public SocialItemViewBinder(final Context context, boolean ignoreIntel) {
         this.context = context;
-		this.imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
         this.ignoreIntel = ignoreIntel;
 	}
 
@@ -40,7 +38,7 @@ public class SocialItemViewBinder implements ViewBinder {
 		final int hasBeenRead = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
 		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
 			String faviconUrl = cursor.getString(columnIndex);
-			imageLoader.displayImage(faviconUrl, ((ImageView) view), true);
+			FeedUtils.imageLoader.displayImage(faviconUrl, ((ImageView) view), true);
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.SUM_STORY_TOTAL)) {
             if (! this.ignoreIntel) {

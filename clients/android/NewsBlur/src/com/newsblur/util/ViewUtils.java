@@ -47,7 +47,7 @@ public class ViewUtils {
 		}
 	}
 
-	public static ImageView createSharebarImage(final Context context, final ImageLoader imageLoader, final String photoUrl, final String userId) {
+	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId) {
 		ImageView image = new ImageView(context);
 		int imageLength = UIUtils.dp2px(context, 15);
 		image.setMaxHeight(imageLength);
@@ -62,7 +62,7 @@ public class ViewUtils {
 		image.setMaxWidth(imageLength);
 		
 		image.setLayoutParams(imageParameters);
-		imageLoader.displayImage(photoUrl, image, 10f);
+		FeedUtils.imageLoader.displayImage(photoUrl, image, 10f);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

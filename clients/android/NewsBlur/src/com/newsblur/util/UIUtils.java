@@ -90,7 +90,7 @@ public class UIUtils {
      */
     public static void setCustomActionBar(Activity activity, String imageUrl, String title) { 
         ImageView iconView = setupCustomActionbar(activity, title);
-        ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().displayImage(imageUrl, iconView, false);
+        FeedUtils.imageLoader.displayImage(imageUrl, iconView, false);
     }
 
     public static void setCustomActionBar(Activity activity, int imageId, String title) { 

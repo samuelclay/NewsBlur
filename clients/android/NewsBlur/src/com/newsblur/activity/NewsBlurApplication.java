@@ -8,6 +8,9 @@ import com.newsblur.util.ImageLoader;
 
 public class NewsBlurApplication extends Application {
 
+    // these need to be app-level singletons, but they can't be safely initiated until
+    // the app is fully started.  create them here and then vend them via FeedUtils like
+    // most other utility functions.
 	private ImageLoader imageLoader;
     private BlurDatabaseHelper dbHelper;
 	
@@ -17,10 +20,7 @@ public class NewsBlurApplication extends Application {
 		imageLoader = new ImageLoader(this);
         dbHelper = new BlurDatabaseHelper(this);
         FeedUtils.offerDB(dbHelper);
+        FeedUtils.offerImageLoader(imageLoader);
 	}
 
-	public ImageLoader getImageLoader() {
-		return imageLoader;
-	}
-	
 }

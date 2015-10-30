@@ -25,12 +25,20 @@ import com.newsblur.service.NBSyncService;
 
 public class FeedUtils {
 
+    // these are app-level singletons stored here for convenience. however, they
+    // cannot be created lazily or via static init, they have to be created when
+    // the main app context is created and then pushed here. see NewsBlurApplication.
     public static BlurDatabaseHelper dbHelper;
+    public static ImageLoader imageLoader;
 
     public static void offerDB(BlurDatabaseHelper _dbHelper) {
         if (_dbHelper.isOpen()) {
             dbHelper = _dbHelper;
         }
+    }
+
+    public static void offerImageLoader(ImageLoader _imageLoader) {
+        imageLoader = _imageLoader;
     }
 
     private static void triggerSync(Context c) {
