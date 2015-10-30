@@ -1,34 +1,27 @@
 package com.newsblur.database;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
-import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Story;
-import com.newsblur.util.ImageLoader;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ThemeUtils;
 
 public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
-	private ImageLoader imageLoader;
 	private int storyTitleUnread, storyContentUnread, storyAuthorUnread, storyTitleRead, storyContentRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
     private boolean ignoreReadStatus;
 
 	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, boolean ignoreReadStatus) {
 		super(context, layout, c, from, to);
-		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 
         storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
         storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
@@ -59,7 +52,7 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
         String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
 
 		String faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
-		imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), false);
+		FeedUtils.imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), false);
 
 		if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
 			borderOne.setBackgroundColor(Color.parseColor(feedColor));

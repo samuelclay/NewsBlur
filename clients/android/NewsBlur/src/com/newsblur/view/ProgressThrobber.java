@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.animation.*;
 import android.view.View;
 
-import com.newsblur.R;
-
 /**
  * A indeterminate loading indicator that pulses between colours.  Inspired by the
  * 4.X-series impl of MaterialProgressDrawable (but platform-stable, public access,

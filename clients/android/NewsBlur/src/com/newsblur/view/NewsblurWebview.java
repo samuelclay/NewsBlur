@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,7 +17,6 @@ import android.widget.FrameLayout;
 
 import com.newsblur.activity.Reading;
 import com.newsblur.fragment.ReadingItemFragment;
-import com.newsblur.util.AppConstants;
 
 public class NewsblurWebview extends WebView {
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="107"
-    android:versionName="4.6.0b1" >
+    android:versionCode="108"
+    android:versionName="4.6.0b2" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -18,8 +18,8 @@
         android:icon="@drawable/logo"
         android:label="@string/newsblur"
         android:theme="@style/NewsBlurTheme"
-        android:name=".activity.NewsBlurApplication"
-        android:hardwareAccelerated="true" >
+        android:hardwareAccelerated="true"
+        android:fullBackupContent="@xml/backupscheme" >
         
         <activity
             android:name=".activity.Login"

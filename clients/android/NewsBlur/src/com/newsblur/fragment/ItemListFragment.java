@@ -41,6 +41,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
 
@@ -52,7 +53,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@FindView(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
-	protected StateFilter currentState;
+	protected StateFilter intelState;
     private boolean cursorSeenYet = false;
     private boolean firstStorySeenYet = false;
     private boolean stopLoading = false;
@@ -67,7 +68,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        currentState = (StateFilter) getArguments().getSerializable("currentState");
+        intelState = PrefsUtils.getStateFilter(getActivity());
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
     }
@@ -210,11 +211,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-	public void changeState(StateFilter state) {
-		currentState = state;
-		hasUpdated();
-	}
-
     protected FeedSet getFeedSet() {
         return activity.getFeedSet();
     }
@@ -234,7 +230,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             try { getActivity().finish(); } catch (Exception e) {;}
             return null;
         }
-		return FeedUtils.dbHelper.getStoriesLoader(getFeedSet(), currentState);
+		return FeedUtils.dbHelper.getStoriesLoader(getFeedSet(), intelState);
 	}
 
     @Override
@@ -344,10 +340,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         int truePosition = position - 1;
         Story story = adapter.getStory(truePosition);
         if (getActivity().isFinishing()) return;
-        onItemClick_(story.storyHash);
+        UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity(), false);
     }
-
-	public abstract void onItemClick_(String storyHash);
 
     protected void setupBezelSwipeDetector(View v) {
         final GestureDetector gestureDetector = new GestureDetector(getActivity(), new BezelSwipeDetector());

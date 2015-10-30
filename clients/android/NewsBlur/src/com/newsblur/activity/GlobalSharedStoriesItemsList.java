@@ -25,7 +25,7 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (GlobalSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(GlobalSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = GlobalSharedStoriesItemListFragment.newInstance(getDefaultFeedView(), currentState);
+			itemListFragment = GlobalSharedStoriesItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, GlobalSharedStoriesItemListFragment.class.getName());
@@ -49,11 +49,6 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
         inflater.inflate(R.menu.allsocialstories_itemslist, menu);
         return true;
 	}
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
-    }
 
     @Override
     public void defaultFeedViewChanged(DefaultFeedView value) {

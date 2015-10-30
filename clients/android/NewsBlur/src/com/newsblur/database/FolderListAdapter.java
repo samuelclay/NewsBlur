@@ -10,9 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -28,16 +26,13 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
-import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
-import com.newsblur.activity.NewsBlurApplication;
-import static com.newsblur.database.DatabaseConstants.getStr;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.ImageLoader;
 import com.newsblur.util.StateFilter;
 
 /**
@@ -90,16 +85,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private int savedStoriesCount;
 
 	private Context context;
-
 	private LayoutInflater inflater;
-    private ImageLoader imageLoader;
-
 	private StateFilter currentState;
 
 	public FolderListAdapter(Context context, StateFilter currentState) {
 		this.context = context;
         this.currentState = currentState;
-		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -112,7 +103,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(context, GlobalSharedStoriesItemsList.class);
-                    i.putExtra(GlobalSharedStoriesItemsList.EXTRA_STATE, currentState);
                     context.startActivity(i);
                 }
             });
@@ -122,7 +112,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent(context, AllSharedStoriesItemsList.class);
-					i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 					context.startActivity(i);
 				}
 			});
@@ -164,7 +153,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				public void onClick(View v) {
 					Intent i = new Intent(v.getContext(), FolderItemsList.class);
 					i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
-					i.putExtra(FolderItemsList.EXTRA_STATE, currentState);
 					context.startActivity(i);
 				}
 			});
@@ -194,7 +182,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			}
             SocialFeed f = socialFeedsOrdered.get(childPosition);
             ((TextView) v.findViewById(R.id.row_socialfeed_name)).setText(f.feedTitle);
-            imageLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), false);
+            FeedUtils.imageLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -217,7 +205,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 				v = convertView;
 			}
             ((TextView) v.findViewById(R.id.row_feedname)).setText(f.title);
-            imageLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), false);
+            FeedUtils.imageLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);

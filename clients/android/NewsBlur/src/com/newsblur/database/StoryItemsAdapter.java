@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.widget.SimpleCursorAdapter;
 
-import java.util.List;
-
 import com.newsblur.domain.Story;
 
 public class StoryItemsAdapter extends SimpleCursorAdapter {
