@@ -47,13 +47,13 @@
 	<string name="share">\"%1$s\" - %2$s</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-    <string name="share_this">SHARE THIS STORY</string>
-    <string name="already_shared">SHARED</string>
+    <string name="share_this">Share</string>
+    <string name="already_shared">Shared</string>
     <string name="share_this_story">Share this story</string>
     <string name="update_shared">Update comment</string>
 
-	<string name="save_this">SAVE THIS STORY</string>
-	<string name="unsave_this">UNSAVE THIS STORY</string>
+	<string name="save_this">Save</string>
+	<string name="unsave_this">Remove from saved</string>
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
