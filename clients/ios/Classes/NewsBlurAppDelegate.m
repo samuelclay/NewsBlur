@@ -60,8 +60,6 @@
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
 #import <float.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
@@ -183,7 +181,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-//    [Fabric with:@[[Crashlytics class]]];
 
     [self registerDefaultsFromSettingsBundle];
     

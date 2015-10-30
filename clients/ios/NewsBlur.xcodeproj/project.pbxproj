@@ -337,8 +337,6 @@
 		FFA0484419CA73B700618DC4 /* UIView+ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA0484319CA73B700618DC4 /* UIView+ViewController.m */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAD89C118AC45A100D68567 /* StoriesCollection.m */; };
-		FFAEA9951BB2030D00A8324E /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAEA9931BB2030D00A8324E /* Fabric.framework */; };
-		FFAEA9961BB2030D00A8324E /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAEA9941BB2030D00A8324E /* Crashlytics.framework */; };
 		FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB5F50A17187B6F00C8B432 /* big_world.png */; };
 		FFB7050A1925921F0052101C /* line_spacing_l.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705051925921F0052101C /* line_spacing_l.png */; };
 		FFB7050B1925921F0052101C /* line_spacing_m.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705061925921F0052101C /* line_spacing_m.png */; };
@@ -929,8 +927,6 @@
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFAD89C018AC45A100D68567 /* StoriesCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCollection.h; sourceTree = "<group>"; };
 		FFAD89C118AC45A100D68567 /* StoriesCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCollection.m; sourceTree = "<group>"; };
-		FFAEA9931BB2030D00A8324E /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
-		FFAEA9941BB2030D00A8324E /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		FFB5F50A17187B6F00C8B432 /* big_world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world.png; sourceTree = "<group>"; };
 		FFB705051925921F0052101C /* line_spacing_l.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_l.png; sourceTree = "<group>"; };
 		FFB705061925921F0052101C /* line_spacing_m.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_m.png; sourceTree = "<group>"; };
@@ -1075,7 +1071,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFAEA9951BB2030D00A8324E /* Fabric.framework in Frameworks */,
 				FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */,
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
@@ -1085,7 +1080,6 @@
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
 				FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */,
 				FFDCA0C316E80952000D8E0C /* AdSupport.framework in Frameworks */,
-				FFAEA9961BB2030D00A8324E /* Crashlytics.framework in Frameworks */,
 				FFDCA0C116E8094F000D8E0C /* Accounts.framework in Frameworks */,
 				FFDCA0BF16E80944000D8E0C /* Social.framework in Frameworks */,
 				43F6A7A915B0E1ED0092EE91 /* CoreText.framework in Frameworks */,
@@ -1158,8 +1152,6 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				FFAEA9931BB2030D00A8324E /* Fabric.framework */,
-				FFAEA9941BB2030D00A8324E /* Crashlytics.framework */,
 				FFD6604D1BACA46D006E4B8D /* AFNetworking */,
 				010EDEF41B238635003B79DE /* OnePasswordExtension */,
 				FF03B00419F987E00063002A /* NJKWebViewProgress */,
@@ -2086,7 +2078,6 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
-				FFAEA9921BB202F000A8324E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2445,22 +2436,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		FFAEA9921BB202F000A8324E /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "./Fabric.framework/run 4db6c03871fbc4a64b66cd2e6f7f1618ebebcf75 ffc5b2da79ffb19fa132e2dc0eaa42017f850e9803b84cb876b56d466c971d51";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		1D60588E0D05DD3D006BFB54 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -2643,7 +2618,7 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2684,7 +2659,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
