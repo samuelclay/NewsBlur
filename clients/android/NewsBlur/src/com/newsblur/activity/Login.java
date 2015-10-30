@@ -19,8 +19,6 @@ public class Login extends Activity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        PrefsUtils.applyThemePreference(this);
-
         super.onCreate(savedInstanceState);
 
         // this is the first Activity launched; use it to init the global singletons in FeedUtils
