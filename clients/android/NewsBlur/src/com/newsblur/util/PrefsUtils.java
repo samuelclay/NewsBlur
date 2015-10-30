@@ -479,7 +479,7 @@ public class PrefsUtils {
 
     public static boolean isAutoOpenFirstUnread(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, true);
+        return prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false);
     }
 
     public static boolean isOfflineEnabled(Context context) {
