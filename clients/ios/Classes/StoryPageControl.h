@@ -17,7 +17,7 @@
 @class ASIHTTPRequest;
 
 @interface StoryPageControl : BaseViewController
-<UIScrollViewDelegate, UIPopoverControllerDelegate, UIGestureRecognizerDelegate, WYPopoverControllerDelegate> {
+<UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate, WYPopoverControllerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
 

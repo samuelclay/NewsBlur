@@ -1019,13 +1019,25 @@
 #pragma mark Styles
 
 
-- (IBAction)toggleFontSize:(id)sender {    
+- (IBAction)toggleFontSize:(id)sender {
+    [self.appDelegate.fontSettingsNavigationController popToRootViewControllerAnimated:NO];
+    self.appDelegate.fontSettingsNavigationController.modalPresentationStyle = UIModalPresentationPopover;
+    UIPopoverPresentationController *popPC = self.appDelegate.fontSettingsNavigationController.popoverPresentationController;
+    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    popPC.delegate = self;
+    popPC.barButtonItem = self.fontSettingsButton;
+//    popPC.sourceView = self.view;
+//    popPC.sourceRect = [sender frame];
+    
+    [self presentViewController:self.appDelegate.fontSettingsNavigationController animated:YES completion:nil];
+    return;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showFontSettingsPopover:self.fontSettingsButton];
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.fontSettingsViewController];
+                                      initWithContentViewController:appDelegate.fontSettingsNavigationController];
             
             self.popoverController.delegate = self;
         } else {
@@ -1033,7 +1045,7 @@
             self.popoverController = nil;
         }
         
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*8-2)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240.0, 302.0)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny
                                                        animated:YES];
@@ -1152,6 +1164,12 @@
 - (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
 	//The popover is automatically dismissed if you click outside it, unless you return NO here
 	return YES;
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    return UIModalPresentationNone;
 }
 
 @end

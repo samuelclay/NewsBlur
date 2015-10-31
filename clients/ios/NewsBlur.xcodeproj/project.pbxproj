@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
 		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
+		175369711BE535CF00904D00 /* Oregon LDO.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 175369701BE535CF00904D00 /* Oregon LDO.ttf */; };
+		17EB505C1BE4411E0021358B /* choose_font.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505A1BE4411E0021358B /* choose_font.png */; };
+		17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505B1BE4411E0021358B /* choose_font@2x.png */; };
+		17EB50601BE46A900021358B /* FontListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB505F1BE46A900021358B /* FontListViewController.m */; };
+		17EB50621BE46BB00021358B /* FontListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17EB50611BE46BB00021358B /* FontListViewController.xib */; };
+		17EB50651BE47C160021358B /* FontTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB50641BE47C160021358B /* FontTableViewCell.m */; };
 		17F1566C1BDAB0930092EBFD /* NBSafariViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */; };
 		17F1566F1BDAB14F0092EBFD /* NBModalPushPopTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F1566E1BDAB14F0092EBFD /* NBModalPushPopTransition.m */; };
 		17F156711BDABBF60092EBFD /* safari_shadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F156701BDABBF60092EBFD /* safari_shadow@2x.png */; };
@@ -456,6 +462,14 @@
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
 		010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnePasswordExtension.h; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.h"; sourceTree = "<group>"; };
 		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
+		175369701BE535CF00904D00 /* Oregon LDO.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Oregon LDO.ttf"; sourceTree = "<group>"; };
+		17EB505A1BE4411E0021358B /* choose_font.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = choose_font.png; sourceTree = "<group>"; };
+		17EB505B1BE4411E0021358B /* choose_font@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "choose_font@2x.png"; sourceTree = "<group>"; };
+		17EB505E1BE46A900021358B /* FontListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontListViewController.h; sourceTree = "<group>"; };
+		17EB505F1BE46A900021358B /* FontListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontListViewController.m; sourceTree = "<group>"; };
+		17EB50611BE46BB00021358B /* FontListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontListViewController.xib; path = Classes/FontListViewController.xib; sourceTree = SOURCE_ROOT; };
+		17EB50631BE47C160021358B /* FontTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontTableViewCell.h; sourceTree = "<group>"; };
+		17EB50641BE47C160021358B /* FontTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontTableViewCell.m; sourceTree = "<group>"; };
 		17F1566A1BDAB0930092EBFD /* NBSafariViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBSafariViewController.h; sourceTree = "<group>"; };
 		17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBSafariViewController.m; sourceTree = "<group>"; };
 		17F1566D1BDAB14F0092EBFD /* NBModalPushPopTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBModalPushPopTransition.h; sourceTree = "<group>"; };
@@ -1126,6 +1140,14 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
+		1753696F1BE535CF00904D00 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				175369701BE535CF00904D00 /* Oregon LDO.ttf */,
+			);
+			path = fonts;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1242,6 +1264,7 @@
 				430C4BBE15D7208000B9F63B /* FTUX */,
 				431B857815A132C500DCE497 /* js */,
 				431B857715A132BE00DCE497 /* css */,
+				1753696F1BE535CF00904D00 /* fonts */,
 				431B857615A132B600DCE497 /* Images */,
 				FFF1E4C717750BDD00BF59D3 /* Settings.bundle */,
 			);
@@ -1348,6 +1371,8 @@
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
 				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
+				17EB505E1BE46A900021358B /* FontListViewController.h */,
+				17EB505F1BE46A900021358B /* FontListViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
 				FF67D3B0168924C40057A7DA /* TrainerViewController.h */,
@@ -1377,6 +1402,8 @@
 				FFE816AA17E280BD008AF4B0 /* ftux_tree.png */,
 				FF855B541794A53A0098D48A /* checkmark.png */,
 				FF855B551794A53A0098D48A /* checkmark@2x.png */,
+				17EB505A1BE4411E0021358B /* choose_font.png */,
+				17EB505B1BE4411E0021358B /* choose_font@2x.png */,
 				FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */,
 				FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */,
 				FF1104601769695A00502C29 /* g_icn_offline@2x.png */,
@@ -1625,6 +1652,7 @@
 				439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */,
 				FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */,
 				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
+				17EB50611BE46BB00021358B /* FontListViewController.xib */,
 				43B8F01C156603170008733D /* LoginViewController.xib */,
 				43B8F01D156603170008733D /* MainWindow.xib */,
 				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
@@ -1761,6 +1789,8 @@
 				436ACA8C15BF1088004E01CC /* NBContainerViewController.m */,
 				FF4130A1162E10CF00DDB6A7 /* MenuTableViewCell.h */,
 				FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */,
+				17EB50631BE47C160021358B /* FontTableViewCell.h */,
+				17EB50641BE47C160021358B /* FontTableViewCell.m */,
 				FF6618C6176184560039913B /* NBNotifier.h */,
 				FF6618C7176184560039913B /* NBNotifier.m */,
 				FF11045D176950F900502C29 /* NBLoadingCell.h */,
@@ -2219,6 +2249,7 @@
 				FFB9BE4817F4B65B00FE0A36 /* logo_152.png in Resources */,
 				43A4BADF15C866FA00F3B8D4 /* popoverArrowLeft@2x.png in Resources */,
 				43A4BAE015C866FA00F3B8D4 /* popoverArrowLeftSimple.png in Resources */,
+				17EB50621BE46BB00021358B /* FontListViewController.xib in Resources */,
 				43A4BAE115C866FA00F3B8D4 /* popoverArrowRight.png in Resources */,
 				FF6281FC1A0962FA00271FDB /* unread_green@3x.png in Resources */,
 				43A4BAE215C866FA00F3B8D4 /* popoverArrowRight@2x.png in Resources */,
@@ -2307,8 +2338,10 @@
 				FF4151C316DEDF9D0013E84B /* markread.png in Resources */,
 				FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */,
 				FF4151C716DEF1A80013E84B /* original_button.png in Resources */,
+				17EB505C1BE4411E0021358B /* choose_font.png in Resources */,
 				FF4151C816DEF1A80013E84B /* original_button@2x.png in Resources */,
 				FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */,
+				17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */,
 				FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */,
 				FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */,
 				FFC5F30E16E2D2C2007AC72C /* story_share_appnet@2x.png in Resources */,
@@ -2367,6 +2400,7 @@
 				FFDD846216E8871A000AA0A2 /* menu_icn_followers.png in Resources */,
 				FFDD846316E8871A000AA0A2 /* menu_icn_followers@2x.png in Resources */,
 				FFDD846416E8871A000AA0A2 /* menu_icn_move.png in Resources */,
+				175369711BE535CF00904D00 /* Oregon LDO.ttf in Resources */,
 				FFDD846516E8871A000AA0A2 /* menu_icn_move@2x.png in Resources */,
 				FFDD846616E8871A000AA0A2 /* menu_icn_train.png in Resources */,
 				FFDD846716E8871A000AA0A2 /* menu_icn_train@2x.png in Resources */,
@@ -2441,6 +2475,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17EB50601BE46A900021358B /* FontListViewController.m in Sources */,
 				FF0FAEB117B084D2008651F9 /* OfflineCleanImages.m in Sources */,
 				43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */,
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
@@ -2576,6 +2611,7 @@
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,
 				FFA0484119CA5F5B00618DC4 /* UIWebView+Offsets.m in Sources */,
 				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
+				17EB50651BE47C160021358B /* FontTableViewCell.m in Sources */,
 				FF855B5B1794B0670098D48A /* OfflineSyncUnreads.m in Sources */,
 				FF855B5E1794B0760098D48A /* OfflineFetchStories.m in Sources */,
 				FF855B611794B0830098D48A /* OfflineFetchImages.m in Sources */,

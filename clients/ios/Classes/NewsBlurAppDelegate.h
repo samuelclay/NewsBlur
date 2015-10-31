@@ -176,7 +176,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 @property (nonatomic, retain) WYPopoverController *popoverController;
-
+@property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;

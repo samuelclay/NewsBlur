@@ -24,6 +24,7 @@
 #import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
+#import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
 #import "AFHTTPRequestOperation.h"
 #import "ASINetworkQueue.h"
@@ -1404,12 +1405,22 @@
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ([viewController isKindOfClass:[SFSafariViewController class]]) {
+    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]]) {
         [_navigationController setNavigationBarHidden:YES animated:YES];
     } else {
         [_navigationController setNavigationBarHidden:NO animated:YES];
     }
 }
+
+- (UINavigationController *)fontSettingsNavigationController {
+    if (!_fontSettingsNavigationController) {
+        self.fontSettingsNavigationController = [[UINavigationController alloc] initWithRootViewController:self.fontSettingsViewController];
+        self.fontSettingsNavigationController.delegate = self;
+    }
+    
+    return _fontSettingsNavigationController;
+}
+
 - (void)closeOriginalStory {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromOriginalView];

@@ -342,12 +342,12 @@
     }
     
     popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.fontSettingsViewController];
+                         initWithContentViewController:appDelegate.fontSettingsNavigationController];
     
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(240, 38*8-2)];
+    [popoverController setPopoverContentSize:CGSizeMake(240.0, 306.0)];
     //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
     //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender
