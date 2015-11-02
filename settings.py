@@ -81,12 +81,13 @@ AUTO_ENABLE_NEW_USERS = True
 PAYPAL_TEST           = False
 
 # ===============
-# = Enviornment =
+# = Environment =
 # ===============
 
 PRODUCTION  = NEWSBLUR_DIR.find('/home/conesus/newsblur') == 0
 STAGING     = NEWSBLUR_DIR.find('/home/conesus/staging') == 0
-DEVELOPMENT = (NEWSBLUR_DIR.find('/Users/') == 0)
+DEVELOPMENT = (not PRODUCTION and not STAGING)
+
 
 # ===========================
 # = Django-specific Modules =
@@ -221,7 +222,7 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 DAYS_OF_UNREAD          = 30
 DAYS_OF_UNREAD_FREE     = 14
-# DoSH can be more, since you can up this value by N, and after N days, 
+# DoSH can be more, since you can up this value by N, and after N days,
 # you can then up the DAYS_OF_UNREAD value with no impact.
 DAYS_OF_STORY_HASHES    = 30
 
