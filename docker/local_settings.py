@@ -12,7 +12,7 @@ ADMINS                = (
 SERVER_EMAIL          = 'server@newsblur.com'
 HELLO_EMAIL           = 'hello@newsblur.com'
 NEWSBLUR_URL          = 'http://www.newsblur.com'
-SESSION_COOKIE_DOMAIN = '.localhost'
+SESSION_COOKIE_DOMAIN = '.newsblur.com'
 
 # ===================
 # = Global Settings =
