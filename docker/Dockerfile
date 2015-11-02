@@ -10,4 +10,4 @@ RUN       pip install -r requirements.txt; pip install image psycopg2 numpy scip
 
 COPY      . /opt/newsblur/
 RUN       cp docker/local_settings.py .
-CMD       ./manage.py runserver 0.0.0.0:8000
+CMD       gunicorn_django --bind 0.0.0.0:8000

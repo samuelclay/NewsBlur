@@ -10,7 +10,7 @@ newsblur:
     - redis
   ports:
     - '80:8000'
-  command: tail -f urls.py
+
 
 
 postgres:
