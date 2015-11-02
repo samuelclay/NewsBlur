@@ -1,0 +1,42 @@
+---
+
+newsblur:
+  build: .
+  dockerfile: docker/Dockerfile
+  links:
+    - mongo
+    - postgres
+    - elasticsearch
+    - redis
+  ports:
+    - '80:8000'
+
+
+
+postgres:
+  image: postgres:9
+  environment:
+    - POSTGRES_USER=newsblur
+    - POSTGRES_PASSWORD=newsblur
+  ports:
+    - '3306:3306'
+
+
+redis:
+  image: redis:3
+  ports:
+    - '6379:6379'
+
+
+elasticsearch:
+  image: elasticsearch:1.7
+  ports:
+    - '9200:9200'
+
+
+
+mongo:
+  image: mongo:3
+  ports:
+    - '27017:27017'
+  command: mongod --smallfiles
