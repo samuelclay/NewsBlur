@@ -303,6 +303,8 @@
     NSString *headerString;
     NSString *sharingHtmlString;
     NSString *footerString;
+    NSString *fontStyle = @"";
+    NSString *customStyle = nil;
     NSString *fontStyleClass = @"";
     NSString *fontSizeClass = @"NB-";
     NSString *lineSpacingClass = @"NB-line-spacing-";
@@ -312,12 +314,19 @@
     }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    if ([userPreferences stringForKey:@"fontStyle"]){
+    
+    fontStyle = [userPreferences stringForKey:@"fontStyle"];
+    if (fontStyle){
         fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
     } else {
+        fontStyle = @"Helvetica";
         fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-helvetica"];
     }
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
+    
+    if ([fontStyle isEqualToString:@"OregonLDO"]) {
+        customStyle = [NSString stringWithFormat:@" style='font-family: %@;'", fontStyle];
+    }
     
     if ([userPreferences stringForKey:@"story_line_spacing"]){
         lineSpacingClass = [lineSpacingClass stringByAppendingString:[userPreferences stringForKey:@"story_line_spacing"]];
@@ -382,7 +391,7 @@
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
-                            "    <div class=\"%@\" id=\"NB-font-style\">"
+                            "    <div class=\"%@\" id=\"NB-font-style\"%@>"
                             "    <div class=\"%@\" id=\"NB-font-size\">"
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
@@ -402,6 +411,7 @@
                             contentWidthClass,
                             riverClass,
                             fontStyleClass,
+                            customStyle,
                             fontSizeClass,
                             lineSpacingClass,
                             storyHeader,
@@ -1539,6 +1549,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *jsString;
     NSString *fontStyleStr;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL customStyle = NO;
     
     if ([fontStyle isEqualToString:@"Helvetica"]) {
         fontStyleStr = @"NB-helvetica";
@@ -1550,6 +1561,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         fontStyleStr = @"NB-avenir";
     } else if ([fontStyle isEqualToString:@"AvenirNext"]) {
         fontStyleStr = @"NB-avenirnext";
+    } else if ([fontStyle isEqualToString:@"OregonLDO"]) {
+        fontStyleStr = @"NB-oregon";
+        customStyle = YES;
     }
     [userPreferences setObject:fontStyleStr forKey:@"fontStyle"];
     [userPreferences synchronize];
@@ -1557,6 +1571,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     jsString = [NSString stringWithFormat:@
                 "document.getElementById('NB-font-style').setAttribute('class', '%@')",
                 fontStyleStr];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    if (customStyle) {
+        jsString = [NSString stringWithFormat:@
+                    "document.getElementById('NB-font-style').setAttribute('style', 'font-family: %@;')",
+                    fontStyle];
+    } else {
+        jsString = @"document.getElementById('NB-font-style').setAttribute('style', '')";
+    }
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
