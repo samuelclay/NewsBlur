@@ -78,7 +78,7 @@ public class PrefsUtils {
         StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
         s.append("<give us some feedback!>%0A%0A");
         s.append("%0Aapp version: ").append(getVersion(context));
-        s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE);
+        s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE).append(" (" + Build.DISPLAY + ")");
         s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
         s.append("%0Asqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("%0Ausername: ").append(getUserDetails(context).username);
