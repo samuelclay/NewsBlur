@@ -87,6 +87,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @FindView(R.id.reading_overlay_progress_left) ProgressBar overlayProgressLeft;
     @FindView(R.id.reading_overlay_text) Button overlayText;
     @FindView(R.id.reading_overlay_send) Button overlaySend;
+    @FindView(R.id.reading_empty_view_text) View emptyViewText;
     
     ViewPager pager;
 
@@ -270,6 +271,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                  (story.storyHash.equals(storyHash)) ) {
                 // now that the pager is getting the right story, make it visible
                 pager.setVisibility(View.VISIBLE);
+                emptyViewText.setVisibility(View.INVISIBLE);
                 pager.setCurrentItem(stories.getPosition(), false);
                 this.onPageSelected(stories.getPosition());
                 storyHash = null;
