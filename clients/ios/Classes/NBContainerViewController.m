@@ -1089,10 +1089,6 @@
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
-    if (self.rotatingToOrientation != UIDeviceOrientationUnknown) {
-        return; // don't animate changes in the old orientation
-    }
-
     if (notification.name == UIKeyboardWillShowNotification) {
         self.keyboardIsShown = YES;
     } else if (notification.name == UIKeyboardWillHideNotification) {
