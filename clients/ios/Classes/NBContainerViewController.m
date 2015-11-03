@@ -57,6 +57,7 @@
 @property (readwrite) BOOL feedDetailIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
 @property (readwrite) UIDeviceOrientation rotatingToOrientation;
+@property (nonatomic) UIBackgroundTaskIdentifier reorientBackgroundTask;
 
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
@@ -222,9 +223,24 @@
             [self layoutFeedDetailScreen];
         }
         if (self.feedDetailIsVisible) {
-            [self.storyPageControl reorientPages];
+            // Defer this in the background, to avoid misaligning the detail views
+            if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+                self.reorientBackgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+                    [[UIApplication sharedApplication] endBackgroundTask:self.reorientBackgroundTask];
+                    self.reorientBackgroundTask = UIBackgroundTaskInvalid;
+                }];
+                [self performSelector:@selector(delayedReorientPages) withObject:nil afterDelay:0.5];
+            } else {
+                [self.storyPageControl reorientPages];
+            }
         }
     }];
+}
+
+- (void)delayedReorientPages {
+    [self.storyPageControl reorientPages];
+    [[UIApplication sharedApplication] endBackgroundTask:self.reorientBackgroundTask];
+    self.reorientBackgroundTask = UIBackgroundTaskInvalid;
 }
 
 - (NSInteger)masterWidth {
