@@ -58,7 +58,7 @@
         fontStyle = @"NB-helvetica";
     }
     
-    if ([font[@"html"] isEqualToString:fontStyle]) {
+    if ([font[@"style"] isEqualToString:fontStyle]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
         self.selectedIndexPath = indexPath;
     }

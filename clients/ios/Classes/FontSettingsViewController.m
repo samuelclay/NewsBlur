@@ -54,13 +54,13 @@
     // Leave commented out for future use:
 //    [self debugOutputFontNames];
     
-    // Available fonts, in alphabetic order.  Remember to add custom font filenames to the Info.plist.
-    [self addFontWithName:@"Avenir-Medium" styleName:@"Avenir" htmlName:@"NB-avenir"];
-    [self addFontWithName:@"AvenirNext-Regular" styleName:@"AvenirNext" htmlName:@"NB-avenirnext"];
-    [self addFontWithName:@"Georgia" styleName:@"Georgia" htmlName:@"NB-georgia"];
-    [self addFontWithName:@"Helvetica" styleName:@"Helvetica" htmlName:@"NB-helvetica"];
-    [self addFontWithName:@"OregonLDO" styleName:@"OregonLDO" htmlName:@"NB-oregon"];
-    [self addFontWithName:@"Palatino-Roman" styleName:@"Palatino" htmlName:@"NB-palatino"];
+    // Available fonts, in alphabetic order.  Remember to add bundled font filenames to the Info.plist.
+    [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir"];
+    [self addBuiltInFontWithName:@"AvenirNext-Regular" styleClass:@"NB-avenirnext"];
+    [self addBuiltInFontWithName:@"Georgia" styleClass:@"NB-georgia"];
+    [self addBuiltInFontWithName:@"Helvetica" styleClass:@"NB-helvetica"];
+    [self addBundledFontWithName:@"OregonLDO"];
+    [self addBuiltInFontWithName:@"Palatino-Roman" styleClass:@"NB-palatino"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
@@ -113,13 +113,17 @@
     }
 }
                    
-- (void)addFontWithName:(NSString *)fontName styleName:(NSString *)styleName htmlName:(NSString *)htmlName {
+- (void)addBuiltInFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass {
     UIFont *font = [UIFont fontWithName:fontName size:16.0];
     
     if (font) {
         NSAttributedString *attrb = [[NSAttributedString alloc] initWithString:font.familyName.uppercaseString attributes:@{NSFontAttributeName : font}];
-        [self.fonts addObject:@{@"name" : attrb, @"style" : styleName, @"html" : htmlName}];
+        [self.fonts addObject:@{@"name" : attrb, @"style" : styleClass}];
     }
+}
+
+- (void)addBundledFontWithName:(NSString *)fontName {
+    [self addBuiltInFontWithName:fontName styleClass:fontName];
 }
 
 - (IBAction)changeFontSize:(id)sender {
@@ -218,7 +222,7 @@
             fontStyle = @"NB-helvetica";
         }
         NSUInteger idx = [self.fonts indexOfObjectPassingTest:^BOOL(NSDictionary *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            return [obj[@"html"] isEqualToString:fontStyle];
+            return [obj[@"style"] isEqualToString:fontStyle];
         }];
         if (idx != NSNotFound) {
             NSDictionary *font = self.fonts[idx];

@@ -303,9 +303,8 @@
     NSString *headerString;
     NSString *sharingHtmlString;
     NSString *footerString;
-    NSString *fontStyle = @"";
-    NSString *customStyle = nil;
     NSString *fontStyleClass = @"";
+    NSString *customStyle = @"";
     NSString *fontSizeClass = @"NB-";
     NSString *lineSpacingClass = @"NB-line-spacing-";
     NSString *storyContent = [self.activeStory objectForKey:@"story_content"];
@@ -315,17 +314,15 @@
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    fontStyle = [userPreferences stringForKey:@"fontStyle"];
-    if (fontStyle){
-        fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
-    } else {
-        fontStyle = @"Helvetica";
-        fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-helvetica"];
+    fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
+    if (!fontStyleClass) {
+        fontStyleClass = @"NB-helvetica";
     }
+    
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
     
-    if ([fontStyle isEqualToString:@"OregonLDO"]) {
-        customStyle = [NSString stringWithFormat:@" style='font-family: %@;'", fontStyle];
+    if (![fontStyleClass hasPrefix:@"NB-"]) {
+        customStyle = [NSString stringWithFormat:@" style='font-family: %@;'", fontStyleClass];
     }
     
     if ([userPreferences stringForKey:@"story_line_spacing"]){
@@ -1547,34 +1544,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setFontStyle:(NSString *)fontStyle {
     NSString *jsString;
-    NSString *fontStyleStr;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL customStyle = NO;
     
-    if ([fontStyle isEqualToString:@"Helvetica"]) {
-        fontStyleStr = @"NB-helvetica";
-    } else if ([fontStyle isEqualToString:@"Palatino"]) {
-        fontStyleStr = @"NB-palatino";
-    } else if ([fontStyle isEqualToString:@"Georgia"]) {
-        fontStyleStr = @"NB-georgia";
-    } else if ([fontStyle isEqualToString:@"Avenir"]) {
-        fontStyleStr = @"NB-avenir";
-    } else if ([fontStyle isEqualToString:@"AvenirNext"]) {
-        fontStyleStr = @"NB-avenirnext";
-    } else if ([fontStyle isEqualToString:@"OregonLDO"]) {
-        fontStyleStr = @"NB-oregon";
-        customStyle = YES;
-    }
-    [userPreferences setObject:fontStyleStr forKey:@"fontStyle"];
+    [userPreferences setObject:fontStyle forKey:@"fontStyle"];
     [userPreferences synchronize];
     
     jsString = [NSString stringWithFormat:@
                 "document.getElementById('NB-font-style').setAttribute('class', '%@')",
-                fontStyleStr];
+                fontStyle];
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
-    if (customStyle) {
+    if (![fontStyle hasPrefix:@"NB-"]) {
         jsString = [NSString stringWithFormat:@
                     "document.getElementById('NB-font-style').setAttribute('style', 'font-family: %@;')",
                     fontStyle];
