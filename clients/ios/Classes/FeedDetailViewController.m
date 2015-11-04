@@ -113,13 +113,16 @@
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
     [separatorBarButton setEnabled:NO];
+    separatorBarButton.isAccessibilityElement = NO;
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsActionSheet:)];
-
+    settingsBarButton.accessibilityLabel = @"Settings";
+    
     UIImage *markreadImage = [UIImage imageNamed:@"markread.png"];
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
-
+    feedMarkReadButton.accessibilityLabel = @"Mark all as read";
+    
     titleImageBarButton = [UIBarButtonItem alloc];
 
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]

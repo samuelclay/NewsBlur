@@ -76,6 +76,21 @@ static UIFont *indicatorFont = nil;
     [cellContent setNeedsDisplay];
 }
 
+- (NSString *)accessibilityLabel {
+    NSMutableString *output = [NSMutableString stringWithString:self.siteTitle];
+    
+    [output appendFormat:@", \"%@\"", self.storyTitle];
+    
+    if (self.storyAuthor.length) {
+        [output appendFormat:@", by %@", self.storyAuthor];
+    }
+    
+    [output appendFormat:@", at %@", self.storyDate];
+    [output appendFormat:@". %@", self.storyContent];
+    
+    return output;
+}
+
 - (void)setupGestures {
     NSString *unreadIcon;
     if (storyScore == -1) {

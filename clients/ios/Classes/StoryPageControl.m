@@ -151,16 +151,19 @@
                                                     target:nil
                                                     action:nil];
     [separatorBarButton setEnabled:NO];
+    separatorBarButton.isAccessibilityElement = NO;
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
+    fontSettingsButton.accessibilityLabel = @"Story settings";
     
     UIImage *markreadImage = [UIImage imageNamed:@"original_button.png"];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
+    originalStoryButton.accessibilityLabel = @"Show original story";
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"

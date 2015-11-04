@@ -48,6 +48,7 @@
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     int countWidth = 0;
+    NSString *accessibilityCount = @"";
     
     if ([folderName isEqual:@"saved_stories"]) {
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
@@ -59,6 +60,8 @@
         [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
+        
+        accessibilityCount = [NSString stringWithFormat:@", %@ stories", @(appDelegate.savedStoriesCount)];
     } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
@@ -70,7 +73,14 @@
         [unreadCount calculateOffsets:counts.ps nt:counts.nt];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
+        
+        accessibilityCount = [NSString stringWithFormat:@", collapsed, %@ unread stories", @(counts.nt)];
+    } else if (UIAccessibilityIsVoiceOverRunning()) {
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        
+        accessibilityCount = [NSString stringWithFormat:@", %@ unread stories", @(counts.nt)];
     }
+    
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
@@ -134,6 +144,8 @@
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
+    invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
+    invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController
                               action:@selector(didSelectSectionHeader:)
                     forControlEvents:UIControlEventTouchUpInside];
