@@ -117,7 +117,8 @@
     UIFont *font = [UIFont fontWithName:fontName size:16.0];
     
     if (font) {
-        NSAttributedString *attrb = [[NSAttributedString alloc] initWithString:font.familyName.uppercaseString attributes:@{NSFontAttributeName : font}];
+        NSAttributedString *attrb = [[NSAttributedString alloc] initWithString:font.familyName
+                                                                    attributes:@{NSFontAttributeName : font}];
         [self.fonts addObject:@{@"name" : attrb, @"style" : styleClass}];
     }
 }
