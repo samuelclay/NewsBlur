@@ -1337,6 +1337,7 @@
     cell.storyScore = score;
     
     cell.isRead = ![storiesCollection isStoryUnread:story];
+    cell.isReadAvailable = ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
     
     cell.isShort = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;

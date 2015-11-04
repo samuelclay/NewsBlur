@@ -60,7 +60,8 @@ static UIFont *indicatorFont = nil;
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
-
+        self.isReadAvailable = YES;
+        
         [self.contentView addSubview:cellContent];
     }
     
@@ -91,6 +92,11 @@ static UIFont *indicatorFont = nil;
     UIColor *readColor = self.isRead ?
                             UIColorFromRGB(0xBED49F) :
                             UIColorFromRGB(0xFFFFD2);
+    
+    if (!self.isReadAvailable) {
+        unreadIcon = nil;
+        readColor = nil;
+    }
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     if (inDashboard) {
