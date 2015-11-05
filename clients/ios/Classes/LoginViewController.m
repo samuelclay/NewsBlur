@@ -59,22 +59,33 @@
     //[self.onePasswordButton setHidden:![[OnePasswordExtension sharedExtension] isAppExtensionAvailable]];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
-            self.logInView.frame = CGRectMake(134, 180, 500, 300); 
-            self.signUpView.frame = CGRectMake(902, 180, 500, 300); 
-            self.selectLoginButton.frame = CGRectMake(134, 80, 250, 50);
-            self.selectSignUpButton.frame = CGRectMake(384, 80, 250, 50);
-            self.errorLabel.frame = CGRectMake(244, 180, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-        } else {
-            self.logInView.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80, 500, 300); 
-            self.signUpView.frame = CGRectMake(902 + LANDSCAPE_MARGIN, 80, 500, 300); 
-            self.selectLoginButton.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 20, 250, 50);
-            self.selectSignUpButton.frame = CGRectMake(384 + LANDSCAPE_MARGIN, 20, 250, 50);
-            self.errorLabel.frame = CGRectMake(244 + LANDSCAPE_MARGIN, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-        } 
+        [self updateControls];
+        [self rearrangeViews];
     }
-
+    
     [super viewDidLoad];
+}
+
+- (CGFloat)xForWidth:(CGFloat)width {
+    return (self.view.bounds.size.width / 2) - (width / 2);
+}
+
+- (void)rearrangeViews {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        CGSize viewSize = self.view.bounds.size;
+        CGFloat viewWidth = viewSize.width;
+        CGFloat yOffset = 0;
+        CGFloat xOffset = isOnSignUpScreen ? -viewWidth : 0;
+        
+        if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
+            yOffset = viewSize.height / 6;
+        }
+        
+        self.buttonsView.frame = CGRectMake([self xForWidth:518], 15 + yOffset, 518, 66);
+        self.logInView.frame = CGRectMake([self xForWidth:500] + xOffset, 75 + yOffset, 500, 300);
+        self.signUpView.frame = CGRectMake([self xForWidth:500] + viewWidth + xOffset, 75 + yOffset, 500, 300);
+        self.errorLabel.frame = CGRectMake([self xForWidth:self.errorLabel.frame.size.width], 75 + yOffset, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
+    }
 }
 
 - (void)viewDidUnload {
@@ -115,38 +126,7 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    int signUpX, loginX;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)){
-            if (isOnSignUpScreen) {
-                loginX = -634;
-                signUpX = 134;
-            } else {
-                loginX = 134;
-                signUpX = 902;
-            }
-            self.logInView.frame = CGRectMake(loginX, 180, 500, 300);
-            self.signUpView.frame = CGRectMake(signUpX, 180, 500, 300); 
-            self.selectLoginButton.frame = CGRectMake(134, 80, 250, 50);
-            self.selectSignUpButton.frame = CGRectMake(384, 80, 250, 50);
-            self.errorLabel.frame = CGRectMake(244, 180, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-        }else{
-            if (isOnSignUpScreen) {
-                loginX = -634 + LANDSCAPE_MARGIN;
-                signUpX = 134 + LANDSCAPE_MARGIN;
-            } else {
-                loginX = 134 + LANDSCAPE_MARGIN;
-                signUpX = 902 + LANDSCAPE_MARGIN;
-            }
-
-            self.logInView.frame = CGRectMake(loginX, 80, 500, 300);
-            self.signUpView.frame = CGRectMake(signUpX, 80, 500, 300); 
-            self.selectLoginButton.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80 - 60, 250, 50);
-            self.selectSignUpButton.frame = CGRectMake(384 + LANDSCAPE_MARGIN, 80 - 60, 250, 50);
-            self.errorLabel.frame = CGRectMake(244 + LANDSCAPE_MARGIN, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-        }
-
-    }
+    [self rearrangeViews];
 }
 
 - (IBAction)findLoginFrom1Password:(id)sender {
@@ -319,22 +299,26 @@
 #pragma mark -
 #pragma mark iPad: Sign Up/Login Toggle
 
+- (void)updateControls {
+    self.selectSignUpButton.selected = isOnSignUpScreen;
+    self.selectLoginButton.selected = !isOnSignUpScreen;
+    self.errorLabel.hidden = YES;
+    
+    self.signUpUsernameInput.enabled = isOnSignUpScreen;
+    self.signUpPasswordInput.enabled = isOnSignUpScreen;
+    self.emailInput.enabled = isOnSignUpScreen;
+    self.usernameInput.enabled = !isOnSignUpScreen;
+    self.passwordInput.enabled = !isOnSignUpScreen;
+}
+
 - (IBAction)selectSignUp {
     isOnSignUpScreen = YES;
-    self.selectSignUpButton.selected = YES;
-    self.selectLoginButton.selected = NO;
-    [self.errorLabel setHidden:YES];
-    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
-        [UIView animateWithDuration:0.35 animations:^{
-            self.logInView.frame = CGRectMake(-634, 180, 500, 300);    
-            self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
-        }]; 
-    } else {
-        [UIView animateWithDuration:0.35 animations:^{
-            self.logInView.frame = CGRectMake(-634 + LANDSCAPE_MARGIN, 80, 500, 300); 
-            self.signUpView.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80, 500, 300); 
-        }]; 
-    }
+    
+    [self updateControls];
+    
+    [UIView animateWithDuration:0.35 animations:^{
+        [self rearrangeViews];
+    }];
     
     [self.signUpUsernameInput becomeFirstResponder];
     
@@ -342,20 +326,12 @@
 
 - (IBAction)selectLogin {
     isOnSignUpScreen = NO;
-    self.selectSignUpButton.selected = NO;
-    self.selectLoginButton.selected = YES;
-    [self.errorLabel setHidden:YES];
-    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
-        [UIView animateWithDuration:0.35 animations:^{
-            self.logInView.frame = CGRectMake(134, 180, 500, 300);   
-            self.signUpView.frame = CGRectMake(902, 180, 500, 300); 
-        }];
-    } else {
-        [UIView animateWithDuration:0.35 animations:^{
-            self.logInView.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80, 500, 300);    
-            self.signUpView.frame = CGRectMake(902 + LANDSCAPE_MARGIN, 80, 500, 300); 
-        }];
-    }
+    
+    [self updateControls];
+    
+    [UIView animateWithDuration:0.35 animations:^{
+        [self rearrangeViews];
+    }];
     
     [self.usernameInput becomeFirstResponder];
 }

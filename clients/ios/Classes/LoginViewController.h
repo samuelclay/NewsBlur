@@ -59,6 +59,7 @@
 @property (nonatomic) IBOutlet UIButton *selectLoginButton;
 @property (nonatomic) IBOutlet UIButton *onePasswordButton;
 
+@property (nonatomic) IBOutlet UIView *buttonsView;
 @property (nonatomic) IBOutlet UIView *signUpView;
 @property (nonatomic) IBOutlet UIView *logInView;
 

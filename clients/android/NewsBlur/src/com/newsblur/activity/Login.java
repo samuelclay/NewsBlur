@@ -11,39 +11,41 @@ import android.view.Window;
 
 import com.newsblur.R;
 import com.newsblur.fragment.LoginRegisterFragment;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 
 public class Login extends Activity {
-	
-	private FragmentManager fragmentManager;
-	private final static String currentTag = "currentFragment";
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-        PrefsUtils.applyThemePreference(this);
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		super.onCreate(savedInstanceState);
-		preferenceCheck();
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_login);
-		fragmentManager = getFragmentManager();
-		
-		if (fragmentManager.findFragmentByTag(currentTag) == null) {
-			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			LoginRegisterFragment login = new LoginRegisterFragment();
-			transaction.add(R.id.login_container, login, currentTag);
-			transaction.commit();
-		}
-	}
+        // this is the first Activity launched; use it to init the global singletons in FeedUtils
+        FeedUtils.offerInitContext(this);
 
-	private void preferenceCheck() {
-		final SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
-		if (preferences.getString(PrefConstants.PREF_COOKIE, null) != null) {
-			final Intent mainIntent = new Intent(this, Main.class);
-			startActivity(mainIntent);
-		}
-	}
-	
+        // see if a user is already logged in; if so, jump to the Main activity
+        preferenceCheck();
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_login);
+        FragmentManager fragmentManager = getFragmentManager();
+        
+        if (fragmentManager.findFragmentByTag(LoginRegisterFragment.class.getName()) == null) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            LoginRegisterFragment login = new LoginRegisterFragment();
+            transaction.add(R.id.login_container, login, LoginRegisterFragment.class.getName());
+            transaction.commit();
+        }
+    }
+
+    private void preferenceCheck() {
+        final SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
+        if (preferences.getString(PrefConstants.PREF_COOKIE, null) != null) {
+            final Intent mainIntent = new Intent(this, Main.class);
+            startActivity(mainIntent);
+        }
+    }
+    
 
 }

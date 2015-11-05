@@ -2,15 +2,12 @@ package com.newsblur.util;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.text.TextUtils;
 
+import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.APIManager;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ReadingAction {
 
@@ -286,9 +283,12 @@ public class ReadingAction {
     }
 
     /**
-     * Excecute this action on the local DB. These must be idempotent.
+     * Excecute this action on the local DB. These *must* be idempotent.
+     *
+     * @return the union of update impact flags that resulted from this action.
      */
-    public void doLocal(BlurDatabaseHelper dbHelper) {
+    public int doLocal(BlurDatabaseHelper dbHelper) {
+        int impact = 0;
         switch (type) {
 
             case MARK_READ:
@@ -297,40 +297,49 @@ public class ReadingAction {
                 } else if (feedSet != null) {
                     dbHelper.markStoriesRead(feedSet, olderThan, newerThan);
                 }
+                impact |= NbActivity.UPDATE_METADATA;
                 break;
                 
             case MARK_UNREAD:
                 dbHelper.setStoryReadState(storyHash, false);
+                impact |= NbActivity.UPDATE_METADATA;
                 break;
 
             case SAVE:
                 dbHelper.setStoryStarred(storyHash, true);
+                impact |= NbActivity.UPDATE_METADATA;
                 break;
 
             case UNSAVE:
                 dbHelper.setStoryStarred(storyHash, false);
+                impact |= NbActivity.UPDATE_METADATA;
                 break;
 
             case SHARE:
                 dbHelper.setStoryShared(storyHash);
                 dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
+                impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case LIKE_COMMENT:
                 dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
+                impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case UNLIKE_COMMENT:
                 dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
+                impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case REPLY:
                 dbHelper.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             default:
                 // not all actions have these, which is fine
         }
+        return impact;
     }
 
 }

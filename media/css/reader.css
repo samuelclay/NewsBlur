@@ -7373,6 +7373,11 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 4px center;
     background-size: 8px;
 }
+.NB-menu-manage .NB-menu-manage-story-read .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 4px center;
+    background-size: 8px;
+    opacity: 0.2;
+}
 .NB-menu-manage .NB-menu-manage-story-star .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 0;
     background-size: 16px;

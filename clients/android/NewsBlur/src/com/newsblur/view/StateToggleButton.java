@@ -6,10 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.newsblur.R;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.StateFilter;
 
 public class StateToggleButton extends LinearLayout implements OnClickListener {

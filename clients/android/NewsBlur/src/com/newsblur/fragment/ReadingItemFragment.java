@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,7 +36,6 @@ import butterknife.OnClick;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
-import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
@@ -46,7 +44,6 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageCache;
-import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
@@ -59,8 +56,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.HashSet;
-import java.util.Set;
 
 public class ReadingItemFragment extends NbFragment implements ClassifierDialogFragment.TagUpdateCallback {
 
@@ -68,7 +63,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
 	public Story story;
 	private LayoutInflater inflater;
-	private ImageLoader imageLoader;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
 	@FindView(R.id.reading_webview) NewsblurWebview web;
@@ -136,7 +130,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
 
 		inflater = getActivity().getLayoutInflater();
@@ -310,7 +303,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
     private void setupItemCommentsAndShares() {
-        new SetupCommentSectionTask(this, view, inflater, story, imageLoader).execute();
+        new SetupCommentSectionTask(this, view, inflater, story).execute();
     }
 
 	private void setupItemMetadata() {
@@ -328,7 +321,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
         int[] colors = {
             Color.parseColor(feedColor),
-            Color.parseColor(feedFade)
+            Color.parseColor(feedFade),
         };
         GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
                 colors);
@@ -347,7 +340,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
 		} else {
-			imageLoader.displayImage(feedIconUrl, feedIcon, false);
+			FeedUtils.imageLoader.displayImage(feedIconUrl, feedIcon, false);
 			itemFeed.setText(feedTitle);
 		}
 

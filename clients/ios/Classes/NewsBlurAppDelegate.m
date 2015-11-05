@@ -24,6 +24,7 @@
 #import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
+#import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
 #import "AFHTTPRequestOperation.h"
 #import "ASINetworkQueue.h"
@@ -37,6 +38,8 @@
 #import "ARChromeActivity.h"
 #import "NBCopyLinkActivity.h"
 #import "MBProgressHUD.h"
+#import "NBSafariViewController.h"
+#import "NBModalPushPopTransition.h"
 #import "Utilities.h"
 #import "StringHelper.h"
 #import "AuthorizeServicesViewController.h"
@@ -58,9 +61,14 @@
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
 #import <float.h>
+
+@interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
+
+@property (nonatomic, strong) NBSafariViewController *safariViewController;
+@property (nonatomic, strong) NBModalPushPopTransition *safariAnimator;
+
+@end
 
 @implementation NewsBlurAppDelegate
 
@@ -118,7 +126,6 @@
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize inStoryDetail;
-@synthesize inTextView;
 @synthesize isPresentingActivities;
 @synthesize activeComment;
 @synthesize activeShareType;
@@ -147,6 +154,7 @@
 @synthesize dictUserProfile;
 @synthesize dictSocialServices;
 @synthesize dictUnreadCounts;
+@synthesize dictTextFeeds;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -174,7 +182,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-//    [Fabric with:@[[Crashlytics class]]];
 
     [self registerDefaultsFromSettingsBundle];
     
@@ -541,7 +548,7 @@
         } else if ([activityType isEqualToString:@"ARChromeActivity"]) {
             return;
         } else if ([activityType isEqualToString:@"NBCopyLinkActivity"]) {
-            _completedString = @"Copied";
+            _completedString = @"Copied Link";
         } else {
             _completedString = @"Saved";
         }
@@ -640,6 +647,7 @@
     self.userActivitiesArray = nil;
     self.userInteractionsArray = nil;
     self.dictUnreadCounts = nil;
+    self.dictTextFeeds = nil;
     
     [self.feedsViewController.feedTitlesTable reloadData];
     [self.feedsViewController resetToolbar];
@@ -765,7 +773,7 @@
         }
         
         [self.userTagsViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count]+0.5))];
+        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count] + [self.activeStory[@"user_tags"] count] + 1))];
         CGRect frame = [sender CGRectValue];
         [self.popoverController presentPopoverFromRect:frame
                                                 inView:self.storyPageControl.currentPage.view
@@ -962,6 +970,7 @@
                                        NEWSBLUR_URL]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
+    [request setValidatesSecureCertificate:NO];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
     [request setFailedBlock:^(void) {
@@ -1000,6 +1009,7 @@
             NSURL *url = [NSURL URLWithString:urlS];
             
             __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            [request setValidatesSecureCertificate:NO];
             [request setDelegate:self];
             [request setResponseEncoding:NSUTF8StringEncoding];
             [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -1320,10 +1330,16 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
-        SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
-                                                             entersReaderIfAvailable:NO];
-        safari.delegate = self;
-        [navigationController pushViewController:safari animated:YES];
+        self.safariAnimator = [NBModalPushPopTransition new];
+        self.safariViewController = [[NBSafariViewController alloc] initWithURL:url
+                                                         entersReaderIfAvailable:NO];
+        self.safariViewController.delegate = self;
+        self.safariViewController.transitioningDelegate = self;
+        [navigationController presentViewController:self.safariViewController animated:YES completion:^{
+            UIScreenEdgePanGestureRecognizer *recognizer = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+            recognizer.edges = UIRectEdgeLeft;
+            [self.safariViewController.edgeView addGestureRecognizer:recognizer];
+        }];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -1347,16 +1363,64 @@
 }
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    [navigationController popViewControllerAnimated:YES];
+    controller.delegate = nil;
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)recognizer {
+    self.safariAnimator.percentageDriven = YES;
+    UIView *view = self.window.rootViewController.view;
+    CGFloat percentComplete = [recognizer locationInView:view].x / view.bounds.size.width;
+    
+    switch (recognizer.state) {
+        case UIGestureRecognizerStateBegan:
+            self.safariViewController.delegate = nil;
+            [navigationController dismissViewControllerAnimated:YES completion:nil];
+            break;
+        case UIGestureRecognizerStateChanged:
+            [self.safariAnimator updateInteractiveTransition:percentComplete > 0.99 ? 0.99 : percentComplete];
+            break;
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+            ([recognizer velocityInView:view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
+            self.safariAnimator.percentageDriven = NO;
+            break;
+        default:
+            break;
+    }
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    self.safariAnimator.dismissing = NO;
+    return self.safariAnimator;
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    self.safariAnimator.dismissing = YES;
+    return self.safariAnimator;
+}
+
+- (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator {
+    return self.safariAnimator.percentageDriven ? self.safariAnimator : nil;
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ([viewController isKindOfClass:[SFSafariViewController class]]) {
+    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]]) {
         [_navigationController setNavigationBarHidden:YES animated:YES];
     } else {
         [_navigationController setNavigationBarHidden:NO animated:YES];
     }
 }
+
+- (UINavigationController *)fontSettingsNavigationController {
+    if (!_fontSettingsNavigationController) {
+        self.fontSettingsNavigationController = [[UINavigationController alloc] initWithRootViewController:self.fontSettingsViewController];
+        self.fontSettingsNavigationController.delegate = self;
+    }
+    
+    return _fontSettingsNavigationController;
+}
+
 - (void)closeOriginalStory {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromOriginalView];
@@ -1373,6 +1437,35 @@
     } else {
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+
+#pragma mark - Text View
+
+- (void)populateDictTextFeeds {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSDictionary *textFeeds = [preferences dictionaryForKey:@"feeds:text"];
+    if (!textFeeds) {
+        self.dictTextFeeds = [[NSMutableDictionary alloc] init];
+    } else {
+        self.dictTextFeeds = [textFeeds mutableCopy];
+    }
+    
+}
+
+- (BOOL)isFeedInTextView:(id)feedId {
+    return [self.dictTextFeeds objectForKey:feedId];
+}
+
+- (void)toggleFeedTextView:(id)feedId {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if ([self.dictTextFeeds objectForKey:feedId]) {
+        [self.dictTextFeeds removeObjectForKey:feedId];
+    } else {
+        [self.dictTextFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedId];
+    }
+    
+    [preferences setObject:self.dictTextFeeds forKey:@"feeds:text"];
+    [preferences synchronize];
 }
 
 #pragma mark - Unread Counts
@@ -1631,16 +1724,22 @@
 }
 
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff {
+    [self markFeedReadInCache:feedIds cutoffTimestamp:cutoff older:YES];
+}
+
+- (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older {
     for (NSString *feedId in feedIds) {
-        NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedId];
+        NSString *feedIdString = [NSString stringWithFormat:@"%@", feedId];
+        NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdString];
         NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
         NSMutableArray *stories = [NSMutableArray array];
+        NSString *direction = older ? @"<" : @">";
         
         [self.database inDatabase:^(FMDatabase *db) {
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "
                              "INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash "
-                             "WHERE s.story_feed_id = %@ AND s.story_timestamp < %ld",
-                             feedId, (long)cutoff];
+                             "WHERE s.story_feed_id = %@ AND s.story_timestamp %@ %ld",
+                             feedIdString, direction, (long)cutoff];
             FMResultSet *cursor = [db executeQuery:sql];
             
             while ([cursor next]) {
@@ -1666,7 +1765,7 @@
                 int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] - 1);
                 [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
             }
-            [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedId];
+            [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdString];
         }
         
         [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -1682,13 +1781,13 @@
                                    stringWithFormat:@"DELETE FROM unread_hashes "
                                    "WHERE story_feed_id = \"%@\" "
                                    "AND story_timestamp < %ld",
-                                   feedId, (long)cutoff];
+                                   feedIdString, (long)cutoff];
             [db executeUpdate:deleteSql];
             [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
              [newUnreadCounts objectForKey:@"ps"],
              [newUnreadCounts objectForKey:@"nt"],
              [newUnreadCounts objectForKey:@"ng"],
-             feedId];
+             feedIdString];
         }];
     }
 }
@@ -1759,7 +1858,7 @@
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
-             isEqualToString:[story objectForKey:@"story_hash"]]) {
+             isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
             [storyPageControl refreshHeaders];
         }
@@ -1770,6 +1869,7 @@
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
+        if (!page) continue;
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;

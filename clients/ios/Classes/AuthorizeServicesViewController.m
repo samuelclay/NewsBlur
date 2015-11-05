@@ -85,7 +85,8 @@
     NSString *URLString = [[request URL] absoluteString];
     NSLog(@"URL STRING IS %@", URLString);
     
-    if ([URLString isEqualToString:[NSString stringWithFormat:@"%@/", NEWSBLUR_URL]]) {
+    // Look at the host & path to cope with http:// or https:// schemes
+    if ([request.URL.host isEqualToString:NEWSBLUR_HOST] && [request.URL.path isEqualToString:@"/"]) {
         NSString *error = [self.webView stringByEvaluatingJavaScriptFromString:@"NEWSBLUR.error"];
         
         if (self.fromStory) {

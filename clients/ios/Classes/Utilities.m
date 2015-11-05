@@ -95,6 +95,31 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     if (!timestamp) timestamp = [[NSDate date] timeIntervalSince1970];
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:(double)timestamp];
+    
+    static NSCalendar *calendar = nil;
+    static NSDateFormatter *todayFormatter = nil;
+    static NSDateFormatter *otherFormatter = nil;
+    
+    if (!calendar || !todayFormatter || !otherFormatter) {
+        calendar = [NSCalendar currentCalendar];
+        
+        todayFormatter = [NSDateFormatter new];
+        todayFormatter.dateStyle = NSDateFormatterNoStyle;
+        todayFormatter.timeStyle = NSDateFormatterShortStyle;
+        
+        otherFormatter = [NSDateFormatter new];
+        otherFormatter.dateStyle = NSDateFormatterLongStyle;
+        otherFormatter.timeStyle = NSDateFormatterShortStyle;
+        otherFormatter.doesRelativeDateFormatting = YES;
+    }
+    
+    return [otherFormatter stringFromDate:date];
+    
+    
+    
+    
+    
+    /*
     static NSDateFormatter *dateFormatter = nil;
     static NSDateFormatter *todayFormatter = nil;
     static NSDateFormatter *yesterdayFormatter = nil;
@@ -139,12 +164,38 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
                                                        withString:[Utilities suffixForDayInDate:date]];
 
     return dateString;
+     */
 }
 
 + (NSString *)formatShortDateFromTimestamp:(NSInteger)timestamp {
     if (!timestamp) timestamp = [[NSDate date] timeIntervalSince1970];
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:(double)timestamp];
+    
+    static NSCalendar *calendar = nil;
+    static NSDateFormatter *todayFormatter = nil;
+    static NSDateFormatter *otherFormatter = nil;
+    
+    if (!calendar || !todayFormatter || !otherFormatter) {
+        calendar = [NSCalendar currentCalendar];
+        
+        todayFormatter = [NSDateFormatter new];
+        todayFormatter.dateStyle = NSDateFormatterNoStyle;
+        todayFormatter.timeStyle = NSDateFormatterShortStyle;
+        
+        otherFormatter = [NSDateFormatter new];
+        otherFormatter.dateStyle = NSDateFormatterMediumStyle;
+        otherFormatter.timeStyle = NSDateFormatterShortStyle;
+        otherFormatter.doesRelativeDateFormatting = YES;
+    }
+    
+    if ([calendar isDateInToday:date]) {
+        return [todayFormatter stringFromDate:date];
+    } else {
+        return [otherFormatter stringFromDate:date];
+    }
+    
+    /*
     static NSDateFormatter *dateFormatter = nil;
     static NSDateFormatter *todayFormatter = nil;
     static NSDateFormatter *yesterdayFormatter = nil;
@@ -187,8 +238,10 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     }
     
     return dateString;
+     */
 }
 
+/*
 + (NSString *)suffixForDayInDate:(NSDate *)date {
     NSInteger day = [[[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian]
                       components:NSCalendarUnitDay fromDate:date] day];
@@ -204,5 +257,6 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
         return @"th";
     }
 }
+*/
 
 @end

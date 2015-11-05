@@ -2,11 +2,6 @@
 
     <string name="newsblur">NewsBlur</string>
     
-    <string name="error_unset_message">An unknown error occurred</string>
-    <string name="error_http_connection">There was a problem connecting to NewsBlur</string>
-    <string name="error_read_connection">There was a problem communicating with NewsBlur</string>
-    <string name="error_offline">There was a problem connecting to the network</string>
-
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
@@ -52,13 +47,13 @@
 	<string name="share">\"%1$s\" - %2$s</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-    <string name="share_this">SHARE THIS STORY</string>
-    <string name="already_shared">SHARED</string>
+    <string name="share_this">Share</string>
+    <string name="already_shared">Shared</string>
     <string name="share_this_story">Share this story</string>
     <string name="update_shared">Update comment</string>
 
-	<string name="save_this">SAVE THIS STORY</string>
-	<string name="unsave_this">UNSAVE THIS STORY</string>
+	<string name="save_this">Save</string>
+	<string name="unsave_this">Remove from saved</string>
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
@@ -222,6 +217,10 @@
         <item>Mark entire folder read</item>
         <item>Cancel</item>
     </string-array>
+
+    <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
+    <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
+
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>

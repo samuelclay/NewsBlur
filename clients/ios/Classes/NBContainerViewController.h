@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SafariServices/SafariServices.h>
 
 @class NewsBlurAppDelegate;
 
 @interface NBContainerViewController : UIViewController
-<UIPopoverControllerDelegate> {
+<UIPopoverControllerDelegate, SFSafariViewControllerDelegate, UIViewControllerTransitioningDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL interactiveOriginalTransition;

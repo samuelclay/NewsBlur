@@ -158,6 +158,7 @@
         NSURL *url = [NSURL URLWithString:urlS];
         
         __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setValidatesSecureCertificate:NO];
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];

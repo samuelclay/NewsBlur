@@ -52,17 +52,15 @@ import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String EXTRA_FEEDSET = "feed_set";
-	public static final String EXTRA_FEED = "feed";
-	public static final String EXTRA_SOCIAL_FEED = "social_feed";
 	public static final String EXTRA_POSITION = "feed_position";
-	public static final String EXTRA_FOLDERNAME = "foldername";
-    public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
     public static final String EXTRA_STORY_HASH = "story_hash";
-    private static final String TEXT_SIZE = "textsize";
     private static final String BUNDLE_POSITION = "position";
     private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
     private static final String BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView";
     private static final String BUNDLE_IS_FULLSCREEN = "is_fullscreen";
+
+    /** special value for starting story hash that jumps to the first unread. */
+    public static final String FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD";
 
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
@@ -70,7 +68,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /** The minimum screen width (in DP) needed to show all the overlay controls. */
     private static final int OVERLAY_MIN_WIDTH_DP = 355;
 
-	protected StateFilter currentState;
+	protected StateFilter intelState;
     protected StoryOrder storyOrder;
     protected ReadFilter readFilter;
 
@@ -136,7 +134,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             storyHash = savedInstanceBundle.getString(EXTRA_STORY_HASH);
         }
 
-		currentState = (StateFilter) getIntent().getSerializableExtra(ItemsList.EXTRA_STATE);
+		intelState = PrefsUtils.getStateFilter(this);
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
@@ -144,7 +142,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_SELECTED_FEED_VIEW)) {
             defaultFeedView = (DefaultFeedView)savedInstanceBundle.getSerializable(BUNDLE_SELECTED_FEED_VIEW);
         } else {
-            defaultFeedView = (DefaultFeedView) getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
+            defaultFeedView = PrefsUtils.getDefaultFeedView(this, fs);
         }
 
         // were we fullscreen before rotation?
@@ -219,7 +217,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             finish();
             return null;
         }
-        return FeedUtils.dbHelper.getStoriesLoader(fs, currentState);
+        return FeedUtils.dbHelper.getStoriesLoader(fs, intelState);
     }
 
 	@Override
@@ -268,7 +266,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         while (stories.moveToNext()) {
             if (stopLoading) return;
             Story story = Story.fromCursor(stories);
-            if (story.storyHash.equals(storyHash)) {
+            if ( ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read)) ||
+                 (story.storyHash.equals(storyHash)) ) {
                 // now that the pager is getting the right story, make it visible
                 pager.setVisibility(View.VISIBLE);
                 pager.setCurrentItem(stories.getPosition(), false);
@@ -312,7 +311,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private int getUnreadCount() {
         // saved stories and global shared stories don't have unreads
         if (fs.isAllSaved() || fs.isGlobalShared()) return 0;
-        return FeedUtils.dbHelper.getUnreadCount(fs, currentState);
+        int result = FeedUtils.dbHelper.getUnreadCount(fs, intelState);
+        if (result < 0) return 0;
+        return result;
     }
 
 	@Override
@@ -358,7 +359,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
-			textSize.show(getFragmentManager(), TEXT_SIZE);
+			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {

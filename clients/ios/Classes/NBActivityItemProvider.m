@@ -11,7 +11,7 @@
 @implementation NBActivityItemProvider
 
 - (instancetype)initWithUrl:(NSURL *)_url authorName:(NSString *)_authorName text:(NSString *)_text title:(NSString *)_title feedTitle:(NSString *)_feedTitle {
-    if (self = [super initWithPlaceholderItem:_title]) {
+    if (self = [super initWithPlaceholderItem:_url]) {
         url = _url;
         authorName = _authorName;
         text = _text;
@@ -30,10 +30,15 @@
             [self.activityType isEqualToString:UIActivityTypeMail]) {
             
             return [NSString stringWithFormat:@"%@\n%@\n%@", title, url, text];
-            
+        } else if ([self.activityType isEqualToString:@"NBCopyLinkActivity"] ||
+                   [self.activityType isEqualToString:@"TUSafariActivity"] ||
+                   [self.activityType isEqualToString:@"ARChromeActivity"]) {
+            return url;
         } else {
             return [NSString stringWithFormat:@"%@\n%@", title, url];
         }
+    } else if ([self.placeholderItem isKindOfClass:[NSURL class]]) {
+        return url;
     }
     
     return [NSString stringWithFormat:@"%@\n%@", title, url];
@@ -47,7 +52,12 @@
                [activityType isEqualToString:UIActivityTypePostToFacebook] ||
                [activityType isEqualToString:UIActivityTypePostToWeibo]) {
         return [NSString stringWithFormat:@"%@\n%@", title, url];
+    } else if ([activityType isEqualToString:@"NBCopyLinkActivity"] ||
+               [self.activityType isEqualToString:@"TUSafariActivity"] ||
+               [self.activityType isEqualToString:@"ARChromeActivity"]) {
+        return url;
     }
+    
     return [NSString stringWithFormat:@"%@\n%@", title, url];
 }
 

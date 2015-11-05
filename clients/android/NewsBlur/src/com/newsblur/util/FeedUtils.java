@@ -25,12 +25,15 @@ import com.newsblur.service.NBSyncService;
 
 public class FeedUtils {
 
+    // these are app-level singletons stored here for convenience. however, they
+    // cannot be created lazily or via static init, they have to be created when
+    // the main app context is created and it offers a reference
     public static BlurDatabaseHelper dbHelper;
+    public static ImageLoader imageLoader;
 
-    public static void offerDB(BlurDatabaseHelper _dbHelper) {
-        if (_dbHelper.isOpen()) {
-            dbHelper = _dbHelper;
-        }
+    public static void offerInitContext(Context context) {
+        dbHelper = new BlurDatabaseHelper(context);
+        imageLoader = new ImageLoader(context);
     }
 
     private static void triggerSync(Context c) {
@@ -205,8 +208,7 @@ public class FeedUtils {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title));
         final String shareString = context.getResources().getString(R.string.share);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[]{Html.fromHtml(story.title),
-                story.permalink}));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[]{Html.fromHtml(story.title), story.permalink}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 

@@ -3389,6 +3389,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
                     ])),
+                    (!story.get('read_status') && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-read' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
+                    ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-star' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
@@ -4976,6 +4980,9 @@
             
             this.model.get_features_page(this.counts['feature_page']+direction, function(features) {
                 $module.removeClass('NB-loading');
+
+                if (!features) return;
+                
                 self.counts['feature_page'] += direction;
                 
                 var $table = $.make('table', { className: 'NB-features', cellSpacing: 0, cellPadding: 0 });
@@ -5005,6 +5012,8 @@
                     $previous.addClass('NB-disabled');
                 }
                 
+            }, function() {
+                $module.removeClass('NB-loading');
             });
         },
         
@@ -5416,10 +5425,11 @@
             if (NEWSBLUR.Globals.debug) return;
             
             // Reload feedback module every 10 minutes.
-            var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
+            var reload_interval = NEWSBLUR.Globals.is_staff ? 30*1000 : 5*60*1000;
             clearInterval(this.locks.load_feedback_table);
             this.locks.load_feedback_table = setInterval(_.bind(function() {
                 this.load_feedback_table();
+                this.load_feature_page(0);
             }, this), reload_interval * (Math.random() * (1.25 - 0.75) + 0.75));
         },
         
@@ -5429,8 +5439,8 @@
             $module.addClass('NB-loading');
             
             this.model.load_feedback_table(function(resp) {
-                if (!resp) return;
                 $module.removeClass('NB-loading');
+                if (!resp) return;
                 $module.replaceWith(resp);
                 self.load_javascript_elements_on_page();
             }, function() {
@@ -5944,6 +5954,13 @@
                 var story_id = $t.closest('.NB-menu-manage').data('story_id');
                 var story = self.model.get_story(story_id);
                 NEWSBLUR.assets.stories.mark_unread(story);
+            });  
+            
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-read' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.closest('.NB-menu-manage').data('story_id');
+                var story = self.model.get_story(story_id);
+                NEWSBLUR.assets.stories.mark_read(story);
             });  
             
             $.targetIs(e, { tagSelector: '.task_view_page:not(.NB-task-return)' }, function($t, $p){

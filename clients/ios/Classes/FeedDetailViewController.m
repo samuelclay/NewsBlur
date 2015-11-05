@@ -10,6 +10,7 @@
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
+#import "NewsBlurViewController.h"
 #import "FeedDetailTableCell.h"
 #import "ASIFormDataRequest.h"
 #import "UserProfileViewController.h"
@@ -38,8 +39,9 @@
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
 #define kTableViewShortRowDifference 17;
-#define kMarkReadActionSheet 1;
-#define kSettingsActionSheet 2;
+#define kMarkReadActionSheet 1
+#define kSettingsActionSheet 2
+#define kMarkOlderNewerActionSheet 3
 
 @interface FeedDetailViewController ()
 
@@ -111,13 +113,16 @@
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
     [separatorBarButton setEnabled:NO];
+    separatorBarButton.isAccessibilityElement = NO;
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsActionSheet:)];
-
+    settingsBarButton.accessibilityLabel = @"Settings";
+    
     UIImage *markreadImage = [UIImage imageNamed:@"markread.png"];
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
-
+    feedMarkReadButton.accessibilityLabel = @"Mark all as read";
+    
     titleImageBarButton = [UIBarButtonItem alloc];
 
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
@@ -340,7 +345,7 @@
     }
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self fadeSelectedCell];
+        [self fadeSelectedCell:NO];
     }
     
     [self.notifier setNeedsLayout];
@@ -369,8 +374,6 @@
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
 
-    appDelegate.inTextView = [appDelegate.storiesCollection.activeStoryView isEqualToString:@"text"];
-
 //    [self testForTryFeed];
 }
 
@@ -391,6 +394,10 @@
     if ([storiesCollection.activeFeedStories count] ||
         self.isDashboardModule) {
         [self.storyTitlesTable reloadData];
+    }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self fadeSelectedCell:YES];
     }
 
     [self.notifier setNeedsLayout];
@@ -438,7 +445,7 @@
                                            animated:NO
                                      scrollPosition:UITableViewScrollPositionMiddle];
         if (deselect) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.4 * NSEC_PER_SEC),
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
                 [self.storyTitlesTable deselectRowAtIndexPath:indexPath
                                                      animated:YES];
@@ -678,6 +685,7 @@
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setValidatesSecureCertificate:NO];
     [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage]}];
     [request setFailedBlock:^(void) {
         NSLog(@"in failed block %@", request);
@@ -890,6 +898,7 @@
 
     [self cancelRequests];
     __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -1331,6 +1340,7 @@
     cell.storyScore = score;
     
     cell.isRead = ![storiesCollection isStoryUnread:story];
+    cell.isReadAvailable = ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
     
     cell.isShort = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -1428,6 +1438,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < storiesCollection.storyLocationsCount) {
         // mark the cell as read
+        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
         if (self.isDashboardModule) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
@@ -1651,7 +1662,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
-    if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
+    
+    if (p.x < 30.0) {
+        appDelegate.activeStory = story;
+        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath];
+    } else if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
         appDelegate.activeStory = story;
         [appDelegate showSendTo:self sender:cell];
     } else if ([longPressStoryTitle isEqualToString:@"mark_unread"]) {
@@ -1665,6 +1680,81 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
         [appDelegate openTrainStory:cell];
     }
+}
+
+- (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath {
+    // already displaying action sheet?
+    if (self.actionSheet_) {
+        [self.actionSheet_ dismissWithClickedButtonIndex:-1 animated:YES];
+        self.actionSheet_ = nil;
+        return;
+    }
+    
+    NSString *title = storiesCollection.isRiverView ? storiesCollection.activeFolder : [storiesCollection.activeFeed objectForKey:@"feed_title"];
+    UIActionSheet *options = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+    
+    self.actionSheet_ = options;
+    [storiesCollection calculateStoryLocations];
+    
+    if ([storiesCollection isStoryUnread:story]) {
+        [options addButtonWithTitle:@"Mark as read"];
+    } else {
+        [options addButtonWithTitle:@"Mark as unread"];
+    }
+    
+    if ([storiesCollection.activeOrder isEqualToString:@"newest"]) {
+        [options addButtonWithTitle:@"Mark newer stories read"];
+        [options addButtonWithTitle:@"Mark older stories read"];
+    } else {
+        [options addButtonWithTitle:@"Mark older stories read"];
+        [options addButtonWithTitle:@"Mark newer stories read"];
+    }
+    
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    options.tag = kMarkOlderNewerActionSheet;
+    
+    CGRect rect = [self.storyTitlesTable rectForRowAtIndexPath:indexPath];
+    rect.size.width = 30.0;
+    [options showFromRect:rect inView:self.storyTitlesTable animated:YES];
+}
+
+- (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableArray *feedIds = [NSMutableArray array];
+    
+    if (storiesCollection.isRiverView) {
+        if ([storiesCollection.activeFolder isEqual:@"everything"]) {
+            for (NSString *folderName in appDelegate.dictFoldersArray) {
+                for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
+                    if (![feedId isKindOfClass:[NSString class]] || ![feedId startsWith:@"saved:"]) {
+                        [feedIds addObject:feedId];
+                    }
+                }
+            }
+        } else {
+            for (id feedId in [appDelegate.dictFolders objectForKey:storiesCollection.activeFolder]) {
+                [feedIds addObject:feedId];
+            }
+        }
+    } else {
+        [feedIds addObject:[storiesCollection.activeFeed objectForKey:@"id"]];
+    }
+    
+    for (id feedId in feedIds) {
+        [request addPostValue:feedId forKey:@"feed_id"];
+    }
+    
+    NSString *direction = older ? @"older" : @"newest";
+    [request setPostValue:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
+    [request setPostValue:direction forKey:@"direction"];
+    [request setDidFinishSelector:@selector(finishMarkOlderNewerAsRead:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setUserInfo:@{@"feeds" : feedIds, @"cutoffTimestamp" : @(cutoffTimestamp), @"older" : @(older)}];
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
@@ -1752,6 +1842,22 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
 }
 
+- (void)finishMarkOlderNewerAsRead:(ASIFormDataRequest *)request {
+    if (request.responseStatusCode != 200) {
+        [self requestFailed:request];
+        return;
+    }
+    
+    if ([request.userInfo objectForKey:@"feeds"]) {
+        [appDelegate markFeedReadInCache:request.userInfo[@"feeds"] cutoffTimestamp:[request.userInfo[@"cutoffTimestamp"] integerValue] older:[request.userInfo[@"older"] boolValue]];
+    }
+    
+    // is there a better way to refresh the detail view?
+    [self reloadStories];
+//    [appDelegate reloadFeedsView:YES];
+//    [appDelegate loadFeedDetailView];
+}
+
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
     // already displaying action sheet?
     if (self.actionSheet_) {
@@ -1821,7 +1927,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 //    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
-    if (actionSheet.tag == 1) {
+    if (actionSheet.tag == kMarkReadActionSheet) {
         NSInteger visibleUnreadCount = storiesCollection.visibleUnreadCount;
         NSInteger totalUnreadCount = [appDelegate unreadCount];
         BOOL showVisible = YES;
@@ -1845,13 +1951,23 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                 [self markFeedsReadWithAllStories:YES];
             }
         }
-    } else if (actionSheet.tag == 2) {
+    } else if (actionSheet.tag == kSettingsActionSheet) {
         if (buttonIndex == 0) {
             [self confirmDeleteSite];
         } else if (buttonIndex == 1) {
             [self openMoveView];
         } else if (buttonIndex == 2) {
             [self instafetchFeed];
+        }
+    } else if (actionSheet.tag == kMarkOlderNewerActionSheet) {
+        if (buttonIndex == 0) {
+            [storiesCollection toggleStoryUnread];
+            [self.storyTitlesTable reloadData];
+        } else if (buttonIndex == 1 || buttonIndex == 2) {
+            NSInteger timestamp = [[appDelegate.activeStory objectForKey:@"story_timestamp"] integerValue];
+            BOOL older = [storiesCollection.activeOrder isEqualToString:@"newest"] ? buttonIndex == 2 : buttonIndex == 1;
+            
+            [self markFeedsReadFromTimestamp:timestamp andOlder:older];
         }
     }
 }
@@ -2053,10 +2169,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)changeActiveFeedDetailRow {
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-    int offset = 1;
+    NSInteger offset = 1;
     if ([[self.storyTitlesTable visibleCells] count] <= 4) {
         offset = 0;
     }
+    if (offset > rowIndex) offset = rowIndex;
                     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
@@ -2119,6 +2236,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            [storiesCollection.activeFeed objectForKey:@"id"]];
     [self cancelRequests];
     ASIHTTPRequest *request = [self requestWithURL:urlString];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];

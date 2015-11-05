@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.view.Menu;
@@ -8,10 +7,8 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.AllSharedStoriesItemListFragment;
-import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -28,7 +25,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getDefaultFeedView());
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
@@ -66,11 +63,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-    }
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
     }
 
     @Override

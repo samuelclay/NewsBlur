@@ -9,9 +9,7 @@ import android.database.Cursor;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Process;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
@@ -28,7 +26,6 @@ import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
-import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FileCache;
@@ -363,9 +360,12 @@ public class NBSyncService extends Service {
         if (HaltNow) return;
         if (FollowupActions.size() < 1) return;
 
+        int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
-            ra.doLocal(dbHelper);
+            int impact = ra.doLocal(dbHelper);
+            impactFlags |= impact;
         }
+        NbActivity.updateAllActivities(impactFlags);
         if (PendingFeed == null) {
             FollowupActions.clear();
         }

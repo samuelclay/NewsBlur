@@ -1,21 +1,16 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SocialFeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -35,7 +30,7 @@ public class SocialFeedItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
 		
 		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance(socialFeed, currentState, getDefaultFeedView());
+			itemListFragment = SocialFeedItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SocialFeedItemListFragment.class.getName());
@@ -74,11 +69,6 @@ public class SocialFeedItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFeed(this, socialFeed.userId);
-    }
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFeed(this, socialFeed.userId);
     }
 
     @Override

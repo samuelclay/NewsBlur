@@ -58,6 +58,7 @@
 @property (nonatomic) UIColor *feedColorBarTopBorder;
 
 @property (readwrite) BOOL isRead;
+@property (readwrite) BOOL isReadAvailable;
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;

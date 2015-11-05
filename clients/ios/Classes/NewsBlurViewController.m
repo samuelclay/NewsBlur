@@ -135,6 +135,9 @@ static UIFont *userLabelFont;
                           (intelFrame.size.width / 2) + 20;
     self.intelligenceControl.frame = intelFrame;
     self.intelligenceControl.hidden = YES;
+    [self.intelligenceControl.subviews objectAtIndex:2].accessibilityLabel = @"All";
+    [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Unread";
+    [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Focus";
     
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
@@ -205,7 +208,7 @@ static UIFont *userLabelFont;
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
 //        [self.feedTitlesTable reloadData];
-        [self refreshHeaderCounts];
+//        [self refreshHeaderCounts];
         [self redrawUnreadCounts];
 //        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
 //                                          animated:NO 
@@ -224,7 +227,9 @@ static UIFont *userLabelFont;
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
-    
+    [self layoutHeaderCounts:nil];
+    [self refreshHeaderCounts];
+
     self.interactiveFeedDetailTransition = NO;
 }
 
@@ -390,6 +395,7 @@ static UIFont *userLabelFont;
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -518,7 +524,9 @@ static UIFont *userLabelFont;
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     addBarButton.enabled = YES;
+    addBarButton.accessibilityLabel = @"Add site";
     settingsBarButton.enabled = YES;
+    settingsBarButton.accessibilityLabel = @"Settings";
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [addBarButton setImage:addImage];
         [settingsBarButton setImage:settingsImage];
@@ -528,6 +536,7 @@ static UIFont *userLabelFont;
         [addButton sizeToFit];
         [addButton addTarget:self action:@selector(tapAddSite:)
             forControlEvents:UIControlEventTouchUpInside];
+        addButton.accessibilityLabel = @"Add feed";
         [addBarButton setCustomView:addButton];
 
         NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
@@ -536,6 +545,7 @@ static UIFont *userLabelFont;
         [settingsButton sizeToFit];
         [settingsButton addTarget:self action:@selector(showSettingsPopover:)
                  forControlEvents:UIControlEventTouchUpInside];
+        settingsButton.accessibilityLabel = @"Settings";
         [settingsBarButton setCustomView:settingsButton];
     }
     
@@ -599,6 +609,7 @@ static UIFont *userLabelFont;
     // set up dictFeeds
     appDelegate.dictFeeds = [[results objectForKey:@"feeds"] mutableCopy];
     [appDelegate populateDictUnreadCounts];
+    [appDelegate populateDictTextFeeds];
     
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
@@ -1114,6 +1125,12 @@ static UIFont *userLabelFont;
     cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
     cell.isSaved       = isSaved;
+    
+    if (cell.neutralCount) {
+        cell.accessibilityLabel = [NSString stringWithFormat:@"%@ feed, %@ unread stories", cell.feedTitle, @(cell.neutralCount)];
+    } else {
+        cell.accessibilityLabel = [NSString stringWithFormat:@"%@ feed", cell.feedTitle];
+    }
     
     [cell setNeedsDisplay];
     
@@ -1728,6 +1745,7 @@ heightForHeaderInSection:(NSInteger)section {
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -1883,6 +1901,8 @@ heightForHeaderInSection:(NSInteger)section {
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
+    userAvatarButton.accessibilityLabel = @"User info";
+    userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
 
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
@@ -1910,6 +1930,7 @@ heightForHeaderInSection:(NSInteger)section {
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
+    userLabel.accessibilityLabel = [NSString stringWithFormat:@"Logged in as %@", appDelegate.activeUsername];
     [userLabel sizeToFit];
     [userInfoView addSubview:userLabel];
     
@@ -1972,9 +1993,11 @@ heightForHeaderInSection:(NSInteger)section {
     UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
     
     positiveCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.ps]];
+    positiveCount.accessibilityLabel = [NSString stringWithFormat:@"%@ focused stories", positiveCount.text];
     
     CGRect yellow = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
+    neutralCount.accessibilityLabel = [NSString stringWithFormat:@"%@ unread stories", neutralCount.text];
     neutralCount.frame = CGRectMake(yellow.size.width + yellow.origin.x + 2,
                                     yellow.origin.y - 3, 100, 16);
     [neutralCount sizeToFit];
@@ -1984,8 +2007,6 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
                                      greenIcon.frame.origin.y - 3, 100, 16);
     [positiveCount sizeToFit];
-    
-    [userInfoBarButton.customView sizeToFit];
 }
 
 - (void)showRefreshNotifier {

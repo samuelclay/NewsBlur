@@ -9,8 +9,6 @@ import android.util.Log;
 
 import com.newsblur.util.AppConstants;
 
-import com.newsblur.R;
-
 /**
  * First receiver in the chain that starts with the device.  Simply schedules another broadcast
  * that will periodicaly start the sync service.
