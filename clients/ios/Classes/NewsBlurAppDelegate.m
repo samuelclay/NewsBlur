@@ -1362,6 +1362,10 @@
     }
 }
 
+- (BOOL)showingSafariViewController {
+    return self.safariViewController.delegate != nil;
+}
+
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
     controller.delegate = nil;
     [controller dismissViewControllerAnimated:YES completion:nil];

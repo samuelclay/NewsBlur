@@ -205,7 +205,10 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [self clearStory];
+    
+    if (!appDelegate.showingSafariViewController) {
+        [self clearStory];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
