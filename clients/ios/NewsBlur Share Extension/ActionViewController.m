@@ -46,7 +46,7 @@
 }
 
 - (void)didSelectPost {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur"];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     NSString *token = [defaults objectForKey:@"share:token"];
     NSLog(@"Secret token: %@", token);
     NSURLSession *mySession = [self configureMySession];
@@ -68,7 +68,7 @@
 - (NSURLSession *) configureMySession {
     NSURLSessionConfiguration* config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"group.com.newsblur.share"];
     // To access the shared container you set up, use the sharedContainerIdentifier property on your configuration object.
-    config.sharedContainerIdentifier = @"group.com.newsblur.NewsBlur";
+    config.sharedContainerIdentifier = @"group.com.newsblur.NewsBlur-Group";
     NSURLSession *mySession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     return mySession;
 }

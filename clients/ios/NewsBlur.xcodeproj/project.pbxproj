@@ -326,16 +326,16 @@
 		FF8C49861BBC893B0010D894 /* ActionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8C49851BBC893B0010D894 /* ActionViewController.m */; };
 		FF8C498D1BBC893B0010D894 /* NewsBlur Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FF8C49821BBC893A0010D894 /* NewsBlur Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FF8C49941BBCA4810010D894 /* NewsBlur_Prefix.pch in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3E615B0099B008787B5 /* NewsBlur_Prefix.pch */; };
-		FF8D1EA71BAA304E00725D8A /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EA61BAA304E00725D8A /* Reachability.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ECC1BAA311000725D8A /* SBJson4Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EBF1BAA311000725D8A /* SBJson4Parser.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ECD1BAA311000725D8A /* SBJson4StreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC11BAA311000725D8A /* SBJson4StreamParser.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ECE1BAA311000725D8A /* SBJson4StreamParserState.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC31BAA311000725D8A /* SBJson4StreamParserState.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC51BAA311000725D8A /* SBJson4StreamTokeniser.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ED01BAA311000725D8A /* SBJson4StreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC71BAA311000725D8A /* SBJson4StreamWriter.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ED11BAA311000725D8A /* SBJson4StreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC91BAA311000725D8A /* SBJson4StreamWriterState.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ED21BAA311000725D8A /* SBJson4Writer.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ECB1BAA311000725D8A /* SBJson4Writer.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ED71BAA33BA00725D8A /* NSObject+SBJSON.m */; settings = {ASSET_TAGS = (); }; };
-		FF8D1EDB1BAA3CCD00725D8A /* JNWThrottledBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */; settings = {ASSET_TAGS = (); }; };
+		FF8D1EA71BAA304E00725D8A /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EA61BAA304E00725D8A /* Reachability.m */; };
+		FF8D1ECC1BAA311000725D8A /* SBJson4Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EBF1BAA311000725D8A /* SBJson4Parser.m */; };
+		FF8D1ECD1BAA311000725D8A /* SBJson4StreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC11BAA311000725D8A /* SBJson4StreamParser.m */; };
+		FF8D1ECE1BAA311000725D8A /* SBJson4StreamParserState.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC31BAA311000725D8A /* SBJson4StreamParserState.m */; };
+		FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC51BAA311000725D8A /* SBJson4StreamTokeniser.m */; };
+		FF8D1ED01BAA311000725D8A /* SBJson4StreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC71BAA311000725D8A /* SBJson4StreamWriter.m */; };
+		FF8D1ED11BAA311000725D8A /* SBJson4StreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC91BAA311000725D8A /* SBJson4StreamWriterState.m */; };
+		FF8D1ED21BAA311000725D8A /* SBJson4Writer.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ECB1BAA311000725D8A /* SBJson4Writer.m */; };
+		FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ED71BAA33BA00725D8A /* NSObject+SBJSON.m */; };
+		FF8D1EDB1BAA3CCD00725D8A /* JNWThrottledBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */; };
 		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
 		FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */; };
 		FFA045B419CA49D700618DC4 /* SloppySwiper.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045AF19CA49D700618DC4 /* SloppySwiper.m */; };
@@ -2162,7 +2162,6 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
-				FFAEA9921BB202F000A8324E /* ShellScript */,
 				FF8C49911BBC893B0010D894 /* Embed App Extensions */,
 			);
 			buildRules = (
@@ -2202,7 +2201,7 @@
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = U92APKK285;
+						DevelopmentTeam = HR7P97SD72;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -2770,7 +2769,6 @@
 				CODE_SIGN_ENTITLEMENTS = NewsBlur/NewsBlur.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
