@@ -210,9 +210,8 @@ public class FeedUtils {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title));
-        final String shareString = context.getResources().getString(R.string.share);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[]{Html.fromHtml(story.title), story.permalink}));
+        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title).toString());
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_body), new Object[]{story.permalink, Html.fromHtml(story.title), Html.fromHtml(story.shortContent)}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
