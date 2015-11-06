@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -44,6 +45,8 @@ public class NbActivity extends Activity {
         PrefsUtils.applyThemePreference(this);
 
 		super.onCreate(bundle);
+
+        FeedUtils.offerInitContext(this);
 
 		if (bundle != null) {
 			uniqueLoginKey = bundle.getString(UNIQUE_LOGIN_KEY);

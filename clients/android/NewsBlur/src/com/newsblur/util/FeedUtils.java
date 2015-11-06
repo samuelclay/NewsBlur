@@ -32,8 +32,12 @@ public class FeedUtils {
     public static ImageLoader imageLoader;
 
     public static void offerInitContext(Context context) {
-        dbHelper = new BlurDatabaseHelper(context);
-        imageLoader = new ImageLoader(context);
+        if (dbHelper == null) {
+            dbHelper = new BlurDatabaseHelper(context.getApplicationContext());
+        }
+        if (imageLoader == null) {
+            imageLoader = new ImageLoader(context.getApplicationContext());
+        }
     }
 
     private static void triggerSync(Context c) {

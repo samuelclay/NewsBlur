@@ -22,7 +22,6 @@ public class InitActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_init);
 
         // this is the first Activity launched; use it to init the global singletons in FeedUtils
         FeedUtils.offerInitContext(this);
@@ -32,7 +31,7 @@ public class InitActivity extends Activity {
     }
 
     private void preferenceCheck() {
-        final SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
         if (preferences.getString(PrefConstants.PREF_COOKIE, null) != null) {
             Intent mainIntent = new Intent(this, Main.class);
             startActivity(mainIntent);
@@ -41,6 +40,5 @@ public class InitActivity extends Activity {
             startActivity(loginIntent);
         }
     }
-    
 
 }
