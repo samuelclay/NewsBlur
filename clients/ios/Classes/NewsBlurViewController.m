@@ -835,7 +835,7 @@ static UIFont *userLabelFont;
         }
         
         [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
-                                                                 self.view.frame.size.height - 28)];
+                                                                 MIN(self.view.frame.size.height - 28, 355))];
         [self.popoverController presentPopoverFromBarButtonItem:self.addBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];

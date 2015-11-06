@@ -304,7 +304,7 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.addSiteViewController];
     [popoverController setDelegate:self];
-    [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
+    [popoverController setPopoverContentSize:CGSizeMake(320, 355)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];

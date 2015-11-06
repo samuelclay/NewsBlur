@@ -103,6 +103,8 @@
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
     
+    [self.inFolderInput becomeFirstResponder];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.siteTable.hidden = NO;
         self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
