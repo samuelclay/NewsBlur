@@ -55,6 +55,8 @@
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
 @property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) IBOutlet UIView *messageView;
+@property (nonatomic) IBOutlet UILabel *messageLabel;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;

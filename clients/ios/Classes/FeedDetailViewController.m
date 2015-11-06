@@ -279,6 +279,7 @@
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
+    self.messageView.hidden = YES;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
@@ -960,12 +961,12 @@
                              options:kNilOptions 
                              error:&error];
     
-    if (storiesCollection.isSavedView &&
-        ![[results objectForKey:@"stories"] count] &&
-        storiesCollection.feedPage == 1 &&
-        [results objectForKey:@"message"]) {
-        [self informError:nil details:[results objectForKey:@"message"]];
-    }
+//    if (storiesCollection.isSavedView &&
+//        ![[results objectForKey:@"stories"] count] &&
+//        storiesCollection.feedPage == 1 &&
+//        [results objectForKey:@"message"]) {
+//        [self informError:nil details:[results objectForKey:@"message"]];
+//    }
     id feedId = [results objectForKey:@"feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     
@@ -1064,6 +1065,13 @@
         [appDelegate.storyPageControl setStoryFromScroll:YES];
     }
     [appDelegate.storyPageControl advanceToNextUnread];
+    
+    if (!storiesCollection.storyCount && [results objectForKey:@"message"]) {
+        self.messageLabel.text = [results objectForKey:@"message"];
+        self.messageView.hidden = NO;
+    } else {
+        self.messageView.hidden = YES;
+    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
