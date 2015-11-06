@@ -258,7 +258,9 @@
     NSString *type = shortcutItem.type;
     BOOL handled = YES;
     
-    if ([type isEqualToString:@"com.newsblur.NewsBlur.AddFeed"]) {
+    if (!self.dictFeeds) {
+        handled = NO;
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AddFeed"]) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
     } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AllStories"]) {
