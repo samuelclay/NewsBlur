@@ -1281,26 +1281,30 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
+    [self didSelectSectionHeaderWithTag:button.tag];
+}
+
+- (void)didSelectSectionHeaderWithTag:(NSInteger)tag {
     // reset pointer to the cells
     self.currentRowAtIndexPath = nil;
-    self.currentSection = button.tag;
+    self.currentSection = tag;
     
-    NSString *tag;
-    if (button.tag == 0) {
-        tag = @"river_global";
-    } else if (button.tag == 1) {
-        tag = @"river_blurblogs";
-    } else if (button.tag == 2) {
-        tag = @"everything";
+    NSString *folder;
+    if (tag == 0) {
+        folder = @"river_global";
+    } else if (tag == 1) {
+        folder = @"river_blurblogs";
+    } else if (tag == 2) {
+        folder = @"everything";
     } else {
-        tag = [NSString stringWithFormat:@"%ld", (long)button.tag];
+        folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
     }
-
-    [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:tag];
+    
+    [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
 }
 
 

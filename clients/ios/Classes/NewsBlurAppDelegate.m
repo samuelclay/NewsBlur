@@ -65,6 +65,7 @@
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
 
+@property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) NBSafariViewController *safariViewController;
 @property (nonatomic, strong) NBModalPushPopTransition *safariAnimator;
 
@@ -234,7 +235,48 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
+    if (launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
+        self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+        return NO;
+    }
+    
 	return YES;
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    if (self.launchedShortcutItem) {
+        [self handleShortcutItem:self.launchedShortcutItem];
+        self.launchedShortcutItem = nil;
+    }
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
+    completionHandler([self handleShortcutItem:shortcutItem]);
+}
+
+- (BOOL)handleShortcutItem:(UIApplicationShortcutItem *)shortcutItem {
+    NSString *type = shortcutItem.type;
+    BOOL handled = YES;
+    
+    if ([type isEqualToString:@"com.newsblur.NewsBlur.AddFeed"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AllStories"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsViewController didSelectSectionHeaderWithTag:2];
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.Search"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsViewController didSelectSectionHeaderWithTag:2];
+        [self.feedDetailViewController.searchBar performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.5];
+    } else {
+        handled = NO;
+    }
+    
+    return handled;
+}
+
+- (void)delayedAddSite {
+    [self.feedsViewController tapAddSite:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

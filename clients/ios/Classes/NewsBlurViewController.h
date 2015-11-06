@@ -97,6 +97,7 @@ UIActionSheetDelegate> {
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 - (void)didSelectSectionHeader:(UIButton *)button;
+- (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
 - (IBAction)selectIntelligence;
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
