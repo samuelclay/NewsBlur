@@ -52,14 +52,15 @@
     self.fonts = [NSMutableArray array];
     
     // Leave commented out for future use:
-//    [self debugOutputFontNames];
+    [self debugOutputFontNames];
     
     // Available fonts, in alphabetic order.  Remember to add bundled font filenames to the Info.plist.
     [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir"];
-    [self addBuiltInFontWithName:@"AvenirNext-Regular" styleClass:@"NB-avenirnext"];
     [self addBuiltInFontWithName:@"Georgia" styleClass:@"NB-georgia"];
     [self addBuiltInFontWithName:@"Helvetica" styleClass:@"NB-helvetica"];
-    [self addBundledFontWithName:@"OregonLDO"];
+    [self addBundledFontWithName:@"WhitneySSm-Book" styleClass:@"WhitneySSm-Book"];
+    [self addBundledFontWithName:@"ChronicleSSm-Book" styleClass:@"ChronicleSSm-Book"];
+    [self addBundledFontWithName:@"GothamNarrow-Book" styleClass:@"GothamNarrow-Book"];
     [self addBuiltInFontWithName:@"Palatino-Roman" styleClass:@"NB-palatino"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -125,6 +126,10 @@
 
 - (void)addBundledFontWithName:(NSString *)fontName {
     [self addBuiltInFontWithName:fontName styleClass:fontName];
+}
+
+- (void)addBundledFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass {
+    [self addBuiltInFontWithName:fontName styleClass:styleClass];
 }
 
 - (IBAction)changeFontSize:(id)sender {

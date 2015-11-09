@@ -80,7 +80,18 @@
 	<string>MainWindow~ipad</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Oregon LDO.ttf</string>
+		<string>WhitneySSm-MediumItalic-Bas.otf</string>
+		<string>WhitneySSm-Medium-Bas.otf</string>
+		<string>WhitneySSm-Book-Bas.otf</string>
+		<string>WhitneySSm-BookItalic-Bas.otf</string>
+		<string>GothamNarrow-MediumItalic.otf</string>
+		<string>GothamNarrow-Medium.otf</string>
+		<string>GothamNarrow-Book.otf</string>
+		<string>GothamNarrow-BookItalic.otf</string>
+		<string>ChronicleSSm-Medium.otf</string>
+		<string>ChronicleSSm-Book.otf</string>
+		<string>ChronicleSSm-MediumItalic.otf</string>
+		<string>ChronicleSSm-BookItalic.otf</string>
 	</array>
 	<key>UIApplicationShortcutItems</key>
 	<array>
