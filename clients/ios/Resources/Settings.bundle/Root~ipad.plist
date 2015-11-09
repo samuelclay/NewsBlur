@@ -70,6 +70,26 @@
 			<key>Key</key>
 			<string>default_feed_read_filter</string>
 		</dict>
+        <dict>
+            <key>Type</key>
+            <string>PSMultiValueSpecifier</string>
+            <key>Title</key>
+            <string>Mark stories read on scroll</string>
+            <key>Titles</key>
+            <array>
+                <string>Mark read when scrolling past</string>
+                <string>Don't automatically mark read</string>
+            </array>
+            <key>DefaultValue</key>
+            <string>nothing</string>
+            <key>Values</key>
+            <array>
+                <string>mark_on_scroll</string>
+                <string>nothing</string>
+            </array>
+            <key>Key</key>
+            <string>default_scroll_read_filter</string>
+        </dict>
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>

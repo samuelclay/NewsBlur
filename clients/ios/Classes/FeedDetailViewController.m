@@ -46,6 +46,7 @@
 @interface FeedDetailViewController ()
 
 @property (nonatomic) UIActionSheet* actionSheet_;  // add this line
+@property (nonatomic) NSUInteger scrollingMarkReadRow;
 
 @end
 
@@ -253,6 +254,7 @@
     self.showImagePreview = [userPreferences boolForKey:@"story_list_preview_images"];
     
     appDelegate.fontDescriptorTitleSize = nil;
+    self.scrollingMarkReadRow = NSNotFound;
     
     [self.storyTitlesTable reloadData];
 }
@@ -329,6 +331,7 @@
     }
     
     appDelegate.originalStoryCount = (int)[appDelegate unreadCount];
+    self.scrollingMarkReadRow = NSNotFound;
     
     if ((storiesCollection.isSocialRiverView ||
          storiesCollection.isSocialView)) {
@@ -1585,6 +1588,28 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:nil];
         } else {
             [self fetchFeedDetail:storiesCollection.feedPage+1 withCallback:nil];
+        }
+    }
+    
+    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:self.storyTitlesTable.contentOffset];
+    NSString *scrollPref = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_scroll_read_filter"];
+    
+    if (indexPath && [scrollPref isEqualToString:@"mark_on_scroll"]) {
+        NSUInteger topRow = indexPath.row;
+        
+        if (self.scrollingMarkReadRow == NSNotFound) {
+            self.scrollingMarkReadRow = topRow;
+        } else if (topRow > self.scrollingMarkReadRow) {
+            for (NSUInteger thisRow = self.scrollingMarkReadRow; thisRow < topRow; thisRow++) {
+                NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
+                NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+                
+                if ([storiesCollection isStoryUnread:story]) {
+                    [storiesCollection markStoryRead:story];
+                }
+            }
+            
+            self.scrollingMarkReadRow = topRow;
         }
     }
 }
