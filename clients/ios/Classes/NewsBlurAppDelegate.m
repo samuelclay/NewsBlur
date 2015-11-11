@@ -1402,6 +1402,7 @@
 }
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    [self.storyPageControl performSelector:@selector(reorientPages) withObject:nil afterDelay:0.2];
     controller.delegate = nil;
     [controller dismissViewControllerAnimated:YES completion:nil];
 }
