@@ -14,8 +14,6 @@
 		17EB50601BE46A900021358B /* FontListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB505F1BE46A900021358B /* FontListViewController.m */; };
 		17EB50621BE46BB00021358B /* FontListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17EB50611BE46BB00021358B /* FontListViewController.xib */; };
 		17EB50651BE47C160021358B /* FontTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB50641BE47C160021358B /* FontTableViewCell.m */; };
-		17F1566C1BDAB0930092EBFD /* NBSafariViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */; };
-		17F1566F1BDAB14F0092EBFD /* NBModalPushPopTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F1566E1BDAB14F0092EBFD /* NBModalPushPopTransition.m */; };
 		17F156711BDABBF60092EBFD /* safari_shadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F156701BDABBF60092EBFD /* safari_shadow@2x.png */; };
 		1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -480,10 +478,6 @@
 		17EB50611BE46BB00021358B /* FontListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontListViewController.xib; path = Classes/FontListViewController.xib; sourceTree = SOURCE_ROOT; };
 		17EB50631BE47C160021358B /* FontTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontTableViewCell.h; sourceTree = "<group>"; };
 		17EB50641BE47C160021358B /* FontTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontTableViewCell.m; sourceTree = "<group>"; };
-		17F1566A1BDAB0930092EBFD /* NBSafariViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBSafariViewController.h; sourceTree = "<group>"; };
-		17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBSafariViewController.m; sourceTree = "<group>"; };
-		17F1566D1BDAB14F0092EBFD /* NBModalPushPopTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBModalPushPopTransition.h; sourceTree = "<group>"; };
-		17F1566E1BDAB14F0092EBFD /* NBModalPushPopTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBModalPushPopTransition.m; sourceTree = "<group>"; };
 		17F156701BDABBF60092EBFD /* safari_shadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari_shadow@2x.png"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1870,10 +1864,6 @@
 				FFA0483D19CA5B8400618DC4 /* EventWindow.m */,
 				FF1C4E151A3FB1F4000995E3 /* NBActivityItemProvider.h */,
 				FF1C4E161A3FB1F4000995E3 /* NBActivityItemProvider.m */,
-				17F1566D1BDAB14F0092EBFD /* NBModalPushPopTransition.h */,
-				17F1566E1BDAB14F0092EBFD /* NBModalPushPopTransition.m */,
-				17F1566A1BDAB0930092EBFD /* NBSafariViewController.h */,
-				17F1566B1BDAB0930092EBFD /* NBSafariViewController.m */,
 			);
 			name = Foundation;
 			sourceTree = "<group>";
@@ -2584,7 +2574,6 @@
 				FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */,
 				FF1F13D818AAC97900FDA816 /* UIImage+Resize.m in Sources */,
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
-				17F1566F1BDAB14F0092EBFD /* NBModalPushPopTransition.m in Sources */,
 				FF62820A1A098EA800271FDB /* WYPopoverController.m in Sources */,
 				FF8D1ECD1BAA311000725D8A /* SBJson4StreamParser.m in Sources */,
 				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
@@ -2633,7 +2622,6 @@
 				FF2EB7BE1AA65504002549A7 /* IASKTextField.m in Sources */,
 				FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */,
 				FFD660641BACA46D006E4B8D /* AFNetworkReachabilityManager.m in Sources */,
-				17F1566C1BDAB0930092EBFD /* NBSafariViewController.m in Sources */,
 				FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */,
 				FF2EB7B11AA65504002549A7 /* IASKAppSettingsWebViewController.m in Sources */,
 				FF1F13D418A9C2BE00FDA816 /* TMDiskCache.m in Sources */,

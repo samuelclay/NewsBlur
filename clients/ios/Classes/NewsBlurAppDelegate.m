@@ -38,8 +38,6 @@
 #import "ARChromeActivity.h"
 #import "NBCopyLinkActivity.h"
 #import "MBProgressHUD.h"
-#import "NBSafariViewController.h"
-#import "NBModalPushPopTransition.h"
 #import "Utilities.h"
 #import "StringHelper.h"
 #import "AuthorizeServicesViewController.h"
@@ -66,8 +64,7 @@
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
 
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
-@property (nonatomic, strong) NBSafariViewController *safariViewController;
-//@property (nonatomic, strong) NBModalPushPopTransition *safariAnimator;
+@property (nonatomic, strong) SFSafariViewController *safariViewController;
 
 @end
 
@@ -1374,16 +1371,10 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
-//        self.safariAnimator = [NBModalPushPopTransition new];
-        self.safariViewController = [[NBSafariViewController alloc] initWithURL:url
-                                                         entersReaderIfAvailable:NO];
+        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
+                                                        entersReaderIfAvailable:NO];
         self.safariViewController.delegate = self;
-//        self.safariViewController.transitioningDelegate = self;
-        [navigationController presentViewController:self.safariViewController animated:YES completion:^{
-            UIScreenEdgePanGestureRecognizer *recognizer = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
-            recognizer.edges = UIRectEdgeLeft;
-            [self.safariViewController.edgeView addGestureRecognizer:recognizer];
-        }];
+        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -1413,43 +1404,6 @@
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
     controller.delegate = nil;
     [controller dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)recognizer {
-//    self.safariAnimator.percentageDriven = YES;
-//    UIView *view = self.window.rootViewController.view;
-//    CGFloat percentComplete = [recognizer locationInView:view].x / view.bounds.size.width;
-    
-    switch (recognizer.state) {
-        case UIGestureRecognizerStateBegan:
-            self.safariViewController.delegate = nil;
-            [navigationController dismissViewControllerAnimated:YES completion:nil];
-            break;
-        case UIGestureRecognizerStateChanged:
-//            [self.safariAnimator updateInteractiveTransition:percentComplete > 0.99 ? 0.99 : percentComplete];
-            break;
-        case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
-//            ([recognizer velocityInView:view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
-//            self.safariAnimator.percentageDriven = NO;
-            break;
-        default:
-            break;
-    }
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-//    self.safariAnimator.dismissing = NO;
-    return nil; //self.safariAnimator;
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-//    self.safariAnimator.dismissing = YES;
-    return nil; //self.safariAnimator;
-}
-
-- (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator {
-    return nil; //self.safariAnimator.percentageDriven ? self.safariAnimator : nil;
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {

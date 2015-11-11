@@ -12,7 +12,7 @@
 @class NewsBlurAppDelegate;
 
 @interface NBContainerViewController : UIViewController
-<UIPopoverControllerDelegate, SFSafariViewControllerDelegate, UIViewControllerTransitioningDelegate> {
+<UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL interactiveOriginalTransition;
