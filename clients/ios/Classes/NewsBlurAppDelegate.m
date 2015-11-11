@@ -67,7 +67,7 @@
 
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) NBSafariViewController *safariViewController;
-@property (nonatomic, strong) NBModalPushPopTransition *safariAnimator;
+//@property (nonatomic, strong) NBModalPushPopTransition *safariAnimator;
 
 @end
 
@@ -1374,11 +1374,11 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
-        self.safariAnimator = [NBModalPushPopTransition new];
+//        self.safariAnimator = [NBModalPushPopTransition new];
         self.safariViewController = [[NBSafariViewController alloc] initWithURL:url
                                                          entersReaderIfAvailable:NO];
         self.safariViewController.delegate = self;
-        self.safariViewController.transitioningDelegate = self;
+//        self.safariViewController.transitioningDelegate = self;
         [navigationController presentViewController:self.safariViewController animated:YES completion:^{
             UIScreenEdgePanGestureRecognizer *recognizer = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
             recognizer.edges = UIRectEdgeLeft;
@@ -1416,9 +1416,9 @@
 }
 
 - (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)recognizer {
-    self.safariAnimator.percentageDriven = YES;
-    UIView *view = self.window.rootViewController.view;
-    CGFloat percentComplete = [recognizer locationInView:view].x / view.bounds.size.width;
+//    self.safariAnimator.percentageDriven = YES;
+//    UIView *view = self.window.rootViewController.view;
+//    CGFloat percentComplete = [recognizer locationInView:view].x / view.bounds.size.width;
     
     switch (recognizer.state) {
         case UIGestureRecognizerStateBegan:
@@ -1426,12 +1426,12 @@
             [navigationController dismissViewControllerAnimated:YES completion:nil];
             break;
         case UIGestureRecognizerStateChanged:
-            [self.safariAnimator updateInteractiveTransition:percentComplete > 0.99 ? 0.99 : percentComplete];
+//            [self.safariAnimator updateInteractiveTransition:percentComplete > 0.99 ? 0.99 : percentComplete];
             break;
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled:
-            ([recognizer velocityInView:view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
-            self.safariAnimator.percentageDriven = NO;
+//            ([recognizer velocityInView:view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
+//            self.safariAnimator.percentageDriven = NO;
             break;
         default:
             break;
@@ -1439,17 +1439,17 @@
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-    self.safariAnimator.dismissing = NO;
-    return self.safariAnimator;
+//    self.safariAnimator.dismissing = NO;
+    return nil; //self.safariAnimator;
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    self.safariAnimator.dismissing = YES;
-    return self.safariAnimator;
+//    self.safariAnimator.dismissing = YES;
+    return nil; //self.safariAnimator;
 }
 
 - (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator {
-    return self.safariAnimator.percentageDriven ? self.safariAnimator : nil;
+    return nil; //self.safariAnimator.percentageDriven ? self.safariAnimator : nil;
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
