@@ -55,13 +55,13 @@
     [self debugOutputFontNames];
     
     // Available fonts, in alphabetic order.  Remember to add bundled font filenames to the Info.plist.
-    [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir"];
-    [self addBuiltInFontWithName:@"Georgia" styleClass:@"NB-georgia"];
-    [self addBuiltInFontWithName:@"Helvetica" styleClass:@"NB-helvetica"];
-    [self addBundledFontWithName:@"WhitneySSm-Book" styleClass:@"WhitneySSm-Book"];
-    [self addBundledFontWithName:@"ChronicleSSm-Book" styleClass:@"ChronicleSSm-Book"];
-    [self addBundledFontWithName:@"GothamNarrow-Book" styleClass:@"GothamNarrow-Book"];
-    [self addBuiltInFontWithName:@"Palatino-Roman" styleClass:@"NB-palatino"];
+    [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir" displayName:nil];
+    [self addBundledFontWithName:@"ChronicleSSm-Book" styleClass:@"ChronicleSSm-Book" displayName:@"Chronicle"];
+    [self addBuiltInFontWithName:@"Georgia" styleClass:@"NB-georgia" displayName:nil];
+    [self addBundledFontWithName:@"GothamNarrow-Book" styleClass:@"GothamNarrow-Book" displayName:nil];
+    [self addBuiltInFontWithName:@"Helvetica" styleClass:@"NB-helvetica" displayName:nil];
+    [self addBuiltInFontWithName:@"Palatino-Roman" styleClass:@"NB-palatino" displayName:nil];
+    [self addBundledFontWithName:@"WhitneySSm-Book" styleClass:@"WhitneySSm-Book" displayName:@"Whitney"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
@@ -114,22 +114,21 @@
     }
 }
                    
-- (void)addBuiltInFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass {
+- (void)addBuiltInFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass displayName:(NSString *)displayName {
     UIFont *font = [UIFont fontWithName:fontName size:16.0];
     
     if (font) {
-        NSAttributedString *attrb = [[NSAttributedString alloc] initWithString:font.familyName
+        if (!displayName) {
+            displayName = font.familyName;
+        }
+        NSAttributedString *attrb = [[NSAttributedString alloc] initWithString:displayName
                                                                     attributes:@{NSFontAttributeName : font}];
         [self.fonts addObject:@{@"name" : attrb, @"style" : styleClass}];
     }
 }
 
-- (void)addBundledFontWithName:(NSString *)fontName {
-    [self addBuiltInFontWithName:fontName styleClass:fontName];
-}
-
-- (void)addBundledFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass {
-    [self addBuiltInFontWithName:fontName styleClass:styleClass];
+- (void)addBundledFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass displayName:(NSString *)displayName {
+    [self addBuiltInFontWithName:fontName styleClass:styleClass displayName:displayName];
 }
 
 - (IBAction)changeFontSize:(id)sender {
