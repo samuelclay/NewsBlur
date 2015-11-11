@@ -3226,6 +3226,10 @@
                             $.make('div', { className: 'NB-change-folders' })
                         ])
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-mute NB-menu-manage-feed-mute' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mute this site')
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
@@ -4136,6 +4140,23 @@
             $confirm_folder.slideUp(500);
             $save.hide();
             this.flags['showing_confirm_input_on_manage_menu'] = false;
+        },
+        
+        manage_menu_mute_feed: function(feed_id) {
+            var approve_list = _.pluck(NEWSBLUR.assets.feeds.filter(function(feed) {
+                return feed.get('active') && feed.get('id') != feed_id;
+            }), 'id');
+
+            console.log(["Saving", approve_list, feed_id]);
+
+            NEWSBLUR.reader.flags['reloading_feeds'] = true;
+            this.model.save_feed_chooser(approve_list, _.bind(function() {
+                this.flags['has_saved'] = true;
+                NEWSBLUR.reader.flags['reloading_feeds'] = false;
+                NEWSBLUR.reader.hide_feed_chooser_button();
+                NEWSBLUR.assets.load_feeds();
+                this.hide_manage_menu();
+            }, this));
         },
         
         // ========================
@@ -5716,6 +5737,11 @@
                 e.preventDefault();
                 e.stopPropagation();
             });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-mute' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                self.manage_menu_mute_feed($t.parents('.NB-menu-manage').data('feed_id'));
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-rename' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
