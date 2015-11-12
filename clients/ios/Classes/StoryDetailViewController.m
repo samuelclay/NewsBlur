@@ -133,7 +133,11 @@
     if ([tagName isEqualToString:@"IMG"] && !inDoubleTap) {
         return NO;
     }
-
+    
+    if (inDoubleTap) {
+        self.webView.scrollView.scrollEnabled = NO;
+    }
+    
     return YES;
 }
 
@@ -194,7 +198,12 @@
             [appDelegate.feedDetailViewController reloadData];
         }
         inDoubleTap = NO;
+        [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
     }
+}
+
+- (void)deferredEnableScrolling {
+    self.webView.scrollView.scrollEnabled = YES;
 }
 
 - (void)viewDidUnload {
