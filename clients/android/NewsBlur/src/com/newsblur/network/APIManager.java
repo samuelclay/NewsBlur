@@ -241,6 +241,21 @@ public class APIManager {
 		}
 	}
 
+    public NewsBlurResponse moveFeedToFolders(String feedId, Set<String> toFolders, Set<String> inFolders) {
+        ValueMultimap values = new ValueMultimap();
+        for (String folder : toFolders) {
+            if (folder.equals(AppConstants.ROOT_FOLDER)) folder = "";
+            values.put(APIConstants.PARAMETER_TO_FOLDER, folder);
+        }
+        for (String folder : inFolders) {
+            if (folder.equals(AppConstants.ROOT_FOLDER)) folder = "";
+            values.put(APIConstants.PARAMETER_IN_FOLDERS, folder);
+        }
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        APIResponse response = post(APIConstants.URL_MOVE_FEED_TO_FOLDERS, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     public UnreadCountResponse getFeedUnreadCounts(Set<String> apiIds) {
         ValueMultimap values = new ValueMultimap();
         for (String id : apiIds) {

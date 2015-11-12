@@ -823,6 +823,16 @@ public class BlurDatabaseHelper {
         return result;
     }
 
+    public List<Folder> getFolders() {
+        Cursor c = getFoldersCursor(null);
+        List<Folder> folders = new ArrayList<Folder>(c.getCount());
+        while (c.moveToNext()) {
+            folders.add(Folder.fromCursor(c));
+        }
+        c.close();
+        return folders;
+    }
+
     public Loader<Cursor> getFoldersLoader() {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getFoldersCursor(cancellationSignal);}

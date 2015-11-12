@@ -27,7 +27,6 @@ public class APIConstants {
 	public static final String URL_SOCIALFEED_STORIES = NEWSBLUR_URL + "/social/stories";
 	public static final String URL_SIGNUP = NEWSBLUR_URL + "/api/signup";
 	public static final String URL_MARK_FEED_AS_READ = NEWSBLUR_URL + "/reader/mark_feed_as_read/";
-	//public static final String URL_MARK_FEED_AS_READ = "http://httpstat.us/502";
 	public static final String URL_MARK_ALL_AS_READ = NEWSBLUR_URL + "/reader/mark_all_as_read/";
 	public static final String URL_MARK_STORIES_READ = NEWSBLUR_URL + "/reader/mark_story_hashes_as_read/";
 	public static final String URL_SHARE_STORY = NEWSBLUR_URL + "/social/share_story";
@@ -46,6 +45,7 @@ public class APIConstants {
 	public static final String URL_STORY_TEXT = NEWSBLUR_URL + "/rss_feeds/original_text";
 	public static final String URL_UNREAD_HASHES = NEWSBLUR_URL + "/reader/unread_story_hashes";
     public static final String URL_READ_STORIES = NEWSBLUR_URL + "/reader/read_stories";
+    public static final String URL_MOVE_FEED_TO_FOLDERS = NEWSBLUR_URL + "/reader/move_feed_to_folders";
 	
 	public static final String PARAMETER_FEEDS = "f";
 	public static final String PARAMETER_H = "h";
@@ -80,6 +80,8 @@ public class APIConstants {
     public static final String PARAMETER_GLOBAL_FEED = "global_feed";
 	public static final String PARAMETER_INCLUDE_HIDDEN = "include_hidden";
 	public static final String PARAMETER_LIMIT = "limit";
+    public static final String PARAMETER_TO_FOLDER = "to_folders";
+    public static final String PARAMETER_IN_FOLDERS = "in_folders";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
