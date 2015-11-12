@@ -250,6 +250,22 @@ public class FeedUtils {
         triggerSync(context);
     }
 
+    public static void moveFeedToFolders(final Context context, final String feedId, final Set<String> toFolders, final Set<String> inFolders) {
+        if (toFolders.size() < 1) return;
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.moveFeedToFolders(feedId, toFolders, inFolders);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                NBSyncService.forceFeedsFolders();
+                triggerSync(context);
+            }
+        }.execute();
+    }
+
     public static FeedSet feedSetFromFolderName(String folderName) {
         return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));
     }
