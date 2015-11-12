@@ -1402,9 +1402,18 @@
 }
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    [self.storyPageControl performSelector:@selector(reorientPages) withObject:nil afterDelay:0.2];
+    // You'd think doing this in the dismiss completion block would work... but nope.
+    [self performSelector:@selector(deferredSafariCleanup) withObject:nil afterDelay:0.2];
     controller.delegate = nil;
     [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)deferredSafariCleanup {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.navigationController.view.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.origin.y, self.isPortrait ? 270.0 : 370.0, self.navigationController.view.frame.size.height);
+    }
+    
+    [self.storyPageControl reorientPages];
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
