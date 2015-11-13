@@ -211,6 +211,9 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             $delete.text('Delete ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
             $move.text('Move ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
         }
+        
+        NEWSBLUR.assets.feeds.off('change:highlighted')
+                             .on('change:highlighted', _.bind(this.change_selection, this));
     },
     
     // ===========
