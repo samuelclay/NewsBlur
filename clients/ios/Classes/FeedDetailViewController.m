@@ -1811,9 +1811,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     
-    NSString *folderTitle = storiesCollection.activeFolder;
-    NSArray *feedIds = [self.appDelegate feedIdsForFolderTitle:folderTitle];
-    NSString *collectionTitle = [folderTitle isEqual:@"everything"] ? @"everything" : @"entire folder";
+    [storiesCollection calculateStoryLocations];
+    NSArray *feedIds = storiesCollection.isRiverView ? [self.appDelegate feedIdsForFolderTitle:storiesCollection.activeFolder] : @[storiesCollection.activeFeed[@"id"]];
+    NSString *collectionTitle = storiesCollection.isRiverView ? [storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder" : @"this site";
     NSInteger totalUnreadCount = [self.appDelegate unreadCount];
     NSInteger visibleUnreadCount = storiesCollection.visibleUnreadCount;
     
