@@ -101,6 +101,7 @@ UIActionSheetDelegate> {
 - (IBAction)selectIntelligence;
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
+- (void)markVisibleStoriesRead;
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)didCollapseFolder:(UIButton *)button;

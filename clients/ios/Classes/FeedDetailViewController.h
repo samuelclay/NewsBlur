@@ -108,8 +108,6 @@
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
-- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;

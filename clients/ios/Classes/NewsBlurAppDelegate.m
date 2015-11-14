@@ -11,6 +11,7 @@
 #import "NBContainerViewController.h"
 #import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
+#import "MarkReadMenuViewController.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "StoryDetailViewController.h"
@@ -823,6 +824,12 @@
     }
 }
 
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    return UIModalPresentationNone;
+}
+
 #pragma mark -
 #pragma mark WYPopoverControllerDelegate implementation
 
@@ -966,6 +973,24 @@
 
 - (BOOL)isSavedFeed:(NSString *)feedIdStr {
     return [feedIdStr startsWith:@"saved:"];
+}
+
+- (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
+    if ([folderTitle isEqualToString:@"everything"]) {
+        NSMutableArray *mutableFeedIds = [NSMutableArray array];
+        
+        for (NSString *folderName in self.dictFoldersArray) {
+            for (id feedId in self.dictFolders[folderName]) {
+                if (![feedId isKindOfClass:[NSString class]] || ![self isSavedFeed:feedId]) {
+                    [mutableFeedIds addObject:feedId];
+                }
+            }
+        }
+        
+        return mutableFeedIds;
+    } else {
+        return self.dictFolders[folderTitle];
+    }
 }
 
 - (BOOL)isPortrait {
@@ -2005,6 +2030,39 @@
 
 - (void)renameFolder:(NSString *)newTitle {
     storiesCollection.activeFolder = newTitle;
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    if (!self.markReadMenuViewController) {
+        self.markReadMenuViewController = [MarkReadMenuViewController new];
+        self.markReadMenuViewController.modalPresentationStyle = UIModalPresentationPopover;
+    }
+    
+    self.markReadMenuViewController.collectionTitle = collectionTitle;
+    self.markReadMenuViewController.feedIds = feedIds;
+    self.markReadMenuViewController.visibleUnreadCount = visibleUnreadCount;
+    self.markReadMenuViewController.completionHandler = completionHandler;
+    
+    UIPopoverPresentationController *popoverPresentationController = self.markReadMenuViewController.popoverPresentationController;
+    popoverPresentationController.delegate = self;
+    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    
+    if (barButtonItem) {
+        popoverPresentationController.barButtonItem = barButtonItem;
+    } else {
+        popoverPresentationController.sourceView = sourceView;
+        popoverPresentationController.sourceRect = sourceRect;
+    }
+    
+    [self.navigationController presentViewController:self.markReadMenuViewController animated:YES completion:nil];
 }
 
 #pragma mark -

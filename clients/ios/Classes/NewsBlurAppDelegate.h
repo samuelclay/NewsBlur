@@ -26,6 +26,7 @@
 @class FeedsMenuViewController;
 @class FeedDetailViewController;
 @class FeedDetailMenuViewController;
+@class MarkReadMenuViewController;
 @class FirstTimeUserViewController;
 @class FirstTimeUserAddSitesViewController;
 @class FirstTimeUserAddFriendsViewController;
@@ -49,7 +50,7 @@
 @class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, WYPopoverControllerDelegate,
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate, WYPopoverControllerDelegate,
 SFSafariViewControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
@@ -177,7 +178,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 @property (nonatomic, retain) WYPopoverController *popoverController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
-
+@property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
@@ -302,6 +303,7 @@ SFSafariViewControllerDelegate>  {
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
+- (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
 - (BOOL)isPortrait;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
@@ -341,6 +343,9 @@ SFSafariViewControllerDelegate>  {
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
 - (void)renameFolder:(NSString *)newTitle;
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler;
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
 
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;

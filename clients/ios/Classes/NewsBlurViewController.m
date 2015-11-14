@@ -903,7 +903,7 @@ static UIFont *userLabelFont;
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
+//    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     
     if (isSaved) return;
@@ -911,17 +911,19 @@ static UIFont *userLabelFont;
     [self performSelector:@selector(highlightCell:) withObject:cell afterDelay:0.0];
 
     if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
-        NSDictionary *feed = isSocial ?
-                            [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
-                            [appDelegate.dictFeeds objectForKey:feedIdStr];
-
-        UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:[feed objectForKey:@"feed_title"]
-                                                                   delegate:self
-                                                          cancelButtonTitle:@"Cancel"
-                                                     destructiveButtonTitle:@"Mark site as read"
-                                                          otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
-        markReadSheet.accessibilityValue = feedIdStr;
-        [markReadSheet showInView:self.view];
+//        NSDictionary *feed = isSocial ?
+//                            [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
+//                            [appDelegate.dictFeeds objectForKey:feedIdStr];
+        
+        [self.appDelegate showMarkReadMenuWithFeedIds:@[feedIdStr] collectionTitle:@"site" sourceView:self.view sourceRect:cell.frame completionHandler:^(BOOL marked){
+            for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
+                if (cell.highlighted) {
+                    [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
+                    break;
+                }
+            }
+        }];
+        
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
         [self markFeedRead:feedId cutoffDays:0];
         
@@ -1392,8 +1394,22 @@ heightForHeaderInSection:(NSInteger)section {
     }
 }
 
+- (void)markVisibleStoriesRead {
+    NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
+    [request setDelegate:self];
+    [request setUserInfo:@{@"stories": feedsStories}];
+    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+    [request startAsynchronous];
+}
+
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    [appDelegate markStoriesRead:nil
+    [appDelegate markStoriesRead:[request.userInfo objectForKey:@"stories"]
                          inFeeds:[request.userInfo objectForKey:@"feeds"]
                  cutoffTimestamp:[[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]];
     [self showOfflineNotifier];
@@ -1415,7 +1431,7 @@ heightForHeaderInSection:(NSInteger)section {
             feed = [[request.userInfo objectForKey:@"feeds"] objectAtIndex:0];
         }
         [self refreshFeedList:feed];
-    } else {
+    } else if ([request.userInfo objectForKey:@"feeds"]) {
         [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
     }
 }

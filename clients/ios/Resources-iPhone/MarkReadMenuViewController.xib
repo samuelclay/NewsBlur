@@ -5,9 +5,9 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MarkReadMenuViewController">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FeedsMenuViewController">
             <connections>
-                <outlet property="menuTableView" destination="12" id="AKp-mJ-4CC"/>
+                <outlet property="menuTableView" destination="12" id="19"/>
                 <outlet property="view" destination="1" id="3"/>
             </connections>
         </placeholder>

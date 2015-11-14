@@ -26,6 +26,7 @@
 #import "WYPopoverController.h"
 #import "UIBarButtonItem+Image.h"
 #import "FeedDetailMenuViewController.h"
+#import "MarkReadMenuViewController.h"
 #import "NBNotifier.h"
 #import "NBLoadingCell.h"
 #import "FMDatabase.h"
@@ -1790,91 +1791,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [request startAsynchronous];
 }
 
-- (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
-    if (storiesCollection.isRiverView && includeHidden &&
-        [storiesCollection.activeFolder isEqualToString:@"everything"]) {
-        // Mark folder as read
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setDelegate:nil];
-        [request startAsynchronous];
-        
-        [appDelegate markActiveFolderAllRead];
-    } else if (storiesCollection.isRiverView && includeHidden) {
-        // Mark folder as read
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        for (id feed_id in [appDelegate.dictFolders objectForKey:storiesCollection.activeFolder]) {
-            [request addPostValue:feed_id forKey:@"feed_id"];
-        }
-        [request setUserInfo:@{@"feeds": storiesCollection.activeFolderFeeds}];
-        [request setDelegate:self];
-        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request startAsynchronous];
-        
-        [appDelegate markActiveFolderAllRead];
-    } else if (!storiesCollection.isRiverView && includeHidden) {
-        // Mark feed as read
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
-        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request setUserInfo:@{@"feeds": @[[storiesCollection.activeFeed objectForKey:@"id"]]}];
-        [request setDelegate:self];
-        [request startAsynchronous];
-        [appDelegate markFeedAllRead:[storiesCollection.activeFeed objectForKey:@"id"]];
-    } else if (!includeHidden) {
-        // Mark visible stories as read
-        NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"]; 
-        [request setDelegate:self];
-        [request setUserInfo:@{@"stories": feedsStories}];
-        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-        [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-        [request startAsynchronous];
-    }
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.navigationController popToRootViewControllerAnimated:YES];
-        [appDelegate.masterContainerViewController transitionFromFeedDetail];
-    } else {
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
-         animated:YES];
-    }
-}
-
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    //    [self informError:@"Failed to mark story as read"];
-    [appDelegate markStoriesRead:[request.userInfo objectForKey:@"stories"]
-                         inFeeds:[request.userInfo objectForKey:@"feeds"]
-                 cutoffTimestamp:nil];
-}
-
-- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
-    if (request.responseStatusCode != 200) {
-        [self requestFailedMarkStoryRead:request];
-        return;
-    }
-    
-    if ([request.userInfo objectForKey:@"feeds"]) {
-        [appDelegate markFeedReadInCache:@[[request.userInfo objectForKey:@"feeds"]]];
-    }
-}
-
 - (void)finishMarkOlderNewerAsRead:(ASIFormDataRequest *)request {
     if (request.responseStatusCode != 200) {
         [self requestFailed:request];
@@ -1892,99 +1808,39 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
-    // already displaying action sheet?
-    if (self.actionSheet_) {
-        [self.actionSheet_ dismissWithClickedButtonIndex:-1 animated:YES];
-        self.actionSheet_ = nil;
-        return;
-    }
+    [self.popoverController dismissPopoverAnimated:YES];
+    self.popoverController = nil;
     
-    // Individual sites just get marked as read, no action sheet needed.
-    if (!storiesCollection.isRiverView) {
-        [self markFeedsReadWithAllStories:YES];
-        return;
-    }
-    
-    NSString *title = storiesCollection.isRiverView ?
-                      storiesCollection.activeFolder :
-                      [storiesCollection.activeFeed objectForKey:@"feed_title"];
-    UIActionSheet *options = [[UIActionSheet alloc] 
-                              initWithTitle:title
-                              delegate:self
-                              cancelButtonTitle:nil
-                              destructiveButtonTitle:nil
-                              otherButtonTitles:nil];
-    
-    self.actionSheet_ = options;
-    [storiesCollection calculateStoryLocations];
+    NSString *folderTitle = storiesCollection.activeFolder;
+    NSArray *feedIds = [self.appDelegate feedIdsForFolderTitle:folderTitle];
+    NSString *collectionTitle = [folderTitle isEqual:@"everything"] ? @"everything" : @"entire folder";
+    NSInteger totalUnreadCount = [self.appDelegate unreadCount];
     NSInteger visibleUnreadCount = storiesCollection.visibleUnreadCount;
-    NSInteger totalUnreadCount = [appDelegate unreadCount];
-    NSArray *buttonTitles = nil;
-    BOOL showVisible = YES;
-    BOOL showEntire = YES;
-//    if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
-    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
-    NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
-                            storiesCollection.isRiverView ?
-                            [storiesCollection.activeFolder isEqualToString:@"everything"] ?
-                            @"everything" :
-                            @"entire folder" : 
-                            @"this site"];
-    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
-                             visibleUnreadCount == 1 ? @"this story as" : 
-                                [NSString stringWithFormat:@"these %ld stories", 
-                                 (long)visibleUnreadCount]];
-    if (showVisible && showEntire) {
-        buttonTitles = [NSArray arrayWithObjects:visibleText, entireText, nil];
-        options.destructiveButtonIndex = 1;
-    } else if (showVisible && !showEntire) {
-        buttonTitles = [NSArray arrayWithObjects:visibleText, nil];
-        options.destructiveButtonIndex = -1;
-    } else if (!showVisible && showEntire) {
-        buttonTitles = [NSArray arrayWithObjects:entireText, nil];
-        options.destructiveButtonIndex = 0;
+    
+    if (feedIds.count == 1 && ![feedIds.firstObject isKindOfClass:[NSString class]]) {
+        collectionTitle = @"this site";
+    }
+
+    if (visibleUnreadCount >= totalUnreadCount) {
+        visibleUnreadCount = 0;
     }
     
-    for (id title in buttonTitles) {
-        [options addButtonWithTitle:title];
-    }
-    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-    
-    options.tag = kMarkReadActionSheet;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [options showFromBarButtonItem:self.feedMarkReadButton animated:YES];
-    } else {
-        [options showInView:self.view];
-    }
+    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:self.feedMarkReadButton completionHandler:^(BOOL marked){
+        if (marked) {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                [appDelegate.navigationController popToRootViewControllerAnimated:YES];
+                [appDelegate.masterContainerViewController transitionFromFeedDetail];
+            } else {
+                [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0] animated:YES];
+            }
+        }
+    }];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 //    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
-    if (actionSheet.tag == kMarkReadActionSheet) {
-        NSInteger visibleUnreadCount = storiesCollection.visibleUnreadCount;
-        NSInteger totalUnreadCount = [appDelegate unreadCount];
-        BOOL showVisible = YES;
-        BOOL showEntire = YES;
-//        if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
-        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
-//        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
-        
-        if (showVisible && showEntire) {
-            if (buttonIndex == 0) {
-                [self markFeedsReadWithAllStories:NO];
-            } else if (buttonIndex == 1) {
-                [self markFeedsReadWithAllStories:YES];
-            }               
-        } else if (showVisible && !showEntire) {
-            if (buttonIndex == 0) {
-                [self markFeedsReadWithAllStories:NO];
-            }   
-        } else if (!showVisible && showEntire) {
-            if (buttonIndex == 0) {
-                [self markFeedsReadWithAllStories:YES];
-            }
-        }
-    } else if (actionSheet.tag == kSettingsActionSheet) {
+    
+    if (actionSheet.tag == kSettingsActionSheet) {
         if (buttonIndex == 0) {
             [self confirmDeleteSite];
         } else if (buttonIndex == 1) {
@@ -2011,6 +1867,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)doOpenSettingsActionSheet:(id)sender {
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showFeedDetailMenuPopover:self.settingsBarButton];
     } else {

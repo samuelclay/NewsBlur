@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
 		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
+		17CBD3BC1BF66B07003FCCAE /* MarkReadMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3BB1BF66B07003FCCAE /* MarkReadMenuViewController.xib */; };
+		17CBD3BF1BF66B6C003FCCAE /* MarkReadMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */; };
+		17CBD3C21BF6ED2C003FCCAE /* menu_icn_markread.png in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3C01BF6ED2C003FCCAE /* menu_icn_markread.png */; };
+		17CBD3C31BF6ED2C003FCCAE /* menu_icn_markread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */; };
 		17EB505C1BE4411E0021358B /* choose_font.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505A1BE4411E0021358B /* choose_font.png */; };
 		17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505B1BE4411E0021358B /* choose_font@2x.png */; };
 		17EB50601BE46A900021358B /* FontListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB505F1BE46A900021358B /* FontListViewController.m */; };
@@ -471,6 +475,11 @@
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
 		010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnePasswordExtension.h; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.h"; sourceTree = "<group>"; };
 		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
+		17CBD3BB1BF66B07003FCCAE /* MarkReadMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MarkReadMenuViewController.xib; sourceTree = "<group>"; };
+		17CBD3BD1BF66B6C003FCCAE /* MarkReadMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkReadMenuViewController.h; sourceTree = "<group>"; };
+		17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkReadMenuViewController.m; sourceTree = "<group>"; };
+		17CBD3C01BF6ED2C003FCCAE /* menu_icn_markread.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_markread.png; sourceTree = "<group>"; };
+		17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_markread@2x.png"; sourceTree = "<group>"; };
 		17EB505A1BE4411E0021358B /* choose_font.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = choose_font.png; sourceTree = "<group>"; };
 		17EB505B1BE4411E0021358B /* choose_font@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "choose_font@2x.png"; sourceTree = "<group>"; };
 		17EB505E1BE46A900021358B /* FontListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontListViewController.h; sourceTree = "<group>"; };
@@ -1504,6 +1513,8 @@
 				FFDD848D16E8ED75000AA0A2 /* menu_icn_share@2x.png */,
 				FFDD845A16E8871A000AA0A2 /* menu_icn_train.png */,
 				FFDD845B16E8871A000AA0A2 /* menu_icn_train@2x.png */,
+				17CBD3C01BF6ED2C003FCCAE /* menu_icn_markread.png */,
+				17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */,
 				FF688E5016E6B8D0003B7B42 /* traverse_background.png */,
 				FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */,
 				FF688E4C16E6B3E1003B7B42 /* traverse_done.png */,
@@ -1709,6 +1720,7 @@
 				43B8F019156603170008733D /* AddSiteViewController.xib */,
 				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
 				439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */,
+				17CBD3BB1BF66B07003FCCAE /* MarkReadMenuViewController.xib */,
 				FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */,
 				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
 				17EB50611BE46BB00021358B /* FontListViewController.xib */,
@@ -1850,6 +1862,8 @@
 				FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */,
 				17EB50631BE47C160021358B /* FontTableViewCell.h */,
 				17EB50641BE47C160021358B /* FontTableViewCell.m */,
+				17CBD3BD1BF66B6C003FCCAE /* MarkReadMenuViewController.h */,
+				17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */,
 				FF6618C6176184560039913B /* NBNotifier.h */,
 				FF6618C7176184560039913B /* NBNotifier.m */,
 				FF11045D176950F900502C29 /* NBLoadingCell.h */,
@@ -2251,6 +2265,7 @@
 				FF62820E1A1160DD00271FDB /* add_tag.png in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
+				17CBD3BC1BF66B07003FCCAE /* MarkReadMenuViewController.xib in Resources */,
 				433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */,
 				433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
@@ -2418,6 +2433,7 @@
 				FFB7050B1925921F0052101C /* line_spacing_m.png in Resources */,
 				FF22FE4B16E413C30046165A /* disclosure@2x.png in Resources */,
 				FF322237185BC1CE004078AA /* logo_80.png in Resources */,
+				17CBD3C21BF6ED2C003FCCAE /* menu_icn_markread.png in Resources */,
 				FFB7050E1925921F0052101C /* line_spacing_xs.png in Resources */,
 				FF22FE4E16E41EB40046165A /* disclosure_down.png in Resources */,
 				FF22FE4F16E41EB40046165A /* disclosure_down@2x.png in Resources */,
@@ -2491,6 +2507,7 @@
 				FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */,
 				FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */,
 				FFB9BE4917F4B65B00FE0A36 /* logo_29.png in Resources */,
+				17CBD3C31BF6ED2C003FCCAE /* menu_icn_markread@2x.png in Resources */,
 				FF8364BB1755759A008F5C58 /* traverse_text.png in Resources */,
 				FF8364BC1755759A008F5C58 /* traverse_text@2x.png in Resources */,
 				FF8364BF1756949E008F5C58 /* traverse_text_on.png in Resources */,
@@ -2584,6 +2601,7 @@
 				FF8D1ED01BAA311000725D8A /* SBJson4StreamWriter.m in Sources */,
 				43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */,
 				439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */,
+				17CBD3BF1BF66B6C003FCCAE /* MarkReadMenuViewController.m in Sources */,
 				FFA045B519CA49D700618DC4 /* SSWAnimator.m in Sources */,
 				437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */,
 				FF8D1ECC1BAA311000725D8A /* SBJson4Parser.m in Sources */,
