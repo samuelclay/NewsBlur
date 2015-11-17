@@ -123,8 +123,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		return false;
 	}
 	
-    // TODO: can all of these be replaced with PrefsUtils queries via FeedSet?
-	public abstract StoryOrder getStoryOrder();
+	public StoryOrder getStoryOrder() {
+        return PrefsUtils.getStoryOrder(this, fs);
+    }
+    
+	protected void updateStoryOrderPreference(StoryOrder newOrder) {
+        PrefsUtils.updateStoryOrder(this, fs, newOrder);
+    }
 	
 	protected abstract ReadFilter getReadFilter();
 
@@ -168,8 +173,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
     }
-	
-	public abstract void updateStoryOrderPreference(StoryOrder newValue);
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
