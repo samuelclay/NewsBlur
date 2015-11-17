@@ -955,7 +955,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
             q.append(" OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1))");
-            q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
+            q.append(" ORDER BY " + DatabaseConstants.getSavedStoriesSortOrder(order));
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isGlobalShared()) {
