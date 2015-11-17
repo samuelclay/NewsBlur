@@ -244,6 +244,18 @@
 		FF322235185BC1AA004078AA /* logo_58.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322234185BC1AA004078AA /* logo_58.png */; };
 		FF322237185BC1CE004078AA /* logo_80.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322236185BC1CE004078AA /* logo_80.png */; };
 		FF3964BC192BED0A004BEE1A /* tag.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3964BB192BED0A004BEE1A /* tag.png */; };
+		FF3A3E091BFBBB5100ADC01A /* ChronicleSSm-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DEF1BFBBAC600ADC01A /* ChronicleSSm-Book.otf */; };
+		FF3A3E0A1BFBBB5400ADC01A /* ChronicleSSm-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF01BFBBAC600ADC01A /* ChronicleSSm-BookItalic.otf */; };
+		FF3A3E0B1BFBBB5900ADC01A /* ChronicleSSm-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */; };
+		FF3A3E0C1BFBBB5B00ADC01A /* ChronicleSSm-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF41BFBBAC600ADC01A /* ChronicleSSm-MediumItalic.otf */; };
+		FF3A3E0D1BFBBB5E00ADC01A /* GothamNarrow-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF71BFBBAC600ADC01A /* GothamNarrow-Book.otf */; };
+		FF3A3E0E1BFBBB6100ADC01A /* GothamNarrow-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF81BFBBAC600ADC01A /* GothamNarrow-BookItalic.otf */; };
+		FF3A3E0F1BFBBB6400ADC01A /* GothamNarrow-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */; };
+		FF3A3E101BFBBB6600ADC01A /* GothamNarrow-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */; };
+		FF3A3E111BFBBB6B00ADC01A /* WhitneySSm-Book-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */; };
+		FF3A3E121BFBBB6D00ADC01A /* WhitneySSm-BookItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */; };
+		FF3A3E131BFBBB6F00ADC01A /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
+		FF3A3E141BFBBB7100ADC01A /* WhitneySSm-MediumItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */; };
 		FF3FA88D1BB2677C001F7C32 /* NBCopyLinkActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3FA88C1BB2677C001F7C32 /* NBCopyLinkActivity.m */; };
 		FF3FA8951BB26B6A001F7C32 /* copy_link@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */; };
 		FF41309D162CEC7100DDB6A7 /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309C162CEC7100DDB6A7 /* time.png */; };
@@ -445,15 +457,6 @@
 		FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDE35D9161D12250034BFDE /* UnreadCountView.m */; };
 		FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDE35E9162799B90034BFDE /* FeedDetailMenuViewController.m */; };
 		FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */; };
-		FFDE62071BF15649008DB4AF /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0551BF14DBA00F23F60 /* WhitneySSm-Medium-Bas.otf */; };
-		FFDE62081BF15674008DB4AF /* GothamNarrow-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F04B1BF14DBA00F23F60 /* GothamNarrow-Medium.otf */; };
-		FFDE62091BF1567B008DB4AF /* GothamNarrow-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F04C1BF14DBA00F23F60 /* GothamNarrow-MediumItalic.otf */; };
-		FFDE620A1BF156D8008DB4AF /* ChronicleSSm-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0431BF14DBA00F23F60 /* ChronicleSSm-Medium.otf */; };
-		FFDE620B1BF156DD008DB4AF /* ChronicleSSm-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0441BF14DBA00F23F60 /* ChronicleSSm-MediumItalic.otf */; };
-		FFDE620C1BF156E8008DB4AF /* GothamNarrow-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0481BF14DBA00F23F60 /* GothamNarrow-BookItalic.otf */; };
-		FFDE620D1BF156F6008DB4AF /* WhitneySSm-BookItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0521BF14DBA00F23F60 /* WhitneySSm-BookItalic-Bas.otf */; };
-		FFDE620E1BF15706008DB4AF /* WhitneySSm-MediumItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0561BF14DBA00F23F60 /* WhitneySSm-MediumItalic-Bas.otf */; };
-		FFDE620F1BF1571A008DB4AF /* ChronicleSSm-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0401BF14DBA00F23F60 /* ChronicleSSm-BookItalic.otf */; };
 		FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE5322E144C8AC300ACFDE0 /* Utilities.m */; };
 		FFE816AB17E280BD008AF4B0 /* ftux_tree.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AA17E280BD008AF4B0 /* ftux_tree.png */; };
 		FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AC17E29D71008AF4B0 /* big_world_white.png */; };
@@ -465,9 +468,6 @@
 		FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; };
 		FFF1E4CB17750D2C00BF59D3 /* menu_icn_preferences.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */; };
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
-		FFF5F0591BF14DE000F23F60 /* WhitneySSm-Book-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0511BF14DBA00F23F60 /* WhitneySSm-Book-Bas.otf */; };
-		FFF5F05A1BF14DE400F23F60 /* GothamNarrow-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F0471BF14DBA00F23F60 /* GothamNarrow-Book.otf */; };
-		FFF5F05B1BF14DE600F23F60 /* ChronicleSSm-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFF5F03F1BF14DBA00F23F60 /* ChronicleSSm-Book.otf */; };
 		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 /* End PBXBuildFile section */
 
@@ -814,6 +814,34 @@
 		FF322234185BC1AA004078AA /* logo_58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_58.png; sourceTree = "<group>"; };
 		FF322236185BC1CE004078AA /* logo_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_80.png; sourceTree = "<group>"; };
 		FF3964BB192BED0A004BEE1A /* tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tag.png; sourceTree = "<group>"; };
+		FF3A3DED1BFBBAC600ADC01A /* ChronicleSSm-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Bold.otf"; sourceTree = "<group>"; };
+		FF3A3DEE1BFBBAC600ADC01A /* ChronicleSSm-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-BoldItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DEF1BFBBAC600ADC01A /* ChronicleSSm-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Book.otf"; sourceTree = "<group>"; };
+		FF3A3DF01BFBBAC600ADC01A /* ChronicleSSm-BookItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-BookItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DF11BFBBAC600ADC01A /* ChronicleSSm-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Light.otf"; sourceTree = "<group>"; };
+		FF3A3DF21BFBBAC600ADC01A /* ChronicleSSm-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-LightItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-Medium.otf"; sourceTree = "<group>"; };
+		FF3A3DF41BFBBAC600ADC01A /* ChronicleSSm-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChronicleSSm-MediumItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DF51BFBBAC600ADC01A /* GothamNarrow-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Bold.otf"; sourceTree = "<group>"; };
+		FF3A3DF61BFBBAC600ADC01A /* GothamNarrow-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-BoldItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DF71BFBBAC600ADC01A /* GothamNarrow-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Book.otf"; sourceTree = "<group>"; };
+		FF3A3DF81BFBBAC600ADC01A /* GothamNarrow-BookItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-BookItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DF91BFBBAC600ADC01A /* GothamNarrow-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Light.otf"; sourceTree = "<group>"; };
+		FF3A3DFA1BFBBAC600ADC01A /* GothamNarrow-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-LightItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-Medium.otf"; sourceTree = "<group>"; };
+		FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GothamNarrow-MediumItalic.otf"; sourceTree = "<group>"; };
+		FF3A3DFD1BFBBAC600ADC01A /* WhitneySSm-Black-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Black-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3DFE1BFBBAC600ADC01A /* WhitneySSm-BlackItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-BlackItalic-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Bold-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E001BFBBAC600ADC01A /* WhitneySSm-BoldItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-BoldItalic-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Book-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-BookItalic-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Light-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E041BFBBAC600ADC01A /* WhitneySSm-LightItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-LightItalic-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Medium-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-MediumItalic-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Semibold-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E081BFBBAC600ADC01A /* WhitneySSm-SemiboldItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-SemiboldItalic-Bas.otf"; sourceTree = "<group>"; };
 		FF3FA88B1BB2677C001F7C32 /* NBCopyLinkActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBCopyLinkActivity.h; sourceTree = "<group>"; };
 		FF3FA88C1BB2677C001F7C32 /* NBCopyLinkActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBCopyLinkActivity.m; sourceTree = "<group>"; };
 		FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "copy_link@2x.png"; sourceTree = "<group>"; };
@@ -1089,34 +1117,6 @@
 		FFF1E4C717750BDD00BF59D3 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_preferences.png; sourceTree = "<group>"; };
 		FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_preferences@2x.png"; sourceTree = "<group>"; };
-		FFF5F03D1BF14DBA00F23F60 /* ChronicleSSm-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-Bold.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-Bold.otf"; sourceTree = "<group>"; };
-		FFF5F03E1BF14DBA00F23F60 /* ChronicleSSm-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-BoldItalic.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-BoldItalic.otf"; sourceTree = "<group>"; };
-		FFF5F03F1BF14DBA00F23F60 /* ChronicleSSm-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-Book.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-Book.otf"; sourceTree = "<group>"; };
-		FFF5F0401BF14DBA00F23F60 /* ChronicleSSm-BookItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-BookItalic.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-BookItalic.otf"; sourceTree = "<group>"; };
-		FFF5F0411BF14DBA00F23F60 /* ChronicleSSm-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-Light.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-Light.otf"; sourceTree = "<group>"; };
-		FFF5F0421BF14DBA00F23F60 /* ChronicleSSm-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-LightItalic.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-LightItalic.otf"; sourceTree = "<group>"; };
-		FFF5F0431BF14DBA00F23F60 /* ChronicleSSm-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-Medium.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-Medium.otf"; sourceTree = "<group>"; };
-		FFF5F0441BF14DBA00F23F60 /* ChronicleSSm-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ChronicleSSm-MediumItalic.otf"; path = "../../../../../secrets-newsblur/fonts/ChronicleSSm-MediumItalic.otf"; sourceTree = "<group>"; };
-		FFF5F0451BF14DBA00F23F60 /* GothamNarrow-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-Bold.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-Bold.otf"; sourceTree = "<group>"; };
-		FFF5F0461BF14DBA00F23F60 /* GothamNarrow-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-BoldItalic.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-BoldItalic.otf"; sourceTree = "<group>"; };
-		FFF5F0471BF14DBA00F23F60 /* GothamNarrow-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-Book.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-Book.otf"; sourceTree = "<group>"; };
-		FFF5F0481BF14DBA00F23F60 /* GothamNarrow-BookItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-BookItalic.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-BookItalic.otf"; sourceTree = "<group>"; };
-		FFF5F0491BF14DBA00F23F60 /* GothamNarrow-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-Light.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-Light.otf"; sourceTree = "<group>"; };
-		FFF5F04A1BF14DBA00F23F60 /* GothamNarrow-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-LightItalic.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-LightItalic.otf"; sourceTree = "<group>"; };
-		FFF5F04B1BF14DBA00F23F60 /* GothamNarrow-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-Medium.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-Medium.otf"; sourceTree = "<group>"; };
-		FFF5F04C1BF14DBA00F23F60 /* GothamNarrow-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "GothamNarrow-MediumItalic.otf"; path = "../../../../../secrets-newsblur/fonts/GothamNarrow-MediumItalic.otf"; sourceTree = "<group>"; };
-		FFF5F04D1BF14DBA00F23F60 /* WhitneySSm-Black-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-Black-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-Black-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F04E1BF14DBA00F23F60 /* WhitneySSm-BlackItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-BlackItalic-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-BlackItalic-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F04F1BF14DBA00F23F60 /* WhitneySSm-Bold-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-Bold-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-Bold-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0501BF14DBA00F23F60 /* WhitneySSm-BoldItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-BoldItalic-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-BoldItalic-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0511BF14DBA00F23F60 /* WhitneySSm-Book-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-Book-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-Book-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0521BF14DBA00F23F60 /* WhitneySSm-BookItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-BookItalic-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-BookItalic-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0531BF14DBA00F23F60 /* WhitneySSm-Light-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-Light-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-Light-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0541BF14DBA00F23F60 /* WhitneySSm-LightItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-LightItalic-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-LightItalic-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0551BF14DBA00F23F60 /* WhitneySSm-Medium-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-Medium-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-Medium-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0561BF14DBA00F23F60 /* WhitneySSm-MediumItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-MediumItalic-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-MediumItalic-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0571BF14DBA00F23F60 /* WhitneySSm-Semibold-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-Semibold-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-Semibold-Bas.otf"; sourceTree = "<group>"; };
-		FFF5F0581BF14DBA00F23F60 /* WhitneySSm-SemiboldItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "WhitneySSm-SemiboldItalic-Bas.otf"; path = "../../../../../secrets-newsblur/fonts/WhitneySSm-SemiboldItalic-Bas.otf"; sourceTree = "<group>"; };
 		FFFF683B19D628000081904A /* NBURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBURLCache.h; path = "Other Sources/NBURLCache.h"; sourceTree = "<group>"; };
 		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1184,34 +1184,34 @@
 		1753696F1BE535CF00904D00 /* fonts */ = {
 			isa = PBXGroup;
 			children = (
-				FFF5F03D1BF14DBA00F23F60 /* ChronicleSSm-Bold.otf */,
-				FFF5F03E1BF14DBA00F23F60 /* ChronicleSSm-BoldItalic.otf */,
-				FFF5F03F1BF14DBA00F23F60 /* ChronicleSSm-Book.otf */,
-				FFF5F0401BF14DBA00F23F60 /* ChronicleSSm-BookItalic.otf */,
-				FFF5F0411BF14DBA00F23F60 /* ChronicleSSm-Light.otf */,
-				FFF5F0421BF14DBA00F23F60 /* ChronicleSSm-LightItalic.otf */,
-				FFF5F0431BF14DBA00F23F60 /* ChronicleSSm-Medium.otf */,
-				FFF5F0441BF14DBA00F23F60 /* ChronicleSSm-MediumItalic.otf */,
-				FFF5F0451BF14DBA00F23F60 /* GothamNarrow-Bold.otf */,
-				FFF5F0461BF14DBA00F23F60 /* GothamNarrow-BoldItalic.otf */,
-				FFF5F0471BF14DBA00F23F60 /* GothamNarrow-Book.otf */,
-				FFF5F0481BF14DBA00F23F60 /* GothamNarrow-BookItalic.otf */,
-				FFF5F0491BF14DBA00F23F60 /* GothamNarrow-Light.otf */,
-				FFF5F04A1BF14DBA00F23F60 /* GothamNarrow-LightItalic.otf */,
-				FFF5F04B1BF14DBA00F23F60 /* GothamNarrow-Medium.otf */,
-				FFF5F04C1BF14DBA00F23F60 /* GothamNarrow-MediumItalic.otf */,
-				FFF5F04D1BF14DBA00F23F60 /* WhitneySSm-Black-Bas.otf */,
-				FFF5F04E1BF14DBA00F23F60 /* WhitneySSm-BlackItalic-Bas.otf */,
-				FFF5F04F1BF14DBA00F23F60 /* WhitneySSm-Bold-Bas.otf */,
-				FFF5F0501BF14DBA00F23F60 /* WhitneySSm-BoldItalic-Bas.otf */,
-				FFF5F0511BF14DBA00F23F60 /* WhitneySSm-Book-Bas.otf */,
-				FFF5F0521BF14DBA00F23F60 /* WhitneySSm-BookItalic-Bas.otf */,
-				FFF5F0531BF14DBA00F23F60 /* WhitneySSm-Light-Bas.otf */,
-				FFF5F0541BF14DBA00F23F60 /* WhitneySSm-LightItalic-Bas.otf */,
-				FFF5F0551BF14DBA00F23F60 /* WhitneySSm-Medium-Bas.otf */,
-				FFF5F0561BF14DBA00F23F60 /* WhitneySSm-MediumItalic-Bas.otf */,
-				FFF5F0571BF14DBA00F23F60 /* WhitneySSm-Semibold-Bas.otf */,
-				FFF5F0581BF14DBA00F23F60 /* WhitneySSm-SemiboldItalic-Bas.otf */,
+				FF3A3DED1BFBBAC600ADC01A /* ChronicleSSm-Bold.otf */,
+				FF3A3DEE1BFBBAC600ADC01A /* ChronicleSSm-BoldItalic.otf */,
+				FF3A3DEF1BFBBAC600ADC01A /* ChronicleSSm-Book.otf */,
+				FF3A3DF01BFBBAC600ADC01A /* ChronicleSSm-BookItalic.otf */,
+				FF3A3DF11BFBBAC600ADC01A /* ChronicleSSm-Light.otf */,
+				FF3A3DF21BFBBAC600ADC01A /* ChronicleSSm-LightItalic.otf */,
+				FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */,
+				FF3A3DF41BFBBAC600ADC01A /* ChronicleSSm-MediumItalic.otf */,
+				FF3A3DF51BFBBAC600ADC01A /* GothamNarrow-Bold.otf */,
+				FF3A3DF61BFBBAC600ADC01A /* GothamNarrow-BoldItalic.otf */,
+				FF3A3DF71BFBBAC600ADC01A /* GothamNarrow-Book.otf */,
+				FF3A3DF81BFBBAC600ADC01A /* GothamNarrow-BookItalic.otf */,
+				FF3A3DF91BFBBAC600ADC01A /* GothamNarrow-Light.otf */,
+				FF3A3DFA1BFBBAC600ADC01A /* GothamNarrow-LightItalic.otf */,
+				FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */,
+				FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */,
+				FF3A3DFD1BFBBAC600ADC01A /* WhitneySSm-Black-Bas.otf */,
+				FF3A3DFE1BFBBAC600ADC01A /* WhitneySSm-BlackItalic-Bas.otf */,
+				FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */,
+				FF3A3E001BFBBAC600ADC01A /* WhitneySSm-BoldItalic-Bas.otf */,
+				FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */,
+				FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */,
+				FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */,
+				FF3A3E041BFBBAC600ADC01A /* WhitneySSm-LightItalic-Bas.otf */,
+				FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */,
+				FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */,
+				FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */,
+				FF3A3E081BFBBAC600ADC01A /* WhitneySSm-SemiboldItalic-Bas.otf */,
 			);
 			path = fonts;
 			sourceTree = "<group>";
@@ -2249,6 +2249,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF3A3E091BFBBB5100ADC01A /* ChronicleSSm-Book.otf in Resources */,
+				FF3A3E111BFBBB6B00ADC01A /* WhitneySSm-Book-Bas.otf in Resources */,
+				FF3A3E0A1BFBBB5400ADC01A /* ChronicleSSm-BookItalic.otf in Resources */,
+				FF3A3E131BFBBB6F00ADC01A /* WhitneySSm-Medium-Bas.otf in Resources */,
+				FF3A3E141BFBBB7100ADC01A /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
+				FF3A3E121BFBBB6D00ADC01A /* WhitneySSm-BookItalic-Bas.otf in Resources */,
+				FF3A3E0B1BFBBB5900ADC01A /* ChronicleSSm-Medium.otf in Resources */,
+				FF3A3E101BFBBB6600ADC01A /* GothamNarrow-MediumItalic.otf in Resources */,
+				FF3A3E0C1BFBBB5B00ADC01A /* ChronicleSSm-MediumItalic.otf in Resources */,
+				FF3A3E0D1BFBBB5E00ADC01A /* GothamNarrow-Book.otf in Resources */,
+				FF3A3E0E1BFBBB6100ADC01A /* GothamNarrow-BookItalic.otf in Resources */,
+				FF3A3E0F1BFBBB6400ADC01A /* GothamNarrow-Medium.otf in Resources */,
 				FF265F12187B6D4F0080C332 /* fitvid.js in Resources */,
 				FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */,
 				FF67D3CD168A73380057A7DA /* zepto.js in Resources */,
@@ -2536,18 +2548,6 @@
 				FF5D401C179A03E700349659 /* traverse_previous_off@2x.png in Resources */,
 				FFE816AB17E280BD008AF4B0 /* ftux_tree.png in Resources */,
 				FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */,
-				FFF5F05A1BF14DE400F23F60 /* GothamNarrow-Book.otf in Resources */,
-				FFDE620C1BF156E8008DB4AF /* GothamNarrow-BookItalic.otf in Resources */,
-				FFDE62081BF15674008DB4AF /* GothamNarrow-Medium.otf in Resources */,
-				FFDE62091BF1567B008DB4AF /* GothamNarrow-MediumItalic.otf in Resources */,
-				FFDE620D1BF156F6008DB4AF /* WhitneySSm-BookItalic-Bas.otf in Resources */,
-				FFDE62071BF15649008DB4AF /* WhitneySSm-Medium-Bas.otf in Resources */,
-				FFDE620E1BF15706008DB4AF /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
-				FFF5F0591BF14DE000F23F60 /* WhitneySSm-Book-Bas.otf in Resources */,
-				FFDE620F1BF1571A008DB4AF /* ChronicleSSm-BookItalic.otf in Resources */,
-				FFF5F05B1BF14DE600F23F60 /* ChronicleSSm-Book.otf in Resources */,
-				FFDE620A1BF156D8008DB4AF /* ChronicleSSm-Medium.otf in Resources */,
-				FFDE620B1BF156DD008DB4AF /* ChronicleSSm-MediumItalic.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
