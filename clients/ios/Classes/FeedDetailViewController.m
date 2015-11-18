@@ -36,6 +36,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
+#import "NSNull+JSON.h"
 
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
@@ -886,12 +887,16 @@
                             NEWSBLUR_URL,
                             storiesCollection.feedPage];
     } else {
+        NSString *feeds = @"";
+        if (storiesCollection.activeFolderFeeds.count) {
+            feeds = [[storiesCollection.activeFolderFeeds
+                      subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
+                     componentsJoinedByString:@"&f="];
+        }
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
                             NEWSBLUR_URL,
-                            [[storiesCollection.activeFolderFeeds
-                              subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
-                             componentsJoinedByString:@"&f="],
+                            feeds,
                             storiesCollection.feedPage];
     }
     

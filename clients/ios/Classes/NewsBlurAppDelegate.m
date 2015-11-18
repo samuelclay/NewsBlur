@@ -60,6 +60,7 @@
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
+#import "NSNull+JSON.h"
 #import <float.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
@@ -2985,28 +2986,48 @@
     for (NSArray *storyHashes in [hashes allValues]) {
         [completedHashes addObjectsFromArray:storyHashes];
     }
+    NSLog(@"Marking %lu queued read stories as read...", (unsigned long)[completedHashes count]);
     NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIHTTPRequest *_request = request;
     [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     [request setDelegate:self];
+    [request setValidatesSecureCertificate:NO];
     [request setCompletionBlock:^{
         if ([_request responseStatusCode] == 200) {
             NSLog(@"Completed clearing %@ hashes", completedHashesStr);
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
                                "WHERE story_hash in (\"%@\")", completedHashesStr]];
+            [self pruneQueuedReadHashes];
         } else {
             NSLog(@"Failed mark read queued.");
             self.hasQueuedReadStories = YES;
+            [self pruneQueuedReadHashes];
         }
         if (callback) callback();
     }];
     [request setFailedBlock:^{
         NSLog(@"Failed mark read queued.");
         self.hasQueuedReadStories = YES;
+        [self pruneQueuedReadHashes];
         if (callback) callback();
     }];
     [request startAsynchronous];
+}
+
+- (void)pruneQueuedReadHashes {
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *unreadSql = [NSString stringWithFormat:@"SELECT qrh.story_hash FROM queued_read_hashes qrh "
+                               "INNER JOIN unread_hashes uh ON qrh.story_hash = uh.story_hash"];
+        FMResultSet *cursor = [db executeQuery:unreadSql];
+        while ([cursor next]) {
+            NSLog(@"Story: %@", [cursor objectForColumnName:@"story_hash"]);
+        }
+//        NSLog(@"Found %lu stories queued to be read but already read", (unsigned long)[[cursor.resultDictionary allKeys] count]);
+        NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
+                               "WHERE story_hash not in (%@)", unreadSql];
+        [db executeUpdate:deleteSql];
+    }];
 }
 
 - (void)prepareActiveCachedImages:(FMDatabase *)db {

@@ -256,6 +256,7 @@
 		FF3A3E121BFBBB6D00ADC01A /* WhitneySSm-BookItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */; };
 		FF3A3E131BFBBB6F00ADC01A /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
 		FF3A3E141BFBBB7100ADC01A /* WhitneySSm-MediumItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */; };
+		FF3A3E171BFC3F1300ADC01A /* NSNull+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3A3E161BFC3F1300ADC01A /* NSNull+JSON.m */; };
 		FF3FA88D1BB2677C001F7C32 /* NBCopyLinkActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3FA88C1BB2677C001F7C32 /* NBCopyLinkActivity.m */; };
 		FF3FA8951BB26B6A001F7C32 /* copy_link@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */; };
 		FF41309D162CEC7100DDB6A7 /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309C162CEC7100DDB6A7 /* time.png */; };
@@ -842,6 +843,8 @@
 		FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-MediumItalic-Bas.otf"; sourceTree = "<group>"; };
 		FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-Semibold-Bas.otf"; sourceTree = "<group>"; };
 		FF3A3E081BFBBAC600ADC01A /* WhitneySSm-SemiboldItalic-Bas.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WhitneySSm-SemiboldItalic-Bas.otf"; sourceTree = "<group>"; };
+		FF3A3E151BFC3F1300ADC01A /* NSNull+JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSNull+JSON.h"; path = "Other Sources/NSNull+JSON.h"; sourceTree = "<group>"; };
+		FF3A3E161BFC3F1300ADC01A /* NSNull+JSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSNull+JSON.m"; path = "Other Sources/NSNull+JSON.m"; sourceTree = "<group>"; };
 		FF3FA88B1BB2677C001F7C32 /* NBCopyLinkActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBCopyLinkActivity.h; sourceTree = "<group>"; };
 		FF3FA88C1BB2677C001F7C32 /* NBCopyLinkActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBCopyLinkActivity.m; sourceTree = "<group>"; };
 		FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "copy_link@2x.png"; sourceTree = "<group>"; };
@@ -1288,6 +1291,8 @@
 				FFFF683C19D628000081904A /* NBURLCache.m */,
 				FFD6604A1BACA45D006E4B8D /* THCircularProgressView.h */,
 				FFD6604B1BACA45D006E4B8D /* THCircularProgressView.m */,
+				FF3A3E151BFC3F1300ADC01A /* NSNull+JSON.h */,
+				FF3A3E161BFC3F1300ADC01A /* NSNull+JSON.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -2587,6 +2592,7 @@
 				78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */,
 				FF1C4E171A3FB1F4000995E3 /* NBActivityItemProvider.m in Sources */,
 				FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */,
+				FF3A3E171BFC3F1300ADC01A /* NSNull+JSON.m in Sources */,
 				FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */,
 				FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */,
 				FF1F13D818AAC97900FDA816 /* UIImage+Resize.m in Sources */,
