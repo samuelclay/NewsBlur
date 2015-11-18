@@ -1,4 +1,4 @@
-//
+
 //  NewsBlurAppDelegate.m
 //  NewsBlur
 //
@@ -234,7 +234,7 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
-    if (launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
+    if (launchOptions && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
         self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
         return NO;
     }
