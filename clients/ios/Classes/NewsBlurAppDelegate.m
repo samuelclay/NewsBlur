@@ -234,7 +234,7 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
-    if (launchOptions && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
+    if ([UIApplicationShortcutItem class] && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
         self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
         return NO;
     }
