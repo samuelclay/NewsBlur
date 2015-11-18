@@ -303,6 +303,7 @@ SFSafariViewControllerDelegate>  {
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
+- (NSArray *)allFeedIds;
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
 - (BOOL)isPortrait;
 - (void)confirmLogout;

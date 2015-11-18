@@ -976,19 +976,23 @@
     return [feedIdStr startsWith:@"saved:"];
 }
 
-- (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
-    if ([folderTitle isEqualToString:@"everything"]) {
-        NSMutableArray *mutableFeedIds = [NSMutableArray array];
-        
-        for (NSString *folderName in self.dictFoldersArray) {
-            for (id feedId in self.dictFolders[folderName]) {
-                if (![feedId isKindOfClass:[NSString class]] || ![self isSavedFeed:feedId]) {
-                    [mutableFeedIds addObject:feedId];
-                }
+- (NSArray *)allFeedIds {
+    NSMutableArray *mutableFeedIds = [NSMutableArray array];
+    
+    for (NSString *folderName in self.dictFoldersArray) {
+        for (id feedId in self.dictFolders[folderName]) {
+            if (![feedId isKindOfClass:[NSString class]] || ![self isSavedFeed:feedId]) {
+                [mutableFeedIds addObject:feedId];
             }
         }
-        
-        return mutableFeedIds;
+    }
+    
+    return mutableFeedIds;
+}
+
+- (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
+    if ([folderTitle isEqualToString:@"everything"]) {
+        return @[folderTitle];
     } else {
         return self.dictFolders[folderTitle];
     }
