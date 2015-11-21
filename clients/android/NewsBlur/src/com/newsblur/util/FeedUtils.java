@@ -205,13 +205,23 @@ public class FeedUtils {
         dbHelper.insertClassifier(classifier);
     }
 
-    public static void sendStory(Story story, Context context) {
+    public static void sendStoryBrief(Story story, Context context) {
         if (story == null ) { return; } 
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), new Object[]{Html.fromHtml(story.title), story.permalink}));
+        context.startActivity(Intent.createChooser(intent, "Send using"));
+    }
+
+    public static void sendStoryFull(Story story, Context context) {
+        if (story == null ) { return; } 
+        String body = getStoryContent(story.storyHash);
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title).toString());
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_body), new Object[]{story.permalink, Html.fromHtml(story.title), Html.fromHtml(story.shortContent)}));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), new Object[]{story.permalink, Html.fromHtml(story.title), Html.fromHtml(body)}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
