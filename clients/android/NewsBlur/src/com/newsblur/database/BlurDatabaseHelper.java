@@ -1080,12 +1080,12 @@ public class BlurDatabaseHelper {
         return replies;
     }
 
-    public void replyToComment(String storyId, String feedId, String commentUserId, String replyText) {
+    public void replyToComment(String storyId, String feedId, String commentUserId, String replyText, long replyCreateTime) {
         Reply reply = new Reply();
         reply.commentId = Comment.constructId(storyId, feedId, commentUserId);
         reply.text = replyText;
         reply.userId = PrefsUtils.getUserDetails(context).id;
-        reply.date = new Date();
+        reply.date = new Date(replyCreateTime);
         reply.id = reply.constructId();
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }
