@@ -63,6 +63,7 @@ UIActionSheetDelegate> {
 - (void)toggleLikeComment:(BOOL)likeComment;
 - (void)flashCheckmarkHud:(NSString *)messageType;
 - (void)scrolltoComment;
+- (void)tryScrollingDown:(BOOL)down;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)checkTryFeedStory;
