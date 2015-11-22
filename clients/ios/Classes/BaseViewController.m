@@ -110,6 +110,15 @@
 }
 
 #pragma mark -
+#pragma mark Keyboard support
+- (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle {
+    UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
+    if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)])
+        keyCommand.discoverabilityTitle = discoverabilityTitle;
+    [self addKeyCommand:keyCommand];
+}
+
+#pragma mark -
 #pragma mark UIViewController
 
 - (void) viewDidLoad {

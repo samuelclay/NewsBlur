@@ -300,6 +300,11 @@
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 #pragma mark -
 #pragma mark Story setup
 
@@ -2044,10 +2049,39 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.storyHUD hide:YES afterDelay:1];
 }
 
+#pragma mark -
+#pragma mark Scrolling
+
 - (void)scrolltoComment {
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
     [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
+}
+
+- (void)tryScrollingDown:(BOOL)down {
+    UIScrollView *scrollView = webView.scrollView;
+    CGPoint contentOffset = scrollView.contentOffset;
+    CGFloat frameHeight = scrollView.frame.size.height;
+    CGFloat scrollHeight = frameHeight - 45; // ~height of source bar and buttons
+    if (down) {
+        CGSize contentSize = scrollView.contentSize;
+        if (contentOffset.y + frameHeight == contentSize.height)
+            return;
+        contentOffset.y = MIN(contentOffset.y + scrollHeight, contentSize.height - frameHeight);
+    } else {
+        if (contentOffset.y <= 0)
+            return;
+        contentOffset.y = MAX(contentOffset.y - scrollHeight, 0);
+    }
+    [scrollView setContentOffset:contentOffset animated:YES];
+}
+
+- (void)scrollPageDown:(id)sender {
+    [self tryScrollingDown:YES];
+}
+
+- (void)scrollPageUp:(id)sender {
+    [self tryScrollingDown:NO];
 }
 
 - (NSString *)textToHtml:(NSString*)htmlString {
@@ -2133,6 +2167,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [self showStoryView];
         }
     }
+}
+
+- (void)toggleTextView:(id)sender {
+    if (self.inTextView)
+        [self showStoryView];
+    else
+        [self fetchTextView];
 }
 
 - (void)showStoryView {
