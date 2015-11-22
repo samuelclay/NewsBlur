@@ -200,6 +200,20 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
+
+    [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
+    [self addKeyCommandWithInput:@"k" modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
+    [self addKeyCommandWithInput:@"\r" modifierFlags:UIKeyModifierShift action:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
+    [self addKeyCommandWithInput:@" " modifierFlags:0 action:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
+    [self addKeyCommandWithInput:@" " modifierFlags:UIKeyModifierShift action:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
+    [self addKeyCommandWithInput:@"n" modifierFlags:0 action:@selector(doNextUnreadStory:) discoverabilityTitle:@"Next Unread Story"];
+    [self addKeyCommandWithInput:@"u" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+    [self addKeyCommandWithInput:@"m" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+    [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(toggleStorySaved:) discoverabilityTitle:@"Save/Unsave Story"];
+    [self addKeyCommandWithInput:@"o" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+    [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+    [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
+    [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -297,6 +311,7 @@
     [self reorientPages];
 //    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+    [self becomeFirstResponder];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -535,6 +550,11 @@
     [self setNextPreviousButtons];
     [self setTextButton];
     [self drawStories];
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 #pragma mark -
@@ -786,6 +806,24 @@
             [self setStoryFromScroll];
         }
     }
+    [currentPage becomeFirstResponder];
+}
+
+- (void)changeToNextPage:(id)sender {
+    NSInteger nextPageIndex = nextPage.pageIndex;
+    if (nextPageIndex < 0 && currentPage.pageIndex < 0) {
+        // just displaying a placeholder - display the first story instead
+        [self changePage:0 animated:YES];
+        return;
+    }
+    [self changePage:nextPageIndex animated:YES];
+}
+
+- (void)changeToPreviousPage:(id)sender {
+    NSInteger previousPageIndex = previousPage.pageIndex;
+    if (previousPageIndex < 0)
+        return;
+    [self changePage:previousPageIndex animated:YES];
 }
 
 - (void)setStoryFromScroll {
@@ -1056,6 +1094,15 @@
     [self.currentPage showTextOrStoryView];
     [self.nextPage showTextOrStoryView];
     [self.previousPage showTextOrStoryView];
+}
+
+- (void)toggleStorySaved:(id)sender {
+    [appDelegate.storiesCollection toggleStorySaved];
+}
+
+- (void)toggleStoryUnread:(id)sender {
+    [appDelegate.storiesCollection toggleStoryUnread];
+    [appDelegate.feedDetailViewController redrawUnreadStory]; // XXX only if successful?
 }
 
 #pragma mark -
