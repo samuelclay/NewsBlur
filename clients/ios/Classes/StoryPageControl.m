@@ -855,6 +855,8 @@
         }
         [appDelegate.feedDetailViewController redrawUnreadStory];
     }
+
+    [currentPage becomeFirstResponder];
 }
 
 - (void)advanceToNextUnread {
