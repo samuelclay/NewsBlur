@@ -214,6 +214,8 @@
     [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
+    [self addKeyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
+    [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierShift action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -327,6 +329,11 @@
     
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+}
+
+- (BOOL)becomeFirstResponder {
+    // delegate to current page
+    return [currentPage becomeFirstResponder];
 }
 
 - (void)transitionFromFeedDetail {
@@ -773,7 +780,7 @@
             [self setStoryFromScroll];
         }
     }
-    [currentPage becomeFirstResponder];
+    [self becomeFirstResponder];
 }
 
 - (void)changeToNextPage:(id)sender {
@@ -1119,6 +1126,13 @@
     [self.currentPage changeLineSpacing:lineSpacing];
     [self.nextPage changeLineSpacing:lineSpacing];
     [self.previousPage changeLineSpacing:lineSpacing];
+}
+
+- (void)backToDashboard:(id)sender {
+    UINavigationController *feedDetailNavigationController = appDelegate.feedDetailViewController.navigationController;
+    if (feedDetailNavigationController != nil)
+        [feedDetailNavigationController popViewControllerAnimated: YES];
+    [self transitionFromFeedDetail];
 }
 
 #pragma mark -
