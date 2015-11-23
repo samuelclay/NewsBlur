@@ -173,6 +173,11 @@
     return YES;
 }
 
+- (BOOL)becomeFirstResponder {
+    // delegate to Web view
+    return [webView becomeFirstResponder];
+}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     CGPoint velocity = CGPointMake(0, 0);
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
