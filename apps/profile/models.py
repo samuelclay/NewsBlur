@@ -408,10 +408,10 @@ class Profile(models.Model):
             has_numbers = numerics.search(user.username)
             if opens is None and not reads and has_numbers:
                 usernames.add(user.username)
-                print user.username, user.email, opens, reads
+                print " ---> Numerics: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
             elif not user.profile.last_seen_ip:
                 usernames.add(user.username)
-                print " ---> No IP: %s %s %s %s" % (user.username, user.email, opens, reads)
+                print " ---> No IP: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
         
         if not confirm: return usernames
         
