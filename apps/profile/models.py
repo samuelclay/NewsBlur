@@ -99,6 +99,7 @@ class Profile(models.Model):
             print " ---> You must pass confirm=True to delete this user."
             return
         
+        logging.user(self.user, "Deleting user: %s / %s" % (user.email, user.profile.last_seen_ip))
         try:
             self.cancel_premium()
         except:
@@ -1147,7 +1148,7 @@ class RNewUserQueue:
             logging.debug("~FRCan't activate free account, can't find user ~SB%s~SN. ~FB%s still in queue." % (user_id, count-1))
             return
             
-        logging.user(user, "~FBActivating free account (%s). %s still in queue." % (user.email, (count-1)))
+        logging.user(user, "~FBActivating free account (%s / %s). %s still in queue." % (user.email, user.profile.last_seen_ip, (count-1)))
 
         user.profile.activate_free()
     
