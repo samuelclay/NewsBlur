@@ -174,6 +174,10 @@ static UIFont *userLabelFont;
     
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
+    [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierShift action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
+    [self addKeyCommandWithInput:@"a" modifierFlags:0 action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -234,6 +238,8 @@ static UIFont *userLabelFont;
     [self refreshHeaderCounts];
 
     self.interactiveFeedDetailTransition = NO;
+
+    [self becomeFirstResponder];
 }
 
 - (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
@@ -367,6 +373,10 @@ static UIFont *userLabelFont;
     [self refreshHeaderCounts];
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
 
 #pragma mark -
 #pragma mark Initialization
@@ -1322,7 +1332,9 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
 }
 
-
+- (void)selectEverything:(id)sender {
+    [self didSelectSectionHeaderWithTag:2];
+}
 
 #pragma mark - MCSwipeTableViewCellDelegate
 
@@ -1554,6 +1566,22 @@ heightForHeaderInSection:(NSInteger)section {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
     [userPreferences synchronize];
+}
+
+- (void)selectPreviousIntelligence:(id)sender {
+    NSInteger selectedSegmentIndex = intelligenceControl.selectedSegmentIndex;
+    if (selectedSegmentIndex <= 0)
+        return;
+    [intelligenceControl setSelectedSegmentIndex:selectedSegmentIndex - 1];
+    [self selectIntelligence];
+}
+
+- (void)selectNextIntelligence:(id)sender {
+    NSInteger selectedSegmentIndex = intelligenceControl.selectedSegmentIndex;
+    if (selectedSegmentIndex >= intelligenceControl.numberOfSegments)
+        return;
+    [intelligenceControl setSelectedSegmentIndex:selectedSegmentIndex + 1];
+    [self selectIntelligence];
 }
 
 - (IBAction)selectIntelligence {
