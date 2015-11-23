@@ -403,12 +403,15 @@ class Profile(models.Model):
         usernames = set()
         numerics = re.compile(r'[0-9]+')
         for user in users:
-          opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
-          reads = RUserStory.read_story_count(user.pk)
-          has_numbers = numerics.search(user.username)
-          if opens is None and not reads and has_numbers:
-             usernames.add(user.username)
-             print user.username, user.email, opens, reads
+            opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
+            reads = RUserStory.read_story_count(user.pk)
+            has_numbers = numerics.search(user.username)
+            if opens is None and not reads and has_numbers:
+                usernames.add(user.username)
+                print user.username, user.email, opens, reads
+            elif not user.profile.last_seen_ip:
+                usernames.add(user.username)
+                print " ---> No IP: %s %s %s %s" % (user.username, user.email, opens, reads)
         
         if not confirm: return usernames
         
