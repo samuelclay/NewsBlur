@@ -99,7 +99,7 @@ class Profile(models.Model):
             print " ---> You must pass confirm=True to delete this user."
             return
         
-        logging.user(self.user, "Deleting user: %s / %s" % (user.email, user.profile.last_seen_ip))
+        logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
         try:
             self.cancel_premium()
         except:
