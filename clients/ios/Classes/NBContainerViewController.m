@@ -735,6 +735,7 @@
 
     self.originalViewController.navigationItem.titleView.alpha = 1;
     self.originalViewController.navigationItem.leftBarButtonItem.customView.alpha = 1;
+    [self.originalViewController becomeFirstResponder];
     
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
@@ -765,6 +766,8 @@
     
     [self.originalViewController viewWillDisappear:YES];
     self.originalViewIsVisible = NO;
+
+    [self.storyPageControl becomeFirstResponder];
     
     [UIView animateWithDuration:0.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
