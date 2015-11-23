@@ -8,7 +8,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
     events: {
         "click .NB-feedbar-options"                 : "open_options_popover",
-        "click .NB-story-title-indicator"           : "show_hidden_story_titles",
         "click .NB-feedbar-mark-feed-read"          : "mark_folder_as_read",
         "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
         "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days"
@@ -182,8 +181,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         }
         var hidden_stories = unread_hidden_stories || !!NEWSBLUR.assets.stories.hidden().length;
         if (!hidden_stories) {
-            $indicator.hide();
-            return;
+            // $indicator.hide();
+            // return;
         }
         
         if (is_feed_load) {
@@ -200,21 +199,22 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
     show_hidden_story_titles: function() {
         var $indicator = this.$('.NB-story-title-indicator');
-        var unread_view_name = NEWSBLUR.reader.get_unread_view_name();
+        var temp_unread_view_name = NEWSBLUR.reader.get_unread_view_name();
+        var unread_view_name = NEWSBLUR.reader.get_unread_view_name(null, true);
         var hidden_stories_at_threshold = NEWSBLUR.assets.stories.any(function(story) {
             var score = story.score();
-            if (unread_view_name == 'positive') return score == 0;
-            else if (unread_view_name == 'neutral') return score < 0;
+            if (temp_unread_view_name == 'positive') return score == 0;
+            else if (temp_unread_view_name == 'neutral') return score < 0;
         });
         var hidden_stories_below_threshold = unread_view_name == 'positive' && 
                                              NEWSBLUR.assets.stories.any(function(story) {
             return story.score() < 0;
         });
         
-        // NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
+        NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name, temp_unread_view_name, NEWSBLUR.reader.flags['unread_threshold_temporarily']]);
         
         // First click, open neutral. Second click, open negative.
-        if (unread_view_name == 'positive' && 
+        if (temp_unread_view_name == 'positive' && 
             hidden_stories_at_threshold && 
             hidden_stories_below_threshold) {
             NEWSBLUR.reader.flags['unread_threshold_temporarily'] = 'neutral';
@@ -224,7 +224,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 'follow': true
             });
             $indicator.removeClass('unread_threshold_positive').addClass('unread_threshold_neutral');
-        } else {
+            $(".NB-story-title-indicator-text", $indicator).text("show hidden stories");
+        } else if (NEWSBLUR.reader.flags['unread_threshold_temporarily'] != 'negative') {
             NEWSBLUR.reader.flags['unread_threshold_temporarily'] = 'negative';
             NEWSBLUR.reader.show_story_titles_above_intelligence_level({
                 'unread_view_name': 'negative',
@@ -234,7 +235,18 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             $indicator.removeClass('unread_threshold_positive')
                       .removeClass('unread_threshold_neutral')
                       .addClass('unread_threshold_negative');
-            $indicator.animate({'opacity': 0}, {'duration': 500}).css('display', 'none');
+            // $indicator.animate({'opacity': 0}, {'duration': 500}).css('display', 'none');
+            $(".NB-story-title-indicator-text", $indicator).text("show hidden stories");
+        } else {
+            NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
+            NEWSBLUR.reader.show_story_titles_above_intelligence_level({
+                'unread_view_name': unread_view_name,
+                'animate': true,
+                'follow': true
+            });
+            $indicator.removeClass('unread_threshold_positive').removeClass('unread_threshold_neutral'); 
+            $indicator.addClass('unread_threshold_'+unread_view_name);
+            $(".NB-story-title-indicator-text", $indicator).text("hide hidden stories");
         }
     },
     

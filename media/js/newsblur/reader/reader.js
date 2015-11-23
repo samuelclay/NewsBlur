@@ -4482,8 +4482,8 @@
             return this.model.preference('unread_view');
         },
         
-        get_unread_view_name: function(unread_view) {
-            if (this.flags['unread_threshold_temporarily']) {
+        get_unread_view_name: function(unread_view, ignore_temp) {
+            if (this.flags['unread_threshold_temporarily'] && !ignore_temp) {
                 return this.flags['unread_threshold_temporarily'];
             }
             
