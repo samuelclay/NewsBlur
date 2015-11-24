@@ -1075,6 +1075,20 @@
     [appDelegate.feedDetailViewController redrawUnreadStory]; // XXX only if successful?
 }
 
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    if (action == @selector(toggleTextView:) ||
+        action == @selector(scrollPageDown:) ||
+        action == @selector(scrollPageUp:) ||
+        action == @selector(toggleStoryUnread:) ||
+        action == @selector(toggleStorySaved:) ||
+        action == @selector(showOriginalSubview:) ||
+        action == @selector(openShareDialog) ||
+        action == @selector(scrolltoComment)) {
+        return (currentPage.pageIndex >= 0);
+    }
+    return [super canPerformAction:action withSender:sender];
+}
+
 #pragma mark -
 #pragma mark Styles
 
