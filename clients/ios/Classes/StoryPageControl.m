@@ -828,8 +828,11 @@
 
 - (void)changeToPreviousPage:(id)sender {
     NSInteger previousPageIndex = previousPage.pageIndex;
-    if (previousPageIndex < 0)
+    if (previousPageIndex < 0) {
+        if (currentPage.pageIndex < 0)
+            [self changeToNextPage:sender];
         return;
+    }
     [self changePage:previousPageIndex animated:YES];
 }
 
