@@ -216,6 +216,7 @@
     [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
+    [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
     [self addKeyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
     [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierShift action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
 }
@@ -1019,6 +1020,11 @@
     [appDelegate showSendTo:self sender:sender];
 }
 
+- (void)openStoryTrainerFromKeyboard:(id)sender {
+    // don't have a tap target for the popover, but the settings button at least doesn't move
+    [appDelegate openTrainStory:self.fontSettingsButton];
+}
+
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
         return [self requestFailed:request];
@@ -1127,7 +1133,8 @@
         action == @selector(toggleStorySaved:) ||
         action == @selector(showOriginalSubview:) ||
         action == @selector(openShareDialog) ||
-        action == @selector(scrolltoComment)) {
+        action == @selector(scrolltoComment) ||
+        action == @selector(openStoryTrainerFromKeyboard:)) {
         return (currentPage.pageIndex >= 0);
     }
     return [super canPerformAction:action withSender:sender];
