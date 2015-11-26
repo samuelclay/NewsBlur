@@ -206,7 +206,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             if (temp_unread_view_name == 'positive') return score == 0;
             else if (temp_unread_view_name == 'neutral') return score < 0;
         });
-        var hidden_stories_below_threshold = unread_view_name == 'positive' && 
+        var hidden_stories_below_threshold = temp_unread_view_name == 'positive' && 
                                              NEWSBLUR.assets.stories.any(function(story) {
             return story.score() < 0;
         });
@@ -223,7 +223,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 'animate': true,
                 'follow': true
             });
-            $indicator.removeClass('unread_threshold_positive').addClass('unread_threshold_neutral');
+            $indicator.removeClass('unread_threshold_positive')
+                      .removeClass('unread_threshold_negative');
+            $indicator.addClass('unread_threshold_neutral');
             $(".NB-story-title-indicator-text", $indicator).text("show hidden stories");
         } else if (NEWSBLUR.reader.flags['unread_threshold_temporarily'] != 'negative') {
             NEWSBLUR.reader.flags['unread_threshold_temporarily'] = 'negative';
@@ -233,10 +235,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 'follow': true
             });
             $indicator.removeClass('unread_threshold_positive')
-                      .removeClass('unread_threshold_neutral')
-                      .addClass('unread_threshold_negative');
+                      .removeClass('unread_threshold_neutral');
+            $indicator.addClass('unread_threshold_negative');
             // $indicator.animate({'opacity': 0}, {'duration': 500}).css('display', 'none');
-            $(".NB-story-title-indicator-text", $indicator).text("show hidden stories");
+            $(".NB-story-title-indicator-text", $indicator).text("hide hidden stories");
         } else {
             NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
             NEWSBLUR.reader.show_story_titles_above_intelligence_level({
@@ -244,9 +246,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 'animate': true,
                 'follow': true
             });
-            $indicator.removeClass('unread_threshold_positive').removeClass('unread_threshold_neutral'); 
+            $indicator.removeClass('unread_threshold_positive')
+                      .removeClass('unread_threshold_neutral') 
+                      .removeClass('unread_threshold_negative'); 
             $indicator.addClass('unread_threshold_'+unread_view_name);
-            $(".NB-story-title-indicator-text", $indicator).text("hide hidden stories");
+            $(".NB-story-title-indicator-text", $indicator).text("show hidden stories");
         }
     },
     
