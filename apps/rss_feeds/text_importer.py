@@ -8,6 +8,7 @@ from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
+from django.utils.encoding import smart_str
 
 BROKEN_URLS = [
     "gamespot.com",
@@ -25,14 +26,15 @@ class TextImporter:
 
     @property
     def headers(self):
+        num_subscribers = getattr(self.feed, 'num_subscribers', 0)
         return {
             'User-Agent': 'NewsBlur Content Fetcher - %s subscriber%s - %s '
                           '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
                           'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
                           'Safari/534.48.3)' % (
-                              self.feed.num_subscribers,
-                              's' if self.feed.num_subscribers != 1 else '',
-                              self.feed.permalink,
+                              num_subscribers,
+                              's' if num_subscribers != 1 else '',
+                              getattr(self.feed, 'permalink', '')
                           ),
         }
 
@@ -53,17 +55,7 @@ class TextImporter:
         if not resp:
             return
 
-        try:
-            text = resp.text
-        except (LookupError, TypeError):
-            text = resp.content
-
-        charset_declared = 'charset' in resp.headers.get('content-type', "")
-        if resp.encoding and resp.encoding != 'utf-8' and not charset_declared:
-            try:
-                text = text.encode(resp.encoding)
-            except (LookupError, UnicodeEncodeError):
-                pass
+        text = resp.text
         original_text_doc = readability.Document(text, url=resp.url,
                                                  debug=self.debug,
                                                  positive_keywords=["postContent", "postField"])
@@ -80,13 +72,13 @@ class TextImporter:
 
         if content:
             if self.story and not skip_save:
-                self.story.original_text_z = zlib.compress(content)
+                self.story.original_text_z = zlib.compress(smart_str(content))
                 try:
                     self.story.save()
                 except NotUniqueError:
                     pass
             logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
-                len(unicode(content)),
+                len(content),
                 self.story and self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
             )), warn_color=False)
         else:
