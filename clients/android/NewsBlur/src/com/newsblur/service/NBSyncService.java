@@ -464,7 +464,11 @@ public class NBSyncService extends Service {
             
             // data for the folder table
             List<ContentValues> folderValues = new ArrayList<ContentValues>();
-            for (Folder folder : feedResponse.folders) {
+            Set<String> foldersSeen = new HashSet<String>(feedResponse.folders.size());
+            folderloop: for (Folder folder : feedResponse.folders) {
+                // don't form graph loops in the folder tree
+                if (foldersSeen.contains(folder.name)) continue folderloop;
+                foldersSeen.add(folder.name);
                 // prune out orphans before pushing to the DB
                 folder.removeOrphanFeedIds(orphanFeedIds);
                 folderValues.add(folder.getValues());
