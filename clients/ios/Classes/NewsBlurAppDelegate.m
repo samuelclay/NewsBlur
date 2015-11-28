@@ -1908,10 +1908,10 @@
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
+    if (!storyPageControl.previousPage || !storyPageControl.currentPage || !storyPageControl.nextPage) return;
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
-        if (!page) continue;
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
