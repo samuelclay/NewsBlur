@@ -528,7 +528,10 @@ class Dispatcher:
 
     def refresh_feed(self, feed_id):
         """Update feed, since it may have changed"""
-        return Feed.objects.using('default').get(pk=feed_id)
+        try:
+            return Feed.objects.using('default').get(pk=feed_id)
+        except Feed.DoesNotExist:
+            return
         
     def process_feed_wrapper(self, feed_queue):
         delta = None
@@ -649,6 +652,7 @@ class Dispatcher:
                 
             if not feed: continue
             feed = self.refresh_feed(feed.pk)
+            if not feed: continue
             
             if ((self.options['force']) or 
                 (random.random() > .9) or
