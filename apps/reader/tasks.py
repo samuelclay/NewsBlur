@@ -34,7 +34,7 @@ class FreshenHomepage(Task):
 
 class CleanAnalytics(Task):
     name = 'clean-analytics'
-    timeout = 720*10
+    hard = 720*10
 
     def run(self, **kwargs):
         logging.debug(" ---> Cleaning analytics... %s feed fetches" % (

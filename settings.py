@@ -438,7 +438,7 @@ CELERYBEAT_SCHEDULE = {
     'clean-analytics': {
         'task': 'clean-analytics',
         'schedule': datetime.timedelta(hours=12),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'beat_tasks', 'timeout': 720*10},
     },
     'clean-spam': {
         'task': 'clean-spam',
