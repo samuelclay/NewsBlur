@@ -181,8 +181,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         }
         var hidden_stories = unread_hidden_stories || !!NEWSBLUR.assets.stories.hidden().length;
         if (!hidden_stories) {
-            // $indicator.hide();
-            // return;
+            $indicator.hide();
+            return;
         }
         
         if (is_feed_load) {
