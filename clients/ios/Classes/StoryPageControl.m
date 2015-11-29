@@ -188,7 +188,7 @@
     [self.view addSubview:self.notifier];
     [self.notifier hideNow];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
                                                    separatorBarButton,
@@ -213,7 +213,7 @@
                          isEqualToString:@"pop_to_story_list"];;
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (self.isPhoneOrCompact) {
         if (!appDelegate.storiesCollection.isSocialView) {
             UIImage *titleImage;
             if (appDelegate.storiesCollection.isSocialRiverView &&
@@ -286,7 +286,7 @@
     [super viewDidAppear:animated];
     
     // set the subscribeButton flag
-    if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (appDelegate.isTryFeedView && !self.isPhoneOrCompact) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
@@ -361,7 +361,7 @@
 //    CGRect scrollViewFrame = self.scrollView.frame;
 //    CGRect traverseViewFrame = self.traverseView.frame;
 
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ||
+    if (self.isPhoneOrCompact ||
         UIInterfaceOrientationIsLandscape(orientation)) {
 //        scrollViewFrame.size.height = self.view.bounds.size.height;
 //        self.bottomSize.hidden = YES;
@@ -487,7 +487,7 @@
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
         CGPoint tappedPt = [theTouch locationInView:self.view];
@@ -507,13 +507,17 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         if (self.inTouchMove) {
             self.inTouchMove = NO;
             [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
         }
     }
+}
+
+- (BOOL)isPhoneOrCompact {
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
 #pragma mark -
@@ -700,7 +704,7 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
         CGFloat pageWidth = self.scrollView.frame.size.width;
@@ -710,7 +714,7 @@
         if (![appDelegate.storiesCollection.activeFeedStories count]) return;
         
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:nearestNumber];
-        if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory]) {
+        if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory] && storyIndex != NSNotFound) {
             appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories
                                        objectAtIndex:storyIndex];
             [appDelegate changeActiveFeedDetailRow];
@@ -720,7 +724,7 @@
 
 - (void)animateIntoPlace:(BOOL)animated {
     // Move view into position if no story is selected yet
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         !self.isAnimatedIntoPlace) {
         CGRect frame = self.scrollView.frame;
         frame.origin.x = frame.size.width;
@@ -805,7 +809,7 @@
     previousPage.webView.scrollView.scrollsToTop = NO;
     currentPage.webView.scrollView.scrollsToTop = YES;
     currentPage.isRecentlyUnread = NO;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (!self.isPhoneOrCompact) {
         appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
     }
     self.scrollView.scrollsToTop = NO;

@@ -224,7 +224,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (!self.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
     [self storeScrollPosition:NO];
@@ -233,7 +233,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (!self.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
 
@@ -292,6 +292,10 @@
         [self drawFeedGradient];
         [self drawStory];
     }
+}
+
+- (BOOL)isPhoneOrCompact {
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
 #pragma mark -
@@ -361,11 +365,11 @@
     NSString *contentWidthClass;
 //    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
-    if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (!UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         contentWidthClass = @"NB-ipad-narrow";
-    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    } else if (UIInterfaceOrientationIsLandscape(orientation) && self.isPhoneOrCompact) {
         contentWidthClass = @"NB-iphone-wide";
     } else {
         contentWidthClass = @"NB-iphone";
@@ -931,7 +935,7 @@
         locationHtml = [NSString stringWithFormat:@"<div class=\"NB-story-comment-location\">%@</div>", location];
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (!self.isPhoneOrCompact) {
         comment = [NSString stringWithFormat:@
                     "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
                     "<div class=\"%@\">"
@@ -1062,7 +1066,7 @@
                         
             NSString *reply;
             
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if (!self.isPhoneOrCompact) {
                 reply = [NSString stringWithFormat:@
                          "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
                          "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
@@ -1498,7 +1502,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
     CGRect frame = CGRectZero;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (!self.isPhoneOrCompact) {
         // only adjust for the bar if user is scrolling
         if (appDelegate.storiesCollection.isRiverView ||
             appDelegate.storiesCollection.isSocialView ||
@@ -1727,7 +1731,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)openTrainingDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
     CGRect frame = CGRectZero;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (!self.isPhoneOrCompact) {
         // only adjust for the bar if user is scrolling
         if (appDelegate.storiesCollection.isRiverView ||
             appDelegate.storiesCollection.isSocialView ||
@@ -2055,11 +2059,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     NSString *contentWidthClass;
 
-    if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (!UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         contentWidthClass = @"NB-ipad-narrow";
-    } else if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    } else if (UIInterfaceOrientationIsLandscape(orientation) && self.isPhoneOrCompact) {
         contentWidthClass = @"NB-iphone-wide";
     } else {
         contentWidthClass = @"NB-iphone";

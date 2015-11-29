@@ -1007,6 +1007,10 @@
     }
 }
 
+- (BOOL)isCompactWidth {
+    return self.compactWidth > 0.0;
+}
+
 - (void)confirmLogout {
     UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" 
                                                             message:nil 
@@ -1334,7 +1338,7 @@
 }
 
 - (void)loadStoryDetailView {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
         [navigationController pushViewController:storyPageControl animated:YES];
         navigationController.navigationItem.hidesBackButton = YES;
     }
@@ -1346,11 +1350,22 @@
         [self.storyPageControl view];
         [self.storyPageControl.view setNeedsLayout];
         [self.storyPageControl.view layoutIfNeeded];
-        [self.storyPageControl changePage:activeStoryLocation animated:animated];
-        [self.storyPageControl animateIntoPlace:YES];
+        
+        NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
+        
+        if (self.isCompactWidth) {
+            [self performSelector:@selector(deferredChangePage:) withObject:params afterDelay:0.0];
+        } else {
+            [self deferredChangePage:params];
+        }
     }
 
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
+}
+
+- (void)deferredChangePage:(NSDictionary *)params {
+    [self.storyPageControl changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
+    [self.storyPageControl animateIntoPlace:YES];
 }
 
 - (void)setTitle:(NSString *)title {
