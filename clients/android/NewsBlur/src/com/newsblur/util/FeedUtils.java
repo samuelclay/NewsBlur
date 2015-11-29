@@ -147,6 +147,10 @@ public class FeedUtils {
         dbHelper.touchStory(story.storyHash);
         if (story.read == read) { return; }
 
+        // tell the sync service we need to mark read
+        ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
+        dbHelper.enqueueAction(ra);
+
         // update the local object to show as read before DB is touched
         story.read = read;
         
@@ -154,9 +158,6 @@ public class FeedUtils {
         Set<FeedSet> impactedFeeds = dbHelper.setStoryReadState(story, read);
         NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
 
-        // tell the sync service we need to mark read
-        ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
-        dbHelper.enqueueAction(ra);
         triggerSync(context);
         NBSyncService.addRecountCandidates(impactedFeeds);
     }
