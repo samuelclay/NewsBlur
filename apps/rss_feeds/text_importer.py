@@ -109,6 +109,10 @@ class TextImporter:
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError, 
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
+                requests.sessions.TooManyRedirects,
+                requests.models.InvalidURL,
+                requests.models.ChunkedEncodingError,
+                requests.models.ContentDecodingError,
                 LocationParseError, OpenSSLError, PyAsn1Error), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
