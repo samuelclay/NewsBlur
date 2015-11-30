@@ -866,28 +866,28 @@ class Feed(models.Model):
         map_f = """
             function() {
                 var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
-                emit(date, 1);
+                var hour = this.story_date.getHours();
+                var day = this.story_date.getDay();
+                emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
             }
         """
         reduce_f = """
             function(key, values) {
-                var total = 0;
-                for (var i=0; i < values.length; i++) {
-                    total += values[i];
-                }
-                return total;
+                return values;
             }
         """
-        dates = {}
-        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, output='inline')
-        for r in res:
-            dates[r.key] = r.value
-            year_found = re.findall(r"(\d{4})-\d{1,2}", r.key)
-            if year_found and len(year_found):
-                year = int(year_found[0])
-                if year < min_year and year > 2000:
-                    min_year = year
-                
+        dates = defaultdict(int)
+        hours = defaultdict(int)
+        days = defaultdict(int)
+        results = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, output='inline')
+        for result in results:
+            dates[result.value['month']] += 1
+            hours[int(result.value['hour'])] += 1
+            days[int(result.value['day'])] += 1
+            year = int(re.findall(r"(\d{4})-\d{1,2}", result.value['month'])[0])
+            if year < min_year and year > 2000:
+                min_year = year
+        
         # Add on to existing months, always amending up, never down. (Current month
         # is guaranteed to be accurate, since trim_feeds won't delete it until after
         # a month. Hacker News can have 1,000+ and still be counted.)
@@ -912,7 +912,7 @@ class Feed(models.Model):
                         total += dates.get(key, 0)
                         month_count += 1
         original_story_count_history = self.data.story_count_history
-        self.data.story_count_history = json.encode(months)
+        self.data.story_count_history = json.encode({'months': months, 'hours': hours, 'days': days})
         if self.data.story_count_history != original_story_count_history:
             self.data.save(update_fields=['story_count_history'])
         

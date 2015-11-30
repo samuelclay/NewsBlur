@@ -193,7 +193,13 @@ def load_feed_statistics(request, feed_id):
     # Stories per month - average and month-by-month breakout
     average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.data.story_count_history
     stats['average_stories_per_month'] = average_stories_per_month
-    stats['story_count_history'] = story_count_history and json.decode(story_count_history)
+    story_count_history = story_count_history and json.decode(story_count_history)
+    if story_count_history and isinstance(story_count_history, dict):
+        stats['story_count_history'] = story_count_history['months']
+        stats['story_days_history'] = story_count_history['days']
+        stats['story_hours_history'] = story_count_history['hours']
+    else:
+        stats['story_count_history'] = story_count_history
     
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers

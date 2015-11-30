@@ -1358,6 +1358,8 @@ def load_social_statistics(request, social_user_id, username=None):
     # Stories per month - average and month-by-month breakout
     stats['average_stories_per_month'] = social_profile.average_stories_per_month
     stats['story_count_history'] = social_profile.story_count_history
+    stats['story_hours_history'] = social_profile.story_hours_history
+    stats['story_days_history'] = social_profile.story_days_history
     
     # Subscribers
     stats['subscriber_count'] = social_profile.follower_count
