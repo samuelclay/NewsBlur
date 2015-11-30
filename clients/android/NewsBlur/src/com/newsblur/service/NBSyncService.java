@@ -393,6 +393,7 @@ public class NBSyncService extends Service {
         if (stopSync()) return;
         if (backoffBackgroundCalls()) return;
         if (ActMode != ActivationMode.ALL) return;
+        if (dbHelper.getActions(false).getCount() > 0) return;
 
         FFSyncRunning = true;
         NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
@@ -416,6 +417,10 @@ public class NBSyncService extends Service {
                 PrefsUtils.logout(this);
                 return;
             }
+
+            if (stopSync()) return;
+            if (ActMode != ActivationMode.ALL) return;
+            if (dbHelper.getActions(false).getCount() > 0) return;
 
             // a metadata sync invalidates pagination and feed status
             ExhaustedFeeds.clear();
