@@ -954,35 +954,6 @@ static UIFont *userLabelFont;
     }
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSString *feedId = actionSheet.accessibilityValue;
-    
-    switch (buttonIndex) {
-        case 0:
-            [self markFeedRead:feedId cutoffDays:0];
-            break;
-        case 1:
-            [self markFeedRead:feedId cutoffDays:1];
-            break;
-        case 2:
-            [self markFeedRead:feedId cutoffDays:3];
-            break;
-        case 3:
-            [self markFeedRead:feedId cutoffDays:7];
-            break;
-        case 4:
-            [self markFeedRead:feedId cutoffDays:14];
-            break;
-    }
-    
-    for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
-        if (cell.highlighted) {
-            [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
-            break;
-        }
-    }
-}
-
 #pragma mark -
 #pragma mark Preferences
 
