@@ -136,6 +136,7 @@
     
     if (inDoubleTap) {
         self.webView.scrollView.scrollEnabled = NO;
+        [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
     }
     
     return YES;

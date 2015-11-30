@@ -113,11 +113,17 @@ class FetchFeed:
                                             etag=etag,
                                             modified=modified)
             except (TypeError, ValueError, KeyError, EOFError), e:
-                logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
+                logging.debug(u'   ***> [%-30s] ~FRFeed fetch error: %s' % 
                               (self.feed.title[:30], e))
+                pass
+                
+        if not self.fpf:
+            try:
+                logging.debug(u'   ***> [%-30s] ~FRTurning off headers...' % 
+                              (self.feed.title[:30]))
                 self.fpf = feedparser.parse(address, agent=USER_AGENT)
             except (TypeError, ValueError, KeyError, EOFError), e:
-                logging.debug(u'   ***> [%-30s] ~FR%s fetch failed: %s.' % 
+                logging.debug(u'   ***> [%-30s] ~FRFetch failed: %s.' % 
                               (self.feed.title[:30], e))
                 return FEED_ERRHTTP, None
             
@@ -522,7 +528,10 @@ class Dispatcher:
 
     def refresh_feed(self, feed_id):
         """Update feed, since it may have changed"""
-        return Feed.objects.using('default').get(pk=feed_id)
+        try:
+            return Feed.objects.using('default').get(pk=feed_id)
+        except Feed.DoesNotExist:
+            return
         
     def process_feed_wrapper(self, feed_queue):
         delta = None
@@ -643,6 +652,7 @@ class Dispatcher:
                 
             if not feed: continue
             feed = self.refresh_feed(feed.pk)
+            if not feed: continue
             
             if ((self.options['force']) or 
                 (random.random() > .9) or

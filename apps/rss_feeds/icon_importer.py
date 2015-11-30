@@ -202,6 +202,8 @@ class IconImporter(object):
                     requests.models.MissingSchema, requests.sessions.InvalidSchema,
                     requests.sessions.TooManyRedirects,
                     requests.models.InvalidURL,
+                    requests.models.ChunkedEncodingError,
+                    requests.models.ContentDecodingError,
                     LocationParseError, OpenSSLError, PyAsn1Error), e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:

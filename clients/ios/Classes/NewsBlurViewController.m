@@ -1364,6 +1364,11 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
+    if (feedIds.count == 1 && [feedIds.firstObject isEqual:@"everything"]) {
+        [self markEverythingReadWithDays:days];
+        return;
+    }
+    
     NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
     cutoffTimestamp -= (days * 60*60*24);
     
@@ -1378,6 +1383,33 @@ heightForHeaderInSection:(NSInteger)section {
         [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
                        forKey:@"cutoff_timestamp"];
     }
+    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+    [request setUserInfo:@{@"feeds": feedIds,
+                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    if (!days) {
+        for (NSString *feedId in feedIds) {
+            [appDelegate markFeedAllRead:feedId];
+        }
+    } else {
+        //        [self showRefreshNotifier];
+    }
+}
+
+- (void)markEverythingReadWithDays:(NSInteger)days {
+    NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
+    cutoffTimestamp -= (days * 60*60*24);
+    NSArray *feedIds = [appDelegate allFeedIds];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[NSNumber numberWithInteger:days]
+                   forKey:@"days"];
     [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
     [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
     [request setUserInfo:@{@"feeds": feedIds,

@@ -36,6 +36,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
+#import "NSNull+JSON.h"
 
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
@@ -125,13 +126,20 @@
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
     feedMarkReadButton.accessibilityLabel = @"Mark all as read";
     
+    UIView *view = [feedMarkReadButton valueForKey:@"view"];
+    UILongPressGestureRecognizer *markReadLongPress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self action:@selector(handleMarkReadLongPress:)];
+    markReadLongPress.minimumPressDuration = 1.0;
+    markReadLongPress.delegate = self;
+    [view addGestureRecognizer:markReadLongPress];
+    
     titleImageBarButton = [UIBarButtonItem alloc];
 
-    UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
-                                               initWithTarget:self action:@selector(handleLongPress:)];
-    longpress.minimumPressDuration = 1.0;
-    longpress.delegate = self;
-    [self.storyTitlesTable addGestureRecognizer:longpress];
+    UILongPressGestureRecognizer *tableLongPress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self action:@selector(handleTableLongPress:)];
+    tableLongPress.minimumPressDuration = 1.0;
+    tableLongPress.delegate = self;
+    [self.storyTitlesTable addGestureRecognizer:tableLongPress];
 
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
                                                 initWithTarget:self action:nil];
@@ -879,12 +887,16 @@
                             NEWSBLUR_URL,
                             storiesCollection.feedPage];
     } else {
+        NSString *feeds = @"";
+        if (storiesCollection.activeFolderFeeds.count) {
+            feeds = [[storiesCollection.activeFolderFeeds
+                      subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
+                     componentsJoinedByString:@"&f="];
+        }
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
                             NEWSBLUR_URL,
-                            [[storiesCollection.activeFolderFeeds
-                              subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
-                             componentsJoinedByString:@"&f="],
+                            feeds,
                             storiesCollection.feedPage];
     }
     
@@ -1684,7 +1696,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #pragma mark -
 #pragma mark Feed Actions
 
-- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+- (void)handleTableLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     CGPoint p = [gestureRecognizer locationInView:self.storyTitlesTable];
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:p];
     FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
@@ -1714,6 +1726,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
         [appDelegate openTrainStory:cell];
     }
+}
+
+- (void)handleMarkReadLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+    
+    [self doOpenMarkReadActionSheet:nil];
 }
 
 - (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath {
@@ -1811,8 +1829,25 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     
+    void (^pop)(void) = ^{
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.navigationController popToRootViewControllerAnimated:YES];
+            [appDelegate.masterContainerViewController transitionFromFeedDetail];
+        } else {
+            [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0] animated:YES];
+        }
+    };
+    
     [storiesCollection calculateStoryLocations];
     NSArray *feedIds = storiesCollection.isRiverView ? [self.appDelegate feedIdsForFolderTitle:storiesCollection.activeFolder] : @[storiesCollection.activeFeed[@"id"]];
+    NSString *confirmPref = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_confirm_read_filter"];
+    
+    if (sender && ([confirmPref isEqualToString:@"never"] || ([confirmPref isEqualToString:@"folders"] && !storiesCollection.isRiverView))) {
+        [self.appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+        pop();
+        return;
+    }
+    
     NSString *collectionTitle = storiesCollection.isRiverView ? [storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder" : @"this site";
     NSInteger totalUnreadCount = [self.appDelegate unreadCount];
     NSInteger visibleUnreadCount = storiesCollection.visibleUnreadCount;
@@ -1827,12 +1862,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:self.feedMarkReadButton completionHandler:^(BOOL marked){
         if (marked) {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                [appDelegate.navigationController popToRootViewControllerAnimated:YES];
-                [appDelegate.masterContainerViewController transitionFromFeedDetail];
-            } else {
-                [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0] animated:YES];
-            }
+            pop();
         }
     }];
 }
