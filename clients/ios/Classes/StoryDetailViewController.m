@@ -133,7 +133,12 @@
     if ([tagName isEqualToString:@"IMG"] && !inDoubleTap) {
         return NO;
     }
-
+    
+    if (inDoubleTap) {
+        self.webView.scrollView.scrollEnabled = NO;
+        [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
+    }
+    
     return YES;
 }
 
@@ -194,7 +199,12 @@
             [appDelegate.feedDetailViewController reloadData];
         }
         inDoubleTap = NO;
+        [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
     }
+}
+
+- (void)deferredEnableScrolling {
+    self.webView.scrollView.scrollEnabled = YES;
 }
 
 - (void)viewDidUnload {
@@ -205,6 +215,10 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    
+    if (!appDelegate.showingSafariViewController) {
+        [self clearStory];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -226,10 +240,22 @@
         _orientation = [UIApplication sharedApplication].statusBarOrientation;
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
     }
+    
+    if ([self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+        [self drawStory];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    // Fix the position and size; can probably remove this once all views use auto layout
+    CGRect viewFrame = self.view.frame;
+    CGSize superSize = self.view.superview.bounds.size;
+    
+    if (viewFrame.size.height > superSize.height) {
+        self.view.frame = CGRectMake(viewFrame.origin.x, viewFrame.origin.y, viewFrame.size.width, superSize.height);
+    }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -259,9 +285,6 @@
 #pragma mark Story setup
 
 - (void)initStory {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                           [self.activeStory
-                            objectForKey:@"story_feed_id"]];
     appDelegate.inStoryDetail = YES;
     self.noStoryMessage.hidden = YES;
     self.webView.hidden = NO;
@@ -280,12 +303,13 @@
 }
 
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
-    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"story_hash"]) {
-        NSLog(@"Already drawn story.");
+    if (!force && [self.activeStoryId isEqualToString:[self.activeStory objectForKey:@"story_hash"]]) {
+        NSLog(@"Already drawn story, drawing anyway: %@", [self.activeStory objectForKey:@"story_title"]);
 //        return;
     }
 
     scrollPct = 0;
+    hasScrolled = NO;
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
@@ -293,6 +317,7 @@
     NSString *sharingHtmlString;
     NSString *footerString;
     NSString *fontStyleClass = @"";
+    NSString *customStyle = @"";
     NSString *fontSizeClass = @"NB-";
     NSString *lineSpacingClass = @"NB-line-spacing-";
     NSString *storyContent = [self.activeStory objectForKey:@"story_content"];
@@ -301,12 +326,17 @@
     }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    if ([userPreferences stringForKey:@"fontStyle"]){
-        fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
-    } else {
-        fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-helvetica"];
+    
+    fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
+    if (!fontStyleClass) {
+        fontStyleClass = @"NB-helvetica";
     }
+    
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
+    
+    if (![fontStyleClass hasPrefix:@"NB-"]) {
+        customStyle = [NSString stringWithFormat:@" style='font-family: %@;'", fontStyleClass];
+    }
     
     if ([userPreferences stringForKey:@"story_line_spacing"]){
         lineSpacingClass = [lineSpacingClass stringByAppendingString:[userPreferences stringForKey:@"story_line_spacing"]];
@@ -316,7 +346,7 @@
     
     int contentWidth = CGRectGetWidth(self.webView.scrollView.bounds);
     NSString *contentWidthClass;
-    NSLog(@"Drawing story: %d", contentWidth);
+    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
@@ -371,7 +401,7 @@
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
-                            "    <div class=\"%@\" id=\"NB-font-style\">"
+                            "    <div class=\"%@\" id=\"NB-font-style\"%@>"
                             "    <div class=\"%@\" id=\"NB-font-size\">"
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
@@ -391,6 +421,7 @@
                             contentWidthClass,
                             riverClass,
                             fontStyleClass,
+                            customStyle,
                             fontSizeClass,
                             lineSpacingClass,
                             storyHeader,
@@ -406,12 +437,12 @@
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self.webView setMediaPlaybackRequiresUserAction:NO];
         [self.webView loadHTMLString:htmlString baseURL:baseURL];
         [appDelegate.storyPageControl setTextButton:self];
     });
 
-//    NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
 }
@@ -458,6 +489,7 @@
 
 - (void)clearStory {
     self.activeStoryId = nil;
+    if (self.activeStory) self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
 }
@@ -1111,7 +1143,8 @@
         }
         
         if (appDelegate.storyPageControl.currentPage != self) return;
-        
+        if (!hasScrolled) hasScrolled = YES;
+
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.webView.scrollView.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
@@ -1213,6 +1246,9 @@
 }
 
 - (void)scrollToLastPosition:(BOOL)animated {
+    if (hasScrolled) return;
+    hasScrolled = YES;
+    
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
@@ -1521,26 +1557,24 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setFontStyle:(NSString *)fontStyle {
     NSString *jsString;
-    NSString *fontStyleStr;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if ([fontStyle isEqualToString:@"Helvetica"]) {
-        fontStyleStr = @"NB-helvetica";
-    } else if ([fontStyle isEqualToString:@"Palatino"]) {
-        fontStyleStr = @"NB-palatino";
-    } else if ([fontStyle isEqualToString:@"Georgia"]) {
-        fontStyleStr = @"NB-georgia";
-    } else if ([fontStyle isEqualToString:@"Avenir"]) {
-        fontStyleStr = @"NB-avenir";
-    } else if ([fontStyle isEqualToString:@"AvenirNext"]) {
-        fontStyleStr = @"NB-avenirnext";
-    }
-    [userPreferences setObject:fontStyleStr forKey:@"fontStyle"];
+    [userPreferences setObject:fontStyle forKey:@"fontStyle"];
     [userPreferences synchronize];
     
     jsString = [NSString stringWithFormat:@
                 "document.getElementById('NB-font-style').setAttribute('class', '%@')",
-                fontStyleStr];
+                fontStyle];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    if (![fontStyle hasPrefix:@"NB-"]) {
+        jsString = [NSString stringWithFormat:@
+                    "document.getElementById('NB-font-style').setAttribute('style', 'font-family: %@;')",
+                    fontStyle];
+    } else {
+        jsString = @"document.getElementById('NB-font-style').setAttribute('style', '')";
+    }
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
@@ -2088,9 +2122,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
     dispatch_async(dispatch_get_main_queue(), ^{
-        [MBProgressHUD hideHUDForView:self.webView animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-        HUD.labelText = @"Fetching text...";
+//        [MBProgressHUD hideHUDForView:self.webView animated:YES];
+//        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+//        HUD.labelText = @"Fetching text...";
+        [self.appDelegate.storyPageControl showFetchingTextNotifier];
     });
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
@@ -2106,6 +2141,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)failedFetchText:(ASIHTTPRequest *)request {
+    [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     [self informError:@"Could not fetch text"];
     self.inTextView = NO;
@@ -2128,6 +2164,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (![[request.userInfo objectForKey:@"storyId"]
           isEqualToString:[self.activeStory objectForKey:@"id"]]) {
+        [self.appDelegate.storyPageControl hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
         [appDelegate.storyPageControl setTextButton:self];
@@ -2141,6 +2178,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     self.activeStory = newActiveStory;
     
+    [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     
     self.inTextView = YES;

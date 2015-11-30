@@ -9,5 +9,8 @@
 
     <item android:id="@+id/menu_unfollow"
           android:title="@string/menu_unfollow" />
+
+    <item android:id="@+id/menu_choose_folders"
+          android:title="@string/menu_choose_folders" />
     
 </menu>

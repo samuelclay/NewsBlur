@@ -7,17 +7,14 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
-import java.util.Set;
 import java.util.TreeMap;
 
 public class UnreadsService extends SubService {

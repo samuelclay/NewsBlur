@@ -60,7 +60,8 @@ static UIFont *indicatorFont = nil;
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
-
+        self.isReadAvailable = YES;
+        
         [self.contentView addSubview:cellContent];
     }
     
@@ -73,6 +74,21 @@ static UIFont *indicatorFont = nil;
     ((FeedDetailTableCellView *)cellContent).appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
+}
+
+- (NSString *)accessibilityLabel {
+    NSMutableString *output = [NSMutableString stringWithString:self.siteTitle];
+    
+    [output appendFormat:@", \"%@\"", self.storyTitle];
+    
+    if (self.storyAuthor.length) {
+        [output appendFormat:@", by %@", self.storyAuthor];
+    }
+    
+    [output appendFormat:@", at %@", self.storyDate];
+    [output appendFormat:@". %@", self.storyContent];
+    
+    return output;
 }
 
 - (void)setupGestures {
@@ -91,6 +107,11 @@ static UIFont *indicatorFont = nil;
     UIColor *readColor = self.isRead ?
                             UIColorFromRGB(0xBED49F) :
                             UIColorFromRGB(0xFFFFD2);
+    
+    if (!self.isReadAvailable) {
+        unreadIcon = nil;
+        readColor = nil;
+    }
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     if (inDashboard) {

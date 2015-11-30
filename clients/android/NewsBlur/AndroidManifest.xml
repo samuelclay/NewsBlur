@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="106"
-    android:versionName="4.5.0" >
+    android:versionCode="110"
+    android:versionName="4.6.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
-        android:targetSdkVersion="21" />
+        android:minSdkVersion="14"
+        android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,18 +18,24 @@
         android:icon="@drawable/logo"
         android:label="@string/newsblur"
         android:theme="@style/NewsBlurTheme"
-        android:name=".activity.NewsBlurApplication"
-        android:hardwareAccelerated="true" >
+        android:hardwareAccelerated="true"
+        android:fullBackupContent="@xml/backupscheme" >
         
+        <activity
+            android:name=".activity.InitActivity"
+            android:label="@string/newsblur"
+            android:noHistory="true">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".activity.Login"
             android:label="@string/newsblur"
             android:noHistory="true"
             android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
         
         <activity

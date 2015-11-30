@@ -26,6 +26,7 @@ UIActionSheetDelegate> {
     BOOL pullingScrollview;
     BOOL inTextView;
     BOOL inDoubleTap;
+    BOOL hasScrolled;
     NSURL *activeLongPressUrl;
     NSInteger actionSheetViewImageIndex;
     NSInteger actionSheetCopyImageIndex;

@@ -48,7 +48,6 @@
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
 @property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
-@property (nonatomic, strong) SFSafariViewController *safariViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
 @property (readwrite) int storyTitlesYCoordinate;
@@ -58,6 +57,7 @@
 @property (readwrite) BOOL feedDetailIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
 @property (readwrite) UIDeviceOrientation rotatingToOrientation;
+@property (nonatomic) UIBackgroundTaskIdentifier reorientBackgroundTask;
 
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
@@ -223,9 +223,24 @@
             [self layoutFeedDetailScreen];
         }
         if (self.feedDetailIsVisible) {
-            [self.storyPageControl reorientPages];
+            // Defer this in the background, to avoid misaligning the detail views
+            if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+                self.reorientBackgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+                    [[UIApplication sharedApplication] endBackgroundTask:self.reorientBackgroundTask];
+                    self.reorientBackgroundTask = UIBackgroundTaskInvalid;
+                }];
+                [self performSelector:@selector(delayedReorientPages) withObject:nil afterDelay:0.5];
+            } else {
+                [self.storyPageControl reorientPages];
+            }
         }
     }];
+}
+
+- (void)delayedReorientPages {
+    [self.storyPageControl reorientPages];
+    [[UIApplication sharedApplication] endBackgroundTask:self.reorientBackgroundTask];
+    self.reorientBackgroundTask = UIBackgroundTaskInvalid;
 }
 
 - (NSInteger)masterWidth {
@@ -289,7 +304,7 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.addSiteViewController];
     [popoverController setDelegate:self];
-    [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
+    [popoverController setPopoverContentSize:CGSizeMake(320, 355)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
@@ -343,12 +358,12 @@
     }
     
     popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.fontSettingsViewController];
+                         initWithContentViewController:appDelegate.fontSettingsNavigationController];
     
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(240, 38*8-2)];
+    [popoverController setPopoverContentSize:CGSizeMake(240.0, 306.0)];
     //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
     //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender
@@ -714,20 +729,6 @@
     }
 }
 
-- (void)transitionToSafariView:(NSURL *)url {
-    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
-                                                    entersReaderIfAvailable:NO];
-    self.safariViewController.delegate = self;
-//    self.navigationController.navigationBar.translucent = YES;
-    [self.storyNavigationController presentViewController:self.safariViewController animated:YES completion:nil];
-//    [self.storyNavigationController pushViewController:self.safariViewController animated:YES];
-}
-
-- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-//    self.storyNavigationController.navigationBar.translucent = NO;
-    [self.storyNavigationController popViewControllerAnimated:YES];
-}
-
 - (void)transitionToOriginalView {
     [self transitionToOriginalView:YES];
 }
@@ -1088,10 +1089,6 @@
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
-    if (self.rotatingToOrientation != UIDeviceOrientationUnknown) {
-        return; // don't animate changes in the old orientation
-    }
-
     if (notification.name == UIKeyboardWillShowNotification) {
         self.keyboardIsShown = YES;
     } else if (notification.name == UIKeyboardWillHideNotification) {

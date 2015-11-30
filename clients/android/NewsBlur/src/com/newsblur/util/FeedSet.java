@@ -214,6 +214,10 @@ public class FeedSet implements Serializable {
         return this.folderName;
     }
 
+    public boolean isFolder() {
+        return (this.folderName != null);
+    }
+
     /**
      * Gets a flat set of feed IDs that can be passed to API calls that take raw numeric IDs or
      * social IDs prefixed with "social:". Returns an empty set for feed sets that don't track

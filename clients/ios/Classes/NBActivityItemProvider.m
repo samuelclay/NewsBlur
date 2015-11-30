@@ -30,10 +30,16 @@
             [self.activityType isEqualToString:UIActivityTypeMail]) {
             
             return [NSString stringWithFormat:@"%@\n%@\n%@", title, url, text];
-            
+        } else if ([self.activityType isEqualToString:@"NBCopyLinkActivity"] ||
+                   [self.activityType isEqualToString:@"TUSafariActivity"] ||
+                   [self.activityType isEqualToString:@"ARChromeActivity"] ||
+                   [self.activityType isEqualToString:@"com.apple.mobilenotes.SharingExtension"]) {
+            return url;
         } else {
             return [NSString stringWithFormat:@"%@\n%@", title, url];
         }
+    } else if ([self.placeholderItem isKindOfClass:[NSURL class]]) {
+        return url;
     }
     
     return [NSString stringWithFormat:@"%@\n%@", title, url];
@@ -47,7 +53,13 @@
                [activityType isEqualToString:UIActivityTypePostToFacebook] ||
                [activityType isEqualToString:UIActivityTypePostToWeibo]) {
         return [NSString stringWithFormat:@"%@\n%@", title, url];
+    } else if ([activityType isEqualToString:@"NBCopyLinkActivity"] ||
+               [self.activityType isEqualToString:@"TUSafariActivity"] ||
+               [self.activityType isEqualToString:@"ARChromeActivity"] ||
+               [self.activityType isEqualToString:@"com.apple.mobilenotes.SharingExtension"]) {
+        return url;
     }
+    
     return [NSString stringWithFormat:@"%@\n%@", title, url];
 }
 

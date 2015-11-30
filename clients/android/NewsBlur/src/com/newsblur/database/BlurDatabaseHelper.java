@@ -24,7 +24,6 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
@@ -822,6 +821,16 @@ public class BlurDatabaseHelper {
         }
         c.close();
         return result;
+    }
+
+    public List<Folder> getFolders() {
+        Cursor c = getFoldersCursor(null);
+        List<Folder> folders = new ArrayList<Folder>(c.getCount());
+        while (c.moveToNext()) {
+            folders.add(Folder.fromCursor(c));
+        }
+        c.close();
+        return folders;
     }
 
     public Loader<Cursor> getFoldersLoader() {

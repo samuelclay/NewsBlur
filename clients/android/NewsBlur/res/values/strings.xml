@@ -2,11 +2,6 @@
 
     <string name="newsblur">NewsBlur</string>
     
-    <string name="error_unset_message">An unknown error occurred</string>
-    <string name="error_http_connection">There was a problem connecting to NewsBlur</string>
-    <string name="error_read_connection">There was a problem communicating with NewsBlur</string>
-    <string name="error_offline">There was a problem connecting to the network</string>
-
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
@@ -35,6 +30,8 @@
 	<string name="description_comment_user">Comment user image</string>
 	<string name="description_empty_list_image">Empty list placeholder</string>
     <string name="description_menu">Menu</string>
+    
+    <string name="title_choose_folders">Choose Folders for Feed %s</string>
 	
 	<string name="reading_shared_count">%s shares</string>
 	<string name="reading_comment_count">%s comments</string>
@@ -46,19 +43,20 @@
 	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="read_stories_title">Read Stories</string>
 	<string name="saved_stories_title">Saved Stories</string>
+    <string name="top_level">TOP LEVEL</string>
 	
 	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
 	
-	<string name="share">\"%1$s\" - %2$s</string>
+	<string name="send_body">%1$s \n\n\"%2$s\" \n\n%3$s… \n\n--\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-    <string name="share_this">SHARE THIS STORY</string>
-    <string name="already_shared">SHARED</string>
+    <string name="share_this">Share</string>
+    <string name="already_shared">Shared</string>
     <string name="share_this_story">Share this story</string>
     <string name="update_shared">Update comment</string>
 
-	<string name="save_this">SAVE THIS STORY</string>
-	<string name="unsave_this">UNSAVE THIS STORY</string>
+	<string name="save_this">Save</string>
+	<string name="unsave_this">Remove from saved</string>
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
@@ -69,10 +67,11 @@
 
 	<string name="reply_to">Reply to \"%s\"</string>
 	
-	<string name="alert_dialog_ok">Okay</string>
-	<string name="alert_dialog_cancel">Cancel</string>
-	<string name="alert_dialog_done">Done</string>
-	<string name="alert_dialog_openimage">Open image</string>
+	<string name="alert_dialog_ok">OKAY</string>
+	<string name="alert_dialog_cancel">CANCEL</string>
+	<string name="alert_dialog_done">DONE</string>
+	<string name="alert_dialog_openimage">OPEN IMAGE</string>
+    <string name="dialog_folders_save">SAVE FOLDERS</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -112,6 +111,7 @@
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
     <string name="menu_unfollow">Unfollow user</string>
+    <string name="menu_choose_folders">Choose folders</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
     <string name="menu_sharenewsblur">Share this story</string>
     <string name="menu_textsize">Adjust text size</string>
@@ -222,6 +222,10 @@
         <item>Mark entire folder read</item>
         <item>Cancel</item>
     </string-array>
+
+    <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
+    <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
+
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>

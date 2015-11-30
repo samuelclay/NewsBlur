@@ -25,11 +25,18 @@ import com.newsblur.service.NBSyncService;
 
 public class FeedUtils {
 
+    // these are app-level singletons stored here for convenience. however, they
+    // cannot be created lazily or via static init, they have to be created when
+    // the main app context is created and it offers a reference
     public static BlurDatabaseHelper dbHelper;
+    public static ImageLoader imageLoader;
 
-    public static void offerDB(BlurDatabaseHelper _dbHelper) {
-        if (_dbHelper.isOpen()) {
-            dbHelper = _dbHelper;
+    public static void offerInitContext(Context context) {
+        if (dbHelper == null) {
+            dbHelper = new BlurDatabaseHelper(context.getApplicationContext());
+        }
+        if (imageLoader == null) {
+            imageLoader = new ImageLoader(context.getApplicationContext());
         }
     }
 
@@ -203,10 +210,8 @@ public class FeedUtils {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title));
-        final String shareString = context.getResources().getString(R.string.share);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[]{Html.fromHtml(story.title),
-                story.permalink}));
+        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title).toString());
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_body), new Object[]{story.permalink, Html.fromHtml(story.title), Html.fromHtml(story.shortContent)}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
@@ -243,6 +248,22 @@ public class FeedUtils {
         ra.doLocal(dbHelper);
         NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
         triggerSync(context);
+    }
+
+    public static void moveFeedToFolders(final Context context, final String feedId, final Set<String> toFolders, final Set<String> inFolders) {
+        if (toFolders.size() < 1) return;
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.moveFeedToFolders(feedId, toFolders, inFolders);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                NBSyncService.forceFeedsFolders();
+                triggerSync(context);
+            }
+        }.execute();
     }
 
     public static FeedSet feedSetFromFolderName(String folderName) {

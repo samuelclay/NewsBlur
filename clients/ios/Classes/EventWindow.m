@@ -56,12 +56,21 @@
                 
             case UITouchPhaseEnded:
                 [contextualMenuTimer invalidate];
+                contextualMenuTimer = nil;
                 if (unmoved) {
                     [self tapAction];
                 }
                 break;
 
-            case UITouchPhaseMoved:
+            case UITouchPhaseMoved: // Changes in force are also "moves"
+                if (CGPointEqualToPoint([touch locationInView:self], tapLocation)) {
+                    if (touch.force > 0.75) {
+                        [contextualMenuTimer invalidate];
+                        contextualMenuTimer = nil;
+                        [self tapAndHoldAction:nil];
+                    }
+                    break;
+                }
             case UITouchPhaseCancelled:
                 unmoved = NO;
                 [contextualMenuTimer invalidate];

@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>5.0.0b2</string>
+	<string>5.0.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -58,21 +58,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>52</string>
-	<key>Fabric</key>
-	<dict>
-		<key>APIKey</key>
-		<string>4db6c03871fbc4a64b66cd2e6f7f1618ebebcf75</string>
-		<key>Kits</key>
-		<array>
-			<dict>
-				<key>KitInfo</key>
-				<dict/>
-				<key>KitName</key>
-				<string>Crashlytics</string>
-			</dict>
-		</array>
-	</dict>
+	<string>57</string>
 	<key>FacebookAppID</key>
 	<string>230426707030569</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -87,11 +73,79 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>newsblur.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key>
+				<string>TLSv1.1</string>
+				<key>NSTemporaryExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
 	<key>NSMainNibFile~ipad</key>
 	<string>MainWindow~ipad</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>WhitneySSm-MediumItalic-Bas.otf</string>
+		<string>WhitneySSm-Medium-Bas.otf</string>
+		<string>WhitneySSm-Book-Bas.otf</string>
+		<string>WhitneySSm-BookItalic-Bas.otf</string>
+		<string>GothamNarrow-MediumItalic.otf</string>
+		<string>GothamNarrow-Medium.otf</string>
+		<string>GothamNarrow-Book.otf</string>
+		<string>GothamNarrow-BookItalic.otf</string>
+		<string>ChronicleSSm-Medium.otf</string>
+		<string>ChronicleSSm-Book.otf</string>
+		<string>ChronicleSSm-MediumItalic.otf</string>
+		<string>ChronicleSSm-BookItalic.otf</string>
+	</array>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeAdd</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string></string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Add Feed</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).AddFeed</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict/>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconFile</key>
+			<string>ak-icon-allstories</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string></string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>All Stories</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).AllStories</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict/>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeSearch</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string></string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Search</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).Search</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict/>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

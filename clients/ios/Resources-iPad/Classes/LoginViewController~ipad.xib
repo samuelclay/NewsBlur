@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoginViewController">
             <connections>
                 <outlet property="activityIndicator" destination="25" id="27"/>
                 <outlet property="authenticatingLabel" destination="24" id="28"/>
+                <outlet property="buttonsView" destination="QTJ-P9-rGN" id="Rz2-mx-JDr"/>
                 <outlet property="emailInput" destination="45" id="49"/>
                 <outlet property="emailLabel" destination="46" id="50"/>
                 <outlet property="errorLabel" destination="29" id="30"/>
@@ -35,6 +36,7 @@
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="Background.png" id="26">
                     <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <animations/>
                 </imageView>
                 <view contentMode="scaleToFill" id="74" userLabel="Sign Up View">
                     <rect key="frame" x="134" y="583" width="500" height="300"/>
@@ -43,10 +45,12 @@
                         <imageView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" image="login_background.png" id="23">
                             <rect key="frame" x="0.0" y="0.0" width="500" height="300"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Username" lineBreakMode="tailTruncation" minimumFontSize="10" adjustsFontSizeToFit="NO" id="43">
                             <rect key="frame" x="93" y="60" width="300" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" name="Georgia" family="Georgia" pointSize="16"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
@@ -55,6 +59,7 @@
                         <textField opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.89999997615814209" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" minimumFontSize="18" clearButtonMode="whileEditing" id="4" userLabel="Input - Username">
                             <rect key="frame" x="93" y="84" width="139" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="next"/>
@@ -65,6 +70,7 @@
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Password" lineBreakMode="tailTruncation" minimumFontSize="18" adjustsFontSizeToFit="NO" id="7">
                             <rect key="frame" x="245" y="60" width="300" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" name="Georgia" family="Georgia" pointSize="16"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
@@ -73,6 +79,7 @@
                         <textField opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.89999997615814209" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" clearsOnBeginEditing="YES" minimumFontSize="18" clearButtonMode="whileEditing" id="6" userLabel="Input - Password">
                             <rect key="frame" x="245" y="84" width="148" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="go" secureTextEntry="YES"/>
@@ -83,6 +90,7 @@
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="OPTIONAL" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="7" adjustsFontSizeToFit="NO" id="34" userLabel="Label - OPTIONAL">
                             <rect key="frame" x="292" y="65" width="101" height="10"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                             <color key="textColor" red="0.69537210459999999" green="0.77874833349999995" blue="0.83360475300000003" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
@@ -91,6 +99,7 @@
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Email" lineBreakMode="tailTruncation" minimumFontSize="10" adjustsFontSizeToFit="NO" id="46" userLabel="Label - Email">
                             <rect key="frame" x="93" y="144" width="300" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" name="Georgia" family="Georgia" pointSize="16"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
@@ -99,6 +108,7 @@
                         <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" minimumFontSize="18" clearButtonMode="whileEditing" id="45" userLabel="Input - Email">
                             <rect key="frame" x="93" y="172" width="300" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="join"/>
@@ -109,6 +119,7 @@
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="128">
                             <rect key="frame" x="194" y="234" width="111" height="32"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" name="Georgia-Bold" family="Georgia" pointSize="15"/>
                             <state key="normal" title="SIGN UP" backgroundImage="orange_button.png">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -122,6 +133,7 @@
                             </connections>
                         </button>
                     </subviews>
+                    <animations/>
                 </view>
                 <view contentMode="scaleToFill" id="82" userLabel="Login View">
                     <rect key="frame" x="134" y="180" width="500" height="300"/>
@@ -130,10 +142,12 @@
                         <imageView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" image="login_background.png" id="91">
                             <rect key="frame" x="0.0" y="0.0" width="500" height="300"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Username" lineBreakMode="tailTruncation" minimumFontSize="10" adjustsFontSizeToFit="NO" id="89">
                             <rect key="frame" x="100" y="63" width="300" height="14"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" name="Georgia" family="Georgia" pointSize="16"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
@@ -142,6 +156,7 @@
                         <textField opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.89999997615814209" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" minimumFontSize="18" clearButtonMode="whileEditing" id="88" userLabel="Input - Username">
                             <rect key="frame" x="100" y="85" width="300" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="next"/>
@@ -152,6 +167,7 @@
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Password" lineBreakMode="tailTruncation" minimumFontSize="18" adjustsFontSizeToFit="NO" id="87">
                             <rect key="frame" x="100" y="142" width="300" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" name="Georgia" family="Georgia" pointSize="16"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
@@ -160,6 +176,7 @@
                         <textField opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.89999997615814209" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" clearsOnBeginEditing="YES" minimumFontSize="18" clearButtonMode="whileEditing" id="86" userLabel="Input - Password">
                             <rect key="frame" x="100" y="163" width="300" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="go" secureTextEntry="YES"/>
@@ -170,6 +187,7 @@
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="OPTIONAL" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="7" adjustsFontSizeToFit="NO" id="83" userLabel="Label - OPTIONAL">
                             <rect key="frame" x="299" y="147" width="101" height="10"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                             <color key="textColor" red="0.69537210459999999" green="0.77874833349999995" blue="0.83360475300000003" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
@@ -178,6 +196,7 @@
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="127">
                             <rect key="frame" x="194" y="234" width="111" height="32"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <fontDescription key="fontDescription" name="Georgia-Bold" family="Georgia" pointSize="15"/>
                             <state key="normal" title="LOGIN" backgroundImage="orange_button.png">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -193,6 +212,7 @@
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="n4i-hq-JhB">
                             <rect key="frame" x="365" y="166" width="35" height="27"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
                             <state key="normal" image="onepassword-button">
                                 <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
@@ -201,48 +221,12 @@
                             </connections>
                         </button>
                     </subviews>
+                    <animations/>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="75">
-                    <rect key="frame" x="384" y="80" width="250" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" name="Georgia-Bold" family="Georgia" pointSize="15"/>
-                    <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="50" maxY="0.0"/>
-                    <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" title="SIGN UP" image="fountain_pen.png">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="selected" image="fountain_pen_on.png"/>
-                    <state key="highlighted" image="fountain_pen_on.png">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="selectSignUp" destination="-1" eventType="touchUpInside" id="106"/>
-                    </connections>
-                </button>
-                <button opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="76">
-                    <rect key="frame" x="134" y="80" width="250" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" name="Georgia-Bold" family="Georgia" pointSize="15"/>
-                    <inset key="contentEdgeInsets" minX="50" minY="0.0" maxX="0.0" maxY="0.0"/>
-                    <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" title="LOGIN" image="user.png">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="selected" image="user_on.png">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="highlighted" image="user_on.png">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="selectLogin" destination="-1" eventType="touchUpInside" id="105"/>
-                    </connections>
-                </button>
                 <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" minimumFontSize="16" id="29" userLabel="Label - Error">
                     <rect key="frame" x="244" y="180" width="280" height="52"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Georgia" family="Georgia" pointSize="16"/>
                     <color key="textColor" red="0.92408370969999998" green="0.35912829639999999" blue="0.23267127570000001" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
@@ -251,6 +235,7 @@
                 <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="Authenticating..." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" id="24">
                     <rect key="frame" x="244" y="180" width="280" height="52"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -259,14 +244,65 @@
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" style="white" id="25">
                     <rect key="frame" x="296" y="196" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <animations/>
                 </activityIndicatorView>
+                <view opaque="NO" contentMode="scaleToFill" id="QTJ-P9-rGN" userLabel="Buttons View">
+                    <rect key="frame" x="126" y="60" width="518" height="66"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="75">
+                            <rect key="frame" x="259" y="8" width="250" height="50"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <fontDescription key="fontDescription" name="Georgia-Bold" family="Georgia" pointSize="15"/>
+                            <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="50" maxY="0.0"/>
+                            <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="SIGN UP" image="fountain_pen.png">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="selected" image="fountain_pen_on.png"/>
+                            <state key="highlighted" image="fountain_pen_on.png">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="selectSignUp" destination="-1" eventType="touchUpInside" id="106"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="76">
+                            <rect key="frame" x="8" y="8" width="250" height="50"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <fontDescription key="fontDescription" name="Georgia-Bold" family="Georgia" pointSize="15"/>
+                            <inset key="contentEdgeInsets" minX="50" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="LOGIN" image="user.png">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="selected" image="user_on.png">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="highlighted" image="user_on.png">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="selectLogin" destination="-1" eventType="touchUpInside" id="105"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <animations/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
             </subviews>
+            <animations/>
             <color key="backgroundColor" red="0.227029128" green="0.3621357764" blue="0.45652173909999999" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
         </view>
         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" id="126">
             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <animations/>
         </imageView>
     </objects>
     <resources>
@@ -279,9 +315,4 @@
         <image name="user.png" width="50" height="50"/>
         <image name="user_on.png" width="50" height="50"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination"/>
-    </simulatedMetricsContainer>
 </document>

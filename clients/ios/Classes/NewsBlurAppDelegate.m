@@ -1,4 +1,4 @@
-//
+
 //  NewsBlurAppDelegate.m
 //  NewsBlur
 //
@@ -11,6 +11,7 @@
 #import "NBContainerViewController.h"
 #import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
+#import "MarkReadMenuViewController.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "StoryDetailViewController.h"
@@ -24,6 +25,7 @@
 #import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
+#import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
 #import "AFHTTPRequestOperation.h"
 #import "ASINetworkQueue.h"
@@ -58,9 +60,15 @@
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
+#import "NSNull+JSON.h"
 #import <float.h>
+
+@interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
+
+@property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
+@property (nonatomic, strong) SFSafariViewController *safariViewController;
+
+@end
 
 @implementation NewsBlurAppDelegate
 
@@ -174,7 +182,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-//    [Fabric with:@[[Crashlytics class]]];
 
     [self registerDefaultsFromSettingsBundle];
     
@@ -227,7 +234,50 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
+    if ([UIApplicationShortcutItem class] && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
+        self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+        return NO;
+    }
+    
 	return YES;
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    if (self.launchedShortcutItem) {
+        [self handleShortcutItem:self.launchedShortcutItem];
+        self.launchedShortcutItem = nil;
+    }
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
+    completionHandler([self handleShortcutItem:shortcutItem]);
+}
+
+- (BOOL)handleShortcutItem:(UIApplicationShortcutItem *)shortcutItem {
+    NSString *type = shortcutItem.type;
+    BOOL handled = YES;
+    
+    if (!self.dictFeeds) {
+        handled = NO;
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AddFeed"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AllStories"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsViewController didSelectSectionHeaderWithTag:2];
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.Search"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsViewController didSelectSectionHeaderWithTag:2];
+        [self.feedDetailViewController.searchBar performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.5];
+    } else {
+        handled = NO;
+    }
+    
+    return handled;
+}
+
+- (void)delayedAddSite {
+    [self.feedsViewController tapAddSite:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -541,7 +591,7 @@
         } else if ([activityType isEqualToString:@"ARChromeActivity"]) {
             return;
         } else if ([activityType isEqualToString:@"NBCopyLinkActivity"]) {
-            _completedString = @"Copied";
+            _completedString = @"Copied Link";
         } else {
             _completedString = @"Saved";
         }
@@ -766,13 +816,19 @@
         }
         
         [self.userTagsViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count]+0.5))];
+        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count] + [self.activeStory[@"user_tags"] count] + 1))];
         CGRect frame = [sender CGRectValue];
         [self.popoverController presentPopoverFromRect:frame
                                                 inView:self.storyPageControl.currentPage.view
                               permittedArrowDirections:WYPopoverArrowDirectionAny
                                               animated:YES];
     }
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    return UIModalPresentationNone;
 }
 
 #pragma mark -
@@ -920,6 +976,28 @@
     return [feedIdStr startsWith:@"saved:"];
 }
 
+- (NSArray *)allFeedIds {
+    NSMutableArray *mutableFeedIds = [NSMutableArray array];
+    
+    for (NSString *folderName in self.dictFoldersArray) {
+        for (id feedId in self.dictFolders[folderName]) {
+            if (![feedId isKindOfClass:[NSString class]] || ![self isSavedFeed:feedId]) {
+                [mutableFeedIds addObject:feedId];
+            }
+        }
+    }
+    
+    return mutableFeedIds;
+}
+
+- (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
+    if ([folderTitle isEqualToString:@"everything"]) {
+        return @[folderTitle];
+    } else {
+        return self.dictFolders[folderTitle];
+    }
+}
+
 - (BOOL)isPortrait {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
@@ -963,6 +1041,7 @@
                                        NEWSBLUR_URL]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
+    [request setValidatesSecureCertificate:NO];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
     [request setFailedBlock:^(void) {
@@ -1001,6 +1080,7 @@
             NSURL *url = [NSURL URLWithString:urlS];
             
             __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            [request setValidatesSecureCertificate:NO];
             [request setDelegate:self];
             [request setResponseEncoding:NSUTF8StringEncoding];
             [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -1321,14 +1401,10 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.masterContainerViewController transitionToSafariView:url];
-        } else {
-            SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url
-                                                             entersReaderIfAvailable:NO];
-            safari.delegate = self;
-            [navigationController pushViewController:safari animated:YES];
-        }
+        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
+                                                        entersReaderIfAvailable:NO];
+        self.safariViewController.delegate = self;
+        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -1351,17 +1427,42 @@
     }
 }
 
+- (BOOL)showingSafariViewController {
+    return self.safariViewController.delegate != nil;
+}
+
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    [navigationController popViewControllerAnimated:YES];
+    // You'd think doing this in the dismiss completion block would work... but nope.
+    [self performSelector:@selector(deferredSafariCleanup) withObject:nil afterDelay:0.2];
+    controller.delegate = nil;
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)deferredSafariCleanup {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.navigationController.view.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.origin.y, self.isPortrait ? 270.0 : 370.0, self.navigationController.view.frame.size.height);
+    }
+    
+    [self.storyPageControl reorientPages];
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ([viewController isKindOfClass:[SFSafariViewController class]]) {
+    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]]) {
         [_navigationController setNavigationBarHidden:YES animated:YES];
     } else {
         [_navigationController setNavigationBarHidden:NO animated:YES];
     }
 }
+
+- (UINavigationController *)fontSettingsNavigationController {
+    if (!_fontSettingsNavigationController) {
+        self.fontSettingsNavigationController = [[UINavigationController alloc] initWithRootViewController:self.fontSettingsViewController];
+        self.fontSettingsNavigationController.delegate = self;
+    }
+    
+    return _fontSettingsNavigationController;
+}
+
 - (void)closeOriginalStory {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromOriginalView];
@@ -1665,16 +1766,22 @@
 }
 
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff {
+    [self markFeedReadInCache:feedIds cutoffTimestamp:cutoff older:YES];
+}
+
+- (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older {
     for (NSString *feedId in feedIds) {
-        NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedId];
+        NSString *feedIdString = [NSString stringWithFormat:@"%@", feedId];
+        NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdString];
         NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
         NSMutableArray *stories = [NSMutableArray array];
+        NSString *direction = older ? @"<" : @">";
         
         [self.database inDatabase:^(FMDatabase *db) {
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "
                              "INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash "
-                             "WHERE s.story_feed_id = %@ AND s.story_timestamp < %ld",
-                             feedId, (long)cutoff];
+                             "WHERE s.story_feed_id = %@ AND s.story_timestamp %@ %ld",
+                             feedIdString, direction, (long)cutoff];
             FMResultSet *cursor = [db executeQuery:sql];
             
             while ([cursor next]) {
@@ -1700,7 +1807,7 @@
                 int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] - 1);
                 [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
             }
-            [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedId];
+            [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdString];
         }
         
         [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -1716,13 +1823,13 @@
                                    stringWithFormat:@"DELETE FROM unread_hashes "
                                    "WHERE story_feed_id = \"%@\" "
                                    "AND story_timestamp < %ld",
-                                   feedId, (long)cutoff];
+                                   feedIdString, (long)cutoff];
             [db executeUpdate:deleteSql];
             [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
              [newUnreadCounts objectForKey:@"ps"],
              [newUnreadCounts objectForKey:@"nt"],
              [newUnreadCounts objectForKey:@"ng"],
-             feedId];
+             feedIdString];
         }];
     }
 }
@@ -1793,7 +1900,7 @@
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
-             isEqualToString:[story objectForKey:@"story_hash"]]) {
+             isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
             [storyPageControl refreshHeaders];
         }
@@ -1804,6 +1911,7 @@
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
+        if (!page) continue;
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
@@ -1927,6 +2035,39 @@
 
 - (void)renameFolder:(NSString *)newTitle {
     storiesCollection.activeFolder = newTitle;
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    if (!self.markReadMenuViewController) {
+        self.markReadMenuViewController = [MarkReadMenuViewController new];
+        self.markReadMenuViewController.modalPresentationStyle = UIModalPresentationPopover;
+    }
+    
+    self.markReadMenuViewController.collectionTitle = collectionTitle;
+    self.markReadMenuViewController.feedIds = feedIds;
+    self.markReadMenuViewController.visibleUnreadCount = visibleUnreadCount;
+    self.markReadMenuViewController.completionHandler = completionHandler;
+    
+    UIPopoverPresentationController *popoverPresentationController = self.markReadMenuViewController.popoverPresentationController;
+    popoverPresentationController.delegate = self;
+    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    
+    if (barButtonItem) {
+        popoverPresentationController.barButtonItem = barButtonItem;
+    } else {
+        popoverPresentationController.sourceView = sourceView;
+        popoverPresentationController.sourceRect = sourceRect;
+    }
+    
+    [self.navigationController presentViewController:self.markReadMenuViewController animated:YES completion:nil];
 }
 
 #pragma mark -
@@ -2849,28 +2990,48 @@
     for (NSArray *storyHashes in [hashes allValues]) {
         [completedHashes addObjectsFromArray:storyHashes];
     }
+    NSLog(@"Marking %lu queued read stories as read...", (unsigned long)[completedHashes count]);
     NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIHTTPRequest *_request = request;
     [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     [request setDelegate:self];
+    [request setValidatesSecureCertificate:NO];
     [request setCompletionBlock:^{
         if ([_request responseStatusCode] == 200) {
             NSLog(@"Completed clearing %@ hashes", completedHashesStr);
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
                                "WHERE story_hash in (\"%@\")", completedHashesStr]];
+            [self pruneQueuedReadHashes];
         } else {
             NSLog(@"Failed mark read queued.");
             self.hasQueuedReadStories = YES;
+            [self pruneQueuedReadHashes];
         }
         if (callback) callback();
     }];
     [request setFailedBlock:^{
         NSLog(@"Failed mark read queued.");
         self.hasQueuedReadStories = YES;
+        [self pruneQueuedReadHashes];
         if (callback) callback();
     }];
     [request startAsynchronous];
+}
+
+- (void)pruneQueuedReadHashes {
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *unreadSql = [NSString stringWithFormat:@"SELECT qrh.story_hash FROM queued_read_hashes qrh "
+                               "INNER JOIN unread_hashes uh ON qrh.story_hash = uh.story_hash"];
+        FMResultSet *cursor = [db executeQuery:unreadSql];
+        while ([cursor next]) {
+            NSLog(@"Story: %@", [cursor objectForColumnName:@"story_hash"]);
+        }
+//        NSLog(@"Found %lu stories queued to be read but already read", (unsigned long)[[cursor.resultDictionary allKeys] count]);
+        NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
+                               "WHERE story_hash not in (%@)", unreadSql];
+        [db executeUpdate:deleteSql];
+    }];
 }
 
 - (void)prepareActiveCachedImages:(FMDatabase *)db {

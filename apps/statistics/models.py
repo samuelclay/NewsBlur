@@ -8,6 +8,7 @@ from apps.profile.models import Profile
 from apps.statistics.rstats import RStats, round_time
 from utils import json_functions as json
 from utils import db_functions
+from utils import log as logging
 
 class MStatistics(mongo.Document):
     key   = mongo.StringField(unique=True)
@@ -248,7 +249,11 @@ class MFeedback(mongo.Document):
         
     @classmethod
     def collect_feedback(cls):
-        data = urllib2.urlopen('https://getsatisfaction.com/newsblur/topics.widget').read()
+        try:
+            data = urllib2.urlopen('https://getsatisfaction.com/newsblur/topics.widget').read()
+        except (urllib2.HTTPError), e:
+            logging.debug(" ***> Failed to collect feedback: %s" % e)
+            return
         data = json.decode(data[1:-1])
         i    = 0
         if len(data):

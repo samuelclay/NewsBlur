@@ -31,7 +31,6 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ReplyDialogFragment;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
@@ -45,20 +44,18 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
     private final ReadingItemFragment fragment;
 	private final Story story;
 	private final LayoutInflater inflater;
-	private final ImageLoader imageLoader;
 	private WeakReference<View> viewHolder;
 	private final Context context;
 	private UserDetails user;
 	private final FragmentManager manager;
 	private List<Comment> comments;
 
-	public SetupCommentSectionTask(ReadingItemFragment fragment, View view, LayoutInflater inflater, Story story, ImageLoader imageLoader) {
+	public SetupCommentSectionTask(ReadingItemFragment fragment, View view, LayoutInflater inflater, Story story) {
         this.fragment = fragment;
 		this.context = fragment.getActivity();
 		this.manager = fragment.getFragmentManager();
 		this.inflater = inflater;
 		this.story = story;
-		this.imageLoader = imageLoader;
 		viewHolder = new WeakReference<View>(view);
 		user = PrefsUtils.getUserDetails(context);
 	}
@@ -109,7 +106,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					ImageView favouriteImage = new ImageView(context);
 					UserProfile user = FeedUtils.dbHelper.getUserProfile(id);
                     if (user != null) {
-                        imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
+                        FeedUtils.imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
                         favouriteContainer.addView(favouriteImage);
                     }
 				}
@@ -153,7 +150,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
                 final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);
 				if (replyUser != null) {
-					imageLoader.displayImage(replyUser.photoUrl, replyImage);
+					FeedUtils.imageLoader.displayImage(replyUser.photoUrl, replyImage);
 					replyImage.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View view) {
@@ -200,11 +197,11 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
                 UserProfile sourceUser = FeedUtils.dbHelper.getUserProfile(comment.sourceUserId);
 				if (sourceUser != null) {
-					imageLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f);
-					imageLoader.displayImage(userPhoto, usershareImage, 10f);
+					FeedUtils.imageLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f);
+					FeedUtils.imageLoader.displayImage(userPhoto, usershareImage, 10f);
 				}
 			} else {
-				imageLoader.displayImage(userPhoto, commentImage, 10f);
+				FeedUtils.imageLoader.displayImage(userPhoto, commentImage, 10f);
 			}
 
 			commentImage.setOnClickListener(new OnClickListener() {
@@ -265,7 +262,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
             if (!commentingUserIds.contains(userId)) {
                 UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
                 if (user != null) {
-                    ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
+                    ImageView image = ViewUtils.createSharebarImage(context, user.photoUrl, user.userId);
                     sharedGrid.addView(image);
                 }
             }
@@ -275,7 +272,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
         for (String userId : commentingUserIds) {
             UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
             if (user != null) {
-                ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
+                ImageView image = ViewUtils.createSharebarImage(context, user.photoUrl, user.userId);
                 commentGrid.addView(image);
             }
         }

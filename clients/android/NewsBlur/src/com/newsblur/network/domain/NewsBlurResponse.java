@@ -2,9 +2,6 @@ package com.newsblur.network.domain;
 
 import android.util.Log;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * A generic response to an API call that only encapsuates success versus failure.
  */

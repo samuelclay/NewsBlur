@@ -30,7 +30,6 @@ import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.Main;
-import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
@@ -219,6 +218,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			inflater.inflate(R.menu.context_feed, menu);
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
+                menu.removeItem(R.id.menu_choose_folders);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
             }
@@ -259,7 +259,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 FeedUtils.markFeedsRead(FeedSet.allFeeds(), null, null, getActivity());
 			}
 			return true;
-		}
+		} else if (item.getItemId() == R.id.menu_choose_folders) {
+            DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(adapter.getChild(groupPosition, childPosition)));
+            chooseFoldersFragment.show(getFragmentManager(), "dialog");
+        }
 
 		return super.onContextItemSelected(item);
 	}
@@ -283,7 +286,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@OnGroupClick(R.id.folderfeed_list) boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         if (adapter.isFolderRoot(groupPosition)) {
 			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
-			i.putExtra(ItemsList.EXTRA_STATE, currentState);
 			startActivity(i);
 			return true;
         } else if (adapter.isRowReadStories(groupPosition)) {
@@ -345,7 +347,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             SocialFeed socialFeed = adapter.getSocialFeed(childName);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
 			intent.putExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED, socialFeed);
-			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivity(intent);
 		} else {
             Feed feed = adapter.getFeed(childName);
@@ -353,7 +354,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			Intent intent = new Intent(getActivity(), FeedItemsList.class);
 			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
 			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
-			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivity(intent);
 		}
 		return true;

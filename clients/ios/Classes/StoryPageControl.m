@@ -151,16 +151,19 @@
                                                     target:nil
                                                     action:nil];
     [separatorBarButton setEnabled:NO];
+    separatorBarButton.isAccessibilityElement = NO;
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
+    fontSettingsButton.accessibilityLabel = @"Story settings";
     
     UIImage *markreadImage = [UIImage imageNamed:@"original_button.png"];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
+    originalStoryButton.accessibilityLabel = @"Show original story";
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
@@ -179,6 +182,11 @@
                                    action:@selector(transitionFromFeedDetail)];
     self.buttonBack = backButton;
     
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
+                                               inView:self.view
+                                           withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
+    [self.view addSubview:self.notifier];
+    [self.notifier hideNow];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
@@ -413,6 +421,7 @@
     previousPage.pageIndex = -2;
     [self changePage:pageIndex animated:NO];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [self.notifier hide];
     //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
@@ -431,6 +440,7 @@
     [self.scrollView scrollRectToVisible:frame animated:NO];
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [self.notifier hide];
 }
 
 - (void)refreshHeaders {
@@ -553,10 +563,16 @@
             self.scrollingToPage < 0 ||
             ABS(newIndex - self.scrollingToPage) <= 1) {
             [pageController drawFeedGradient];
+            NSString *originalStoryId = pageController.activeStoryId;
+            __block StoryDetailViewController *blockPageController = pageController;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul), ^{
-                [pageController initStory];
-                [pageController drawStory];
-                [pageController showTextOrStoryView];
+                if (blockPageController.activeStoryId && ![blockPageController.activeStoryId isEqualToString:originalStoryId]) {
+                    NSLog(@"Stale story, already drawn. Was: %@, Now: %@", originalStoryId, blockPageController.activeStoryId);
+                    return;
+                }
+                [blockPageController initStory];
+                [blockPageController drawStory];
+                [blockPageController showTextOrStoryView];
             });
         } else {
 //            [pageController clearStory];
@@ -1006,13 +1022,25 @@
 #pragma mark Styles
 
 
-- (IBAction)toggleFontSize:(id)sender {    
+- (IBAction)toggleFontSize:(id)sender {
+    [self.appDelegate.fontSettingsNavigationController popToRootViewControllerAnimated:NO];
+    self.appDelegate.fontSettingsNavigationController.modalPresentationStyle = UIModalPresentationPopover;
+    UIPopoverPresentationController *popPC = self.appDelegate.fontSettingsNavigationController.popoverPresentationController;
+    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    popPC.delegate = self;
+    popPC.barButtonItem = self.fontSettingsButton;
+//    popPC.sourceView = self.view;
+//    popPC.sourceRect = [sender frame];
+    
+    [self presentViewController:self.appDelegate.fontSettingsNavigationController animated:YES completion:nil];
+    return;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showFontSettingsPopover:self.fontSettingsButton];
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.fontSettingsViewController];
+                                      initWithContentViewController:appDelegate.fontSettingsNavigationController];
             
             self.popoverController.delegate = self;
         } else {
@@ -1020,7 +1048,7 @@
             self.popoverController = nil;
         }
         
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*8-2)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240.0, 302.0)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny
                                                        animated:YES];
@@ -1058,6 +1086,17 @@
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
     [[self currentPage] flashCheckmarkHud:messageType];
+}
+
+- (void)showFetchingTextNotifier {
+    self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"Fetching text...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)hideNotifier {
+    [self.notifier hide];
 }
 
 #pragma mark -
@@ -1128,6 +1167,12 @@
 - (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
 	//The popover is automatically dismissed if you click outside it, unless you return NO here
 	return YES;
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    return UIModalPresentationNone;
 }
 
 @end

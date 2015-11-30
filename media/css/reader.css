@@ -7028,6 +7028,10 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-move.NB-menu-manage-feed-move-cancel .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
 }
+.NB-menu-manage .NB-menu-manage-mute .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/silk/color_swatch_bw.png') no-repeat  1px 2px;
+    background-size: 18px;
+}
 .NB-menu-manage .NB-menu-manage-rename .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_rename.png') no-repeat 0 0;  
     background-size: 18px;
@@ -7398,6 +7402,11 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-unread .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 4px center;
     background-size: 8px;
+}
+.NB-menu-manage .NB-menu-manage-story-read .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 4px center;
+    background-size: 8px;
+    opacity: 0.2;
 }
 .NB-menu-manage .NB-menu-manage-story-star .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 0;

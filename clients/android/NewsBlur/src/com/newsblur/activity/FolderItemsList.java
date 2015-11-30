@@ -1,30 +1,20 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Toast;
 import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.fragment.FolderItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
@@ -44,7 +34,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FolderItemListFragment.newInstance(folderName, currentState, getDefaultFeedView());
+			itemListFragment = FolderItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FolderItemListFragment.class.getName());
@@ -93,11 +83,6 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, folderName);
-    }
-
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFolder(this, folderName);
     }
 
     @Override

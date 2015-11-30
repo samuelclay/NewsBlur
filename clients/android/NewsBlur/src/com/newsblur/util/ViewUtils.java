@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.PowerManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,7 +47,7 @@ public class ViewUtils {
 		}
 	}
 
-	public static ImageView createSharebarImage(final Context context, final ImageLoader imageLoader, final String photoUrl, final String userId) {
+	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId) {
 		ImageView image = new ImageView(context);
 		int imageLength = UIUtils.dp2px(context, 15);
 		image.setMaxHeight(imageLength);
@@ -61,7 +62,7 @@ public class ViewUtils {
 		image.setMaxWidth(imageLength);
 		
 		image.setLayoutParams(imageParameters);
-		imageLoader.displayImage(photoUrl, image, 10f);
+		FeedUtils.imageLoader.displayImage(photoUrl, image, 10f);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -157,4 +158,15 @@ public class ViewUtils {
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
+
+    /**
+     * see if Power Save mode is enabled on the device and the UI should disable animations
+     * or other extra features.
+     */
+    public static boolean isPowerSaveMode(Context context) {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return false;
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        return pm.isPowerSaveMode();
+    }
+
 }

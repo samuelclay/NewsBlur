@@ -55,6 +55,8 @@
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
 @property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) IBOutlet UIView *messageView;
+@property (nonatomic) IBOutlet UILabel *messageLabel;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -106,8 +108,6 @@
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
-- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;

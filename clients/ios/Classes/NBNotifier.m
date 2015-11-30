@@ -204,71 +204,34 @@
     CGRect frame = self.frame;
     frame.size.width = self.view.frame.size.width;
     self.frame = frame;
+    self.hidden = NO;
     
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:time];
-    
-    CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
-    self.frame = move;
-    
-    [UIView commitAnimations];
-    
-}
-
-- (void)showFor:(float)time{
-    showing = YES;
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3f];
-    
-    CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
-    self.frame = move;
-    
-    [UIView commitAnimations];
-    
-    [self hideAfter:time];
-}
-
-- (void)hideAfter:(float)seconds{
-    
-    if (!showing) return;
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, seconds * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.3f];
-        [UIView setAnimationDelegate: self]; //or some other object that has necessary method
-//        [UIView setAnimationDidStopSelector: @selector(removeFromSuperview)];
-        
-        
+    [UIView animateWithDuration:time animations:^{
         CGRect move = self.frame;
-        move.origin.y += NOTIFIER_HEIGHT;
+        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
         self.frame = move;
-        
-        [UIView commitAnimations];
-    });
-    showing = NO;
+    } completion:nil];
 }
 
 - (void)hide {
     [self hideIn:0.3f];
 }
+
+- (void)hideNow {
+    [self hideIn:0.0f];
+}
+
 - (void)hideIn:(float)seconds {
     
     if (!showing) return;
     
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:seconds];
-    [UIView setAnimationDelegate: self]; //or some other object that has necessary method
-//    [UIView setAnimationDidStopSelector: @selector(removeFromSuperview)];
-    
-    
-    CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height - self.offset.y;
-    self.frame = move;
-    
-    [UIView commitAnimations];
+    [UIView animateWithDuration:seconds animations:^{
+        CGRect move = self.frame;
+        move.origin.y = self.view.frame.size.height - self.offset.y;
+        self.frame = move;
+    } completion:^(BOOL finished) {
+        self.hidden = YES;
+    }];
     
     showing = NO;
 }

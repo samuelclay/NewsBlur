@@ -117,6 +117,7 @@
     NSURL *url = [NSURL URLWithString:urlString];
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -129,6 +130,7 @@
     NSURL *url = [NSURL URLWithString:urlString];
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setValidatesSecureCertificate:NO];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(loadSuggestedFriendsListFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];

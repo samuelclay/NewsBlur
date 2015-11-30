@@ -8,16 +8,13 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.activity.NewsBlurApplication;
+import com.newsblur.activity.*;
 
 public class UIUtils {
 	
@@ -93,7 +90,7 @@ public class UIUtils {
      */
     public static void setCustomActionBar(Activity activity, String imageUrl, String title) { 
         ImageView iconView = setupCustomActionbar(activity, title);
-        ((NewsBlurApplication) activity.getApplicationContext()).getImageLoader().displayImage(imageUrl, iconView, false);
+        FeedUtils.imageLoader.displayImage(imageUrl, iconView, false);
     }
 
     public static void setCustomActionBar(Activity activity, int imageId, String title) { 
@@ -165,5 +162,36 @@ public class UIUtils {
                 activity.startActivity(intent);
             }
         });
+    }
+
+    public static void startReadingActivity(FeedSet fs, String startingHash, Context context, boolean ignoreFilters) {
+        Class activityClass;
+		if (fs.isAllSaved()) {
+            activityClass = SavedStoriesReading.class;
+        } else if (fs.isGlobalShared()) {
+            activityClass = GlobalSharedStoriesReading.class;
+        } else if (fs.isAllSocial()) {
+            activityClass = AllSharedStoriesReading.class;
+        } else if (fs.isAllNormal()) {
+            activityClass = AllStoriesReading.class;
+        } else if (fs.isFolder()) {
+            activityClass = FolderReading.class;
+        } else if (fs.getSingleFeed() != null) {
+            activityClass = FeedReading.class;
+        } else if (fs.getSingleSocialFeed() != null) {
+            activityClass = SocialFeedReading.class;
+        } else if (fs.isAllRead()) {
+            activityClass = ReadStoriesReading.class;
+        } else {
+            Log.e(UIUtils.class.getName(), "can't launch reading activity for unknown feedset type");
+            return;
+        }
+        Intent i = new Intent(context, activityClass);
+        i.putExtra(Reading.EXTRA_FEEDSET, fs);
+        i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
+        if (ignoreFilters) {
+            i.putExtra(SocialFeedReading.EXTRA_IGNORE_FILTERS, true);
+        }
+        context.startActivity(i);
     }
 }

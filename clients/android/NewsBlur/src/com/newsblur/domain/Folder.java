@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import com.newsblur.database.DatabaseConstants;
@@ -63,7 +64,11 @@ public class Folder {
             builder.append(" - ");
         }
         builder.append(name);
-        return builder.toString();
+        return builder.toString().toUpperCase();
+    }
+
+    public String toString() {
+        return flatName();
     }
 
     public void removeOrphanFeedIds(Collection<String> orphanFeedIds) {
@@ -80,4 +85,33 @@ public class Folder {
         return name.hashCode();
     }
 	
+    public final static Comparator<String> FolderNameComparator = new Comparator<String>() {
+        @Override
+        public int compare(String s1, String s2) {
+            return compareFolderNames(s1, s2);
+        }
+    };
+
+    public final static Comparator<Folder> FolderComparator = new Comparator<Folder>() {
+        @Override
+        public int compare(Folder f1, Folder f2) {
+            return compareFolderNames(f1.name, f2.name);
+        }
+    };
+
+    /**
+     * Custom sorting for folders. Handles the special case to keep the root
+     * folder on top, and also the expectation that *despite locale*, folders
+     * starting with an underscore should show up on top.
+     */
+    private static int compareFolderNames(String s1, String s2) {
+        if (TextUtils.equals(s1, s2)) return 0;
+        if (s1.equals(AppConstants.ROOT_FOLDER)) return -1;
+        if (s2.equals(AppConstants.ROOT_FOLDER)) return 1;
+        if (s1.startsWith("_")) return -1;
+        if (s2.startsWith("_")) return 1;
+        return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
+    }
+
+
 }

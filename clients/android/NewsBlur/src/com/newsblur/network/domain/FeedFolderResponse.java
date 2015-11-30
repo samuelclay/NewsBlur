@@ -13,8 +13,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;

@@ -46,10 +46,9 @@ typedef enum {
 
 - (void)show;
 - (void)showIn:(float)time;
-- (void)showFor:(float)time;
 
 - (void)hide;
-- (void)hideAfter:(float)seconds;
+- (void)hideNow;
 - (void)hideIn:(float)seconds;
 
 @end

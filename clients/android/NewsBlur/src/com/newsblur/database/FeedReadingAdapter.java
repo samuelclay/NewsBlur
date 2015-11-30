@@ -1,6 +1,5 @@
 package com.newsblur.database;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 
 import com.newsblur.activity.ReadingAdapter;

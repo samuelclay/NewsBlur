@@ -48,6 +48,7 @@
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     int countWidth = 0;
+    NSString *accessibilityCount = @"";
     
     if ([folderName isEqual:@"saved_stories"]) {
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
@@ -59,6 +60,8 @@
         [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
+        
+        accessibilityCount = [NSString stringWithFormat:@", %@ stories", @(appDelegate.savedStoriesCount)];
     } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
@@ -70,7 +73,14 @@
         [unreadCount calculateOffsets:counts.ps nt:counts.nt];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
+        
+        accessibilityCount = [NSString stringWithFormat:@", collapsed, %@ unread stories", @(counts.nt)];
+    } else if (UIAccessibilityIsVoiceOverRunning()) {
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        
+        accessibilityCount = [NSString stringWithFormat:@", %@ unread stories", @(counts.nt)];
     }
+    
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
@@ -134,6 +144,8 @@
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
+    invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
+    invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController
                               action:@selector(didSelectSectionHeader:)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -207,6 +219,7 @@
         } else {
             folderImageViewX = 7;
         }
+        allowLongPress = YES;
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"clock.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -279,49 +292,20 @@
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     if (section < 2) return;
+    
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressTitle = [preferences stringForKey:@"long_press_feed_title"];
-
     NSString *folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
-    NSArray *feedIds = [appDelegate.dictFolders objectForKey:folderTitle];
-
+    NSArray *feedIds = [self.appDelegate feedIdsForFolderTitle:folderTitle];
+    NSString *collectionTitle = [folderTitle isEqual:@"everything"] ? @"everything" : @"entire folder";
+    
     if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
-        UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:folderTitle
-                                                                   delegate:self
-                                                          cancelButtonTitle:@"Cancel"
-                                                     destructiveButtonTitle:@"Mark folder as read"
-                                                          otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
-        markReadSheet.accessibilityValue = folderTitle;
-        [markReadSheet showInView:appDelegate.feedsViewController.view];
+        [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle sourceView:self sourceRect:self.bounds completionHandler:^(BOOL marked){
+            [appDelegate.feedsViewController sectionUntappedOutside:invisibleHeaderButton];
+        }];
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
         [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
     }
 }
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSString *folderTitle = actionSheet.accessibilityValue;
-    NSArray *feedIds = [appDelegate.dictFolders objectForKey:folderTitle];
-
-    switch (buttonIndex) {
-        case 0:
-            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
-            break;
-        case 1:
-            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:1];
-            break;
-        case 2:
-            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:3];
-            break;
-        case 3:
-            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:7];
-            break;
-        case 4:
-            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:14];
-            break;
-    }
-    
-    [appDelegate.feedsViewController sectionUntappedOutside:invisibleHeaderButton];
-}
-
 
 @end

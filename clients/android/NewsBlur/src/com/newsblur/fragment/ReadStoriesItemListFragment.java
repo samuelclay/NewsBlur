@@ -1,7 +1,5 @@
 package com.newsblur.fragment;
 
-import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,13 +8,8 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 
 import com.newsblur.R;
-import com.newsblur.activity.Reading;
-import com.newsblur.activity.ReadStoriesReading;
-import com.newsblur.activity.FeedReading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.MultipleFeedItemsAdapter;
-import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class ReadStoriesItemListFragment extends ItemListFragment {
@@ -26,10 +19,9 @@ public class ReadStoriesItemListFragment extends ItemListFragment {
 		super.onCreate(savedInstanceState);
 	}
 
-	public static ItemListFragment newInstance(DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance() {
 		ItemListFragment fragment = new ReadStoriesItemListFragment();
         Bundle args = new Bundle();
-        args.putSerializable("defaultFeedView", defaultFeedView);
         fragment.setArguments(args);
 		return fragment;
 	}
@@ -45,15 +37,6 @@ public class ReadStoriesItemListFragment extends ItemListFragment {
        }
        super.onLoadFinished(loader, cursor);
     }
-
-	@Override
-	public void onItemClick_(String storyHash) {
-		Intent i = new Intent(getActivity(), ReadStoriesReading.class);
-        i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
-        i.putExtra(Reading.EXTRA_FEEDSET, getFeedSet());
-        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
-		startActivity(i);
-	}
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

@@ -107,6 +107,7 @@
 
         NSURL *url = [NSURL URLWithString:urlString];
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setValidatesSecureCertificate:NO];
 
         [request setDidFinishSelector:@selector(finishLoadInteractions:)];
         [request setDidFailSelector:@selector(requestFailed:)];

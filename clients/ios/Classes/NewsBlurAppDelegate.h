@@ -26,6 +26,7 @@
 @class FeedsMenuViewController;
 @class FeedDetailViewController;
 @class FeedDetailMenuViewController;
+@class MarkReadMenuViewController;
 @class FirstTimeUserViewController;
 @class FirstTimeUserAddSitesViewController;
 @class FirstTimeUserAddFriendsViewController;
@@ -49,7 +50,7 @@
 @class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, WYPopoverControllerDelegate,
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate, WYPopoverControllerDelegate,
 SFSafariViewControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
@@ -176,8 +177,8 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 @property (nonatomic, retain) WYPopoverController *popoverController;
-
-
+@property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
+@property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
@@ -246,6 +247,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
+@property (nonatomic, readonly) BOOL showingSafariViewController;
 
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 
@@ -301,6 +303,8 @@ SFSafariViewControllerDelegate>  {
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
+- (NSArray *)allFeedIds;
+- (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
 - (BOOL)isPortrait;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
@@ -325,6 +329,7 @@ SFSafariViewControllerDelegate>  {
 - (void)markFeedAllRead:(id)feedId;
 - (void)markFeedReadInCache:(NSArray *)feedIds;
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff;
+- (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older;
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff;
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
@@ -339,6 +344,9 @@ SFSafariViewControllerDelegate>  {
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
 - (void)renameFolder:(NSString *)newTitle;
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler;
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
 
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
