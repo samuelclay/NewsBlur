@@ -62,7 +62,9 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			borderTwo.setBackgroundColor(Color.LTGRAY);
 		}
 		
-		if (this.ignoreReadStatus || (! Story.fromCursor(cursor).read)) {
+        Story story = Story.fromCursor(cursor);
+
+		if (this.ignoreReadStatus || (! story.read)) {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedUnread);
@@ -94,6 +96,12 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			borderOne.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}
+
+        if (story.starred) {
+            v.findViewById(R.id.row_item_saved_icon).setVisibility(View.VISIBLE);
+        } else {
+            v.findViewById(R.id.row_item_saved_icon).setVisibility(View.GONE);
+        }
 
         if (!PrefsUtils.isShowContentPreviews(context)) {
             v.findViewById(R.id.row_item_content).setVisibility(View.GONE);
