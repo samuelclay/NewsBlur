@@ -20,8 +20,7 @@
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailViewController : BaseViewController 
-<UITableViewDelegate, UITableViewDataSource, 
- UIActionSheetDelegate, UIAlertViewDelegate,
+<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate,
  UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
  WYPopoverControllerDelegate, MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate> {
@@ -93,8 +92,8 @@
 - (void)fadeSelectedCell:(BOOL)deselect;
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row;
 - (void)redrawUnreadStory;
-- (IBAction)doOpenMarkReadActionSheet:(id)sender;
-- (IBAction)doOpenSettingsActionSheet:(id)sender;
+- (IBAction)doOpenMarkReadMenu:(id)sender;
+- (IBAction)doOpenSettingsMenu:(id)sender;
 - (void)confirmDeleteSite;
 - (void)deleteSite;
 - (void)deleteFolder;
@@ -106,6 +105,7 @@
 - (void)instafetchFeed;
 - (void)changeActiveStoryTitleCellLayout;
 - (void)loadFaviconsFromActiveFeed;
+- (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;

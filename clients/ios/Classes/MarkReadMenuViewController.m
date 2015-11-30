@@ -9,12 +9,22 @@
 #import "MarkReadMenuViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
+#import "FeedDetailViewController.h"
 #import "StoriesCollection.h"
 #import "MenuTableViewCell.h"
 
 NSString * const MarkReadMenuTitle = @"title";
 NSString * const MarkReadMenuIcon = @"icon";
 NSString * const MarkReadMenuDays = @"days";
+NSString * const MarkReadMenuOlderNewer = @"olderNewer";
+
+typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
+{
+    MarkReadMenuOlderNewerModeOlder = -1,
+    MarkReadMenuOlderNewerModeToggle = 0,
+    MarkReadMenuOlderNewerModeNewer = 1
+};
+
 
 @interface MarkReadMenuViewController ()
 
@@ -52,7 +62,9 @@ NSString * const MarkReadMenuDays = @"days";
 }
 
 - (CGSize)preferredContentSize {
-    if (self.visibleUnreadCount) {
+    if (self.olderNewerStoriesCollection) {
+        return CGSizeMake(300.0, 114.0);
+    } else if (self.visibleUnreadCount) {
         return CGSizeMake(300.0, 228.0);
     } else {
         return CGSizeMake(300.0, 190.0);
@@ -63,19 +75,41 @@ NSString * const MarkReadMenuDays = @"days";
     self.marked = NO;
     self.menuOptions = [NSMutableArray array];
     
-    [self addTitle:[NSString stringWithFormat:@"Mark %@ as read", self.collectionTitle] iconName:@"menu_icn_markread.png" days:0];
-    
-    if (self.visibleUnreadCount) {
-        NSString *stories = self.visibleUnreadCount == 1 ? @"Mark this story as read" : [NSString stringWithFormat:@"Mark these %@ stories read", @(self.visibleUnreadCount)];
+    if (self.olderNewerStoriesCollection) {
+        [self.olderNewerStoriesCollection calculateStoryLocations];
         
-        [self addTitle:stories iconName:@"menu_icn_markread.png" days:-1];
+        if ([self.olderNewerStoriesCollection isStoryUnread:self.olderNewerStory]) {
+            [self addTitle:@"Mark as read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeToggle];
+        } else {
+            [self addTitle:@"Mark as unread" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeToggle];
+        }
+        
+        if ([self.olderNewerStoriesCollection.activeOrder isEqualToString:@"newest"]) {
+            [self addTitle:@"Mark newer stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeNewer];
+            [self addTitle:@"Mark older stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeOlder];
+        } else {
+            [self addTitle:@"Mark older stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeOlder];
+            [self addTitle:@"Mark newer stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeNewer];
+        }
+    } else {
+        [self addTitle:[NSString stringWithFormat:@"Mark %@ as read", self.collectionTitle] iconName:@"menu_icn_markread.png" days:0];
+        
+        if (self.visibleUnreadCount) {
+            NSString *stories = self.visibleUnreadCount == 1 ? @"Mark this story as read" : [NSString stringWithFormat:@"Mark these %@ stories read", @(self.visibleUnreadCount)];
+            
+            [self addTitle:stories iconName:@"menu_icn_markread.png" days:-1];
+        }
+        
+        // Might want different icons for each
+        [self addTitle:@"Mark read older than 1 day" iconName:@"menu_icn_markread.png" days:1];
+        [self addTitle:@"Mark read older than 3 days" iconName:@"menu_icn_markread.png" days:3];
+        [self addTitle:@"Mark read older than 7 days" iconName:@"menu_icn_markread.png" days:7];
+        [self addTitle:@"Mark read older than 14 days" iconName:@"menu_icn_markread.png" days:14];
     }
-    
-    // Might want different icons for each
-    [self addTitle:@"Mark read older than 1 day" iconName:@"menu_icn_markread.png" days:1];
-    [self addTitle:@"Mark read older than 3 days" iconName:@"menu_icn_markread.png" days:3];
-    [self addTitle:@"Mark read older than 7 days" iconName:@"menu_icn_markread.png" days:7];
-    [self addTitle:@"Mark read older than 14 days" iconName:@"menu_icn_markread.png" days:14];
+}
+
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName olderNewerMode:(MarkReadMenuOlderNewerMode)mode {
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuOlderNewer : @(mode)}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName days:(NSInteger)days {
@@ -116,14 +150,27 @@ NSString * const MarkReadMenuDays = @"days";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSInteger days = [self.menuOptions[indexPath.row][MarkReadMenuDays] integerValue];
-    
     self.marked = YES;
     
-    if (days < 0) {
-        [self.appDelegate.feedsViewController markVisibleStoriesRead];
+    if (self.olderNewerStoriesCollection) {
+        MarkReadMenuOlderNewerMode mode = [self.menuOptions[indexPath.row][MarkReadMenuOlderNewer] integerValue];
+        
+        if (mode == MarkReadMenuOlderNewerModeToggle) {
+            [self.olderNewerStoriesCollection toggleStoryUnread];
+        } else {
+            NSInteger timestamp = [[self.olderNewerStory objectForKey:@"story_timestamp"] integerValue];
+            BOOL older = mode == MarkReadMenuOlderNewerModeOlder;
+            
+            [self.appDelegate.feedDetailViewController markFeedsReadFromTimestamp:timestamp andOlder:older];
+        }
     } else {
-        [self.appDelegate.feedsViewController markFeedsRead:self.feedIds cutoffDays:days];
+        NSInteger days = [self.menuOptions[indexPath.row][MarkReadMenuDays] integerValue];
+        
+        if (days < 0) {
+            [self.appDelegate.feedsViewController markVisibleStoriesRead];
+        } else {
+            [self.appDelegate.feedsViewController markFeedsRead:self.feedIds cutoffDays:days];
+        }
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];

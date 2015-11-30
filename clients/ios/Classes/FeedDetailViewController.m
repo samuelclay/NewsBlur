@@ -41,13 +41,9 @@
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
 #define kTableViewShortRowDifference 17;
-#define kMarkReadActionSheet 1
-#define kSettingsActionSheet 2
-#define kMarkOlderNewerActionSheet 3
 
 @interface FeedDetailViewController ()
 
-@property (nonatomic) UIActionSheet* actionSheet_;  // add this line
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 
 @end
@@ -63,7 +59,6 @@
 @synthesize appDelegate;
 @synthesize pageFetching;
 @synthesize pageFinished;
-@synthesize actionSheet_;
 @synthesize finishedAnimatingIn;
 @synthesize notifier;
 @synthesize searchBar;
@@ -119,11 +114,11 @@
     separatorBarButton.isAccessibilityElement = NO;
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
-    settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsActionSheet:)];
+    settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsMenu:)];
     settingsBarButton.accessibilityLabel = @"Settings";
     
     UIImage *markreadImage = [UIImage imageNamed:@"markread.png"];
-    feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
+    feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadMenu:)];
     feedMarkReadButton.accessibilityLabel = @"Mark all as read";
     
     UIView *view = [feedMarkReadButton valueForKey:@"view"];
@@ -1735,43 +1730,16 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)handleMarkReadLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     
-    [self doOpenMarkReadActionSheet:nil];
+    [self doOpenMarkReadMenu:nil];
 }
 
 - (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath {
-    // already displaying action sheet?
-    if (self.actionSheet_) {
-        [self.actionSheet_ dismissWithClickedButtonIndex:-1 animated:YES];
-        self.actionSheet_ = nil;
-        return;
-    }
-    
-    NSString *title = storiesCollection.isRiverView ? storiesCollection.activeFolder : [storiesCollection.activeFeed objectForKey:@"feed_title"];
-    UIActionSheet *options = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
-    
-    self.actionSheet_ = options;
-    [storiesCollection calculateStoryLocations];
-    
-    if ([storiesCollection isStoryUnread:story]) {
-        [options addButtonWithTitle:@"Mark as read"];
-    } else {
-        [options addButtonWithTitle:@"Mark as unread"];
-    }
-    
-    if ([storiesCollection.activeOrder isEqualToString:@"newest"]) {
-        [options addButtonWithTitle:@"Mark newer stories read"];
-        [options addButtonWithTitle:@"Mark older stories read"];
-    } else {
-        [options addButtonWithTitle:@"Mark older stories read"];
-        [options addButtonWithTitle:@"Mark newer stories read"];
-    }
-    
-    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-    options.tag = kMarkOlderNewerActionSheet;
-    
     CGRect rect = [self.storyTitlesTable rectForRowAtIndexPath:indexPath];
     rect.size.width = 30.0;
-    [options showFromRect:rect inView:self.storyTitlesTable animated:YES];
+    
+    [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.storyTitlesTable sourceRect:rect completionHandler:^(BOOL marked) {
+        [self.storyTitlesTable reloadData];
+    }];
 }
 
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
@@ -1829,7 +1797,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 //    [appDelegate loadFeedDetailView];
 }
 
-- (IBAction)doOpenMarkReadActionSheet:(id)sender {
+- (IBAction)doOpenMarkReadMenu:(id)sender {
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     
@@ -1871,36 +1839,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-//    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
-    
-    if (actionSheet.tag == kSettingsActionSheet) {
-        if (buttonIndex == 0) {
-            [self confirmDeleteSite];
-        } else if (buttonIndex == 1) {
-            [self openMoveView];
-        } else if (buttonIndex == 2) {
-            [self instafetchFeed];
-        }
-    } else if (actionSheet.tag == kMarkOlderNewerActionSheet) {
-        if (buttonIndex == 0) {
-            [storiesCollection toggleStoryUnread];
-            [self.storyTitlesTable reloadData];
-        } else if (buttonIndex == 1 || buttonIndex == 2) {
-            NSInteger timestamp = [[appDelegate.activeStory objectForKey:@"story_timestamp"] integerValue];
-            BOOL older = [storiesCollection.activeOrder isEqualToString:@"newest"] ? buttonIndex == 2 : buttonIndex == 1;
-            
-            [self markFeedsReadFromTimestamp:timestamp andOlder:older];
-        }
-    }
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    // just set to nil
-    actionSheet_ = nil;
-}
-
-- (IBAction)doOpenSettingsActionSheet:(id)sender {
+- (IBAction)doOpenSettingsMenu:(id)sender {
     if (self.presentedViewController) {
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         return;
