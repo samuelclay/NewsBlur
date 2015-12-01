@@ -1082,9 +1082,14 @@
     }
     [appDelegate.storyPageControl advanceToNextUnread];
     
-    if (!storiesCollection.storyCount && [results objectForKey:@"message"]) {
-        self.messageLabel.text = [results objectForKey:@"message"];
-        self.messageView.hidden = NO;
+    if (!storiesCollection.storyCount) {
+        if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
+            self.messageLabel.text = [results objectForKey:@"message"];
+            self.messageView.hidden = NO;
+        } else {
+            self.messageView.hidden = YES;
+        }
+        [storyTitlesTable setContentOffset:CGPointZero animated:YES];
     } else {
         self.messageView.hidden = YES;
     }
