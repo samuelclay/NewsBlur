@@ -327,7 +327,6 @@ public class DatabaseConstants {
     public static final String JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP =
         " INNER JOIN " + SOCIALFEED_TABLE + " ON " + SOCIALFEED_TABLE + "." + SOCIAL_FEED_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_USER_ID;
 
-    public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " DESC";
     public static final String READ_STORY_ORDER = STORY_LAST_READ_DATE + " DESC";
 
     /**
@@ -419,6 +418,15 @@ public class DatabaseConstants {
             return STORY_TIMESTAMP + " DESC, " + STORY_HASH + " DESC";
         } else {
             return STORY_TIMESTAMP + " ASC, " + STORY_HASH + " ASC";
+        }
+    }
+
+    public static String getSavedStoriesSortOrder(StoryOrder storyOrder) {
+        // "newest" in this context means "most recently saved"
+        if (storyOrder == StoryOrder.NEWEST) {
+            return STORY_STARRED_DATE + " DESC";
+        } else {
+            return STORY_STARRED_DATE + " ASC";
         }
     }
     

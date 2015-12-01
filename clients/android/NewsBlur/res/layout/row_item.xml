@@ -35,11 +35,24 @@
         android:layout_marginRight="7dp"
         android:layout_centerVertical="true" />
 
+    <ImageView
+        android:id="@+id/row_item_saved_icon"
+        android:src="@drawable/clock"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="8dp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/row_item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_toLeftOf="@id/row_item_saved_icon"
         android:layout_marginTop="2dp"
         android:maxLines="2"
         android:ellipsize="end"

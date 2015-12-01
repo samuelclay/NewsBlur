@@ -328,9 +328,11 @@ public class APIManager {
 
 		// request params common to most story sets
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-        if ( !(fs.isAllRead() || fs.isAllSaved())) {
-		    values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+        if (!(fs.isAllRead() || fs.isAllSaved())) {
 		    values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
+        }
+        if (!fs.isAllRead()) {
+		    values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
         }
 
 		APIResponse response = get(uri.toString(), values);

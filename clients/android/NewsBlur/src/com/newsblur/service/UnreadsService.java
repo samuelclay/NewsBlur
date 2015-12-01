@@ -162,6 +162,10 @@ public class UnreadsService extends SubService {
         doMetadata = true;
     }
 
+    public static boolean isDoMetadata() {
+        return doMetadata;
+    }
+
     public static boolean running() {
         return Running;
     }
