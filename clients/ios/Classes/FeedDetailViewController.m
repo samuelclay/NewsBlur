@@ -456,7 +456,7 @@
     if (indexPath && location >= 0) {
         [self.storyTitlesTable selectRowAtIndexPath:indexPath
                                            animated:NO
-                                     scrollPosition:UITableViewScrollPositionMiddle];
+                                     scrollPosition:UITableViewScrollPositionNone];
         if (deselect) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
