@@ -24,6 +24,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
+from django.utils.encoding import smart_str
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
@@ -83,7 +84,6 @@ class Feed(models.Model):
     s3_page = models.NullBooleanField(default=False, blank=True, null=True)
     s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
     search_indexed = models.NullBooleanField(default=None, null=True, blank=True)
-
 
     class Meta:
         db_table="feeds"
@@ -1900,13 +1900,13 @@ class MStory(mongo.Document):
         self.story_hash = self.feed_guid_hash
         
         if self.story_content:
-            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content_z = zlib.compress(smart_str(self.story_content))
             self.story_content = None
         if self.story_original_content:
-            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content_z = zlib.compress(smart_str(self.story_original_content))
             self.story_original_content = None
         if self.story_latest_content:
-            self.story_latest_content_z = zlib.compress(self.story_latest_content)
+            self.story_latest_content_z = zlib.compress(smart_str(self.story_latest_content))
             self.story_latest_content = None
         if self.story_title and len(self.story_title) > story_title_max:
             self.story_title = self.story_title[:story_title_max]
