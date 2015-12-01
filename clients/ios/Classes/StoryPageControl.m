@@ -279,6 +279,7 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
+    [self reorientPages];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -324,13 +325,14 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         _orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        NSLog(@"Story page control did re-orient.");
+        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
     }];
 }
 
@@ -346,6 +348,13 @@
             previousPage.view.hidden = YES;
         }
     }
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    [self layoutForInterfaceOrientation:orientation];
+    [self adjustDragBar:orientation];
 }
 
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
@@ -436,13 +445,16 @@
     [self resizeScrollView]; // Will change currentIndex, so preserve
     
     // Scroll back to preserved index
-    CGRect frame = self.scrollView.frame;
+    CGRect frame = self.scrollView.bounds;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        frame = self.view.bounds;
+    }
     frame.origin.x = frame.size.width * currentIndex;
     frame.origin.y = 0;
     [self.scrollView scrollRectToVisible:frame animated:NO];
-
+    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.notifier hide];
+    [self hideNotifier];
 }
 
 - (void)refreshHeaders {
@@ -461,14 +473,15 @@
     [nextPage refreshSideoptions];
     [previousPage refreshSideoptions];
 }
+
 - (void)resizeScrollView {
     NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width
                                              * widthCount,
-                                             self.scrollView.frame.size.height);
+                                             self.scrollView.bounds.size.height);
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -533,7 +546,7 @@
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
-    NSLog(@"---> Story page control orient page: %@ (%d)", NSStringFromCGRect(self.view.bounds), suppressRedraw);
+    NSLog(@"---> Story page control orient page: %@ (%d-%d)", NSStringFromCGRect(self.view.bounds), pageController.pageIndex, suppressRedraw);
 
     if (suppressRedraw) return;
     
@@ -585,9 +598,6 @@
         [pageController clearStory];
     }
     
-    if (!suppressRedraw) {
-        [self resizeScrollView];
-    }
     [self setTextButton];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
@@ -759,7 +769,7 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
-    CGFloat pageWidth = self.scrollView.frame.size.width;
+    CGFloat pageWidth = self.view.bounds.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     
