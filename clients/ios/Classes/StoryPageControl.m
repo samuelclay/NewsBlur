@@ -292,7 +292,8 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
-    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
+    [self reorientPages];
+//    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
 }
 
@@ -324,11 +325,12 @@
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        _orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        
+        NSLog(@"Story page control did re-orient.");
     }];
 }
 
@@ -531,7 +533,8 @@
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
-    
+    NSLog(@"---> Story page control orient page: %@ (%d)", NSStringFromCGRect(self.view.bounds), suppressRedraw);
+
     if (suppressRedraw) return;
     
     //    NSInteger wasIndex = pageController.pageIndex;
