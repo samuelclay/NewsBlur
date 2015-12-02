@@ -1145,7 +1145,7 @@ class Feed(models.Model):
                         # Don't mangle stories with code, just use new
                         story_content_diff = story_content
                     else:
-                        story_content_diff = htmldiff(unicode(original_content), unicode(story_content))
+                        story_content_diff = htmldiff(smart_unicode(original_content), smart_unicode(story_content))
                 else:
                     story_content_diff = original_content
                 # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
