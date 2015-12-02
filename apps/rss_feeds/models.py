@@ -24,7 +24,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
-from django.utils.encoding import smart_str
+from django.utils.encoding import smart_str, smart_unicode
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
@@ -1484,11 +1484,11 @@ class Feed(models.Model):
                 continue
 
             if 'story_latest_content_z' in existing_story:
-                existing_story_content = unicode(zlib.decompress(existing_story.story_latest_content_z))
+                existing_story_content = smart_unicode(zlib.decompress(existing_story.story_latest_content_z))
             elif 'story_latest_content' in existing_story:
                 existing_story_content = existing_story.story_latest_content
             elif 'story_content_z' in existing_story:
-                existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
+                existing_story_content = smart_unicode(zlib.decompress(existing_story.story_content_z))
             elif 'story_content' in existing_story:
                 existing_story_content = existing_story.story_content
             else:
