@@ -85,8 +85,8 @@
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;
     
-    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
-    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));
+//    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
+//    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));
 	[self.scrollView addSubview:currentPage.view];
 	[self.scrollView addSubview:nextPage.view];
     [self.scrollView addSubview:previousPage.view];
@@ -97,10 +97,10 @@
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
-    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
-    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
+//    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
+//    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
     [self.scrollView sizeToFit];
-    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
+//    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
     
     popoverClass = [WYPopoverController class];
     
@@ -325,14 +325,14 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
+//        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         _orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
+//        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
     }];
 }
 
@@ -407,7 +407,7 @@
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
     
-    NSLog(@"Pages are at: %f / %f / %f (%@)", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x, NSStringFromCGRect(frame));
+//    NSLog(@"Pages are at: %f / %f / %f (%@)", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x, NSStringFromCGRect(frame));
     currentPage.view.frame = self.scrollView.frame;
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;
@@ -452,7 +452,7 @@
     frame.origin.x = frame.size.width * currentIndex;
     frame.origin.y = 0;
     [self.scrollView scrollRectToVisible:frame animated:NO];
-    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
+//    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
 }
@@ -546,7 +546,7 @@
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
-    NSLog(@"---> Story page control orient page: %@ (%d-%d)", NSStringFromCGRect(self.view.bounds), pageController.pageIndex, suppressRedraw);
+//    NSLog(@"---> Story page control orient page: %@ (%d-%d)", NSStringFromCGRect(self.view.bounds), pageController.pageIndex, suppressRedraw);
 
     if (suppressRedraw) return;
     
