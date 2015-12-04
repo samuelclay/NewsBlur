@@ -1550,10 +1550,10 @@ a img {
 .NB-feedbar .NB-story-title-indicator .NB-story-title-indicator-count .unread_count_starred {
     display: none;
 }
-.NB-feedbar .NB-story-title-indicator.unread_threshold_negative {
+/*.NB-feedbar .NB-story-title-indicator.unread_threshold_negative {
   display: none;
 }
-.NB-feedbar .NB-story-title-indicator .feed_counts_floater {
+*/.NB-feedbar .NB-story-title-indicator .feed_counts_floater {
   float: left;
   padding: 2px 0 0;
   text-align: center;
