@@ -23,6 +23,7 @@ from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
+from django.utils.encoding import smart_unicode
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
 from apps.recommendations.models import RecommendedFeed
@@ -1055,8 +1056,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             Site.objects.get_current().domain,
             story['story_feed_id'],
             feed.feed_title if feed else "",
-            story['story_content']
-            )
+            smart_unicode(story['story_content'])
+        )
         story_data = {
             'title': story['story_title'],
             'link': story['story_permalink'],
