@@ -357,7 +357,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             newFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story) {
-			FeedUtils.sendStory(story, this);
+			FeedUtils.sendStoryBrief(story, this);
+			return true;
+		} else if (item.getItemId() == R.id.menu_send_story_full) {
+			FeedUtils.sendStoryFull(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
@@ -775,7 +778,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     public void overlaySend(View v) {
         if ((readingAdapter == null) || (pager == null)) return;
 		Story story = readingAdapter.getStory(pager.getCurrentItem());
-        FeedUtils.sendStory(story, this);
+        FeedUtils.sendStoryBrief(story, this);
     }
 
     public void overlayText(View v) {

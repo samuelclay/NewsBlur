@@ -15,6 +15,8 @@ public class FeedReading extends Reading {
         super.onCreate(savedInstanceBundle);
 
         Feed feed = FeedUtils.dbHelper.getFeed(fs.getSingleFeed());
+        if (feed == null) finish(); // don't open fatally stale intents
+
         Classifier classifier = FeedUtils.dbHelper.getClassifierForFeed(feed.feedId);
 
         UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);

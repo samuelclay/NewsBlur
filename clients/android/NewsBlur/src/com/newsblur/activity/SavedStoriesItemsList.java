@@ -58,19 +58,9 @@ public class SavedStoriesItemsList extends ItemsList {
         }
     }
 
-    // Note: the following four methods are required by our parent spec but are not
-    // relevant since saved stories have no read/unread status nor ordering.
+    // Note: the following two methods are required by our parent spec but are not
+    // relevant since saved stories have no read/unread status.
 
-    @Override
-    public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
-    }
-
-    @Override
-    public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, newValue);
-    }
-    
     @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, newValue);

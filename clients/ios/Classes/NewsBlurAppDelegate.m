@@ -1908,10 +1908,10 @@
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
+    if (!storyPageControl.previousPage || !storyPageControl.currentPage || !storyPageControl.nextPage) return;
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
-        if (!page) continue;
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
@@ -2904,7 +2904,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [self.database inDatabase:^(FMDatabase *db) {
-            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
+//            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
             [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
              [story objectForKey:@"story_feed_id"],
              [story objectForKey:@"story_hash"],

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="flow" format="string" />
-    <attr name="defaultImageSize" format="integer" />
+    <attr name="imageViewSize" format="integer" />
     <attr name="selectorFolderBackground" format="string" />
     <attr name="selectorFeedBackground" format="string" />
     <attr name="selectorRowFolderName" format="string" />
@@ -32,6 +32,6 @@
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />
-        <attr name="defaultImageSize" />
+        <attr name="imageViewSize" />
     </declare-styleable>
 </resources>

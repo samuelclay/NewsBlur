@@ -386,8 +386,6 @@
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
-
-//    [self testForTryFeed];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -414,6 +412,8 @@
     }
 
     [self.notifier setNeedsLayout];
+    
+    [self testForTryFeed];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -456,7 +456,7 @@
     if (indexPath && location >= 0) {
         [self.storyTitlesTable selectRowAtIndexPath:indexPath
                                            animated:NO
-                                     scrollPosition:UITableViewScrollPositionMiddle];
+                                     scrollPosition:UITableViewScrollPositionNone];
         if (deselect) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
@@ -1082,9 +1082,14 @@
     }
     [appDelegate.storyPageControl advanceToNextUnread];
     
-    if (!storiesCollection.storyCount && [results objectForKey:@"message"]) {
-        self.messageLabel.text = [results objectForKey:@"message"];
-        self.messageView.hidden = NO;
+    if (!storiesCollection.storyCount) {
+        if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
+            self.messageLabel.text = [results objectForKey:@"message"];
+            self.messageView.hidden = NO;
+        } else {
+            self.messageView.hidden = YES;
+        }
+        [storyTitlesTable setContentOffset:CGPointZero animated:YES];
     } else {
         self.messageView.hidden = YES;
     }
@@ -1179,6 +1184,10 @@
                 [self changeIntelligence:score];
             }
             NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyHashStr];
+            if (locationOfStoryId == -1) {
+                NSLog(@"---> Could not find story: %@", storyHashStr);
+                return;
+            }
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
             
             [self.storyTitlesTable selectRowAtIndexPath:indexPath
