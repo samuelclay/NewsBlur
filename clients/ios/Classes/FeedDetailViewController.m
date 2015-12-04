@@ -386,8 +386,6 @@
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
-
-//    [self testForTryFeed];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -414,6 +412,8 @@
     }
 
     [self.notifier setNeedsLayout];
+    
+    [self testForTryFeed];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1184,6 +1184,10 @@
                 [self changeIntelligence:score];
             }
             NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyHashStr];
+            if (locationOfStoryId == -1) {
+                NSLog(@"---> Could not find story: %@", storyHashStr);
+                return;
+            }
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
             
             [self.storyTitlesTable selectRowAtIndexPath:indexPath
