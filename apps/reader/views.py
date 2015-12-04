@@ -5,6 +5,7 @@ import redis
 import requests
 import random
 import zlib
+#import ipdb
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -106,9 +107,7 @@ def dashboard(request, **kwargs):
         del request.session['import_from_google_reader']
     
     if not user.is_active:
-        url = "https://%s%s" % (Site.objects.get_current().domain,
-                                 reverse('stripe-form'))
-        return HttpResponseRedirect(url)
+        return HttpResponseRedirect(reverse('stripe-form'))
 
     logging.user(request, "~FBLoading dashboard")
 
@@ -182,9 +181,7 @@ def signup(request):
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             if not new_user.is_active:
-                url = "https://%s%s" % (Site.objects.get_current().domain,
-                                         reverse('stripe-form'))
-                return HttpResponseRedirect(url)
+                return HttpResponseRedirect(reverse('stripe-form'))
     
     return index(request)
         
@@ -963,6 +960,7 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
 
 def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     domain = Site.objects.get_current().domain
+    scheme = 'https' if request.is_secure() else 'http'
     
     try:
         user = User.objects.get(pk=user_id)
@@ -1032,9 +1030,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         
     data = {}
     data['title'] = "%s from %s (%s sites)" % (folder_title, user.username, len(feed_ids))
-    data['link'] = "https://%s%s" % (
+    data['link'] = "%s://%s%s" % (
+        scheme,
         domain,
-        reverse('folder', kwargs=dict(folder_name=folder_title)))
+        reverse('folder', kwargs=dict(folder_name=folder_title))
+    )
     data['description'] = "Unread stories in %s on NewsBlur. From %s's account and contains %s sites." % (
         folder_title,
         user.username,
@@ -1043,7 +1043,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
     data['docs'] = None
     data['author_name'] = user.username
-    data['feed_url'] = "https://%s%s" % (
+    data['feed_url'] = "%s://%s%s" % (
+        scheme,
         domain,
         reverse('folder-rss-feed', 
                 kwargs=dict(user_id=user_id, secret_token=secret_token, unread_filter=unread_filter, folder_slug=folder_slug)),
@@ -1063,7 +1064,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             'link': story['story_permalink'],
             'description': story_content,
             'categories': story['story_tags'],
-            'unique_id': 'https://%s/site/%s/%s/' % (domain, story['story_feed_id'], story['guid_hash']),
+            'unique_id': '%s://%s/site/%s/%s/' % (scheme, domain, story['story_feed_id'], story['guid_hash']),
             'pubdate': localtime_for_timezone(story['story_date'], user.profile.timezone),
         }
         if story['story_authors']:
@@ -1073,9 +1074,9 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     if not user.profile.is_premium:
         story_data = {
             'title': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
-            'link': "https://%s" % domain,
+            'link': "%s://%s" % (scheme, domain),
             'description': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
-            'unique_id': "https://%s/premium_only" % domain,
+            'unique_id': "%s://%s/premium_only" % (scheme, domain),
             'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),
         }
         rss.add_item(**story_data)
