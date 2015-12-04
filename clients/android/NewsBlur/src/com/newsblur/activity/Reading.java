@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -88,6 +89,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @FindView(R.id.reading_overlay_text) Button overlayText;
     @FindView(R.id.reading_overlay_send) Button overlaySend;
     @FindView(R.id.reading_empty_view_text) View emptyViewText;
+    @FindView(R.id.reading_sync_status) TextView overlayStatusText;
     
     ViewPager pager;
 
@@ -386,11 +388,21 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
 	protected void handleUpdate(int updateType) {
+        Log.d(this.getClass().getName(), "reading act update " + updateType);
         if ((updateType & UPDATE_REBUILD) != 0) {
             finish();
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
+            if (overlayStatusText != null) {
+                String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
+                if (syncStatus != null)  {
+                    overlayStatusText.setText(syncStatus);
+                    overlayStatusText.setVisibility(View.VISIBLE);
+                } else {
+                    overlayStatusText.setVisibility(View.GONE);
+                }
+            }
         }
         if ((updateType & UPDATE_STORY) != 0) {    
             updateCursor();

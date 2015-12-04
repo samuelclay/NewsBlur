@@ -139,6 +139,8 @@ public class NBSyncService extends Service {
         service doesn't spin in the background chewing up battery when the API is unavailable. */
     private static long lastAPIFailure = 0;
 
+    private static int lastActionCount = 0;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -308,12 +310,13 @@ public class NBSyncService extends Service {
         Cursor c = null;
         try {
             c = dbHelper.getActions(false);
-            if (c.getCount() < 1) return;
+            lastActionCount = c.getCount();
+            if (lastActionCount < 1) return;
 
             ActionsRunning = true;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
             actionsloop : while (c.moveToNext()) {
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
                 ReadingAction ra;
                 try {
@@ -344,6 +347,7 @@ public class NBSyncService extends Service {
                     dbHelper.clearAction(id);
                     FollowupActions.add(ra);
                 }
+                lastActionCount--;
             }
         } finally {
             closeQuietly(c);
@@ -803,7 +807,7 @@ public class NBSyncService extends Service {
         if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
         if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
-        if (ActionsRunning||RecountsRunning) return context.getResources().getString(R.string.sync_status_actions);
+        if (ActionsRunning||RecountsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
