@@ -105,7 +105,7 @@
     <color name="progress_circle_remaining">#D5D7CF</color>
 
     <color name="status_overlay_text">#CCFFFFFF</color>
-    <color name="status_overlay_background">#99777777</color>
+    <color name="status_overlay_background">#AA777777</color>
 
     <color name="story_buttons_dark">#90928b</color>
 
