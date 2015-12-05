@@ -364,6 +364,7 @@ public class NBSyncService extends Service {
         if (HaltNow) return;
         if (FollowupActions.size() < 1) return;
 
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
             int impact = ra.doLocal(dbHelper);
@@ -807,7 +808,8 @@ public class NBSyncService extends Service {
         if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
         if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
-        if (ActionsRunning||RecountsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
+        if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
+        if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
