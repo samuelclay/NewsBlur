@@ -296,6 +296,9 @@
 }
 
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
+    if (viewController == self.masterNavigationController.presentedViewController)
+        return; // nothing to do, already showing this controller
+
     [self hidePopoverAnimated:YES];
 
     viewController.modalPresentationStyle = UIModalPresentationPopover;
