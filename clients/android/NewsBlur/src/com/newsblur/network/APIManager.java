@@ -217,7 +217,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		values.put(APIConstants.PARAMETER_EMAIL, email);
 		final APIResponse response = post(APIConstants.URL_SIGNUP, values);
-        RegisterResponse registerResponse = ((RegisterResponse) response.getResponse(gson, RegisterResponse.class));
+        RegisterResponse registerResponse = response.getRegisterResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
 

@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.util.AppConstants;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -142,6 +143,21 @@ public class APIResponse {
             return response;
         } else {
             LoginResponse response = gson.fromJson(this.responseBody, LoginResponse.class);
+            return response;
+        }
+    }
+
+    /**
+     * Special binder for RegisterResponses, since they can't inherit from NewsBlurResponse due to
+     * the design of the API fields.
+     */ 
+    public RegisterResponse getRegisterResponse(Gson gson) {
+        if (this.isError) {
+            RegisterResponse response = new RegisterResponse();
+            response.isProtocolError = true;
+            return response;
+        } else {
+            RegisterResponse response = gson.fromJson(this.responseBody, RegisterResponse.class);
             return response;
         }
     }
