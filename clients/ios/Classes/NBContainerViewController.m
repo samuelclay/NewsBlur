@@ -59,8 +59,6 @@
 @property (readwrite) UIDeviceOrientation rotatingToOrientation;
 @property (nonatomic) UIBackgroundTaskIdentifier reorientBackgroundTask;
 
-@property (nonatomic, strong) UIPopoverController *popoverController;
-
 @end
 
 @implementation NBContainerViewController
@@ -82,7 +80,6 @@
 @synthesize storyNavigationController;
 @synthesize storyTitlesYCoordinate;
 @synthesize storyTitlesOnLeft;
-@synthesize popoverController;
 @synthesize storyTitlesStub;
 @synthesize isSharingStory;
 @synthesize isHidingStory;
@@ -299,13 +296,11 @@
 }
 
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
-    if (self.masterNavigationController.presentedViewController) {
-        [self.masterNavigationController.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-    }
-    
+    [self hidePopoverAnimated:YES];
+
     viewController.modalPresentationStyle = UIModalPresentationPopover;
     viewController.preferredContentSize = contentSize;
-    
+
     UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
     popoverPresentationController.delegate = self;
     popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
@@ -382,17 +377,17 @@
     [self showPopoverWithViewController:self.appDelegate.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPageControl.view sourceRect:frame];
 }
 
-- (void)showSendToPopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-    }
+- (BOOL)hidePopoverAnimated:(BOOL)animated {
+    UIViewController *presentedViewController = self.masterNavigationController.presentedViewController;
+    if (!presentedViewController)
+        return NO;
+
+    [presentedViewController dismissViewControllerAnimated:animated completion:nil];
+    return YES;
 }
 
 - (void)hidePopover {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:YES];
-    }
-    popoverController = nil;
+    [self hidePopoverAnimated:YES];
     [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
