@@ -607,7 +607,8 @@
     }];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
+        BOOL fromPopover = [self.masterContainerViewController hidePopoverAnimated:NO];
+        [self.masterContainerViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
@@ -1007,6 +1008,10 @@
     }
 }
 
+- (BOOL)isCompactWidth {
+    return self.compactWidth > 0.0;
+}
+
 - (void)confirmLogout {
     UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" 
                                                             message:nil 
@@ -1334,7 +1339,7 @@
 }
 
 - (void)loadStoryDetailView {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
         [navigationController pushViewController:storyPageControl animated:YES];
         navigationController.navigationItem.hidesBackButton = YES;
     }
@@ -1346,11 +1351,22 @@
         [self.storyPageControl view];
         [self.storyPageControl.view setNeedsLayout];
         [self.storyPageControl.view layoutIfNeeded];
-        [self.storyPageControl changePage:activeStoryLocation animated:animated];
-        [self.storyPageControl animateIntoPlace:YES];
+        
+        NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
+        
+        if (self.isCompactWidth) {
+            [self performSelector:@selector(deferredChangePage:) withObject:params afterDelay:0.0];
+        } else {
+            [self deferredChangePage:params];
+        }
     }
 
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
+}
+
+- (void)deferredChangePage:(NSDictionary *)params {
+    [self.storyPageControl changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
+    [self.storyPageControl animateIntoPlace:YES];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -2038,14 +2054,18 @@
 }
 
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler {
-    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero completionHandler:completionHandler];
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount olderNewerCollection:nil olderNewerStory:nil barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero completionHandler:completionHandler];
 }
 
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
-    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 olderNewerCollection:nil olderNewerStory:nil barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
 }
 
-- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+- (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:nil collectionTitle:nil visibleUnreadCount:0 olderNewerCollection:storiesCollection olderNewerStory:olderNewerStory barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount olderNewerCollection:(StoriesCollection *)olderNewerCollection olderNewerStory:(NSDictionary *)olderNewerStory barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
     if (!self.markReadMenuViewController) {
         self.markReadMenuViewController = [MarkReadMenuViewController new];
         self.markReadMenuViewController.modalPresentationStyle = UIModalPresentationPopover;
@@ -2054,6 +2074,8 @@
     self.markReadMenuViewController.collectionTitle = collectionTitle;
     self.markReadMenuViewController.feedIds = feedIds;
     self.markReadMenuViewController.visibleUnreadCount = visibleUnreadCount;
+    self.markReadMenuViewController.olderNewerStoriesCollection = olderNewerCollection;
+    self.markReadMenuViewController.olderNewerStory = olderNewerStory;
     self.markReadMenuViewController.completionHandler = completionHandler;
     
     UIPopoverPresentationController *popoverPresentationController = self.markReadMenuViewController.popoverPresentationController;

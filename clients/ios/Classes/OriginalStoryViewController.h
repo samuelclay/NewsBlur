@@ -16,7 +16,7 @@
 @class NewsBlurAppDelegate;
 
 @interface OriginalStoryViewController : BaseViewController
-<UIActionSheetDelegate, UITextFieldDelegate, WKNavigationDelegate, WKUIDelegate,
+<UITextFieldDelegate, WKNavigationDelegate, WKUIDelegate,
 UIGestureRecognizerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;

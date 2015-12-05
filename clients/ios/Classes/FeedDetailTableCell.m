@@ -166,6 +166,10 @@ static UIFont *indicatorFont = nil;
 @synthesize appDelegate;
 
 - (void)drawRect:(CGRect)r {
+    if (!cell) {
+        return;
+    }
+    
     int riverPadding = 0;
     if (cell.isRiverOrSocial) {
         riverPadding = 20;

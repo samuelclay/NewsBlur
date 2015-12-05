@@ -27,8 +27,7 @@ WYPopoverControllerDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,
 MCSwipeTableViewCellDelegate,
-UIGestureRecognizerDelegate,
-UIActionSheetDelegate> {
+UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;

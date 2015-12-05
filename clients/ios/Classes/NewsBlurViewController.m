@@ -171,6 +171,10 @@ static UIFont *userLabelFont;
     
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
+    [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierShift action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
+    [self addKeyCommandWithInput:@"a" modifierFlags:0 action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -231,6 +235,8 @@ static UIFont *userLabelFont;
     [self refreshHeaderCounts];
 
     self.interactiveFeedDetailTransition = NO;
+
+    [self becomeFirstResponder];
 }
 
 - (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
@@ -364,6 +370,10 @@ static UIFont *userLabelFont;
     [self refreshHeaderCounts];
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
 
 #pragma mark -
 #pragma mark Initialization
@@ -954,35 +964,6 @@ static UIFont *userLabelFont;
     }
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSString *feedId = actionSheet.accessibilityValue;
-    
-    switch (buttonIndex) {
-        case 0:
-            [self markFeedRead:feedId cutoffDays:0];
-            break;
-        case 1:
-            [self markFeedRead:feedId cutoffDays:1];
-            break;
-        case 2:
-            [self markFeedRead:feedId cutoffDays:3];
-            break;
-        case 3:
-            [self markFeedRead:feedId cutoffDays:7];
-            break;
-        case 4:
-            [self markFeedRead:feedId cutoffDays:14];
-            break;
-    }
-    
-    for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
-        if (cell.highlighted) {
-            [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
-            break;
-        }
-    }
-}
-
 #pragma mark -
 #pragma mark Preferences
 
@@ -1309,7 +1290,9 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
 }
 
-
+- (void)selectEverything:(id)sender {
+    [self didSelectSectionHeaderWithTag:2];
+}
 
 #pragma mark - MCSwipeTableViewCellDelegate
 
@@ -1541,6 +1524,22 @@ heightForHeaderInSection:(NSInteger)section {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
     [userPreferences synchronize];
+}
+
+- (void)selectPreviousIntelligence:(id)sender {
+    NSInteger selectedSegmentIndex = intelligenceControl.selectedSegmentIndex;
+    if (selectedSegmentIndex <= 0)
+        return;
+    [intelligenceControl setSelectedSegmentIndex:selectedSegmentIndex - 1];
+    [self selectIntelligence];
+}
+
+- (void)selectNextIntelligence:(id)sender {
+    NSInteger selectedSegmentIndex = intelligenceControl.selectedSegmentIndex;
+    if (selectedSegmentIndex >= intelligenceControl.numberOfSegments)
+        return;
+    [intelligenceControl setSelectedSegmentIndex:selectedSegmentIndex + 1];
+    [self selectIntelligence];
 }
 
 - (IBAction)selectIntelligence {

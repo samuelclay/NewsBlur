@@ -12,7 +12,7 @@
 @class NewsBlurAppDelegate;
 
 @interface NBContainerViewController : UIViewController
-<UIPopoverControllerDelegate> {
+<UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL interactiveOriginalTransition;
@@ -52,7 +52,7 @@
 - (void)showFontSettingsPopover:(id)sender;
 - (void)showTrainingPopover:(id)sender;
 - (void)showUserTagsPopover:(id)sender;
-- (void)showSendToPopover:(id)sender;
 - (void)showSitePopover:(id)sender;
+- (BOOL)hidePopoverAnimated:(BOOL)animated;
 - (void)hidePopover;
 @end
