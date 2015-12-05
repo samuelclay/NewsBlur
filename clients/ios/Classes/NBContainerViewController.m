@@ -296,23 +296,23 @@
 }
 
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
-    [self hidePopoverAnimated:YES];
-
     viewController.modalPresentationStyle = UIModalPresentationPopover;
     viewController.preferredContentSize = contentSize;
 
-    UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
-    popoverPresentationController.delegate = self;
-    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    
-    if (barButtonItem) {
-        popoverPresentationController.barButtonItem = barButtonItem;
-    } else {
-        popoverPresentationController.sourceView = sourceView;
-        popoverPresentationController.sourceRect = sourceRect;
-    }
-    
-    [self.masterNavigationController presentViewController:viewController animated:YES completion:nil];
+    [self hidePopoverAnimated:NO completion:^{
+        UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
+        popoverPresentationController.delegate = self;
+        popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+
+        if (barButtonItem) {
+            popoverPresentationController.barButtonItem = barButtonItem;
+        } else {
+            popoverPresentationController.sourceView = sourceView;
+            popoverPresentationController.sourceRect = sourceRect;
+        }
+
+        [self.masterNavigationController presentViewController:viewController animated:YES completion:nil];
+    }];
 }
 
 - (void)showUserProfilePopover:(id)sender {
@@ -377,13 +377,20 @@
     [self showPopoverWithViewController:self.appDelegate.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPageControl.view sourceRect:frame];
 }
 
-- (BOOL)hidePopoverAnimated:(BOOL)animated {
+- (BOOL)hidePopoverAnimated:(BOOL)animated completion:(void (^ __nullable)(void))completion {
     UIViewController *presentedViewController = self.masterNavigationController.presentedViewController;
-    if (!presentedViewController)
+    if (!presentedViewController) {
+        if (completion)
+            completion();
         return NO;
+    }
 
-    [presentedViewController dismissViewControllerAnimated:animated completion:nil];
+    [presentedViewController dismissViewControllerAnimated:animated completion:completion];
     return YES;
+}
+
+- (BOOL)hidePopoverAnimated:(BOOL)animated {
+    return [self hidePopoverAnimated:animated completion:nil];
 }
 
 - (void)hidePopover {
