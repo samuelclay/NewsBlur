@@ -607,7 +607,8 @@
     }];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
+        BOOL fromPopover = [self.masterContainerViewController hidePopoverAnimated:NO];
+        [self.masterContainerViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;

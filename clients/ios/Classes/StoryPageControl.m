@@ -925,9 +925,6 @@
 
 - (IBAction)openSendToDialog:(id)sender {
     [self endTouchDown:sender];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSendToPopover:sender];
-    }
     [appDelegate showSendTo:self sender:sender];
 }
 
