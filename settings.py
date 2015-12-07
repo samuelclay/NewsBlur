@@ -34,10 +34,6 @@ import django.http
 import re
 from mongoengine import connect
 from boto.s3.connection import S3Connection
-try:
-    from raven.contrib.celery import register_signal, register_logger_signal
-except ImportError, e:
-    print " ---> Raven not installed, can't log errors to Sentry."
 from utils import jammit
 
 # ===================
@@ -295,6 +291,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
+    'kombu.transport.django',
     'vendor.paypal.standard.ipn',
     'apps.rss_feeds',
     'apps.reader',
@@ -333,6 +330,9 @@ ZEBRA_ENABLE_APP = True
 
 import djcelery
 djcelery.setup_loader()
+from celery import Celery
+celeryapp = Celery()
+celeryapp.config_from_object('django.conf:settings')
 CELERY_ROUTES = {
     "work-queue": {
         "queue": "work_queue",
@@ -531,7 +531,7 @@ REDIS_SESSIONS = {
     'host': 'db_redis_sessions',
 }
 
-CELERY_REDIS_DB = 4
+CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
 
 # =================
@@ -586,24 +586,14 @@ if not DEVELOPMENT:
         'django_ses',
 
     )
-    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
-
-    # register a custom filter to filter out duplicate logs
-    register_logger_signal(RAVEN_CLIENT)
-
-    # hook into the Celery error handler
-    register_signal(RAVEN_CLIENT)
-
-    # The register_logger_signal function can also take an optional argument
-    # `loglevel` which is the level used for the handler created.
-    # Defaults to `logging.ERROR`
-    register_logger_signal(RAVEN_CLIENT, loglevel=logging.ERROR)
     RAVEN_CONFIG = {
         'dsn': SENTRY_DSN,
         # If you are using git, you can also automatically configure the
         # release based on the git info.
         'release': raven.fetch_git_sha(os.path.dirname(__file__)),
     }
+    RAVEN_CLIENT = raven.Client(RAVEN_CONFIG)
+    
 
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
@@ -667,13 +657,12 @@ MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), host=MONGO_ANALYTICS_URI, **MONGO_ANALYTICS_DB)
 MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 
-
 # =========
 # = Redis =
 # =========
 
 BROKER_BACKEND = "redis"
-BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
+BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = BROKER_URL
 SESSION_REDIS_HOST = REDIS_SESSIONS['host']
 
@@ -699,6 +688,13 @@ REDIS_SESSION_POOL         = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)
 REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=2)
 REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
+
+# ==========
+# = Celery =
+# ==========
+
+celeryapp.autodiscover_tasks(INSTALLED_APPS)
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 
 # ==========
 # = Assets =
