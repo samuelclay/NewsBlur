@@ -200,6 +200,25 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
+
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
+    [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
+    [self addKeyCommandWithInput:@"k" modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
+    [self addKeyCommandWithInput:@"\r" modifierFlags:UIKeyModifierShift action:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
+    [self addKeyCommandWithInput:@" " modifierFlags:0 action:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
+    [self addKeyCommandWithInput:@" " modifierFlags:UIKeyModifierShift action:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
+    [self addKeyCommandWithInput:@"n" modifierFlags:0 action:@selector(doNextUnreadStory:) discoverabilityTitle:@"Next Unread Story"];
+    [self addKeyCommandWithInput:@"u" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+    [self addKeyCommandWithInput:@"m" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+    [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(toggleStorySaved:) discoverabilityTitle:@"Save/Unsave Story"];
+    [self addKeyCommandWithInput:@"o" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+    [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+    [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
+    [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
+    [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+    [self addKeyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
+    [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierShift action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -294,6 +313,7 @@
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+    [self becomeFirstResponder];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -312,6 +332,11 @@
     
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+}
+
+- (BOOL)becomeFirstResponder {
+    // delegate to current page
+    return [currentPage becomeFirstResponder];
 }
 
 - (void)transitionFromFeedDetail {
@@ -503,6 +528,11 @@
 
 - (BOOL)isPhoneOrCompact {
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 #pragma mark -
@@ -753,6 +783,27 @@
             [self setStoryFromScroll];
         }
     }
+    [self becomeFirstResponder];
+}
+
+- (void)changeToNextPage:(id)sender {
+    NSInteger nextPageIndex = nextPage.pageIndex;
+    if (nextPageIndex < 0 && currentPage.pageIndex < 0) {
+        // just displaying a placeholder - display the first story instead
+        [self changePage:0 animated:YES];
+        return;
+    }
+    [self changePage:nextPageIndex animated:YES];
+}
+
+- (void)changeToPreviousPage:(id)sender {
+    NSInteger previousPageIndex = previousPage.pageIndex;
+    if (previousPageIndex < 0) {
+        if (currentPage.pageIndex < 0)
+            [self changeToNextPage:sender];
+        return;
+    }
+    [self changePage:previousPageIndex animated:YES];
 }
 
 - (void)setStoryFromScroll {
@@ -810,6 +861,8 @@
         }
         [appDelegate.feedDetailViewController redrawUnreadStory];
     }
+
+    [currentPage becomeFirstResponder];
 }
 
 - (void)advanceToNextUnread {
@@ -928,6 +981,11 @@
     [appDelegate showSendTo:self sender:sender];
 }
 
+- (void)openStoryTrainerFromKeyboard:(id)sender {
+    // don't have a tap target for the popover, but the settings button at least doesn't move
+    [appDelegate openTrainStory:self.fontSettingsButton];
+}
+
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
         return [self requestFailed:request];
@@ -1019,6 +1077,30 @@
     [self.previousPage showTextOrStoryView];
 }
 
+- (void)toggleStorySaved:(id)sender {
+    [appDelegate.storiesCollection toggleStorySaved];
+}
+
+- (void)toggleStoryUnread:(id)sender {
+    [appDelegate.storiesCollection toggleStoryUnread];
+    [appDelegate.feedDetailViewController redrawUnreadStory]; // XXX only if successful?
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    if (action == @selector(toggleTextView:) ||
+        action == @selector(scrollPageDown:) ||
+        action == @selector(scrollPageUp:) ||
+        action == @selector(toggleStoryUnread:) ||
+        action == @selector(toggleStorySaved:) ||
+        action == @selector(showOriginalSubview:) ||
+        action == @selector(openShareDialog) ||
+        action == @selector(scrolltoComment) ||
+        action == @selector(openStoryTrainerFromKeyboard:)) {
+        return (currentPage.pageIndex >= 0);
+    }
+    return [super canPerformAction:action withSender:sender];
+}
+
 #pragma mark -
 #pragma mark Styles
 
@@ -1072,6 +1154,13 @@
     [self.currentPage changeLineSpacing:lineSpacing];
     [self.nextPage changeLineSpacing:lineSpacing];
     [self.previousPage changeLineSpacing:lineSpacing];
+}
+
+- (void)backToDashboard:(id)sender {
+    UINavigationController *feedDetailNavigationController = appDelegate.feedDetailViewController.navigationController;
+    if (feedDetailNavigationController != nil)
+        [feedDetailNavigationController popViewControllerAnimated: YES];
+    [self transitionFromFeedDetail];
 }
 
 #pragma mark -

@@ -93,6 +93,8 @@
     }
     
     [self.webView loadHTMLString:@"" baseURL:nil];
+
+    [self addKeyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(closeOriginalView) discoverabilityTitle:@"Close Original View"];
 }
 
 - (void)dealloc {
@@ -164,6 +166,16 @@
         // Make sure to call the superclass's implementation in the else block in case it is also implementing KVO
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (BOOL)becomeFirstResponder {
+    // delegate to Web view
+    return [webView becomeFirstResponder];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
