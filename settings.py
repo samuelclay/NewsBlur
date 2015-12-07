@@ -34,6 +34,10 @@ import django.http
 import re
 from mongoengine import connect
 from boto.s3.connection import S3Connection
+try:
+    from raven.contrib.celery import register_signal, register_logger_signal
+except ImportError, e:
+    print " ---> Raven not installed, can't log errors to Sentry."
 from utils import jammit
 
 # ===================
@@ -178,7 +182,11 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'filters': ['require_debug_false'],
             'include_html': True,
-        }
+        },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
+        },
     },
     'loggers': {
         'django.request': {
@@ -204,6 +212,16 @@ LOGGING = {
             'handlers': ['log_file'],
             'level': 'INFO',
             'propagate': True,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
         },
     },
     'filters': {
@@ -564,11 +582,28 @@ from local_settings import *
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
-        'raven.contrib.django',
+        'raven.contrib.django.raven_compat',
         'django_ses',
 
     )
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+
+    # register a custom filter to filter out duplicate logs
+    register_logger_signal(RAVEN_CLIENT)
+
+    # hook into the Celery error handler
+    register_signal(RAVEN_CLIENT)
+
+    # The register_logger_signal function can also take an optional argument
+    # `loglevel` which is the level used for the handler created.
+    # Defaults to `logging.ERROR`
+    register_logger_signal(RAVEN_CLIENT, loglevel=logging.ERROR)
+    RAVEN_CONFIG = {
+        'dsn': SENTRY_DSN,
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        'release': raven.fetch_git_sha(os.path.dirname(__file__)),
+    }
 
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
