@@ -327,6 +327,7 @@ public class NBSyncService extends Service {
                     continue actionsloop;
                 }
                     
+                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "doing action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(apiManager);
 
                 if (response == null) {

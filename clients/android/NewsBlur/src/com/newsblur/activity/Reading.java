@@ -388,7 +388,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
 	protected void handleUpdate(int updateType) {
-        Log.d(this.getClass().getName(), "reading act update " + updateType);
         if ((updateType & UPDATE_REBUILD) != 0) {
             finish();
         }
