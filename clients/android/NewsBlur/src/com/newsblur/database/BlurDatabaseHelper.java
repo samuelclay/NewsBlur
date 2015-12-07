@@ -78,10 +78,6 @@ public class BlurDatabaseHelper {
         }.execute();
     }
 
-    public boolean isOpen() {
-        return dbRW.isOpen();
-    }
-
     public void dropAndRecreateTables() {
         synchronized (RW_MUTEX) {dbWrapper.dropAndRecreateTables();}
     }
