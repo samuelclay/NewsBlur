@@ -732,6 +732,7 @@ public class NBSyncService extends Service {
                     stopSelf(startId);
                 }
                 lastStartIdCompleted = startId;
+                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "wakelock depleted");
             }
         }
     }
