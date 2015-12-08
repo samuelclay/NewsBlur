@@ -1733,6 +1733,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                      withRowAnimation:UITableViewRowAnimationFade];
     } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
+        appDelegate.activeStory = story;
         [appDelegate openTrainStory:cell];
     }
 }
