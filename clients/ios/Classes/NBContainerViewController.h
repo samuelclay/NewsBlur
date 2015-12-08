@@ -29,6 +29,8 @@
 
 - (void)syncNextPreviousButtons;
 
+- (void)updateTheme;
+
 - (void)layoutDashboardScreen;
 - (void)layoutFeedDetailScreen;
 - (void)adjustFeedDetailScreenForStoryTitles;

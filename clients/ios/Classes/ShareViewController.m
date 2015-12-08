@@ -70,7 +70,7 @@
     // Do any additional setup after loading the view from its nib.
     commentField.layer.borderWidth = 1.0f;
     commentField.layer.cornerRadius = 4;
-    commentField.layer.borderColor = [[UIColor grayColor] CGColor];
+    commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
     
     twitterButton.layer.borderWidth = 1.0f;
     twitterButton.layer.cornerRadius = 1.0f;
@@ -134,6 +134,9 @@
     
     [self adjustCommentField:CGSizeZero];
     [self adjustShareButtons];
+    
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]

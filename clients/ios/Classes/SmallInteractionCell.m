@@ -25,7 +25,7 @@
         [self.contentView addSubview:favicon];
         
         UILabel *interaction = [[UILabel alloc] initWithFrame:CGRectZero];
-        interaction.backgroundColor = [UIColor whiteColor];
+        interaction.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
         self.interactionLabel = interaction;
         [self.contentView addSubview:interaction];
         

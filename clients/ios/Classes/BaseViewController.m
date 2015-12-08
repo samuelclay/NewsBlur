@@ -105,11 +105,17 @@
     [HUD hide:YES afterDelay:2];
 }
 
+- (void)updateTheme {
+    // Subclasses should override this, calling super, to update their nav bar, table, etc
+}
+
 #pragma mark -
 #pragma mark UIViewController
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
+    
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
 }
 
 - (void) viewDidUnload {

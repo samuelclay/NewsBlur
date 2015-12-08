@@ -61,6 +61,7 @@
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
 #import "NSNull+JSON.h"
+#import "UISearchBar+Field.h"
 #import <float.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
@@ -109,7 +110,6 @@
 @synthesize firstTimeUserAddFriendsViewController;
 @synthesize firstTimeUserAddNewsBlurViewController;
 
-@synthesize tintColor;
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
@@ -204,11 +204,7 @@
     
     [window makeKeyAndVisible];
     
-    [self setTintColor:UIColorFromRGB(0x8F918B)];
-    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE3E6E0)];
-    [[UIToolbar appearance] setBarTintColor:      UIColorFromRGB(0xE3E6E0)];
-    [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
-//    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
+    [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -458,6 +454,7 @@
 - (void)showPreferences {
     if (!preferencesViewController) {
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];
+        [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.preferencesViewController.view];
     }
 
     preferencesViewController.delegate = self.feedsViewController;
@@ -475,6 +472,12 @@
     if (system_font_enabled) {
         [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
     }
+    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
+    if (theme_auto_toggle) {
+        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
+    } else {
+        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
+    }
     preferencesViewController.hiddenKeys = hiddenSet;
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
@@ -482,7 +485,7 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
     self.modalNavigationController.navigationBar.translucent = NO;
-
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -2236,7 +2239,7 @@
     NSScanner *scanner = [NSScanner scannerWithString:colorString];
     [scanner scanHexInt:&color];
 
-    return UIColorFromRGB(color);
+    return UIColorFromFixedRGB(color);
 }
 
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor {
@@ -2255,7 +2258,7 @@
     
     CALayer *whiteBackground = [CALayer layer];
     whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
-    whiteBackground.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.7].CGColor;
+    whiteBackground.backgroundColor = [UIColorFromRGB(NEWSBLUR_WHITE_COLOR) colorWithAlphaComponent:0.7].CGColor;
     [gradientView.layer addSublayer:whiteBackground];
     
     [gradientView.layer addSublayer:gradient];
@@ -2303,12 +2306,12 @@
             UIColor *borderColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_border"]];
 
             titleLabel.textColor = lightText ?
-            [UIColor whiteColor] :
-            [UIColor blackColor];            
+            UIColorFromRGB(NEWSBLUR_WHITE_COLOR) :
+            UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
             titleLabel.shadowColor = lightText ? borderColor : fadeColor;
         } else {
-            titleLabel.textColor = [UIColor whiteColor];
-            titleLabel.shadowColor = [UIColor blackColor];
+            titleLabel.textColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+            titleLabel.shadowColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         }
         titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         

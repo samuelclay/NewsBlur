@@ -175,7 +175,7 @@ static UIFont *textFont = nil;
 
     
     UIColor *textColor = cell.highlighted || cell.selected ?
-                         [UIColor blackColor]:
+                         UIColorFromRGB(NEWSBLUR_BLACK_COLOR):
                          UIColorFromRGB(0x3a3a3a);
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];

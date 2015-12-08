@@ -20,5 +20,7 @@
 - (void)informMessage:(NSString *)message;
 - (void)informLoadingMessage:(NSString *)message;
 
+- (void)updateTheme;
+
 @end
 

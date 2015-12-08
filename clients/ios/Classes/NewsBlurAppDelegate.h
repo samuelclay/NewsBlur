@@ -88,7 +88,6 @@ SFSafariViewControllerDelegate>  {
     IASKAppSettingsViewController *preferencesViewController;
     WYPopoverController *popoverController;
 
-    UIColor *tintColor;
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
@@ -188,7 +187,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) TMCache *cachedFavicons;
 @property (nonatomic, readwrite) TMCache *cachedStoryImages;
 
-@property (nonatomic) UIColor *tintColor;
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;

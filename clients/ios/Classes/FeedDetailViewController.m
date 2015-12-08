@@ -37,6 +37,7 @@
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
 #import "NSNull+JSON.h"
+#import "UISearchBar+Field.h"
 
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
@@ -101,8 +102,9 @@
                  initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.storyTitlesTable.frame), 44.)];
     self.searchBar.delegate = self;
     [self.searchBar setReturnKeyType:UIReturnKeySearch];
-    [self.searchBar setBackgroundColor:UIColorFromRGB(0xDCDFD6)];
-    [self.searchBar setTintColor:[UIColor whiteColor]];
+    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.searchBar.tintColor = UIColorFromRGB(0x0);
+    self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
     [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
     [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     self.storyTitlesTable.tableHeaderView = self.searchBar;
@@ -141,7 +143,9 @@
     doubleTapGesture.numberOfTapsRequired = 2;
     [self.storyTitlesTable addGestureRecognizer:doubleTapGesture];
     doubleTapGesture.delegate = self;
-
+    
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.storyTitlesTable];
+    
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
 }
@@ -202,6 +206,12 @@
         }
         inDoubleTap = NO;
     }
+    return YES;
+}
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+    [self updateTheme];
+    
     return YES;
 }
 
@@ -1351,7 +1361,7 @@
     NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
     [scannerBorder scanHexInt:&colorBorder];
 
-    cell.feedColorBar = UIColorFromRGB(colorBorder);
+    cell.feedColorBar = UIColorFromFixedRGB(colorBorder);
     
     // feed color bar border
     NSString *faviconFade = [feed valueForKey:@"favicon_color"];
@@ -1360,7 +1370,7 @@
     }    
     scannerBorder = [NSScanner scannerWithString:faviconFade];
     [scannerBorder scanHexInt:&colorBorder];
-    cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
+    cell.feedColorBarTopBorder =  UIColorFromFixedRGB(colorBorder);
     
     // favicon
     cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
@@ -2070,6 +2080,32 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                                 atScrollPosition:UITableViewScrollPositionTop 
                                         animated:YES];
     }
+}
+
+- (void)updateTheme {
+    [super updateTheme];
+    
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    
+    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.searchBar.tintColor = UIColorFromRGB(0xffffff);
+    self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    
+    if (self.isPhoneOrCompact) {
+        self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+    }
+    
+    if ([ThemeManager themeManager].isDarkTheme) {
+        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
+    }
+    
+    self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    [self.storyTitlesTable reloadData];
 }
 
 #pragma mark -

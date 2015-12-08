@@ -107,7 +107,9 @@
     doubleDoubleTapGesture.numberOfTapsRequired = 2;
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
-
+    
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
+    
     self.pageIndex = -2;
     self.inTextView = NO;
     
@@ -400,11 +402,17 @@
                             appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
     
+    NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
+    
+    if (themeStyle.length) {
+        themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView%@.css\">", themeStyle];
+    }
+    
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\">%@"
                     "<meta name=\"viewport\" id=\"viewport\" content=\"width=%d, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
-                    contentWidth];
+                    themeStyle, contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
                     "<script src=\"fitvid.js\"></script>"

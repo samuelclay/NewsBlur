@@ -70,50 +70,50 @@
 			<key>Key</key>
 			<string>default_feed_read_filter</string>
 		</dict>
-        <dict>
-            <key>FooterText</key>
-            <string>The mark read options are always available via a long press on the mark read button in the stories list.</string>
-            <key>Type</key>
-            <string>PSMultiValueSpecifier</string>
-            <key>Title</key>
-            <string>Confirm mark read</string>
-            <key>Titles</key>
-            <array>
-                <string>On folders and sites</string>
-                <string>On folders only</string>
-                <string>Never</string>
-            </array>
-            <key>DefaultValue</key>
-            <string>folders</string>
-            <key>Values</key>
-            <array>
-                <string>all</string>
-                <string>folders</string>
-                <string>never</string>
-            </array>
-            <key>Key</key>
-            <string>default_confirm_read_filter</string>
-        </dict>
-        <dict>
-            <key>Type</key>
-            <string>PSMultiValueSpecifier</string>
-            <key>Title</key>
-            <string>Mark stories read on scroll</string>
-            <key>Titles</key>
-            <array>
-                <string>Mark read when scrolling past</string>
-                <string>Don't automatically mark read</string>
-            </array>
-            <key>DefaultValue</key>
-            <string>nothing</string>
-            <key>Values</key>
-            <array>
-                <string>mark_on_scroll</string>
-                <string>nothing</string>
-            </array>
-            <key>Key</key>
-            <string>default_scroll_read_filter</string>
-        </dict>
+		<dict>
+			<key>FooterText</key>
+			<string>The mark read options are always available via a long press on the mark read button in the stories list.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Confirm mark read</string>
+			<key>Titles</key>
+			<array>
+				<string>On folders and sites</string>
+				<string>On folders only</string>
+				<string>Never</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>folders</string>
+			<key>Values</key>
+			<array>
+				<string>all</string>
+				<string>folders</string>
+				<string>never</string>
+			</array>
+			<key>Key</key>
+			<string>default_confirm_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Mark stories read on scroll</string>
+			<key>Titles</key>
+			<array>
+				<string>Mark read when scrolling past</string>
+				<string>Don&apos;t automatically mark read</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>nothing</string>
+			<key>Values</key>
+			<array>
+				<string>mark_on_scroll</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>default_scroll_read_filter</string>
+		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -221,6 +221,112 @@
 			</array>
 			<key>Key</key>
 			<string>story_font_size</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Theme</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Switch automatically</string>
+			<key>Key</key>
+			<string>theme_auto_toggle</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>theme_auto_brightness</string>
+			<key>DefaultValue</key>
+			<real>0.5</real>
+			<key>MinimumValue</key>
+			<integer>0</integer>
+			<key>MaximumValue</key>
+			<integer>1</integer>
+			<key>MinimumValueImage</key>
+			<string>theme_dark.png</string>
+			<key>MaximumValueImage</key>
+			<string>theme_light.png</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Current theme</string>
+			<key>Titles</key>
+			<array>
+				<string>Light</string>
+				<string>Sepia</string>
+				<string>Medium</string>
+				<string>Dark</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>light</string>
+			<key>Values</key>
+			<array>
+				<string>light</string>
+				<string>sepia</string>
+				<string>medium</string>
+				<string>dark</string>
+			</array>
+			<key>Key</key>
+			<string>theme_style</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Switch via two-finger swipe up or down</string>
+			<key>Key</key>
+			<string>theme_gesture</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Dark theme</string>
+			<key>Titles</key>
+			<array>
+				<string>Medium</string>
+				<string>Dark</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>dark</string>
+			<key>Values</key>
+			<array>
+				<string>medium</string>
+				<string>dark</string>
+			</array>
+			<key>Key</key>
+			<string>theme_dark</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Light theme</string>
+			<key>Titles</key>
+			<array>
+				<string>Light</string>
+				<string>Sepia</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>light</string>
+			<key>Values</key>
+			<array>
+				<string>light</string>
+				<string>sepia</string>
+			</array>
+			<key>Key</key>
+			<string>theme_light</string>
 		</dict>
 		<dict>
 			<key>Title</key>

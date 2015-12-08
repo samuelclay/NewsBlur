@@ -9,10 +9,32 @@
 /* Begin PBXBuildFile section */
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
 		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
+		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
+		1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6851C10FD75005EA453 /* theme_color_light.png */; };
+		1740C68A1C10FD75005EA453 /* theme_color_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6861C10FD75005EA453 /* theme_color_medium.png */; };
+		1740C68B1C10FD75005EA453 /* theme_color_sepia.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6871C10FD75005EA453 /* theme_color_sepia.png */; };
+		1740C6901C110665005EA453 /* theme_color_dark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C68C1C110665005EA453 /* theme_color_dark@2x.png */; };
+		1740C6911C110665005EA453 /* theme_color_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C68D1C110665005EA453 /* theme_color_light@2x.png */; };
+		1740C6921C110665005EA453 /* theme_color_medium@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C68E1C110665005EA453 /* theme_color_medium@2x.png */; };
+		1740C6931C110665005EA453 /* theme_color_sepia@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C68F1C110665005EA453 /* theme_color_sepia@2x.png */; };
+		1740C69C1C1110BA005EA453 /* theme_color_dark-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6941C1110BA005EA453 /* theme_color_dark-sel.png */; };
+		1740C69D1C1110BA005EA453 /* theme_color_dark-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6951C1110BA005EA453 /* theme_color_dark-sel@2x.png */; };
+		1740C69E1C1110BA005EA453 /* theme_color_light-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6961C1110BA005EA453 /* theme_color_light-sel.png */; };
+		1740C69F1C1110BA005EA453 /* theme_color_light-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6971C1110BA005EA453 /* theme_color_light-sel@2x.png */; };
+		1740C6A01C1110BA005EA453 /* theme_color_medium-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6981C1110BA005EA453 /* theme_color_medium-sel.png */; };
+		1740C6A11C1110BA005EA453 /* theme_color_medium-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6991C1110BA005EA453 /* theme_color_medium-sel@2x.png */; };
+		1740C6A21C1110BA005EA453 /* theme_color_sepia-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C69A1C1110BA005EA453 /* theme_color_sepia-sel.png */; };
+		1740C6A31C1110BA005EA453 /* theme_color_sepia-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C69B1C1110BA005EA453 /* theme_color_sepia-sel@2x.png */; };
+		17C074961C14C46B00CFCDB7 /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C074951C14C46B00CFCDB7 /* ThemeManager.m */; };
+		17C4954B1C129863004805A7 /* UISearchBar+Field.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C4954A1C129863004805A7 /* UISearchBar+Field.m */; };
+		17C4954F1C14049A004805A7 /* logo_newsblur_blur-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 17C4954E1C14049A004805A7 /* logo_newsblur_blur-dark.png */; };
 		17CBD3BC1BF66B07003FCCAE /* MarkReadMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3BB1BF66B07003FCCAE /* MarkReadMenuViewController.xib */; };
 		17CBD3BF1BF66B6C003FCCAE /* MarkReadMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */; };
 		17CBD3C21BF6ED2C003FCCAE /* menu_icn_markread.png in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3C01BF6ED2C003FCCAE /* menu_icn_markread.png */; };
 		17CBD3C31BF6ED2C003FCCAE /* menu_icn_markread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */; };
+		17E265DE1C0D17340060655F /* storyDetailViewDark.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E265DD1C0D17340060655F /* storyDetailViewDark.css */; };
+		17E57D571C0E592600EB3D4B /* storyDetailViewMedium.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */; };
+		17E57D581C0E592600EB3D4B /* storyDetailViewSepia.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */; };
 		17EB505C1BE4411E0021358B /* choose_font.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505A1BE4411E0021358B /* choose_font.png */; };
 		17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505B1BE4411E0021358B /* choose_font@2x.png */; };
 		17EB50601BE46A900021358B /* FontListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB505F1BE46A900021358B /* FontListViewController.m */; };
@@ -476,11 +498,35 @@
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
 		010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnePasswordExtension.h; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.h"; sourceTree = "<group>"; };
 		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
+		1740C6841C10FD75005EA453 /* theme_color_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_dark.png; sourceTree = "<group>"; };
+		1740C6851C10FD75005EA453 /* theme_color_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_light.png; sourceTree = "<group>"; };
+		1740C6861C10FD75005EA453 /* theme_color_medium.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_medium.png; sourceTree = "<group>"; };
+		1740C6871C10FD75005EA453 /* theme_color_sepia.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_sepia.png; sourceTree = "<group>"; };
+		1740C68C1C110665005EA453 /* theme_color_dark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_dark@2x.png"; sourceTree = "<group>"; };
+		1740C68D1C110665005EA453 /* theme_color_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_light@2x.png"; sourceTree = "<group>"; };
+		1740C68E1C110665005EA453 /* theme_color_medium@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_medium@2x.png"; sourceTree = "<group>"; };
+		1740C68F1C110665005EA453 /* theme_color_sepia@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_sepia@2x.png"; sourceTree = "<group>"; };
+		1740C6941C1110BA005EA453 /* theme_color_dark-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_dark-sel.png"; sourceTree = "<group>"; };
+		1740C6951C1110BA005EA453 /* theme_color_dark-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_dark-sel@2x.png"; sourceTree = "<group>"; };
+		1740C6961C1110BA005EA453 /* theme_color_light-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_light-sel.png"; sourceTree = "<group>"; };
+		1740C6971C1110BA005EA453 /* theme_color_light-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_light-sel@2x.png"; sourceTree = "<group>"; };
+		1740C6981C1110BA005EA453 /* theme_color_medium-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_medium-sel.png"; sourceTree = "<group>"; };
+		1740C6991C1110BA005EA453 /* theme_color_medium-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_medium-sel@2x.png"; sourceTree = "<group>"; };
+		1740C69A1C1110BA005EA453 /* theme_color_sepia-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_sepia-sel.png"; sourceTree = "<group>"; };
+		1740C69B1C1110BA005EA453 /* theme_color_sepia-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_sepia-sel@2x.png"; sourceTree = "<group>"; };
+		17C074941C14C46B00CFCDB7 /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeManager.h; sourceTree = "<group>"; };
+		17C074951C14C46B00CFCDB7 /* ThemeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeManager.m; sourceTree = "<group>"; };
+		17C495491C129863004805A7 /* UISearchBar+Field.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UISearchBar+Field.h"; path = "Other Sources/UISearchBar+Field.h"; sourceTree = "<group>"; };
+		17C4954A1C129863004805A7 /* UISearchBar+Field.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UISearchBar+Field.m"; path = "Other Sources/UISearchBar+Field.m"; sourceTree = "<group>"; };
+		17C4954E1C14049A004805A7 /* logo_newsblur_blur-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_newsblur_blur-dark.png"; sourceTree = "<group>"; };
 		17CBD3BB1BF66B07003FCCAE /* MarkReadMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MarkReadMenuViewController.xib; sourceTree = "<group>"; };
 		17CBD3BD1BF66B6C003FCCAE /* MarkReadMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkReadMenuViewController.h; sourceTree = "<group>"; };
 		17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkReadMenuViewController.m; sourceTree = "<group>"; };
 		17CBD3C01BF6ED2C003FCCAE /* menu_icn_markread.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_markread.png; sourceTree = "<group>"; };
 		17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_markread@2x.png"; sourceTree = "<group>"; };
+		17E265DD1C0D17340060655F /* storyDetailViewDark.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewDark.css; path = static/storyDetailViewDark.css; sourceTree = SOURCE_ROOT; };
+		17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewMedium.css; path = static/storyDetailViewMedium.css; sourceTree = SOURCE_ROOT; };
+		17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewSepia.css; path = static/storyDetailViewSepia.css; sourceTree = SOURCE_ROOT; };
 		17EB505A1BE4411E0021358B /* choose_font.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = choose_font.png; sourceTree = "<group>"; };
 		17EB505B1BE4411E0021358B /* choose_font@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "choose_font@2x.png"; sourceTree = "<group>"; };
 		17EB505E1BE46A900021358B /* FontListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontListViewController.h; sourceTree = "<group>"; };
@@ -1283,6 +1329,8 @@
 				FFA0484319CA73B700618DC4 /* UIView+ViewController.m */,
 				FF4151BE16DED9660013E84B /* UIBarButtonItem+Image.h */,
 				FF4151BF16DED9660013E84B /* UIBarButtonItem+Image.m */,
+				17C495491C129863004805A7 /* UISearchBar+Field.h */,
+				17C4954A1C129863004805A7 /* UISearchBar+Field.m */,
 				FF1F13D618AAC97900FDA816 /* UIImage+Resize.h */,
 				FF1F13D718AAC97900FDA816 /* UIImage+Resize.m */,
 				FFA0483F19CA5F5B00618DC4 /* UIWebView+Offsets.h */,
@@ -1562,6 +1610,22 @@
 				FFC5F30A16E2D2C2007AC72C /* story_share_twitter@2x.png */,
 				FF4151C516DEF1A80013E84B /* original_button.png */,
 				FF4151C616DEF1A80013E84B /* original_button@2x.png */,
+				1740C6851C10FD75005EA453 /* theme_color_light.png */,
+				1740C68D1C110665005EA453 /* theme_color_light@2x.png */,
+				1740C6961C1110BA005EA453 /* theme_color_light-sel.png */,
+				1740C6971C1110BA005EA453 /* theme_color_light-sel@2x.png */,
+				1740C6871C10FD75005EA453 /* theme_color_sepia.png */,
+				1740C68F1C110665005EA453 /* theme_color_sepia@2x.png */,
+				1740C69A1C1110BA005EA453 /* theme_color_sepia-sel.png */,
+				1740C69B1C1110BA005EA453 /* theme_color_sepia-sel@2x.png */,
+				1740C6861C10FD75005EA453 /* theme_color_medium.png */,
+				1740C68E1C110665005EA453 /* theme_color_medium@2x.png */,
+				1740C6991C1110BA005EA453 /* theme_color_medium-sel@2x.png */,
+				1740C6981C1110BA005EA453 /* theme_color_medium-sel.png */,
+				1740C6841C10FD75005EA453 /* theme_color_dark.png */,
+				1740C68C1C110665005EA453 /* theme_color_dark@2x.png */,
+				1740C6941C1110BA005EA453 /* theme_color_dark-sel.png */,
+				1740C6951C1110BA005EA453 /* theme_color_dark-sel@2x.png */,
 				FF4151C116DEDF9D0013E84B /* markread.png */,
 				FF4151C216DEDF9D0013E84B /* markread@2x.png */,
 				FF4151BA16DED7D10013E84B /* bar-separator.png */,
@@ -1648,6 +1712,7 @@
 				FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */,
 				43A4C42415B00A26008787B5 /* logo_background.png */,
 				43A4C42615B00A26008787B5 /* logo_newsblur_blur.png */,
+				17C4954E1C14049A004805A7 /* logo_newsblur_blur-dark.png */,
 				17F156701BDABBF60092EBFD /* safari_shadow@2x.png */,
 				43A4C43F15B00A26008787B5 /* warning.gif */,
 				43A4C44015B00A26008787B5 /* warning.png */,
@@ -1660,6 +1725,9 @@
 			isa = PBXGroup;
 			children = (
 				FF67D3BD168A708D0057A7DA /* storyDetailView.css */,
+				17E265DD1C0D17340060655F /* storyDetailViewDark.css */,
+				17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */,
+				17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */,
 				FF67D3BA168A70630057A7DA /* trainer.css */,
 			);
 			name = css;
@@ -1857,6 +1925,8 @@
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
 				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
+				17C074941C14C46B00CFCDB7 /* ThemeManager.h */,
+				17C074951C14C46B00CFCDB7 /* ThemeManager.m */,
 				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
 				43D818A115B940C200733444 /* DataUtilities.h */,
@@ -2268,6 +2338,8 @@
 				FF3A3E0F1BFBBB6400ADC01A /* GothamNarrow-Medium.otf in Resources */,
 				FF265F12187B6D4F0080C332 /* fitvid.js in Resources */,
 				FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */,
+				1740C6A31C1110BA005EA453 /* theme_color_sepia-sel@2x.png in Resources */,
+				1740C6921C110665005EA453 /* theme_color_medium@2x.png in Resources */,
 				FF67D3CD168A73380057A7DA /* zepto.js in Resources */,
 				FF67D3CE168A73380057A7DA /* trainer.js in Resources */,
 				FF67D3CF168A73380057A7DA /* fastTouch.js in Resources */,
@@ -2302,6 +2374,7 @@
 				010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */,
 				FF6DD31F1AEDF9F300F1F53A /* menu_icn_rename@2x.png in Resources */,
 				437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */,
+				17E57D581C0E592600EB3D4B /* storyDetailViewSepia.css in Resources */,
 				FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */,
 				43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */,
 				43A4C44E15B00A26008787B5 /* arrow.png in Resources */,
@@ -2314,13 +2387,16 @@
 				43A4C47E15B00A26008787B5 /* logo_512.png in Resources */,
 				43A4C47F15B00A26008787B5 /* logo_background.png in Resources */,
 				FFB9BE4717F4B65B00FE0A36 /* logo_120.png in Resources */,
+				1740C6911C110665005EA453 /* theme_color_light@2x.png in Resources */,
 				43A4C48115B00A26008787B5 /* logo_newsblur_blur.png in Resources */,
 				43A4C49A15B00A26008787B5 /* warning.gif in Resources */,
 				43A4C49B15B00A26008787B5 /* warning.png in Resources */,
+				17E265DE1C0D17340060655F /* storyDetailViewDark.css in Resources */,
 				43A4C49C15B00A26008787B5 /* world.png in Resources */,
 				43C1680B15B3D99B00428BA3 /* 7-location-place.png in Resources */,
 				43B6A27515B6952F00CEA2E6 /* group.png in Resources */,
 				43B6A27615B6952F00CEA2E6 /* group@2x.png in Resources */,
+				1740C6901C110665005EA453 /* theme_color_dark@2x.png in Resources */,
 				43E8381F15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib in Resources */,
 				43E8382115BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib in Resources */,
 				43E8382315BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib in Resources */,
@@ -2343,6 +2419,7 @@
 				43A4BAE315C866FA00F3B8D4 /* popoverArrowRightSimple.png in Resources */,
 				FFC486AF19CA413C00F4758F /* logo_180.png in Resources */,
 				43A4BAE415C866FA00F3B8D4 /* popoverArrowUp.png in Resources */,
+				1740C68A1C10FD75005EA453 /* theme_color_medium.png in Resources */,
 				43A4BAE515C866FA00F3B8D4 /* popoverArrowUp@2x.png in Resources */,
 				43A4BAE615C866FA00F3B8D4 /* popoverArrowUpSimple.png in Resources */,
 				43A4BAE715C866FA00F3B8D4 /* popoverBg.png in Resources */,
@@ -2360,6 +2437,7 @@
 				43C3D40515D44EA30066D36D /* user_light@2x.png in Resources */,
 				43C3D40A15D468BA0066D36D /* all.png in Resources */,
 				43C3D40C15D469010066D36D /* unread_yellow.png in Resources */,
+				1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */,
 				43C3D41215D46D330066D36D /* all@2x.png in Resources */,
 				43B232C115D5F61700D035B4 /* AuthorizeServicesViewController.xib in Resources */,
 				430C4BC015D7208600B9F63B /* facebook.png in Resources */,
@@ -2383,6 +2461,7 @@
 				FF03B00219F881380063002A /* ARChromeActivity@3x~ipad.png in Resources */,
 				FF5F3A82162B82B5008DBE3E /* rainbow.png in Resources */,
 				FF5F3A85162B831A008DBE3E /* user_orange.png in Resources */,
+				1740C69F1C1110BA005EA453 /* theme_color_light-sel@2x.png in Resources */,
 				FF5F3A87162B834E008DBE3E /* bin_closed.png in Resources */,
 				FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */,
 				FF5F3A8B162B8390008DBE3E /* car.png in Resources */,
@@ -2413,6 +2492,7 @@
 				17F156711BDABBF60092EBFD /* safari_shadow@2x.png in Resources */,
 				FF29708E16DD7C8A00E92F85 /* segment_left_selected.png in Resources */,
 				FF29709016DD7FD800E92F85 /* segment_unselected.png in Resources */,
+				17E57D571C0E592600EB3D4B /* storyDetailViewMedium.css in Resources */,
 				FF03B00319F881380063002A /* ARChromeActivity~ipad.png in Resources */,
 				FF29709216DD80F700E92F85 /* segment_right_selected.png in Resources */,
 				FF29709416DD8CB000E92F85 /* unread_yellow@2x.png in Resources */,
@@ -2423,6 +2503,7 @@
 				FF4151BC16DED7D10013E84B /* bar-separator.png in Resources */,
 				FF4151BD16DED7D10013E84B /* bar-separator@2x.png in Resources */,
 				FF4151C316DEDF9D0013E84B /* markread.png in Resources */,
+				1740C6931C110665005EA453 /* theme_color_sepia@2x.png in Resources */,
 				FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */,
 				FF4151C716DEF1A80013E84B /* original_button.png in Resources */,
 				17EB505C1BE4411E0021358B /* choose_font.png in Resources */,
@@ -2432,6 +2513,7 @@
 				FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */,
 				FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */,
 				FFC5F30E16E2D2C2007AC72C /* story_share_appnet@2x.png in Resources */,
+				1740C6A11C1110BA005EA453 /* theme_color_medium-sel@2x.png in Resources */,
 				FFC5F30F16E2D2C2007AC72C /* story_share_facebook_active.png in Resources */,
 				FFC486B219CA416D00F4758F /* logo_57.png in Resources */,
 				FFC5F31016E2D2C2007AC72C /* story_share_facebook_active@2x.png in Resources */,
@@ -2477,6 +2559,7 @@
 				FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */,
 				FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */,
 				FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */,
+				1740C68B1C10FD75005EA453 /* theme_color_sepia.png in Resources */,
 				FFDD845C16E8871A000AA0A2 /* menu_icn_delete.png in Resources */,
 				FFDD845D16E8871A000AA0A2 /* menu_icn_delete@2x.png in Resources */,
 				FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */,
@@ -2485,6 +2568,7 @@
 				FFDD846016E8871A000AA0A2 /* menu_icn_fetch.png in Resources */,
 				FFDD846116E8871A000AA0A2 /* menu_icn_fetch@2x.png in Resources */,
 				FF03AFFE19F881380063002A /* ARChromeActivity.png in Resources */,
+				17C4954F1C14049A004805A7 /* logo_newsblur_blur-dark.png in Resources */,
 				FFDD846216E8871A000AA0A2 /* menu_icn_followers.png in Resources */,
 				FFDD846316E8871A000AA0A2 /* menu_icn_followers@2x.png in Resources */,
 				FFDD846416E8871A000AA0A2 /* menu_icn_move.png in Resources */,
@@ -2505,13 +2589,16 @@
 				FF03B00119F881380063002A /* ARChromeActivity@3x.png in Resources */,
 				FFDD847E16E887D3000AA0A2 /* g_icn_folder.png in Resources */,
 				FFDD847F16E887D3000AA0A2 /* g_icn_folder@2x.png in Resources */,
+				1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */,
 				FFDD848016E887D3000AA0A2 /* g_icn_hidden.png in Resources */,
 				FFDD848116E887D3000AA0A2 /* g_icn_hidden@2x.png in Resources */,
 				FFB7050C1925921F0052101C /* line_spacing_s.png in Resources */,
+				1740C69E1C1110BA005EA453 /* theme_color_light-sel.png in Resources */,
 				FFDD848216E887D3000AA0A2 /* g_icn_unread.png in Resources */,
 				FFDD848316E887D3000AA0A2 /* g_icn_unread@2x.png in Resources */,
 				FFDD848616E8EB1E000AA0A2 /* share.png in Resources */,
 				FFDD848716E8EB1E000AA0A2 /* share@2x.png in Resources */,
+				1740C6A01C1110BA005EA453 /* theme_color_medium-sel.png in Resources */,
 				FFDD848A16E8EBF8000AA0A2 /* train.png in Resources */,
 				FFDD848B16E8EBF8000AA0A2 /* train@2x.png in Resources */,
 				FFB9BE4A17F4B65B00FE0A36 /* logo_40.png in Resources */,
@@ -2526,12 +2613,15 @@
 				FFB9BE4917F4B65B00FE0A36 /* logo_29.png in Resources */,
 				17CBD3C31BF6ED2C003FCCAE /* menu_icn_markread@2x.png in Resources */,
 				FF8364BB1755759A008F5C58 /* traverse_text.png in Resources */,
+				1740C69D1C1110BA005EA453 /* theme_color_dark-sel@2x.png in Resources */,
 				FF8364BC1755759A008F5C58 /* traverse_text@2x.png in Resources */,
 				FF8364BF1756949E008F5C58 /* traverse_text_on.png in Resources */,
+				1740C6A21C1110BA005EA453 /* theme_color_sepia-sel.png in Resources */,
 				FFEA5AEA19D3407400ED87A0 /* launch_gradient.png in Resources */,
 				FF03AFEF19F87F2E0063002A /* safari@2x.png in Resources */,
 				FF8364C01756949E008F5C58 /* traverse_text_on@2x.png in Resources */,
 				FF8364C61757EC0B008F5C58 /* traverse_background_left.png in Resources */,
+				1740C69C1C1110BA005EA453 /* theme_color_dark-sel.png in Resources */,
 				FF8364C71757EC0B008F5C58 /* traverse_background_left@2x.png in Resources */,
 				FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */,
 				FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */,
@@ -2591,6 +2681,7 @@
 				78095E39128EF30D00230C8E /* ASINetworkQueue.m in Sources */,
 				78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */,
 				FF1C4E171A3FB1F4000995E3 /* NBActivityItemProvider.m in Sources */,
+				17C4954B1C129863004805A7 /* UISearchBar+Field.m in Sources */,
 				FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */,
 				FF3A3E171BFC3F1300ADC01A /* NSNull+JSON.m in Sources */,
 				FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */,
@@ -2681,6 +2772,7 @@
 				FFA045B619CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m in Sources */,
 				FF1F13D318A9C2BE00FDA816 /* TMCache.m in Sources */,
 				FF22FE5E16E53ADC0046165A /* Underscore+Functional.m in Sources */,
+				17C074961C14C46B00CFCDB7 /* ThemeManager.m in Sources */,
 				FF22FE5F16E53ADC0046165A /* Underscore.m in Sources */,
 				FF22FE6016E53ADC0046165A /* USArrayWrapper.m in Sources */,
 				FF22FE6116E53ADC0046165A /* USDictionaryWrapper.m in Sources */,

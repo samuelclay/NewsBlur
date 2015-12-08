@@ -106,6 +106,8 @@ static UIFont *userLabelFont;
     popoverClass = [WYPopoverController class];
 
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
+    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
 
@@ -157,13 +159,14 @@ static UIFont *userLabelFont;
     longpress.delegate = self;
     [self.feedTitlesTable addGestureRecognizer:longpress];
     
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
+    
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
                                                inView:self.view
                                            withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
     
-    UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-    self.feedTitlesTable.backgroundColor = bgColor;
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
     userAvatarButton.customView.hidden = YES;
@@ -957,6 +960,10 @@ static UIFont *userLabelFont;
 #pragma mark -
 #pragma mark Preferences
 
+- (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender {
+    [[ThemeManager themeManager] updatePreferencesTheme];
+}
+
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController dismissViewControllerAnimated:YES completion:nil];
@@ -978,22 +985,57 @@ static UIFont *userLabelFont;
     }
 }
 
+- (void)updateTheme {
+    [super updateTheme];
+    
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.feedViewToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    
+    [self layoutHeaderCounts:nil];
+    
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    [self.feedTitlesTable reloadData];
+}
+
+- (void)updateThemeBrightness {
+    if ([[ThemeManager themeManager] autoChangeTheme]) {
+        [[ThemeManager themeManager] updateTheme];
+    }
+}
+
+- (void)updateThemeStyle {
+    [[ThemeManager themeManager] updateTheme];
+}
+
 - (void)settingDidChange:(NSNotification*)notification {
-	if ([notification.object isEqual:@"offline_allowed"]) {
-		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"offline_allowed"] intValue];
+    NSString *identifier = notification.object;
+    
+	if ([identifier isEqual:@"offline_allowed"]) {
+		BOOL enabled = [[notification.userInfo objectForKey:@"offline_allowed"] boolValue];
 		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
          [NSSet setWithObjects:@"offline_image_download",
           @"offline_download_connection",
           @"offline_store_limit",
           nil] animated:YES];
-	} else if ([notification.object isEqual:@"use_system_font_size"]) {
-		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"use_system_font_size"] intValue];
+	} else if ([identifier isEqual:@"use_system_font_size"]) {
+		BOOL enabled = [[notification.userInfo objectForKey:@"use_system_font_size"] boolValue];
 		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
          [NSSet setWithObjects:@"feed_list_font_size",
           nil] animated:YES];
-    } else if ([notification.object isEqual:@"feed_list_font_size"]) {
+    } else if ([identifier isEqual:@"feed_list_font_size"]) {
         [self resizeFontSize];
-    } else if ([notification.object isEqual:@"story_list_preview_images"]) {
+    } else if ([identifier isEqual:@"theme_auto_toggle"]) {
+        BOOL enabled = [[notification.userInfo objectForKey:@"theme_auto_toggle"] boolValue];
+        [appDelegate.preferencesViewController setHiddenKeys:!enabled ? [NSSet setWithObject:@"theme_auto_brightness"] : [NSSet setWithObjects:@"theme_style", @"theme_gesture", nil] animated:YES];
+    } else if ([identifier isEqual:@"theme_auto_brightness"]) {
+        [self updateThemeBrightness];
+    } else if ([identifier isEqual:@"theme_style"]) {
+        [self updateThemeStyle];
+    } else if ([identifier isEqual:@"story_list_preview_images"]) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [appDelegate.dashboardViewController.storiesModule reloadData];
         }
@@ -1554,7 +1596,7 @@ heightForHeaderInSection:(NSInteger)section {
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:1];
     }
-
+    
     [self calculateFeedLocations];
     [self.feedTitlesTable reloadData];
 
