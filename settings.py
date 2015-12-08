@@ -80,15 +80,6 @@ AUTO_PREMIUM_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = True
 PAYPAL_TEST           = False
 
-# ===============
-# = Environment =
-# ===============
-
-PRODUCTION  = NEWSBLUR_DIR.find('/home/conesus/newsblur') == 0
-STAGING     = NEWSBLUR_DIR.find('/home/conesus/staging') == 0
-DEVELOPMENT = (not PRODUCTION and not STAGING)
-
-
 # ===========================
 # = Django-specific Modules =
 # ===========================
@@ -257,10 +248,10 @@ SESSION_COOKIE_AGE      = 60*60*24*365 # 1 year
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
-if not DEVELOPMENT:
-    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
-else:
+if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
 
 # ==============
 # = Subdomains =
@@ -291,6 +282,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
+    'kombu.transport.django',
     'vendor.paypal.standard.ipn',
     'apps.rss_feeds',
     'apps.reader',
@@ -329,6 +321,9 @@ ZEBRA_ENABLE_APP = True
 
 import djcelery
 djcelery.setup_loader()
+from celery import Celery
+celeryapp = Celery()
+celeryapp.config_from_object('django.conf:settings')
 CELERY_ROUTES = {
     "work-queue": {
         "queue": "work_queue",
@@ -527,7 +522,7 @@ REDIS_SESSIONS = {
     'host': 'db_redis_sessions',
 }
 
-CELERY_REDIS_DB = 4
+CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
 
 # =================
@@ -575,20 +570,15 @@ except ImportError, e:
 
 from local_settings import *
 
-if not DEVELOPMENT:
+if not DEBUG:
     INSTALLED_APPS += (
         'gunicorn',
         'raven.contrib.django.raven_compat',
         'django_ses',
 
     )
-    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
-    RAVEN_CONFIG = {
-        'dsn': SENTRY_DSN,
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        'release': raven.fetch_git_sha(os.path.dirname(__file__)),
-    }
+    RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
+    
 
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
@@ -652,13 +642,12 @@ MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), host=MONGO_ANALYTICS_URI, **MONGO_ANALYTICS_DB)
 MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 
-
 # =========
 # = Redis =
 # =========
 
 BROKER_BACKEND = "redis"
-BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
+BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = BROKER_URL
 SESSION_REDIS_HOST = REDIS_SESSIONS['host']
 
@@ -685,6 +674,13 @@ REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=
 REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=2)
 REDIS_SESSION_POOL         = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=5)
 REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
+
+# ==========
+# = Celery =
+# ==========
+
+celeryapp.autodiscover_tasks(INSTALLED_APPS)
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 
 # ==========
 # = Assets =
