@@ -80,15 +80,6 @@ AUTO_PREMIUM_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = True
 PAYPAL_TEST           = False
 
-# ===============
-# = Environment =
-# ===============
-
-PRODUCTION  = NEWSBLUR_DIR.find('/home/conesus/newsblur') == 0
-STAGING     = NEWSBLUR_DIR.find('/home/conesus/staging') == 0
-DEVELOPMENT = (not PRODUCTION and not STAGING)
-
-
 # ===========================
 # = Django-specific Modules =
 # ===========================
@@ -257,10 +248,10 @@ SESSION_COOKIE_AGE      = 60*60*24*365 # 1 year
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
-if not DEVELOPMENT:
-    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
-else:
+if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
 
 # ==============
 # = Subdomains =
@@ -579,7 +570,7 @@ except ImportError, e:
 
 from local_settings import *
 
-if not DEVELOPMENT:
+if not DEBUG:
     INSTALLED_APPS += (
         'gunicorn',
         'raven.contrib.django.raven_compat',
