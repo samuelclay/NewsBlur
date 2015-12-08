@@ -646,6 +646,7 @@ class UserSubscription(models.Model):
             logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_hashes), self.feed))
         else:
             logging.user(request, "~FYRead story in feed: %s" % (self.feed))
+            RUserStory.aggregate_mark_read(self.feed_id)
         
         for story_hash in set(story_hashes):
             RUserStory.mark_read(self.user_id, self.feed_id, story_hash, aggregated=aggregated)
@@ -1002,10 +1003,15 @@ class RUserStory:
         if not isinstance(story_hashes, list):
             story_hashes = [story_hashes]
         
+        single_story = len(story_hashes) == 1
+        
         for story_hash in story_hashes:
             feed_id, _ = MStory.split_story_hash(story_hash)
             feed_ids.add(feed_id)
-
+            
+            if single_story:
+                cls.aggregate_mark_read(feed_id)
+            
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (user_id)
             share_key = "S:%s" % (story_hash)
@@ -1038,6 +1044,19 @@ class RUserStory:
         cls.mark_unread(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=r)
         
         return feed_id, list(friend_ids)
+    
+    @classmethod
+    def aggregate_mark_read(cls, feed_id):
+        if not feed_id:
+            logging.debug(" ***> ~BR~FWNo feed_id on aggregate mark read. Ignoring.")
+            return
+            
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_READ_POOL)
+        week_of_year = datetime.datetime.now().strftime('%Y-%U')
+        feed_read_key = "fR:%s:%s" % (feed_id, week_of_year)
+        
+        r.incr(feed_read_key)
+        r.expire(2*settings.DAYS_OF_STORY_HASHES*24*60*60)
         
     @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, 

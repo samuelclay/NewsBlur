@@ -34,10 +34,6 @@ import django.http
 import re
 from mongoengine import connect
 from boto.s3.connection import S3Connection
-try:
-    from raven.contrib.celery import register_signal, register_logger_signal
-except ImportError, e:
-    print " ---> Raven not installed, can't log errors to Sentry."
 from utils import jammit
 
 # ===================
@@ -587,17 +583,6 @@ if not DEVELOPMENT:
 
     )
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
-
-    # register a custom filter to filter out duplicate logs
-    register_logger_signal(RAVEN_CLIENT)
-
-    # hook into the Celery error handler
-    register_signal(RAVEN_CLIENT)
-
-    # The register_logger_signal function can also take an optional argument
-    # `loglevel` which is the level used for the handler created.
-    # Defaults to `logging.ERROR`
-    register_logger_signal(RAVEN_CLIENT, loglevel=logging.ERROR)
     RAVEN_CONFIG = {
         'dsn': SENTRY_DSN,
         # If you are using git, you can also automatically configure the
@@ -692,12 +677,13 @@ REDIS_POOL                 = redis.ConnectionPool(host=REDIS['host'], port=6379,
 REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
 REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
 REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
-# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
+# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8) # Only used when changing DAYS_OF_UNREAD
 REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=10)
 # REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
-REDIS_SESSION_POOL         = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=5)
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)
+REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=1)
 REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=2)
+REDIS_SESSION_POOL         = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=5)
 REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
 
 # ==========
