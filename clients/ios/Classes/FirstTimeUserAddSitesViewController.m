@@ -407,7 +407,7 @@
     NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
     [scannerBorder scanHexInt:&colorBorder];
     
-    cell.feedColorBar = UIColorFromRGB(colorBorder);
+    cell.feedColorBar = UIColorFromFixedRGB(colorBorder);
     
     // feed color bar border
     NSString *faviconFade = [feed valueForKey:@"favicon_border"];
@@ -416,7 +416,7 @@
     }    
     scannerBorder = [NSScanner scannerWithString:faviconFade];
     [scannerBorder scanHexInt:&colorBorder];
-    cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
+    cell.feedColorBarTopBorder =  UIColorFromFixedRGB(colorBorder);
     
     // favicon
     

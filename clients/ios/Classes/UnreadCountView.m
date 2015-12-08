@@ -11,15 +11,6 @@
 #import "UIView+TKCategory.h"
 
 static UIFont *indicatorFont = nil;
-static UIColor *indicatorWhiteColor = nil;
-static UIColor *indicatorBlackColor = nil;
-static UIColor *positiveBackgroundColor = nil;
-static UIColor *neutralBackgroundColor = nil;
-static UIColor *positiveBackgroundShadowColor = nil;
-static UIColor *neutralBackgroundShadowColor = nil;
-static UIColor *negativeBackgroundColor = nil;
-static UIColor *blueBackgroundColor = nil;
-static UIColor *blueBackgroundShadowColor = nil;
 
 @implementation UnreadCountView
 
@@ -32,30 +23,6 @@ const int COUNT_HEIGHT = 15;
 + (void) initialize {
     if (self == [UnreadCountView class]) {
         indicatorFont = [UIFont boldSystemFontOfSize:12];
-        indicatorWhiteColor = [UIColor whiteColor];
-        indicatorBlackColor = [UIColor blackColor];
-        
-        UIColor *ps = UIColorFromRGB(0x6EA74A);
-        UIColor *nt = UIColorFromRGB(0xB3B6AD);
-        UIColor *ng = UIColorFromRGB(0xCC2A2E);
-        UIColor *blue = UIColorFromRGB(0x11448B);
-        positiveBackgroundColor = ps;
-        neutralBackgroundColor = nt;
-        positiveBackgroundShadowColor = UIColorFromRGB(0x4E872A);
-        negativeBackgroundColor = ng;
-        neutralBackgroundShadowColor = UIColorFromRGB(0x93968D);
-        blueBackgroundColor = blue;
-        blueBackgroundShadowColor = UIColorFromRGB(0x01346B);
-        //        UIColor *psGrad = UIColorFromRGB(0x559F4D);
-        //        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
-        //        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
-        //        const CGFloat* psTop = CGColorGetComponents(ps.CGColor);
-        //        const CGFloat* psBot = CGColorGetComponents(psGrad.CGColor);
-        //        CGFloat psGradient[] = {
-        //            psTop[0], psTop[1], psTop[2], psTop[3],
-        //            psBot[0], psBot[1], psBot[2], psBot[3]
-        //        };
-        //        psColors = psGradient;
     }
 }
 
@@ -97,17 +64,17 @@ const int COUNT_HEIGHT = 15;
         }
         
         if (blueCount) {
-            [blueBackgroundShadowColor set];
+            [UIColorFromFixedRGB(0x01346B) set];
         } else {
-            [positiveBackgroundShadowColor set];
+            [UIColorFromFixedRGB(0x4E872A) set];
         }
         CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);
         [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
         
         if (blueCount) {
-            [blueBackgroundColor set];
+            [UIColorFromFixedRGB(0x11448B) set];
         } else {
-            [positiveBackgroundColor set];
+            [UIColorFromFixedRGB(0x6EA74A) set];
         }
         [UIView drawRoundRectangleInRect:rr withRadius:4];
         
@@ -119,9 +86,9 @@ const int COUNT_HEIGHT = 15;
         
         UIColor *psColor;
         if (blueCount) {
-            psColor = indicatorBlackColor;
+            psColor = UIColorFromFixedRGB(NEWSBLUR_BLACK_COLOR);
         } else {
-            psColor = positiveBackgroundShadowColor;
+            psColor = UIColorFromFixedRGB(0x4E872A);
         }
         [psStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
@@ -131,7 +98,7 @@ const int COUNT_HEIGHT = 15;
         [psStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName: indicatorWhiteColor}];
+                          NSForegroundColorAttributeName: UIColorFromFixedRGB(NEWSBLUR_WHITE_COLOR)}];
     }
     
     if (nt > 0 && appDelegate.selectedIntelligence <= 0) {        
@@ -149,11 +116,11 @@ const int COUNT_HEIGHT = 15;
         }
         
         
-        [neutralBackgroundShadowColor set];
+        [UIColorFromFixedRGB(0x93968D) set];
         CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);
         [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
         
-        [neutralBackgroundColor set];
+        [UIColorFromLightDarkRGB(0xB3B6AD, 0xaaaaaa) set];
         [UIView drawRoundRectangleInRect:rr withRadius:4];        
         
         NSString *ntStr = [NSString stringWithFormat:@"%d", nt];
@@ -164,12 +131,12 @@ const int COUNT_HEIGHT = 15;
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName: neutralBackgroundShadowColor}];
+                          NSForegroundColorAttributeName:UIColorFromFixedRGB(0x93968D)}];
         
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName: indicatorWhiteColor}];
+                          NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)}];
     }
 }
 

@@ -32,7 +32,7 @@
         [self.contentView addSubview:favicon];
         
         UILabel *activity = [[UILabel alloc] initWithFrame:CGRectZero];
-        activity.backgroundColor = [UIColor whiteColor];
+        activity.backgroundColor = UIColorFromRGB(0xffffff);
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
 
@@ -189,6 +189,7 @@
                         range:dateRange];
     }
     
+    self.activityLabel.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.activityLabel.attributedText = attrStr;
     [self.activityLabel sizeToFit];
         

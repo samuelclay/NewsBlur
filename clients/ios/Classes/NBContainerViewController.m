@@ -155,7 +155,7 @@
     UIView * storyTitlesPlaceholder = [[UIView alloc] initWithFrame:CGRectZero];
     storyTitlesPlaceholder.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     storyTitlesPlaceholder.autoresizesSubviews = YES;
-    storyTitlesPlaceholder.backgroundColor = [UIColor whiteColor];
+    storyTitlesPlaceholder.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
         
     self.storyTitlesStub = storyTitlesPlaceholder;
     
@@ -283,6 +283,14 @@
         return NB_DEFAULT_MASTER_WIDTH_LANDSCAPE;
     }
     return NB_DEFAULT_MASTER_WIDTH;
+}
+
+- (void)updateTheme {
+    self.masterNavigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    self.masterNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    
+    self.storyNavigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    self.storyNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
 }
 
 # pragma mark Modals and Popovers

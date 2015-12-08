@@ -15,11 +15,6 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        self.textLabel.backgroundColor = [UIColor clearColor];
-        self.textLabel.textColor = UIColorFromRGB(0x303030);
-        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-        self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-        self.textLabel.shadowOffset = CGSizeMake(0, 1);
         self.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
         [self setSeparatorInset:UIEdgeInsetsMake(0, 38, 0, 0)];
         UIView *background = [[UIView alloc] init];
@@ -42,6 +37,14 @@
     self.textLabel.frame = CGRectMake(self.imageView.frame.size.width, 0,
                                       self.frame.size.width - self.imageView.frame.size.width,
                                       self.frame.size.height);
+    
+    self.textLabel.backgroundColor = [UIColor clearColor];
+    self.textLabel.textColor = UIColorFromRGB(0x303030);
+    self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+    self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+    self.textLabel.shadowOffset = CGSizeMake(0, 1);
+    self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

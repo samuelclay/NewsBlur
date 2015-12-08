@@ -205,6 +205,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
 
@@ -503,6 +504,22 @@
 
 - (BOOL)isPhoneOrCompact {
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+}
+
+- (void)updateTraverseBackground {
+    self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    self.dragBarImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"drag_icon.png"]];
+    self.bottomSize.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+}
+
+- (void)updateTheme {
+    [super updateTheme];
+    
+    [self updateTraverseBackground];
+    [self setNextPreviousButtons];
+    [self setTextButton];
+    [self drawStories];
 }
 
 #pragma mark -
@@ -870,6 +887,9 @@
         [buttonPrevious setEnabled:YES];
     }
     
+    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_previous.png"]]
+                              forState:UIControlStateNormal];
+    
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
     NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
@@ -878,11 +898,11 @@
     if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
         nextIndex != -1) {
         [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"]
+        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_next.png"]]
                               forState:UIControlStateNormal];
     } else {
         [buttonNext setTitle:[@"Done" uppercaseString] forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_done.png"]
+        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_done.png"]]
                               forState:UIControlStateNormal];
     }
     
@@ -910,14 +930,17 @@
         [buttonSend setAlpha:.4];
     }
     
+    [buttonSend setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_send.png"]]
+                          forState:UIControlStateNormal];
+    
     if (storyViewController.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text_on.png"]
+        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
                               forState:nil];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
         [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text.png"]
+        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
                               forState:nil];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
     }
@@ -1072,6 +1095,12 @@
     [self.currentPage changeLineSpacing:lineSpacing];
     [self.nextPage changeLineSpacing:lineSpacing];
     [self.previousPage changeLineSpacing:lineSpacing];
+}
+
+- (void)drawStories {
+    [self.currentPage drawStory];
+    [self.nextPage drawStory];
+    [self.previousPage drawStory];
 }
 
 #pragma mark -

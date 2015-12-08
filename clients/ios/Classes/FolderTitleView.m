@@ -86,8 +86,8 @@
 
     // Background
     [NewsBlurAppDelegate fillGradient:rect
-                           startColor:UIColorFromRGB(0xEAECE5)
-                             endColor:UIColorFromRGB(0xDCDFD6)];
+                           startColor:UIColorFromLightDarkRGB(0xEAECE5, 0x333333)
+                             endColor:UIColorFromLightDarkRGB(0xDCDFD6, 0x444444)];
 //    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
 //    [backgroundColor set];
 //    CGContextFillRect(context, rect);
@@ -110,7 +110,7 @@
     CGContextStrokePath(context);
     
     // Folder title
-    UIColor *textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    UIColor *textColor = UIColorFromRGB(0x4D4D4D);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;

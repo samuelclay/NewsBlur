@@ -41,7 +41,7 @@ const NSInteger kHeaderHeight = 24;
                   state:UIControlStateNormal];
     [addTagBar setReturnKeyType:UIReturnKeyDone];
     [addTagBar setBackgroundColor:UIColorFromRGB(0xDCDFD6)];
-    [addTagBar setTintColor:[UIColor whiteColor]];
+    [addTagBar setTintColor:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)];
     [addTagBar setSearchBarStyle:UISearchBarStyleMinimal];
     [addTagBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     tagsTableView.tableHeaderView = addTagBar;

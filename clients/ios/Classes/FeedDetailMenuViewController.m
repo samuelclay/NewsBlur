@@ -203,11 +203,13 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     orderSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                              kMenuOptionHeight - 7*2);
     [orderSegmentedControl setTitle:[@"Newest first" uppercaseString] forSegmentAtIndex:0];
     [orderSegmentedControl setTitle:[@"Oldest" uppercaseString] forSegmentAtIndex:1];
+    self.orderSegmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
     
     [cell addSubview:orderSegmentedControl];
     
@@ -219,11 +221,13 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     readFilterSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                                   kMenuOptionHeight - 7*2);
     [readFilterSegmentedControl setTitle:[@"All stories" uppercaseString] forSegmentAtIndex:0];
     [readFilterSegmentedControl setTitle:[@"Unread only" uppercaseString] forSegmentAtIndex:1];
+    self.readFilterSegmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
     
     [cell addSubview:readFilterSegmentedControl];
     
