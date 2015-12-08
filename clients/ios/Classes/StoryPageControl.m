@@ -598,6 +598,9 @@
         [pageController clearStory];
     }
     
+    if (!suppressRedraw) {
+        [self resizeScrollView];
+    }
     [self setTextButton];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
