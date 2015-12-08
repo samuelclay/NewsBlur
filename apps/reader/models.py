@@ -1056,7 +1056,7 @@ class RUserStory:
         feed_read_key = "fR:%s:%s" % (feed_id, week_of_year)
         
         r.incr(feed_read_key)
-        r.expire(2*settings.DAYS_OF_STORY_HASHES*24*60*60)
+        r.expire(feed_read_key, 2*settings.DAYS_OF_STORY_HASHES*24*60*60)
         
     @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, 
