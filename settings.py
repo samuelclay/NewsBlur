@@ -586,13 +586,7 @@ if not DEVELOPMENT:
         'django_ses',
 
     )
-    RAVEN_CONFIG = {
-        'dsn': SENTRY_DSN,
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        'release': raven.fetch_git_sha(os.path.dirname(__file__)),
-    }
-    RAVEN_CLIENT = raven.Client(RAVEN_CONFIG)
+    RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
     
 
 COMPRESS = not DEBUG
