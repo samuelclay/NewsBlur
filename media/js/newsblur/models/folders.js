@@ -331,7 +331,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         url = url.replace('{folder_title}', Inflector.sluggify(this.options.title));
         console.log(['rss_url', this]);
         
-        return document.location.protocol + "//" + NEWSBLUR.URLs.domain + url;
+        return "https://" + NEWSBLUR.URLs.domain + url;
     },
     
     view_setting: function(setting) {
