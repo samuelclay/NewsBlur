@@ -672,6 +672,7 @@
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
+        [self.storyPageControl becomeFirstResponder];
     } else {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
