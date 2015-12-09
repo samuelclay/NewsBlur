@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_story_order"
+          android:title="@string/menu_story_order"
+          android:showAsAction="never" />
     <item android:id="@+id/menu_default_view"
           android:title="@string/menu_default_view"
           android:showAsAction="never" />

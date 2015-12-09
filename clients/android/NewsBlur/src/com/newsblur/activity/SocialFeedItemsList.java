@@ -52,16 +52,6 @@ public class SocialFeedItemsList extends ItemsList {
 	}
 	
     @Override
-    public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFeed(this, socialFeed.userId);
-    }
-
-    @Override
-    public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFeed(this, socialFeed.userId, newValue);
-    }
-    
-    @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         PrefsUtils.setReadFilterForFeed(this, socialFeed.userId, newValue);
     }

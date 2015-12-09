@@ -4468,9 +4468,9 @@
             });
         },
         
-        get_unread_view_score: function() {
+        get_unread_view_score: function(ignore_temp) {
             if (this.flags['feed_list_showing_starred']) return -1;
-            if (this.flags['unread_threshold_temporarily']) {
+            if (this.flags['unread_threshold_temporarily'] && !ignore_temp) {
                 var score_name = this.flags['unread_threshold_temporarily'];
                 if (score_name == 'neutral') {
                     return 0;
@@ -4482,13 +4482,13 @@
             return this.model.preference('unread_view');
         },
         
-        get_unread_view_name: function(unread_view) {
-            if (this.flags['unread_threshold_temporarily']) {
+        get_unread_view_name: function(unread_view, ignore_temp) {
+            if (this.flags['unread_threshold_temporarily'] && !ignore_temp) {
                 return this.flags['unread_threshold_temporarily'];
             }
             
-            if (typeof unread_view == 'undefined') {
-                unread_view = this.get_unread_view_score();
+            if (typeof unread_view == 'undefined' || unread_view === null) {
+                unread_view = this.get_unread_view_score(ignore_temp);
             }
             
             if (this.flags['feed_list_showing_starred']) return 'starred';

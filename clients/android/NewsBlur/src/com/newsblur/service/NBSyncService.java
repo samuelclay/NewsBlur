@@ -366,9 +366,16 @@ public class NBSyncService extends Service {
             impactFlags |= impact;
         }
         NbActivity.updateAllActivities(impactFlags);
-        if (PendingFeed == null) {
-            FollowupActions.clear();
-        }
+
+        // if there is a feed fetch loop running, don't clear, there will likely be races for
+        // stories that were just tapped as they were being re-fetched
+        synchronized (PENDING_FEED_MUTEX) {if (PendingFeed != null) return;}
+
+        // if there is a what-is-unread sync in progress, hold off on confirming actions,
+        // as this subservice can vend stale unread data
+        if (UnreadsService.isDoMetadata()) return;
+
+        FollowupActions.clear();
     }
 
     /**
@@ -386,6 +393,7 @@ public class NBSyncService extends Service {
         if (stopSync()) return;
         if (backoffBackgroundCalls()) return;
         if (ActMode != ActivationMode.ALL) return;
+        if (dbHelper.getActions(false).getCount() > 0) return;
 
         FFSyncRunning = true;
         NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
@@ -396,13 +404,6 @@ public class NBSyncService extends Service {
         orphanFeedIds = new HashSet<String>();
 
         try {
-            // a metadata sync invalidates pagination and feed status
-            ExhaustedFeeds.clear();
-            FeedPagesSeen.clear();
-            FeedStoriesSeen.clear();
-            UnreadsService.clear();
-            RecountCandidates.clear();
-
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
 
             if (feedResponse == null) {
@@ -416,6 +417,17 @@ public class NBSyncService extends Service {
                 PrefsUtils.logout(this);
                 return;
             }
+
+            if (stopSync()) return;
+            if (ActMode != ActivationMode.ALL) return;
+            if (dbHelper.getActions(false).getCount() > 0) return;
+
+            // a metadata sync invalidates pagination and feed status
+            ExhaustedFeeds.clear();
+            FeedPagesSeen.clear();
+            FeedStoriesSeen.clear();
+            UnreadsService.clear();
+            RecountCandidates.clear();
 
             lastFFConnMillis = feedResponse.connTime;
             lastFFReadMillis = feedResponse.readTime;
@@ -464,7 +476,11 @@ public class NBSyncService extends Service {
             
             // data for the folder table
             List<ContentValues> folderValues = new ArrayList<ContentValues>();
-            for (Folder folder : feedResponse.folders) {
+            Set<String> foldersSeen = new HashSet<String>(feedResponse.folders.size());
+            folderloop: for (Folder folder : feedResponse.folders) {
+                // don't form graph loops in the folder tree
+                if (foldersSeen.contains(folder.name)) continue folderloop;
+                foldersSeen.add(folder.name);
                 // prune out orphans before pushing to the DB
                 folder.removeOrphanFeedIds(orphanFeedIds);
                 folderValues.add(folder.getValues());
@@ -592,7 +608,10 @@ public class NBSyncService extends Service {
             
             while (totalStoriesSeen < PendingFeedTarget) {
                 if (stopSync()) return;
+                // this is a good heuristic for double-checking if we have left the story list
                 if (FlushRecounts) return;
+                // don't let the page loop block actions
+                if (dbHelper.getActions(false).getCount() > 0) return;
                 if (!fs.equals(PendingFeed)) {
                     // the active view has changed
                     if (fs == null) finished = true;
@@ -625,6 +644,9 @@ public class NBSyncService extends Service {
                     finished = true;
                     return;
                 }
+
+                // re-do any very recent actions that were incorrectly overwritten by this page
+                finishActions();
             }
             finished = true;
 
@@ -783,11 +805,11 @@ public class NBSyncService extends Service {
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
         if (ActionsRunning||RecountsRunning) return context.getResources().getString(R.string.sync_status_actions);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
-        if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
         if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
+        if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
         return null;
     }
 

@@ -11,44 +11,44 @@
         style="?rowItemHeaderBackground">
 
         <RelativeLayout
-                android:id="@+id/row_item_feed_header"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:minHeight="6dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                style="?rowItemFeedHeader">
+            android:id="@+id/row_item_feed_header"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="6dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            style="?rowItemFeedHeader">
 
             <ImageView
-                    android:id="@+id/reading_feed_icon"
-                    android:layout_width="17dp"
-                    android:layout_height="17dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="5dp"
-                    android:contentDescription="@string/description_row_folder_icon" />
+                android:id="@+id/reading_feed_icon"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="5dp"
+                android:contentDescription="@string/description_row_folder_icon" />
 
             <TextView
-                    android:id="@+id/reading_feed_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_toRightOf="@id/reading_feed_icon"
-                    android:layout_centerVertical="true"
-                    android:ellipsize="end"
-                    android:lines="1"
-                    android:textColor="@color/newsblur_blue"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:id="@+id/reading_feed_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/reading_feed_icon"
+                android:layout_centerVertical="true"
+                android:ellipsize="end"
+                android:lines="1"
+                android:textColor="@color/newsblur_blue"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
         <View
-                android:id="@+id/item_feed_border"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@id/row_item_feed_header"
-                android:background="@color/darkgray"/>
+            android:id="@+id/item_feed_border"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/row_item_feed_header"
+            android:background="@color/darkgray"/>
 
         <TextView
             android:id="@+id/reading_item_title"
@@ -90,7 +90,7 @@
             android:layout_height="17dp"
             android:layout_alignLeft="@id/reading_item_title"
             android:layout_below="@id/reading_item_date"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp" />
 
     </RelativeLayout>

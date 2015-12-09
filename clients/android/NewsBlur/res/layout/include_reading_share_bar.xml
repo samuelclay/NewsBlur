@@ -11,7 +11,7 @@
 
     <View
         android:id="@+id/center_filler"
-        android:layout_width="10dp"
+        android:layout_width="8dp"
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="5dp"
         style="?shareBarText"
         android:textSize="11sp"
@@ -34,7 +34,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="8dp"
         style="?shareBarText"
         android:textSize="11sp"
         android:textStyle="bold" />
@@ -42,7 +42,7 @@
     <com.newsblur.view.FlowLayout
         android:id="@+id/reading_social_commentimages"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/center_filler"
         android:layout_toRightOf="@id/comment_by" />
@@ -51,7 +51,7 @@
         xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
         android:id="@+id/reading_social_shareimages"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/shared_by"
         android:layout_toRightOf="@+id/center_filler"

@@ -117,7 +117,7 @@
             android:layout_toRightOf="@id/comment_username"
             android:paddingTop="2dp"
             newsblur:flow="left"
-            newsblur:defaultImageSize="20" />
+            newsblur:imageViewSize="20" />
         
     </RelativeLayout>
 
