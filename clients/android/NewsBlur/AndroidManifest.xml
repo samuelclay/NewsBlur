@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
+<<<<<<< HEAD
     android:versionCode="120"
     android:versionName="4.8.0b2" >
+=======
+    android:versionCode="112"
+    android:versionName="4.6.1b2" >
+>>>>>>> Android v4.6.1b2.
 
     <uses-sdk
         android:minSdkVersion="14"
