@@ -115,7 +115,7 @@ public class FeedFolderResponse {
             // a folder array contains either feed IDs or nested folder objects
 			if(jsonElement.isJsonPrimitive()) {
 				feedIds.add(jsonElement.getAsString());
-			} else {
+			} else if (jsonElement.isJsonObject()) {
                 // if it wasn't a feed ID, it is a nested folder object
                 Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();
                 // recurse - nested folders are just objects with (usually one) field named for the folder
@@ -129,7 +129,9 @@ public class FeedFolderResponse {
                     appendedParentList.add(name);
                     parseFolderArray(appendedParentList, nextName, (JsonArray) next.getValue());
                 }
-			}
+			} else {
+                Log.w( this.getClass().getName(), "folder had null or malformed child: " + name);
+            }
 		}
         Folder folder = new Folder();
         folder.name = name;

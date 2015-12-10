@@ -139,6 +139,8 @@ public class NBSyncService extends Service {
         service doesn't spin in the background chewing up battery when the API is unavailable. */
     private static long lastAPIFailure = 0;
 
+    private static int lastActionCount = 0;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -308,12 +310,13 @@ public class NBSyncService extends Service {
         Cursor c = null;
         try {
             c = dbHelper.getActions(false);
-            if (c.getCount() < 1) return;
+            lastActionCount = c.getCount();
+            if (lastActionCount < 1) return;
 
             ActionsRunning = true;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
             actionsloop : while (c.moveToNext()) {
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
                 ReadingAction ra;
                 try {
@@ -324,6 +327,7 @@ public class NBSyncService extends Service {
                     continue actionsloop;
                 }
                     
+                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "doing action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(apiManager);
 
                 if (response == null) {
@@ -344,6 +348,7 @@ public class NBSyncService extends Service {
                     dbHelper.clearAction(id);
                     FollowupActions.add(ra);
                 }
+                lastActionCount--;
             }
         } finally {
             closeQuietly(c);
@@ -360,6 +365,7 @@ public class NBSyncService extends Service {
         if (HaltNow) return;
         if (FollowupActions.size() < 1) return;
 
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
             int impact = ra.doLocal(dbHelper);
@@ -726,6 +732,7 @@ public class NBSyncService extends Service {
                     stopSelf(startId);
                 }
                 lastStartIdCompleted = startId;
+                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "wakelock depleted");
             }
         }
     }
@@ -803,7 +810,8 @@ public class NBSyncService extends Service {
         if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
         if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
-        if (ActionsRunning||RecountsRunning) return context.getResources().getString(R.string.sync_status_actions);
+        if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
+        if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
