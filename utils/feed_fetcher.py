@@ -25,10 +25,11 @@ from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
+from utils.feed_functions import timelimit, TimeoutError, cache_bust_url
 from BeautifulSoup import BeautifulSoup
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
+from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -37,6 +38,7 @@ from utils import json_functions as json
 # http://feedjack.googlecode.com
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
+
 
 def mtime(ttime):
     """ datetime auxiliar function.
@@ -389,7 +391,7 @@ class ProcessFeed:
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             original_tagline = self.feed.data.feed_tagline
-            self.feed.data.feed_tagline = utf8encode(tagline)
+            self.feed.data.feed_tagline = smart_unicode(tagline)
             if self.feed.data.feed_tagline != original_tagline:
                 self.feed.data.save(update_fields=['feed_tagline'])
 
@@ -808,5 +810,3 @@ class Dispatcher:
                                                             args=(feed_queue,)))
             for i in range(self.num_threads):
                 self.workers[i].start()
-
-                

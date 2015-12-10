@@ -2,23 +2,30 @@ import logging
 import re
 import string
 import time
+
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
-from utils.user_functions import extract_user_agent
+from django.utils.encoding import smart_unicode
+
+from user_functions import extract_user_agent
 from apps.statistics.rstats import RStats
 
-class NullHandler(logging.Handler): #exists in python 3.1
+
+class NullHandler(logging.Handler):  # exists in python 3.1
     def emit(self, record):
         pass
+
 
 def getlogger():
     logger = logging.getLogger('newsblur')
     return logger
 
+
 def user(u, msg, request=None, warn_color=True):
+    msg = smart_unicode(msg)
     if not u:
         return debug(msg)
-        
+
     platform = '------'
     time_elapsed = ""
     if isinstance(u, WSGIRequest) or request:
@@ -54,6 +61,7 @@ def user(u, msg, request=None, warn_color=True):
         if path in page_load_paths:
             RStats.add('page_load', duration=seconds)
 
+
 def cipher(msg):
     shift = len(msg)
     in_alphabet = unicode(string.ascii_lowercase)
@@ -61,19 +69,26 @@ def cipher(msg):
     translation_table = dict((ord(ic), oc) for ic, oc in zip(in_alphabet, out_alphabet))
 
     return msg.translate(translation_table)
-    
+
+
 def debug(msg):
+    msg = smart_unicode(msg)
     logger = getlogger()
     logger.debug(colorize(msg))
 
+
 def info(msg):
+    msg = smart_unicode(msg)
     logger = getlogger()
     logger.info(colorize(msg))
 
+
 def error(msg):
+    msg = smart_unicode(msg)
     logger = getlogger()
     logger.error(msg)
-    
+
+
 def colorize(msg):
     params = {
         r'\-\-\->'        : '~FB~SB--->~FW',
