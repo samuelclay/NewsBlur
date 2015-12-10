@@ -57,6 +57,7 @@ public class BlurDatabaseHelper {
     private SQLiteDatabase dbRW;
 
     public BlurDatabaseHelper(Context context) {
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "new DB conn requested");
         this.context = context;
         synchronized (RW_MUTEX) {
             dbWrapper = new BlurDatabase(context);
@@ -75,10 +76,6 @@ public class BlurDatabaseHelper {
                 return null;
             }
         }.execute();
-    }
-
-    public boolean isOpen() {
-        return dbRW.isOpen();
     }
 
     public void dropAndRecreateTables() {

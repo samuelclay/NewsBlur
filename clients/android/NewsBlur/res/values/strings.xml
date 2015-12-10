@@ -149,6 +149,7 @@
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
     
     <string name="login_registration_register">Register</string>
+    <string name="register_message_error">There was problem registering for NewsBlur.</string>
     <string name="get_started">Let\'s get started</string>
     <string name="add_friends">Add your friends</string>
     <string name="connect_with_your_friends">Connect with your friends to easily follow the stories that matter to them</string>
@@ -251,7 +252,8 @@
     <string name="default_theme_value">light</string>
 
     <string name="sync_status_housekeeping">Tidying up...</string>
-    <string name="sync_status_actions">Catching up reading actions...</string>
+    <string name="sync_status_actions">Catching up %d reading actions...</string>
+    <string name="sync_status_recounts">Catching up reading actions...</string>
     <string name="sync_status_ffsync">On its way...</string>
     <string name="sync_status_cleanup">Cleaning up...</string>
     <string name="sync_status_stories">Fetching fresh stories...</string>
