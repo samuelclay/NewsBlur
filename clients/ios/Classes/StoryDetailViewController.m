@@ -82,6 +82,8 @@
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
+    
+    [self clearWebView];
 
 //    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
 //                                              initWithTarget:self action:@selector(showOriginalStory:)];
@@ -244,7 +246,7 @@
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
     }
     
-    if ([self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+    if (!self.activeStoryId) {
         [self drawStory];
     }
 }
@@ -521,7 +523,8 @@
 - (void)clearStory {
     self.activeStoryId = nil;
     if (self.activeStory) self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
-    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
+    
+    [self clearWebView];
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
 }
 
@@ -533,6 +536,22 @@
 
 #pragma mark -
 #pragma mark Story layout
+
+- (void)clearWebView {
+    NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
+    
+    if (themeStyle.length) {
+        themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView%@.css\">", themeStyle];
+    }
+    
+    NSURL *baseURL = [NSBundle mainBundle].bundleURL;
+    NSString *html = [NSString stringWithFormat:@"<html>"
+                      "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\">%@</head>" // header string
+                      "<body></body>"
+                      "</html>", themeStyle];
+    
+    [self.webView loadHTMLString:html baseURL:baseURL];
+}
 
 - (NSString *)getHeader {
     NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
@@ -1550,8 +1569,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.webkitTouchCallout='none';"];
 
     if ([appDelegate.storiesCollection.activeFeedStories count] &&
-        self.activeStoryId &&
-        ![self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+        self.activeStoryId) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
             [self checkTryFeedStory];
