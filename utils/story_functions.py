@@ -156,11 +156,11 @@ def pre_process_story(entry):
 
 def attach_media_scripts(content):
     if 'instagram-media' in content and '<script' not in content:
-        content += '<script async defer src="//platform.instagram.com/en_US/embeds.js"></script><script>(function(){window.instgrm.Embeds.process()})()</script>'
+        content += '<script async defer src="https://platform.instagram.com/en_US/embeds.js"></script><script>(function(){if(window.instgrm)window.instgrm.Embeds.process()})()</script>'
     if 'twitter-tweet' in content and '<script' not in content:
-        content += '<script id="twitter-wjs" type="text/javascript" async defer src="//platform.twitter.com/widgets.js"></script>'
+        content += '<script id="twitter-wjs" type="text/javascript" async defer src="https://platform.twitter.com/widgets.js"></script>'
     if 'imgur-embed-pub' in content and '<script' not in content:
-        content += '<script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>'
+        content += '<script async src="https://s.imgur.com/min/embed.js" charset="utf-8"></script>'
     return content
         
     
