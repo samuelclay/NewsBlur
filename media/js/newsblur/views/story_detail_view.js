@@ -314,6 +314,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.model.set('visible', true);
         } else {
             this.$el.addClass('NB-hidden');
+            this.model.set('visible', false);
         }
     },
     
