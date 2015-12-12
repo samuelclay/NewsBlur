@@ -47,6 +47,7 @@ UIActionSheetDelegate> {
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
+@property (nonatomic) BOOL hasStory;
 
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
