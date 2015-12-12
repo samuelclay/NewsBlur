@@ -78,7 +78,7 @@ public class PrefsUtils {
         StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
         s.append("<give us some feedback!>%0A%0A");
         s.append("%0Aapp version: ").append(getVersion(context));
-        s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE);
+        s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE).append(" (" + Build.DISPLAY + ")");
         s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
         s.append("%0Asqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("%0Ausername: ").append(getUserDetails(context).username);
@@ -392,38 +392,50 @@ public class PrefsUtils {
     public static StoryOrder getStoryOrder(Context context, FeedSet fs) {
         if (fs.isAllNormal()) {
             return getStoryOrderForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
-        }
-        if (fs.getSingleFeed() != null) {
+        } else if (fs.getSingleFeed() != null) {
             return getStoryOrderForFeed(context, fs.getSingleFeed());
-        }
-        if (fs.getMultipleFeeds() != null) {
+        } else if (fs.getMultipleFeeds() != null) {
             return getStoryOrderForFolder(context, fs.getFolderName());
-        }
-
-        if (fs.isAllSocial()) {
+        } else if (fs.isAllSocial()) {
             return getStoryOrderForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-        }
-        if (fs.getSingleSocialFeed() != null) {
+        } else if (fs.getSingleSocialFeed() != null) {
             return getStoryOrderForFeed(context, fs.getSingleSocialFeed().getKey());
-        }
-        if (fs.getMultipleSocialFeeds() != null) {
+        } else if (fs.getMultipleSocialFeeds() != null) {
             throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
-        }
-
-        if (fs.isAllRead()) {
+        } else if (fs.isAllRead()) {
             // dummy value, not really used
             return StoryOrder.NEWEST;
-        }
-
-        if (fs.isAllSaved()) {
+        } else if (fs.isAllSaved()) {
             return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
-        }
-
-        if (fs.isGlobalShared()) {
+        } else if (fs.isGlobalShared()) {
             return StoryOrder.NEWEST;
+        } else {
+            throw new IllegalArgumentException( "unknown type of feed set" );
         }
+    }
 
-        throw new IllegalArgumentException( "unknown type of feed set" );
+    public static void updateStoryOrder(Context context, FeedSet fs, StoryOrder newOrder) {
+        if (fs.isAllNormal()) {
+            setStoryOrderForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newOrder);
+        } else if (fs.getSingleFeed() != null) {
+            setStoryOrderForFeed(context, fs.getSingleFeed(), newOrder);
+        } else if (fs.getMultipleFeeds() != null) {
+            setStoryOrderForFolder(context, fs.getFolderName(), newOrder);
+        } else if (fs.isAllSocial()) {
+            setStoryOrderForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newOrder);
+        } else if (fs.getSingleSocialFeed() != null) {
+            setStoryOrderForFeed(context, fs.getSingleSocialFeed().getKey(), newOrder);
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "multiple social feeds not supported" );
+        } else if (fs.isAllRead()) {
+            throw new IllegalArgumentException( "AllRead FeedSet type has fixed ordering" );
+        } else if (fs.isAllSaved()) {
+            setStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder);
+        } else if (fs.isGlobalShared()) {
+            throw new IllegalArgumentException( "GlobalShared FeedSet type has fixed ordering" );
+        } else {
+            throw new IllegalArgumentException( "unknown type of feed set" );
+        }
     }
 
     public static ReadFilter getReadFilter(Context context, FeedSet fs) {

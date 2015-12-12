@@ -32,8 +32,12 @@ public class FeedUtils {
     public static ImageLoader imageLoader;
 
     public static void offerInitContext(Context context) {
-        dbHelper = new BlurDatabaseHelper(context);
-        imageLoader = new ImageLoader(context);
+        if (dbHelper == null) {
+            dbHelper = new BlurDatabaseHelper(context.getApplicationContext());
+        }
+        if (imageLoader == null) {
+            imageLoader = new ImageLoader(context.getApplicationContext());
+        }
     }
 
     private static void triggerSync(Context c) {
@@ -143,6 +147,10 @@ public class FeedUtils {
         dbHelper.touchStory(story.storyHash);
         if (story.read == read) { return; }
 
+        // tell the sync service we need to mark read
+        ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
+        dbHelper.enqueueAction(ra);
+
         // update the local object to show as read before DB is touched
         story.read = read;
         
@@ -150,9 +158,6 @@ public class FeedUtils {
         Set<FeedSet> impactedFeeds = dbHelper.setStoryReadState(story, read);
         NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
 
-        // tell the sync service we need to mark read
-        ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
-        dbHelper.enqueueAction(ra);
         triggerSync(context);
         NBSyncService.addRecountCandidates(impactedFeeds);
     }
@@ -201,14 +206,23 @@ public class FeedUtils {
         dbHelper.insertClassifier(classifier);
     }
 
-    public static void sendStory(Story story, Context context) {
+    public static void sendStoryBrief(Story story, Context context) {
         if (story == null ) { return; } 
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title));
-        final String shareString = context.getResources().getString(R.string.share);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[]{Html.fromHtml(story.title), story.permalink}));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), new Object[]{Html.fromHtml(story.title), story.permalink}));
+        context.startActivity(Intent.createChooser(intent, "Send using"));
+    }
+
+    public static void sendStoryFull(Story story, Context context) {
+        if (story == null ) { return; } 
+        String body = getStoryContent(story.storyHash);
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title).toString());
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), new Object[]{story.permalink, Html.fromHtml(story.title), Html.fromHtml(body)}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
@@ -245,6 +259,22 @@ public class FeedUtils {
         ra.doLocal(dbHelper);
         NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
         triggerSync(context);
+    }
+
+    public static void moveFeedToFolders(final Context context, final String feedId, final Set<String> toFolders, final Set<String> inFolders) {
+        if (toFolders.size() < 1) return;
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.moveFeedToFolders(feedId, toFolders, inFolders);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                NBSyncService.forceFeedsFolders();
+                triggerSync(context);
+            }
+        }.execute();
     }
 
     public static FeedSet feedSetFromFolderName(String folderName) {

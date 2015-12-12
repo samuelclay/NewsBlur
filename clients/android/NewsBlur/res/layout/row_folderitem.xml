@@ -54,11 +54,24 @@
         android:textColor="@color/lightgray"
         android:textSize="14dp" />
 
+    <ImageView
+        android:id="@+id/row_item_saved_icon"
+        android:src="@drawable/clock"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/row_item_feedtitle"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="8dp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/row_item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_toLeftOf="@id/row_item_saved_icon"
         android:layout_below="@id/row_item_feedicon"
         android:paddingTop="6dp"
         android:paddingBottom="4dp"

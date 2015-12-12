@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -87,6 +88,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @FindView(R.id.reading_overlay_progress_left) ProgressBar overlayProgressLeft;
     @FindView(R.id.reading_overlay_text) Button overlayText;
     @FindView(R.id.reading_overlay_send) Button overlaySend;
+    @FindView(R.id.reading_empty_view_text) View emptyViewText;
+    @FindView(R.id.reading_sync_status) TextView overlayStatusText;
     
     ViewPager pager;
 
@@ -270,6 +273,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                  (story.storyHash.equals(storyHash)) ) {
                 // now that the pager is getting the right story, make it visible
                 pager.setVisibility(View.VISIBLE);
+                emptyViewText.setVisibility(View.INVISIBLE);
                 pager.setCurrentItem(stories.getPosition(), false);
                 this.onPageSelected(stories.getPosition());
                 storyHash = null;
@@ -355,7 +359,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             newFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story) {
-			FeedUtils.sendStory(story, this);
+			FeedUtils.sendStoryBrief(story, this);
+			return true;
+		} else if (item.getItemId() == R.id.menu_send_story_full) {
+			FeedUtils.sendStoryFull(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
@@ -386,6 +393,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
+            if (overlayStatusText != null) {
+                String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
+                if (syncStatus != null)  {
+                    overlayStatusText.setText(syncStatus);
+                    overlayStatusText.setVisibility(View.VISIBLE);
+                } else {
+                    overlayStatusText.setVisibility(View.GONE);
+                }
+            }
         }
         if ((updateType & UPDATE_STORY) != 0) {    
             updateCursor();
@@ -773,7 +789,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     public void overlaySend(View v) {
         if ((readingAdapter == null) || (pager == null)) return;
 		Story story = readingAdapter.getStory(pager.getCurrentItem());
-        FeedUtils.sendStory(story, this);
+        FeedUtils.sendStoryBrief(story, this);
     }
 
     public void overlayText(View v) {

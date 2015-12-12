@@ -4,6 +4,9 @@
     <item android:id="@+id/menu_send_story"
         android:title="@string/menu_send_story"/>
 
+    <item android:id="@+id/menu_send_story_full"
+        android:title="@string/menu_send_story_full"/>
+
     <item android:id="@+id/menu_mark_story_as_unread"
           android:title="@string/menu_mark_unread" />
 

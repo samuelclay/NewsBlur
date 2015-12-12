@@ -218,6 +218,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			inflater.inflate(R.menu.context_feed, menu);
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
+                menu.removeItem(R.id.menu_choose_folders);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
             }
@@ -258,7 +259,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 FeedUtils.markFeedsRead(FeedSet.allFeeds(), null, null, getActivity());
 			}
 			return true;
-		}
+		} else if (item.getItemId() == R.id.menu_choose_folders) {
+            DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(adapter.getChild(groupPosition, childPosition)));
+            chooseFoldersFragment.show(getFragmentManager(), "dialog");
+        }
 
 		return super.onContextItemSelected(item);
 	}

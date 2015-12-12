@@ -57,6 +57,7 @@ public class BlurDatabaseHelper {
     private SQLiteDatabase dbRW;
 
     public BlurDatabaseHelper(Context context) {
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "new DB conn requested");
         this.context = context;
         synchronized (RW_MUTEX) {
             dbWrapper = new BlurDatabase(context);
@@ -75,10 +76,6 @@ public class BlurDatabaseHelper {
                 return null;
             }
         }.execute();
-    }
-
-    public boolean isOpen() {
-        return dbRW.isOpen();
     }
 
     public void dropAndRecreateTables() {
@@ -823,6 +820,16 @@ public class BlurDatabaseHelper {
         return result;
     }
 
+    public List<Folder> getFolders() {
+        Cursor c = getFoldersCursor(null);
+        List<Folder> folders = new ArrayList<Folder>(c.getCount());
+        while (c.moveToNext()) {
+            folders.add(Folder.fromCursor(c));
+        }
+        c.close();
+        return folders;
+    }
+
     public Loader<Cursor> getFoldersLoader() {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getFoldersCursor(cancellationSignal);}
@@ -945,7 +952,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
             q.append(" OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1))");
-            q.append(" ORDER BY " + DatabaseConstants.STARRED_STORY_ORDER);
+            q.append(" ORDER BY " + DatabaseConstants.getSavedStoriesSortOrder(order));
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isGlobalShared()) {
@@ -1070,12 +1077,12 @@ public class BlurDatabaseHelper {
         return replies;
     }
 
-    public void replyToComment(String storyId, String feedId, String commentUserId, String replyText) {
+    public void replyToComment(String storyId, String feedId, String commentUserId, String replyText, long replyCreateTime) {
         Reply reply = new Reply();
         reply.commentId = Comment.constructId(storyId, feedId, commentUserId);
         reply.text = replyText;
         reply.userId = PrefsUtils.getUserDetails(context).id;
-        reply.date = new Date();
+        reply.date = new Date(replyCreateTime);
         reply.id = reply.constructId();
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }

@@ -25,10 +25,11 @@ from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
+from utils.feed_functions import timelimit, TimeoutError, cache_bust_url
 from BeautifulSoup import BeautifulSoup
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
+from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -37,6 +38,7 @@ from utils import json_functions as json
 # http://feedjack.googlecode.com
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
+
 
 def mtime(ttime):
     """ datetime auxiliar function.
@@ -113,11 +115,17 @@ class FetchFeed:
                                             etag=etag,
                                             modified=modified)
             except (TypeError, ValueError, KeyError, EOFError), e:
-                logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
+                logging.debug(u'   ***> [%-30s] ~FRFeed fetch error: %s' % 
                               (self.feed.title[:30], e))
+                pass
+                
+        if not self.fpf:
+            try:
+                logging.debug(u'   ***> [%-30s] ~FRTurning off headers...' % 
+                              (self.feed.title[:30]))
                 self.fpf = feedparser.parse(address, agent=USER_AGENT)
             except (TypeError, ValueError, KeyError, EOFError), e:
-                logging.debug(u'   ***> [%-30s] ~FR%s fetch failed: %s.' % 
+                logging.debug(u'   ***> [%-30s] ~FRFetch failed: %s.' % 
                               (self.feed.title[:30], e))
                 return FEED_ERRHTTP, None
             
@@ -383,7 +391,7 @@ class ProcessFeed:
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             original_tagline = self.feed.data.feed_tagline
-            self.feed.data.feed_tagline = utf8encode(tagline)
+            self.feed.data.feed_tagline = smart_unicode(tagline)
             if self.feed.data.feed_tagline != original_tagline:
                 self.feed.data.save(update_fields=['feed_tagline'])
 
@@ -522,7 +530,10 @@ class Dispatcher:
 
     def refresh_feed(self, feed_id):
         """Update feed, since it may have changed"""
-        return Feed.objects.using('default').get(pk=feed_id)
+        try:
+            return Feed.objects.using('default').get(pk=feed_id)
+        except Feed.DoesNotExist:
+            return
         
     def process_feed_wrapper(self, feed_queue):
         delta = None
@@ -643,6 +654,7 @@ class Dispatcher:
                 
             if not feed: continue
             feed = self.refresh_feed(feed.pk)
+            if not feed: continue
             
             if ((self.options['force']) or 
                 (random.random() > .9) or
@@ -798,5 +810,3 @@ class Dispatcher:
                                                             args=(feed_queue,)))
             for i in range(self.num_threads):
                 self.workers[i].start()
-
-                

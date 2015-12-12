@@ -20,8 +20,7 @@
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailViewController : BaseViewController 
-<UITableViewDelegate, UITableViewDataSource, 
- UIActionSheetDelegate, UIAlertViewDelegate,
+<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate,
  UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
  WYPopoverControllerDelegate, MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate> {
@@ -55,6 +54,8 @@
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
 @property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) IBOutlet UIView *messageView;
+@property (nonatomic) IBOutlet UILabel *messageLabel;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -91,8 +92,8 @@
 - (void)fadeSelectedCell:(BOOL)deselect;
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row;
 - (void)redrawUnreadStory;
-- (IBAction)doOpenMarkReadActionSheet:(id)sender;
-- (IBAction)doOpenSettingsActionSheet:(id)sender;
+- (IBAction)doOpenMarkReadMenu:(id)sender;
+- (IBAction)doOpenSettingsMenu:(id)sender;
 - (void)confirmDeleteSite;
 - (void)deleteSite;
 - (void)deleteFolder;
@@ -104,10 +105,9 @@
 - (void)instafetchFeed;
 - (void)changeActiveStoryTitleCellLayout;
 - (void)loadFaviconsFromActiveFeed;
+- (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
-- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;

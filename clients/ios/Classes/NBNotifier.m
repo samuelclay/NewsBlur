@@ -84,10 +84,10 @@
         [_txtLabel setFont:[UIFont fontWithName: @"Helvetica" size: 16]];
         [_txtLabel setBackgroundColor:[UIColor clearColor]];
         
-        [_txtLabel setTextColor:[UIColor whiteColor]];
+        [_txtLabel setTextColor:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)];
         
         _txtLabel.layer.shadowOffset =CGSizeMake(0, -0.5);
-        _txtLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+        _txtLabel.layer.shadowColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR).CGColor;
         _txtLabel.layer.shadowOpacity = 1.0;
         _txtLabel.layer.shadowRadius = 1;
         
@@ -202,13 +202,13 @@
 - (void)showIn:(float)time {
     showing = YES;
     CGRect frame = self.frame;
-    frame.size.width = self.view.frame.size.width;
+    frame.size.width = self.view.bounds.size.width;
     self.frame = frame;
     self.hidden = NO;
     
     [UIView animateWithDuration:time animations:^{
         CGRect move = self.frame;
-        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
+        move.origin.y = self.view.bounds.size.height - NOTIFIER_HEIGHT - self.offset.y;
         self.frame = move;
     } completion:nil];
 }
@@ -223,11 +223,11 @@
 
 - (void)hideIn:(float)seconds {
     
-    if (!showing) return;
+//    if (!showing) return;
     
     [UIView animateWithDuration:seconds animations:^{
         CGRect move = self.frame;
-        move.origin.y = self.view.frame.size.height - self.offset.y;
+        move.origin.y = self.view.bounds.size.height - self.offset.y;
         self.frame = move;
     } completion:^(BOOL finished) {
         self.hidden = YES;

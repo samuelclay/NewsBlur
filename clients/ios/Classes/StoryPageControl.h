@@ -50,6 +50,8 @@
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic) IBOutlet UIImageView *textStorySendBackgroundImageView;
+@property (nonatomic) IBOutlet UIImageView *prevNextBackgroundImageView;
 @property (nonatomic) IBOutlet THCircularProgressView *circularProgressView;
 @property (nonatomic) IBOutlet UIButton *buttonPrevious;
 @property (nonatomic) IBOutlet UIButton *buttonNext;
@@ -69,6 +71,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
+@property (nonatomic) IBOutlet UIImageView *dragBarImageView;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
 @property (readwrite) CGFloat inTouchMove;
@@ -115,6 +118,7 @@
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (void)changeLineSpacing:(NSString *)lineSpacing;
+- (void)drawStories;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;
 - (void)hideNotifier;

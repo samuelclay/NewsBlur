@@ -76,6 +76,9 @@
     
     self.activeTerm_ = @"";
     self.searchResults_ = [[NSMutableDictionary alloc] init];
+    
+    self.folderPicker.delegate = self;
+    
     [super viewDidLoad];
 }
 
@@ -85,6 +88,11 @@
     [self.folderPicker setHidden:YES];
     [self.siteScrollView setAlpha:0];
     [self.activityIndicator stopAnimating];
+    
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.siteTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.folderPicker.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    
     [super viewWillAppear:animated];
 }
 
@@ -102,6 +110,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
+    
+    [self.inFolderInput becomeFirstResponder];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.siteTable.hidden = NO;
@@ -382,14 +392,19 @@ numberOfRowsInComponent:(NSInteger)component {
     return [[self folders] count] + 1;
 }
 
-- (NSString *)pickerView:(UIPickerView *)pickerView
-             titleForRow:(NSInteger)row
-            forComponent:(NSInteger)component {
+- (NSAttributedString *)pickerView:(UIPickerView *)pickerView
+             attributedTitleForRow:(NSInteger)row
+                      forComponent:(NSInteger)component {
+    NSString *title = nil;
+    NSDictionary *attributes = @{NSForegroundColorAttributeName : UIColorFromRGB(NEWSBLUR_BLACK_COLOR)};
+    
     if (row == 0) {
-        return @"— Top Level —";
+        title = @"— Top Level —";
     } else {
-        return [[self folders] objectAtIndex:row-1];
+        title = [[self folders] objectAtIndex:row - 1];
     }
+    
+    return [[NSAttributedString alloc] initWithString:title attributes:attributes];
 }
 
 - (void)pickerView:(UIPickerView *)pickerView 
@@ -471,10 +486,14 @@ numberOfRowsInComponent:(NSInteger)component {
     }
 
     cell.feedTitle.text = [result objectForKey:@"label"];
+    cell.feedTitle.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     cell.feedUrl.text = [result objectForKey:@"value"];
+    cell.feedUrl.textColor = UIColorFromFixedRGB(NEWSBLUR_LINK_COLOR);
     cell.feedSubs.text = [[NSString stringWithFormat:@"%@ subscriber%@",
                           [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"] uppercaseString];
+    cell.feedSubs.textColor = UIColorFromRGB(0x808080);
     cell.feedFavicon.image = faviconImage;
+    cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     return cell;
 }

@@ -1550,10 +1550,10 @@ a img {
 .NB-feedbar .NB-story-title-indicator .NB-story-title-indicator-count .unread_count_starred {
     display: none;
 }
-.NB-feedbar .NB-story-title-indicator.unread_threshold_negative {
+/*.NB-feedbar .NB-story-title-indicator.unread_threshold_negative {
   display: none;
 }
-.NB-feedbar .NB-story-title-indicator .feed_counts_floater {
+*/.NB-feedbar .NB-story-title-indicator .feed_counts_floater {
   float: left;
   padding: 2px 0 0;
   text-align: center;
@@ -7001,6 +7001,10 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-move.NB-menu-manage-feed-move-cancel .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
+}
+.NB-menu-manage .NB-menu-manage-mute .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/silk/color_swatch_bw.png') no-repeat  1px 2px;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-rename .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_rename.png') no-repeat 0 0;  

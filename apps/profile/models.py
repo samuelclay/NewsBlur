@@ -99,6 +99,7 @@ class Profile(models.Model):
             print " ---> You must pass confirm=True to delete this user."
             return
         
+        logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
         try:
             self.cancel_premium()
         except:
@@ -402,12 +403,15 @@ class Profile(models.Model):
         usernames = set()
         numerics = re.compile(r'[0-9]+')
         for user in users:
-          opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
-          reads = RUserStory.read_story_count(user.pk)
-          has_numbers = numerics.search(user.username)
-          if opens is None and not reads and has_numbers:
-             usernames.add(user.username)
-             print user.username, user.email, opens, reads
+            opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
+            reads = RUserStory.read_story_count(user.pk)
+            has_numbers = numerics.search(user.username)
+            if opens is None and not reads and has_numbers:
+                usernames.add(user.username)
+                print " ---> Numerics: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+            elif not user.profile.last_seen_ip:
+                usernames.add(user.username)
+                print " ---> No IP: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
         
         if not confirm: return usernames
         
@@ -1147,7 +1151,7 @@ class RNewUserQueue:
             logging.debug("~FRCan't activate free account, can't find user ~SB%s~SN. ~FB%s still in queue." % (user_id, count-1))
             return
             
-        logging.user(user, "~FBActivating free account (%s). %s still in queue." % (user.email, (count-1)))
+        logging.user(user, "~FBActivating free account (%s / %s). %s still in queue." % (user.email, user.profile.last_seen_ip, (count-1)))
 
         user.profile.activate_free()
     

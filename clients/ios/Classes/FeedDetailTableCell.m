@@ -166,6 +166,10 @@ static UIFont *indicatorFont = nil;
 @synthesize appDelegate;
 
 - (void)drawRect:(CGRect)r {
+    if (!cell) {
+        return;
+    }
+    
     int riverPadding = 0;
     if (cell.isRiverOrSocial) {
         riverPadding = 20;
@@ -336,18 +340,18 @@ static UIFont *indicatorFont = nil;
     int storyAuthorDateY = r.size.height - 18;
     
     if (cell.isRead) {
-        textColor = UIColorFromRGB(0xbabdd1);
+        textColor = UIColorFromLightDarkRGB(0xbabdd1, 0x3A708A);
         font = [UIFont fontWithName:@"Helvetica" size:10];
     } else {
-        textColor = UIColorFromRGB(0x262c6c);
+        textColor = UIColorFromLightDarkRGB(0x262c6c, 0x3A708A);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     
     if (cell.highlighted || cell.selected) {
         if (cell.isRead) {
-            textColor = UIColorFromRGB(0xaaadc1);
+            textColor = UIColorFromLightDarkRGB(0xaaadc1, 0x3A708A);
         } else {
-            textColor = UIColorFromRGB(0x5a5d91);
+            textColor = UIColorFromLightDarkRGB(0x5a5d91, 0x3A708A);
         }
     }
     

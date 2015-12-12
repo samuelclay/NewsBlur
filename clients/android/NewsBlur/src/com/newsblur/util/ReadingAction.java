@@ -22,6 +22,7 @@ public class ReadingAction {
         UNLIKE_COMMENT
     };
 
+    private final long time;
     private ActionType type;
     private String storyHash;
     private FeedSet feedSet;
@@ -34,7 +35,13 @@ public class ReadingAction {
     private String commentUserId;
 
     private ReadingAction() {
-        ; // must use helpers
+        // note: private - must use helpers
+        this(System.currentTimeMillis());
+    }
+
+    private ReadingAction(long time) {
+        // note: private - must use helpers
+        this.time = time;
     }
 
     public static ReadingAction markStoryRead(String hash) {
@@ -115,7 +122,7 @@ public class ReadingAction {
 
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.ACTION_TIME, System.currentTimeMillis());
+        values.put(DatabaseConstants.ACTION_TIME, time);
         switch (type) {
 
             case MARK_READ:
@@ -186,7 +193,8 @@ public class ReadingAction {
 	}
 
 	public static ReadingAction fromCursor(Cursor c) {
-		ReadingAction ra = new ReadingAction();
+        long time = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TIME));
+		ReadingAction ra = new ReadingAction(time);
         if (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MARK_READ)) == 1) {
             ra.type = ActionType.MARK_READ;
             String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
@@ -332,7 +340,7 @@ public class ReadingAction {
                 break;
 
             case REPLY:
-                dbHelper.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                dbHelper.replyToComment(storyId, feedId, commentUserId, commentReplyText, time);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 

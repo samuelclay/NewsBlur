@@ -25,7 +25,7 @@
         [self.contentView addSubview:favicon];
         
         UILabel *activity = [[UILabel alloc] initWithFrame:CGRectZero];
-        activity.backgroundColor = [UIColor whiteColor];
+        activity.backgroundColor = UIColorFromRGB(0xffffff);
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
         
@@ -62,6 +62,7 @@
     } else {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);
     }
+    self.backgroundColor = [UIColor clearColor];
     self.activityLabel.backgroundColor = [UIColor clearColor];
 }
 

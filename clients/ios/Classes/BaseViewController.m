@@ -105,11 +105,26 @@
     [HUD hide:YES afterDelay:2];
 }
 
+- (void)updateTheme {
+    // Subclasses should override this, calling super, to update their nav bar, table, etc
+}
+
+#pragma mark -
+#pragma mark Keyboard support
+- (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle {
+    UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
+    if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)])
+        keyCommand.discoverabilityTitle = discoverabilityTitle;
+    [self addKeyCommand:keyCommand];
+}
+
 #pragma mark -
 #pragma mark UIViewController
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
+    
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
 }
 
 - (void) viewDidUnload {

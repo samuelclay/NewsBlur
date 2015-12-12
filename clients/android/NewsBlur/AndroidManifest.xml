@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="108"
-    android:versionName="4.6.0b2" >
+    android:versionCode="112"
+    android:versionName="4.6.1b2" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -22,14 +22,20 @@
         android:fullBackupContent="@xml/backupscheme" >
         
         <activity
-            android:name=".activity.Login"
+            android:name=".activity.InitActivity"
             android:label="@string/newsblur"
-            android:noHistory="true"
-            android:windowSoftInputMode="adjustResize">
+            android:noHistory="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activity.Login"
+            android:label="@string/newsblur"
+            android:noHistory="true"
+            android:windowSoftInputMode="adjustResize">
         </activity>
         
         <activity

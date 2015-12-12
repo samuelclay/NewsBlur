@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/empty_view_text"
+        android:id="@+id/reading_empty_view_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -117,5 +117,17 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:indeterminate="true" />
+
+    <TextView
+        android:id="@+id/reading_sync_status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="1dp"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:textColor="@color/status_overlay_text"
+        android:background="@color/status_overlay_background"
+        android:visibility="gone" />
 
 </RelativeLayout>

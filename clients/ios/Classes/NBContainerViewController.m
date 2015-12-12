@@ -59,8 +59,6 @@
 @property (readwrite) UIDeviceOrientation rotatingToOrientation;
 @property (nonatomic) UIBackgroundTaskIdentifier reorientBackgroundTask;
 
-@property (nonatomic, strong) UIPopoverController *popoverController;
-
 @end
 
 @implementation NBContainerViewController
@@ -82,7 +80,6 @@
 @synthesize storyNavigationController;
 @synthesize storyTitlesYCoordinate;
 @synthesize storyTitlesOnLeft;
-@synthesize popoverController;
 @synthesize storyTitlesStub;
 @synthesize isSharingStory;
 @synthesize isHidingStory;
@@ -158,7 +155,7 @@
     UIView * storyTitlesPlaceholder = [[UIView alloc] initWithFrame:CGRectZero];
     storyTitlesPlaceholder.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     storyTitlesPlaceholder.autoresizesSubviews = YES;
-    storyTitlesPlaceholder.backgroundColor = [UIColor whiteColor];
+    storyTitlesPlaceholder.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
         
     self.storyTitlesStub = storyTitlesPlaceholder;
     
@@ -178,6 +175,10 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self checkSize:self.view.bounds.size];
+    }
+    
     [self layoutDashboardScreen];
 }
 
@@ -194,9 +195,12 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self checkSize:size];
+    }
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -243,7 +247,37 @@
     self.reorientBackgroundTask = UIBackgroundTaskInvalid;
 }
 
+- (void)checkSize:(CGSize)size {
+    BOOL wasCompact = self.appDelegate.isCompactWidth;
+    BOOL isCompact = size.width < 700.0;
+    
+    if (!isCompact && wasCompact == isCompact) {
+        return;
+    }
+    
+    self.appDelegate.compactWidth = isCompact ? size.width : 0.0;
+    
+    self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, self.view.bounds.size.height);
+    
+    if (!isCompact) {
+        if (self.masterNavigationController.topViewController == self.storyPageControl) {
+            [self.masterNavigationController popToViewController:self.feedDetailViewController animated:NO];
+        }
+        
+        if (self.storyNavigationController.topViewController != self.storyPageControl) {
+            [self.storyNavigationController pushViewController:self.storyPageControl animated:NO];
+            self.storyPageControl.isAnimatedIntoPlace = NO;
+        }
+        
+        [self.storyPageControl hidePages];
+    }
+}
+
 - (NSInteger)masterWidth {
+    if (self.appDelegate.isCompactWidth) {
+        return self.appDelegate.compactWidth;
+    }
+    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsLandscape(orientation)) {
         return NB_DEFAULT_MASTER_WIDTH_LANDSCAPE;
@@ -251,196 +285,132 @@
     return NB_DEFAULT_MASTER_WIDTH;
 }
 
+- (void)updateTheme {
+    self.masterNavigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    self.masterNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    
+    self.storyNavigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    self.storyNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+}
+
 # pragma mark Modals and Popovers
 
-- (void)showUserProfilePopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-        popoverController = nil;
-        return;
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceView:sourceView sourceRect:sourceRect];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
+    if (viewController == self.masterNavigationController.presentedViewController)
+        return; // nothing to do, already showing this controller
+
+    [self hidePopoverAnimated:YES];
+
+    viewController.modalPresentationStyle = UIModalPresentationPopover;
+    viewController.preferredContentSize = contentSize;
+
+    UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
+    popoverPresentationController.delegate = self;
+    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    
+    if (barButtonItem) {
+        popoverPresentationController.barButtonItem = barButtonItem;
+    } else {
+        popoverPresentationController.sourceView = sourceView;
+        popoverPresentationController.sourceRect = sourceRect;
     }
     
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.userProfileNavigationController];
-    
-    [popoverController setDelegate:self];
-    [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
-    [appDelegate.userProfileNavigationController view];
+    [self.masterNavigationController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)showUserProfilePopover:(id)sender {
     if ([sender class] == [InteractionCell class] ||
         [sender class] == [ActivityCell class]) {
         InteractionCell *cell = (InteractionCell *)sender;
         
-        [popoverController presentPopoverFromRect:cell.bounds
-                                           inView:cell
-                         permittedArrowDirections:UIPopoverArrowDirectionAny
-                                         animated:YES];
+        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:cell sourceRect:cell.bounds];
     } else if ([sender class] == [FeedTableCell class]) {
-            FeedTableCell *cell = (FeedTableCell *)sender;
-            
-            [popoverController presentPopoverFromRect:cell.bounds
-                                               inView:cell
-                             permittedArrowDirections:UIPopoverArrowDirectionAny
-                                             animated:YES];
+        FeedTableCell *cell = (FeedTableCell *)sender;
+        
+        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:cell sourceRect:cell.bounds];
     } else if ([sender class] == [UIBarButtonItem class]) {
-        [popoverController presentPopoverFromBarButtonItem:sender 
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                  animated:YES];  
+        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) barButtonItem:sender];
     } else {
         CGRect frame = [sender CGRectValue];
-        [popoverController presentPopoverFromRect:frame 
-                                           inView:self.storyPageControl.view
-                         permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                         animated:YES];
-    } 
+        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:self.storyPageControl.view sourceRect:frame];
+    }
 }
 
 - (void)showSitePopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-        popoverController = nil;
-        return;
-    }
-    
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.addSiteViewController];
-    [popoverController setDelegate:self];
-    [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
-    [popoverController presentPopoverFromBarButtonItem:sender
-                              permittedArrowDirections:UIPopoverArrowDirectionAny
-                                              animated:YES];
+    [self showPopoverWithViewController:self.appDelegate.addSiteViewController contentSize:CGSizeMake(320, 355) barButtonItem:sender];
 }
 
-
 - (void)showFeedMenuPopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-        popoverController = nil;
-        return;
-    }
-
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.feedsMenuViewController];
-    [popoverController setDelegate:self];
-    [appDelegate.feedsMenuViewController view];
-    NSInteger menuCount = [appDelegate.feedsMenuViewController.menuOptions count];
-    [popoverController setPopoverContentSize:CGSizeMake(200, 38 * menuCount)];
-    [popoverController presentPopoverFromBarButtonItem:sender
-                              permittedArrowDirections:UIPopoverArrowDirectionAny
-                                              animated:YES];
+    [self.appDelegate.feedsMenuViewController view];
+    NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
+    
+    [self showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(200, 38 * menuCount) barButtonItem:sender];
 }
 
 - (void)showFeedDetailMenuPopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-        popoverController = nil;
-        return;
-    }
-    
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.feedDetailMenuViewController];
-    
     [appDelegate.feedDetailMenuViewController buildMenuOptions];
-    popoverController.delegate = self;
-    
     [appDelegate.feedDetailMenuViewController view];
-    NSInteger menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
-    [popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
-    [popoverController presentPopoverFromBarButtonItem:sender
-                              permittedArrowDirections:UIPopoverArrowDirectionAny
-                                              animated:YES];
+    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+    
+    [self showPopoverWithViewController:self.appDelegate.feedDetailMenuViewController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:sender];
 }
 
 - (void)showFontSettingsPopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-        popoverController = nil;
-        return;
-    }
-    
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.fontSettingsNavigationController];
-    
-    popoverController.delegate = self;
-    
-    
-    [popoverController setPopoverContentSize:CGSizeMake(240.0, 306.0)];
-    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
-    //                                       initWithCustomView:sender];
-    [popoverController presentPopoverFromBarButtonItem:sender
-                              permittedArrowDirections:UIPopoverArrowDirectionAny
-                                              animated:YES];
+    [self showPopoverWithViewController:self.appDelegate.fontSettingsNavigationController contentSize:CGSizeMake(240.0, 306.0) barButtonItem:sender];
 }
 
 - (void)showTrainingPopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-    }
-    
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.trainerViewController];
-    popoverController.delegate = self;
-    
-    [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
     if ([sender class] == [UIBarButtonItem class]) {
-        [popoverController presentPopoverFromBarButtonItem:sender
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                  animated:NO];
+        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) barButtonItem:sender];
     } else if ([sender class] == [FeedTableCell class]) {
         FeedTableCell *cell = (FeedTableCell *)sender;
-        [popoverController presentPopoverFromRect:cell.bounds
-                                           inView:cell
-                         permittedArrowDirections:UIPopoverArrowDirectionAny
-                                         animated:YES];
+        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
     } else if ([sender class] == [FeedDetailTableCell class]) {
         FeedDetailTableCell *cell = (FeedDetailTableCell *)sender;
-        [popoverController presentPopoverFromRect:cell.bounds
-                                           inView:cell
-                         permittedArrowDirections:UIPopoverArrowDirectionAny
-                                         animated:YES];
+        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
     } else {
         CGRect frame = [sender CGRectValue];
-        [popoverController presentPopoverFromRect:frame
-                                           inView:self.storyPageControl.view
-                         permittedArrowDirections:UIPopoverArrowDirectionAny
-                                         animated:YES];
+        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPageControl.view sourceRect:frame];
     }
 }
 
 - (void)showUserTagsPopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-    }
-    
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.userTagsViewController];
-    popoverController.delegate = self;
-    
-    [popoverController setPopoverContentSize:CGSizeMake(220, 382)];
     [appDelegate.userTagsViewController view]; // Force viewDidLoad
     CGRect frame = [sender CGRectValue];
-    [popoverController presentPopoverFromRect:frame
-                                       inView:self.storyPageControl.currentPage.view
-                     permittedArrowDirections:UIPopoverArrowDirectionAny
-                                     animated:YES];
+    [self showPopoverWithViewController:self.appDelegate.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPageControl.view sourceRect:frame];
 }
 
-- (void)showSendToPopover:(id)sender {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
-    }
+- (BOOL)hidePopoverAnimated:(BOOL)animated {
+    UIViewController *presentedViewController = self.masterNavigationController.presentedViewController;
+    if (!presentedViewController)
+        return NO;
+
+    [presentedViewController dismissViewControllerAnimated:animated completion:nil];
+    return YES;
 }
 
 - (void)hidePopover {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:YES];
-    }
-    popoverController = nil;
+    [self hidePopoverAnimated:YES];
     [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 
 - (void)syncNextPreviousButtons {
     [self.storyPageControl setNextPreviousButtons];
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    return UIModalPresentationNone;
 }
 
 #pragma mark - Screen Transitions and Layout
@@ -765,6 +735,7 @@
 
     self.originalViewController.navigationItem.titleView.alpha = 1;
     self.originalViewController.navigationItem.leftBarButtonItem.customView.alpha = 1;
+    [self.originalViewController becomeFirstResponder];
     
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
@@ -795,6 +766,8 @@
     
     [self.originalViewController viewWillDisappear:YES];
     self.originalViewIsVisible = NO;
+
+    [self.storyPageControl becomeFirstResponder];
     
     [UIView animateWithDuration:0.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut

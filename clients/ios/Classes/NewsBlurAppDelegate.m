@@ -1,4 +1,4 @@
-//
+
 //  NewsBlurAppDelegate.m
 //  NewsBlur
 //
@@ -11,6 +11,7 @@
 #import "NBContainerViewController.h"
 #import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
+#import "MarkReadMenuViewController.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "StoryDetailViewController.h"
@@ -61,12 +62,14 @@
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
+#import "NSNull+JSON.h"
+#import "UISearchBar+Field.h"
 #import <float.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
 
-@property (nonatomic, strong) NBSafariViewController *safariViewController;
-@property (nonatomic, strong) NBModalPushPopTransition *safariAnimator;
+@property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
+@property (nonatomic, strong) SFSafariViewController *safariViewController;
 
 @end
 
@@ -109,7 +112,6 @@
 @synthesize firstTimeUserAddFriendsViewController;
 @synthesize firstTimeUserAddNewsBlurViewController;
 
-@synthesize tintColor;
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
@@ -204,11 +206,7 @@
     
     [window makeKeyAndVisible];
     
-    [self setTintColor:UIColorFromRGB(0x8F918B)];
-    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE3E6E0)];
-    [[UIToolbar appearance] setBarTintColor:      UIColorFromRGB(0xE3E6E0)];
-    [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
-//    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
+    [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -234,7 +232,50 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
+    if ([UIApplicationShortcutItem class] && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
+        self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+        return NO;
+    }
+    
 	return YES;
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    if (self.launchedShortcutItem) {
+        [self handleShortcutItem:self.launchedShortcutItem];
+        self.launchedShortcutItem = nil;
+    }
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
+    completionHandler([self handleShortcutItem:shortcutItem]);
+}
+
+- (BOOL)handleShortcutItem:(UIApplicationShortcutItem *)shortcutItem {
+    NSString *type = shortcutItem.type;
+    BOOL handled = YES;
+    
+    if (!self.dictFeeds) {
+        handled = NO;
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AddFeed"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AllStories"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsViewController didSelectSectionHeaderWithTag:2];
+    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.Search"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsViewController didSelectSectionHeaderWithTag:2];
+        [self.feedDetailViewController.searchBar performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.5];
+    } else {
+        handled = NO;
+    }
+    
+    return handled;
+}
+
+- (void)delayedAddSite {
+    [self.feedsViewController tapAddSite:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -415,6 +456,7 @@
 - (void)showPreferences {
     if (!preferencesViewController) {
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];
+        [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.preferencesViewController.view];
     }
 
     preferencesViewController.delegate = self.feedsViewController;
@@ -432,6 +474,12 @@
     if (system_font_enabled) {
         [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
     }
+    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
+    if (theme_auto_toggle) {
+        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
+    } else {
+        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
+    }
     preferencesViewController.hiddenKeys = hiddenSet;
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
@@ -439,7 +487,7 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
     self.modalNavigationController.navigationBar.translucent = NO;
-
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -564,7 +612,8 @@
     }];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
+        BOOL fromPopover = [self.masterContainerViewController hidePopoverAnimated:NO];
+        [self.masterContainerViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
@@ -625,6 +674,7 @@
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
+        [self.storyPageControl becomeFirstResponder];
     } else {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
@@ -782,6 +832,12 @@
     }
 }
 
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    return UIModalPresentationNone;
+}
+
 #pragma mark -
 #pragma mark WYPopoverControllerDelegate implementation
 
@@ -927,6 +983,28 @@
     return [feedIdStr startsWith:@"saved:"];
 }
 
+- (NSArray *)allFeedIds {
+    NSMutableArray *mutableFeedIds = [NSMutableArray array];
+    
+    for (NSString *folderName in self.dictFoldersArray) {
+        for (id feedId in self.dictFolders[folderName]) {
+            if (![feedId isKindOfClass:[NSString class]] || ![self isSavedFeed:feedId]) {
+                [mutableFeedIds addObject:feedId];
+            }
+        }
+    }
+    
+    return mutableFeedIds;
+}
+
+- (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
+    if ([folderTitle isEqualToString:@"everything"]) {
+        return @[folderTitle];
+    } else {
+        return self.dictFolders[folderTitle];
+    }
+}
+
 - (BOOL)isPortrait {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
@@ -934,6 +1012,10 @@
     } else {
         return NO;
     }
+}
+
+- (BOOL)isCompactWidth {
+    return self.compactWidth > 0.0;
 }
 
 - (void)confirmLogout {
@@ -1263,7 +1345,7 @@
 }
 
 - (void)loadStoryDetailView {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
         [navigationController pushViewController:storyPageControl animated:YES];
         navigationController.navigationItem.hidesBackButton = YES;
     }
@@ -1275,11 +1357,22 @@
         [self.storyPageControl view];
         [self.storyPageControl.view setNeedsLayout];
         [self.storyPageControl.view layoutIfNeeded];
-        [self.storyPageControl changePage:activeStoryLocation animated:animated];
-        [self.storyPageControl animateIntoPlace:YES];
+        
+        NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
+        
+        if (self.isCompactWidth) {
+            [self performSelector:@selector(deferredChangePage:) withObject:params afterDelay:0.0];
+        } else {
+            [self deferredChangePage:params];
+        }
     }
 
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
+}
+
+- (void)deferredChangePage:(NSDictionary *)params {
+    [self.storyPageControl changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
+    [self.storyPageControl animateIntoPlace:YES];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -1330,16 +1423,10 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
-        self.safariAnimator = [NBModalPushPopTransition new];
-        self.safariViewController = [[NBSafariViewController alloc] initWithURL:url
-                                                         entersReaderIfAvailable:NO];
+        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
+                                                        entersReaderIfAvailable:NO];
         self.safariViewController.delegate = self;
-        self.safariViewController.transitioningDelegate = self;
-        [navigationController presentViewController:self.safariViewController animated:YES completion:^{
-            UIScreenEdgePanGestureRecognizer *recognizer = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
-            recognizer.edges = UIRectEdgeLeft;
-            [self.safariViewController.edgeView addGestureRecognizer:recognizer];
-        }];
+        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -1362,46 +1449,23 @@
     }
 }
 
+- (BOOL)showingSafariViewController {
+    return self.safariViewController.delegate != nil;
+}
+
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    // You'd think doing this in the dismiss completion block would work... but nope.
+    [self performSelector:@selector(deferredSafariCleanup) withObject:nil afterDelay:0.2];
     controller.delegate = nil;
     [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)recognizer {
-    self.safariAnimator.percentageDriven = YES;
-    UIView *view = self.window.rootViewController.view;
-    CGFloat percentComplete = [recognizer locationInView:view].x / view.bounds.size.width;
-    
-    switch (recognizer.state) {
-        case UIGestureRecognizerStateBegan:
-            self.safariViewController.delegate = nil;
-            [navigationController dismissViewControllerAnimated:YES completion:nil];
-            break;
-        case UIGestureRecognizerStateChanged:
-            [self.safariAnimator updateInteractiveTransition:percentComplete > 0.99 ? 0.99 : percentComplete];
-            break;
-        case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
-            ([recognizer velocityInView:view].x < 0.0) ? [self.safariAnimator cancelInteractiveTransition] : [self.safariAnimator finishInteractiveTransition];
-            self.safariAnimator.percentageDriven = NO;
-            break;
-        default:
-            break;
+- (void)deferredSafariCleanup {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.navigationController.view.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.origin.y, self.isPortrait ? 270.0 : 370.0, self.navigationController.view.frame.size.height);
     }
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-    self.safariAnimator.dismissing = NO;
-    return self.safariAnimator;
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    self.safariAnimator.dismissing = YES;
-    return self.safariAnimator;
-}
-
-- (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator {
-    return self.safariAnimator.percentageDriven ? self.safariAnimator : nil;
+    
+    [self.storyPageControl reorientPages];
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
@@ -1866,6 +1930,7 @@
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
+    if (!storyPageControl.previousPage || !storyPageControl.currentPage || !storyPageControl.nextPage) return;
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
@@ -1993,6 +2058,45 @@
 
 - (void)renameFolder:(NSString *)newTitle {
     storiesCollection.activeFolder = newTitle;
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount olderNewerCollection:nil olderNewerStory:nil barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 olderNewerCollection:nil olderNewerStory:nil barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
+}
+
+- (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:nil collectionTitle:nil visibleUnreadCount:0 olderNewerCollection:storiesCollection olderNewerStory:olderNewerStory barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount olderNewerCollection:(StoriesCollection *)olderNewerCollection olderNewerStory:(NSDictionary *)olderNewerStory barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    if (!self.markReadMenuViewController) {
+        self.markReadMenuViewController = [MarkReadMenuViewController new];
+        self.markReadMenuViewController.modalPresentationStyle = UIModalPresentationPopover;
+    }
+    
+    self.markReadMenuViewController.collectionTitle = collectionTitle;
+    self.markReadMenuViewController.feedIds = feedIds;
+    self.markReadMenuViewController.visibleUnreadCount = visibleUnreadCount;
+    self.markReadMenuViewController.olderNewerStoriesCollection = olderNewerCollection;
+    self.markReadMenuViewController.olderNewerStory = olderNewerStory;
+    self.markReadMenuViewController.completionHandler = completionHandler;
+    
+    UIPopoverPresentationController *popoverPresentationController = self.markReadMenuViewController.popoverPresentationController;
+    popoverPresentationController.delegate = self;
+    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    
+    if (barButtonItem) {
+        popoverPresentationController.barButtonItem = barButtonItem;
+    } else {
+        popoverPresentationController.sourceView = sourceView;
+        popoverPresentationController.sourceRect = sourceRect;
+    }
+    
+    [self.navigationController presentViewController:self.markReadMenuViewController animated:YES completion:nil];
 }
 
 #pragma mark -
@@ -2139,7 +2243,7 @@
     NSScanner *scanner = [NSScanner scannerWithString:colorString];
     [scanner scanHexInt:&color];
 
-    return UIColorFromRGB(color);
+    return UIColorFromFixedRGB(color);
 }
 
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor {
@@ -2158,7 +2262,7 @@
     
     CALayer *whiteBackground = [CALayer layer];
     whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
-    whiteBackground.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.7].CGColor;
+    whiteBackground.backgroundColor = [UIColorFromRGB(NEWSBLUR_WHITE_COLOR) colorWithAlphaComponent:0.7].CGColor;
     [gradientView.layer addSublayer:whiteBackground];
     
     [gradientView.layer addSublayer:gradient];
@@ -2206,12 +2310,12 @@
             UIColor *borderColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_border"]];
 
             titleLabel.textColor = lightText ?
-            [UIColor whiteColor] :
-            [UIColor blackColor];            
+            UIColorFromRGB(NEWSBLUR_WHITE_COLOR) :
+            UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
             titleLabel.shadowColor = lightText ? borderColor : fadeColor;
         } else {
-            titleLabel.textColor = [UIColor whiteColor];
-            titleLabel.shadowColor = [UIColor blackColor];
+            titleLabel.textColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+            titleLabel.shadowColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         }
         titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         
@@ -2829,7 +2933,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [self.database inDatabase:^(FMDatabase *db) {
-            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
+//            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
             [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
              [story objectForKey:@"story_feed_id"],
              [story objectForKey:@"story_hash"],
@@ -2915,28 +3019,48 @@
     for (NSArray *storyHashes in [hashes allValues]) {
         [completedHashes addObjectsFromArray:storyHashes];
     }
+    NSLog(@"Marking %lu queued read stories as read...", (unsigned long)[completedHashes count]);
     NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIHTTPRequest *_request = request;
     [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     [request setDelegate:self];
+    [request setValidatesSecureCertificate:NO];
     [request setCompletionBlock:^{
         if ([_request responseStatusCode] == 200) {
             NSLog(@"Completed clearing %@ hashes", completedHashesStr);
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
                                "WHERE story_hash in (\"%@\")", completedHashesStr]];
+            [self pruneQueuedReadHashes];
         } else {
             NSLog(@"Failed mark read queued.");
             self.hasQueuedReadStories = YES;
+            [self pruneQueuedReadHashes];
         }
         if (callback) callback();
     }];
     [request setFailedBlock:^{
         NSLog(@"Failed mark read queued.");
         self.hasQueuedReadStories = YES;
+        [self pruneQueuedReadHashes];
         if (callback) callback();
     }];
     [request startAsynchronous];
+}
+
+- (void)pruneQueuedReadHashes {
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *unreadSql = [NSString stringWithFormat:@"SELECT qrh.story_hash FROM queued_read_hashes qrh "
+                               "INNER JOIN unread_hashes uh ON qrh.story_hash = uh.story_hash"];
+        FMResultSet *cursor = [db executeQuery:unreadSql];
+        while ([cursor next]) {
+            NSLog(@"Story: %@", [cursor objectForColumnName:@"story_hash"]);
+        }
+//        NSLog(@"Found %lu stories queued to be read but already read", (unsigned long)[[cursor.resultDictionary allKeys] count]);
+        NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
+                               "WHERE story_hash not in (%@)", unreadSql];
+        [db executeUpdate:deleteSql];
+    }];
 }
 
 - (void)prepareActiveCachedImages:(FMDatabase *)db {
