@@ -1490,7 +1490,7 @@ def mark_story_hashes_as_read(request):
     try:
         story_hashes = request.REQUEST.getlist('story_hash')
     except UnreadablePostError:
-        return HttpResponse(status=400)
+        return dict(code=-1, message="Missing `story_hash` list parameter.")
     
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
     

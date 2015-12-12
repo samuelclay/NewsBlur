@@ -65,7 +65,7 @@
             case UITouchPhaseMoved: // Changes in force are also "moves"
                 if (CGPointEqualToPoint([touch locationInView:self], tapLocation)) {
                     
-                    if ([touch respondsToSelector:@selector(force)] && touch.force > 0.75) {
+                    if ([touch respondsToSelector:@selector(force)] && (touch.force / touch.maximumPossibleForce) > 0.75) {
                         [contextualMenuTimer invalidate];
                         contextualMenuTimer = nil;
                         [self tapAndHoldAction:nil];

@@ -179,6 +179,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             this.model.set('visible', true);
         } else {
             this.$st.addClass('NB-hidden');
+            this.model.set('visible', false);
         }
     },
     
