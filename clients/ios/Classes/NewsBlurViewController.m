@@ -481,7 +481,7 @@ static UIFont *userLabelFont;
     appDelegate.activeUsername = [results objectForKey:@"user"];
     
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
-    [defaults setObject:[results objectForKey:@"share_token"] forKey:@"share:token"];
+    [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
     [defaults synchronize];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
