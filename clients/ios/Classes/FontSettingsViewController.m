@@ -366,7 +366,7 @@
     
     [cell addSubview:self.fontSizeSegment];
     
-    [self.navigationController pushViewController:controller animated:YES];
+    return cell;
 }
 
 - (UITableViewCell *)makeLineSpacingTableCell {
