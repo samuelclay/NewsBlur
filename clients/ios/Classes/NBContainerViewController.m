@@ -285,11 +285,19 @@
     return NB_DEFAULT_MASTER_WIDTH;
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    if ([ThemeManager themeManager].isDarkTheme) {
+        return UIStatusBarStyleLightContent;
+    } else {
+        return UIStatusBarStyleDefault;
+    }
+}
+
 - (void)updateTheme {
-    self.masterNavigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    self.masterNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.masterNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
     
-    self.storyNavigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    self.storyNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.storyNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
 }
 
@@ -314,6 +322,7 @@
 
     UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
     popoverPresentationController.delegate = self;
+    popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
     
     if (barButtonItem) {

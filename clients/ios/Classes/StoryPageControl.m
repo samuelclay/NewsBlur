@@ -1149,6 +1149,7 @@
     self.appDelegate.fontSettingsNavigationController.modalPresentationStyle = UIModalPresentationPopover;
     UIPopoverPresentationController *popPC = self.appDelegate.fontSettingsNavigationController.popoverPresentationController;
     popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     popPC.delegate = self;
     popPC.barButtonItem = self.fontSettingsButton;
 //    popPC.sourceView = self.view;

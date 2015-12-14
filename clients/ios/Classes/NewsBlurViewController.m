@@ -998,7 +998,14 @@ static UIFont *userLabelFont;
 - (void)updateTheme {
     [super updateTheme];
     
-    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x0);
+    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || ((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    [self.popoverController dismissPopoverAnimated:YES];
+    self.popoverController = nil;
+    
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
     self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
     self.feedViewToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);

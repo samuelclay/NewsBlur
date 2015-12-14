@@ -616,6 +616,7 @@
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
         popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+        popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
         
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             popPC.barButtonItem = sender;
@@ -2085,6 +2086,7 @@
     UIPopoverPresentationController *popoverPresentationController = self.markReadMenuViewController.popoverPresentationController;
     popoverPresentationController.delegate = self;
     popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     if (barButtonItem) {
         popoverPresentationController.barButtonItem = barButtonItem;

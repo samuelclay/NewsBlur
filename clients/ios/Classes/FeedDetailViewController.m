@@ -2085,7 +2085,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)updateTheme {
     [super updateTheme];
     
-    self.navigationController.navigationBar.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
+    self.navigationController.navigationBar.backItem.backBarButtonItem.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
     self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
     
