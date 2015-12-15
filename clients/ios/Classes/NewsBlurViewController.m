@@ -1013,6 +1013,7 @@ static UIFont *userLabelFont;
     self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
     
     [self layoutHeaderCounts:nil];
+    [self refreshHeaderCounts];
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [self.feedTitlesTable reloadData];
