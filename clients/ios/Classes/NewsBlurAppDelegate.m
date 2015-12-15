@@ -103,7 +103,6 @@
 @synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
 @synthesize preferencesViewController;
-@synthesize popoverController;
 
 @synthesize firstTimeUserViewController;
 @synthesize firstTimeUserAddSitesViewController;
@@ -445,7 +444,7 @@
 
 - (void)hideUserProfileModal {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController hidePopover];
+        [self hidePopover];
     } else {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
@@ -610,7 +609,7 @@
     }];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        BOOL fromPopover = [self.masterContainerViewController hidePopoverAnimated:NO];
+        BOOL fromPopover = [self hidePopoverAnimated:NO];
         [self.masterContainerViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
         // iOS 8+
@@ -808,46 +807,15 @@
         self.userTagsViewController = [[UserTagsViewController alloc] init];
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController showUserTagsPopover:sender];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:self.userTagsViewController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [self.userTagsViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count] + [self.activeStory[@"user_tags"] count] + 1))];
-        CGRect frame = [sender CGRectValue];
-        [self.popoverController presentPopoverFromRect:frame
-                                                inView:self.storyPageControl.currentPage.view
-                              permittedArrowDirections:WYPopoverArrowDirectionAny
-                                              animated:YES];
-    }
+    [self.userTagsViewController view]; // Force viewDidLoad
+    CGRect frame = [sender CGRectValue];
+    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPageControl.view sourceRect:frame];
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
 
 - (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
     return UIModalPresentationNone;
-}
-
-#pragma mark -
-#pragma mark WYPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
-    //Safe to release the popover here
-    self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
-    //The popover is automatically dismissed if you click outside it, unless you return NO here
-    return YES;
 }
 
 #pragma mark -
@@ -926,9 +894,8 @@
         [self loadFeedDetailView];
     } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:YES];
-        }
+        [self hidePopoverAnimated:YES];
+        
         if (self.navigationController.presentedViewController) {
             [self.navigationController dismissViewControllerAnimated:YES completion:^{
                 [self loadFeedDetailView];
@@ -944,9 +911,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
-        }
+        [self hidePopoverAnimated:NO];
     }
 
     self.inFindingStoryMode = YES;
@@ -1232,9 +1197,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
-        }
+        [self hidePopoverAnimated:NO];
     }
     
     self.inFindingStoryMode = YES;
@@ -2096,6 +2059,61 @@
     }
     
     [self.navigationController presentViewController:self.markReadMenuViewController animated:YES completion:nil];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceView:sourceView sourceRect:sourceRect];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
+    if (viewController == self.navigationControllerForPopover.presentedViewController) {
+        return; // nothing to do, already showing this controller
+    }
+    
+    [self hidePopoverAnimated:YES];
+    
+    viewController.modalPresentationStyle = UIModalPresentationPopover;
+    viewController.preferredContentSize = contentSize;
+    
+    UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
+    popoverPresentationController.delegate = self;
+    popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    
+    if (barButtonItem) {
+        popoverPresentationController.barButtonItem = barButtonItem;
+    } else {
+        popoverPresentationController.sourceView = sourceView;
+        popoverPresentationController.sourceRect = sourceRect;
+    }
+    
+    [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:nil];
+}
+
+- (BOOL)hidePopoverAnimated:(BOOL)animated {
+    UIViewController *presentedViewController = self.navigationControllerForPopover.presentedViewController;
+    if (!presentedViewController || presentedViewController.presentationController.presentationStyle != UIModalPresentationPopover)
+        return NO;
+    
+    [presentedViewController dismissViewControllerAnimated:animated completion:nil];
+    return YES;
+}
+
+- (void)hidePopover {
+    [self hidePopoverAnimated:YES];
+    [self.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (UINavigationController *)navigationControllerForPopover {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return self.masterContainerViewController.masterNavigationController;
+    } else {
+        return self.navigationController;
+    }
 }
 
 #pragma mark -

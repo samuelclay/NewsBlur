@@ -70,7 +70,6 @@ static UIFont *userLabelFont;
 @synthesize pull;
 @synthesize lastUpdate;
 @synthesize imageCache;
-@synthesize popoverController;
 @synthesize currentRowAtIndexPath;
 @synthesize currentSection;
 @synthesize noFocusMessage;
@@ -103,8 +102,6 @@ static UIFont *userLabelFont;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    popoverClass = [WYPopoverController class];
-
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
@@ -329,8 +326,7 @@ static UIFont *userLabelFont;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [self.popoverController dismissPopoverAnimated:YES];
-    self.popoverController = nil;
+    [self.appDelegate hidePopoverAnimated:YES];
     [super viewWillDisappear:animated];
 }
 
@@ -834,68 +830,23 @@ static UIFont *userLabelFont;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSitePopover:self.addBarButton];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.addSiteViewController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
-                                                                 MIN(self.view.frame.size.height - 28, 355))];
-        [self.popoverController presentPopoverFromBarButtonItem:self.addBarButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionDown
-                                                       animated:YES];
-    }
-    
-    [appDelegate.addSiteViewController reload];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteViewController contentSize:CGSizeMake(320, 355) barButtonItem:self.addBarButton];
+    [self.appDelegate.addSiteViewController reload];
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFeedMenuPopover:self.settingsBarButton];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.feedsMenuViewController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [appDelegate.feedsMenuViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 38 * [appDelegate.feedsMenuViewController.menuOptions count])];
-        [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionDown
-                                                       animated:YES];
-    }
+    [self.appDelegate.feedsMenuViewController view];
+    NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
+    
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(200, 38 * menuCount) barButtonItem:self.settingsBarButton];
 }
 
-- (IBAction)showInteractionsPopover:(id)sender {    
-    if (self.popoverController == nil) {
-        self.popoverController = [[WYPopoverController alloc]
-                                  initWithContentViewController:appDelegate.dashboardViewController];
-        
-        self.popoverController.delegate = self;
-    } else {
-        [self.popoverController dismissPopoverAnimated:YES];
-        self.popoverController = nil;
-    }
+- (IBAction)showInteractionsPopover:(id)sender {
+    CGSize size = CGSizeMake(self.view.frame.size.width - 36,
+                             self.view.frame.size.height - 60);
     
-    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
-                                                             self.view.frame.size.height - 60)];
-    [self.popoverController presentPopoverFromBarButtonItem:self.activitiesButton
-                                   permittedArrowDirections:UIPopoverArrowDirectionUp
-                                                   animated:YES];
-
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.dashboardViewController contentSize:size barButtonItem:self.activitiesButton];
+    
     [appDelegate.dashboardViewController refreshInteractions];
     [appDelegate.dashboardViewController refreshActivity];
 }
@@ -1002,8 +953,7 @@ static UIFont *userLabelFont;
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
-    [self.popoverController dismissPopoverAnimated:YES];
-    self.popoverController = nil;
+    [self.appDelegate hidePopoverAnimated:YES];
     
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
@@ -1953,19 +1903,6 @@ heightForHeaderInSection:(NSInteger)section {
 // called when the date shown needs to be updated, optional
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
     return self.lastUpdate;
-}
-
-#pragma mark -
-#pragma mark WYPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
-	//Safe to release the popover here
-	self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
-	//The popover is automatically dismissed if you click outside it, unless you return NO here
-	return YES;
 }
 
 - (void)resetToolbar {

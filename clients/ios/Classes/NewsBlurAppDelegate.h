@@ -11,7 +11,6 @@
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
 #import "EventWindow.h"
-#import "WYPopoverController.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -50,7 +49,7 @@
 @class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate, WYPopoverControllerDelegate,
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
 SFSafariViewControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
@@ -86,7 +85,6 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
-    WYPopoverController *popoverController;
 
     NSString * activeUsername;
     NSString * activeUserProfileId;
@@ -175,7 +173,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
-@property (nonatomic, retain) WYPopoverController *popoverController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 @property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
@@ -348,6 +345,11 @@ SFSafariViewControllerDelegate>  {
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler;
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
 - (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem;
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect;
+- (BOOL)hidePopoverAnimated:(BOOL)animated;
+- (void)hidePopover;
 
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;

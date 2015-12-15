@@ -303,114 +303,38 @@
 
 # pragma mark Modals and Popovers
 
-- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem {
-    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero];
-}
-
-- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
-    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceView:sourceView sourceRect:sourceRect];
-}
-
-- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
-    if (viewController == self.masterNavigationController.presentedViewController)
-        return; // nothing to do, already showing this controller
-
-    [self hidePopoverAnimated:YES];
-
-    viewController.modalPresentationStyle = UIModalPresentationPopover;
-    viewController.preferredContentSize = contentSize;
-
-    UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
-    popoverPresentationController.delegate = self;
-    popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    
-    if (barButtonItem) {
-        popoverPresentationController.barButtonItem = barButtonItem;
-    } else {
-        popoverPresentationController.sourceView = sourceView;
-        popoverPresentationController.sourceRect = sourceRect;
-    }
-    
-    [self.masterNavigationController presentViewController:viewController animated:YES completion:nil];
-}
-
 - (void)showUserProfilePopover:(id)sender {
     if ([sender class] == [InteractionCell class] ||
         [sender class] == [ActivityCell class]) {
         InteractionCell *cell = (InteractionCell *)sender;
         
-        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:cell sourceRect:cell.bounds];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:cell sourceRect:cell.bounds];
     } else if ([sender class] == [FeedTableCell class]) {
         FeedTableCell *cell = (FeedTableCell *)sender;
         
-        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:cell sourceRect:cell.bounds];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:cell sourceRect:cell.bounds];
     } else if ([sender class] == [UIBarButtonItem class]) {
-        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) barButtonItem:sender];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) barButtonItem:sender];
     } else {
         CGRect frame = [sender CGRectValue];
-        [self showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:self.storyPageControl.view sourceRect:frame];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:self.storyPageControl.view sourceRect:frame];
     }
-}
-
-- (void)showSitePopover:(id)sender {
-    [self showPopoverWithViewController:self.appDelegate.addSiteViewController contentSize:CGSizeMake(320, 355) barButtonItem:sender];
-}
-
-- (void)showFeedMenuPopover:(id)sender {
-    [self.appDelegate.feedsMenuViewController view];
-    NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
-    
-    [self showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(200, 38 * menuCount) barButtonItem:sender];
-}
-
-- (void)showFeedDetailMenuPopover:(id)sender {
-    [appDelegate.feedDetailMenuViewController buildMenuOptions];
-    [appDelegate.feedDetailMenuViewController view];
-    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
-    
-    [self showPopoverWithViewController:self.appDelegate.feedDetailMenuViewController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:sender];
-}
-
-- (void)showFontSettingsPopover:(id)sender {
-    [self showPopoverWithViewController:self.appDelegate.fontSettingsNavigationController contentSize:CGSizeMake(240.0, 306.0) barButtonItem:sender];
 }
 
 - (void)showTrainingPopover:(id)sender {
     if ([sender class] == [UIBarButtonItem class]) {
-        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) barButtonItem:sender];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) barButtonItem:sender];
     } else if ([sender class] == [FeedTableCell class]) {
         FeedTableCell *cell = (FeedTableCell *)sender;
-        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
     } else if ([sender class] == [FeedDetailTableCell class]) {
         FeedDetailTableCell *cell = (FeedDetailTableCell *)sender;
-        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
     } else {
         CGRect frame = [sender CGRectValue];
-        [self showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPageControl.view sourceRect:frame];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPageControl.view sourceRect:frame];
     }
 }
-
-- (void)showUserTagsPopover:(id)sender {
-    [appDelegate.userTagsViewController view]; // Force viewDidLoad
-    CGRect frame = [sender CGRectValue];
-    [self showPopoverWithViewController:self.appDelegate.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPageControl.view sourceRect:frame];
-}
-
-- (BOOL)hidePopoverAnimated:(BOOL)animated {
-    UIViewController *presentedViewController = self.masterNavigationController.presentedViewController;
-    if (!presentedViewController)
-        return NO;
-
-    [presentedViewController dismissViewControllerAnimated:animated completion:nil];
-    return YES;
-}
-
-- (void)hidePopover {
-    [self hidePopoverAnimated:YES];
-    [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
-}
-
 
 - (void)syncNextPreviousButtons {
     [self.storyPageControl setNextPreviousButtons];
@@ -581,7 +505,7 @@
     [self transitionToFeedDetail:YES];
 }
 - (void)transitionToFeedDetail:(BOOL)resetLayout {
-    [self hidePopover];
+    [self.appDelegate hidePopover];
     if (self.feedDetailIsVisible) resetLayout = NO;
     self.feedDetailIsVisible = YES;
     
@@ -856,7 +780,7 @@
         return;
     }
     
-    [self hidePopover];
+    [self.appDelegate hidePopover];
     
     if (self.isSharingStory) {
         [self transitionFromShareView];
@@ -936,7 +860,7 @@
         return;
     } 
     
-    [self hidePopover];
+    [self.appDelegate hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = YES;
     self.storyPageControl.traverseView.hidden = YES;
@@ -970,7 +894,7 @@
         return;
     } 
     
-    [self hidePopover];
+    [self.appDelegate hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = NO;
     self.storyPageControl.traverseView.hidden = NO;

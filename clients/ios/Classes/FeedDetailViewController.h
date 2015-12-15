@@ -11,7 +11,6 @@
 #import "ASIHTTPRequest.h"
 #import "BaseViewController.h"
 #import "Utilities.h"
-#import "WYPopoverController.h"
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 
@@ -22,7 +21,7 @@
 @interface FeedDetailViewController : BaseViewController 
 <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate,
  UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
- WYPopoverControllerDelegate, MCSwipeTableViewCellDelegate,
+ MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
@@ -37,7 +36,6 @@
      
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
-    WYPopoverController *popoverController;
     Class popoverClass;
     NBNotifier *notifier;
 }
@@ -50,7 +48,6 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
-@property (nonatomic, retain) WYPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
 @property (nonatomic) UISearchBar *searchBar;

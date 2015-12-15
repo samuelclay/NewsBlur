@@ -12,7 +12,6 @@
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "BaseViewController.h"
-#import "WYPopoverController.h"
 #import "NBNotifier.h"
 #import "IASKAppSettingsViewController.h"
 #import "MCSwipeTableViewCell.h"
@@ -23,7 +22,6 @@
 <UITableViewDelegate, UITableViewDataSource,
 UIAlertViewDelegate, PullToRefreshViewDelegate,
 ASIHTTPRequestDelegate, NSCacheDelegate,
-WYPopoverControllerDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,
 MCSwipeTableViewCellDelegate,
@@ -50,8 +48,6 @@ UIGestureRecognizerDelegate> {
     UIBarButtonItem * settingsBarButton;
     UIBarButtonItem * activitiesButton;
     UISegmentedControl * intelligenceControl;
-    WYPopoverController *popoverController;
-	Class popoverClass;
     NBNotifier *notifier;
 }
 
@@ -80,7 +76,6 @@ UIGestureRecognizerDelegate> {
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
-@property (nonatomic, retain) WYPopoverController *popoverController;
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
 @property (nonatomic) NSInteger currentSection;
 @property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
