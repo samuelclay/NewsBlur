@@ -1507,7 +1507,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)showOriginalStory:(UIGestureRecognizer *)gesture {
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
-    [appDelegate.masterContainerViewController hidePopover];
+    [appDelegate hidePopover];
 
     if (!gesture || [gesture isKindOfClass:[UITapGestureRecognizer class]]) {
         [appDelegate showOriginalStory:url];

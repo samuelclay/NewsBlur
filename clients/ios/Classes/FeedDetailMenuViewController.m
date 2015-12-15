@@ -189,10 +189,9 @@
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController hidePopover];
+        [self.appDelegate hidePopover];
     } else {
-        [appDelegate.feedDetailViewController.popoverController dismissPopoverAnimated:YES];
-        appDelegate.feedDetailViewController.popoverController = nil;
+        [self.appDelegate hidePopoverAnimated:YES];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
