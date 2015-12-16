@@ -455,6 +455,8 @@
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];
         [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.preferencesViewController.view];
     }
+    
+    [self hidePopover];
 
     preferencesViewController.delegate = self.feedsViewController;
     preferencesViewController.showDoneButton = YES;
@@ -495,6 +497,8 @@
 }
 
 - (void)showFindFriends {
+    [self hidePopover];
+    
     FriendsListViewController *friendsBVC = [[FriendsListViewController alloc] init];
     UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
     
