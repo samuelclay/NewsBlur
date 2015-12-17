@@ -16,6 +16,12 @@ class NBMuninGraph(MuninGraph):
             'mongo_avg.draw' : 'LINE1',
             'redis_avg.label' :'Redis avg times (5m)',
             'redis_avg.draw' : 'LINE1',
+            'task_sql_avg.label' : 'Task SQL avg times (5m)',
+            'task_sql_avg.draw' : 'LINE1',
+            'task_mongo_avg.label' : 'Task Mongo avg times (5m)',
+            'task_mongo_avg.draw' : 'LINE1',
+            'task_redis_avg.label' :'Task Redis avg times (5m)',
+            'task_redis_avg.draw' : 'LINE1',
         }
 
     def calculate_metrics(self):
