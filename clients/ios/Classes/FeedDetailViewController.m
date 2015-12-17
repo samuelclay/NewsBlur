@@ -2071,6 +2071,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.searchBar.tintColor = UIColorFromRGB(0xffffff);
     self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     
     if (self.isPhoneOrCompact) {
         self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
