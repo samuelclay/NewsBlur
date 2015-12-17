@@ -380,6 +380,8 @@
     }
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
+        [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
+        [self.searchBar becomeFirstResponder];
     } else {
         [self.searchBar setText:@""];
     }
