@@ -250,20 +250,27 @@
 
 - (BOOL)handleShortcutItem:(UIApplicationShortcutItem *)shortcutItem {
     NSString *type = shortcutItem.type;
+    NSString *prefix = [[NSBundle mainBundle].bundleIdentifier stringByAppendingString:@"."];
     BOOL handled = YES;
     
-    if (!self.dictFeeds) {
+    if (!self.activeUsername) {
         handled = NO;
-    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AddFeed"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
-    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AllStories"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.feedsViewController didSelectSectionHeaderWithTag:2];
-    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.Search"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.feedsViewController didSelectSectionHeaderWithTag:2];
-        [self.feedDetailViewController.searchBar performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.5];
+    } else if ([type startsWith:prefix]) {
+        type = [type substringFromIndex:[prefix length]];
+        if ([type isEqualToString:@"AddFeed"]) {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
+        } else if ([type isEqualToString:@"AllStories"]) {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self.feedsViewController didSelectSectionHeaderWithTag:2];
+        } else if ([type isEqualToString:@"Search"]) {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self.feedsViewController didSelectSectionHeaderWithTag:2];
+            self.feedDetailViewController.storiesCollection.searchQuery = @"";
+            self.feedDetailViewController.storiesCollection.inSearch = YES;
+        } else {
+            handled = NO;
+        }
     } else {
         handled = NO;
     }
