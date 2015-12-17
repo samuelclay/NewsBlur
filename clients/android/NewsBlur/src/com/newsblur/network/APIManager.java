@@ -334,6 +334,9 @@ public class APIManager {
         if (!fs.isAllRead()) {
 		    values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
         }
+        if (fs.getSearchQuery() != null) {
+            values.put(APIConstants.PARAMETER_QUERY, fs.getSearchQuery());
+        }
 
 		APIResponse response = get(uri.toString(), values);
         return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);

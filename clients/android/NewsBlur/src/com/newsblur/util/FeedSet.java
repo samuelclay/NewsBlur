@@ -32,6 +32,7 @@ public class FeedSet implements Serializable {
     private boolean isGlobalShared;
 
     private String folderName;
+    private String searchQuery;
 
     /**
      * Construct a new set of feeds. Only one of the arguments may be non-null or true. Specify an empty
@@ -218,6 +219,14 @@ public class FeedSet implements Serializable {
         return (this.folderName != null);
     }
 
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+
+    public String getSearchQuery() {
+        return this.searchQuery;
+    }
+
     /**
      * Gets a flat set of feed IDs that can be passed to API calls that take raw numeric IDs or
      * social IDs prefixed with "social:". Returns an empty set for feed sets that don't track
@@ -307,31 +316,33 @@ public class FeedSet implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if ( o instanceof FeedSet) {
-            FeedSet s = (FeedSet) o;
-            if ( (feeds != null) && (s.feeds != null) && TextUtils.equals(folderName, s.folderName) && s.feeds.equals(feeds) ) return true;
-            if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
-            if ( isAllNormal && s.isAllNormal ) return true;
-            if ( isAllSocial && s.isAllSocial ) return true;
-            if ( isAllRead && s.isAllRead ) return true;
-            if ( isAllSaved && s.isAllSaved ) return true;
-            if ( isGlobalShared && s.isGlobalShared ) return true;
-        }
+        if (!( o instanceof FeedSet)) return false;
+        FeedSet s = (FeedSet) o;
+
+        if ( !TextUtils.equals(searchQuery, s.searchQuery)) return false;
+        if ( !TextUtils.equals(folderName, s.folderName)) return false;
+        if ( (feeds != null) && (s.feeds != null) && s.feeds.equals(feeds) ) return true;
+        if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
+        if ( isAllNormal && s.isAllNormal ) return true;
+        if ( isAllSocial && s.isAllSocial ) return true;
+        if ( isAllRead && s.isAllRead ) return true;
+        if ( isAllSaved && s.isAllSaved ) return true;
+        if ( isGlobalShared && s.isGlobalShared ) return true;
         return false;
     }
 
     @Override
     public int hashCode() {
-        if (isAllNormal) return 11;
-        if (isAllSocial) return 12;
-        if (isAllSaved) return 13;
-        if (isGlobalShared) return 14;
-        if (isAllRead) return 15;
-
         int result = 17;
+        if (isAllNormal) result = 11;
+        if (isAllSocial) result = 12;
+        if (isAllSaved) result = 13;
+        if (isGlobalShared) result = 14;
+        if (isAllRead) result = 15;
         if (feeds != null) result = 31 * result + feeds.hashCode();
         if (socialFeeds != null) result = 31 * result + socialFeeds.hashCode();
         if (folderName != null) result = 31 * result + folderName.hashCode();
+        if (searchQuery != null) result = 31 * result + searchQuery.hashCode();
         return result;
     }
 

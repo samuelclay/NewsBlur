@@ -776,11 +776,12 @@ public class BlurDatabaseHelper {
     }
 
     /**
-     * Clears the read_this_session flag for all stories so they won't be displayed.
+     * Clears the read_this_session and search_hit flags for all stories.
      */
     public void clearReadingSession() {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, false);
+        values.put(DatabaseConstants.STORY_SEARCHIT, false);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
     }
 
@@ -894,7 +895,7 @@ public class BlurDatabaseHelper {
             q.append(TextUtils.join(",", DatabaseConstants.STORY_COLUMNS));
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(" WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), new String[]{fs.getSingleFeed()}, cancellationSignal);
 
         } else if (fs.getMultipleFeeds() != null) {
@@ -904,7 +905,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
             q.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, false);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.getSingleSocialFeed() != null) {
@@ -914,7 +915,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, false);
             return rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()}, cancellationSignal);
 
         } else if (fs.isAllNormal()) {
@@ -923,7 +924,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE 1");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, false);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSocial()) {
@@ -933,7 +934,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(DatabaseConstants.JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP);
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllRead()) {
@@ -961,7 +962,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false);
             return rawQuery(q.toString(), null, cancellationSignal);
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
