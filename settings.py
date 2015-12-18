@@ -577,7 +577,8 @@ if not DEBUG:
         'django_ses',
 
     )
-    RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
+    # RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
+    RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN)
     
 
 COMPRESS = not DEBUG
