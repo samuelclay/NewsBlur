@@ -170,10 +170,10 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'include_html': True,
         },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
-        },
+        # 'sentry': {
+        #     'level': 'ERROR',
+        #     'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
+        # },
     },
     'loggers': {
         'django.request': {
@@ -200,16 +200,16 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'raven': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'sentry.errors': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
+        # 'raven': {
+        #     'level': 'DEBUG',
+        #     'handlers': ['console'],
+        #     'propagate': False,
+        # },
+        # 'sentry.errors': {
+        #     'level': 'DEBUG',
+        #     'handlers': ['console'],
+        #     'propagate': False,
+        # },
     },
     'filters': {
         'require_debug_false': {
@@ -282,7 +282,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
-    'kombu.transport.django',
+    # 'kombu.transport.django',
     'vendor.paypal.standard.ipn',
     'apps.rss_feeds',
     'apps.reader',
@@ -321,9 +321,9 @@ ZEBRA_ENABLE_APP = True
 
 import djcelery
 djcelery.setup_loader()
-from celery import Celery
-celeryapp = Celery()
-celeryapp.config_from_object('django.conf:settings')
+# from celery import Celery
+# celeryapp = Celery()
+# celeryapp.config_from_object('django.conf:settings')
 CELERY_ROUTES = {
     "work-queue": {
         "queue": "work_queue",
@@ -524,6 +524,7 @@ REDIS_SESSIONS = {
 }
 
 CELERY_REDIS_DB_NUM = 4
+CELERY_REDIS_DB = CELERY_REDIS_DB_NUM
 SESSION_REDIS_DB = 5
 
 # =================
@@ -574,12 +575,12 @@ from local_settings import *
 if not DEBUG:
     INSTALLED_APPS += (
         'gunicorn',
-        'raven.contrib.django.raven_compat',
+        'raven.contrib.django',
         'django_ses',
 
     )
     # RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
-    RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN)
+    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
     
 
 COMPRESS = not DEBUG
