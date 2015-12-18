@@ -402,6 +402,7 @@ CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.social.tasks",
                                "apps.reader.tasks",
+                               "apps.profile.tasks",
                                "apps.feed_import.tasks",
                                "apps.search.tasks",
                                "apps.statistics.tasks",)
