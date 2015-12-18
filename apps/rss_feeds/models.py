@@ -473,7 +473,7 @@ class Feed(models.Model):
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
         
-        if force or has_new_stories:
+        if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
 
         if force or (has_new_stories and count_extra):
