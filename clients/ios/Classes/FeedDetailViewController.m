@@ -23,7 +23,6 @@
 #import "NSObject+SBJSON.h"
 #import "StringHelper.h"
 #import "Utilities.h"
-#import "WYPopoverController.h"
 #import "UIBarButtonItem+Image.h"
 #import "FeedDetailMenuViewController.h"
 #import "MarkReadMenuViewController.h"
@@ -51,7 +50,6 @@
 
 @implementation FeedDetailViewController
 
-@synthesize popoverController;
 @synthesize storyTitlesTable, feedMarkReadButton;
 @synthesize settingsBarButton;
 @synthesize separatorBarButton;
@@ -87,7 +85,6 @@
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:nil];
 
-    popoverClass = [WYPopoverController class];
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     
@@ -383,6 +380,8 @@
     }
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
+        [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
+        [self.searchBar becomeFirstResponder];
     } else {
         [self.searchBar setText:@""];
     }
@@ -431,8 +430,7 @@
     [super viewDidDisappear:animated];
     
     [self.searchBar resignFirstResponder];
-    [self.popoverController dismissPopoverAnimated:YES];
-    self.popoverController = nil;
+    [self.appDelegate hidePopoverAnimated:YES];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
     if (self.isMovingToParentViewController) {
@@ -1818,8 +1816,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)doOpenMarkReadMenu:(id)sender {
-    [self.popoverController dismissPopoverAnimated:YES];
-    self.popoverController = nil;
+    [self.appDelegate hidePopoverAnimated:YES];
     
     void (^pop)(void) = ^{
         if (!self.isPhoneOrCompact) {
@@ -1865,29 +1862,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return;
     }
     
-    if (!self.isPhoneOrCompact) {
-        [appDelegate.masterContainerViewController showFeedDetailMenuPopover:self.settingsBarButton];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:(UIViewController *)appDelegate.feedDetailMenuViewController];
-            [appDelegate.feedDetailMenuViewController buildMenuOptions];
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        NSInteger menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
-        [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionUp
-                                                       animated:YES];
-    }
-
+    [self.appDelegate.feedDetailMenuViewController buildMenuOptions];
+    [self.appDelegate.feedDetailMenuViewController view];
+    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+    
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuViewController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
 }
-
-
 
 - (void)confirmDeleteSite {
     UIAlertView *deleteConfirm = [[UIAlertView alloc] 
@@ -2085,13 +2065,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)updateTheme {
     [super updateTheme];
     
-    self.navigationController.navigationBar.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
+    self.navigationController.navigationBar.backItem.backBarButtonItem.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
     self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
     
     self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.searchBar.tintColor = UIColorFromRGB(0xffffff);
     self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     
     if (self.isPhoneOrCompact) {
         self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
@@ -2244,19 +2226,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
-}
-
-#pragma mark -
-#pragma mark WYPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
-	//Safe to release the popover here
-	self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
-	//The popover is automatically dismissed if you click outside it, unless you return NO here
-	return YES;
 }
 
 @end

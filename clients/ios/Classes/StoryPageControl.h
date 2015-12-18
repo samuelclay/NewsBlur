@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "WYPopoverController.h"
 #import "THCircularProgressView.h"
 #import "NBNotifier.h"
 
@@ -17,7 +16,7 @@
 @class ASIHTTPRequest;
 
 @interface StoryPageControl : BaseViewController
-<UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate, WYPopoverControllerDelegate> {
+<UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
 
@@ -30,9 +29,6 @@
     UIView *traverseView;
     UIView *progressView;
     UIView *progressViewContainer;
-    
-    WYPopoverController *popoverController;
-	Class popoverClass;
     
     BOOL isDraggingScrollview;
     BOOL isAnimatedIntoPlace;
@@ -81,8 +77,6 @@
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
-
-@property (nonatomic, strong) WYPopoverController *popoverController;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;

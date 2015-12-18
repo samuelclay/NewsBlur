@@ -246,7 +246,7 @@
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
     }
     
-    if (!self.activeStoryId) {
+    if (!self.hasStory) {
         [self drawStory];
     }
 }
@@ -469,6 +469,7 @@
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        self.hasStory = YES;
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self.webView setMediaPlaybackRequiresUserAction:NO];
         [self.webView loadHTMLString:htmlString baseURL:baseURL];
@@ -537,6 +538,8 @@
 #pragma mark Story layout
 
 - (void)clearWebView {
+    self.hasStory = NO;
+    
     NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
     
     if (themeStyle.length) {
@@ -1503,7 +1506,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)showOriginalStory:(UIGestureRecognizer *)gesture {
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
-    [appDelegate.masterContainerViewController hidePopover];
+    [appDelegate hidePopover];
 
     if (!gesture || [gesture isKindOfClass:[UITapGestureRecognizer class]]) {
         [appDelegate showOriginalStory:url];
@@ -1568,7 +1571,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.webkitTouchCallout='none';"];
 
     if ([appDelegate.storiesCollection.activeFeedStories count] &&
-        self.activeStoryId) {
+        self.activeStoryId && self.hasStory) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
             [self checkTryFeedStory];

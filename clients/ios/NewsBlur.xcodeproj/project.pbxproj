@@ -307,8 +307,6 @@
 		FF6281FA1A09614C00271FDB /* all@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281F91A09614C00271FDB /* all@3x.png */; };
 		FF6281FC1A0962FA00271FDB /* unread_green@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281FB1A0962FA00271FDB /* unread_green@3x.png */; };
 		FF6281FE1A09641100271FDB /* unread_yellow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6281FD1A09641100271FDB /* unread_yellow@3x.png */; };
-		FF62820A1A098EA800271FDB /* WYPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282071A098EA800271FDB /* WYPopoverController.m */; };
-		FF62820B1A098EA800271FDB /* WYStoryboardPopoverSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282091A098EA800271FDB /* WYStoryboardPopoverSegue.m */; };
 		FF62820E1A1160DD00271FDB /* add_tag.png in Resources */ = {isa = PBXBuildFile; fileRef = FF62820C1A1160DD00271FDB /* add_tag.png */; };
 		FF62820F1A1160DD00271FDB /* add_tag@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF62820D1A1160DD00271FDB /* add_tag@2x.png */; };
 		FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282141A11613900271FDB /* UserTagsViewController.m */; };
@@ -950,10 +948,6 @@
 		FF6281F91A09614C00271FDB /* all@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "all@3x.png"; sourceTree = "<group>"; };
 		FF6281FB1A0962FA00271FDB /* unread_green@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_green@3x.png"; sourceTree = "<group>"; };
 		FF6281FD1A09641100271FDB /* unread_yellow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_yellow@3x.png"; sourceTree = "<group>"; };
-		FF6282061A098EA800271FDB /* WYPopoverController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WYPopoverController.h; sourceTree = "<group>"; };
-		FF6282071A098EA800271FDB /* WYPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WYPopoverController.m; sourceTree = "<group>"; };
-		FF6282081A098EA800271FDB /* WYStoryboardPopoverSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WYStoryboardPopoverSegue.h; sourceTree = "<group>"; };
-		FF6282091A098EA800271FDB /* WYStoryboardPopoverSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WYStoryboardPopoverSegue.m; sourceTree = "<group>"; };
 		FF62820C1A1160DD00271FDB /* add_tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_tag.png; sourceTree = "<group>"; };
 		FF62820D1A1160DD00271FDB /* add_tag@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add_tag@2x.png"; sourceTree = "<group>"; };
 		FF6282131A11613900271FDB /* UserTagsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTagsViewController.h; sourceTree = "<group>"; };
@@ -1344,7 +1338,6 @@
 				FF2EB77E1AA65504002549A7 /* InAppSettingsKit */,
 				FF753CC2175858FC00344EC9 /* fmdb */,
 				FF22FE5316E53ADC0046165A /* Underscore */,
-				FF6282051A098EA800271FDB /* WYPopoverController */,
 				FF1F13CC18A9C2BE00FDA816 /* TMCache */,
 				43A4C3E615B0099B008787B5 /* NewsBlur_Prefix.pch */,
 				43A4C3B915B00966008787B5 /* ABTableViewCell.h */,
@@ -2112,18 +2105,6 @@
 			name = Activities;
 			sourceTree = "<group>";
 		};
-		FF6282051A098EA800271FDB /* WYPopoverController */ = {
-			isa = PBXGroup;
-			children = (
-				FF6282061A098EA800271FDB /* WYPopoverController.h */,
-				FF6282071A098EA800271FDB /* WYPopoverController.m */,
-				FF6282081A098EA800271FDB /* WYStoryboardPopoverSegue.h */,
-				FF6282091A098EA800271FDB /* WYStoryboardPopoverSegue.m */,
-			);
-			name = WYPopoverController;
-			path = "Other Sources/WYPopoverController";
-			sourceTree = "<group>";
-		};
 		FF753CC2175858FC00344EC9 /* fmdb */ = {
 			isa = PBXGroup;
 			children = (
@@ -2768,7 +2749,6 @@
 				7843F50511EEB1A000675F64 /* FeedDetailTableCell.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
 				78095E34128EF30C00230C8E /* ASIAuthenticationDialog.m in Sources */,
-				FF62820B1A098EA800271FDB /* WYStoryboardPopoverSegue.m in Sources */,
 				78095E35128EF30D00230C8E /* ASIDownloadCache.m in Sources */,
 				FF2EB7B41AA65504002549A7 /* IASKSettingsReader.m in Sources */,
 				78095E36128EF30D00230C8E /* ASIFormDataRequest.m in Sources */,
@@ -2788,8 +2768,6 @@
 				FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */,
 				FF1F13D818AAC97900FDA816 /* UIImage+Resize.m in Sources */,
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
-				17F1566F1BDAB14F0092EBFD /* NBModalPushPopTransition.m in Sources */,
-				FF62820A1A098EA800271FDB /* WYPopoverController.m in Sources */,
 				FF8D1ECD1BAA311000725D8A /* SBJson4StreamParser.m in Sources */,
 				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
 				FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */,

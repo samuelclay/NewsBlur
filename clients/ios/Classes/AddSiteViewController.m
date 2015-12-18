@@ -133,10 +133,9 @@
 
 - (IBAction)doCancelButton {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController hidePopover];
+        [self.appDelegate hidePopover];
     } else {
-        [appDelegate.feedsViewController.popoverController dismissPopoverAnimated:YES];
-        appDelegate.feedsViewController.popoverController = nil;
+        [self.appDelegate hidePopoverAnimated:YES];
     }
 }
 
@@ -310,12 +309,11 @@
         [self.errorLabel setHidden:NO];
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [appDelegate.masterContainerViewController hidePopover];
+            [self.appDelegate hidePopover];
         } else {
-            [appDelegate.feedsViewController.popoverController dismissPopoverAnimated:YES];
-            appDelegate.feedsViewController.popoverController = nil;            
+            [self.appDelegate hidePopoverAnimated:YES];
         }
-        [appDelegate reloadFeedsView:NO];
+        [self.appDelegate reloadFeedsView:NO];
     }
     
 }

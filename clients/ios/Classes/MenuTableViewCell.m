@@ -43,6 +43,7 @@
     self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
     self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     self.textLabel.shadowOffset = CGSizeMake(0, 1);
+    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
 }

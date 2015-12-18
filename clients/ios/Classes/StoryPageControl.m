@@ -45,7 +45,6 @@
 @synthesize buttonBack;
 @synthesize bottomSize;
 @synthesize bottomSizeHeightConstraint;
-@synthesize popoverController;
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
 @synthesize isDraggingScrollview;
@@ -102,9 +101,7 @@
     [self.scrollView sizeToFit];
 //    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
     
-    popoverClass = [WYPopoverController class];
-    
-    // adding HUD for progress bar    
+    // adding HUD for progress bar
     CGFloat radius = 8;
     circularProgressView = [[THCircularProgressView alloc]
                             initWithCenter:CGPointMake(self.buttonNext.frame.origin.x + 2*radius,
@@ -1078,7 +1075,7 @@
 }
 
 - (IBAction)showOriginalSubview:(id)sender {
-    [appDelegate.masterContainerViewController hidePopover];
+    [appDelegate hidePopover];
 
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
@@ -1149,32 +1146,13 @@
     self.appDelegate.fontSettingsNavigationController.modalPresentationStyle = UIModalPresentationPopover;
     UIPopoverPresentationController *popPC = self.appDelegate.fontSettingsNavigationController.popoverPresentationController;
     popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     popPC.delegate = self;
     popPC.barButtonItem = self.fontSettingsButton;
 //    popPC.sourceView = self.view;
 //    popPC.sourceRect = [sender frame];
     
     [self presentViewController:self.appDelegate.fontSettingsNavigationController animated:YES completion:nil];
-    return;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFontSettingsPopover:self.fontSettingsButton];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.fontSettingsNavigationController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [self.popoverController setPopoverContentSize:CGSizeMake(240.0, 302.0)];
-        [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                       animated:YES];
-    }
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {
@@ -1289,19 +1267,6 @@
 //        
         [self changePage:previousLocation];
     }
-}
-
-#pragma mark -
-#pragma mark WYPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
-	//Safe to release the popover here
-	self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
-	//The popover is automatically dismissed if you click outside it, unless you return NO here
-	return YES;
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
