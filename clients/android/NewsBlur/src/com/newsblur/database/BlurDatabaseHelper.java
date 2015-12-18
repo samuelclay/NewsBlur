@@ -905,7 +905,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
             q.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, false);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.getSingleSocialFeed() != null) {
@@ -915,7 +915,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, false);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()}, cancellationSignal);
 
         } else if (fs.isAllNormal()) {
@@ -924,7 +924,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE 1");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, false);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSocial()) {
@@ -953,6 +953,9 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
             q.append(" OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1))");
+            if (fs.getSearchQuery() != null) {
+                q.append(" AND (" + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_SEARCHIT + " = 1)");
+            }
             q.append(" ORDER BY " + DatabaseConstants.getSavedStoriesSortOrder(order));
             return rawQuery(q.toString(), null, cancellationSignal);
 
