@@ -680,7 +680,7 @@ REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], por
 # = Celery =
 # ==========
 
-celeryapp.autodiscover_tasks(INSTALLED_APPS)
+# celeryapp.autodiscover_tasks(INSTALLED_APPS)
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 
 # ==========
