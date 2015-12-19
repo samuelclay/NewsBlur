@@ -435,17 +435,16 @@ public class BlurDatabaseHelper {
     }
 
     /**
-     * Marks a story (un)read but does not adjust counts.
+     * Marks a story (un)read but does not adjust counts. Must stay idempotent an time-insensitive.
      */
     public void setStoryReadState(String hash, boolean read) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, read);
-        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
     /**
-     * Marks a story (un)read and also adjusts unread counts for it.
+     * Marks a story (un)read and also adjusts unread counts for it. Non-idempotent by design.
      *
      * @return the set of feed IDs that potentially have counts impacted by the mark.
      */
