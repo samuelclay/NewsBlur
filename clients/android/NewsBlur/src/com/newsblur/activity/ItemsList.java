@@ -37,7 +37,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
-    public static final String BUNDLE_FEED_IDS = "feedIds";
+    private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
@@ -68,6 +68,14 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             }
         }
 
+        if (bundle != null) {
+            String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+            if (activeSearchQuery != null) {
+                searchQueryInput.setText(activeSearchQuery);
+                searchQueryInput.setVisibility(View.VISIBLE);
+                fs.setSearchQuery(activeSearchQuery);
+            }
+        }
         searchQueryInput.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
@@ -84,6 +92,16 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             }
         });
 	}
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (searchQueryInput != null) {
+            String q = searchQueryInput.getText().toString().trim();
+            if (q.length() > 0) {
+                outState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
+            }
+        }
+    }
 
     protected abstract FeedSet createFeedSet();
 
