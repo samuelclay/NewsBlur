@@ -320,6 +320,7 @@ def setup_installs():
         'libdbd-pg-perl',
         'libssl-dev',
         'libffi-dev',
+        'libevent-dev',
         'make',
         'pgbouncer',
         'python-setuptools',
@@ -466,6 +467,21 @@ def setup_hosts():
     put(os.path.join(env.SECRETS_PATH, 'configs/hosts'), '/etc/hosts', use_sudo=True)
     sudo('echo "\n\n127.0.0.1   `hostname`" | sudo tee -a /etc/hosts')
 
+def setup_pgbouncer():
+    sudo('apt-get remove -y pgbouncer')
+    sudo('apt-get install -y libevent-dev')
+    PGBOUNCER_VERSION = '1.7'
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('wget https://pgbouncer.github.io/downloads/files/%s/pgbouncer-%s.tar.gz' % (PGBOUNCER_VERSION, PGBOUNCER_VERSION))
+        run('tar -xzf pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
+        run('rm pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
+        with cd('pgbouncer-%s' % PGBOUNCER_VERSION):
+            run('./configure --prefix=/usr/local --with-libevent=libevent-prefix')
+            run('make')
+            sudo('make install')
+            sudo('ln -s /usr/local/bin/pgbouncer /usr/sbin/pgbouncer')
+    config_pgbouncer()
+    
 def config_pgbouncer():
     put('config/pgbouncer.conf', 'pgbouncer.conf')
     sudo('mv pgbouncer.conf /etc/pgbouncer/pgbouncer.ini')

@@ -8,7 +8,6 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
 from django.template import Template, Context
-from apps.profile.tasks import CleanupUser
 from apps.statistics.rstats import round_time
 from utils import json_functions as json
 
@@ -26,6 +25,7 @@ class LastSeenMiddleware(object):
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
+                from apps.profile.tasks import CleanupUser
                 CleanupUser.delay(user_id=request.user.pk)
             elif settings.DEBUG:
                 logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
@@ -45,6 +45,13 @@ class DBProfilerMiddleware:
             random.random() < .01):
             request.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
+
+    def process_celery(self): 
+        setattr(self, 'activated_segments', [])        
+        if random.random() < .01:
+            self.activated_segments.append('db_profiler')
+            connection.use_debug_cursor = True
+            return self
     
     def process_exception(self, request, exception):
         if hasattr(request, 'sql_times_elapsed'):
@@ -55,14 +62,21 @@ class DBProfilerMiddleware:
             self._save_times(request.sql_times_elapsed)
         return response
     
-    def _save_times(self, db_times):
+    def process_celery_finished(self):
+        middleware = SQLLogToConsoleMiddleware()
+        middleware.process_celery(self)
+        if hasattr(self, 'sql_times_elapsed'):
+            logging.debug(" ---> ~FGProfiling~FB task: %s" % self.sql_times_elapsed)
+            self._save_times(self.sql_times_elapsed, 'task_')
+    
+    def _save_times(self, db_times, prefix=""):
         if not db_times: return
         
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         pipe = r.pipeline()
         minute = round_time(round_to=60)
         for db, duration in db_times.items():
-            key = "DB:%s:%s" % (db, minute.strftime('%s'))
+            key = "DB:%s%s:%s" % (prefix, db, minute.strftime('%s'))
             pipe.incr("%s:c" % key)
             pipe.expireat("%s:c" % key, (minute + datetime.timedelta(days=2)).strftime("%s"))
             if duration:
@@ -109,6 +123,9 @@ class SQLLogToConsoleMiddleware:
             }
             setattr(request, 'sql_times_elapsed', times_elapsed)
         return response
+        
+    def process_celery(self, profiler):
+        self.process_response(profiler, None)
 
 SIMPSONS_QUOTES = [
     ("Homer", "D'oh."),
