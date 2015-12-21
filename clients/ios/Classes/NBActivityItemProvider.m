@@ -46,9 +46,10 @@
 }
 
 -(id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType {
-    if ([activityType isEqualToString:UIActivityTypeMail] ||
-        [activityType isEqualToString:@"com.evernote.iPhone.Evernote.EvernoteShare"]) {
-        return @{@"body": text ?: @"", @"subject": title};
+    if ([activityType isEqualToString:UIActivityTypeMail]) {
+        return text ?: (url ?: @"");
+    } else if ([activityType isEqualToString:@"com.evernote.iPhone.Evernote.EvernoteShare"]) {
+        return @{@"body": text ?: (url ?: @""), @"subject": title};
     } else if ([activityType isEqualToString:UIActivityTypePostToTwitter] ||
                [activityType isEqualToString:UIActivityTypePostToFacebook] ||
                [activityType isEqualToString:UIActivityTypePostToWeibo]) {
