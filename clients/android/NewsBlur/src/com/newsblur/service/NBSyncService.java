@@ -512,7 +512,7 @@ public class NBSyncService extends Service {
 
         } finally {
             FFSyncRunning = false;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+            NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA | NbActivity.UPDATE_STATUS);
         }
 
     }
