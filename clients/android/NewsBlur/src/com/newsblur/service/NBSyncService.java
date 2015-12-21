@@ -911,13 +911,17 @@ public class NBSyncService extends Service {
     }
 
     public static void addRecountCandidates(FeedSet fs) {
-        if (fs != null) {
-            RecountCandidates.add(fs);
-        }
+        if (fs == null) return;
+        // if this is a special feedset (read, saved, global shared, etc) that doesn't represent a
+        // countable set of stories, don't bother recounting it
+        if (fs.getFlatFeedIds().size() < 1) return;
+        RecountCandidates.add(fs);
     }
 
-    public static void addRecountCandidates(Set<FeedSet> fs) {
-        RecountCandidates.addAll(fs);
+    public static void addRecountCandidates(Set<FeedSet> sets) {
+        for (FeedSet fs : sets) {
+            addRecountCandidates(fs);
+        }
     }
 
     public static void softInterrupt() {
