@@ -7,7 +7,7 @@
  */
 
 body {
-    color: #aaaaaa;
+    color: #eeeeee;
     background-color: gray;
 }
 
@@ -32,7 +32,7 @@ body {
     color: lightgray;
 }
 .NB-story-date {
-    color: #818776;
+    color: #eeeeee;
 }
 
 .NB-middot {
@@ -40,8 +40,8 @@ body {
 }
 
 .NB-story-author {
-    color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    color: #eeeeee;
+    text-shadow: 0 1px 0 rgba(155, 155, 155, .5);
 }
 .NB-story-author-positive {
     color: #58A353;
@@ -104,8 +104,8 @@ a:active {
 
 .NB-header {
     color: #bbbbbb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#111111), to(#444444));
-    border-bottom: 1px solid #C2C5BE;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#777777));
+    border-bottom: 1px solid #bbbbbb;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -190,29 +190,29 @@ a:active {
 /* Story Comments */
 
 #story_pane .NB-story-comment {
-    border-bottom: 1px solid #EAECE8;
-    background:#111111;
-    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
+    border-bottom: 1px solid #dddddd;
+    background:#888888;
+    box-shadow: inset 1px 1px 1px rgba(155, 155, 155, 1);shar
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {
-    color: #1D4BA6;
-    text-shadow: 0 -1px 0 #F0F0F0;
+    color: #eeeeee;
+    text-shadow: 0 -1px 0 #dddddd;
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
-    color: #9D9D9D;
+    color: #eeeeee;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-content {
-    color: #303030;
+    color: #dddddd;
 }
 
 #story_pane .NB-story-comment-reply {
-    border-top: 1px solid #EAECE8;
+    border-top: 1px solid #888888;
 }
 
 #story_pane .NB-story-comment-reply-content {
-    color: #303030;
+    color: #dddddd;
 }
 
 #story_pane .NB-story-comment-reply-form .NB-error {
@@ -222,20 +222,20 @@ a:active {
 #story_pane .NB-story-comments-public-teaser,
 #story_pane .NB-story-comments-public-header,
 #story_pane .NB-story-comments-friends-header {
-    background-color: #B1B6B4;
+    background-color: #999999;
     color: white;
     text-shadow: 0 1px 0 #505050;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F6F2), to(#E5E6E0));
-    color: #404040;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#999999), to(#aaaaaa));
+    color: #eeeeee;
     text-shadow: 0 1px 0 white;
     border-color: rgba(0, 0, 0, .1) transparent rgba(0, 0, 0, .1);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
 }
 #story_pane .NB-story-comments-shares-teaser {
-    background-color: #F5F5EF;
-    color: #898989;
+    background-color: #999999;
+    color: #eeeeee;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
-    border-bottom: 1px solid #E3E3DF;
+    border-bottom: 1px solid #dddddd;
     -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
 }
 

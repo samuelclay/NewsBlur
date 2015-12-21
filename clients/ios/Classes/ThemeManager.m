@@ -14,6 +14,7 @@
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
+#import "OriginalStoryViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 
 NSString * const ThemeStyleLight = @"light";
@@ -24,6 +25,7 @@ NSString * const ThemeStyleDark = @"dark";
 @interface ThemeManager ()
 
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) BOOL justToggledViaGesture;
 
 @end
 
@@ -58,7 +60,7 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
-- (NSString *)themeName {
+- (NSString *)themeDisplayName {
     NSString *theme = self.theme;
     
     if ([theme isEqualToString:ThemeStyleDark]) {
@@ -83,6 +85,20 @@ NSString * const ThemeStyleDark = @"dark";
         return @"Medium";
     } else {
         return @"";
+    }
+}
+
+- (NSString *)similarTheme {
+    NSString *theme = self.theme;
+    
+    if ([theme isEqualToString:ThemeStyleDark]) {
+        return ThemeStyleMedium;
+    } else if ([theme isEqualToString:ThemeStyleMedium]) {
+        return ThemeStyleDark;
+    } else if ([theme isEqualToString:ThemeStyleSepia]) {
+        return ThemeStyleLight;
+    } else {
+        return ThemeStyleSepia;
     }
 }
 
@@ -118,6 +134,20 @@ NSString * const ThemeStyleDark = @"dark";
     return [self fixedColorFromRGB:rgbValue];
 }
 
+- (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue sepiaRGB:(NSUInteger)sepiaRGBValue mediumRGB:(NSUInteger)mediumRGBValue darkRGB:(NSUInteger)darkRGBValue {
+    NSInteger rgbValue = lightRGBValue;
+    
+    if ([self.theme isEqualToString:ThemeStyleSepia]) {
+        rgbValue = sepiaRGBValue;
+    } else if ([self.theme isEqualToString:ThemeStyleMedium]) {
+        rgbValue = mediumRGBValue;
+    } else if ([self.theme isEqualToString:ThemeStyleDark]) {
+        rgbValue = darkRGBValue;
+    }
+    
+    return [self fixedColorFromRGB:rgbValue];
+}
+
 - (UIColor *)themedColorFromRGB:(NSInteger)rgbValue {
     NSString *theme = self.theme;
     CGFloat red = ((rgbValue & 0xFF0000) >> 16) / 255.0;
@@ -130,7 +160,9 @@ NSString * const ThemeStyleDark = @"dark";
     if ([theme isEqualToString:ThemeStyleDark]) {
         return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
-        if (red < 0.5 && green < 0.5 && blue < 0.5) {
+        if (rgbValue == 0x8F918B) {
+            return [UIColor colorWithWhite:0.7 alpha:1.0];
+        } else if (red < 0.5 && green < 0.5 && blue < 0.5) {
             return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
         } else {
             return [UIColor colorWithRed:red - 0.5 green:green - 0.5 blue:blue - 0.5 alpha:1.0];
@@ -210,6 +242,7 @@ NSString * const ThemeStyleDark = @"dark";
     [appDelegate.dashboardViewController updateTheme];
     [appDelegate.feedDetailViewController updateTheme];
     [appDelegate.storyPageControl updateTheme];
+    [appDelegate.originalStoryViewController updateTheme];
     
     [self updatePreferencesTheme];
 }
@@ -245,7 +278,7 @@ NSString * const ThemeStyleDark = @"dark";
             theme = [prefs objectForKey:@"theme_light"];
         }
         
-        NSLog(@"Automatically changing to theme: %@", [self themeDisplayName]);  // log
+        NSLog(@"Automatically changing to theme: %@", self.themeDisplayName);  // log
         
         self.theme = theme;
         
@@ -276,12 +309,13 @@ NSString * const ThemeStyleDark = @"dark";
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     
     if (recognizer.state != UIGestureRecognizerStateChanged || [prefs boolForKey:@"theme_auto_toggle"] || ![prefs boolForKey:@"theme_gesture"]) {
+        self.justToggledViaGesture = NO;
         return;
     }
     
     CGPoint translation = [recognizer translationInView:recognizer.view];
     
-    if (fabs(translation.x) > 50.0 || fabs(translation.y) < 50.0) {
+    if (self.justToggledViaGesture || fabs(translation.x) > 50.0 || fabs(translation.y) < 50.0) {
         return;
     }
     
@@ -295,16 +329,19 @@ NSString * const ThemeStyleDark = @"dark";
         wantTheme = [prefs objectForKey:@"theme_light"];
     }
     
-    if (![isTheme isEqualToString:wantTheme]) {
-        self.theme = wantTheme;
-        
-        NSLog(@"Swiped to theme: %@", [self themeDisplayName]);  // log
-        
-        [self updateTheme];
-        
-        // Play a click sound, like a light switch; might want to use a custom sound instead?
-        AudioServicesPlaySystemSound(1105);
+    if ([isTheme isEqualToString:wantTheme]) {
+        wantTheme = [self similarTheme];
     }
+    
+    self.theme = wantTheme;
+    self.justToggledViaGesture = YES;
+    
+    NSLog(@"Swiped to theme: %@", self.themeDisplayName);  // log
+    
+    [self updateTheme];
+    
+    // Play a click sound, like a light switch; might want to use a custom sound instead?
+    AudioServicesPlaySystemSound(1105);
 }
 
 @end

@@ -86,8 +86,8 @@
 
     // Background
     [NewsBlurAppDelegate fillGradient:rect
-                           startColor:UIColorFromLightDarkRGB(0xEAECE5, 0x333333)
-                             endColor:UIColorFromLightDarkRGB(0xDCDFD6, 0x444444)];
+                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc0, 0x666666, 0x333333)
+                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffd0, 0x777777, 0x444444)];
 //    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
 //    [backgroundColor set];
 //    CGContextFillRect(context, rect);
