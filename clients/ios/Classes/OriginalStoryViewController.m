@@ -85,11 +85,18 @@
     progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
     progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
+    
+    // This makes the theme gesture work reliably, but makes scrolling more "sticky", so isn't acceptable:
+//    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
+//    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(handlePanGesture:)];
         gesture.delegate = self;
         [self.webView.scrollView addGestureRecognizer:gesture];
+//        [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:gesture];
     }
     
     [self.webView loadHTMLString:@"" baseURL:nil];
@@ -139,6 +146,12 @@
     }
     
     self.navigationController.delegate = appDelegate;
+}
+
+- (void)updateTheme {
+    [super updateTheme];
+    
+    titleView.textColor = UIColorFromRGB(0x303030);
 }
 
 - (void)resetProgressBar {

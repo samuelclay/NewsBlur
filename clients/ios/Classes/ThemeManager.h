@@ -10,6 +10,7 @@
 
 #define UIColorFromFixedRGB(rgbValue) [[ThemeManager themeManager] fixedColorFromRGB:rgbValue]
 #define UIColorFromLightDarkRGB(lightRGBValue, darkRGBValue) [[ThemeManager themeManager] colorFromLightRGB:lightRGBValue darkRGB:darkRGBValue]
+#define UIColorFromLightSepiaMediumDarkRGB(lightRGBValue, sepiaRGBValue, mediumRGBValue, darkRGBValue) [[ThemeManager themeManager] colorFromLightRGB:lightRGBValue sepiaRGB:sepiaRGBValue mediumRGB:mediumRGBValue darkRGB:darkRGBValue]
 #define UIColorFromRGB(rgbValue) [[ThemeManager themeManager] themedColorFromRGB:rgbValue]
 
 #define NEWSBLUR_LINK_COLOR 0x405BA8
@@ -31,10 +32,12 @@ extern NSString * const ThemeStyleDark;
 
 + (instancetype)themeManager;
 
+- (NSString *)similarTheme;
 - (BOOL)isValidTheme:(NSString *)theme;
 
 - (UIColor *)fixedColorFromRGB:(NSInteger)rgbValue;
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue darkRGB:(NSUInteger)darkRGBValue;
+- (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue sepiaRGB:(NSUInteger)sepiaRGBValue mediumRGB:(NSUInteger)mediumRGBValue darkRGB:(NSUInteger)darkRGBValue;
 - (UIColor *)themedColorFromRGB:(NSInteger)rgbValue;
 
 - (UIImage *)themedImage:(UIImage *)image;

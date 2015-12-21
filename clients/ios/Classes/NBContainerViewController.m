@@ -299,6 +299,12 @@
     
     self.storyNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.storyNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    
+    self.originalNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
+    self.originalNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    
+    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
+    self.storyPageControl.navigationItem.titleView = titleLabel;
 }
 
 # pragma mark Modals and Popovers
