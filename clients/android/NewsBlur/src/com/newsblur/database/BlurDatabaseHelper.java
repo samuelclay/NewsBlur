@@ -684,19 +684,42 @@ public class BlurDatabaseHelper {
     }
 
     public void setStoryStarred(String hash, boolean starred) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_STARRED, starred);
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
-
-        // since local star/unstar operations are, so far, never retried or done automatically,
-        // we don't do the complex transactional accounting done with counts as with read/unread
-        // operations. Though this could get off by 1 in very loaded circumstances, the count will
-        // get refreshed on the next feed/folder sync. Unfortunately, we also can't do local
-        // counting like with unreads, since we never get a full set of starred stories.
-        String operator = (starred ? " + 1" : " - 1");
-        StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
-        q.append(" SET ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(" = ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(operator);
-        synchronized (RW_MUTEX) {dbRW.execSQL(q.toString());}
+        // check the story's starting state and the desired state and adjust it as an atom so we
+        // know if it truly changed or not and thus whether to update counts
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                // get a fresh copy of the story from the DB so we know if it changed
+                Cursor c = dbRW.query(DatabaseConstants.STORY_TABLE, 
+                                      new String[]{DatabaseConstants.STORY_STARRED}, 
+                                      DatabaseConstants.STORY_HASH + " = ?", 
+                                      new String[]{hash}, 
+                                      null, null, null);
+                if (c.getCount() < 1) {
+                    Log.w(this.getClass().getName(), "story removed before finishing mark-starred");
+                    return;
+                }
+                c.moveToFirst();
+                boolean origState = (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.STORY_STARRED)) > 0);
+                c.close();
+                // if there is nothing to be done, halt
+                if (origState == starred) {
+                    return;
+                }
+                // fix the state
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.STORY_STARRED, starred);
+                dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                // adjust counts
+                String operator = (starred ? " + 1" : " - 1");
+                StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
+                q.append(" SET ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(" = ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(operator);
+                dbRW.execSQL(q.toString());
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public void setStoryShared(String hash) {
