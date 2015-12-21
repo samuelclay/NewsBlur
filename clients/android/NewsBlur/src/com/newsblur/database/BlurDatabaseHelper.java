@@ -148,17 +148,6 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.execSQL(q);}
     }
 
-    public void cleanupFeedsFolders() {
-        synchronized (RW_MUTEX) {
-            dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
-        }
-    }
-
     public void vacuum() {
         synchronized (RW_MUTEX) {dbRW.execSQL("VACUUM");}
     }
@@ -191,7 +180,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                for(ContentValues values: valuesList) {
+                for (ContentValues values : valuesList) {
                     dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 }
                 dbRW.setTransactionSuccessful();
@@ -201,12 +190,34 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void insertFeedsFolders(List<ContentValues> folderValues,
-                                   List<ContentValues> feedValues,
-                                   List<ContentValues> socialFeedValues) {
-        bulkInsertValues(DatabaseConstants.FOLDER_TABLE, folderValues);
-        bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
-        bulkInsertValues(DatabaseConstants.SOCIALFEED_TABLE, socialFeedValues);
+    // just like bulkInsertValues, but leaves sync/transactioning to the caller
+    private void bulkInsertValuesExtSync(String table, List<ContentValues> valuesList) {
+        if (valuesList.size() < 1) return;
+        for (ContentValues values : valuesList) {
+            dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        }
+    }
+
+    public void setFeedsFolders(List<ContentValues> folderValues,
+                                List<ContentValues> feedValues,
+                                List<ContentValues> socialFeedValues) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
+                bulkInsertValuesExtSync(DatabaseConstants.FOLDER_TABLE, folderValues);
+                bulkInsertValuesExtSync(DatabaseConstants.FEED_TABLE, feedValues);
+                bulkInsertValuesExtSync(DatabaseConstants.SOCIALFEED_TABLE, socialFeedValues);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public void updateStarredStoriesCount(int count) {
@@ -294,14 +305,11 @@ public class BlurDatabaseHelper {
             }
             impliedFeedId = story.feedId;
         }
-        // we don't use bulkInsertValues for stories, since we need to put markStoriesActive within the transaction
         if (storyValues.size() > 0) {
             synchronized (RW_MUTEX) {
                 dbRW.beginTransaction();
                 try {
-                    for(ContentValues values: storyValues) {
-                        dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                    }
+                    bulkInsertValuesExtSync(DatabaseConstants.STORY_TABLE, storyValues);
                     markStoriesActive(actMode, modeCutoff);
                     dbRW.setTransactionSuccessful();
                 } finally {

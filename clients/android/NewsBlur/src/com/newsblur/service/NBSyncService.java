@@ -443,9 +443,6 @@ public class NBSyncService extends Service {
             isPremium = feedResponse.isPremium;
             isStaff = feedResponse.isStaff;
 
-            // clean out the feed / folder tables
-            dbHelper.cleanupFeedsFolders();
-
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
                 debugFeedIdsFromFolders.addAll(folder.feedIds);
@@ -498,7 +495,7 @@ public class NBSyncService extends Service {
                 socialFeedValues.add(feed.getValues());
             }
             
-            dbHelper.insertFeedsFolders(folderValues, feedValues, socialFeedValues);
+            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues);
 
             // populate the starred stories count table
             dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
