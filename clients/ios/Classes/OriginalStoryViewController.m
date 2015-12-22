@@ -312,10 +312,10 @@
     [webView reload];
 }
 
-# pragma mark: -
-# pragma mark: UIWebViewDelegate protocol
+# pragma mark -
+# pragma mark WKNavigationDelegate protocol
 
-- (void)webView:(UIWebView *)aWebView didCommitNavigation:(null_unspecified WKNavigation *)navigation {
+- (void)webView:(WKWebView *)aWebView didCommitNavigation:(null_unspecified WKNavigation *)navigation {
     if ([webView canGoBack]) {
         [backBarButton setEnabled:YES];
     } else {
@@ -335,7 +335,7 @@
     finishedLoading = YES;
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailLoadWithError:(NSError *)error
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
@@ -348,7 +348,21 @@
     finishedLoading = YES;
 }
 
-- (void)updateTitle:(UIWebView*)aWebView
+# pragma mark -
+# pragma mark WKUIDelegate protocol
+
+- (nullable WKWebView *)webView:(WKWebView *)aWebView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    if (!navigationAction.targetFrame.isMainFrame) {
+        // Load target="_blank" links into the same frame.
+        [webView loadRequest:navigationAction.request];
+    }
+
+    return nil;
+}
+
+# pragma mark -
+
+- (void)updateTitle:(WKWebView*)aWebView
 {
     NSString *pageTitleValue = webView.title;
     titleView.text = [pageTitleValue stringByDecodingHTMLEntities];

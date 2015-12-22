@@ -39,6 +39,8 @@ env.VENDOR_PATH   = "/srv/code"
 env.user = 'sclay'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
 env.connection_attempts = 10
+env.do_ip_to_hostname = {}
+env.colorize_errors = True
 
 # =========
 # = Roles =
@@ -62,6 +64,7 @@ except:
 def do_roledefs(split=False):
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
+    env.do_ip_to_hostname = {}
     hostnames = {}
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
@@ -71,6 +74,7 @@ def do_roledefs(split=False):
             hostnames[roledef] = []
         if droplet.ip_address not in hostnames[roledef]:
             hostnames[roledef].append({'name': droplet.name, 'address': droplet.ip_address})
+            env.do_ip_to_hostname[droplet.ip_address] = droplet.name
         if droplet.ip_address not in env.roledefs[roledef]:
             env.roledefs[roledef].append(droplet.ip_address)
 
@@ -79,7 +83,7 @@ def do_roledefs(split=False):
     return droplets
 
 def list_do():
-    droplets = do(split=True)
+    droplets = assign_digitalocean_roledefs(split=True)
     pprint(droplets)
     
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
@@ -101,7 +105,7 @@ def list_do():
 def host(*names):
     env.hosts = []
     env.doname = ','.join(names)
-    hostnames = do(split=True)
+    hostnames = assign_digitalocean_roledefs(split=True)
     for role, hosts in hostnames.items():
         for host in hosts:
             if isinstance(host, dict) and host['name'] in names:
@@ -116,53 +120,53 @@ def server():
     env.NEWSBLUR_PATH = "/srv/newsblur"
     env.VENDOR_PATH   = "/srv/code"
 
-def do(split=False):
+def assign_digitalocean_roledefs(split=False):
     server()
     droplets = do_roledefs(split=split)
     if split:
         for roledef, hosts in env.roledefs.items():
             if roledef not in droplets:
                 droplets[roledef] = hosts
+    
     return droplets
 
 def app():
-    do()
-    env.roles = ['app']
+    web()
 
 def web():
-    do()
-    env.roles = ['app', 'push', 'work']
+    assign_digitalocean_roledefs()
+    env.roles = ['app', 'push', 'work', 'search']
 
 def work():
-    do()
-    env.roles = ['work']
+    assign_digitalocean_roledefs()
+    env.roles = ['work', 'search']
 
 def www():
-    do()
+    assign_digitalocean_roledefs()
     env.roles = ['www']
 
 def dev():
-    do()
+    assign_digitalocean_roledefs()
     env.roles = ['dev']
 
 def debug():
-    do()
+    assign_digitalocean_roledefs()
     env.roles = ['debug']
 
 def node():
-    do()
+    assign_digitalocean_roledefs()
     env.roles = ['node']
 
 def push():
-    do()
+    assign_digitalocean_roledefs()
     env.roles = ['push']
 
 def db():
-    do()
-    env.roles = ['db']
+    assign_digitalocean_roledefs()
+    env.roles = ['db', 'search']
 
 def task():
-    do()
+    assign_digitalocean_roledefs()
     env.roles = ['task']
 
 def ec2task():
@@ -172,11 +176,11 @@ def ec2task():
 def ec2():
     env.user = 'ubuntu'
     env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
-    do()
+    assign_digitalocean_roledefs()
 
 def all():
-    do()
-    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work', 'www']
+    assign_digitalocean_roledefs()
+    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work', 'www', 'search']
 
 # =============
 # = Bootstrap =
@@ -1310,17 +1314,30 @@ def pre_deploy():
 def post_deploy():
     cleanup_assets()
 
+def role_for_host():
+    for role, hosts in env.roledefs.items():
+        if env.host in hosts:
+            return role
+
 @parallel
 def deploy(fast=False, reload=False):
-    deploy_code(copy_assets=False, fast=fast, reload=reload)
+    role = role_for_host()
+    if role in ['work', 'search']:
+        deploy_code(copy_assets=False, fast=fast, reload=True)
+    else:
+        deploy_code(copy_assets=False, fast=fast, reload=reload)
 
 @parallel
 def deploy_web(fast=False):
-    deploy_code(copy_assets=True, fast=fast, full=False)
+    role = role_for_host()
+    if role in ['work', 'search']:
+        deploy_code(copy_assets=True, fast=fast, reload=True)
+    else:
+        deploy_code(copy_assets=True, fast=fast)
 
 @parallel
-def deploy_full(fast=False):
-    deploy_code(copy_assets=True, fast=fast, full=True)
+def deploy_rebuild(fast=False):
+    deploy_code(copy_assets=True, fast=fast, rebuild=True)
 
 @parallel
 def kill_gunicorn():
@@ -1328,22 +1345,22 @@ def kill_gunicorn():
         sudo('pkill -9 -u %s -f gunicorn_django' % env.user)
                 
 @parallel
-def deploy_code(copy_assets=False, full=False, fast=False, reload=False):
+def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
-        if full:
+        if rebuild:
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
         
-        with settings(warn_only=True):
-            if reload:
-                sudo('supervisorctl reload')
-            elif fast:
-                kill_gunicorn()
-            else:
-                sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        if reload:
+            sudo('supervisorctl reload')
+        elif fast:
+            kill_gunicorn()
+        else:
+            sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
 
 @parallel
 def kill():
@@ -1377,7 +1394,7 @@ def staging():
         run('curl -s http://dev.newsblur.com > /dev/null')
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
 
-def staging_full():
+def staging_build():
     with cd('~/staging'):
         run('git pull')
         run('./manage.py migrate')
