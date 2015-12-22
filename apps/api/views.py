@@ -232,7 +232,7 @@ def check_share_on_site(request, token):
     
     return response
 
-def share_story(request, token):
+def share_story(request, token=None):
     code      = 0
     story_url = request.POST['story_url']
     comments  = request.POST['comments']
@@ -245,6 +245,8 @@ def share_story(request, token):
     
     if not story_url:
         code = -1
+    elif request.user.is_authenticated():
+        profile = request.user.profile
     else:
         try:
             profile = Profile.objects.get(secret_token=token)

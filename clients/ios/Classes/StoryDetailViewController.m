@@ -112,6 +112,10 @@
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
+    // This makes the theme gesture work reliably, but makes scrolling more "sticky", so isn't acceptable:
+//    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
+//    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
+    
     self.pageIndex = -2;
     self.inTextView = NO;
     
@@ -430,6 +434,7 @@
 
     NSString *storyHeader = [self getHeader];
     NSString *htmlString = [NSString stringWithFormat:@
+                            "<!DOCTYPE html>\n"
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"

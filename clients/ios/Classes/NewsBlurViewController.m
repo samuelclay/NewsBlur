@@ -954,7 +954,7 @@ static UIFont *userLabelFont;
 - (void)updateTheme {
     [super updateTheme];
     
-    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || ((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController) {
+    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || (((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController && ![((UINavigationController *)self.presentedViewController).topViewController conformsToProtocol:@protocol(IASKViewController)])) {
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
