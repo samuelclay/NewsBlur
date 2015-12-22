@@ -37,13 +37,16 @@
                         NSCharacterSet *characterSet = [NSCharacterSet URLQueryAllowedCharacterSet];
                         NSString *encodedURL = [item.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:characterSet];
                         NSString *encodedComments = [self.contentText stringByAddingPercentEncodingWithAllowedCharacters:characterSet];
-                        NSInteger time = [[NSDate date] timeIntervalSince1970];
-                        NSLog(@"Host: %@; secret token: %@", host, token);
+//                        NSInteger time = [[NSDate date] timeIntervalSince1970];
                         NSURLSession *mySession = [self configureMySession];
-                        //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/api/share_story/%@", host, token]];
-                        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/api/add_site_load_script/%@/?url=%@&time=%@&comments=%@", host, token, encodedURL, @(time), encodedComments]];
+                        //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/api/add_site_load_script/%@/?url=%@&time=%@&comments=%@", host, token, encodedURL, @(time), encodedComments]];
+                        //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/api/share_story/%@", host, token]];
+                        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/api/share_story", host]];
+                        NSLog(@"Host: %@; secret token: %@; url: %@", host, token, url);
                         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-                        [request setHTTPMethod:@"GET"];
+                        [request setHTTPMethod:@"POST"];
+                        NSString *postBody = [NSString stringWithFormat:@"story_url=%@&comments=%@", encodedURL, encodedComments];
+                        [request setHTTPBody:[postBody dataUsingEncoding:NSUTF8StringEncoding]];
                         NSURLSessionTask *myTask = [mySession dataTaskWithRequest:request];
                         [myTask resume];
                         
@@ -61,6 +64,16 @@
     config.sharedContainerIdentifier = @"group.com.newsblur.NewsBlur-Group";
     NSURLSession *mySession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     return mySession;
+}
+
+//- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+// completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler {
+//    
+//    
+//}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
+    
 }
 
 - (NSArray *)configurationItems {
