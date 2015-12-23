@@ -283,7 +283,10 @@ def share_story(request, token=None):
         content = lxml.html.tostring(content)
     else:
         importer = TextImporter(story=None, story_url=story_url, request=request, debug=settings.DEBUG)
-        content = importer.fetch(skip_save=True)
+        document = importer.fetch(skip_save=True, return_document=True)
+        content = document['content']
+        if not title:
+            title = document['title']
     
     shared_story = MSharedStory.objects.filter(user_id=profile.user.pk,
                                                story_feed_id=feed_id, 
