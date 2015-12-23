@@ -40,7 +40,7 @@ def main(role="app", role2="work", command=None, path=None):
 
 def create_streams_for_roles(role, role2, command=None, path=None):
     streams = list()
-    hosts = fabfile.do(split=True)
+    hosts = fabfile.assign_digitalocean_roledefs(split=True)
     found = set()
 
     if not path:
