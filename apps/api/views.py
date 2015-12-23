@@ -17,6 +17,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserS
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
+from utils.view_functions import required_params
 
 
 @json.json_view
@@ -232,6 +233,7 @@ def check_share_on_site(request, token):
     
     return response
 
+@required_params('story_url', 'comments', 'title', 'content')
 def share_story(request, token=None):
     code      = 0
     story_url = request.POST['story_url']
