@@ -1,8 +1,13 @@
 package com.newsblur.database;
 
+import java.util.List;
+
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.provider.BaseColumns;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
@@ -442,8 +447,18 @@ public class DatabaseConstants {
         return l;
     }
 
-    public static String getStr(Cursor c, String colName) {
-        return c.getString(c.getColumnIndex(colName));
+    private static final Gson JsonHelper = new Gson();
+
+    /**
+     * A quick way to represent a list of strings as a single DB value. Though not particularly
+     * efficient, this avoids having to add more DB tables to have one-to-many or many-to-many
+     * relationships, since SQLite gets less stable as DB complexity increases.
+     */
+    public static String flattenStringList(List<String> list) {
+        return JsonHelper.toJson(list);
     }
 
+    public static List<String> unflattenStringList(String flat) {
+        return JsonHelper.fromJson(flat, new TypeToken<List<String>>(){}.getType());
+    }
 }
