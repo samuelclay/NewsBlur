@@ -988,4 +988,11 @@ public class NBSyncService extends Service {
         return s.toString();
     }
 
+    public static String getPendingInfo() {
+        StringBuilder s = new StringBuilder();
+        s.append(" pre:").append(lastActionCount);
+        s.append(" post:").append(FollowupActions.size());
+        return s.toString();
+    }
+
 }
