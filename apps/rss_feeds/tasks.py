@@ -7,7 +7,9 @@ from celery.task import Task
 from utils import log as logging
 from utils import s3_utils as s3
 from django.conf import settings
-
+from apps.profile.middleware import DBProfilerMiddleware
+from utils.mongo_raw_log_middleware import MongoDumpMiddleware
+from utils.redis_raw_log_middleware import RedisDumpMiddleware
 FEED_TASKING_MAX = 10000
 
 class TaskFeeds(Task):
@@ -131,6 +133,14 @@ class UpdateFeeds(Task):
         mongodb_replication_lag = int(MStatistics.get('mongodb_replication_lag', 0))
         compute_scores = bool(mongodb_replication_lag < 10)
         
+        profiler = DBProfilerMiddleware()
+        profiler_activated = profiler.process_celery()
+        if profiler_activated:
+            mongo_middleware = MongoDumpMiddleware()
+            mongo_middleware.process_celery(profiler)
+            redis_middleware = RedisDumpMiddleware()
+            redis_middleware.process_celery(profiler)
+        
         options = {
             'quick': float(MStatistics.get('quick_fetch', 0)),
             'updates_off': MStatistics.get('updates_off', False),
@@ -148,6 +158,7 @@ class UpdateFeeds(Task):
                 r.zrem('tasked_feeds', feed_pk)
             if feed:
                 feed.update(**options)
+                if profiler_activated: profiler.process_celery_finished()
 
 class NewFeeds(Task):
     name = 'new-feeds'

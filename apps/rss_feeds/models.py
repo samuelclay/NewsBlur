@@ -473,7 +473,7 @@ class Feed(models.Model):
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
         
-        if force or has_new_stories:
+        if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
 
         if force or (has_new_stories and count_extra):
@@ -1316,7 +1316,24 @@ class Feed(models.Model):
         if not cutoff:
             cutoff = self.story_cutoff
         MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
+    
+    def purge_feed_stories(self, update=True):
+        MStory.purge_feed_stories(feed=self, cutoff=self.story_cutoff)
+        if update:
+            self.update()
 
+    def purge_author(self, author):
+        all_stories = MStory.objects.filter(story_feed_id=self.pk)
+        author_stories = MStory.objects.filter(story_feed_id=self.pk, story_author_name__iexact=author)
+        logging.debug(" ---> Deleting %s of %s stories in %s by '%s'." % (author_stories.count(), all_stories.count(), self, author))
+        author_stories.delete()
+
+    def purge_tag(self, tag):
+        all_stories = MStory.objects.filter(story_feed_id=self.pk)
+        tagged_stories = MStory.objects.filter(story_feed_id=self.pk, story_tags__icontains=tag)
+        logging.debug(" ---> Deleting %s of %s stories in %s by '%s'." % (tagged_stories.count(), all_stories.count(), self, tag))
+        tagged_stories.delete()
+    
     # @staticmethod
     # def clean_invalid_ids():
     #     history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
@@ -1924,7 +1941,16 @@ class MStory(mongo.Document):
         self.remove_from_search_index()
         
         super(MStory, self).delete(*args, **kwargs)
-
+    
+    @classmethod
+    def purge_feed_stories(cls, feed, cutoff, verbose=True):
+        stories = cls.objects(story_feed_id=feed.pk)
+        logging.debug(" ---> Deleting %s stories from %s" % (stories.count(), feed))
+        if stories.count() > cutoff*1.25:
+            logging.debug(" ***> ~FRToo many stories in %s, not purging..." % (feed))
+            return
+        stories.delete()
+    
     @classmethod
     def index_all_for_search(cls, offset=0):
         if not offset:
