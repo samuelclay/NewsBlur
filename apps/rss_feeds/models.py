@@ -1321,7 +1321,19 @@ class Feed(models.Model):
         MStory.purge_feed_stories(feed=self, cutoff=self.story_cutoff)
         if update:
             self.update()
-            
+
+    def purge_author(self, author):
+        all_stories = MStory.objects.filter(story_feed_id=self.pk)
+        author_stories = MStory.objects.filter(story_feed_id=self.pk, story_author_name__iexact=author)
+        logging.debug(" ---> Deleting %s of %s stories in %s by '%s'." % (author_stories.count(), all_stories.count(), self, author))
+        author_stories.delete()
+
+    def purge_tag(self, tag):
+        all_stories = MStory.objects.filter(story_feed_id=self.pk)
+        tagged_stories = MStory.objects.filter(story_feed_id=self.pk, story_tags__icontains=tag)
+        logging.debug(" ---> Deleting %s of %s stories in %s by '%s'." % (tagged_stories.count(), all_stories.count(), self, tag))
+        tagged_stories.delete()
+    
     # @staticmethod
     # def clean_invalid_ids():
     #     history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
