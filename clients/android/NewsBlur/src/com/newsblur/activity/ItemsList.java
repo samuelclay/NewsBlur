@@ -2,10 +2,17 @@ package com.newsblur.activity;
 
 import android.os.Bundle;
 import android.app.FragmentManager;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnKeyListener;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import butterknife.ButterKnife;
+import butterknife.FindView;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
@@ -30,11 +37,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
-    public static final String BUNDLE_FEED_IDS = "feedIds";
+    private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
-    private TextView overlayStatusText;
+    @FindView(R.id.itemlist_sync_status) TextView overlayStatusText;
+    @FindView(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
 
     private FeedSet fs;
@@ -51,16 +59,49 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_itemslist);
+        ButterKnife.bind(this);
 		fragmentManager = getFragmentManager();
-
-        this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this, false);
             }
         }
+
+        if (bundle != null) {
+            String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+            if (activeSearchQuery != null) {
+                searchQueryInput.setText(activeSearchQuery);
+                searchQueryInput.setVisibility(View.VISIBLE);
+                fs.setSearchQuery(activeSearchQuery);
+            }
+        }
+        searchQueryInput.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    searchQueryInput.setVisibility(View.GONE);
+                    searchQueryInput.setText("");
+                    checkSearchQuery();
+                    return true;
+                }
+                if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    checkSearchQuery();
+                    return true;
+                }   
+                return false;
+            }
+        });
 	}
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (searchQueryInput != null) {
+            String q = searchQueryInput.getText().toString().trim();
+            if (q.length() > 0) {
+                outState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
+            }
+        }
+    }
 
     protected abstract FeedSet createFeedSet();
 
@@ -118,6 +159,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
             readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
             return true;
+        } else if (item.getItemId() == R.id.menu_search_stories) {
+            searchQueryInput.setVisibility(View.VISIBLE);
+            searchQueryInput.requestFocus();
         }
 	
 		return false;
@@ -162,6 +206,21 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             } else {
                 overlayStatusText.setVisibility(View.GONE);
             }
+        }
+    }
+
+    private void checkSearchQuery() {
+        String oldQuery = fs.getSearchQuery();
+        String q = searchQueryInput.getText().toString().trim();
+        if (q.length() < 1) {
+            q = null;
+        }
+        fs.setSearchQuery(q);
+        if (!TextUtils.equals(q, oldQuery)) {
+            FeedUtils.clearReadingSession();
+            itemListFragment.resetEmptyState();
+            itemListFragment.hasUpdated();
+            itemListFragment.scrollToTop();
         }
     }
 

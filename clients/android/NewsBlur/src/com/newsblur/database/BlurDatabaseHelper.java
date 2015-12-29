@@ -148,17 +148,6 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.execSQL(q);}
     }
 
-    public void cleanupFeedsFolders() {
-        synchronized (RW_MUTEX) {
-            dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
-            dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
-        }
-    }
-
     public void vacuum() {
         synchronized (RW_MUTEX) {dbRW.execSQL("VACUUM");}
     }
@@ -191,7 +180,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                for(ContentValues values: valuesList) {
+                for (ContentValues values : valuesList) {
                     dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 }
                 dbRW.setTransactionSuccessful();
@@ -201,12 +190,34 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void insertFeedsFolders(List<ContentValues> folderValues,
-                                   List<ContentValues> feedValues,
-                                   List<ContentValues> socialFeedValues) {
-        bulkInsertValues(DatabaseConstants.FOLDER_TABLE, folderValues);
-        bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
-        bulkInsertValues(DatabaseConstants.SOCIALFEED_TABLE, socialFeedValues);
+    // just like bulkInsertValues, but leaves sync/transactioning to the caller
+    private void bulkInsertValuesExtSync(String table, List<ContentValues> valuesList) {
+        if (valuesList.size() < 1) return;
+        for (ContentValues values : valuesList) {
+            dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        }
+    }
+
+    public void setFeedsFolders(List<ContentValues> folderValues,
+                                List<ContentValues> feedValues,
+                                List<ContentValues> socialFeedValues) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
+                bulkInsertValuesExtSync(DatabaseConstants.FOLDER_TABLE, folderValues);
+                bulkInsertValuesExtSync(DatabaseConstants.FEED_TABLE, feedValues);
+                bulkInsertValuesExtSync(DatabaseConstants.SOCIALFEED_TABLE, socialFeedValues);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public void updateStarredStoriesCount(int count) {
@@ -294,14 +305,11 @@ public class BlurDatabaseHelper {
             }
             impliedFeedId = story.feedId;
         }
-        // we don't use bulkInsertValues for stories, since we need to put markStoriesActive within the transaction
         if (storyValues.size() > 0) {
             synchronized (RW_MUTEX) {
                 dbRW.beginTransaction();
                 try {
-                    for(ContentValues values: storyValues) {
-                        dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                    }
+                    bulkInsertValuesExtSync(DatabaseConstants.STORY_TABLE, storyValues);
                     markStoriesActive(actMode, modeCutoff);
                     dbRW.setTransactionSuccessful();
                 } finally {
@@ -435,17 +443,16 @@ public class BlurDatabaseHelper {
     }
 
     /**
-     * Marks a story (un)read but does not adjust counts.
+     * Marks a story (un)read but does not adjust counts. Must stay idempotent an time-insensitive.
      */
     public void setStoryReadState(String hash, boolean read) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, read);
-        values.put(DatabaseConstants.STORY_READ_THIS_SESSION, read);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
     /**
-     * Marks a story (un)read and also adjusts unread counts for it.
+     * Marks a story (un)read and also adjusts unread counts for it. Non-idempotent by design.
      *
      * @return the set of feed IDs that potentially have counts impacted by the mark.
      */
@@ -685,19 +692,42 @@ public class BlurDatabaseHelper {
     }
 
     public void setStoryStarred(String hash, boolean starred) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_STARRED, starred);
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
-
-        // since local star/unstar operations are, so far, never retried or done automatically,
-        // we don't do the complex transactional accounting done with counts as with read/unread
-        // operations. Though this could get off by 1 in very loaded circumstances, the count will
-        // get refreshed on the next feed/folder sync. Unfortunately, we also can't do local
-        // counting like with unreads, since we never get a full set of starred stories.
-        String operator = (starred ? " + 1" : " - 1");
-        StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
-        q.append(" SET ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(" = ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(operator);
-        synchronized (RW_MUTEX) {dbRW.execSQL(q.toString());}
+        // check the story's starting state and the desired state and adjust it as an atom so we
+        // know if it truly changed or not and thus whether to update counts
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                // get a fresh copy of the story from the DB so we know if it changed
+                Cursor c = dbRW.query(DatabaseConstants.STORY_TABLE, 
+                                      new String[]{DatabaseConstants.STORY_STARRED}, 
+                                      DatabaseConstants.STORY_HASH + " = ?", 
+                                      new String[]{hash}, 
+                                      null, null, null);
+                if (c.getCount() < 1) {
+                    Log.w(this.getClass().getName(), "story removed before finishing mark-starred");
+                    return;
+                }
+                c.moveToFirst();
+                boolean origState = (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.STORY_STARRED)) > 0);
+                c.close();
+                // if there is nothing to be done, halt
+                if (origState == starred) {
+                    return;
+                }
+                // fix the state
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.STORY_STARRED, starred);
+                dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                // adjust counts
+                String operator = (starred ? " + 1" : " - 1");
+                StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
+                q.append(" SET ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(" = ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(operator);
+                dbRW.execSQL(q.toString());
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public void setStoryShared(String hash) {
@@ -776,11 +806,12 @@ public class BlurDatabaseHelper {
     }
 
     /**
-     * Clears the read_this_session flag for all stories so they won't be displayed.
+     * Clears the read_this_session and search_hit flags for all stories.
      */
     public void clearReadingSession() {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, false);
+        values.put(DatabaseConstants.STORY_SEARCHIT, false);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
     }
 
@@ -894,7 +925,7 @@ public class BlurDatabaseHelper {
             q.append(TextUtils.join(",", DatabaseConstants.STORY_COLUMNS));
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(" WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), new String[]{fs.getSingleFeed()}, cancellationSignal);
 
         } else if (fs.getMultipleFeeds() != null) {
@@ -904,7 +935,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
             q.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.getSingleSocialFeed() != null) {
@@ -914,7 +945,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()}, cancellationSignal);
 
         } else if (fs.isAllNormal()) {
@@ -923,7 +954,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE 1");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSocial()) {
@@ -933,7 +964,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(DatabaseConstants.JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP);
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllRead()) {
@@ -952,6 +983,9 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
             q.append(" OR (" + DatabaseConstants.STORY_READ_THIS_SESSION + " = 1))");
+            if (fs.getSearchQuery() != null) {
+                q.append(" AND (" + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_SEARCHIT + " = 1)");
+            }
             q.append(" ORDER BY " + DatabaseConstants.getSavedStoriesSortOrder(order));
             return rawQuery(q.toString(), null, cancellationSignal);
 
@@ -961,7 +995,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false);
             return rawQuery(q.toString(), null, cancellationSignal);
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");

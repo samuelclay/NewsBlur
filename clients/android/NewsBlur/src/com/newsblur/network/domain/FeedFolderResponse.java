@@ -122,8 +122,6 @@ public class FeedFolderResponse {
                 // that is a list of contained feeds or additional folders
                 for (Entry<String, JsonElement> next : entrySet) {
                     String nextName = next.getKey();
-                    // our DB uses a woraround that requires exclusive use of a delimiter char
-                    nextName = nextName.replaceAll(Folder.SPLIT_DELIM, "").trim();
                     children.add(nextName);
                     List<String> appendedParentList = new ArrayList<String>(parentNames);
                     appendedParentList.add(name);

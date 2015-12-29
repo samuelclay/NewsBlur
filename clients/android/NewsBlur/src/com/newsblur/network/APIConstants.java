@@ -82,6 +82,7 @@ public class APIConstants {
 	public static final String PARAMETER_LIMIT = "limit";
     public static final String PARAMETER_TO_FOLDER = "to_folders";
     public static final String PARAMETER_IN_FOLDERS = "in_folders";
+    public static final String PARAMETER_QUERY = "query";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

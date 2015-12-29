@@ -126,12 +126,14 @@
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_fullscreen">Full screen</string>
+    <string name="menu_search_stories">Search…</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
     
     <string name="feed_search_hint">Search for new feeds</string>
+    <string name="story_search_hint">Search for stories</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>

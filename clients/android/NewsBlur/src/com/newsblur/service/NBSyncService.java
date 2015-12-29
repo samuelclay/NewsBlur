@@ -443,9 +443,6 @@ public class NBSyncService extends Service {
             isPremium = feedResponse.isPremium;
             isStaff = feedResponse.isStaff;
 
-            // clean out the feed / folder tables
-            dbHelper.cleanupFeedsFolders();
-
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
                 debugFeedIdsFromFolders.addAll(folder.feedIds);
@@ -498,7 +495,7 @@ public class NBSyncService extends Service {
                 socialFeedValues.add(feed.getValues());
             }
             
-            dbHelper.insertFeedsFolders(folderValues, feedValues, socialFeedValues);
+            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues);
 
             // populate the starred stories count table
             dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
@@ -512,7 +509,7 @@ public class NBSyncService extends Service {
 
         } finally {
             FFSyncRunning = false;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+            NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA | NbActivity.UPDATE_STATUS);
         }
 
     }
@@ -703,6 +700,14 @@ public class NBSyncService extends Service {
             // when they really aren't.
             for (Story story : apiResponse.stories) {
                 story.intelligence.intelligenceFeed--;
+            }
+        }
+
+        if (fs.getSearchQuery() != null) {
+            // If this set of stories was found in response to the active search query, note
+            // them as such in the DB so the UI can filter for them
+            for (Story story : apiResponse.stories) {
+                story.isSearchHit = true;
             }
         }
 
@@ -903,13 +908,17 @@ public class NBSyncService extends Service {
     }
 
     public static void addRecountCandidates(FeedSet fs) {
-        if (fs != null) {
-            RecountCandidates.add(fs);
-        }
+        if (fs == null) return;
+        // if this is a special feedset (read, saved, global shared, etc) that doesn't represent a
+        // countable set of stories, don't bother recounting it
+        if (fs.getFlatFeedIds().size() < 1) return;
+        RecountCandidates.add(fs);
     }
 
-    public static void addRecountCandidates(Set<FeedSet> fs) {
-        RecountCandidates.addAll(fs);
+    public static void addRecountCandidates(Set<FeedSet> sets) {
+        for (FeedSet fs : sets) {
+            addRecountCandidates(fs);
+        }
     }
 
     public static void softInterrupt() {
@@ -976,6 +985,13 @@ public class NBSyncService extends Service {
         s.append(" read:").append(lastFFReadMillis);
         s.append(" parse:").append(lastFFParseMillis);
         s.append(" store:").append(lastFFWriteMillis);
+        return s.toString();
+    }
+
+    public static String getPendingInfo() {
+        StringBuilder s = new StringBuilder();
+        s.append(" pre:").append(lastActionCount);
+        s.append(" post:").append(FollowupActions.size());
         return s.toString();
     }
 
