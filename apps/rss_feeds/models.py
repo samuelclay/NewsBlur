@@ -1314,7 +1314,7 @@ class Feed(models.Model):
         pipeline = r.pipeline()
         read_stories_per_week = []
         now = datetime.datetime.now()
-        for weeks_back in range(int(math.floor(settings.DAYS_OF_UNREAD/7))):
+        for weeks_back in range(2*int(math.floor(settings.DAYS_OF_STORY_HASHES/7))):
             weeks_ago = now - datetime.timedelta(days=7*weeks_back)
             week_of_year = weeks_ago.strftime('%Y-%U')
             feed_read_key = "fR:%s:%s" % (self.pk, week_of_year)
@@ -1323,7 +1323,7 @@ class Feed(models.Model):
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
         if read_stories_last_month == 0:
             # cutoff = min(cutoff, 25)
-            logging.debug("   ---> [%-30s] ~FBWould have trimmed down to ~SB25 (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, read_stories_per_week))
+            logging.debug("   ---> [%-30s] ~FBWould have trimmed down to ~SB25 (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, self.last_story_date.strftime("%Y-%m-%d")))
         
         return cutoff
                 
