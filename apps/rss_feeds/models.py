@@ -1304,11 +1304,26 @@ class Feed(models.Model):
             cutoff = 400
         elif self.active_premium_subscribers <= 20:
             cutoff = 450
-        
+            
         if self.active_subscribers and self.average_stories_per_month < 5 and self.stories_last_month < 5:
             cutoff /= 2
         if self.active_premium_subscribers <= 1 and self.average_stories_per_month <= 1 and self.stories_last_month <= 1:
             cutoff /= 2
+        
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_READ_POOL)
+        pipeline = r.pipeline()
+        read_stories_per_week = []
+        now = datetime.datetime.now()
+        for weeks_back in range(int(math.floor(settings.DAYS_OF_UNREAD/7))):
+            weeks_ago = now - datetime.timedelta(days=7*weeks_back)
+            week_of_year = weeks_ago.strftime('%Y-%U')
+            feed_read_key = "fR:%s:%s" % (self.pk, week_of_year)
+            pipeline.get(feed_read_key)
+        read_stories_per_week = pipeline.execute()
+        read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
+        if read_stories_last_month == 0:
+            # cutoff = min(cutoff, 25)
+            logging.debug("   ---> [%-30s] ~FBWould have trimmed down to ~SB25 (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, read_stories_per_week))
         
         return cutoff
                 
