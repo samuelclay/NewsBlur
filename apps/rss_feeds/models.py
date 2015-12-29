@@ -1322,8 +1322,9 @@ class Feed(models.Model):
         read_stories_per_week = pipeline.execute()
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
         if read_stories_last_month == 0:
-            # cutoff = min(cutoff, 25)
-            logging.debug("   ---> [%-30s] ~FBWould have trimmed down to ~SB25 (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, self.last_story_date.strftime("%Y-%m-%d")))
+            original_cutoff = cutoff
+            cutoff = min(cutoff, 25)
+            logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d")))
         
         return cutoff
                 
