@@ -341,7 +341,7 @@ def share_story(request, token=None):
     response = HttpResponse(json.encode({
         'code':     code,
         'message':  message,
-        'story':    None,
+        'story':    shared_story,
     }), mimetype='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'
