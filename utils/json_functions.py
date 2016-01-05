@@ -1,6 +1,7 @@
+#-*- coding: utf-8 -*-
 from django.db import models
 from django.utils.functional import Promise
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_unicode, smart_unicode
 from django.utils import simplejson as json
 from decimal import Decimal
 from django.core import serializers
@@ -13,28 +14,31 @@ from bson.objectid import ObjectId
 import sys
 import datetime
 
+
 def decode(data):
     if not data:
         return data
     return json.loads(data)
-    
+
+
 def encode(data, *args, **kwargs):
-    if type(data) == QuerySet: # Careful, ValuesQuerySet is a dict
+    if type(data) == QuerySet:  # Careful, ValuesQuerySet is a dict
         # Django models
         return serializers.serialize("json", data, *args, **kwargs)
     else:
         return json_encode(data, *args, **kwargs)
 
+
 def json_encode(data, *args, **kwargs):
     """
     The main issues with django's default json serializer is that properties that
-    had been added to an object dynamically are being ignored (and it also has 
+    had been added to an object dynamically are being ignored (and it also has
     problems with some models).
     """
 
     def _any(data):
         ret = None
-        # Opps, we used to check if it is of type list, but that fails 
+        # Opps, we used to check if it is of type list, but that fails
         # i.e. in the case of django.newforms.utils.ErrorList, which extends
         # the type "list". Oh man, that was a dumb mistake!
         if hasattr(data, 'canonical'):
@@ -59,7 +63,7 @@ def json_encode(data, *args, **kwargs):
             ret = _model(data)
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
         elif isinstance(data, basestring):
-            ret = unicode(data)
+            ret = smart_unicode(data)
         elif isinstance(data, Exception):
             ret = unicode(data)
         # see http://code.djangoproject.com/ticket/5868
@@ -72,7 +76,7 @@ def json_encode(data, *args, **kwargs):
         else:
             ret = data
         return ret
-    
+
     def _model(data):
         ret = {}
         # If we only have a model, we only want to encode the fields.
@@ -84,23 +88,24 @@ def json_encode(data, *args, **kwargs):
         for k in add_ons:
             ret[k] = _any(getattr(data, k))
         return ret
-    
+
     def _list(data):
         ret = []
         for v in data:
             ret.append(_any(v))
         return ret
-    
+
     def _dict(data):
         ret = {}
-        for k,v in data.items():
+        for k, v in data.items():
             ret[str(k)] = _any(v)
         return ret
-    
+
     if hasattr(data, 'to_json'):
         data = data.to_json()
     ret = _any(data)
     return json.dumps(ret)
+
 
 def json_view(func):
     def wrap(request, *a, **kw):
@@ -111,7 +116,8 @@ def json_view(func):
         return func
     else:
         return wrap
-        
+
+
 def json_response(request, response=None):
     code = 200
 
@@ -145,7 +151,7 @@ def json_response(request, response=None):
             '\n'.join(traceback.format_exception(*exc_info)),
             request_repr,
             )
-        
+
         response = {'result': 'error',
                     'text': unicode(e)}
         code = 500
@@ -157,10 +163,18 @@ def json_response(request, response=None):
     json = json_encode(response)
     return HttpResponse(json, mimetype='application/json', status=code)
 
+
 def main():
-    test = {1: True, 2: u"string", 3: 30}
+    test = {
+        1: True,
+        2: u"string",
+        3: 30,
+        4: u"юнікод, ўўў, © ™ ® ё ² § $ ° ќо́",
+        5: "utf-8: \xd1\x9e, \xc2\xa9 \xe2\x84\xa2 \xc2\xae \xd1\x91 \xd0\xba\xcc\x81\xd0\xbe\xcc\x81",
+    }
     json_test = json_encode(test)
     print test, json_test
-    
+
+
 if __name__ == '__main__':
     main()

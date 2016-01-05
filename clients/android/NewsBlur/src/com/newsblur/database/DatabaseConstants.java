@@ -1,8 +1,13 @@
 package com.newsblur.database;
 
+import java.util.List;
+
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.provider.BaseColumns;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
@@ -96,6 +101,7 @@ public class DatabaseConstants {
     public static final String STORY_ACTIVE = "active";
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
+    public static final String STORY_SEARCHIT = "search_hit";
 
     public static final String STORY_TEXT_TABLE = "storytext";
     public static final String STORY_TEXT_STORY_HASH = "story_hash";
@@ -237,7 +243,8 @@ public class DatabaseConstants {
 		STORY_TITLE + TEXT + ", " +
         STORY_ACTIVE + INTEGER + " DEFAULT 0, " +
         STORY_IMAGE_URLS + TEXT + ", " +
-        STORY_LAST_READ_DATE + INTEGER +
+        STORY_LAST_READ_DATE + INTEGER + ", " +
+        STORY_SEARCHIT + INTEGER + " DEFAULT 0" +
         ")";
 
     static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
@@ -311,7 +318,7 @@ public class DatabaseConstants {
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS, STORY_SUM_TOTAL, STORY_HASH,
-        STORY_LAST_READ_DATE,
+        STORY_LAST_READ_DATE, STORY_SEARCHIT,
 	};
 
     public static final String MULTIFEED_STORIES_QUERY_BASE = 
@@ -327,14 +334,13 @@ public class DatabaseConstants {
     public static final String JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP =
         " INNER JOIN " + SOCIALFEED_TABLE + " ON " + SOCIALFEED_TABLE + "." + SOCIAL_FEED_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_USER_ID;
 
-    public static final String STARRED_STORY_ORDER = STORY_STARRED_DATE + " DESC";
     public static final String READ_STORY_ORDER = STORY_LAST_READ_DATE + " DESC";
 
     /**
      * Appends to the given story query any and all selection statements that are required to satisfy the specified
      * filtration parameters, dedup column, and ordering requirements.
      */ 
-    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, StateFilter stateFilter, String dedupCol) {
+    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, StateFilter stateFilter, String dedupCol, boolean requireQueryHit) {
         if (readFilter == ReadFilter.UNREAD) {
             // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
             // or else the selection set will constantly change as they see things!
@@ -347,6 +353,10 @@ public class DatabaseConstants {
         String stateSelection =  getStorySelectionFromState(stateFilter);
         if (stateSelection != null) {
             q.append(" AND " + stateSelection);
+        }
+
+        if (requireQueryHit) {
+            q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCHIT + " = 1)");
         }
         
         q.append(" AND (" + STORY_TABLE + "." + STORY_ACTIVE + " = 1)");
@@ -421,6 +431,15 @@ public class DatabaseConstants {
             return STORY_TIMESTAMP + " ASC, " + STORY_HASH + " ASC";
         }
     }
+
+    public static String getSavedStoriesSortOrder(StoryOrder storyOrder) {
+        // "newest" in this context means "most recently saved"
+        if (storyOrder == StoryOrder.NEWEST) {
+            return STORY_STARRED_DATE + " DESC";
+        } else {
+            return STORY_STARRED_DATE + " ASC";
+        }
+    }
     
     public static Long nullIfZero(Long l) {
         if (l == null) return null;
@@ -428,8 +447,18 @@ public class DatabaseConstants {
         return l;
     }
 
-    public static String getStr(Cursor c, String colName) {
-        return c.getString(c.getColumnIndex(colName));
+    private static final Gson JsonHelper = new Gson();
+
+    /**
+     * A quick way to represent a list of strings as a single DB value. Though not particularly
+     * efficient, this avoids having to add more DB tables to have one-to-many or many-to-many
+     * relationships, since SQLite gets less stable as DB complexity increases.
+     */
+    public static String flattenStringList(List<String> list) {
+        return JsonHelper.toJson(list);
     }
 
+    public static List<String> unflattenStringList(String flat) {
+        return JsonHelper.fromJson(flat, new TypeToken<List<String>>(){}.getType());
+    }
 }

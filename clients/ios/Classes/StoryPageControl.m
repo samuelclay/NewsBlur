@@ -85,8 +85,8 @@
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;
     
-    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
-    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));
+//    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
+//    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));
 	[self.scrollView addSubview:currentPage.view];
 	[self.scrollView addSubview:nextPage.view];
     [self.scrollView addSubview:previousPage.view];
@@ -97,10 +97,10 @@
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
-    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
-    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
+//    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
+//    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
     [self.scrollView sizeToFit];
-    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
+//    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
     
     popoverClass = [WYPopoverController class];
     
@@ -279,6 +279,7 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
+    [self reorientPages];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -292,7 +293,8 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
-    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
+    [self reorientPages];
+//    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
 }
 
@@ -323,12 +325,14 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+//        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        _orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        
+//        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
     }];
 }
 
@@ -344,6 +348,13 @@
             previousPage.view.hidden = YES;
         }
     }
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    [self layoutForInterfaceOrientation:orientation];
+    [self adjustDragBar:orientation];
 }
 
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
@@ -396,7 +407,7 @@
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
     
-    NSLog(@"Pages are at: %f / %f / %f (%@)", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x, NSStringFromCGRect(frame));
+//    NSLog(@"Pages are at: %f / %f / %f (%@)", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x, NSStringFromCGRect(frame));
     currentPage.view.frame = self.scrollView.frame;
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;
@@ -434,13 +445,16 @@
     [self resizeScrollView]; // Will change currentIndex, so preserve
     
     // Scroll back to preserved index
-    CGRect frame = self.scrollView.frame;
+    CGRect frame = self.scrollView.bounds;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        frame = self.view.bounds;
+    }
     frame.origin.x = frame.size.width * currentIndex;
     frame.origin.y = 0;
     [self.scrollView scrollRectToVisible:frame animated:NO];
-
+//    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.notifier hide];
+    [self hideNotifier];
 }
 
 - (void)refreshHeaders {
@@ -459,14 +473,15 @@
     [nextPage refreshSideoptions];
     [previousPage refreshSideoptions];
 }
+
 - (void)resizeScrollView {
     NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width
                                              * widthCount,
-                                             self.scrollView.frame.size.height);
+                                             self.scrollView.bounds.size.height);
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -531,7 +546,8 @@
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
-    
+//    NSLog(@"---> Story page control orient page: %@ (%d-%d)", NSStringFromCGRect(self.view.bounds), pageController.pageIndex, suppressRedraw);
+
     if (suppressRedraw) return;
     
     //    NSInteger wasIndex = pageController.pageIndex;
@@ -756,7 +772,7 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
-    CGFloat pageWidth = self.scrollView.frame.size.width;
+    CGFloat pageWidth = self.view.bounds.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     

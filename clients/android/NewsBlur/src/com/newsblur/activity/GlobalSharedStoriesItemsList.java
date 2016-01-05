@@ -58,18 +58,6 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
         }
     }
 
-    // Story order and read filter are fixed for global shared stories
-
-    @Override
-    public StoryOrder getStoryOrder() {
-        return StoryOrder.NEWEST;
-    }
-
-    @Override
-    public void updateStoryOrderPreference(StoryOrder newValue) {
-        // Not supported for global shared stories
-    }
-    
     @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         // Not supported for global shared stories
@@ -79,6 +67,5 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
     protected ReadFilter getReadFilter() {
         return ReadFilter.UNREAD;
     }
-
 
 }

@@ -111,13 +111,13 @@
             xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
             android:id="@+id/comment_favourite_avatars"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
             android:layout_marginRight="4dp"
             android:layout_toLeftOf="@id/comment_favourite_icon"
             android:layout_toRightOf="@id/comment_username"
             android:paddingTop="2dp"
             newsblur:flow="left"
-            newsblur:defaultImageSize="20" />
+            newsblur:imageViewSize="20" />
         
     </RelativeLayout>
 

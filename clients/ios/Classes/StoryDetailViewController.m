@@ -216,7 +216,8 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    if (!appDelegate.showingSafariViewController) {
+    if (!appDelegate.showingSafariViewController &&
+        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.originalStoryViewController) {
         [self clearStory];
     }
 }
@@ -262,8 +263,8 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     scrollPct = self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height;
-    NSLog(@"Current scroll is %2.2f%% (offset %.0f - height %.0f)", scrollPct*100, self.webView.scrollView.contentOffset.y,
-          self.webView.scrollView.contentSize.height);
+//    NSLog(@"Current scroll is %2.2f%% (offset %.0f - height %.0f)", scrollPct*100, self.webView.scrollView.contentOffset.y,
+//          self.webView.scrollView.contentSize.height);
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         _orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -275,10 +276,22 @@
 }
 
 - (void)viewWillLayoutSubviews {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [super viewWillLayoutSubviews];
+    [appDelegate.storyPageControl layoutForInterfaceOrientation:orientation];
     [self changeWebViewWidth];
     [self drawFeedGradient];
-    NSLog(@"viewWillLayoutSubviews: %.2f", self.webView.scrollView.bounds.size.width);
+
+//    NSLog(@"viewWillLayoutSubviews: %.2f", self.webView.scrollView.bounds.size.width);
+}
+
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    if (interfaceOrientation != _orientation) {
+        _orientation = interfaceOrientation;
+        [self changeWebViewWidth];
+        [self drawFeedGradient];
+        [self drawStory];
+    }
 }
 
 #pragma mark -
@@ -304,7 +317,7 @@
 
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
     if (!force && [self.activeStoryId isEqualToString:[self.activeStory objectForKey:@"story_hash"]]) {
-        NSLog(@"Already drawn story, drawing anyway: %@", [self.activeStory objectForKey:@"story_title"]);
+//        NSLog(@"Already drawn story, drawing anyway: %@", [self.activeStory objectForKey:@"story_title"]);
 //        return;
     }
 
@@ -346,7 +359,7 @@
     
     int contentWidth = CGRectGetWidth(self.webView.scrollView.bounds);
     NSString *contentWidthClass;
-    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
+//    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
@@ -398,6 +411,7 @@
 
     NSString *storyHeader = [self getHeader];
     NSString *htmlString = [NSString stringWithFormat:@
+                            "<!DOCTYPE html>\n"
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
@@ -437,7 +451,7 @@
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
+//        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self.webView setMediaPlaybackRequiresUserAction:NO];
         [self.webView loadHTMLString:htmlString baseURL:baseURL];
         [appDelegate.storyPageControl setTextButton:self];
@@ -2035,7 +2049,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    [webView setNeedsLayout];
 //    [webView layoutIfNeeded];
     
-    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
+//    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
 
     NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -2121,12 +2135,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (!self.activeStoryId || !self.activeStory) return;
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
-    dispatch_async(dispatch_get_main_queue(), ^{
-//        [MBProgressHUD hideHUDForView:self.webView animated:YES];
-//        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-//        HUD.labelText = @"Fetching text...";
-        [self.appDelegate.storyPageControl showFetchingTextNotifier];
-    });
+    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.appDelegate.storyPageControl showFetchingTextNotifier];
+        });
+    }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
                            NEWSBLUR_URL];
@@ -2143,7 +2156,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)failedFetchText:(ASIHTTPRequest *)request {
     [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [self informError:@"Could not fetch text"];
+    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+        [self informError:@"Could not fetch text"];
+    }
     self.inTextView = NO;
     [appDelegate.storyPageControl setTextButton:self];
 }

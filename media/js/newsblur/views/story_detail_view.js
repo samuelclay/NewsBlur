@@ -309,11 +309,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var score = this.model.score();
         var unread_view = NEWSBLUR.reader.get_unread_view_score();
         
-        if (score >= unread_view || this.model.get('visible')) {
+        if (score >= unread_view) {
             this.$el.removeClass('NB-hidden');
             this.model.set('visible', true);
         } else {
             this.$el.addClass('NB-hidden');
+            this.model.set('visible', false);
         }
     },
     

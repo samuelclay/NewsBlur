@@ -9,4 +9,5 @@ urlpatterns = patterns('',
     url(r'^add_site/(?P<token>\w+)', views.add_site, name='api-add-site'),
     url(r'^check_share_on_site/(?P<token>\w+)', views.check_share_on_site, name='api-check-share-on-site'),
     url(r'^share_story/(?P<token>\w+)', views.share_story, name='api-share-story'),
+    url(r'^share_story/?$', views.share_story),
 )

@@ -172,12 +172,14 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         options = options || {};
         var score = this.model.score();
         var unread_view = NEWSBLUR.reader.get_unread_view_score();
+        // console.log(['render_intelligence', score, unread_view, this.model.get('visible'), this.model.get('story_title')]);
         
-        if (score >= unread_view || this.model.get('visible')) {
+        if (score >= unread_view) {
             this.$st.removeClass('NB-hidden');
             this.model.set('visible', true);
         } else {
             this.$st.addClass('NB-hidden');
+            this.model.set('visible', false);
         }
     },
     
