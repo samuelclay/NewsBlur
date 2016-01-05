@@ -150,7 +150,7 @@ def feed_autocomplete(request):
     else:
         return feeds
     
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=30)
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
