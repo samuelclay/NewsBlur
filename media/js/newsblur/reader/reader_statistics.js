@@ -311,7 +311,9 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         $plot.attr('width', width);
         $plot.attr('height', height);
         var myLine = new Chart($plot.get(0).getContext("2d")).Line(points, {
-            scaleLabel : "<%= Math.round(value) %>"
+            scaleLabel : "<%= Math.round(value) %>",
+			showTooltips: false,
+			scaleBeginAtZero: true
         });
     },
     
@@ -364,7 +366,9 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         $plot.attr('height', height);
 
         var myLine = new Chart($plot.get(0).getContext("2d")).Radar(points, {
-            scaleShowLabelBackdrop: false
+            scaleShowLabelBackdrop: false,
+			showTooltips: false,
+			scaleFontSize: 16
         });
     },
     
