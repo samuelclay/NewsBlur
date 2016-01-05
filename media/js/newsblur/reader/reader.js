@@ -1707,21 +1707,14 @@
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
             if (!explicit_view_setting || explicit_view_setting == 'page') {
-              explicit_view_setting = 'feed';
+				explicit_view_setting = 'feed';
             }
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             this.switch_taskbar_view(this.story_view);
+			this.switch_story_layout();            
             this.setup_mousemove_on_views();
-            this.make_feed_title_in_stories();              
-            if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
-                NEWSBLUR.app.story_list.show_loading(options);
-            } else {
-                NEWSBLUR.app.story_titles.show_loading(options);
-            }
-            NEWSBLUR.app.taskbar_info.hide_stories_error();
-            
-            this.model.fetch_starred_stories(1, this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this), 
-                                             NEWSBLUR.app.taskbar_info.show_stories_error, true);
+            this.make_feed_title_in_stories();  
+            NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();
 
             if (!options.silent) {
                 var url = "/saved";
@@ -1733,6 +1726,17 @@
                     NEWSBLUR.router.navigate(url);
                 }
             }
+
+            if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
+                NEWSBLUR.app.story_list.show_loading(options);
+            } else {
+                NEWSBLUR.app.story_titles.show_loading(options);
+            }
+            NEWSBLUR.app.taskbar_info.hide_stories_error();
+            
+            this.model.fetch_starred_stories(1, this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this), 
+                                             NEWSBLUR.app.taskbar_info.show_stories_error, true);
+
 
         },
         
