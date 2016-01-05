@@ -7512,8 +7512,8 @@ form.opml_import_form input {
   overflow: hidden;
 }
 
-.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-chart {
-  margin: 0px 24px;
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-count-chart {
+  margin: 12px 24px 18px;
   width: 524px;
   height: 180px;
   -webkit-box-sizing: border-box;
@@ -7521,6 +7521,35 @@ form.opml_import_form input {
   box-sizing: border-box;
 }
 
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-hours-chart {
+  margin: 12px 24px 18px;
+  width: 524px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-days-chart {
+  margin: -32px 24px;
+  width: 524px;
+  height: 400px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-hours-chart {
+    text-align: left;
+    color: #808080;
+    font-size: 10px;
+}
+.NB-modal-statistics .NB-statistics-history-chart-hours-row {
+    background-color: #97BBCD;
+    height: 50px;
+}
+.NB-modal-statistics .NB-statistics-history-chart-hours-row td {
+    width: 18px;
+}
 .NB-modal-statistics .NB-modal-loading {
   margin: 6px 8px 0;
 }
