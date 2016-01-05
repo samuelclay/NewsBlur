@@ -434,10 +434,8 @@ a img {
   color: rgba(0, 0, 0, .4);
   opacity: .4;
   font-size: 16px;
-  padding: 0 24px;
-  position: absolute;
+  padding: 256px 24px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-  top: 40%;
   width: 100%;
   z-index: 10;
   cursor: default;
@@ -448,6 +446,7 @@ a img {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 .NB-story-list-empty .NB-world {
   background: transparent url("/media/embed/reader/big_world.png") no-repeat center 0;
   background-size: 64px;
