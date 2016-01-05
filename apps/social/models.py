@@ -133,8 +133,6 @@ class MSocialProfile(mongo.Document):
     stories_last_month   = mongo.IntField(default=0)
     average_stories_per_month = mongo.IntField(default=0)
     story_count_history  = mongo.ListField()
-    story_days_history   = mongo.DictField()
-    story_hours_history  = mongo.DictField()
     feed_classifier_counts = mongo.DictField()
     favicon_color        = mongo.StringField(max_length=6)
     protected            = mongo.BooleanField()
@@ -692,25 +690,23 @@ class MSocialProfile(mongo.Document):
         map_f = """
             function() {
                 var date = (this.shared_date.getFullYear()) + "-" + (this.shared_date.getMonth()+1);
-                var hour = this.shared_date.getHours();
-                var day = this.shared_date.getDay();
-                emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
+                emit(date, 1);
             }
         """
         reduce_f = """
             function(key, values) {
-                return values;
+                var total = 0;
+                for (var i=0; i < values.length; i++) {
+                    total += values[i];
+                }
+                return total;
             }
         """
-        dates = defaultdict(int)
-        hours = defaultdict(int)
-        days = defaultdict(int)
-        results = MSharedStory.objects(user_id=self.user_id).map_reduce(map_f, reduce_f, output='inline')
-        for result in results:
-            dates[result.value['month']] += 1
-            hours[str(int(result.value['hour']))] += 1
-            days[str(int(result.value['day']))] += 1
-            year = int(re.findall(r"(\d{4})-\d{1,2}", result.value['month'])[0])
+        dates = {}
+        res = MSharedStory.objects(user_id=self.user_id).map_reduce(map_f, reduce_f, output='inline')
+        for r in res:
+            dates[r.key] = r.value
+            year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
             if year < min_year:
                 min_year = year
         
@@ -729,8 +725,6 @@ class MSocialProfile(mongo.Document):
                         month_count += 1
 
         self.story_count_history = months
-        self.story_days_history = days
-        self.story_hours_history = hours
         self.average_stories_per_month = total / max(1, month_count)
         self.save()
     
