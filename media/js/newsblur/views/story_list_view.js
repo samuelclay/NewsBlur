@@ -118,7 +118,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     clear_explainer: function() {
-        var $container = this.$el.closest(".NB-feed-stories-container");
         this.$(".NB-story-list-empty").remove();
         this.$el.removeClass("NB-empty");
     },
@@ -144,7 +143,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             'Select a story to read'
         ]);
 
-        var $container = this.$el.closest(".NB-feed-stories-container");
         this.$el.append($empty);
     },
     
@@ -176,7 +174,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             ]))
         ]);
 
-        var $container = this.$el.closest(".NB-feed-stories-container");
         this.$el.append($empty);
         
         this.$el.addClass("NB-empty");
