@@ -67,4 +67,5 @@ public class PrefConstants {
     public static final String LAST_CLEANUP_TIME = "last_cleanup_time";
 
     public static final String VOLUME_KEY_NAVIGATION = "volume_key_navigation";
+    public static final String MARK_AS_READ_CONFIRMATION = "mark_as_read_confirmation";
 }
