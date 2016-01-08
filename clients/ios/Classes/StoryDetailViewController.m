@@ -317,7 +317,6 @@
 - (void)initStory {
     appDelegate.inStoryDetail = YES;
     self.noStoryMessage.hidden = YES;
-    self.webView.hidden = NO;
     self.inTextView = NO;
 
     [appDelegate hideShareView:NO];
@@ -544,6 +543,11 @@
 
 - (void)clearWebView {
     self.hasStory = NO;
+    
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.webView.hidden = YES;
+    self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    [self.activityIndicator startAnimating];
     
     NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
     
@@ -1569,6 +1573,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+    self.webView.hidden = NO;
+    [self.activityIndicator stopAnimating];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
