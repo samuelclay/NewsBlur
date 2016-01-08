@@ -1637,6 +1637,8 @@ class Feed(models.Model):
         elif spd == 0:
             if subs > 1:
                 total = 60 * 6
+            elif subs == 1:
+                total = 60 * 12
             else:
                 total = 60 * 24
             months_since_last_story = seconds_timesince(self.last_story_date) / (60*60*24*30)
