@@ -218,7 +218,10 @@ class FetchFeed:
         videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=contentDetails%%2Csnippet&id=%s&key=%s" %
              (','.join(video_ids), settings.YOUTUBE_API_KEY))
         videos = json.decode(videos_json.content)
-
+        if 'error' in videos:
+            logging.debug(" ***> ~FRYoutube returned an error: ~FM~SB%s" % (videos))
+            return
+            
         data = {}
         data['title'] = ("%s's YouTube Videos" % username if 'Uploads' not in username else username)
         data['link'] = channel_url
@@ -228,7 +231,7 @@ class FetchFeed:
         data['docs'] = None
         data['feed_url'] = address
         rss = feedgenerator.Atom1Feed(**data)
-
+        
         for video in videos['items']:
             thumbnail = video['snippet']['thumbnails'].get('maxres')
             if not thumbnail:
