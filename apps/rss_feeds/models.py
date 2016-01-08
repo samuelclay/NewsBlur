@@ -1665,8 +1665,11 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 2 day max
-        total = min(total, 60*24*2)
+        # 24 hour max for premiums, 48 hour max for free
+        if subs >= 1:
+            total = min(total, 60*24*1)
+        else:
+            total = min(total, 60*24*2)
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
