@@ -323,7 +323,10 @@ def exception_change_feed_address(request):
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
-        feed, _ = Feed.objects.get_or_create(feed_address=feed_address, feed_link=feed.feed_link)
+        try:
+            feed = Feed.objects.get(hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link))
+        except Feed.DoesNotExist:
+            feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
         code = 1
         if feed.pk != original_feed.pk:
             try:
@@ -405,7 +408,10 @@ def exception_change_feed_link(request):
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
-        feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
+        try:
+            feed = Feed.objects.get(hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link))
+        except Feed.DoesNotExist:
+            feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
         code = 1
         if feed.pk != original_feed.pk:
             try:
