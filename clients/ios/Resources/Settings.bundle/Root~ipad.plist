@@ -225,6 +225,8 @@
 		<dict>
 			<key>Title</key>
 			<string>Theme</string>
+			<key>FooterText</key>
+			<string>Switch between both light themes and both dark themes by swiping up or down repeatedly with two fingers, like a light switch.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

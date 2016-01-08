@@ -44,6 +44,8 @@ UIActionSheetDelegate> {
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIView *noStoryMessage;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;

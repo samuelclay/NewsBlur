@@ -400,6 +400,7 @@
 }
 
 - (void)showUserProfileModal:(id)sender {
+    [self hidePopoverAnimated:NO];
     UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
     self.userProfileViewController = newUserProfile; 
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
@@ -905,15 +906,15 @@
         [self loadFeedDetailView];
     } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
-        [self hidePopoverAnimated:YES];
-        
-        if (self.navigationController.presentedViewController) {
-            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+        [self hidePopoverAnimated:YES completion:^{
+            if (self.navigationController.presentedViewController) {
+                [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                    [self loadFeedDetailView];
+                }];
+            } else {
                 [self loadFeedDetailView];
-            }];
-        } else {
-            [self loadFeedDetailView];
-        }
+            }
+        }];
     }
 }
 
@@ -2103,6 +2104,18 @@
     }
     
     [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)hidePopoverAnimated:(BOOL)animated completion:(void (^)(void))completion {
+    UIViewController *presentedViewController = self.navigationControllerForPopover.presentedViewController;
+    if (!presentedViewController || presentedViewController.presentationController.presentationStyle != UIModalPresentationPopover) {
+        if (completion) {
+            completion();
+        }
+        return;
+    }
+    
+    [presentedViewController dismissViewControllerAnimated:animated completion:completion];
 }
 
 - (BOOL)hidePopoverAnimated:(BOOL)animated {
