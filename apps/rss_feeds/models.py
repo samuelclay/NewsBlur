@@ -755,8 +755,11 @@ class Feed(models.Model):
             self.active_subscribers != original_active_subs or
             self.premium_subscribers != original_premium_subscribers or
             self.active_premium_subscribers != original_active_premium_subscribers):
-            self.save(update_fields=['num_subscribers', 'active_subscribers', 
-                                     'premium_subscribers', 'active_premium_subscribers'])
+            if original_premium_subscribers == -1 or original_active_premium_subscribers == -1:
+                self.save()
+            else:
+                self.save(update_fields=['num_subscribers', 'active_subscribers', 
+                                         'premium_subscribers', 'active_premium_subscribers'])
         
         if verbose:
             if self.num_subscribers <= 1:
