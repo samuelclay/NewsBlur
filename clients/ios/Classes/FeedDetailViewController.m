@@ -1725,9 +1725,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
     
-    if (p.x < 30.0) {
+    if ([longPressStoryTitle isEqualToString:@"ask"]) {
         appDelegate.activeStory = story;
-        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath];
+        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath cell:cell];
     } else if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
         appDelegate.activeStory = story;
         [appDelegate showSendTo:self sender:cell];
@@ -1751,13 +1751,31 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self doOpenMarkReadMenu:nil];
 }
 
-- (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath {
+- (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath cell:(FeedDetailTableCell *)cell {
     CGRect rect = [self.storyTitlesTable rectForRowAtIndexPath:indexPath];
-    rect.size.width = 30.0;
     
-    [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.storyTitlesTable sourceRect:rect completionHandler:^(BOOL marked) {
+    NSMutableArray *items = [NSMutableArray array];
+    BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
+    
+    [items addObject:[self itemWithTitle:isSaved ? @"Unsave This Story" : @"Save This Story" iconName:@"clock.png" handler:^{
+        [storiesCollection toggleStorySaved:story];
+    }]];
+    
+    [items addObject:[self itemWithTitle:@"Send This Story To..." iconName:@"menu_icn_mail.png" handler:^{
+        [appDelegate showSendTo:self sender:cell];
+    }]];
+    
+    [items addObject:[self itemWithTitle:@"Train This Story" iconName:@"menu_icn_train.png" handler:^{
+        [appDelegate openTrainStory:cell];
+    }]];
+    
+    [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.storyTitlesTable sourceRect:rect extraItems:items completionHandler:^(BOOL marked) {
         [self.storyTitlesTable reloadData];
     }];
+}
+
+- (NSDictionary *)itemWithTitle:(NSString *)title iconName:(NSString *)iconName handler:(void (^)(void))handler {
+    return @{@"title" : title, @"icon" : iconName, @"handler" : handler};
 }
 
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
