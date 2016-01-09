@@ -499,6 +499,7 @@
 			<string>Long press story title</string>
 			<key>Titles</key>
 			<array>
+				<string>Ask</string>
 				<string>Send to third-party</string>
 				<string>Mark as unread</string>
 				<string>Save story</string>
@@ -506,9 +507,10 @@
 				<string>Do nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>open_send_to</string>
+			<string>ask</string>
 			<key>Values</key>
 			<array>
+				<string>ask</string>
 				<string>open_send_to</string>
 				<string>mark_unread</string>
 				<string>save_story</string>

@@ -17,6 +17,7 @@ NSString * const MarkReadMenuTitle = @"title";
 NSString * const MarkReadMenuIcon = @"icon";
 NSString * const MarkReadMenuDays = @"days";
 NSString * const MarkReadMenuOlderNewer = @"olderNewer";
+NSString * const MarkReadMenuHandler = @"handler";
 
 typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 {
@@ -62,13 +63,17 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 }
 
 - (CGSize)preferredContentSize {
+    CGSize size = CGSizeMake(300.0, 190.0);
+    
     if (self.olderNewerStoriesCollection) {
-        return CGSizeMake(300.0, 114.0);
+        size = CGSizeMake(300.0, 114.0);
     } else if (self.visibleUnreadCount) {
-        return CGSizeMake(300.0, 228.0);
-    } else {
-        return CGSizeMake(300.0, 190.0);
+        size = CGSizeMake(300.0, 228.0);
     }
+    
+    size.height = size.height + (self.extraItems.count * 38.0);
+    
+    return size;
 }
 
 - (void)buildMenuOptions {
@@ -106,6 +111,10 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
         [self addTitle:@"Mark read older than 7 days" iconName:@"menu_icn_markread.png" days:7];
         [self addTitle:@"Mark read older than 14 days" iconName:@"menu_icn_markread.png" days:14];
     }
+    
+    for (NSDictionary *item in self.extraItems) {
+        [self addTitle:item[MarkReadMenuTitle] iconName:item[MarkReadMenuIcon] handler:item[MarkReadMenuHandler]];
+    }
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName olderNewerMode:(MarkReadMenuOlderNewerMode)mode {
@@ -114,6 +123,10 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName days:(NSInteger)days {
     [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuDays : @(days)}];
+}
+
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName handler:(void (^)(void))handler {
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuHandler : handler}];
 }
 
 #pragma mark -
@@ -131,8 +144,10 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
         cell = [[MenuTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIndentifier];
     }
     
-    cell.textLabel.text = self.menuOptions[indexPath.row][MarkReadMenuTitle];
-    cell.imageView.image = self.menuOptions[indexPath.row][MarkReadMenuIcon];
+    NSDictionary *options = self.menuOptions[indexPath.row];
+    
+    cell.textLabel.text = options[MarkReadMenuTitle];
+    cell.imageView.image = options[MarkReadMenuIcon];
     
     return cell;
 }
@@ -140,7 +155,6 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kMenuOptionHeight;
 }
-
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row >= self.menuOptions.count) {
@@ -152,8 +166,20 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     self.marked = YES;
     
-    if (self.olderNewerStoriesCollection) {
-        MarkReadMenuOlderNewerMode mode = [self.menuOptions[indexPath.row][MarkReadMenuOlderNewer] integerValue];
+    NSDictionary *options = self.menuOptions[indexPath.row];
+    
+    if (options[MarkReadMenuHandler]) {
+        void (^handler)(void) = options[MarkReadMenuHandler];
+        
+        [self dismissViewControllerAnimated:YES completion:^{
+            handler();
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        }];
+        
+        return;
+    }
+    else if (self.olderNewerStoriesCollection) {
+        MarkReadMenuOlderNewerMode mode = [options[MarkReadMenuOlderNewer] integerValue];
         
         if (mode == MarkReadMenuOlderNewerModeToggle) {
             [self.olderNewerStoriesCollection toggleStoryUnread];
@@ -164,7 +190,7 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
             [self.appDelegate.feedDetailViewController markFeedsReadFromTimestamp:timestamp andOlder:older];
         }
     } else {
-        NSInteger days = [self.menuOptions[indexPath.row][MarkReadMenuDays] integerValue];
+        NSInteger days = [options[MarkReadMenuDays] integerValue];
         
         if (days < 0) {
             [self.appDelegate.feedsViewController markVisibleStoriesRead];

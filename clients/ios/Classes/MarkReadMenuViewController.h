@@ -17,6 +17,7 @@
 @property (nonatomic) NSInteger visibleUnreadCount;
 @property (nonatomic, strong) StoriesCollection *olderNewerStoriesCollection;
 @property (nonatomic, strong) NSDictionary *olderNewerStory;
+@property (nonatomic, strong) NSArray *extraItems;
 @property (nonatomic, copy) void (^completionHandler)(BOOL marked);
 
 @end
