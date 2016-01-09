@@ -433,7 +433,7 @@
 
     NSString *storyHeader = [self getHeader];
     NSString *htmlString = [NSString stringWithFormat:@
-                            "<!DOCTYPE html>\n"
+//                            "<!DOCTYPE html>\n"
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
