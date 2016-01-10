@@ -568,9 +568,8 @@ public class PrefsUtils {
         return VolumeKeyNavigation.valueOf(prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString()));
     }
 
-    public static MarkAsReadConfirmation getMarkAsReadConfirmation(Context context) {
+    public static MarkAllReadConfirmation getMarkAllReadConfirmation(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        // TODO default to FOLDER_ONLY
-        return MarkAsReadConfirmation.valueOf(prefs.getString(PrefConstants.MARK_AS_READ_CONFIRMATION, MarkAsReadConfirmation.NONE.toString()));
+        return MarkAllReadConfirmation.valueOf(prefs.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString()));
     }
 }

@@ -1,10 +1,10 @@
 package com.newsblur.util;
 
 /**
- * Enum to represent mark as read confirmation preference.
+ * Enum to represent mark all read confirmation preference.
  * @author mark
  */
-public enum MarkAsReadConfirmation {
+public enum MarkAllReadConfirmation {
 
     FEED_AND_FOLDER("feed_and_folder"),
     FOLDER_ONLY("folder_only"),
@@ -12,7 +12,7 @@ public enum MarkAsReadConfirmation {
 
     private String parameterValue;
 
-    MarkAsReadConfirmation(String parameterValue) {
+    MarkAllReadConfirmation(String parameterValue) {
         this.parameterValue = parameterValue;
     }
 

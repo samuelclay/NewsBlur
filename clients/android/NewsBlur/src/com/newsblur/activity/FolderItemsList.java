@@ -12,7 +12,7 @@ import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.MarkAsReadConfirmation;
+import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
@@ -55,7 +55,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 	@Override
 	public void markItemListAsRead() {
-        MarkAsReadConfirmation confirmation = PrefsUtils.getMarkAsReadConfirmation(this);
+        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
         if (confirmation.foldersRequireConfirmation()) {
             MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(folderName);
             dialog.show(fragmentManager, "dialog");
