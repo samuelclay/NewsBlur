@@ -10,7 +10,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         "click .NB-feedbar-options"                 : "open_options_popover",
         "click .NB-feedbar-mark-feed-read"          : "mark_folder_as_read",
         "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
-        "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days"
+        "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days",
+        "click .NB-story-title-indicator"           : "show_hidden_story_titles"
     },
     
     initialize: function() {
