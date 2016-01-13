@@ -2641,8 +2641,8 @@
         
         make_feed_title_in_stories: function(options) {
             if ((this.flags.search || this.flags.searching)
-                && NEWSBLUR.app.story_titles_header) {
-                // console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
+                && NEWSBLUR.app.story_titles_header.search_has_focus()) {
+                console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
                 return;
             }
             
