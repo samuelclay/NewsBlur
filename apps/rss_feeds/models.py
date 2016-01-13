@@ -2591,8 +2591,9 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.push_history or []
 
         history = [[date, code, message]] + history
-        if code and code >= 400:
-            history = history[:50]
+        any_exceptions = any([c for d, c, m in history if c >= 400])
+        if any_exceptions:
+            history = history[:25]
         else:
             history = history[:5]
 

@@ -315,8 +315,8 @@ class ProcessFeed:
                 if self.fpf.href.endswith('feedburner.com/atom.xml'):
                     return FEED_ERRHTTP, ret_values
                 redirects, non_redirects = self.feed.count_redirects_in_history('feed')
-                self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (20-len(redirects)))
-                if len(redirects) >= 20 or len(non_redirects) == 0:
+                self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (10-len(redirects)))
+                if len(redirects) >= 10 or len(non_redirects) == 0:
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
