@@ -160,8 +160,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
             return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
-            searchQueryInput.setVisibility(View.VISIBLE);
-            searchQueryInput.requestFocus();
+            if (searchQueryInput.getVisibility() != View.VISIBLE) {
+                searchQueryInput.setVisibility(View.VISIBLE);
+                searchQueryInput.requestFocus();
+            } else {
+                searchQueryInput.setVisibility(View.GONE);
+            }
         }
 	
 		return false;
