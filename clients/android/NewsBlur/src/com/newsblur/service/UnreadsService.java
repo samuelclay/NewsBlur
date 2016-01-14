@@ -33,13 +33,6 @@ public class UnreadsService extends SubService {
 
     @Override
     protected void exec() {
-        // only use the unread status API if the user is premium
-        if (parent.isPremium != Boolean.TRUE) {
-            // ensure the flag is unset so other parts of sync don't think we are still running
-            doMetadata = false;
-            return;
-        }
-
         if (doMetadata) {
             gotWork();
             syncUnreadList();

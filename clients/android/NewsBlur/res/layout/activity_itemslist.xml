@@ -14,6 +14,7 @@
         android:hint="@string/story_search_hint"
         android:drawableLeft="@android:drawable/ic_menu_search"
         android:inputType="textNoSuggestions"
+        android:imeOptions="actionSearch"
         android:visibility="gone"
         android:animateLayoutChanges="true"
     />

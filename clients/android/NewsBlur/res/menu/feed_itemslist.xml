@@ -17,5 +17,5 @@
           android:showAsAction="never" />
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
-          android:showAsAction="never" />
+          android:showAsAction="ifRoom" android:icon="@drawable/search" />
 </menu>
