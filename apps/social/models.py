@@ -133,6 +133,8 @@ class MSocialProfile(mongo.Document):
     stories_last_month   = mongo.IntField(default=0)
     average_stories_per_month = mongo.IntField(default=0)
     story_count_history  = mongo.ListField()
+    story_days_history   = mongo.DictField()
+    story_hours_history  = mongo.DictField()
     feed_classifier_counts = mongo.DictField()
     favicon_color        = mongo.StringField(max_length=6)
     protected            = mongo.BooleanField()
@@ -690,23 +692,25 @@ class MSocialProfile(mongo.Document):
         map_f = """
             function() {
                 var date = (this.shared_date.getFullYear()) + "-" + (this.shared_date.getMonth()+1);
-                emit(date, 1);
+                var hour = this.shared_date.getHours();
+                var day = this.shared_date.getDay();
+                emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
             }
         """
         reduce_f = """
             function(key, values) {
-                var total = 0;
-                for (var i=0; i < values.length; i++) {
-                    total += values[i];
-                }
-                return total;
+                return values;
             }
         """
-        dates = {}
-        res = MSharedStory.objects(user_id=self.user_id).map_reduce(map_f, reduce_f, output='inline')
-        for r in res:
-            dates[r.key] = r.value
-            year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
+        dates = defaultdict(int)
+        hours = defaultdict(int)
+        days = defaultdict(int)
+        results = MSharedStory.objects(user_id=self.user_id).map_reduce(map_f, reduce_f, output='inline')
+        for result in results:
+            dates[result.value['month']] += 1
+            hours[str(int(result.value['hour']))] += 1
+            days[str(int(result.value['day']))] += 1
+            year = int(re.findall(r"(\d{4})-\d{1,2}", result.value['month'])[0])
             if year < min_year:
                 min_year = year
         
@@ -725,6 +729,8 @@ class MSocialProfile(mongo.Document):
                         month_count += 1
 
         self.story_count_history = months
+        self.story_days_history = days
+        self.story_hours_history = hours
         self.average_stories_per_month = total / max(1, month_count)
         self.save()
     
@@ -1135,13 +1141,17 @@ class MSocialSubscription(mongo.Document):
             logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_hashes), sub_username))
         else:
             logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
+            
         
         for story_hash in set(story_hashes):
             if feed_id is not None:
                 story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=feed_id)
             if feed_id is None:
                 feed_id, _ = MStory.split_story_hash(story_hash)
-
+            
+            if len(story_hashes) == 1:
+                RUserStory.aggregate_mark_read(feed_id)
+                
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
             share_key = "S:%s" % (story_hash)
@@ -2038,7 +2048,7 @@ class MSharedStory(mongo.Document):
         
     def blurblog_permalink(self):
         profile = MSocialProfile.get_user(self.user_id)
-        return "%s/story/%s/%s" % (
+        return "%sstory/%s/%s" % (
             profile.blurblog_url,
             slugify(self.story_title)[:20],
             self.guid_hash[:6]

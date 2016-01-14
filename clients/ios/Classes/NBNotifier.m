@@ -202,13 +202,13 @@
 - (void)showIn:(float)time {
     showing = YES;
     CGRect frame = self.frame;
-    frame.size.width = self.view.frame.size.width;
+    frame.size.width = self.view.bounds.size.width;
     self.frame = frame;
     self.hidden = NO;
     
     [UIView animateWithDuration:time animations:^{
         CGRect move = self.frame;
-        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
+        move.origin.y = self.view.bounds.size.height - NOTIFIER_HEIGHT - self.offset.y;
         self.frame = move;
     } completion:nil];
 }
@@ -223,11 +223,11 @@
 
 - (void)hideIn:(float)seconds {
     
-    if (!showing) return;
+//    if (!showing) return;
     
     [UIView animateWithDuration:seconds animations:^{
         CGRect move = self.frame;
-        move.origin.y = self.view.frame.size.height - self.offset.y;
+        move.origin.y = self.view.bounds.size.height - self.offset.y;
         self.frame = move;
     } completion:^(BOOL finished) {
         self.hidden = YES;

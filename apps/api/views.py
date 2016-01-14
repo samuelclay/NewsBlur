@@ -13,10 +13,12 @@ from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
 from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
 from apps.rss_feeds.models import Feed
+from apps.rss_feeds.text_importer import TextImporter
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
+from utils.view_functions import required_params
 
 
 @json.json_view
@@ -232,24 +234,38 @@ def check_share_on_site(request, token):
     
     return response
 
-def share_story(request, token):
+@required_params('story_url', 'comments', 'title')
+def share_story(request, token=None):
     code      = 0
-    story_url = request.POST['story_url']
-    comments  = request.POST['comments']
-    title     = request.POST['title']
-    content   = request.POST['content']
-    rss_url   = request.POST.get('rss_url')
-    feed_id   = request.POST.get('feed_id') or 0
+    story_url = request.REQUEST['story_url']
+    comments  = request.REQUEST['comments']
+    title     = request.REQUEST['title']
+    content   = request.REQUEST.get('content', None)
+    rss_url   = request.REQUEST.get('rss_url', None)
+    feed_id   = request.REQUEST.get('feed_id', None) or 0
     feed      = None
     message   = None
+    profile   = None
     
-    if not story_url:
-        code = -1
+    if request.user.is_authenticated():
+        profile = request.user.profile
     else:
         try:
             profile = Profile.objects.get(secret_token=token)
         except Profile.DoesNotExist:
             code = -1
+            if token:
+                message = "Not authenticated, couldn't find user by token."
+            else:
+                message = "Not authenticated, no token supplied and not authenticated."
+
+    
+    if not profile:
+        return HttpResponse(json.encode({
+            'code':     code,
+            'message':  message,
+            'story':    None,
+        }), mimetype='text/plain')
     
     if feed_id:
         feed = Feed.get_by_id(feed_id)
@@ -261,9 +277,16 @@ def share_story(request, token):
         if feed:
             feed_id = feed.pk
     
-    content = lxml.html.fromstring(content)
-    content.make_links_absolute(story_url)
-    content = lxml.html.tostring(content)
+    if content:
+        content = lxml.html.fromstring(content)
+        content.make_links_absolute(story_url)
+        content = lxml.html.tostring(content)
+    else:
+        importer = TextImporter(story=None, story_url=story_url, request=request, debug=settings.DEBUG)
+        document = importer.fetch(skip_save=True, return_document=True)
+        content = document['content']
+        if not title:
+            title = document['title']
     
     shared_story = MSharedStory.objects.filter(user_id=profile.user.pk,
                                                story_feed_id=feed_id, 
@@ -287,6 +310,7 @@ def share_story(request, token):
             socialsub.needs_unread_recalc = True
             socialsub.save()
         logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
+        message = "Sharing story from site: %s: %s" % (story_url, comments)
     else:
         shared_story.story_content = content
         shared_story.story_title = title
@@ -297,7 +321,7 @@ def share_story(request, token):
         shared_story.story_feed_id = feed_id
         shared_story.save()
         logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
-    
+        message = "Updating shared story from site: %s: %s" % (story_url, comments)
     try:
         socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
                                                     subscription_user_id=profile.user.pk)
@@ -317,7 +341,7 @@ def share_story(request, token):
     response = HttpResponse(json.encode({
         'code':     code,
         'message':  message,
-        'story':    None,
+        'story':    shared_story,
     }), mimetype='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'

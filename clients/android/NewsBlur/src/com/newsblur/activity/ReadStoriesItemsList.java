@@ -59,17 +59,6 @@ public class ReadStoriesItemsList extends ItemsList {
     }
 
     @Override
-    public StoryOrder getStoryOrder() {
-        // dummy method.  read stories don't have an order option
-        return StoryOrder.NEWEST;
-    }
-
-    @Override
-    public void updateStoryOrderPreference(StoryOrder newValue) {
-        // dummy method.  read stories don't have an order option
-    }
-    
-    @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         // dummy method.  read stories don't have an order option
     }
@@ -79,6 +68,5 @@ public class ReadStoriesItemsList extends ItemsList {
         // dummy method. read stories always show reads and unreads
         return ReadFilter.ALL;
     }
-
 
 }

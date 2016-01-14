@@ -10,6 +10,7 @@ import android.view.View;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.MultipleFeedItemsAdapter;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class SavedStoriesItemListFragment extends ItemListFragment {
@@ -34,8 +35,10 @@ public class SavedStoriesItemListFragment extends ItemListFragment {
             adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo, true);
             adapter.setViewBinder(new SocialItemViewBinder(getActivity(), true));
             itemList.setAdapter(adapter);
-       }
-       super.onLoadFinished(loader, cursor);
+        }
+        super.onLoadFinished(loader, cursor);
+        // every time we see a set of saved stories, tag them so they don't disappear during this reading session
+        FeedUtils.dbHelper.markSavedReadingSession();
     }
 
     @Override

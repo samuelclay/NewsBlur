@@ -77,16 +77,6 @@ public class FeedItemsList extends ItemsList {
 	}
 
     @Override
-    public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFeed(this, feed.feedId);
-    }
-
-    @Override
-    public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFeed(this, feed.feedId, newValue);
-    }
-    
-    @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         PrefsUtils.setReadFilterForFeed(this, feed.feedId, newValue);
     }

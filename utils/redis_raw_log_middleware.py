@@ -15,9 +15,14 @@ class RedisDumpMiddleware(object):
         if not getattr(Connection, '_logging', False):
             # save old methods
             setattr(Connection, '_logging', True)
-            # self.orig_pack_command = \
-            #         Connection.pack_command
-            # instrument methods to record messages
+            Connection.pack_command = \
+                    self._instrument(Connection.pack_command)
+
+    def process_celery(self, profiler):
+        if not self.activated(profiler): return
+        if not getattr(Connection, '_logging', False):
+            # save old methods
+            setattr(Connection, '_logging', True)
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
 

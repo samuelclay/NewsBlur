@@ -217,7 +217,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		values.put(APIConstants.PARAMETER_EMAIL, email);
 		final APIResponse response = post(APIConstants.URL_SIGNUP, values);
-        RegisterResponse registerResponse = ((RegisterResponse) response.getResponse(gson, RegisterResponse.class));
+        RegisterResponse registerResponse = response.getRegisterResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
 
@@ -328,9 +328,14 @@ public class APIManager {
 
 		// request params common to most story sets
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-        if ( !(fs.isAllRead() || fs.isAllSaved())) {
-		    values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+        if (!(fs.isAllRead() || fs.isAllSaved())) {
 		    values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
+        }
+        if (!fs.isAllRead()) {
+		    values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+        }
+        if (fs.getSearchQuery() != null) {
+            values.put(APIConstants.PARAMETER_QUERY, fs.getSearchQuery());
         }
 
 		APIResponse response = get(uri.toString(), values);

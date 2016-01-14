@@ -23,6 +23,7 @@ from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
+from django.utils.encoding import smart_unicode
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
 from apps.recommendations.models import RecommendedFeed
@@ -220,7 +221,7 @@ def autologin(request, username, secret):
     else:
         return HttpResponseRedirect(reverse('index'))
     
-@ratelimit(minutes=1, requests=24)
+@ratelimit(minutes=1, requests=60)
 @never_cache
 @json.json_view
 def load_feeds(request):
@@ -1055,8 +1056,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             Site.objects.get_current().domain,
             story['story_feed_id'],
             feed.feed_title if feed else "",
-            story['story_content']
-            )
+            smart_unicode(story['story_content'])
+        )
         story_data = {
             'title': story['story_title'],
             'link': story['story_permalink'],
@@ -1489,7 +1490,7 @@ def mark_story_hashes_as_read(request):
     try:
         story_hashes = request.REQUEST.getlist('story_hash')
     except UnreadablePostError:
-        return HttpResponse(status=400)
+        return dict(code=-1, message="Missing `story_hash` list parameter.")
     
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
     

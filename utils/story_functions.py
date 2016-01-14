@@ -150,42 +150,20 @@ def pre_process_story(entry):
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))
     
-    return entry
+    entry['story_content'] = attach_media_scripts(entry['story_content'])
     
-class bunch(dict):
-    """Example of overloading __getatr__ and __setattr__
-    This example creates a dictionary where members can be accessed as attributes
-    """
-    def __init__(self, indict=None, attribute=None):
-        if indict is None:
-            indict = {}
-        # set any attributes here - before initialisation
-        # these remain as normal attributes
-        self.attribute = attribute
-        dict.__init__(self, indict)
-        self.__initialised = True
-        # after initialisation, setting attributes is the same as setting an item
+    return entry
 
-    def __getattr__(self, item):
-        """Maps values to attributes.
-        Only called if there *isn't* an attribute with this name
-        """
-        try:
-            return self.__getitem__(item)
-        except KeyError:
-            return None
-
-    def __setattr__(self, item, value):
-        """Maps attributes to values.
-        Only if we are initialised
-        """
-        if not self.__dict__.has_key('_bunch__initialised'):  # this test allows attributes to be set in the __init__ method
-            return dict.__setattr__(self, item, value)
-        elif self.__dict__.has_key(item):       # any normal attributes are handled normally
-            dict.__setattr__(self, item, value)
-        else:
-            self.__setitem__(item, value)
-            
+def attach_media_scripts(content):
+    if 'instagram-media' in content and '<script' not in content:
+        content += '<script async defer src="https://platform.instagram.com/en_US/embeds.js"></script><script>(function(){if(window.instgrm)window.instgrm.Embeds.process()})()</script>'
+    if 'twitter-tweet' in content and '<script' not in content:
+        content += '<script id="twitter-wjs" type="text/javascript" async defer src="https://platform.twitter.com/widgets.js"></script>'
+    if 'imgur-embed-pub' in content and '<script' not in content:
+        content += '<script async src="https://s.imgur.com/min/embed.js" charset="utf-8"></script>'
+    return content
+        
+    
 class MLStripper(HTMLParser):
     def __init__(self):
         self.reset()

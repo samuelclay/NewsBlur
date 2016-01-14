@@ -112,7 +112,7 @@ class SignupForm(forms.Form):
             email_exists = User.objects.filter(email__iexact=email).count()
             if email_exists:
                 raise forms.ValidationError(_(u'Someone is already using that email address.'))
-            if any([banned in email for banned in ['mailwire24', 'mailbox9', 'scintillamail']]):
+            if any([banned in email for banned in ['mailwire24', 'mailbox9', 'scintillamail', 'bluemailboxes', 'devmailing']]):
                 logging.info(" ***> [%s] Spammer signup banned: %s/%s" % (username, password, email))
                 raise forms.ValidationError('Seriously, fuck off spammer.')
         exists = User.objects.filter(username__iexact=username).count()

@@ -66,16 +66,6 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
     }
 
     @Override
-    public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFolder(this, folderName);
-    }
-
-    @Override
-    public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFolder(this, folderName, newValue);
-    }
-    
-    @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         PrefsUtils.setReadFilterForFolder(this, folderName, newValue);
     }

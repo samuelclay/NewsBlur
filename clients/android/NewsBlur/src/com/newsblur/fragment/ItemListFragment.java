@@ -318,7 +318,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_send_story:
-            FeedUtils.sendStory(story, activity);
+            FeedUtils.sendStoryBrief(story, activity);
+            return true;
+
+        case R.id.menu_send_story_full:
+            FeedUtils.sendStoryFull(story, activity);
             return true;
 
         case R.id.menu_save_story:

@@ -24,6 +24,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
+from django.utils.encoding import smart_str, smart_unicode
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
@@ -84,7 +85,6 @@ class Feed(models.Model):
     s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
     search_indexed = models.NullBooleanField(default=None, null=True, blank=True)
 
-
     class Meta:
         db_table="feeds"
         ordering=["feed_title"]
@@ -142,7 +142,13 @@ class Feed(models.Model):
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_FREE)
-
+    
+    @classmethod
+    def generate_hash_address_and_link(cls, feed_address, feed_link):
+        if not feed_address: feed_address = ""
+        if not feed_link: feed_link = ""
+        return hashlib.sha1(feed_address+feed_link).hexdigest()
+        
     def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,
@@ -206,7 +212,7 @@ class Feed(models.Model):
         
         feed_address = self.feed_address or ""
         feed_link = self.feed_link or ""
-        self.hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
+        self.hash_address_and_link = self.generate_hash_address_and_link(feed_address, feed_link)
             
         max_feed_title = Feed._meta.get_field('feed_title').max_length
         if len(self.feed_title) > max_feed_title:
@@ -227,7 +233,7 @@ class Feed(models.Model):
             if not duplicate_feeds:
                 feed_address = self.feed_address or ""
                 feed_link = self.feed_link or ""
-                hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
+                hash_address_and_link = self.generate_hash_address_and_link(feed_address, feed_link)
                 duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
@@ -359,10 +365,10 @@ class Feed(models.Model):
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
         feed = None
         
-        if url and 'www.youtube.com/user/' in url:
+        if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
-        if url and 'www.youtube.com/channel/' in url:
+        if url and 'youtube.com/channel/' in url:
             channel_id = re.search('youtube.com/channel/([-_\w]+)', url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
             
@@ -473,7 +479,7 @@ class Feed(models.Model):
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
         
-        if force or has_new_stories:
+        if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
 
         if force or (has_new_stories and count_extra):
@@ -749,8 +755,11 @@ class Feed(models.Model):
             self.active_subscribers != original_active_subs or
             self.premium_subscribers != original_premium_subscribers or
             self.active_premium_subscribers != original_active_premium_subscribers):
-            self.save(update_fields=['num_subscribers', 'active_subscribers', 
-                                     'premium_subscribers', 'active_premium_subscribers'])
+            if original_premium_subscribers == -1 or original_active_premium_subscribers == -1:
+                self.save()
+            else:
+                self.save(update_fields=['num_subscribers', 'active_subscribers', 
+                                         'premium_subscribers', 'active_premium_subscribers'])
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -866,28 +875,28 @@ class Feed(models.Model):
         map_f = """
             function() {
                 var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
-                emit(date, 1);
+                var hour = this.story_date.getHours();
+                var day = this.story_date.getDay();
+                emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
             }
         """
         reduce_f = """
             function(key, values) {
-                var total = 0;
-                for (var i=0; i < values.length; i++) {
-                    total += values[i];
-                }
-                return total;
+                return values;
             }
         """
-        dates = {}
-        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, output='inline')
-        for r in res:
-            dates[r.key] = r.value
-            year_found = re.findall(r"(\d{4})-\d{1,2}", r.key)
-            if year_found and len(year_found):
-                year = int(year_found[0])
-                if year < min_year and year > 2000:
-                    min_year = year
-                
+        dates = defaultdict(int)
+        hours = defaultdict(int)
+        days = defaultdict(int)
+        results = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, output='inline')
+        for result in results:
+            dates[result.value['month']] += 1
+            hours[int(result.value['hour'])] += 1
+            days[int(result.value['day'])] += 1
+            year = int(re.findall(r"(\d{4})-\d{1,2}", result.value['month'])[0])
+            if year < min_year and year > 2000:
+                min_year = year
+        
         # Add on to existing months, always amending up, never down. (Current month
         # is guaranteed to be accurate, since trim_feeds won't delete it until after
         # a month. Hacker News can have 1,000+ and still be counted.)
@@ -912,7 +921,7 @@ class Feed(models.Model):
                         total += dates.get(key, 0)
                         month_count += 1
         original_story_count_history = self.data.story_count_history
-        self.data.story_count_history = json.encode(months)
+        self.data.story_count_history = json.encode({'months': months, 'hours': hours, 'days': days})
         if self.data.story_count_history != original_story_count_history:
             self.data.save(update_fields=['story_count_history'])
         
@@ -1145,7 +1154,7 @@ class Feed(models.Model):
                         # Don't mangle stories with code, just use new
                         story_content_diff = story_content
                     else:
-                        story_content_diff = htmldiff(unicode(original_content), unicode(story_content))
+                        story_content_diff = htmldiff(smart_unicode(original_content), smart_unicode(story_content))
                 else:
                     story_content_diff = original_content
                 # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
@@ -1304,11 +1313,27 @@ class Feed(models.Model):
             cutoff = 400
         elif self.active_premium_subscribers <= 20:
             cutoff = 450
-        
+            
         if self.active_subscribers and self.average_stories_per_month < 5 and self.stories_last_month < 5:
             cutoff /= 2
         if self.active_premium_subscribers <= 1 and self.average_stories_per_month <= 1 and self.stories_last_month <= 1:
             cutoff /= 2
+        
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_READ_POOL)
+        pipeline = r.pipeline()
+        read_stories_per_week = []
+        now = datetime.datetime.now()
+        for weeks_back in range(2*int(math.floor(settings.DAYS_OF_STORY_HASHES/7))):
+            weeks_ago = now - datetime.timedelta(days=7*weeks_back)
+            week_of_year = weeks_ago.strftime('%Y-%U')
+            feed_read_key = "fR:%s:%s" % (self.pk, week_of_year)
+            pipeline.get(feed_read_key)
+        read_stories_per_week = pipeline.execute()
+        read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
+        if read_stories_last_month == 0:
+            original_cutoff = cutoff
+            cutoff = min(cutoff, 25)
+            logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d")))
         
         return cutoff
                 
@@ -1316,7 +1341,24 @@ class Feed(models.Model):
         if not cutoff:
             cutoff = self.story_cutoff
         MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
+    
+    def purge_feed_stories(self, update=True):
+        MStory.purge_feed_stories(feed=self, cutoff=self.story_cutoff)
+        if update:
+            self.update()
 
+    def purge_author(self, author):
+        all_stories = MStory.objects.filter(story_feed_id=self.pk)
+        author_stories = MStory.objects.filter(story_feed_id=self.pk, story_author_name__iexact=author)
+        logging.debug(" ---> Deleting %s of %s stories in %s by '%s'." % (author_stories.count(), all_stories.count(), self, author))
+        author_stories.delete()
+
+    def purge_tag(self, tag):
+        all_stories = MStory.objects.filter(story_feed_id=self.pk)
+        tagged_stories = MStory.objects.filter(story_feed_id=self.pk, story_tags__icontains=tag)
+        logging.debug(" ---> Deleting %s of %s stories in %s by '%s'." % (tagged_stories.count(), all_stories.count(), self, tag))
+        tagged_stories.delete()
+    
     # @staticmethod
     # def clean_invalid_ids():
     #     history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
@@ -1484,11 +1526,11 @@ class Feed(models.Model):
                 continue
 
             if 'story_latest_content_z' in existing_story:
-                existing_story_content = unicode(zlib.decompress(existing_story.story_latest_content_z))
+                existing_story_content = smart_unicode(zlib.decompress(existing_story.story_latest_content_z))
             elif 'story_latest_content' in existing_story:
                 existing_story_content = existing_story.story_latest_content
             elif 'story_content_z' in existing_story:
-                existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
+                existing_story_content = smart_unicode(zlib.decompress(existing_story.story_content_z))
             elif 'story_content' in existing_story:
                 existing_story_content = existing_story.story_content
             else:
@@ -1595,6 +1637,8 @@ class Feed(models.Model):
         elif spd == 0:
             if subs > 1:
                 total = 60 * 6
+            elif subs == 1:
+                total = 60 * 12
             else:
                 total = 60 * 24
             months_since_last_story = seconds_timesince(self.last_story_date) / (60*60*24*30)
@@ -1621,8 +1665,11 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 2 day max
-        total = min(total, 60*24*2)
+        # 24 hour max for premiums, 48 hour max for free
+        if subs >= 1:
+            total = min(total, 60*24*1)
+        else:
+            total = min(total, 60*24*2)
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
@@ -1900,13 +1947,13 @@ class MStory(mongo.Document):
         self.story_hash = self.feed_guid_hash
         
         if self.story_content:
-            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content_z = zlib.compress(smart_str(self.story_content))
             self.story_content = None
         if self.story_original_content:
-            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content_z = zlib.compress(smart_str(self.story_original_content))
             self.story_original_content = None
         if self.story_latest_content:
-            self.story_latest_content_z = zlib.compress(self.story_latest_content)
+            self.story_latest_content_z = zlib.compress(smart_str(self.story_latest_content))
             self.story_latest_content = None
         if self.story_title and len(self.story_title) > story_title_max:
             self.story_title = self.story_title[:story_title_max]
@@ -1924,7 +1971,16 @@ class MStory(mongo.Document):
         self.remove_from_search_index()
         
         super(MStory, self).delete(*args, **kwargs)
-
+    
+    @classmethod
+    def purge_feed_stories(cls, feed, cutoff, verbose=True):
+        stories = cls.objects(story_feed_id=feed.pk)
+        logging.debug(" ---> Deleting %s stories from %s" % (stories.count(), feed))
+        if stories.count() > cutoff*1.25:
+            logging.debug(" ***> ~FRToo many stories in %s, not purging..." % (feed))
+            return
+        stories.delete()
+    
     @classmethod
     def index_all_for_search(cls, offset=0):
         if not offset:
@@ -2535,8 +2591,9 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.push_history or []
 
         history = [[date, code, message]] + history
-        if code and code >= 400:
-            history = history[:50]
+        any_exceptions = any([c for d, c, m in history if c >= 400])
+        if any_exceptions:
+            history = history[:25]
         else:
             history = history[:5]
 

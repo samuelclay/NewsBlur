@@ -441,7 +441,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Given a set of (not-flat) folder names, figure out child folder names (also not flat). Does
-     * not include the initially passed folder names.
+     * not include the initially passed folder names, unless they occur as children of one of the
+     * other parents passed.
      */
     private Set<String> getSubFoldersRecursive(Set<String> parentFolders) {
         HashSet<String> subFolders = new HashSet<String>();
@@ -449,7 +450,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             Folder f = folders.get(folder);
             if (f == null) continue;
             innerloop: for (String child : f.children) {
-                if (parentFolders.contains(child)) continue innerloop;
                 subFolders.add(child);
             }
             subFolders.addAll(getSubFoldersRecursive(subFolders));

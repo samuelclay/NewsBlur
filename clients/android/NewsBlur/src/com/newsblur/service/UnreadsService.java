@@ -33,9 +33,6 @@ public class UnreadsService extends SubService {
 
     @Override
     protected void exec() {
-        // only use the unread status API if the user is premium
-        if (parent.isPremium != Boolean.TRUE) return;
-
         if (doMetadata) {
             gotWork();
             syncUnreadList();
@@ -160,6 +157,10 @@ public class UnreadsService extends SubService {
 
     public static void doMetadata() {
         doMetadata = true;
+    }
+
+    public static boolean isDoMetadata() {
+        return doMetadata;
     }
 
     public static boolean running() {

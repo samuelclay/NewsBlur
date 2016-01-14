@@ -46,16 +46,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
     }
 
     @Override
-    public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-    }
-
-    @Override
-    public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
-    }
-
-    @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
     }

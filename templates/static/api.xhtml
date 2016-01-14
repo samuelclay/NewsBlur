@@ -34,7 +34,24 @@
       on Github</a> is the place to make that happen.</p>
     </div>
   </div>
-  
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">A Note about OAuth</h5>
+    <div class="NB-module-content">
+      <p>NewsBlur supports OAuth but to have an OAuth enabled client you must 
+          <a href="mailto:samuel@newsblur.com">email Samuel</a> to request a client ID and
+          secret. You will need to provide your NewsBlur username, redirect URI (often just your
+          client app's website), and app name.</p>
+          
+      <p>To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with
+          every request, just as you would on any other OAuth API. Use the <code>/oauth/authorize</code>
+          endpoint to begin the OAuth authentication procedure. Use the <code>/oauth/token</code> 
+          endpoint to receive your authorized token, which you can pass in with every request.</p>
+          
+      <p>You can not required to use OAuth, in which case you will need to pass the <code>newsblur_sessionid</code>
+          cookie with every request. This cookie is set on login.</p>
+    </div>
+  </div>
   
   <div class="NB-module">
     <h5 class="NB-module-title">API Table of Contents</h5>

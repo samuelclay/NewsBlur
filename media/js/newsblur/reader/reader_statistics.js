@@ -85,7 +85,9 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             $expires.html("");
         }
         setTimeout(function() {
-            self.make_charts(data);  
+            self.make_chart_count(data);
+            self.make_chart_hours(data);
+            self.make_chart_days(data);
         }, this.first_load ? 200 : 50);
         
         setTimeout(function() {
@@ -156,7 +158,19 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Stories per month')
                 ]),
-                $.make('canvas', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
+                $.make('canvas', { id: 'NB-statistics-history-count-chart', className: 'NB-statistics-history-count-chart' })
+            ]),
+            $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
+                $.make('div', { className: 'NB-statistics-history-stat' }, [
+                    $.make('div', { className: 'NB-statistics-label' }, 'Stories per day')
+                ]),
+                $.make('canvas', { id: 'NB-statistics-history-days-chart', className: 'NB-statistics-history-days-chart' })
+            ]),
+            $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
+                $.make('div', { className: 'NB-statistics-history-stat' }, [
+                    $.make('div', { className: 'NB-statistics-label' }, 'Daily distribution of stories')
+                ]),
+                $.make('div', { className: 'NB-statistics-history-hours-chart' })
             ]),
             (data.classifier_counts && $.make('div', { className: 'NB-statistics-state NB-statistics-classifiers' }, [
                 this.make_classifier_count('tag', data.classifier_counts['tag']),
@@ -263,7 +277,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         return $history;
     },
     
-    make_charts: function(data) {
+    make_chart_count: function(data) {
         var labels = _.map(data['story_count_history'], function(date) {
             var date_matched = date[0].match(/(\d{4})-(\d{1,2})/);
             var date = (new Date(parseInt(date_matched[1], 10), parseInt(date_matched[2],10)-1));
@@ -291,13 +305,70 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 }
             ]
         };
-        var $plot = $(".NB-statistics-history-chart");
+        var $plot = $(".NB-statistics-history-count-chart");
         var width = $plot.width();
         var height = $plot.height();
         $plot.attr('width', width);
         $plot.attr('height', height);
         var myLine = new Chart($plot.get(0).getContext("2d")).Line(points, {
-            scaleLabel : "<%= Math.round(value) %>"
+            scaleLabel : "<%= Math.round(value) %>",
+			showTooltips: false,
+			scaleBeginAtZero: true
+        });
+    },
+    
+    make_chart_hours: function(data) {
+        var max_count = _.max(data.story_hours_history);
+        var $chart = $.make('table', [
+            $.make('tr', { className: 'NB-statistics-history-chart-hours-row' }, [
+                _.map(_.range(24), function(hour) {
+                    var count = data.story_hours_history[hour] || 0;
+                    var opacity = 1 - (count * 1.0 / max_count);
+                    return $.make('td', { style: "background-color: rgba(255, 255, 255, " + opacity + ");" });
+                })
+            ]),
+            $.make('tr', { className: 'NB-statistics-history-chart-hours-text-row' }, [
+                _.compact(_.map(_.range(24), function(hour, count) {
+                    var am = hour < 12;
+                    if (hour == 0) hour = 12;
+                    var hour_name = am ? (hour + "am") : ((hour > 12 ? hour - 12 : hour) + "pm");
+                    if (hour % 3 == 0) {
+                        return $.make('td', { colSpan: 3 }, hour_name);
+                    }
+                }))
+            ])
+        ]);
+        
+        $(".NB-statistics-history-hours-chart", this.$modal).html($chart);
+    },
+    
+    make_chart_days: function(data) {
+        var labels = NEWSBLUR.utils.dayNames;
+        var values = _.map(_.range(7), function(day) {
+            return data['story_days_history'][day] || 0;
+        });
+        var points = {
+            labels: labels,
+            datasets: [
+                {
+                    fillColor : "rgba(151,187,205,0.5)",
+                    strokeColor : "rgba(151,187,205,1)",
+                    pointColor : "rgba(151,187,205,1)",
+                    pointStrokeColor : "#fff",
+                    data : values
+                }
+            ]
+        };
+        var $plot = $(".NB-statistics-history-days-chart");
+        var width = $plot.width();
+        var height = $plot.height();
+        $plot.attr('width', width);
+        $plot.attr('height', height);
+
+        var myLine = new Chart($plot.get(0).getContext("2d")).Radar(points, {
+            scaleShowLabelBackdrop: false,
+			showTooltips: false,
+			scaleFontSize: 16
         });
     },
     
