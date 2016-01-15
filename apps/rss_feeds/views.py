@@ -24,7 +24,6 @@ from utils.view_functions import required_params
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.ratelimit import ratelimit
 
-
 IGNORE_AUTOCOMPLETE = [
     "facebook.com/feeds/notifications.php",
     "inbox",
@@ -200,6 +199,14 @@ def load_feed_statistics(request, feed_id):
         stats['story_hours_history'] = story_count_history['hours']
     else:
         stats['story_count_history'] = story_count_history
+    
+    # Rotate hours to match user's timezone offset
+    localoffset = timezone.utcoffset(datetime.datetime.utcnow())
+    hours_offset = int(localoffset.total_seconds() / 3600)
+    rotated_hours = {}
+    for hour, value in stats['story_hours_history'].items():
+        rotated_hours[str(int(hour)+hours_offset)] = value
+    stats['story_hours_history'] = rotated_hours
     
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers

@@ -875,7 +875,7 @@ class Feed(models.Model):
         map_f = """
             function() {
                 var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
-                var hour = this.story_date.getHours();
+                var hour = this.story_date.getUTCHours();
                 var day = this.story_date.getDay();
                 emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
             }
