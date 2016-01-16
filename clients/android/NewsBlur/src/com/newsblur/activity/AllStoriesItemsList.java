@@ -12,6 +12,7 @@ import com.newsblur.fragment.MarkAllReadDialogFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -43,8 +44,13 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
     
 	@Override
 	public void markItemListAsRead() {
-	    MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(getResources().getString(R.string.all_stories));
-        dialog.show(fragmentManager, "dialog");
+        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
+        if (confirmation.foldersRequireConfirmation()) {
+            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(getResources().getString(R.string.all_stories));
+            dialog.show(fragmentManager, "dialog");
+        } else {
+            onMarkAllRead();
+        }
 	}
 
     @Override
