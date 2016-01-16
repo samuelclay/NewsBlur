@@ -447,7 +447,7 @@ public class DatabaseConstants {
         return l;
     }
 
-    private static final Gson JsonHelper = new Gson();
+    public static final Gson JsonHelper = new Gson();
 
     /**
      * A quick way to represent a list of strings as a single DB value. Though not particularly

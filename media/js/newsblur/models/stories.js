@@ -488,7 +488,6 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             visible_stories[current_index].set('selected', false);
             return visible_stories[current_index];
         }
-
     },
     
     get_last_unread_story: function(unread_count, options) {

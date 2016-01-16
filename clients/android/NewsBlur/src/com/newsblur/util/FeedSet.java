@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.APIConstants;
 
 /**
@@ -25,81 +26,37 @@ public class FeedSet implements Serializable {
     private Set<String> feeds;
     /** Mapping of social feed IDs to usernames. */
     private Map<String,String> socialFeeds;
-    private boolean isAllNormal;
-    private boolean isAllSocial;
+    private Set<String> savedFeeds;
+    private Set<String> savedTags;
     private boolean isAllRead;
-    private boolean isAllSaved;
     private boolean isGlobalShared;
 
     private String folderName;
     private String searchQuery;
 
-    /**
-     * Construct a new set of feeds. Only one of the arguments may be non-null or true. Specify an empty
-     * set to request all of a given type.
-     */
-    private FeedSet(Set<String> feeds, Map<String,String> socialFeeds, boolean allSaved, boolean globalShared, boolean allRead) {
-
-        if ( booleanCardinality( (feeds != null), (socialFeeds != null), allRead, allSaved, globalShared ) > 1 ) {
-            throw new IllegalArgumentException("at most one type of feed may be specified");
-        }
-
-        if (feeds != null) {
-            if (feeds.size() < 1) {
-                isAllNormal = true;
-                this.feeds = feeds;
-                return;
-            } else {
-                this.feeds = Collections.unmodifiableSet(feeds);
-                return;
-            }
-        }
-
-        if (socialFeeds != null) {
-            if (socialFeeds.size() < 1) {
-                isAllSocial = true;
-                this.socialFeeds = socialFeeds;
-                return;
-            } else {
-                this.socialFeeds = Collections.unmodifiableMap(socialFeeds);
-                return;
-            }
-        }
-
-        if (allRead) {
-            isAllRead = true;
-            return;
-        }
-
-        if (allSaved) {
-            isAllSaved = true;
-            return;
-        }
-
-        if (globalShared) {
-            isGlobalShared = true;
-            return;
-        }
-
-        throw new IllegalArgumentException("no type of feed specified");
+    private FeedSet() {
+        // must use factory methods
     }
 
     /**
      * Convenience constructor for a single feed.
      */
     public static FeedSet singleFeed(String feedId) {
-        Set<String> feedIds = new HashSet<String>(1);
-        feedIds.add(feedId);
-        return new FeedSet(feedIds, null, false, false, false);
+        FeedSet fs = new FeedSet();
+        fs.feeds = new HashSet<String>(1);
+        fs.feeds.add(feedId);
+        fs.feeds = Collections.unmodifiableSet(fs.feeds);
+        return fs;
     }
 
     /**
      * Convenience constructor for a single social feed.
      */
     public static FeedSet singleSocialFeed(String userId, String username) {
-        Map<String,String> socialFeedIds = new HashMap<String,String>(1);
-        socialFeedIds.put(userId, username);
-        return new FeedSet(null, socialFeedIds, false, false, false);
+        FeedSet fs = new FeedSet();
+        fs.socialFeeds = new HashMap<String,String>(1);
+        fs.socialFeeds.put(userId, username);
+        return fs;
     }
 
     /**
@@ -107,53 +64,65 @@ public class FeedSet implements Serializable {
      * for local operations only.
      */
     public static FeedSet multipleSocialFeeds(Set<String> userIds) {
-        Map<String,String> socialFeedIds = new HashMap<String,String>(userIds.size());
+        FeedSet fs = new FeedSet();
+        fs.socialFeeds = new HashMap<String,String>(userIds.size());
         for (String id : userIds) {
-            socialFeedIds.put(id, "");
+            fs.socialFeeds.put(id, "");
         }
-        return new FeedSet(null, socialFeedIds, false, false, false);
+        return fs;
     }
 
     /** 
      * Convenience constructor for all (non-social) feeds.
      */
     public static FeedSet allFeeds() {
-        return new FeedSet(Collections.EMPTY_SET, null, false, false, false);
+        FeedSet fs = new FeedSet();
+        fs.feeds = Collections.EMPTY_SET;
+        return fs;
     }
 
     /**
      * Convenience constructor for read stories meta-feed.
      */
     public static FeedSet allRead() {
-        return new FeedSet(null, null, false, false, true);
+        FeedSet fs = new FeedSet();
+        fs.isAllRead = true;
+        return fs;
     }
 
     /**
      * Convenience constructor for saved stories feed.
      */
     public static FeedSet allSaved() {
-        return new FeedSet(null, null, true, false, false);
+        FeedSet fs = new FeedSet();
+        fs.savedFeeds = Collections.EMPTY_SET;
+        return fs;
     }
 
     /**
      * Convenience constructor for global shared stories feed.
      */
     public static FeedSet globalShared() {
-        return new FeedSet(null, null, false, true, false);
+        FeedSet fs = new FeedSet();
+        fs.isGlobalShared = true;
+        return fs;
     }
 
     /** 
      * Convenience constructor for all shared/social feeds.
      */
     public static FeedSet allSocialFeeds() {
-        return new FeedSet(null, Collections.EMPTY_MAP, false, false, false);
+        FeedSet fs = new FeedSet();
+        fs.socialFeeds = Collections.EMPTY_MAP;
+        return fs;
     }
 
     /** 
      * Convenience constructor for a folder.
      */
     public static FeedSet folder(String folderName, Set<String> feedIds) {
-        FeedSet fs = new FeedSet(feedIds, null, false, false, false);
+        FeedSet fs = new FeedSet();
+        fs.feeds = Collections.unmodifiableSet(feedIds);
         fs.setFolderName(folderName);
         return fs;
     }
@@ -188,11 +157,11 @@ public class FeedSet implements Serializable {
     }
 
     public boolean isAllNormal() {
-        return this.isAllNormal;
+        return ((feeds != null) && (feeds.size() < 1));
     }
 
     public boolean isAllSocial() {
-        return this.isAllSocial;
+        return ((socialFeeds != null) && (socialFeeds.size() < 1));
     }
 
     public boolean isAllRead() {
@@ -200,7 +169,7 @@ public class FeedSet implements Serializable {
     }
 
     public boolean isAllSaved() {
-        return this.isAllSaved;
+        return (((savedFeeds != null) && (savedFeeds.size() < 1)) || ((savedTags != null) && (savedTags.size() < 1)));
     }
 
     public boolean isGlobalShared() {
@@ -247,71 +216,12 @@ public class FeedSet implements Serializable {
         return result;
     }
 
-    // TODO: get rid of this compat serialisation hack when we switch to an object store!
-
-    private static final String COM_SER_NUL = "NUL";
-
     public String toCompactSerial() {
-        StringBuilder s = new StringBuilder("FS|");
-        if (feeds == null) {
-            s.append(COM_SER_NUL).append("|");
-        } else {
-            s.append(TextUtils.join(",", feeds)).append("|");
-        }
-        if (socialFeeds == null) {
-            s.append(COM_SER_NUL).append("|");
-        } else {
-            Iterator<Map.Entry<String,String>> i = socialFeeds.entrySet().iterator();
-            while (i.hasNext()) {
-                Map.Entry<String,String> e = i.next();
-                s.append(e.getKey()).append(":").append(e.getValue());
-                if (i.hasNext()) s.append(",");
-            }
-            s.append("|");
-        }
-        s.append(isAllSaved);
-        s.append("|");
-        s.append(isGlobalShared);
-        s.append("|");
-        s.append(isAllRead);
-        return s.toString();
+        return DatabaseConstants.JsonHelper.toJson(this);
     }
 
     public static FeedSet fromCompactSerial(String s) {
-        String[] fields = TextUtils.split(s, "\\|");
-        if ((fields.length != 6) || (!fields[0].equals("FS"))) throw new IllegalArgumentException("invalid compact form");
-        if (! fields[1].equals(COM_SER_NUL)) {
-            HashSet<String> feeds = new HashSet<String>();
-            for (String id : TextUtils.split(fields[1], ",")) feeds.add(id);
-            return new FeedSet(feeds, null, false, false, false);
-        }
-        if (! fields[2].equals(COM_SER_NUL)) {
-            HashMap<String,String> socialFeeds = new HashMap<String,String>();
-            for (String pair : TextUtils.split(fields[2], ",")) {
-                String[] kv = TextUtils.split(pair, ":");
-                if (kv.length != 2) throw new IllegalArgumentException("invalid compact form");
-                socialFeeds.put(kv[0], kv[1]);
-            }
-            return new FeedSet(null, socialFeeds, false, false, false);
-        }
-        if (fields[3].equals(Boolean.TRUE.toString())) {
-            return new FeedSet(null, null, true, false, false);
-        }
-        if (fields[4].equals(Boolean.TRUE.toString())) {
-            return new FeedSet(null, null, false, true, false);
-        }
-        if (fields[5].equals(Boolean.TRUE.toString())) {
-            return new FeedSet(null, null, false, false, true);
-        }
-        throw new IllegalArgumentException("invalid compact form");
-    }
-
-    private int booleanCardinality(boolean... args) {
-        int card = 0;
-        for (boolean b : args) {
-            if (b) card++;
-        }
-        return card;
+        return DatabaseConstants.JsonHelper.fromJson(s, FeedSet.class);
     }
 
     @Override
@@ -323,10 +233,9 @@ public class FeedSet implements Serializable {
         if ( !TextUtils.equals(folderName, s.folderName)) return false;
         if ( (feeds != null) && (s.feeds != null) && s.feeds.equals(feeds) ) return true;
         if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
-        if ( isAllNormal && s.isAllNormal ) return true;
-        if ( isAllSocial && s.isAllSocial ) return true;
+        if ( (savedFeeds != null) && (s.savedFeeds != null) && s.savedFeeds.equals(savedFeeds) ) return true;
+        if ( (savedTags != null) && (s.savedTags != null) && s.savedTags.equals(savedTags) ) return true;
         if ( isAllRead && s.isAllRead ) return true;
-        if ( isAllSaved && s.isAllSaved ) return true;
         if ( isGlobalShared && s.isGlobalShared ) return true;
         return false;
     }
@@ -334,15 +243,17 @@ public class FeedSet implements Serializable {
     @Override
     public int hashCode() {
         int result = 17;
-        if (isAllNormal) result = 11;
-        if (isAllSocial) result = 12;
-        if (isAllSaved) result = 13;
+        if (isAllNormal()) result = 11;
+        if (isAllSocial()) result = 12;
+        if (isAllSaved()) result = 13;
         if (isGlobalShared) result = 14;
         if (isAllRead) result = 15;
         if (feeds != null) result = 31 * result + feeds.hashCode();
-        if (socialFeeds != null) result = 31 * result + socialFeeds.hashCode();
-        if (folderName != null) result = 31 * result + folderName.hashCode();
-        if (searchQuery != null) result = 31 * result + searchQuery.hashCode();
+        if (socialFeeds != null) result = 37 * result + socialFeeds.hashCode();
+        if (folderName != null) result = 41 * result + folderName.hashCode();
+        if (searchQuery != null) result = 43 * result + searchQuery.hashCode();
+        if (savedFeeds != null) result = 47 * result + savedFeeds.hashCode();
+        if (savedTags != null) result = 53 * result + savedTags.hashCode();
         return result;
     }
 

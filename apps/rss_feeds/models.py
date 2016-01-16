@@ -142,7 +142,13 @@ class Feed(models.Model):
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_FREE)
-
+    
+    @classmethod
+    def generate_hash_address_and_link(cls, feed_address, feed_link):
+        if not feed_address: feed_address = ""
+        if not feed_link: feed_link = ""
+        return hashlib.sha1(feed_address+feed_link).hexdigest()
+        
     def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,
@@ -206,7 +212,7 @@ class Feed(models.Model):
         
         feed_address = self.feed_address or ""
         feed_link = self.feed_link or ""
-        self.hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
+        self.hash_address_and_link = self.generate_hash_address_and_link(feed_address, feed_link)
             
         max_feed_title = Feed._meta.get_field('feed_title').max_length
         if len(self.feed_title) > max_feed_title:
@@ -227,7 +233,7 @@ class Feed(models.Model):
             if not duplicate_feeds:
                 feed_address = self.feed_address or ""
                 feed_link = self.feed_link or ""
-                hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
+                hash_address_and_link = self.generate_hash_address_and_link(feed_address, feed_link)
                 duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
@@ -749,8 +755,11 @@ class Feed(models.Model):
             self.active_subscribers != original_active_subs or
             self.premium_subscribers != original_premium_subscribers or
             self.active_premium_subscribers != original_active_premium_subscribers):
-            self.save(update_fields=['num_subscribers', 'active_subscribers', 
-                                     'premium_subscribers', 'active_premium_subscribers'])
+            if original_premium_subscribers == -1 or original_active_premium_subscribers == -1:
+                self.save()
+            else:
+                self.save(update_fields=['num_subscribers', 'active_subscribers', 
+                                         'premium_subscribers', 'active_premium_subscribers'])
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -866,7 +875,7 @@ class Feed(models.Model):
         map_f = """
             function() {
                 var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
-                var hour = this.story_date.getHours();
+                var hour = this.story_date.getUTCHours();
                 var day = this.story_date.getDay();
                 emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
             }
@@ -1628,6 +1637,8 @@ class Feed(models.Model):
         elif spd == 0:
             if subs > 1:
                 total = 60 * 6
+            elif subs == 1:
+                total = 60 * 12
             else:
                 total = 60 * 24
             months_since_last_story = seconds_timesince(self.last_story_date) / (60*60*24*30)
@@ -1654,8 +1665,11 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 2 day max
-        total = min(total, 60*24*2)
+        # 24 hour max for premiums, 48 hour max for free
+        if subs >= 1:
+            total = min(total, 60*24*1)
+        else:
+            total = min(total, 60*24*2)
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
@@ -2577,8 +2591,9 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.push_history or []
 
         history = [[date, code, message]] + history
-        if code and code >= 400:
-            history = history[:50]
+        any_exceptions = any([c for d, c, m in history if c >= 400])
+        if any_exceptions:
+            history = history[:25]
         else:
             history = history[:5]
 

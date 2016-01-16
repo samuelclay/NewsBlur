@@ -24,7 +24,6 @@ from utils.view_functions import required_params
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.ratelimit import ratelimit
 
-
 IGNORE_AUTOCOMPLETE = [
     "facebook.com/feeds/notifications.php",
     "inbox",
@@ -201,6 +200,14 @@ def load_feed_statistics(request, feed_id):
     else:
         stats['story_count_history'] = story_count_history
     
+    # Rotate hours to match user's timezone offset
+    localoffset = timezone.utcoffset(datetime.datetime.utcnow())
+    hours_offset = int(localoffset.total_seconds() / 3600)
+    rotated_hours = {}
+    for hour, value in stats['story_hours_history'].items():
+        rotated_hours[str(int(hour)+hours_offset)] = value
+    stats['story_hours_history'] = rotated_hours
+    
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers
     stats['num_subscribers'] = feed.num_subscribers
@@ -323,7 +330,10 @@ def exception_change_feed_address(request):
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
-        feed, _ = Feed.objects.get_or_create(feed_address=feed_address, feed_link=feed.feed_link)
+        try:
+            feed = Feed.objects.get(hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link))
+        except Feed.DoesNotExist:
+            feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
         code = 1
         if feed.pk != original_feed.pk:
             try:
@@ -405,7 +415,10 @@ def exception_change_feed_link(request):
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
-        feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
+        try:
+            feed = Feed.objects.get(hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link))
+        except Feed.DoesNotExist:
+            feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
         code = 1
         if feed.pk != original_feed.pk:
             try:

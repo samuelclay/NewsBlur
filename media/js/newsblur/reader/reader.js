@@ -286,7 +286,7 @@
                     west__paneSelector:     ".left-pane",
                     west__size:             this.model.preference('feed_pane_size'),
                     west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
-                    west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
+                    west__onresize_end:     _.bind(this.save_feed_pane_size, this),
                     // west__initHidden:       this.options.hide_sidebar,
                     west__spacing_open:     this.options.hide_sidebar ? 1 : 1,
                     resizerDragOpacity:     0.6,
@@ -294,10 +294,11 @@
                     enableCursorHotkey:     false,
                     togglerLength_open:     0
                 }); 
-            
-                if (this.model.preference('feed_pane_size') < 242) {
-                    this.layout.outerLayout.resizeAll();
-                }
+                
+                // What the hell is this handling?
+                // if (this.model.preference('feed_pane_size') < 242) {
+                //     this.layout.outerLayout.resizeAll();
+                // }
 
                 this.layout.leftLayout = $('.left-pane').layout({
                     closable:               false,
@@ -2640,8 +2641,8 @@
         
         make_feed_title_in_stories: function(options) {
             if ((this.flags.search || this.flags.searching)
-                && NEWSBLUR.app.story_titles_header) {
-                // console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
+                && NEWSBLUR.app.story_titles_header.search_has_focus()) {
+                console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
                 return;
             }
             

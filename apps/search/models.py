@@ -1,3 +1,4 @@
+import re
 import time
 import datetime
 import pymongo
@@ -270,7 +271,8 @@ class SearchStory:
     def query(cls, feed_ids, query, order, offset, limit):
         cls.create_elasticsearch_mapping()
         cls.ES.indices.refresh()
-        
+
+        query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric        
         sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
         feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:1000])
