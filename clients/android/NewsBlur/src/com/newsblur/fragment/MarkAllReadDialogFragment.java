@@ -10,19 +10,19 @@ import android.os.Bundle;
 import android.app.DialogFragment;
 
 public class MarkAllReadDialogFragment extends DialogFragment {
-    private static final String FOLDER_NAME = "folder_name";
+    private static final String TITLE = "title";
     
     public interface MarkAllReadDialogListener {
-        public void onMarkAllRead();
-        public void onCancel();
+        void onMarkAllRead();
+        void onCancel();
     }
     
     private MarkAllReadDialogListener listener;
     
-    public static MarkAllReadDialogFragment newInstance(String folderName) {
+    public static MarkAllReadDialogFragment newInstance(String title) {
         MarkAllReadDialogFragment fragment = new MarkAllReadDialogFragment();
         Bundle args = new Bundle();
-        args.putString(FOLDER_NAME, folderName);
+        args.putString(TITLE, title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -36,7 +36,7 @@ public class MarkAllReadDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getArguments().getString(FOLDER_NAME))
+        builder.setTitle(getArguments().getString(TITLE))
                .setItems(R.array.mark_all_read_options, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int which) {
                        if (which == 0) {

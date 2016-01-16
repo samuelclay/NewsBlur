@@ -19,4 +19,8 @@ public enum MarkAllReadConfirmation {
     public boolean foldersRequireConfirmation() {
         return this != NONE;
     }
+
+    public boolean feedsRequireConfirmation() {
+        return this == FEED_AND_FOLDER;
+    }
 }
