@@ -280,7 +280,7 @@
     </string-array>
     <string name="default_volume_key_navigation_value">OFF</string>
 
-    <string name="settings_confirm_mark_all_read">Mark All Read Confirmation</string>
+    <string name="settings_confirm_mark_all_read">Confirm Mark All Read</string>
     <string name="none">None</string>
     <string name="feed_and_folder">Feeds and Folders</string>
     <string name="folder_only">Folders Only</string>
