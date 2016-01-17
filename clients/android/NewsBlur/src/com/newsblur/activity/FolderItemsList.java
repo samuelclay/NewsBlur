@@ -86,10 +86,4 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
             itemListFragment.setDefaultFeedView(value);
         }
     }
-
-    @Override
-    public void onCancel() {
-        // do nothing
-    }
-
 }

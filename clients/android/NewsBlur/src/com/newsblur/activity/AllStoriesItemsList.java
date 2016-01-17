@@ -83,10 +83,4 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
             itemListFragment.setDefaultFeedView(value);
         }
     }
-
-    @Override
-    public void onCancel() {
-        // do nothing
-    }
-
 }

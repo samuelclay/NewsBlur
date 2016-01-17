@@ -14,7 +14,6 @@ public class MarkAllReadDialogFragment extends DialogFragment {
     
     public interface MarkAllReadDialogListener {
         void onMarkAllRead();
-        void onCancel();
     }
     
     private MarkAllReadDialogListener listener;
@@ -41,10 +40,7 @@ public class MarkAllReadDialogFragment extends DialogFragment {
                    public void onClick(DialogInterface dialog, int which) {
                        if (which == 0) {
                            listener.onMarkAllRead();
-                       } else {
-                           listener.onCancel();
                        }
-
                }
         });
         return builder.create();

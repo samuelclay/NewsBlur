@@ -111,9 +111,4 @@ public class FeedItemsList extends ItemsList implements MarkAllReadDialogListene
     public void onMarkAllRead() {
         super.markItemListAsRead();
     }
-
-    @Override
-    public void onCancel() {
-        // do nothing
-    }
 }
