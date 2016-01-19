@@ -2051,6 +2051,7 @@ class MStory(mongo.Document):
             for story in extra_stories:
                 if story.share_count: 
                     shared_story_count += 1
+                    extra_stories_count -= 1
                     continue
                 story.delete()
             if verbose:
