@@ -218,7 +218,10 @@ class FetchFeed:
         videos_json = requests.get("https://www.googleapis.com/youtube/v3/videos?part=contentDetails%%2Csnippet&id=%s&key=%s" %
              (','.join(video_ids), settings.YOUTUBE_API_KEY))
         videos = json.decode(videos_json.content)
-
+        if 'error' in videos:
+            logging.debug(" ***> ~FRYoutube returned an error: ~FM~SB%s" % (videos))
+            return
+            
         data = {}
         data['title'] = ("%s's YouTube Videos" % username if 'Uploads' not in username else username)
         data['link'] = channel_url
@@ -228,7 +231,7 @@ class FetchFeed:
         data['docs'] = None
         data['feed_url'] = address
         rss = feedgenerator.Atom1Feed(**data)
-
+        
         for video in videos['items']:
             thumbnail = video['snippet']['thumbnails'].get('maxres')
             if not thumbnail:
@@ -312,8 +315,8 @@ class ProcessFeed:
                 if self.fpf.href.endswith('feedburner.com/atom.xml'):
                     return FEED_ERRHTTP, ret_values
                 redirects, non_redirects = self.feed.count_redirects_in_history('feed')
-                self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (20-len(redirects)))
-                if len(redirects) >= 20 or len(non_redirects) == 0:
+                self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (10-len(redirects)))
+                if len(redirects) >= 10 or len(non_redirects) == 0:
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
                     self.feed.fetched_once = True

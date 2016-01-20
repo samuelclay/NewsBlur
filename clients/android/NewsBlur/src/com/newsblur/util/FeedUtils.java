@@ -151,9 +151,6 @@ public class FeedUtils {
         ReadingAction ra = (read ? ReadingAction.markStoryRead(story.storyHash) : ReadingAction.markStoryUnread(story.storyHash));
         dbHelper.enqueueAction(ra);
 
-        // update the local object to show as read before DB is touched
-        story.read = read;
-        
         // update unread state and unread counts in the local DB
         Set<FeedSet> impactedFeeds = dbHelper.setStoryReadState(story, read);
         NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);

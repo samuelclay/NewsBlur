@@ -84,6 +84,7 @@ public class PrefsUtils {
         s.append("%0Ausername: ").append(getUserDetails(context).username);
         s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
         s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());
+        s.append("%0Apending actions: ").append(NBSyncService.getPendingInfo());
         s.append("%0Apremium: ");
         if (NBSyncService.isPremium == Boolean.TRUE) {
             s.append("yes");

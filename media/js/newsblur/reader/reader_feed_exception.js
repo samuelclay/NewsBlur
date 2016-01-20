@@ -531,6 +531,21 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         });
     },
     
+    animate_saved: function() {
+        var $status = $('.NB-exception-option-view .NB-exception-option-status', this.$modal);
+        $status.text('Saved').animate({
+            'opacity': 1
+        }, {
+            'queue': false,
+            'duration': 600,
+            'complete': function() {
+                _.delay(function() {
+                    $status.animate({'opacity': 0}, {'queue': false, 'duration': 1000});
+                }, 300);
+            }
+        });
+    },
+    
     handle_change: function(elem, e) {
         var self = this;
         
