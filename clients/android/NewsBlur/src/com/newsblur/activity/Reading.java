@@ -691,14 +691,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         boolean unreadFound = false;
         // start searching just after the current story
-        int candidate = pager.getCurrentItem() + 1;
+        int currentIndex = pager.getCurrentItem();
+        int candidate = currentIndex + 1;
         unreadSearch:while (!unreadFound) {
-            // if we've reached the end of the list, loop back to the beginning
+            // if we've reached the end of the list, start searching backward from the current story
             if (candidate >= readingAdapter.getCount()) {
-                candidate = 0;
+                candidate = currentIndex - 1;
             }
-            // if we have looped all the way around to the story we are on, there aren't any left
-            if (candidate == pager.getCurrentItem()) {
+            // if we have looked all the way back to the first story, there aren't any left
+            if (candidate < 0) {
                 break unreadSearch;
             }
             Story story = readingAdapter.getStory(candidate);
@@ -710,7 +711,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             // iterate through the stories in our cursor until we find an unread one
             if (story != null) {
                 if (story.read) {
-                    candidate++;
+                    if (candidate > currentIndex ) {
+                        // if we are still searching past the current story, search forward
+                        candidate++;
+                    } else {
+                        // if we hit the end and re-started before the current story, search backward
+                        candidate--;
+                    }
                     continue unreadSearch;
                 } else {
                     unreadFound = true;
