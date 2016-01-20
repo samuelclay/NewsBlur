@@ -1270,11 +1270,11 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1])
 
     @classmethod
-    def trim_old_stories(cls, start=0, verbose=True, dryrun=False):
+    def trim_old_stories(cls, start=0, verbose=True, dryrun=False, total=0):
         now = datetime.datetime.now()
         month_ago = now - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         feed_count = Feed.objects.latest('pk').pk
-        total = 0
+
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
                 print "\n\n -------------------------- %s (%s deleted so far) --------------------------\n\n" % (feed_id, total)
@@ -1337,7 +1337,11 @@ class Feed(models.Model):
         if read_stories_last_month == 0:
             original_cutoff = cutoff
             cutoff = min(cutoff, 25)
-            logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
+            try:
+                logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
+            except ValueError, e:
+                logging.debug("   ***> [%-30s] Error trimming: %s" % (self, e))
+                pass
         
         return cutoff
                 
