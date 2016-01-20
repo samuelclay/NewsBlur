@@ -17,6 +17,8 @@ import butterknife.FindView;
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.service.NBSyncService;
@@ -24,6 +26,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
@@ -32,7 +35,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, MarkAllReadDialogListener {
 
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
@@ -126,6 +129,17 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
 	public void markItemListAsRead() {
+        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
+        if (confirmation.feedSetRequiresConfirmation(fs)) {
+            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
+            dialog.show(fragmentManager, "dialog");
+        } else {
+            onMarkAllRead(fs);
+        }
+    }
+
+    @Override
+    public void onMarkAllRead(FeedSet feedSet) {
         if (itemListFragment != null) {
             // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
             // dataset changes rapidly as happens when marking-all-read and when the fragment is

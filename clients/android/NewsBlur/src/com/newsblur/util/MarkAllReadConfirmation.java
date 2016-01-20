@@ -16,11 +16,11 @@ public enum MarkAllReadConfirmation {
         this.parameterValue = parameterValue;
     }
 
-    public boolean foldersRequireConfirmation() {
-        return this != NONE;
-    }
-
-    public boolean feedsRequireConfirmation() {
-        return this == FEED_AND_FOLDER;
+    public boolean feedSetRequiresConfirmation(FeedSet fs) {
+        if (fs.isFolder() || fs.isAllNormal()) {
+            return this != NONE;
+        } else {
+            return this == FEED_AND_FOLDER;
+        }
     }
 }

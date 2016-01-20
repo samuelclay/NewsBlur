@@ -39,6 +39,7 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
@@ -244,20 +245,24 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_feed_as_read) {
             String feedId = adapter.getChild(groupPosition, childPosition);
+            FeedSet fs = null;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 SocialFeed socialFeed = adapter.getSocialFeed(feedId);
-                FeedUtils.markFeedsRead(FeedSet.singleSocialFeed(socialFeed.userId, socialFeed.username), null, null, getActivity());
+                fs = FeedSet.singleSocialFeed(socialFeed.userId, socialFeed.username);
             } else {
-                FeedUtils.markFeedsRead(FeedSet.singleFeed(feedId), null, null, getActivity());
+                fs = FeedSet.singleFeed(feedId);
             }
+            markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
+            FeedSet fs = null;
 			if (!adapter.isFolderRoot(groupPosition)) {
 				String folderName = adapter.getGroup(groupPosition);
-                FeedUtils.markFeedsRead(FeedUtils.feedSetFromFolderName(folderName), null, null, getActivity());
+                fs = FeedUtils.feedSetFromFolderName(folderName);
 			} else {
-                FeedUtils.markFeedsRead(FeedSet.allFeeds(), null, null, getActivity());
+                fs = FeedSet.allFeeds();
 			}
+            markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_choose_folders) {
             DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(adapter.getChild(groupPosition, childPosition)));
@@ -266,6 +271,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		return super.onContextItemSelected(item);
 	}
+
+    private void markFeedsAsRead(FeedSet fs) {
+        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(getActivity());
+        if (confirmation.feedSetRequiresConfirmation(fs)) {
+            // TODO dialog
+        } else {
+            FeedUtils.markFeedsRead(fs, null, null, getActivity());
+        }
+    }
 
 	public void changeState(StateFilter state) {
 		currentState = state;

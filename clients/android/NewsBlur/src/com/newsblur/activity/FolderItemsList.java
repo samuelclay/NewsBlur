@@ -7,17 +7,14 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.FolderItemListFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
-public class FolderItemsList extends ItemsList implements MarkAllReadDialogListener {
+public class FolderItemsList extends ItemsList {
 
 	public static final String EXTRA_FOLDER_NAME = "folderName";
 	private String folderName;
@@ -52,22 +49,6 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 		inflater.inflate(R.menu.itemslist, menu);
 		return true;
 	}
-
-	@Override
-	public void markItemListAsRead() {
-        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
-        if (confirmation.foldersRequireConfirmation()) {
-            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(folderName);
-            dialog.show(fragmentManager, "dialog");
-        } else {
-            onMarkAllRead();
-        }
-	}
-
-    @Override
-    public void onMarkAllRead() {
-        super.markItemListAsRead();
-    }
 
     @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {

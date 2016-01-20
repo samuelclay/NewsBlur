@@ -11,16 +11,13 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
-public class FeedItemsList extends ItemsList implements MarkAllReadDialogListener {
+public class FeedItemsList extends ItemsList {
 
     public static final String EXTRA_FEED = "feed";
     public static final String EXTRA_FOLDER_NAME = "folderName";
@@ -94,21 +91,5 @@ public class FeedItemsList extends ItemsList implements MarkAllReadDialogListene
         if (itemListFragment != null) {
             itemListFragment.setDefaultFeedView(value);
         }
-    }
-
-    @Override
-    public void markItemListAsRead() {
-        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
-        if (confirmation.feedsRequireConfirmation()) {
-            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(feed.title);
-            dialog.show(fragmentManager, "dialog");
-        } else {
-            onMarkAllRead();
-        }
-    }
-
-    @Override
-    public void onMarkAllRead() {
-        super.markItemListAsRead();
     }
 }

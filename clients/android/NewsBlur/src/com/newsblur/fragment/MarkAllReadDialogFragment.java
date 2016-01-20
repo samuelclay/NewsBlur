@@ -1,6 +1,7 @@
 package com.newsblur.fragment;
 
 import com.newsblur.R;
+import com.newsblur.util.FeedSet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,18 +11,18 @@ import android.os.Bundle;
 import android.app.DialogFragment;
 
 public class MarkAllReadDialogFragment extends DialogFragment {
-    private static final String TITLE = "title";
+    private static final String FEED_SET = "feed_set";
     
     public interface MarkAllReadDialogListener {
-        void onMarkAllRead();
+        void onMarkAllRead(FeedSet feedSet);
     }
     
     private MarkAllReadDialogListener listener;
     
-    public static MarkAllReadDialogFragment newInstance(String title) {
+    public static MarkAllReadDialogFragment newInstance(FeedSet feedSet) {
         MarkAllReadDialogFragment fragment = new MarkAllReadDialogFragment();
         Bundle args = new Bundle();
-        args.putString(TITLE, title);
+        args.putSerializable(FEED_SET, feedSet);
         fragment.setArguments(args);
         return fragment;
     }
@@ -35,11 +36,22 @@ public class MarkAllReadDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getArguments().getString(TITLE))
+
+        final FeedSet feedSet = (FeedSet)getArguments().getSerializable(FEED_SET);
+        String title = null;
+        if (feedSet.isAllNormal()) {
+            title = getResources().getString(R.string.all_stories);
+        } else if (feedSet.isFolder()) {
+            title = feedSet.getFolderName();
+        } else {
+            title = feedSet.getSingleFeed();
+        }
+
+        builder.setTitle(title)
                .setItems(R.array.mark_all_read_options, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int which) {
                        if (which == 0) {
-                           listener.onMarkAllRead();
+                           listener.onMarkAllRead(feedSet);
                        }
                }
         });
