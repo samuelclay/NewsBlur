@@ -682,7 +682,8 @@ a.NB-show-profile {
     white-space: nowrap;
     float: right;
     
-    line-height: 20px;
+    line-height: 0px;
+    height: 20px;
     font-family: Helvetica, sans-serif;
     font-size: 14px;
     display: block;
