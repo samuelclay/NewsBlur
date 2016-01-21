@@ -89,23 +89,23 @@
     margin: 0 90px;
 }
 
-.NB-ipad-wide#story_pane .nb-story-comments-public-teaser, 
-.NB-ipad-wide#story_pane .nb-story-comments-public-header,
-.NB-ipad-wide#story_pane .nb-story-comments-friends-header,
+.NB-ipad-wide#story_pane .NB-story-comments-public-teaser,
+.NB-ipad-wide#story_pane .NB-story-comments-public-header,
+.NB-ipad-wide#story_pane .NB-story-comments-friends-header,
 .NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
     padding-left: 90px;
     padding-right: 90px;
 }
 
-.NB-ipad-wide#story_pane .nb-story-comment {
+.NB-ipad-wide#story_pane .NB-story-comment {
     padding: 0 90px 2px 150px;
 }
 
-.NB-ipad-wide#story_pane .nb-story-comment .nb-user-avatar,
+.NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     left: 88px;
 }
-.NB-ipad-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
+.NB-ipad-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     left: 108px;
 }
 
@@ -136,28 +136,28 @@
     padding: 0 30px;
 }
 
-.NB-iphone-wide#story_pane .nb-story-comments-public-teaser,
-.NB-iphone-wide#story_pane .nb-story-comments-public-header,
-.NB-iphone-wide#story_pane .nb-story-comments-friends-header,
+.NB-iphone-wide#story_pane .NB-story-comments-public-teaser,
+.NB-iphone-wide#story_pane .NB-story-comments-public-header,
+.NB-iphone-wide#story_pane .NB-story-comments-friends-header,
 .NB-iphone-wide#story_pane .NB-story-comments-shares-teaser,
-.NB-ipad-narrow#story_pane .nb-story-comments-public-teaser,
-.NB-ipad-narrow#story_pane .nb-story-comments-public-header,
-.NB-ipad-narrow#story_pane .nb-story-comments-friends-header,
+.NB-ipad-narrow#story_pane .NB-story-comments-public-teaser,
+.NB-ipad-narrow#story_pane .NB-story-comments-public-header,
+.NB-ipad-narrow#story_pane .NB-story-comments-friends-header,
 .NB-ipad-narrow#story_pane .NB-story-comments-shares-teaser {
     padding-left: 30px;
     padding-right: 30px;
 }
 
-.NB-iphone-wide#story_pane .nb-story-comment,
-.NB-ipad-narrow#story_pane .nb-story-comment {
+.NB-iphone-wide#story_pane .NB-story-comment,
+.NB-ipad-narrow#story_pane .NB-story-comment {
     padding: 0 30px 2px 90px;
 }
 .NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar {
     left: 26px;
 }
-.NB-iphone-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar,
-.NB-ipad-narrow#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
+.NB-iphone-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+.NB-ipad-narrow#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     left: 45px;
 }
 
@@ -635,13 +635,13 @@ del {
     float: none;
 }
 
-.nb-story-comments-label {
+.NB-story-comments-label {
     float: left;
     margin-right: 2px;
     white-space: nowrap;
 }
 
-.nb-story-share-label {
+.NB-story-share-label {
     float: right;
     margin-left: 2px;
     white-space: nowrap;
@@ -1121,7 +1121,7 @@ a.NB-show-profile {
     vertical-align: middle;
     height: 22px;
     width: 22px;
-    margin: 0 4px 6px 0;
+    margin: 0 4px 0 0;
     cursor: pointer;
 }
 
