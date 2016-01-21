@@ -10,6 +10,7 @@ from apps.profile.tasks import EmailNewUser
 from apps.social.models import MActivity
 from apps.profile.models import blank_authenticate, RNewUserQueue
 from utils import log as logging
+from dns.resolver import query, NXDOMAIN
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username or Email"), max_length=30,
@@ -115,6 +116,12 @@ class SignupForm(forms.Form):
             if any([banned in email for banned in ['mailwire24', 'mailbox9', 'scintillamail', 'bluemailboxes', 'devmailing']]):
                 logging.info(" ***> [%s] Spammer signup banned: %s/%s" % (username, password, email))
                 raise forms.ValidationError('Seriously, fuck off spammer.')
+            try:
+                domain = email.rsplit('@', 1)[-1]
+                if not query(domain, 'MX'):
+                    raise forms.ValidationError('Sorry, that email is invalid.')
+            except NXDOMAIN:
+                raise forms.ValidationError('Sorry, that email is invalid.')
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
             user_auth = authenticate(username=username, password=password)
