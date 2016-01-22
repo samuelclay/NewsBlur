@@ -297,6 +297,7 @@ def load_feeds(request):
         'social_services': social_services,
         'user_profile': user.profile,
         "is_staff": user.is_staff,
+        'user_id': user.pk,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
         'starred_counts': starred_counts,
