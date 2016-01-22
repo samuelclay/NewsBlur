@@ -1663,10 +1663,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"%@/social/like_comment",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     } else {
         urlString = [NSString stringWithFormat:@"%@/social/remove_like_comment",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     }
     
     NSURL *url = [NSURL URLWithString:urlString];
@@ -1985,7 +1985,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)subscribeToBlurblog {
     [appDelegate.storyPageControl showShareHUD:@"Following"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
-                     NEWSBLUR_URL];
+                     self.appDelegate.url];
     
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -2232,7 +2232,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     ASIFormDataRequest *request = [self formRequestWithURL:urlString];
     [request addPostValue:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
     [request addPostValue:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];

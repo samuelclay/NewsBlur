@@ -183,7 +183,7 @@
     HUD.labelText = @"Authenticating";
     
     NSString *urlString = [NSString stringWithFormat:@"%@/api/login",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
@@ -234,7 +234,7 @@
     HUD.labelText = @"Registering...";
     [self.errorLabel setHidden:YES];
     NSString *urlString = [NSString stringWithFormat:@"%@/api/signup",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];

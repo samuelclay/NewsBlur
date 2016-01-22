@@ -153,7 +153,7 @@
     }
     if (buttonIndex == 1) {
         NSString *urlS = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
-                          NEWSBLUR_URL, alertTextField.text];
+                          self.appDelegate.url, alertTextField.text];
         NSURL *url = [NSURL URLWithString:urlS];
         
         __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];

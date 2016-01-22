@@ -105,7 +105,7 @@
     NSString *urlString = [NSString stringWithFormat:@
                            "%@/social/profile?user_id=%@"
                            "&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];
 

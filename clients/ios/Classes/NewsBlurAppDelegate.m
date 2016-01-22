@@ -66,6 +66,7 @@
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
 
+@property (nonatomic, strong) NSString *cachedURL;
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 
@@ -345,7 +346,7 @@
 }
 
 - (void)setupReachability {
-    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+    Reachability* reach = [Reachability reachabilityWithHostname:self.host];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
@@ -362,13 +363,43 @@
 
 - (void)reachabilityChanged:(id)something {
     NSLog(@"Reachability changed: %@", something);
-//    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+//    Reachability* reach = [Reachability reachabilityWithHostname:self.host];
 
 //    if (reach.isReachable && feedsViewController.isOffline) {
 //        [feedsViewController loadOfflineFeeds:NO];
 ////    } else {
 ////        [feedsViewController loadOfflineFeeds:NO];
 //    }
+}
+
+- (NSString *)url {
+    if (!self.cachedURL) {
+        NSString *url = [[NSUserDefaults standardUserDefaults] objectForKey:@"custom_domain"];
+        
+        if (url.length) {
+            if ([url rangeOfString:@"://"].location == NSNotFound) {
+                url = [@"http://" stringByAppendingString:url];
+            }
+        } else {
+            url = DEFAULT_NEWSBLUR_URL;
+        }
+        
+        self.cachedURL = url;
+    }
+    
+    return self.cachedURL;
+}
+
+- (NSString *)host {
+    NSString *url = self.url;
+    NSString *host = nil;
+    NSRange range = [url rangeOfString:@"://"];
+    
+    if (url.length && range.location != NSNotFound) {
+        host = [url substringFromIndex:range.location + range.length];
+    }
+    
+    return host;
 }
 
 #pragma mark -
@@ -1027,7 +1058,7 @@
 
 - (void)refreshUserProfile:(void(^)())callback {
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/social/load_user_profile",
-                                       NEWSBLUR_URL]];
+                                       self.url]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
     [request setValidatesSecureCertificate:NO];
@@ -1065,7 +1096,7 @@
         } else {
             NSLog(@"Logging out...");
             NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
-                              NEWSBLUR_URL];
+                              self.url];
             NSURL *url = [NSURL URLWithString:urlS];
             
             __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -2513,7 +2544,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2561,7 +2592,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2613,7 +2644,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2659,7 +2690,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2750,7 +2781,7 @@
     
     NSArray *cachePaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *dbPath = [cachePaths objectAtIndex:0];
-    NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_HOST];
+    NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", self.host];
     NSString *path = [dbPath stringByAppendingPathComponent:dbName];
     [self applicationDocumentsDirectory];
     
@@ -3057,7 +3088,7 @@
 
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableArray *completedHashes = [NSMutableArray array];
     for (NSArray *storyHashes in [hashes allValues]) {

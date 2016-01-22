@@ -78,7 +78,7 @@
         NSString *feedId = [self feedId];
         NSURL *url = [NSURL URLWithString:[NSString
                                            stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
-                                           NEWSBLUR_URL, feedId]];
+                                           self.appDelegate.url, feedId]];
 
         __weak __typeof(&*self)weakSelf = self;
         AFHTTPRequestOperation *request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];

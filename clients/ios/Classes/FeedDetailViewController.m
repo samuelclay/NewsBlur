@@ -668,23 +668,23 @@
     
     if (storiesCollection.isSocialView) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             [storiesCollection.activeFeed objectForKey:@"user_id"],
                             storiesCollection.feedPage];
     } else if (storiesCollection.isSavedView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/starred_stories/?page=%d&v=2&tag=%@",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage,
                             [storiesCollection.activeSavedStoryTag urlEncode]];
     } else if (storiesCollection.isReadView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/read_stories/?page=%d&v=2",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?include_hidden=true&page=%d",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             [storiesCollection.activeFeed objectForKey:@"id"],
                             storiesCollection.feedPage];
     }
@@ -874,24 +874,24 @@
         if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"%@/social/river_stories/?global_feed=true&page=%d",
-                                NEWSBLUR_URL,
+                                self.appDelegate.url,
                                 storiesCollection.feedPage];
             
         } else {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"%@/social/river_stories/?page=%d", 
-                                NEWSBLUR_URL,
+                                self.appDelegate.url,
                                 storiesCollection.feedPage];
         }
     } else if (storiesCollection.isSavedView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/starred_stories/?page=%d&v=2",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage];
     } else if (storiesCollection.isReadView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/read_stories/?page=%d&v=2",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage];
     } else {
         NSString *feeds = @"";
@@ -902,7 +902,7 @@
         }
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             feeds,
                             storiesCollection.feedPage];
     }
@@ -956,7 +956,7 @@
     if (request.isCancelled) {
         NSLog(@"Cancelled");
         return;
-    } else if ([request responseStatusCode] >= 500) {
+    } else if ([request responseStatusCode] >= 500 || [request responseStatusCode] == 404) {
         self.isOnline = NO;
         self.isShowingFetching = NO;
 //        storiesCollection.feedPage = 1;
@@ -1780,7 +1780,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSMutableArray *feedIds = [NSMutableArray array];
@@ -1923,9 +1923,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Renaming...";
     
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/rename_feed", NEWSBLUR_URL];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/rename_feed", self.appDelegate.url];
     if (storiesCollection.isRiverView) {
-        urlString = [NSString stringWithFormat:@"%@/reader/rename_folder", NEWSBLUR_URL];
+        urlString = [NSString stringWithFormat:@"%@/reader/rename_folder", self.appDelegate.url];
     }
     NSURL *url = [NSURL URLWithString:urlString];
     
@@ -1968,7 +1968,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     HUD.labelText = @"Deleting...";
     
     NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_feed", 
-                                  NEWSBLUR_URL];
+                                  self.appDelegate.url];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
@@ -1995,7 +1995,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     HUD.labelText = @"Deleting...";
     
     NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_folder", 
-                                  NEWSBLUR_URL];
+                                  self.appDelegate.url];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
@@ -2145,7 +2145,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)instafetchFeed {
     NSString *urlString = [NSString
                            stringWithFormat:@"%@/reader/refresh_feed/%@", 
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            [storiesCollection.activeFeed objectForKey:@"id"]];
     [self cancelRequests];
     ASIHTTPRequest *request = [self requestWithURL:urlString];
@@ -2197,7 +2197,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *feedIdsQuery = [NSString stringWithFormat:@"?feed_ids=%@", 
                                [[keys valueForKey:@"description"] componentsJoinedByString:@"&feed_ids="]];        
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons%@",
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            feedIdsQuery];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];

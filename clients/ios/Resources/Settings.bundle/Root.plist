@@ -600,6 +600,30 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Custom Domain</string>
+			<key>FooterText</key>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;.</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>Title</key>
+			<string>URL</string>
+			<key>Key</key>
+			<string>custom_domain</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

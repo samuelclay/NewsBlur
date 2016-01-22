@@ -98,7 +98,7 @@
         NSString *urlString = [NSString stringWithFormat:@
                                "%@/social/activities?user_id=%@&page=%i&limit=10"
                                "&category=signup&category=star&category=feedsub&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
-                               NEWSBLUR_URL,
+                               self.appDelegate.url,
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
         
