@@ -36,6 +36,7 @@ import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -46,7 +47,8 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
 public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener, 
-                                                              LoaderManager.LoaderCallbacks<Cursor> {
+                                                              LoaderManager.LoaderCallbacks<Cursor>,
+                                                              MarkAllReadDialogListener {
 
     private static final int SOCIALFEEDS_LOADER = 1;
     private static final int FOLDERS_LOADER = 2;
@@ -252,6 +254,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             } else {
                 fs = FeedSet.singleFeed(feedId);
             }
+
             markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
@@ -275,10 +278,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     private void markFeedsAsRead(FeedSet fs) {
         MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(getActivity());
         if (confirmation.feedSetRequiresConfirmation(fs)) {
-            // TODO dialog
+            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
+            dialog.show(getFragmentManager(), "dialog");
         } else {
-            FeedUtils.markFeedsRead(fs, null, null, getActivity());
+            onMarkAllRead(fs);
         }
+    }
+
+    @Override
+    public void onMarkAllRead(FeedSet feedSet) {
+        FeedUtils.markFeedsRead(feedSet, null, null, getActivity());
     }
 
 	public void changeState(StateFilter state) {

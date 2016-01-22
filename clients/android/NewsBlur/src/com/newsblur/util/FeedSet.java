@@ -172,6 +172,10 @@ public class FeedSet implements Serializable {
         return (((savedFeeds != null) && (savedFeeds.size() < 1)) || ((savedTags != null) && (savedTags.size() < 1)));
     }
 
+    public boolean isSingleSocial() {
+        return ((socialFeeds != null) && (socialFeeds.size() == 1));
+    }
+
     public boolean isGlobalShared() {
         return this.isGlobalShared;
     }

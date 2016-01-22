@@ -2,6 +2,7 @@ package com.newsblur.fragment;
 
 import com.newsblur.R;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,7 +27,7 @@ public class MarkAllReadDialogFragment extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
-    
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -43,8 +44,10 @@ public class MarkAllReadDialogFragment extends DialogFragment {
             title = getResources().getString(R.string.all_stories);
         } else if (feedSet.isFolder()) {
             title = feedSet.getFolderName();
+        } else if (feedSet.isSingleSocial()) {
+            title = FeedUtils.getSocialFeed(feedSet.getSingleSocialFeed().getKey()).feedTitle;
         } else {
-            title = feedSet.getSingleFeed();
+            title = FeedUtils.getFeed(feedSet.getSingleFeed()).title;
         }
 
         builder.setTitle(title)
