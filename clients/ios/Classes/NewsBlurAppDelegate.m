@@ -763,11 +763,13 @@
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     } else {
+        [self hidePopover];
         [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     }
 }
 
 - (void)openTrainSite {
+    [self hidePopover];
     // Needs a delay because the menu will close the popover.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{
