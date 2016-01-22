@@ -140,7 +140,7 @@
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *fromFolder = [appDelegate extractFolderName:[fromFolderInput text]];
@@ -189,7 +189,7 @@
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_folder_to_folder",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *folderName = [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder];

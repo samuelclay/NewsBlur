@@ -330,7 +330,7 @@
 
 - (void)syncStoryAsRead:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -359,7 +359,7 @@
 
 - (void)syncStoryAsUnread:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -710,7 +710,7 @@
 
 - (void)syncStoryAsSaved:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -765,7 +765,7 @@
 
 - (void)syncStoryAsUnsaved:(NSDictionary *)story {    
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     

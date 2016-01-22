@@ -394,11 +394,11 @@ static UIFont *userLabelFont;
     if (self.inPullToRefresh_) {
         urlFeedList = [NSURL URLWithString:
                       [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
-                      NEWSBLUR_URL]];
+                      self.appDelegate.url]];
     } else {
         urlFeedList = [NSURL URLWithString:
                        [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
-                        NEWSBLUR_URL]];
+                        self.appDelegate.url]];
     }
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
@@ -1356,7 +1356,7 @@ heightForHeaderInSection:(NSInteger)section {
     cutoffTimestamp -= (days * 60*60*24);
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     for (NSString *feedId in feedIds) {
@@ -1388,7 +1388,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSArray *feedIds = [appDelegate allFeedIds];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInteger:days]
@@ -1412,7 +1412,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)markVisibleStoriesRead {
     NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
@@ -1687,7 +1687,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)loadFavicons {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
     
@@ -1778,10 +1778,10 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *urlString;
     if (feedId) {
         urlString = [NSString stringWithFormat:@"%@/reader/feed_unread_count?feed_id=%@",
-                     NEWSBLUR_URL, feedId];
+                     self.appDelegate.url, feedId];
     } else {
         urlString = [NSString stringWithFormat:@"%@/reader/refresh_feeds",
-                     NEWSBLUR_URL];
+                     self.appDelegate.url];
     }
     NSURL *urlFeedList = [NSURL URLWithString:urlString];
     

@@ -113,7 +113,7 @@
     
     if (self.selectedCategories_.count) {
         NSString *urlString = [NSString stringWithFormat:@"%@/categories/subscribe",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         
@@ -162,7 +162,7 @@
     [self.googleReaderButton addSubview:self.activityIndicator];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/import/import_from_google_reader/",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:@"true" forKey:@"auto_active"];
@@ -257,7 +257,7 @@
 
 - (void)addSite:(NSString *)siteUrl {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     

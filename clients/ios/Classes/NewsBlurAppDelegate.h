@@ -184,6 +184,9 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) TMCache *cachedFavicons;
 @property (nonatomic, readwrite) TMCache *cachedStoryImages;
 
+@property (nonatomic, readonly) NSString *url;
+@property (nonatomic, readonly) NSString *host;
+
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
