@@ -586,11 +586,14 @@ def setup_logrotate(clear=True):
         run('find /srv/newsblur/logs/*.log | xargs tee')
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
-    sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb}')
-    sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb}')
+    put('config/logrotate.nginx.conf', '/etc/logrotate.d/nginx', use_sudo=True)
+    sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb,nginx}')
+    sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb,nginx}')
     with settings(warn_only=True):
         sudo('chown sclay.sclay /srv/newsblur/logs/*.log')
     sudo('logrotate -f /etc/logrotate.d/newsblur')
+    sudo('logrotate -f /etc/logrotate.d/nginx')
+    sudo('logrotate -f /etc/logrotate.d/mongodb')
 
 def setup_ulimit():
     # Increase File Descriptor limits.
@@ -1233,7 +1236,7 @@ def setup_do(name, size=2, image=None):
     env.host_string = host
     time.sleep(20)
     add_user_to_do()
-    do()
+    assign_digitalocean_roledefs()
 
 def do_name(name):
     if re.search(r"[0-9]", name):
