@@ -36,7 +36,6 @@ import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -47,8 +46,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
 public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener, 
-                                                              LoaderManager.LoaderCallbacks<Cursor>,
-                                                              MarkAllReadDialogListener {
+                                                              LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int SOCIALFEEDS_LOADER = 1;
     private static final int FOLDERS_LOADER = 2;
@@ -281,13 +279,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
             dialog.show(getFragmentManager(), "dialog");
         } else {
-            onMarkAllRead(fs);
+            FeedUtils.markFeedsRead(fs, null, null, getActivity());
         }
-    }
-
-    @Override
-    public void onMarkAllRead(FeedSet feedSet) {
-        FeedUtils.markFeedsRead(feedSet, null, null, getActivity());
     }
 
 	public void changeState(StateFilter state) {
