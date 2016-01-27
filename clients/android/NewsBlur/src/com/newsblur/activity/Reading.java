@@ -281,7 +281,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             }
         }
         // if the story wasn't found, try to get more stories into the cursor
-        FeedUtils.activateAllStories();
         this.checkStoryCount(readingAdapter.getCount()+1);
     }
 
@@ -677,13 +676,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private void nextUnread() {
         unreadSearchActive = true;
-
-        // the first time an unread search is triggered, also trigger an activation of unreads, so
-        // we don't search for a story that doesn't exist in the cursor
-        if (!unreadSearchStarted) {
-            FeedUtils.activateAllStories();
-            unreadSearchStarted = true;
-        }
+        unreadSearchStarted = true;
 
         // if we somehow got tapped before construction or are running during destruction, stop and
         // let either finish. search will happen when the cursor is pushed.

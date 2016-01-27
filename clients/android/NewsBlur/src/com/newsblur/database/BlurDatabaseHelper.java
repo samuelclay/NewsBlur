@@ -267,153 +267,138 @@ public class BlurDatabaseHelper {
     }
 
     public void insertStories(StoriesResponse apiResponse, NBSyncService.ActivationMode actMode, long modeCutoff) {
-        // to insert classifiers, we need to determine the feed ID of the stories in this
-        // response, so sniff one out.
-        String impliedFeedId = null;
+        long startTime = System.currentTimeMillis();
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransactionNonExclusive();
+            try {
+            
+                // to insert classifiers, we need to determine the feed ID of the stories in this
+                // response, so sniff one out.
+                String impliedFeedId = null;
 
-        // handle users
-        if (apiResponse.users != null) {
-            List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
-            for (UserProfile user : apiResponse.users) {
-                userValues.add(user.getValues());
-            }
-            bulkInsertValues(DatabaseConstants.USER_TABLE, userValues);
-        }
-
-        // handle supplemental feed data that may have been included (usually in social requests)
-        if (apiResponse.feeds != null) {
-            List<ContentValues> feedValues = new ArrayList<ContentValues>(apiResponse.feeds.size());
-            for (Feed feed : apiResponse.feeds) {
-                feedValues.add(feed.getValues());
-            }
-            bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
-        }
-
-        // handle story content
-        List<ContentValues> storyValues = new ArrayList<ContentValues>(apiResponse.stories.length);
-        List<ContentValues> socialStoryValues = new ArrayList<ContentValues>();
-        for (Story story : apiResponse.stories) {
-            ContentValues values = story.getValues();
-            // the basic columns are fine for the stories table
-            storyValues.add(values);
-            // if a story was shared by a user, also insert it into the social table under their userid, too
-            for (String sharedUserId : story.sharedUserIds) {
-                ContentValues socialValues = new ContentValues();
-                socialValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
-                socialValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
-                socialStoryValues.add(socialValues);
-            }
-            impliedFeedId = story.feedId;
-        }
-        if (storyValues.size() > 0) {
-            synchronized (RW_MUTEX) {
-                dbRW.beginTransaction();
-                try {
-                    bulkInsertValuesExtSync(DatabaseConstants.STORY_TABLE, storyValues);
-                    markStoriesActive(actMode, modeCutoff);
-                    dbRW.setTransactionSuccessful();
-                } finally {
-                    dbRW.endTransaction();
+                // handle users
+                if (apiResponse.users != null) {
+                    List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
+                    for (UserProfile user : apiResponse.users) {
+                        userValues.add(user.getValues());
+                    }
+                    bulkInsertValuesExtSync(DatabaseConstants.USER_TABLE, userValues);
                 }
-            }
-        }
-        if (socialStoryValues.size() > 0) {
-            synchronized (RW_MUTEX) {
-                dbRW.beginTransaction();
-                try {
+
+                // handle supplemental feed data that may have been included (usually in social requests)
+                if (apiResponse.feeds != null) {
+                    List<ContentValues> feedValues = new ArrayList<ContentValues>(apiResponse.feeds.size());
+                    for (Feed feed : apiResponse.feeds) {
+                        feedValues.add(feed.getValues());
+                    }
+                    bulkInsertValuesExtSync(DatabaseConstants.FEED_TABLE, feedValues);
+                }
+
+                // handle story content
+                List<ContentValues> storyValues = new ArrayList<ContentValues>(apiResponse.stories.length);
+                List<ContentValues> socialStoryValues = new ArrayList<ContentValues>();
+                for (Story story : apiResponse.stories) {
+                    ContentValues values = story.getValues();
+                    // the basic columns are fine for the stories table
+                    storyValues.add(values);
+                    // if a story was shared by a user, also insert it into the social table under their userid, too
+                    for (String sharedUserId : story.sharedUserIds) {
+                        ContentValues socialValues = new ContentValues();
+                        socialValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
+                        socialValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
+                        socialStoryValues.add(socialValues);
+                    }
+                    impliedFeedId = story.feedId;
+                }
+                if (storyValues.size() > 0) {
+                    bulkInsertValuesExtSync(DatabaseConstants.STORY_TABLE, storyValues);
+                }
+                if (socialStoryValues.size() > 0) {
                     for(ContentValues values: socialStoryValues) {
                         dbRW.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                     }
-                    markStoriesActive(actMode, modeCutoff);
-                    dbRW.setTransactionSuccessful();
-                } finally {
-                    dbRW.endTransaction();
                 }
-            }
-        }
 
-        // handle classifiers
-        if (apiResponse.classifiers != null) {
-            for (Map.Entry<String,Classifier> entry : apiResponse.classifiers.entrySet()) {
-                // the API might not have included a feed ID, in which case it deserialized as -1 and must be implied
-                String classifierFeedId = entry.getKey();
-                if (classifierFeedId.equals("-1")) {
-                    classifierFeedId = impliedFeedId;
+                // handle classifiers
+                if (apiResponse.classifiers != null) {
+                    for (Map.Entry<String,Classifier> entry : apiResponse.classifiers.entrySet()) {
+                        // the API might not have included a feed ID, in which case it deserialized as -1 and must be implied
+                        String classifierFeedId = entry.getKey();
+                        if (classifierFeedId.equals("-1")) {
+                            classifierFeedId = impliedFeedId;
+                        }
+                        List<ContentValues> classifierValues = entry.getValue().getContentValues();
+                        for (ContentValues values : classifierValues) {
+                            values.put(DatabaseConstants.CLASSIFIER_ID, classifierFeedId);
+                        }
+                        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { classifierFeedId });}
+                        bulkInsertValuesExtSync(DatabaseConstants.CLASSIFIER_TABLE, classifierValues);
+                    }
                 }
-                List<ContentValues> classifierValues = entry.getValue().getContentValues();
-                for (ContentValues values : classifierValues) {
-                    values.put(DatabaseConstants.CLASSIFIER_ID, classifierFeedId);
-                }
-                synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { classifierFeedId });}
-                bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifierValues);
-            }
-        }
 
-        // handle comments
-        List<ContentValues> commentValues = new ArrayList<ContentValues>();
-        List<ContentValues> replyValues = new ArrayList<ContentValues>();
-        // track which comments were seen, so replies can be cleared before re-insertion. there isn't
-        // enough data to de-dupe them for an insert/update operation
-        List<String> freshCommentIds = new ArrayList<String>();
-        for (Story story : apiResponse.stories) {
-            for (Comment comment : story.publicComments) {
-                comment.storyId = story.id;
-                // we need a primary key for comments, so construct one
-                comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
-                commentValues.add(comment.getValues());
-                for (Reply reply : comment.replies) {
-                    reply.commentId = comment.id;
-                    reply.id = reply.constructId();
-                    replyValues.add(reply.getValues());
+                // handle comments
+                List<ContentValues> commentValues = new ArrayList<ContentValues>();
+                List<ContentValues> replyValues = new ArrayList<ContentValues>();
+                // track which comments were seen, so replies can be cleared before re-insertion. there isn't
+                // enough data to de-dupe them for an insert/update operation
+                List<String> freshCommentIds = new ArrayList<String>();
+                for (Story story : apiResponse.stories) {
+                    for (Comment comment : story.publicComments) {
+                        comment.storyId = story.id;
+                        // we need a primary key for comments, so construct one
+                        comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
+                        commentValues.add(comment.getValues());
+                        for (Reply reply : comment.replies) {
+                            reply.commentId = comment.id;
+                            reply.id = reply.constructId();
+                            replyValues.add(reply.getValues());
+                        }
+                        freshCommentIds.add(comment.id);
+                    }
+                    for (Comment comment : story.friendsComments) {
+                        comment.storyId = story.id;
+                        // we need a primary key for comments, so construct one
+                        comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
+                        comment.byFriend = true;
+                        commentValues.add(comment.getValues());
+                        for (Reply reply : comment.replies) {
+                            reply.commentId = comment.id;
+                            reply.id = reply.constructId();
+                            replyValues.add(reply.getValues());
+                        }
+                        freshCommentIds.add(comment.id);
+                    }
+                    for (Comment comment : story.friendsShares) {
+                        comment.isPseudo = true;
+                        comment.storyId = story.id;
+                        // we need a primary key for comments, so construct one
+                        comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
+                        comment.byFriend = true;
+                        commentValues.add(comment.getValues());
+                        for (Reply reply : comment.replies) {
+                            reply.commentId = comment.id;
+                            reply.id = reply.constructId();
+                            replyValues.add(reply.getValues());
+                        }
+                        freshCommentIds.add(comment.id);
+                    }
                 }
-                freshCommentIds.add(comment.id);
-            }
-            for (Comment comment : story.friendsComments) {
-                comment.storyId = story.id;
-                // we need a primary key for comments, so construct one
-                comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
-                comment.byFriend = true;
-                commentValues.add(comment.getValues());
-                for (Reply reply : comment.replies) {
-                    reply.commentId = comment.id;
-                    reply.id = reply.constructId();
-                    replyValues.add(reply.getValues());
-                }
-                freshCommentIds.add(comment.id);
-            }
-            for (Comment comment : story.friendsShares) {
-                comment.isPseudo = true;
-                comment.storyId = story.id;
-                // we need a primary key for comments, so construct one
-                comment.id = Comment.constructId(story.id, story.feedId, comment.userId);
-                comment.byFriend = true;
-                commentValues.add(comment.getValues());
-                for (Reply reply : comment.replies) {
-                    reply.commentId = comment.id;
-                    reply.id = reply.constructId();
-                    replyValues.add(reply.getValues());
-                }
-                freshCommentIds.add(comment.id);
-            }
-        }
-        deleteRepliesForComments(freshCommentIds);
-        bulkInsertValues(DatabaseConstants.COMMENT_TABLE, commentValues);
-        bulkInsertValues(DatabaseConstants.REPLY_TABLE, replyValues);
-    }
-
-    private void deleteRepliesForComments(Collection<String> commentIds) {
-        // NB: attempting to do this with a "WHERE col IN (vector)" for speed can cause errors on some versions of sqlite
-        synchronized (RW_MUTEX) {
-            dbRW.beginTransaction();
-            try {
-                for (String commentId : commentIds) {
+                // before inserting new replies, remove existing ones for the fetched comments
+                // NB: attempting to do this with a "WHERE col IN (vector)" for speed can cause errors on some versions of sqlite
+                for (String commentId : freshCommentIds) {
                     dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COMMENTID + " = ?", new String[]{commentId});
                 }
+                bulkInsertValuesExtSync(DatabaseConstants.COMMENT_TABLE, commentValues);
+                bulkInsertValuesExtSync(DatabaseConstants.REPLY_TABLE, replyValues);
+
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
             }
         }
+
+        long totalTime = System.currentTimeMillis() - startTime;
+        Log.d(this.getClass().getName(), "inserted stories in " + totalTime + "ms");
     }
 
     public Folder getFolder(String folderName) {
@@ -813,22 +798,6 @@ public class BlurDatabaseHelper {
         values.put(DatabaseConstants.STORY_READ_THIS_SESSION, false);
         values.put(DatabaseConstants.STORY_SEARCHIT, false);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
-    }
-
-    public void markStoriesActive(NBSyncService.ActivationMode actMode, long modeCutoff) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_ACTIVE, true);
-
-        String selection = null;
-        if (actMode == NBSyncService.ActivationMode.ALL) {
-            // leave the selection null to mark all
-        } else if (actMode == NBSyncService.ActivationMode.OLDER) {
-            selection = DatabaseConstants.STORY_TIMESTAMP + " <= " + Long.toString(modeCutoff);
-        } else if (actMode == NBSyncService.ActivationMode.NEWER) {
-            selection = DatabaseConstants.STORY_TIMESTAMP + " >= " + Long.toString(modeCutoff);
-        }
-
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, selection, null);}
     }
 
     public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {

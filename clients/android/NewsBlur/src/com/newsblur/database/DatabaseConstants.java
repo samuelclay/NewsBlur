@@ -77,7 +77,6 @@ public class DatabaseConstants {
 	public static final String STORY_SHARED_DATE = "sharedDate";
     public static final String STORY_CONTENT = "content";
     public static final String STORY_SHORT_CONTENT = "short_content";
-	public static final String STORY_COMMENT_COUNT = "comment_count";
 	public static final String STORY_FEED_ID = "feed_id";
 	public static final String STORY_INTELLIGENCE_AUTHORS = "intelligence_authors";
 	public static final String STORY_INTELLIGENCE_TAGS = "intelligence_tags";
@@ -88,17 +87,13 @@ public class DatabaseConstants {
 	public static final String STORY_READ_THIS_SESSION = "read_this_session";
 	public static final String STORY_STARRED = "starred";
 	public static final String STORY_STARRED_DATE = "starred_date";
-	public static final String STORY_SHARE_COUNT = "share_count";
 	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
 	public static final String STORY_FRIEND_USER_IDS = "comment_user_ids";
-	public static final String STORY_PUBLIC_USER_IDS = "public_user_ids";
-	public static final String STORY_SHORTDATE = "shortDate";
 	public static final String STORY_LONGDATE = "longDate";
 	public static final String STORY_SOCIAL_USER_ID = "socialUserId";
 	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
     public static final String STORY_HASH = "story_hash";
-    public static final String STORY_ACTIVE = "active";
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
     public static final String STORY_SEARCHIT = "search_hit";
@@ -213,26 +208,22 @@ public class DatabaseConstants {
 		")";
 	
 	static final String STORY_SQL = "CREATE TABLE " + STORY_TABLE + " (" + 
-		STORY_HASH + TEXT + ", " +
+		STORY_HASH + TEXT + " PRIMARY KEY, " +
 		STORY_AUTHORS + TEXT + ", " +
 		STORY_CONTENT + TEXT + ", " +
 		STORY_SHORT_CONTENT + TEXT + ", " +
 		STORY_TIMESTAMP + INTEGER + ", " +
 		STORY_SHARED_DATE + INTEGER + ", " +
-		STORY_SHORTDATE + TEXT + ", " +
 		STORY_LONGDATE + TEXT + ", " +
 		STORY_FEED_ID + INTEGER + ", " +
-		STORY_ID + TEXT + " PRIMARY KEY, " +
+		STORY_ID + TEXT + ", " +
 		STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
 		STORY_INTELLIGENCE_FEED + INTEGER + ", " +
 		STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
 		STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
-		STORY_COMMENT_COUNT + INTEGER + ", " +
-		STORY_SHARE_COUNT + INTEGER + ", " +
 		STORY_SOCIAL_USER_ID + TEXT + ", " +
 		STORY_SOURCE_USER_ID + TEXT + ", " +
 		STORY_SHARED_USER_IDS + TEXT + ", " +
-		STORY_PUBLIC_USER_IDS + TEXT + ", " +
 		STORY_FRIEND_USER_IDS + TEXT + ", " +
 		STORY_TAGS + TEXT + ", " +
 		STORY_PERMALINK + TEXT + ", " + 
@@ -241,7 +232,6 @@ public class DatabaseConstants {
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
-        STORY_ACTIVE + INTEGER + " DEFAULT 0, " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
         STORY_SEARCHIT + INTEGER + " DEFAULT 0" +
@@ -314,10 +304,10 @@ public class DatabaseConstants {
 	private static final String STORY_INTELLIGENCE_NEG = SUM_STORY_TOTAL + " < 0 ";
 
 	public static final String[] STORY_COLUMNS = {
-		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE,
+		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_LONGDATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS,
-        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE,
-        STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS, STORY_SUM_TOTAL, STORY_HASH,
+        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
+        STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_SUM_TOTAL, STORY_HASH,
         STORY_LAST_READ_DATE, STORY_SEARCHIT,
 	};
 
@@ -359,8 +349,6 @@ public class DatabaseConstants {
             q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCHIT + " = 1)");
         }
         
-        q.append(" AND (" + STORY_TABLE + "." + STORY_ACTIVE + " = 1)");
-
         if (dedupCol != null) {
             q.append( " GROUP BY " + dedupCol);
         }
