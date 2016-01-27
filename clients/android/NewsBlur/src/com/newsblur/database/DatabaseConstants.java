@@ -97,6 +97,7 @@ public class DatabaseConstants {
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
     public static final String STORY_SEARCHIT = "search_hit";
+    public static final String STORY_FETCHTIME = "fetch_time";
 
     public static final String STORY_TEXT_TABLE = "storytext";
     public static final String STORY_TEXT_STORY_HASH = "story_hash";
@@ -234,7 +235,8 @@ public class DatabaseConstants {
 		STORY_TITLE + TEXT + ", " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
-        STORY_SEARCHIT + INTEGER + " DEFAULT 0" +
+        STORY_SEARCHIT + INTEGER + " DEFAULT 0," +
+        STORY_FETCHTIME + INTEGER + " DEFAULT 0" +
         ")";
 
     static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
@@ -330,7 +332,7 @@ public class DatabaseConstants {
      * Appends to the given story query any and all selection statements that are required to satisfy the specified
      * filtration parameters, dedup column, and ordering requirements.
      */ 
-    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, StateFilter stateFilter, String dedupCol, boolean requireQueryHit) {
+    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, StateFilter stateFilter, String dedupCol, boolean requireQueryHit, long readingSessionStart) {
         if (readFilter == ReadFilter.UNREAD) {
             // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
             // or else the selection set will constantly change as they see things!
@@ -348,6 +350,8 @@ public class DatabaseConstants {
         if (requireQueryHit) {
             q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCHIT + " = 1)");
         }
+
+        q.append(" AND (" + STORY_FETCHTIME + " < ").append(readingSessionStart).append(")");
         
         if (dedupCol != null) {
             q.append( " GROUP BY " + dedupCol);

@@ -266,7 +266,7 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
-    public void insertStories(StoriesResponse apiResponse, NBSyncService.ActivationMode actMode, long modeCutoff) {
+    public void insertStories(StoriesResponse apiResponse, long fetchtime) {
         long startTime = System.currentTimeMillis();
         synchronized (RW_MUTEX) {
             dbRW.beginTransactionNonExclusive();
@@ -299,6 +299,7 @@ public class BlurDatabaseHelper {
                 List<ContentValues> socialStoryValues = new ArrayList<ContentValues>();
                 for (Story story : apiResponse.stories) {
                     ContentValues values = story.getValues();
+                    values.put(DatabaseConstants.STORY_FETCHTIME, fetchtime);
                     // the basic columns are fine for the stories table
                     storyValues.add(values);
                     // if a story was shared by a user, also insert it into the social table under their userid, too
@@ -657,7 +658,7 @@ public class BlurDatabaseHelper {
      * Get the unread count for the given feedset based on local story state.
      */
     public int getLocalUnreadCount(FeedSet fs, StateFilter stateFilter) {
-        Cursor c = getStoriesCursor(fs, stateFilter, ReadFilter.PURE_UNREAD, null, null);
+        Cursor c = getStoriesCursor(fs, stateFilter, ReadFilter.PURE_UNREAD, null, System.currentTimeMillis(), null);
         int count = c.getCount();
         c.close();
         return count;
@@ -860,11 +861,11 @@ public class BlurDatabaseHelper {
         return dbRO.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null, null, null, null, null);
     }
 
-    public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter) {
+    public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter, final long readingSessionStart) {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {
                 ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
-                return getStoriesCursor(fs, stateFilter, readFilter, cancellationSignal);
+                return getStoriesCursor(fs, stateFilter, readFilter, readingSessionStart, cancellationSignal);
             }
         };
     }
@@ -873,19 +874,19 @@ public class BlurDatabaseHelper {
      * When navigating to a social story from an interaction/activity we want to ignore
      * the any state so we can be sure we find the selected story.
      */
-    public Loader<Cursor> getStoriesLoaderIgnoreFilters(final FeedSet fs) {
+    public Loader<Cursor> getStoriesLoaderIgnoreFilters(final FeedSet fs, final long readingSessionStart) {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getStoriesCursor(fs, StateFilter.ALL, ReadFilter.ALL, cancellationSignal);}
+            protected Cursor createCursor() {return getStoriesCursor(fs, StateFilter.ALL, ReadFilter.ALL, readingSessionStart, cancellationSignal);}
         };
     }
 
-    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, CancellationSignal cancellationSignal) {
+    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, long readingSessionStart, CancellationSignal cancellationSignal) {
         if (fs == null) return null;
         StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
-        return getStoriesCursor(fs, stateFilter, readFilter, order, cancellationSignal);
+        return getStoriesCursor(fs, stateFilter, readFilter, order, readingSessionStart, cancellationSignal);
     }
 
-    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, StoryOrder order, CancellationSignal cancellationSignal) {
+    private Cursor getStoriesCursor(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter, StoryOrder order, long readingSessionStart, CancellationSignal cancellationSignal) {
         if (fs == null) return null;
 
         if (fs.getSingleFeed() != null) {
@@ -894,7 +895,7 @@ public class BlurDatabaseHelper {
             q.append(TextUtils.join(",", DatabaseConstants.STORY_COLUMNS));
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(" WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null), readingSessionStart);
             return rawQuery(q.toString(), new String[]{fs.getSingleFeed()}, cancellationSignal);
 
         } else if (fs.getMultipleFeeds() != null) {
@@ -904,7 +905,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
             q.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null), readingSessionStart);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.getSingleSocialFeed() != null) {
@@ -914,7 +915,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null), readingSessionStart);
             return rawQuery(q.toString(), new String[]{fs.getSingleSocialFeed().getKey()}, cancellationSignal);
 
         } else if (fs.isAllNormal()) {
@@ -923,7 +924,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.STORY_TABLE);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(" WHERE 1");
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, null, (fs.getSearchQuery() != null), readingSessionStart);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllSocial()) {
@@ -933,7 +934,7 @@ public class BlurDatabaseHelper {
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
             q.append(DatabaseConstants.JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP);
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false, readingSessionStart);
             return rawQuery(q.toString(), null, cancellationSignal);
 
         } else if (fs.isAllRead()) {
@@ -964,7 +965,7 @@ public class BlurDatabaseHelper {
             q.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             q.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             q.append(DatabaseConstants.JOIN_FEEDS_ON_STORIES);
-            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false);
+            DatabaseConstants.appendStorySelectionGroupOrder(q, readFilter, order, stateFilter, DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID, false, readingSessionStart);
             return rawQuery(q.toString(), null, cancellationSignal);
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
