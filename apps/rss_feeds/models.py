@@ -2488,8 +2488,11 @@ class MStarredStoryCounts(mongo.Document):
         
         if not total_only:
             cls.objects(user_id=user_id).delete()
-            user_tags = cls.count_tags_for_user(user_id)
-            user_feeds = cls.count_feeds_for_user(user_id)
+            try:
+                user_tags = cls.count_tags_for_user(user_id)
+                user_feeds = cls.count_feeds_for_user(user_id)
+            except pymongo.errors.OperationFailure, e:
+                logging.debug(" ---> ~FBOperationError on mongo: ~SB%s" % e)
 
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
         cls.objects(user_id=user_id, tag=None, feed_id=None).update_one(set__count=total_stories_count,
