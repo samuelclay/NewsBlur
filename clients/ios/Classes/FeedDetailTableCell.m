@@ -261,7 +261,7 @@ static UIFont *indicatorFont = nil;
     } else {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
         font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
-        textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xB0B0B0, 0xCCCCCC);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xD0D0D0, 0xCCCCCC);
     }
     if (cell.highlighted || cell.selected) {
         textColor = UIColorFromLightDarkRGB(0x686868, 0xA0A0A0);
