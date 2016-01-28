@@ -213,6 +213,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (adapter.isRowReadStories(groupPosition)) break;
             if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
+            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
             inflater.inflate(R.menu.context_folder, menu);
 			break;
 
@@ -258,7 +259,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
             FeedSet fs = null;
-			if (!adapter.isFolderRoot(groupPosition)) {
+            if (!adapter.isFolderRoot(groupPosition)) {
 				String folderName = adapter.getGroup(groupPosition);
                 fs = FeedUtils.feedSetFromFolderName(folderName);
 			} else {
