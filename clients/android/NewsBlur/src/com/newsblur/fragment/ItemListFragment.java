@@ -54,7 +54,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter intelState;
-    /** The time this story list / reading session began.  */
     private boolean cursorSeenYet = false;
     private boolean stopLoading = false;
     

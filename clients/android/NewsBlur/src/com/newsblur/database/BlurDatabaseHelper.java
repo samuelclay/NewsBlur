@@ -485,11 +485,11 @@ public class BlurDatabaseHelper {
                 // which column to inc/dec depends on story intel
                 String impactedCol;
                 String impactedSocialCol;
-                if (story.intelTotal < 0) {
+                if (story.intelligence.calcTotalIntel() < 0) {
                     // negative stories don't affect counts
                     dbRW.setTransactionSuccessful();
                     return impactedFeeds;
-                } else if (story.intelTotal == 0 ) {
+                } else if (story.intelligence.calcTotalIntel() == 0 ) {
                     impactedCol = DatabaseConstants.FEED_NEUTRAL_COUNT;
                     impactedSocialCol = DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT;
                 } else {
@@ -901,10 +901,11 @@ public class BlurDatabaseHelper {
         selArgs = getLocalStorySelectionAndArgs(sel, fs, stateFilter, readFilter);
 
         // use the inner select statement to push the active hashes into the session table
-        StringBuilder q = new StringBuilder("INSERT INTO" + DatabaseConstants.READING_SESSION_TABLE);
-        q.append(" (" + DatabaseConstants.READING_SESSION_STORY_HASH + ")");
+        StringBuilder q = new StringBuilder("INSERT INTO " + DatabaseConstants.READING_SESSION_TABLE);
+        q.append(" (" + DatabaseConstants.READING_SESSION_STORY_HASH + ") ");
         q.append(sel);
 
+        Log.d(this.getClass().getName(), String.format("DB rawQuery: '%s' with args: %s", q.toString(), java.util.Arrays.toString(selArgs)));
         dbRW.execSQL(q.toString(), selArgs);
     }
 
@@ -913,7 +914,7 @@ public class BlurDatabaseHelper {
      * both to populate a reading session or to count local unreads.
      */
     private String[] getLocalStorySelectionAndArgs(StringBuilder sel, FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
-        String[] selArgs = null;
+        String[] selArgs = new String[]{};
         sel.append("SELECT " + DatabaseConstants.STORY_HASH);
         if (fs.getSingleFeed() != null) {
 

@@ -82,6 +82,7 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_TAGS = "intelligence_tags";
 	public static final String STORY_INTELLIGENCE_FEED = "intelligence_feed";
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
+    public static final String STORY_INTELLIGENCE_TOTAL = "intelligence_total";
 	public static final String STORY_PERMALINK = "permalink";
 	public static final String STORY_READ = "read";
 	public static final String STORY_STARRED = "starred";
@@ -223,6 +224,7 @@ public class DatabaseConstants {
 		STORY_INTELLIGENCE_FEED + INTEGER + ", " +
 		STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
 		STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
+		STORY_INTELLIGENCE_TOTAL + INTEGER + ", " +
 		STORY_SOCIAL_USER_ID + TEXT + ", " +
 		STORY_SOURCE_USER_ID + TEXT + ", " +
 		STORY_SHARED_USER_IDS + TEXT + ", " +
@@ -295,24 +297,12 @@ public class DatabaseConstants {
 		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_TITLE, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT,
 	};
 
-    public static final String SUM_STORY_TOTAL = "storyTotal";
-	private static String STORY_SUM_TOTAL = " CASE " + 
-	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 
-	"THEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
-	"WHEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") < 0 " + 
-	"THEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
-	"ELSE " + STORY_INTELLIGENCE_FEED + " " +
-	"END AS " + SUM_STORY_TOTAL;
-	private static final String STORY_INTELLIGENCE_BEST = SUM_STORY_TOTAL + " > 0 ";
-	private static final String STORY_INTELLIGENCE_SOME = SUM_STORY_TOTAL + " >= 0 ";
-	private static final String STORY_INTELLIGENCE_NEUT = SUM_STORY_TOTAL + " = 0 ";
-	private static final String STORY_INTELLIGENCE_NEG = SUM_STORY_TOTAL + " < 0 ";
-
 	private static final String[] BASE_STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_LONGDATE,
-        STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS,
+        STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID,
+        STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
-        STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_SUM_TOTAL, STORY_HASH,
+        STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
         STORY_LAST_READ_DATE, STORY_SEARCHIT,
 	};
 
@@ -329,7 +319,7 @@ public class DatabaseConstants {
         " WHERE " + STORY_HASH + " IN (" +
         " SELECT DISTINCT " + READING_SESSION_STORY_HASH +
         " FROM " + READING_SESSION_TABLE + ")" + 
-        " GROUP BY " + STORY_ID;
+        " GROUP BY " + STORY_HASH;
 
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
@@ -363,13 +353,13 @@ public class DatabaseConstants {
         case ALL:
             return null;
         case SOME:
-            return STORY_INTELLIGENCE_SOME;
+            return STORY_INTELLIGENCE_TOTAL + " >= 0 ";
         case NEUT:
-            return STORY_INTELLIGENCE_NEUT;
+            return STORY_INTELLIGENCE_TOTAL + " = 0 ";
         case BEST:
-            return STORY_INTELLIGENCE_BEST;
+            return STORY_INTELLIGENCE_TOTAL + " > 0 ";
         case NEG:
-            return STORY_INTELLIGENCE_NEG;
+            return STORY_INTELLIGENCE_TOTAL + " < 0 ";
         default:
             return null;
         }
