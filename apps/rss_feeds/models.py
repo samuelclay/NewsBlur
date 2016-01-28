@@ -875,7 +875,7 @@ class Feed(models.Model):
         map_f = """
             function() {
                 var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
-                var hour = this.story_date.getHours();
+                var hour = this.story_date.getUTCHours();
                 var day = this.story_date.getDay();
                 emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
             }
@@ -1270,11 +1270,11 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1])
 
     @classmethod
-    def trim_old_stories(cls, start=0, verbose=True, dryrun=False):
+    def trim_old_stories(cls, start=0, verbose=True, dryrun=False, total=0):
         now = datetime.datetime.now()
         month_ago = now - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         feed_count = Feed.objects.latest('pk').pk
-        total = 0
+
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
                 print "\n\n -------------------------- %s (%s deleted so far) --------------------------\n\n" % (feed_id, total)
@@ -1282,9 +1282,7 @@ class Feed(models.Model):
                 feed = Feed.objects.get(pk=feed_id)
             except Feed.DoesNotExist:
                 continue
-            if feed.active_subscribers > 0:
-                continue
-            if not feed.last_story_date or feed.last_story_date < month_ago:
+            if feed.active_subscribers <= 0 and (not feed.last_story_date or feed.last_story_date < month_ago):
                 months_ago = 6
                 if feed.last_story_date:
                     months_ago = int((now - feed.last_story_date).days / 30.0)
@@ -1293,6 +1291,12 @@ class Feed(models.Model):
                     print " DRYRUN: %s cutoff - %s" % (cutoff, feed)
                 else:
                     total += MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+            else:
+                if dryrun:
+                    print " DRYRUN: %s/%s cutoff - %s" % (cutoff, feed.story_cutoff, feed)
+                else:
+                    total += feed.trim_feed(verbose=verbose)
+                
                     
         print " ---> Deleted %s stories in total." % total
     
@@ -1333,14 +1337,18 @@ class Feed(models.Model):
         if read_stories_last_month == 0:
             original_cutoff = cutoff
             cutoff = min(cutoff, 25)
-            logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d")))
+            try:
+                logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
+            except ValueError, e:
+                logging.debug("   ***> [%-30s] Error trimming: %s" % (self, e))
+                pass
         
         return cutoff
                 
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
             cutoff = self.story_cutoff
-        MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
+        return MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
     
     def purge_feed_stories(self, update=True):
         MStory.purge_feed_stories(feed=self, cutoff=self.story_cutoff)
@@ -1665,9 +1673,9 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 24 hour max for premiums, 48 hour max for free
+        # 12 hour max for premiums, 48 hour max for free
         if subs >= 1:
-            total = min(total, 60*24*1)
+            total = min(total, 60*12*1)
         else:
             total = min(total, 60*24*2)
         
@@ -2030,7 +2038,7 @@ class MStory(mongo.Document):
         stories = cls.objects(
             story_feed_id=feed_id
         ).only('story_date').order_by('-story_date')
-                
+        
         if stories.count() > cutoff:
             logging.debug('   ---> [%-30s] ~FMFound %s stories. Trimming to ~SB%s~SN...' %
                           (unicode(feed)[:30], stories.count(), cutoff))
@@ -2047,6 +2055,7 @@ class MStory(mongo.Document):
             for story in extra_stories:
                 if story.share_count: 
                     shared_story_count += 1
+                    extra_stories_count -= 1
                     continue
                 story.delete()
             if verbose:
