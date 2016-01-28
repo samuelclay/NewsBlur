@@ -62,6 +62,11 @@ static UIFont *indicatorFont = nil;
         cellContent.opaque = YES;
         self.isReadAvailable = YES;
         
+        // Clear out half pixel border on top and bottom that the draw code can't touch
+        UIView *selectedBackground = [[UIView alloc] init];
+        [selectedBackground setBackgroundColor:[UIColor clearColor]];
+        self.selectedBackgroundView = selectedBackground;
+        
         [self.contentView addSubview:cellContent];
     }
     
@@ -182,7 +187,7 @@ static UIFont *indicatorFont = nil;
     
     UIColor *backgroundColor;
     backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromRGB(0xFFFDEF) : UIColorFromRGB(0xf4f4f4);
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xFFFDEF, 0x808A90, 0x0F0F22) : UIColorFromRGB(0xf4f4f4);
     [backgroundColor set];
     
     CGContextFillRect(context, r);
@@ -213,25 +218,25 @@ static UIFont *indicatorFont = nil;
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     
-    if (cell.isRead) {
-        font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        textColor = UIColorFromRGB(0x808080);
-    } else {
-        UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
-        textColor = UIColorFromRGB(0x606060);
-        
-    }
-    if (cell.highlighted || cell.selected) {
-        textColor = UIColorFromRGB(0x686868);
-    }
-    
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     paragraphStyle.lineHeightMultiple = 0.95f;
 
     if (cell.isRiverOrSocial) {
+        if (cell.isRead) {
+            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x808080, 0xB0B0B0, 0x707070);
+        } else {
+            UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
+            font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x606060, 0x606060, 0xD0D0D0, 0x909090);
+            
+        }
+        if (cell.highlighted || cell.selected) {
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA0A0A0, 0x808080);
+        }
+        
         NSInteger siteTitleY = (20 - font.pointSize/2)/2;
         [cell.siteTitle drawInRect:CGRectMake(leftMargin + 20, siteTitleY, rect.size.width - 20, 20)
                     withAttributes:@{NSFontAttributeName: font,
@@ -247,21 +252,20 @@ static UIFont *indicatorFont = nil;
         }
 
         [cell.siteFavicon drawInRect:CGRectMake(leftMargin, siteTitleY, 16.0, 16.0)];
-
-        if (cell.isRead) {
-            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-            textColor = UIColorFromRGB(0x585858);
-        } else {
-            UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-            font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
-            textColor = UIColorFromRGB(0x333333);
-        }
-        if (cell.highlighted || cell.selected) {
-            textColor = UIColorFromRGB(0x686868);
-        }
     }
     
     // story title
+    if (cell.isRead) {
+        font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
+    } else {
+        UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
+        font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xB0B0B0, 0xCCCCCC);
+    }
+    if (cell.highlighted || cell.selected) {
+        textColor = UIColorFromLightDarkRGB(0x686868, 0xA0A0A0);
+    }
     CGSize theSize = [cell.storyTitle
                       boundingRectWithSize:CGSizeMake(rect.size.width, cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
                       options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
@@ -312,17 +316,17 @@ static UIFont *indicatorFont = nil;
         }
         
         if (cell.isRead) {
-            textColor = UIColorFromRGB(0xB8B8B8);
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
             font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
         } else {
-            textColor = UIColorFromRGB(0x404040);
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0);
             font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
         }
         if (cell.highlighted || cell.selected) {
             if (cell.isRead) {
-                textColor = UIColorFromRGB(0xB8B8B8);
+                textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
             } else {
-                textColor = UIColorFromRGB(0x686868);
+                textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA9A9A9, 0x989898);
             }
         }
         
@@ -340,18 +344,18 @@ static UIFont *indicatorFont = nil;
     int storyAuthorDateY = r.size.height - 18;
     
     if (cell.isRead) {
-        textColor = UIColorFromLightDarkRGB(0xbabdd1, 0x3A708A);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0xBABDD1, 0xBABDD1, 0x52535d, 0x25262A);
         font = [UIFont fontWithName:@"Helvetica" size:10];
     } else {
-        textColor = UIColorFromLightDarkRGB(0x262c6c, 0x3A708A);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x262C6C, 0x262C6C, 0x363C5C, 0x21468e);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     
     if (cell.highlighted || cell.selected) {
         if (cell.isRead) {
-            textColor = UIColorFromLightDarkRGB(0xaaadc1, 0x3A708A);
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0xAAADC1, 0xAAADC1, 0x72738d, 0x35363A);
         } else {
-            textColor = UIColorFromLightDarkRGB(0x5a5d91, 0x3A708A);
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x5A5D91, 0x5A5D91, 0x666C8C, 0x11367e);
         }
     }
     
@@ -368,17 +372,17 @@ static UIFont *indicatorFont = nil;
     
     // Story author
     if (cell.isRead) {
-        textColor = UIColorFromRGB(0xB8B8B8);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0x909090, 0x404040);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     } else {
-        textColor = UIColorFromRGB(0xA6A8A2);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0xA6A8A2, 0xA6A8A2, 0x909090, 0x505050);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     if (cell.highlighted || cell.selected) {
         if (cell.isRead) {
-            textColor = UIColorFromRGB(0xA8A8A8);
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0xA8A8A8, 0xA8A8A8, 0x999999, 0x303030);
         } else {
-            textColor = UIColorFromRGB(0x959595);
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x959595, 0x959595, 0xA0A0A0, 0x404040);
         }
     }
     

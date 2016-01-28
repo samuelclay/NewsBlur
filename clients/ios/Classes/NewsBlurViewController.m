@@ -1086,7 +1086,7 @@ static UIFont *userLabelFont;
         CellIdentifier = @"FeedCellIdentifier";
     }
     
-    FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
+    FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[FeedTableCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
@@ -1966,7 +1966,6 @@ heightForHeaderInSection:(NSInteger)section {
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
-    userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
     userLabel.accessibilityLabel = [NSString stringWithFormat:@"Logged in as %@", appDelegate.activeUsername];
     [userLabel sizeToFit];
     [userInfoView addSubview:userLabel];

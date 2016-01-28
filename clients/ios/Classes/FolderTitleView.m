@@ -86,14 +86,14 @@
 
     // Background
     [NewsBlurAppDelegate fillGradient:rect
-                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc0, 0x666666, 0x333333)
-                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffd0, 0x777777, 0x444444)];
+                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffd0, 0x777777, 0x444444)
+                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
 //    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
 //    [backgroundColor set];
 //    CGContextFillRect(context, rect);
     
     // Borders
-    UIColor *topColor = UIColorFromRGB(0xFDFDFD);
+    UIColor *topColor = UIColorFromLightDarkRGB(0xFDFDFD, 0x474B4A);
     CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
     CGContextBeginPath(context);
@@ -102,7 +102,7 @@
     CGContextStrokePath(context);
     
     // bottom border
-    UIColor *bottomColor = UIColorFromRGB(0xB7BBAA);
+    UIColor *bottomColor = UIColorFromLightDarkRGB(0xB7BBAA, 0x0D0D0D);
     CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, 0, rect.size.height-0.25f);
@@ -110,7 +110,7 @@
     CGContextStrokePath(context);
     
     // Folder title
-    UIColor *textColor = UIColorFromRGB(0x4D4D4D);
+    UIColor *textColor = UIColorFromRGB(0x4C4D4A);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;

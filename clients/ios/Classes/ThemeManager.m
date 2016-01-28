@@ -155,7 +155,7 @@ NSString * const ThemeStyleDark = @"dark";
     CGFloat blue = ((rgbValue & 0xFF)) / 255.0;
     
     // Debug method to log all of the unique colors; leave commented out
-    //    [self debugColor:rgbValue];
+    //    [self debugColor:rgbValue]; 
     
     if ([theme isEqualToString:ThemeStyleDark]) {
         return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];

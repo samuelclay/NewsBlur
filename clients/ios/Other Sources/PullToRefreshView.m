@@ -65,7 +65,7 @@
         scrollView = scroll;
         [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
 
-        UIColor *bgColor = UIColorFromRGB(0xF2F2F2);
+        UIColor *bgColor = UIColorFromRGB(0xF4F4F4);
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		self.backgroundColor = bgColor;
 
