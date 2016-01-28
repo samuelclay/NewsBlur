@@ -351,6 +351,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.sortItem];
 }
 
+/*
 - (void)moveToFolder:(FeedChooserItem *)toFolder {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -382,8 +383,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [request startAsynchronous];
     }
 }
+*/
 
-/* this is what I want to do, but I don't think I got the parameters right, as it doesn't do anything (no error either):
 - (void)moveToFolder:(FeedChooserItem *)toFolder {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -396,7 +397,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         FeedChooserItem *fromFolder = self.sections[indexPath.section];
         FeedChooserItem *item = fromFolder.contents[indexPath.row];
         
-        [feedsByFolder addObject:@{@"feed_id" : item.identifier, @"in_folder" : fromFolder.identifier}];
+        [feedsByFolder addObject:@[item.identifier, fromFolder.identifier]];
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feeds_by_folder_to_folder", self.appDelegate.url];
@@ -412,7 +413,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
 }
-*/
 
 - (void)showMoveMenu {
     MenuViewController *viewController = [MenuViewController new];
