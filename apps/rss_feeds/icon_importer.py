@@ -61,8 +61,7 @@ class IconImporter(object):
             if len(image_str) > 500000:
                 image = None
             if (image and
-                (self.force or
-                 self.feed_icon.color != color or
+                (self.feed_icon.color != color or
                  self.feed_icon.data != image_str or
                  self.feed_icon.icon_url != icon_url or
                  self.feed_icon.not_found or

@@ -111,6 +111,10 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     focus: function() {
         this.$("input").focus();
     },
+    
+    has_focus: function() {
+        return this.$("input:focus").length;
+    },
 
     blur: function() {
         this.$("input").blur();
@@ -183,6 +187,11 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     },
     
     perform_search: function(query) {
+        if (query && query.length) {
+            window.history.pushState({}, "", $.updateQueryString('search', query, window.location.pathname));
+        } else {
+            window.history.pushState({}, "", $.updateQueryString('search', null, window.location.pathname));
+        }
         NEWSBLUR.reader.reload_feed({
             search: query
         });
@@ -192,6 +201,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     close_search: function() {
         var $search = this.$("input[name=feed_search]");
         $search.val('');
+        window.history.pushState({}, "", $.updateQueryString('search', null, window.location.pathname));
         NEWSBLUR.reader.flags.searching = false;
         
         NEWSBLUR.reader.reload_feed();

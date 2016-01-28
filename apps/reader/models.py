@@ -1317,6 +1317,7 @@ class UserSubscriptionFolders(models.Model):
         return flat_folders
 
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
+        feed_id = int(feed_id)
         def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
             new_folders = []
             for k, folder in enumerate(old_folders):
@@ -1462,6 +1463,7 @@ class UserSubscriptionFolders(models.Model):
         logging.user(self.user, "~FBMoving ~SB%s~SN feeds to folder: ~SB%s" % (
                      len(feeds_by_folder), to_folder))
         for feed_id, in_folder in feeds_by_folder:
+            feed_id = int(feed_id)
             self.move_feed_to_folder(feed_id, in_folder, to_folder)
         
         return self

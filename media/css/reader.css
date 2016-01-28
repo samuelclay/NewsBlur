@@ -434,10 +434,8 @@ a img {
   color: rgba(0, 0, 0, .4);
   opacity: .4;
   font-size: 16px;
-  padding: 0 24px;
-  position: absolute;
+  padding: 256px 24px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-  top: 40%;
   width: 100%;
   z-index: 10;
   cursor: default;
@@ -448,6 +446,7 @@ a img {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 .NB-story-list-empty .NB-world {
   background: transparent url("/media/embed/reader/big_world.png") no-repeat center 0;
   background-size: 64px;
@@ -7512,8 +7511,8 @@ form.opml_import_form input {
   overflow: hidden;
 }
 
-.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-chart {
-  margin: 0px 24px;
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-count-chart {
+  margin: 12px 24px 18px;
   width: 524px;
   height: 180px;
   -webkit-box-sizing: border-box;
@@ -7521,6 +7520,35 @@ form.opml_import_form input {
   box-sizing: border-box;
 }
 
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-hours-chart {
+  margin: 12px 24px 18px;
+  width: 524px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-days-chart {
+  margin: 32px 24px;
+  width: 524px;
+  height: 300px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-hours-chart {
+    text-align: left;
+    color: #808080;
+    font-size: 10px;
+}
+.NB-modal-statistics .NB-statistics-history-chart-hours-row {
+    background-color: #97BBCD;
+    height: 50px;
+}
+.NB-modal-statistics .NB-statistics-history-chart-hours-row td {
+    width: 18px;
+}
 .NB-modal-statistics .NB-modal-loading {
   margin: 6px 8px 0;
 }

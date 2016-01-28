@@ -221,7 +221,7 @@ def autologin(request, username, secret):
     else:
         return HttpResponseRedirect(reverse('index'))
     
-@ratelimit(minutes=1, requests=24)
+@ratelimit(minutes=1, requests=60)
 @never_cache
 @json.json_view
 def load_feeds(request):
@@ -297,6 +297,7 @@ def load_feeds(request):
         'social_services': social_services,
         'user_profile': user.profile,
         "is_staff": user.is_staff,
+        'user_id': user.pk,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
         'starred_counts': starred_counts,
@@ -391,6 +392,7 @@ def load_feeds_flat(request):
         "social_profile": social_profile,
         "social_services": social_services,
         "user": user.username,
+        "user_id": user.pk,
         "is_staff": user.is_staff,
         "user_profile": user.profile,
         "iphone_version": iphone_version,
@@ -539,7 +541,7 @@ def load_single_feed(request, feed_id):
     offset                  = limit * (page-1)
     order                   = request.REQUEST.get('order', 'newest')
     read_filter             = request.REQUEST.get('read_filter', 'all')
-    query                   = request.REQUEST.get('query')
+    query                   = request.REQUEST.get('query', '').strip()
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
     include_hidden          = is_true(request.REQUEST.get('include_hidden', False))
     message                 = None
@@ -791,7 +793,7 @@ def load_starred_stories(request):
     offset       = int(request.REQUEST.get('offset', 0))
     limit        = int(request.REQUEST.get('limit', 10))
     page         = int(request.REQUEST.get('page', 0))
-    query        = request.REQUEST.get('query')
+    query        = request.REQUEST.get('query', '').strip()
     order        = request.REQUEST.get('order', 'newest')
     tag          = request.REQUEST.get('tag')
     story_hashes = request.REQUEST.getlist('h')[:100]
@@ -1095,7 +1097,7 @@ def load_read_stories(request):
     limit  = int(request.REQUEST.get('limit', 10))
     page   = int(request.REQUEST.get('page', 0))
     order  = request.REQUEST.get('order', 'newest')
-    query  = request.REQUEST.get('query')
+    query  = request.REQUEST.get('query', '').strip()
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     if page: offset = limit * (page - 1)
@@ -1183,7 +1185,7 @@ def load_river_stories__redis(request):
     page              = int(request.REQUEST.get('page', 1))
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
-    query             = request.REQUEST.get('query')
+    query             = request.REQUEST.get('query', '').strip()
     include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []

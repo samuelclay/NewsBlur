@@ -17,7 +17,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-statistics"              : "open_statistics",
         "click .NB-feedlist-manage-icon"            : "show_manage_menu",
         "click .NB-feedbar-options"                 : "open_options_popover",
-        "click .NB-story-title-indicator"           : "show_hidden_story_titles",
         "click"                                     : "open",
         "mousedown"                                 : "highlight_event",
         "mouseenter"                                : "add_hover_inverse",
@@ -490,10 +489,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: this.model.id
         });
-    },
-    
-    show_hidden_story_titles: function() {
-        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     }
     
 });
