@@ -435,6 +435,7 @@ static UIFont *userLabelFont;
     }
 
     [self showOfflineNotifier];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
@@ -752,6 +753,8 @@ static UIFont *userLabelFont;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

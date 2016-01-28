@@ -43,6 +43,8 @@
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
+@class FeedChooserViewController;
+@class MenuViewController;
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
 @class StoriesCollection;
@@ -175,6 +177,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 @property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
+@property (nonatomic, strong) FeedChooserViewController *feedChooserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
@@ -273,6 +276,8 @@ SFSafariViewControllerDelegate>  {
          feedTitle:(NSString *)title
             images:(NSArray *)images;
 - (void)showFindFriends;
+- (void)showMuteSites;
+- (void)showOrganizeSites;
 - (void)showPreferences;
 
 - (void)showMoveSite;

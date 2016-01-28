@@ -37,6 +37,8 @@
     if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
+                                            [@"Mute Sites" uppercaseString],
+                                            [@"Organize Sites" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString],
                                             [@"Login as..." uppercaseString],
@@ -44,6 +46,8 @@
     } else {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
+                                            [@"Mute Sites" uppercaseString],
+                                            [@"Organize Sites" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString], nil];
     }
@@ -96,15 +100,40 @@
     
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
     
-    if (indexPath.row == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_preferences.png"];
-    } else if (indexPath.row == 1) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_followers.png"];
-    } else if (indexPath.row == 2) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
-    } else if (indexPath.row == 3) {
-        cell.imageView.image = [UIImage imageNamed:@"barbutton_sendto.png"];
+    UIImage *image = nil;
+    
+    switch (indexPath.row) {
+        case 0:
+            image = [UIImage imageNamed:@"menu_icn_preferences.png"];
+            break;
+            
+        case 1:
+            image = [[UIImage imageNamed:@"menu_icn_mute.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            cell.imageView.tintColor = [UIColor blueColor];
+            break;
+            
+        case 2:
+            image = [[UIImage imageNamed:@"menu_icn_organize.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            cell.imageView.tintColor = [UIColor orangeColor];
+            break;
+            
+        case 3:
+            image = [UIImage imageNamed:@"menu_icn_followers.png"];
+            break;
+            
+        case 4:
+            image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
+            break;
+            
+        case 5:
+            image = [UIImage imageNamed:@"barbutton_sendto.png"];
+            break;
+            
+        default:
+            break;
     }
+    
+    cell.imageView.image = image;
     
     return cell;
 }
@@ -115,14 +144,33 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    if (indexPath.row == 0) {
-        [appDelegate showPreferences];
-    } else if (indexPath.row == 1) {
-        [appDelegate showFindFriends];
-    } else if (indexPath.row == 2) {
-        [appDelegate confirmLogout];
-    } else if (indexPath.row == 3) {
-        [self showLoginAsDialog];
+    switch (indexPath.row) {
+        case 0:
+            [appDelegate showPreferences];
+            break;
+            
+        case 1:
+            [appDelegate showMuteSites];
+            break;
+            
+        case 2:
+            [appDelegate showOrganizeSites];
+            break;
+            
+        case 3:
+            [appDelegate showFindFriends];
+            break;
+            
+        case 4:
+            [appDelegate confirmLogout];
+            break;
+            
+        case 5:
+            [self showLoginAsDialog];
+            break;
+            
+        default:
+            break;
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
