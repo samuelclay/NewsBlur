@@ -10,4 +10,6 @@
 
 @interface MenuTableViewCell : UITableViewCell
 
+@property (nonatomic) BOOL destructive;
+
 @end

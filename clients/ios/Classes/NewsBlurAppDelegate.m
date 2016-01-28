@@ -26,6 +26,7 @@
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "FontSettingsViewController.h"
+#import "FeedChooserViewController.h"
 #import "UserProfileViewController.h"
 #import "AFHTTPRequestOperation.h"
 #import "ASINetworkQueue.h"
@@ -533,6 +534,34 @@
     } else {
         [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
+}
+
+- (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
+    [self hidePopover];
+    
+    self.feedChooserViewController = [FeedChooserViewController new];
+    self.feedChooserViewController.operation = operation;
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.feedChooserViewController];
+    
+    self.modalNavigationController = nav;
+    self.modalNavigationController.navigationBar.translucent = NO;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    } else {
+        [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
+    }
+}
+
+
+- (void)showMuteSites {
+    [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
+}
+
+- (void)showOrganizeSites {
+    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites];
 }
 
 - (void)showFindFriends {
