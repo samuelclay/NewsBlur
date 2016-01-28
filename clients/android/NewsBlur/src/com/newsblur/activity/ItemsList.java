@@ -64,7 +64,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
-                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this, false, System.currentTimeMillis());
+                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
 

@@ -53,7 +53,6 @@ import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String EXTRA_FEEDSET = "feed_set";
-    public static final String EXTRA_SESSION_START = "session_start_time";
 	public static final String EXTRA_POSITION = "feed_position";
     public static final String EXTRA_STORY_HASH = "story_hash";
     private static final String BUNDLE_POSITION = "position";
@@ -98,7 +97,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected ReadingAdapter readingAdapter;
     private boolean stopLoading;
     protected FeedSet fs;
-    protected long readingSessionStart;
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     protected int startingUnreadCount = 0;
@@ -126,7 +124,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		fragmentManager = getFragmentManager();
 
         fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
-        readingSessionStart = getIntent().getLongExtra(EXTRA_SESSION_START, 0L);
 
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
@@ -223,7 +220,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             finish();
             return null;
         }
-        return FeedUtils.dbHelper.getStoriesLoader(fs, intelState, readingSessionStart);
+        return FeedUtils.dbHelper.getActiveStoriesLoader(fs);
     }
 
 	@Override

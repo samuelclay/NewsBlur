@@ -695,14 +695,11 @@ public class NBSyncService extends Service {
             }
         }
 
-        // stories fetched for a particular feed set have an always-visible fetch time of arbitrarily long ago
-        dbHelper.insertStories(apiResponse, 0L);
+        dbHelper.insertStories(apiResponse, true);
     }
 
     void insertStories(StoriesResponse apiResponse) {
-        // stories inserted by the prefetch service have their fetch time noted so they don't show up before requested
-        long fetchtime = System.currentTimeMillis();
-        dbHelper.insertStories(apiResponse, fetchtime);
+        dbHelper.insertStories(apiResponse, false);
     }
 
     void incrementRunningChild() {

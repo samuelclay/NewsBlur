@@ -37,8 +37,6 @@ public class SavedStoriesItemListFragment extends ItemListFragment {
             itemList.setAdapter(adapter);
         }
         super.onLoadFinished(loader, cursor);
-        // every time we see a set of saved stories, tag them so they don't disappear during this reading session
-        FeedUtils.dbHelper.markSavedReadingSession();
     }
 
     @Override

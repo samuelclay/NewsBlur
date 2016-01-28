@@ -101,6 +101,7 @@ public class FeedUtils {
                 NBSyncService.resetFeeds();
                 try {
                     dbHelper.clearReadingSession();
+                    dbHelper.clearStorySession();
                 } catch (Exception e) {
                     ; // this one call can evade the on-upgrade DB wipe and throw exceptions
                 }

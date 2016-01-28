@@ -84,7 +84,6 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
 	public static final String STORY_PERMALINK = "permalink";
 	public static final String STORY_READ = "read";
-	public static final String STORY_READ_THIS_SESSION = "read_this_session";
 	public static final String STORY_STARRED = "starred";
 	public static final String STORY_STARRED_DATE = "starred_date";
 	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
@@ -97,7 +96,9 @@ public class DatabaseConstants {
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
     public static final String STORY_SEARCHIT = "search_hit";
-    public static final String STORY_FETCHTIME = "fetch_time";
+
+    public static final String READING_SESSION_TABLE = "reading_session";
+    public static final String READING_SESSION_STORY_HASH = "session_story_hash";
 
     public static final String STORY_TEXT_TABLE = "storytext";
     public static final String STORY_TEXT_STORY_HASH = "story_hash";
@@ -229,14 +230,16 @@ public class DatabaseConstants {
 		STORY_TAGS + TEXT + ", " +
 		STORY_PERMALINK + TEXT + ", " + 
 		STORY_READ + INTEGER + ", " +
-		STORY_READ_THIS_SESSION + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
-        STORY_SEARCHIT + INTEGER + " DEFAULT 0," +
-        STORY_FETCHTIME + INTEGER + " DEFAULT 0" +
+        STORY_SEARCHIT + INTEGER + " DEFAULT 0" +
+        ")";
+
+    static final String READING_SESSION_SQL = "CREATE TABLE " + READING_SESSION_TABLE + " (" +
+        READING_SESSION_STORY_HASH + TEXT +
         ")";
 
     static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
@@ -305,7 +308,7 @@ public class DatabaseConstants {
 	private static final String STORY_INTELLIGENCE_NEUT = SUM_STORY_TOTAL + " = 0 ";
 	private static final String STORY_INTELLIGENCE_NEG = SUM_STORY_TOTAL + " < 0 ";
 
-	public static final String[] STORY_COLUMNS = {
+	private static final String[] BASE_STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_LONGDATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
@@ -313,32 +316,32 @@ public class DatabaseConstants {
         STORY_LAST_READ_DATE, STORY_SEARCHIT,
 	};
 
-    public static final String MULTIFEED_STORIES_QUERY_BASE = 
-        "SELECT " + TextUtils.join(",", STORY_COLUMNS) + ", " + 
+    private static final String STORY_COLUMNS = 
+        TextUtils.join(",", BASE_STORY_COLUMNS) + ", " + 
         FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
 
-    public static final String JOIN_FEEDS_ON_STORIES =
-        " INNER JOIN " + FEED_TABLE + " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID;
+    public static final String STORY_QUERY_BASE = 
+        "SELECT " +
+        STORY_COLUMNS +
+        " FROM " + STORY_TABLE +
+        " INNER JOIN " + FEED_TABLE + 
+        " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID +
+        " WHERE " + STORY_HASH + " IN (" +
+        " SELECT DISTINCT " + READING_SESSION_STORY_HASH +
+        " FROM " + READING_SESSION_TABLE + ")" + 
+        " GROUP BY " + STORY_ID;
 
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
-
-    public static final String JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP =
-        " INNER JOIN " + SOCIALFEED_TABLE + " ON " + SOCIALFEED_TABLE + "." + SOCIAL_FEED_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_USER_ID;
 
     public static final String READ_STORY_ORDER = STORY_LAST_READ_DATE + " DESC";
 
     /**
      * Appends to the given story query any and all selection statements that are required to satisfy the specified
-     * filtration parameters, dedup column, and ordering requirements.
+     * filtration parameters.
      */ 
-    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, StateFilter stateFilter, String dedupCol, boolean requireQueryHit, long readingSessionStart) {
+    public static void appendStorySelection(StringBuilder q, ReadFilter readFilter, StateFilter stateFilter, boolean requireQueryHit) {
         if (readFilter == ReadFilter.UNREAD) {
-            // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
-            // or else the selection set will constantly change as they see things!
-            q.append(" AND ((" + STORY_READ + " = 0) OR (" + STORY_READ_THIS_SESSION + " = 1))");
-        } else if (readFilter == ReadFilter.PURE_UNREAD) {
-            // This means really just unreads, useful for getting counts
             q.append(" AND (" + STORY_READ + " = 0)");
         }
 
@@ -349,16 +352,6 @@ public class DatabaseConstants {
 
         if (requireQueryHit) {
             q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCHIT + " = 1)");
-        }
-
-        q.append(" AND (" + STORY_FETCHTIME + " < ").append(readingSessionStart).append(")");
-        
-        if (dedupCol != null) {
-            q.append( " GROUP BY " + dedupCol);
-        }
-
-        if (order != null) {
-            q.append(" ORDER BY " + getStorySortOrder(order));
         }
     }
 

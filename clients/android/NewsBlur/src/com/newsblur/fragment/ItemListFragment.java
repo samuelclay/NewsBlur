@@ -49,15 +49,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	public static int ITEMLIST_LOADER = 0x01;
 
-    private static final String BUNDLE_SESSION_START = "bundle_session_start_time";
-
     protected ItemsList activity;
 	@FindView(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter intelState;
     /** The time this story list / reading session began.  */
-    private long readingSessionStart;
     private boolean cursorSeenYet = false;
     private boolean stopLoading = false;
     
@@ -74,17 +71,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         intelState = PrefsUtils.getStateFilter(getActivity());
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
-        if ((savedInstanceState != null) && savedInstanceState.containsKey(BUNDLE_SESSION_START)) {
-            readingSessionStart = savedInstanceState.getLong(BUNDLE_SESSION_START);
-        } else {
-            readingSessionStart = System.currentTimeMillis();
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(BUNDLE_SESSION_START, readingSessionStart);
     }
 
 	@Override
@@ -138,6 +124,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         super.onActivityCreated(savedInstanceState);
         stopLoading = false;
         if (getLoaderManager().getLoader(ITEMLIST_LOADER) == null) {
+            FeedUtils.dbHelper.prepareReadingSession(getFeedSet(), intelState);
             getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
         }
     }
@@ -243,7 +230,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             try { getActivity().finish(); } catch (Exception e) {;}
             return null;
         }
-		return FeedUtils.dbHelper.getStoriesLoader(getFeedSet(), intelState, readingSessionStart);
+		return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
 	}
 
     @Override
@@ -343,7 +330,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         int truePosition = position - 1;
         Story story = adapter.getStory(truePosition);
         if (getActivity().isFinishing()) return;
-        UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity(), false, readingSessionStart);
+        UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
     }
 
     protected void setupBezelSwipeDetector(View v) {
