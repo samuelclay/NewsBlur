@@ -212,6 +212,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (adapter.isRowReadStories(groupPosition)) break;
+            if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
             inflater.inflate(R.menu.context_folder, menu);
 			break;
 
