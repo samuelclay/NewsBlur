@@ -324,6 +324,7 @@ def load_feeds_flat(request):
     update_counts    = is_true(request.REQUEST.get('update_counts', True))
     
     feeds = {}
+    inactive_feeds = {}
     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     scheduled_feeds = []
     iphone_version = "2.1" # Preserved forever. Don't change.
@@ -345,7 +346,8 @@ def load_feeds_flat(request):
     if not user_subs and folders:
         folders.auto_activate()
         user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-
+    inactive_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=False)
+    
     for sub in user_subs:
         if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
@@ -356,6 +358,9 @@ def load_feeds_flat(request):
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
+    
+    for sub in inactive_subs:
+        inactive_feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
     if len(scheduled_feeds) > 0 and request.user.is_authenticated():
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
@@ -382,12 +387,13 @@ def load_feeds_flat(request):
     if not user_subs:
         categories = MCategory.serialize()
         
-    logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials ~FMflat~FB%s" % (
-            len(feeds.keys()), len(social_feeds), '. ~FCUpdating counts.' if update_counts else ''))
+    logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s" % (
+            len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else ''))
 
     data = {
         "flat_folders": flat_folders, 
         "feeds": feeds,
+        "inactive_feeds": inactive_feeds,
         "social_feeds": social_feeds,
         "social_profile": social_profile,
         "social_services": social_services,
