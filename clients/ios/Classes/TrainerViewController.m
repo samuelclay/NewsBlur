@@ -48,6 +48,10 @@
     [self hideGradientBackground:webView];
     [self.webView.scrollView setDelaysContentTouches:YES];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
+
+    // Work around iOS 9 issue where menu doesn't appear the first time
+    // http://stackoverflow.com/questions/32685198/
+    [self.webView becomeFirstResponder];
 }
 - (void) hideGradientBackground:(UIView*)theView
 {
@@ -612,6 +616,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)hideTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     [appDelegate.trainerViewController changeTitle:sender score:-1];
+}
+
+// Work around iOS 9 issue where menu doesn't appear the first time
+// http://stackoverflow.com/questions/32685198/
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 @end
