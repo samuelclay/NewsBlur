@@ -64,7 +64,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
-                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this, false);
+                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
 
@@ -95,6 +95,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (searchQueryInput != null) {
             String q = searchQueryInput.getText().toString().trim();
             if (q.length() > 0) {

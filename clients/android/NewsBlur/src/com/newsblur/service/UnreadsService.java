@@ -90,6 +90,8 @@ public class UnreadsService extends SubService {
     }
 
     private void getNewUnreadStories() {
+        long startTime = System.currentTimeMillis();
+        int totalCount = StoryHashQueue.size();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) return;
             if(!PrefsUtils.isOfflineEnabled(parent)) return;
@@ -125,6 +127,8 @@ public class UnreadsService extends SubService {
             parent.originalTextService.start(startId);
             parent.imagePrefetchService.start(startId);
         }
+        long totalTime = System.currentTimeMillis() - startTime;
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetched " + totalCount + " stories in " + totalTime + "ms");
     }
 
     private boolean isStoryResponseGood(StoriesResponse response) {

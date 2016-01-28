@@ -101,22 +101,9 @@ public class FeedUtils {
                 NBSyncService.resetFeeds();
                 try {
                     dbHelper.clearReadingSession();
+                    dbHelper.clearStorySession();
                 } catch (Exception e) {
                     ; // this one call can evade the on-upgrade DB wipe and throw exceptions
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public static void activateAllStories() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                try {
-                    dbHelper.markStoriesActive(NBSyncService.ActivationMode.ALL, 0L);
-                } catch (Exception e) {
-                    ; // this call can evade the on-upgrade DB wipe and throw exceptions
                 }
                 return null;
             }
