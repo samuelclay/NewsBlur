@@ -849,6 +849,7 @@ def setup_db_firewall():
                   env.roledefs['work'] +
                   env.roledefs['push'] +
                   env.roledefs['www'] +
+                  env.roledefs['search'] +
                   env.roledefs['node']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
