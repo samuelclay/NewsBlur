@@ -784,6 +784,10 @@
     } else {
         [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
         if (navigationController.isViewLoaded && navigationController.view.window) {
+            if ([self.navigationController visibleViewController] == loginViewController) {
+                NSLog(@"Already showing login!");
+                return;
+            }
             [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
         }
     }
