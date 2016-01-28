@@ -2418,12 +2418,12 @@
             UIColor *borderColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_border"]];
 
             titleLabel.textColor = lightText ?
-            UIColorFromRGB(NEWSBLUR_WHITE_COLOR) :
-            UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+            UIColorFromFixedRGB(NEWSBLUR_WHITE_COLOR) :
+            UIColorFromFixedRGB(NEWSBLUR_BLACK_COLOR);
             titleLabel.shadowColor = lightText ? borderColor : fadeColor;
         } else {
-            titleLabel.textColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-            titleLabel.shadowColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+            titleLabel.textColor = UIColorFromFixedRGB(NEWSBLUR_WHITE_COLOR);
+            titleLabel.shadowColor = UIColorFromFixedRGB(NEWSBLUR_BLACK_COLOR);
         }
         titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         
