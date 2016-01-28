@@ -224,7 +224,7 @@
     <string name="default_read_filter_value">ALL</string>
     
     <string-array name="mark_all_read_options">
-        <item>Mark entire folder read</item>
+        <item>Mark all read</item>
         <item>Cancel</item>
     </string-array>
 
@@ -279,4 +279,20 @@
         <item>DOWN_NEXT</item>
     </string-array>
     <string name="default_volume_key_navigation_value">OFF</string>
+
+    <string name="settings_confirm_mark_all_read">Confirm Mark All Read</string>
+    <string name="none">None</string>
+    <string name="feed_and_folder">Feeds and Folders</string>
+    <string name="folder_only">Folders Only</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string-array name="confirm_mark_all_read_values">
+        <item>FEED_AND_FOLDER</item>
+        <item>FOLDER_ONLY</item>
+        <item>NONE</item>
+    </string-array>
+    <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
 </resources>
