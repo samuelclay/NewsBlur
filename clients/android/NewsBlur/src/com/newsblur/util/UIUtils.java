@@ -191,4 +191,13 @@ public class UIUtils {
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
         context.startActivity(i);
     }
+
+    public static String getMemoryUsageDebug(Context context) {
+        String memInfo = " (";
+        android.app.ActivityManager activityManager = (android.app.ActivityManager) context.getSystemService(android.app.Activity.ACTIVITY_SERVICE);
+        int[] pids = new int[]{android.os.Process.myPid()};
+        android.os.Debug.MemoryInfo[] mi = activityManager.getProcessMemoryInfo(pids);
+        memInfo = memInfo + (mi[0].getTotalPss() / 1024) + "MB used)";
+        return memInfo;
+    }
 }

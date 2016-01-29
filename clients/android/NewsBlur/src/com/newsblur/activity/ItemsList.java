@@ -20,6 +20,7 @@ import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
@@ -205,6 +206,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
+            if (AppConstants.VERBOSE_LOG) {
+                if (syncStatus == null) syncStatus = "";
+                syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
+            }
             if (syncStatus != null)  {
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);
@@ -232,7 +237,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
@@ -241,7 +245,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();

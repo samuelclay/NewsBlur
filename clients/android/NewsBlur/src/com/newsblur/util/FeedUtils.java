@@ -94,6 +94,16 @@ public class FeedUtils {
         }.execute();
     }
 
+    public static void prepareReadingSession(final FeedSet fs, final StateFilter state) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                dbHelper.prepareReadingSession(fs, state);
+                return null;
+            }
+        }.execute();
+    }
+
     public static void clearReadingSession() {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -107,7 +117,7 @@ public class FeedUtils {
                 }
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.execute();
     }
 
     public static void markStoryUnread(final Story story, final Context context) {

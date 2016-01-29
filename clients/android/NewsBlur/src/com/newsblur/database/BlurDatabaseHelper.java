@@ -263,6 +263,7 @@ public class BlurDatabaseHelper {
     }
 
     public void insertStories(StoriesResponse apiResponse, boolean forImmediateReading) {
+        StateFilter intelState = PrefsUtils.getStateFilter(context);
         long startTime = System.currentTimeMillis();
         synchronized (RW_MUTEX) {
             dbRW.beginTransactionNonExclusive();
@@ -304,7 +305,7 @@ public class BlurDatabaseHelper {
                         socialStoryValues.add(socialValues);
                     }
                     // if the story is being fetched for the immediate session, also add the hash to the session table
-                    if (forImmediateReading) {
+                    if (forImmediateReading && story.isStoryVisibileInState(intelState)) {
                         ContentValues sessionHashValues = new ContentValues();
                         sessionHashValues.put(DatabaseConstants.READING_SESSION_STORY_HASH, story.storyHash);
                         dbRW.insert(DatabaseConstants.READING_SESSION_TABLE, null, sessionHashValues);
@@ -877,13 +878,18 @@ public class BlurDatabaseHelper {
     }
 
     public void clearStorySession() {
-        Log.d(this.getClass().getName(), "clearing reading session!");
+        long startTime = System.currentTimeMillis();
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);}
+        long totalTime = System.currentTimeMillis() - startTime;
+        Log.d(this.getClass().getName(), "cleared reading session in " + totalTime);
     }
 
     public void prepareReadingSession(FeedSet fs, StateFilter stateFilter) {
+        long startTime = System.currentTimeMillis();
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         prepareReadingSession(fs, stateFilter, readFilter);
+        long totalTime = System.currentTimeMillis() - startTime;
+        Log.d(this.getClass().getName(), "preppedreading session in " + totalTime);
     }
 
     /**
@@ -892,7 +898,6 @@ public class BlurDatabaseHelper {
      * fetched via the API and used to actually select story data when rendering story lists.
      */
     private void prepareReadingSession(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
-        Log.d(this.getClass().getName(), "prepping and priming reading session!");
         // a selection filter that will be used to pull active story hashes from the stories table into the reading session table
         StringBuilder sel = new StringBuilder();
         // any selection args that need to be used within the inner select statement
@@ -958,7 +963,7 @@ public class BlurDatabaseHelper {
         } else if (fs.isAllSaved()) {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
-            sel.append(" WHERE ((" + DatabaseConstants.STORY_STARRED + " = 1)");
+            sel.append(" WHERE (" + DatabaseConstants.STORY_STARRED + " = 1)");
             if (fs.getSearchQuery() != null) {
                 sel.append(" AND (" + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_SEARCHIT + " = 1)");
             }

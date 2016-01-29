@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
+
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.util.StateFilter;
 
 public class Story implements Serializable {
 
@@ -183,6 +185,23 @@ public class Story implements Serializable {
         }
 	}
 
+    public boolean isStoryVisibileInState(StateFilter state) {
+        int score = intelligence.calcTotalIntel();
+        switch (state) {
+        case ALL:
+            return true;
+        case SOME:
+            return (score >= 0);
+        case NEUT:
+            return (score == 0);
+        case BEST:
+            return (score > 0);
+        case NEG:
+            return (score < 0);
+        default:
+            return false;
+        }
+    }
 
     /**
      * Custom equality based on storyID/feedID equality so that a Set can de-duplicate story objects.

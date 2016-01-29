@@ -123,9 +123,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         super.onActivityCreated(savedInstanceState);
         stopLoading = false;
         if (getLoaderManager().getLoader(ITEMLIST_LOADER) == null) {
-            FeedUtils.dbHelper.prepareReadingSession(getFeedSet(), intelState);
+            initReadingSession();
             getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
         }
+    }
+
+    private void initReadingSession() {
+        FeedUtils.prepareReadingSession(getFeedSet(), intelState);
     }
 
     private void triggerRefresh(int desiredStoryCount, int totalSeen) {
@@ -145,6 +149,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      */
     public void resetEmptyState() {
         cursorSeenYet = false;
+        FeedUtils.dbHelper.clearStorySession();
+        initReadingSession();
     }
 
     /**

@@ -605,9 +605,9 @@ public class NBSyncService extends Service {
                 if (FlushRecounts) return;
                 // don't let the page loop block actions
                 if (dbHelper.getActions(false).getCount() > 0) return;
+
+                // bail if the active view has changed
                 if (!fs.equals(PendingFeed)) {
-                    // the active view has changed
-                    if (fs == null) finished = true;
                     return; 
                 }
 
@@ -618,6 +618,10 @@ public class NBSyncService extends Service {
                 StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
             
                 if (! isStoryResponseGood(apiResponse)) return;
+
+                if (!fs.equals(PendingFeed)) {
+                    return; 
+                }
 
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
