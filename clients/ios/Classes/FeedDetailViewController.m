@@ -1899,6 +1899,18 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [deleteConfirm setTag:0];
 }
 
+- (void)confirmMuteSite {
+    UIAlertView *deleteConfirm = [[UIAlertView alloc]
+                                  initWithTitle:@"Positive?"
+                                  message:nil
+                                  delegate:self
+                                  cancelButtonTitle:@"Cancel"
+                                  otherButtonTitles:@"Mute",
+                                  nil];
+    [deleteConfirm show];
+    [deleteConfirm setTag:2];
+}
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 0) {
         // Delete
@@ -1914,6 +1926,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         if (buttonIndex != alertView.cancelButtonIndex) {
             NSString *newTitle = [[alertView textFieldAtIndex:0] text];
             [self renameTo:newTitle];
+        }
+    } else if (alertView.tag == 2) {
+        // Mute
+        if (buttonIndex != alertView.cancelButtonIndex) {
+            [self muteSite];
         }
     }
 }
@@ -2015,6 +2032,32 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }];
     [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+}
+
+- (void)muteSite {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Muting...";
+    
+    NSMutableArray *activeIdentifiers = [self.appDelegate.dictFeeds.allKeys mutableCopy];
+    NSString *thisIdentifier = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
+    [activeIdentifiers removeObject:thisIdentifier];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    for (id identifier in activeIdentifiers) {
+        [request addPostValue:identifier forKey:@"approved_feeds"];
+    }
+    [request setCompletionBlock:^(void) {
+        [self.appDelegate reloadFeedsView:YES];
+        [self.appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    request.didFailSelector = @selector(requestFailed:);
+    request.timeOutSeconds = 30;
     [request startAsynchronous];
 }
 
