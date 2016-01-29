@@ -695,7 +695,7 @@ public class NBSyncService extends Service {
             // If this set of stories was found in response to the active search query, note
             // them as such in the DB so the UI can filter for them
             for (Story story : apiResponse.stories) {
-                story.isSearchHit = true;
+                story.searchHit = fs.getSearchQuery();
             }
         }
 

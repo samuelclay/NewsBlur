@@ -50,24 +50,26 @@ public class UnreadsService extends SubService {
         // values are the actual story hash, which will be extracted once we have processed
         // all hashes.
         NavigableMap<String,String> sortingMap = new TreeMap<String,String>();
+        Log.d(this.getClass().getName(), "getting unreads from API");
         UnreadStoryHashesResponse unreadHashes = parent.apiManager.getUnreadStoryHashes();
         
         // note all the stories we thought were unread before. if any fail to appear in
         // the API request for unreads, we will mark them as read
         List<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashes();
+        Log.d(this.getClass().getName(), "getting unreads from DB");
 
         // process the api response, both bookkeeping no-longer-unread stories and populating
         // the sortation map we will use to create the fetch list for step two
-        for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
+        Log.d(this.getClass().getName(), "building read state diff");
+        feedloop: for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
             String feedId = entry.getKey();
             // ignore unreads from orphaned feeds
-            if( ! parent.orphanFeedIds.contains(feedId)) {
+            if(parent.orphanFeedIds.contains(feedId)) continue feedloop;
+            for (String[] newHash : entry.getValue()) {
                 // only fetch the reported unreads if we don't already have them
-                List<String> existingHashes = parent.dbHelper.getStoryHashesForFeed(feedId);
-                for (String[] newHash : entry.getValue()) {
-                    if (!existingHashes.contains(newHash[0])) {
-                        sortingMap.put(newHash[1]+newHash[0], newHash[0]);
-                    }
+                if (!oldUnreadHashes.contains(newHash[0])) {
+                    sortingMap.put(newHash[1]+newHash[0], newHash[0]);
+                } else {
                     oldUnreadHashes.remove(newHash[0]);
                 }
             }
@@ -79,6 +81,7 @@ public class UnreadsService extends SubService {
             // if the user reads newest-first by default, reverse the download order
             sortingMap = sortingMap.descendingMap();
         }
+        Log.d(this.getClass().getName(), "setting queue");
         StoryHashQueue.clear();
         for (Map.Entry<String,String> entry : sortingMap.entrySet()) {
             StoryHashQueue.add(entry.getValue());
@@ -86,6 +89,7 @@ public class UnreadsService extends SubService {
 
         // any stories that we previously thought to be unread but were not found in the
         // list, mark them read now
+        Log.d(this.getClass().getName(), "updating unread states for old stories");
         parent.dbHelper.markStoryHashesRead(oldUnreadHashes);
     }
 

@@ -96,7 +96,7 @@ public class DatabaseConstants {
     public static final String STORY_HASH = "story_hash";
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
-    public static final String STORY_SEARCHIT = "search_hit";
+    public static final String STORY_SEARCH_HIT = "search_hit";
 
     public static final String READING_SESSION_TABLE = "reading_session";
     public static final String READING_SESSION_STORY_HASH = "session_story_hash";
@@ -237,7 +237,7 @@ public class DatabaseConstants {
 		STORY_TITLE + TEXT + ", " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
-        STORY_SEARCHIT + INTEGER + " DEFAULT 0" +
+        STORY_SEARCH_HIT + TEXT +
         ")";
 
     static final String READING_SESSION_SQL = "CREATE TABLE " + READING_SESSION_TABLE + " (" +
@@ -303,7 +303,7 @@ public class DatabaseConstants {
         STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
-        STORY_LAST_READ_DATE, STORY_SEARCHIT,
+        STORY_LAST_READ_DATE,
 	};
 
     private static final String STORY_COLUMNS = 
@@ -330,7 +330,7 @@ public class DatabaseConstants {
      * Appends to the given story query any and all selection statements that are required to satisfy the specified
      * filtration parameters.
      */ 
-    public static void appendStorySelection(StringBuilder q, ReadFilter readFilter, StateFilter stateFilter, boolean requireQueryHit) {
+    public static void appendStorySelection(StringBuilder q, List<String> selArgs, ReadFilter readFilter, StateFilter stateFilter, String requireQueryHit) {
         if (readFilter == ReadFilter.UNREAD) {
             q.append(" AND (" + STORY_READ + " = 0)");
         }
@@ -340,8 +340,9 @@ public class DatabaseConstants {
             q.append(" AND " + stateSelection);
         }
 
-        if (requireQueryHit) {
-            q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCHIT + " = 1)");
+        if (requireQueryHit != null) {
+            q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCH_HIT + " = ?)");
+            selArgs.add(requireQueryHit);
         }
     }
 

@@ -108,9 +108,9 @@ public class FeedUtils {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
+                // TODO: this reset might no longer be necessary after every FeedSet switch and could save a lot of API calls
                 NBSyncService.resetFeeds();
                 try {
-                    dbHelper.clearReadingSession();
                     dbHelper.clearStorySession();
                 } catch (Exception e) {
                     ; // this one call can evade the on-upgrade DB wipe and throw exceptions

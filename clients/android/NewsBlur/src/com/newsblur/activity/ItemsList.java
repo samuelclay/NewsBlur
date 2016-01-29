@@ -206,11 +206,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
-            if (AppConstants.VERBOSE_LOG) {
-                if (syncStatus == null) syncStatus = "";
-                syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
-            }
             if (syncStatus != null)  {
+                if (AppConstants.VERBOSE_LOG) {
+                    syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
+                }
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);
             } else {

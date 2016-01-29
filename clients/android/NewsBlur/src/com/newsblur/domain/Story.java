@@ -89,7 +89,8 @@ public class Story implements Serializable {
     // not yet vended by the API, but tracked locally and fudged (see SyncService) for remote stories
     public long lastReadTimestamp = 0L;
 
-    public boolean isSearchHit = false;
+    // non-API and only set once when story is pushed to DB so it can be selected upon
+    public String searchHit = "";
  
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
@@ -118,7 +119,7 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_HASH, storyHash);
         values.put(DatabaseConstants.STORY_IMAGE_URLS, TextUtils.join(",", imageUrls));
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, lastReadTimestamp);
-		values.put(DatabaseConstants.STORY_SEARCHIT, isSearchHit);
+		values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
 		return values;
 	}
 
@@ -149,7 +150,6 @@ public class Story implements Serializable {
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
         story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
         story.lastReadTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_LAST_READ_DATE));
-		story.isSearchHit = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_SEARCHIT)) > 0;
 		return story;
 	}
 

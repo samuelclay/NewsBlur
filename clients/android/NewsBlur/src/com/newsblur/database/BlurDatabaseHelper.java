@@ -266,7 +266,10 @@ public class BlurDatabaseHelper {
         StateFilter intelState = PrefsUtils.getStateFilter(context);
         long startTime = System.currentTimeMillis();
         synchronized (RW_MUTEX) {
-            dbRW.beginTransactionNonExclusive();
+            // do not attempt to use beginTransactionNonExclusive() to reduce lock time for this very heavy set
+            // of calls. most versions of Android incorrectly implement the underlying SQLite calls and will
+            // result in crashes that poison the DB beyond repair
+            dbRW.beginTransaction();
             try {
             
                 // to insert classifiers, we need to determine the feed ID of the stories in this
@@ -330,7 +333,7 @@ public class BlurDatabaseHelper {
                         for (ContentValues values : classifierValues) {
                             values.put(DatabaseConstants.CLASSIFIER_ID, classifierFeedId);
                         }
-                        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { classifierFeedId });}
+                        dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { classifierFeedId });
                         bulkInsertValuesExtSync(DatabaseConstants.CLASSIFIER_TABLE, classifierValues);
                     }
                 }
@@ -656,10 +659,10 @@ public class BlurDatabaseHelper {
      */
     public int getLocalUnreadCount(FeedSet fs, StateFilter stateFilter) {
         StringBuilder sel = new StringBuilder();
-        String[] selArgs = null;
-        selArgs = getLocalStorySelectionAndArgs(sel, fs, stateFilter, ReadFilter.UNREAD);
+        ArrayList<String> selArgs = new ArrayList<String>();
+        getLocalStorySelectionAndArgs(sel, selArgs, fs, stateFilter, ReadFilter.UNREAD);
 
-        Cursor c = dbRO.rawQuery(sel.toString(), selArgs);
+        Cursor c = dbRO.rawQuery(sel.toString(), selArgs.toArray(new String[selArgs.size()]));
         int count = c.getCount();
         c.close();
         return count;
@@ -783,15 +786,6 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);}
     }
 
-    /**
-     * Clears the search_hit flag for all stories.
-     */
-    public void clearReadingSession() {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_SEARCHIT, false);
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
-    }
-
     public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getSocialFeedsCursor(stateFilter, cancellationSignal);}
@@ -901,59 +895,57 @@ public class BlurDatabaseHelper {
         // a selection filter that will be used to pull active story hashes from the stories table into the reading session table
         StringBuilder sel = new StringBuilder();
         // any selection args that need to be used within the inner select statement
-        String[] selArgs = null;
+        ArrayList<String> selArgs = new ArrayList<String>();
 
-        selArgs = getLocalStorySelectionAndArgs(sel, fs, stateFilter, readFilter);
+        getLocalStorySelectionAndArgs(sel, selArgs, fs, stateFilter, readFilter);
 
         // use the inner select statement to push the active hashes into the session table
         StringBuilder q = new StringBuilder("INSERT INTO " + DatabaseConstants.READING_SESSION_TABLE);
         q.append(" (" + DatabaseConstants.READING_SESSION_STORY_HASH + ") ");
         q.append(sel);
 
-        Log.d(this.getClass().getName(), String.format("DB rawQuery: '%s' with args: %s", q.toString(), java.util.Arrays.toString(selArgs)));
-        dbRW.execSQL(q.toString(), selArgs);
+        dbRW.execSQL(q.toString(), selArgs.toArray(new String[selArgs.size()]));
     }
 
     /**
      * Gets hashes of already-fetched stories that satisfy the given FeedSet and filters. Can be used
      * both to populate a reading session or to count local unreads.
      */
-    private String[] getLocalStorySelectionAndArgs(StringBuilder sel, FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
-        String[] selArgs = new String[]{};
+    private void getLocalStorySelectionAndArgs(StringBuilder sel, List<String> selArgs, FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
         sel.append("SELECT " + DatabaseConstants.STORY_HASH);
         if (fs.getSingleFeed() != null) {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
             sel.append(" WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?");
-            DatabaseConstants.appendStorySelection(sel, readFilter, stateFilter, (fs.getSearchQuery() != null));
-            selArgs = new String[]{fs.getSingleFeed()};
+            selArgs.add(fs.getSingleFeed());
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.getMultipleFeeds() != null) {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
             sel.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
             sel.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
-            DatabaseConstants.appendStorySelection(sel, readFilter, stateFilter, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.getSingleSocialFeed() != null) {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
             sel.append(" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ");
-            DatabaseConstants.appendStorySelection(sel, readFilter, stateFilter, (fs.getSearchQuery() != null));
-            selArgs = new String[]{fs.getSingleSocialFeed().getKey()};
+            selArgs.add(fs.getSingleSocialFeed().getKey());
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.isAllNormal()) {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
             sel.append(" WHERE 1");
-            DatabaseConstants.appendStorySelection(sel, readFilter, stateFilter, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.isAllSocial()) {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
-            DatabaseConstants.appendStorySelection(sel, readFilter, stateFilter, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.isAllRead()) {
 
@@ -964,20 +956,17 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
             sel.append(" WHERE (" + DatabaseConstants.STORY_STARRED + " = 1)");
-            if (fs.getSearchQuery() != null) {
-                sel.append(" AND (" + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_SEARCHIT + " = 1)");
-            }
+            DatabaseConstants.appendStorySelection(sel, selArgs, ReadFilter.ALL, StateFilter.ALL, fs.getSearchQuery());
 
         } else if (fs.isGlobalShared()) {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
-            DatabaseConstants.appendStorySelection(sel, readFilter, stateFilter, (fs.getSearchQuery() != null));
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else {
             throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
         }
-        return selArgs;
     }
 
     public void clearClassifiersForFeed(String feedId) {

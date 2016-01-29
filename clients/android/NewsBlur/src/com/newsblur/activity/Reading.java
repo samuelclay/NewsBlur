@@ -395,6 +395,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             if (overlayStatusText != null) {
                 String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
                 if (syncStatus != null)  {
+                    if (AppConstants.VERBOSE_LOG) {
+                        syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
+                    }
                     overlayStatusText.setText(syncStatus);
                     overlayStatusText.setVisibility(View.VISIBLE);
                 } else {
