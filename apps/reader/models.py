@@ -1291,12 +1291,14 @@ class UserSubscriptionFolders(models.Model):
     def flatten_folders(self, feeds=None, inactive_feeds=None):
         folders = json.decode(self.folders)
         flat_folders = {" ": []}
+        if feeds and not inactive_feeds:
+            inactive_feeds = []
         
         def _flatten_folders(items, parent_folder="", depth=0):
             for item in items:
                 if (isinstance(item, int) and 
-                    (((not feeds) or (feeds and item in feeds)) or
-                     ((not inactive_feeds) or (inactive_feeds and item in inactive_feeds)))):
+                    (not feeds or 
+                     (item in feeds or item in inactive_feeds))):
                     if not parent_folder:
                         parent_folder = ' '
                     if parent_folder in flat_folders:

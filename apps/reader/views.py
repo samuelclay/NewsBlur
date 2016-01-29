@@ -368,8 +368,11 @@ def load_feeds_flat(request):
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
     
     flat_folders = []
+    flat_folders_with_inactive = []
     if folders:
-        flat_folders = folders.flatten_folders(feeds=feeds, inactive_feeds=inactive_feeds)
+        flat_folders = folders.flatten_folders(feeds=feeds)
+        flat_folders_with_inactive = folders.flatten_folders(feeds=feeds,
+                                                             inactive_feeds=inactive_feeds)
         
     social_params = {
         'user_id': user.pk,
@@ -392,6 +395,7 @@ def load_feeds_flat(request):
 
     data = {
         "flat_folders": flat_folders, 
+        "flat_folders_with_inactive": flat_folders_with_inactive, 
         "feeds": feeds,
         "inactive_feeds": inactive_feeds,
         "social_feeds": social_feeds,
