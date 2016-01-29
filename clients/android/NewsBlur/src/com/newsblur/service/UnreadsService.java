@@ -50,17 +50,15 @@ public class UnreadsService extends SubService {
         // values are the actual story hash, which will be extracted once we have processed
         // all hashes.
         NavigableMap<String,String> sortingMap = new TreeMap<String,String>();
-        Log.d(this.getClass().getName(), "getting unreads from API");
         UnreadStoryHashesResponse unreadHashes = parent.apiManager.getUnreadStoryHashes();
         
+        if (parent.stopSync()) return;
         // note all the stories we thought were unread before. if any fail to appear in
         // the API request for unreads, we will mark them as read
         List<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashes();
-        Log.d(this.getClass().getName(), "getting unreads from DB");
 
         // process the api response, both bookkeeping no-longer-unread stories and populating
         // the sortation map we will use to create the fetch list for step two
-        Log.d(this.getClass().getName(), "building read state diff");
         feedloop: for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
             String feedId = entry.getKey();
             // ignore unreads from orphaned feeds
@@ -75,13 +73,13 @@ public class UnreadsService extends SubService {
             }
         }
 
+        if (parent.stopSync()) return;
         // now that we have the sorted set of hashes, turn them into a list over which we 
         // can iterate to fetch them
         if (PrefsUtils.getDefaultStoryOrder(parent) == StoryOrder.NEWEST) {
             // if the user reads newest-first by default, reverse the download order
             sortingMap = sortingMap.descendingMap();
         }
-        Log.d(this.getClass().getName(), "setting queue");
         StoryHashQueue.clear();
         for (Map.Entry<String,String> entry : sortingMap.entrySet()) {
             StoryHashQueue.add(entry.getValue());
@@ -89,12 +87,10 @@ public class UnreadsService extends SubService {
 
         // any stories that we previously thought to be unread but were not found in the
         // list, mark them read now
-        Log.d(this.getClass().getName(), "updating unread states for old stories");
         parent.dbHelper.markStoryHashesRead(oldUnreadHashes);
     }
 
     private void getNewUnreadStories() {
-        long startTime = System.currentTimeMillis();
         int totalCount = StoryHashQueue.size();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) return;
@@ -131,8 +127,6 @@ public class UnreadsService extends SubService {
             parent.originalTextService.start(startId);
             parent.imagePrefetchService.start(startId);
         }
-        long totalTime = System.currentTimeMillis() - startTime;
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetched " + totalCount + " stories in " + totalTime + "ms");
     }
 
     private boolean isStoryResponseGood(StoriesResponse response) {

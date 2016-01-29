@@ -264,7 +264,6 @@ public class BlurDatabaseHelper {
 
     public void insertStories(StoriesResponse apiResponse, boolean forImmediateReading) {
         StateFilter intelState = PrefsUtils.getStateFilter(context);
-        long startTime = System.currentTimeMillis();
         synchronized (RW_MUTEX) {
             // do not attempt to use beginTransactionNonExclusive() to reduce lock time for this very heavy set
             // of calls. most versions of Android incorrectly implement the underlying SQLite calls and will
@@ -398,9 +397,6 @@ public class BlurDatabaseHelper {
                 dbRW.endTransaction();
             }
         }
-
-        long totalTime = System.currentTimeMillis() - startTime;
-        Log.d(this.getClass().getName(), "inserted stories in " + totalTime + "ms");
     }
 
     public Folder getFolder(String folderName) {
@@ -872,18 +868,12 @@ public class BlurDatabaseHelper {
     }
 
     public void clearStorySession() {
-        long startTime = System.currentTimeMillis();
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);}
-        long totalTime = System.currentTimeMillis() - startTime;
-        Log.d(this.getClass().getName(), "cleared reading session in " + totalTime);
     }
 
     public void prepareReadingSession(FeedSet fs, StateFilter stateFilter) {
-        long startTime = System.currentTimeMillis();
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         prepareReadingSession(fs, stateFilter, readFilter);
-        long totalTime = System.currentTimeMillis() - startTime;
-        Log.d(this.getClass().getName(), "preppedreading session in " + totalTime);
     }
 
     /**

@@ -5,7 +5,7 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = true;
+    public static final boolean VERBOSE_LOG = false;
     public static final boolean VERBOSE_LOG_DB = false;
     public static final boolean VERBOSE_LOG_NET = false;
 	
@@ -56,7 +56,7 @@ public class AppConstants {
     public static final int MAX_READ_STORIES_STORED = 500;
 
     // how many unread stories to fetch via hash at a time
-    public static final int UNREAD_FETCH_BATCH_SIZE = 100;
+    public static final int UNREAD_FETCH_BATCH_SIZE = 50;
 
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 6;
