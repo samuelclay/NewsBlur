@@ -164,7 +164,7 @@ public class UIUtils {
         });
     }
 
-    public static void startReadingActivity(FeedSet fs, String startingHash, Context context, boolean ignoreFilters) {
+    public static void startReadingActivity(FeedSet fs, String startingHash, Context context) {
         Class activityClass;
 		if (fs.isAllSaved()) {
             activityClass = SavedStoriesReading.class;
@@ -189,9 +189,15 @@ public class UIUtils {
         Intent i = new Intent(context, activityClass);
         i.putExtra(Reading.EXTRA_FEEDSET, fs);
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
-        if (ignoreFilters) {
-            i.putExtra(SocialFeedReading.EXTRA_IGNORE_FILTERS, true);
-        }
         context.startActivity(i);
+    }
+
+    public static String getMemoryUsageDebug(Context context) {
+        String memInfo = " (";
+        android.app.ActivityManager activityManager = (android.app.ActivityManager) context.getSystemService(android.app.Activity.ACTIVITY_SERVICE);
+        int[] pids = new int[]{android.os.Process.myPid()};
+        android.os.Debug.MemoryInfo[] mi = activityManager.getProcessMemoryInfo(pids);
+        memInfo = memInfo + (mi[0].getTotalPss() / 1024) + "MB used)";
+        return memInfo;
     }
 }

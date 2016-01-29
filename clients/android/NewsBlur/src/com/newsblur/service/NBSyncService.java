@@ -65,12 +65,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class NBSyncService extends Service {
 
-    /**
-     * Mode switch for which newly received stories are suitable for display so
-     * that they don't disrupt actively visible pager and list offsets.
-     */
-    public enum ActivationMode { ALL, OLDER, NEWER };
-
     private static final Object WAKELOCK_MUTEX = new Object();
     private static final Object PENDING_FEED_MUTEX = new Object();
 
@@ -83,8 +77,6 @@ public class NBSyncService extends Service {
     private volatile static boolean DoFeedsFolders = false;
     private volatile static boolean DoUnreads = false;
     private volatile static boolean HaltNow = false;
-    private volatile static ActivationMode ActMode = ActivationMode.ALL;
-    private volatile static long ModeCutoff = 0L;
 
     /** Informational flag only, as to whether we were offline last time we cycled. */
     public volatile static boolean OfflineNow = false;
@@ -398,7 +390,6 @@ public class NBSyncService extends Service {
 
         if (stopSync()) return;
         if (backoffBackgroundCalls()) return;
-        if (ActMode != ActivationMode.ALL) return;
         if (dbHelper.getActions(false).getCount() > 0) return;
 
         FFSyncRunning = true;
@@ -425,7 +416,6 @@ public class NBSyncService extends Service {
             }
 
             if (stopSync()) return;
-            if (ActMode != ActivationMode.ALL) return;
             if (dbHelper.getActions(false).getCount() > 0) return;
 
             // a metadata sync invalidates pagination and feed status
@@ -615,9 +605,9 @@ public class NBSyncService extends Service {
                 if (FlushRecounts) return;
                 // don't let the page loop block actions
                 if (dbHelper.getActions(false).getCount() > 0) return;
+
+                // bail if the active view has changed
                 if (!fs.equals(PendingFeed)) {
-                    // the active view has changed
-                    if (fs == null) finished = true;
                     return; 
                 }
 
@@ -629,16 +619,14 @@ public class NBSyncService extends Service {
             
                 if (! isStoryResponseGood(apiResponse)) return;
 
+                if (!fs.equals(PendingFeed)) {
+                    return; 
+                }
+
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
                 FeedStoriesSeen.put(fs, totalStoriesSeen);
 
-                // lock in the activation cutoff based upon the timestamp of the first
-                // story received for a given pagination session. it will be the newest
-                // or oldest story for the feedset, as dictated by order.
-                if ((pageNumber == 1) && (apiResponse.stories.length > 0)) {
-                    ModeCutoff = apiResponse.stories[0].timestamp;
-                }
                 insertStories(apiResponse, fs);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
             
@@ -707,15 +695,15 @@ public class NBSyncService extends Service {
             // If this set of stories was found in response to the active search query, note
             // them as such in the DB so the UI can filter for them
             for (Story story : apiResponse.stories) {
-                story.isSearchHit = true;
+                story.searchHit = fs.getSearchQuery();
             }
         }
 
-        dbHelper.insertStories(apiResponse, ActMode, ModeCutoff);
+        dbHelper.insertStories(apiResponse, true);
     }
 
     void insertStories(StoriesResponse apiResponse) {
-        dbHelper.insertStories(apiResponse, ActMode, ModeCutoff);
+        dbHelper.insertStories(apiResponse, false);
     }
 
     void incrementRunningChild() {
@@ -836,18 +824,6 @@ public class NBSyncService extends Service {
 
     public static void flushRecounts() {
         FlushRecounts = true;
-    }
-
-    /**
-     * Tell the service which stories can be activated if received. See ActivationMode.
-     */
-    public static void setActivationMode(ActivationMode actMode) {
-        ActMode = actMode;
-    }
-
-    public static void setActivationMode(ActivationMode actMode, long modeCutoff) {
-        ActMode = actMode;
-        ModeCutoff = modeCutoff;
     }
 
     /**
