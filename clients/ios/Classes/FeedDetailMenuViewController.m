@@ -102,6 +102,7 @@
     }
     
     if (!appDelegate.storiesCollection.isRiverView && !saved && !read) {
+        [options addObject:[@"Mute this site" uppercaseString]];
         [options addObject:[@"Rename this site" uppercaseString]];
         [options addObject:[@"Train this site" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
@@ -152,10 +153,12 @@
     } else if (indexPath.row == 1) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_move.png"];
     } else if (indexPath.row == 2) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_rename.png"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_mute.png"];
     } else if (indexPath.row == 3) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_rename.png"];
     } else if (indexPath.row == 4) {
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
+    } else if (indexPath.row == 5) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch.png"];
     }
     
@@ -181,10 +184,12 @@
     } else if (indexPath.row == 1) {
         [appDelegate.feedDetailViewController openMoveView];
     } else if (indexPath.row == 2) {
-        [appDelegate.feedDetailViewController openRenameSite];
+        [appDelegate.feedDetailViewController confirmMuteSite];
     } else if (indexPath.row == 3) {
-        [appDelegate.feedDetailViewController openTrainSite];
+        [appDelegate.feedDetailViewController openRenameSite];
     } else if (indexPath.row == 4) {
+        [appDelegate.feedDetailViewController openTrainSite];
+    } else if (indexPath.row == 5) {
         [appDelegate.feedDetailViewController instafetchFeed];
     }
     
