@@ -322,6 +322,7 @@ def load_feeds_flat(request):
     user = request.user
     include_favicons = is_true(request.REQUEST.get('include_favicons', False))
     update_counts    = is_true(request.REQUEST.get('update_counts', True))
+    include_inactive = is_true(request.REQUEST.get('include_inactive', False))
     
     feeds = {}
     inactive_feeds = {}
@@ -346,7 +347,8 @@ def load_feeds_flat(request):
     if not user_subs and folders:
         folders.auto_activate()
         user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    inactive_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=False)
+    if include_inactive:
+        inactive_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=False)
     
     for sub in user_subs:
         if update_counts and sub.needs_unread_recalc:
@@ -359,8 +361,9 @@ def load_feeds_flat(request):
         elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
     
-    for sub in inactive_subs:
-        inactive_feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
+    if include_inactive:
+        for sub in inactive_subs:
+            inactive_feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
     if len(scheduled_feeds) > 0 and request.user.is_authenticated():
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
@@ -396,8 +399,8 @@ def load_feeds_flat(request):
     data = {
         "flat_folders": flat_folders, 
         "flat_folders_with_inactive": flat_folders_with_inactive, 
-        "feeds": feeds,
-        "inactive_feeds": inactive_feeds,
+        "feeds": feeds if not include_inactive else {"0": "Don't include `include_inactive=true` if you want active feeds."},
+        "inactive_feeds": inactive_feeds if include_inactive else {"0": "Include `include_inactive=true`"},
         "social_feeds": social_feeds,
         "social_profile": social_profile,
         "social_services": social_services,
