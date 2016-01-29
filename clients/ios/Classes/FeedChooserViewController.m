@@ -26,6 +26,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
 @property (nonatomic, strong) NSArray *sections;
 @property (nonatomic, strong) NSArray *indexTitles;
 @property (nonatomic, strong) NSArray *folders;
+@property (nonatomic, strong) NSDictionary *dictFolders;
+@property (nonatomic, strong) NSDictionary *inactiveFeeds;
 @property (nonatomic) FeedChooserSort sort;
 @property (nonatomic) BOOL ascending;
 @property (nonatomic) BOOL flat;
@@ -67,15 +69,72 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
     
+    if (self.operation == FeedChooserOperationMuteSites) {
+        [self performGetInactiveFeeds];
+    } else {
+        [self updateDictFolders];
+        [self rebuildItemsAnimated:NO];
+    }
+}
+
+- (void)performGetInactiveFeeds {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Loading...";
+    
+    NSArray *selection = self.tableView.indexPathsForSelectedRows;
+    NSMutableArray *feedsByFolder = [NSMutableArray arrayWithCapacity:selection.count];
+    
+    for (NSIndexPath *indexPath in selection) {
+        FeedChooserItem *fromFolder = self.sections[indexPath.section];
+        FeedChooserItem *item = fromFolder.contents[indexPath.row];
+        
+        [feedsByFolder addObject:@[item.identifier, fromFolder.identifier]];
+    }
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false&include_inactive=true", self.appDelegate.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.delegate = self;
+    request.didFinishSelector = @selector(finishLoadingInactiveFeeds:);
+    request.didFailSelector = @selector(finishedWithError:);
+    request.timeOutSeconds = 30;
+    [request startAsynchronous];
+}
+
+- (void)finishLoadingInactiveFeeds:(ASIHTTPRequest *)request {
+    NSString *responseString = request.responseString;
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
+    
+    self.dictFolders = results[@"flat_folders_with_inactive"];
+    self.inactiveFeeds = results[@"inactive_feeds"];
+    
     [self rebuildItemsAnimated:NO];
     
-    if (self.operation == FeedChooserOperationMuteSites) {
-        #warning *** to be implemented ***: select only the unmuted sites
-        
-        [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
-            [self select:YES section:section];
-        }];
-    }
+    [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+        if ([item.info[@"active"] boolValue]) {
+            [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+    }];
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+}
+
+- (void)finishedWithError:(ASIHTTPRequest *)request {
+    NSError *error = request.error;
+    NSLog(@"informError: %@", error);
+    NSString *errorMessage = [error localizedDescription];
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [HUD setCustomView:[[UIImageView alloc]
+                        initWithImage:[UIImage imageNamed:@"warning.gif"]]];
+    [HUD setMode:MBProgressHUDModeCustomView];
+    HUD.labelText = errorMessage;
+    [HUD hide:YES afterDelay:1];
+    [self rebuildItemsAnimated:YES];
 }
 
 - (void)rebuildItemsAnimated:(BOOL)animated {
@@ -91,7 +150,9 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [sections addObject:section];
     }
     
-    for (NSString *folderName in appDelegate.dictFoldersArray) {
+    NSArray *folderArray = [self.dictFolders.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    
+    for (NSString *folderName in folderArray) {
         if (![folderName hasPrefix:@"river_"] && ![folderName isEqualToString:@"read_stories"] && ![folderName isEqualToString:@"saved_stories"]) {
             FeedChooserItem *folder = [FeedChooserItem makeFolderWithTitle:folderName];
             [folders addObject:folder];
@@ -102,11 +163,16 @@ static const CGFloat kFolderTitleHeight = 36.0;
                 [indexTitles addObject:section.title.length ? [section.title substringToIndex:1] : @"-"];
             }
             
-            for (id feedId in appDelegate.dictFolders[folderName]) {
+            for (id feedId in self.dictFolders[folderName]) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+                NSDictionary *info = appDelegate.dictFeeds[feedIdStr];
+                
+                if (!info) {
+                    info = self.inactiveFeeds[feedIdStr];
+                }
                 
                 if (![appDelegate isSocialFeed:feedIdStr] && ![appDelegate isSavedFeed:feedIdStr]) {
-                    [section addItemWithInfo:appDelegate.dictFeeds[feedIdStr]];
+                    [section addItemWithInfo:info];
                 }
             }
         }
@@ -161,7 +227,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     __block NSIndexPath *indexPath = nil;
     
     [self enumerateAllRowsUsingBlock:^(NSIndexPath *localIndexPath, FeedChooserItem *localItem) {
-        if ([item.identifier isEqualToString:localItem.identifier]) {
+        if ([item.identifierString isEqualToString:localItem.identifierString]) {
             indexPath = localIndexPath;
         }
     }];
@@ -351,41 +417,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.sortItem];
 }
 
-/*
-- (void)moveToFolder:(FeedChooserItem *)toFolder {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Moving...";
-    
-    NSArray *selection = self.tableView.indexPathsForSelectedRows;
-    __block NSUInteger remaining = selection.count;
-    
-    for (NSIndexPath *indexPath in selection) {
-        FeedChooserItem *fromFolder = self.sections[indexPath.section];
-        FeedChooserItem *item = fromFolder.contents[indexPath.row];
-        
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder", self.appDelegate.url];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:fromFolder.identifier forKey:@"in_folder"];
-        [request setPostValue:toFolder.identifier forKey:@"to_folder"];
-        [request setPostValue:item.identifier forKey:@"feed_id"];
-        [request setDelegate:self];
-        [request setCompletionBlock:^(void) {
-            remaining--;
-            
-            if (remaining <= 0) {
-                HUD.labelText = @"Reloading...";
-                [self.appDelegate reloadFeedsView:YES];
-            }
-        }];
-        [request setTimeOutSeconds:30];
-        [request startAsynchronous];
-    }
-}
-*/
-
-- (void)moveToFolder:(FeedChooserItem *)toFolder {
+- (void)performMoveToFolder:(FeedChooserItem *)toFolder {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Moving...";
@@ -405,12 +437,12 @@ static const CGFloat kFolderTitleHeight = 36.0;
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
     [request setPostValue:toFolder.identifier forKey:@"to_folder"];
-    [request setDelegate:self];
     [request setCompletionBlock:^(void) {
         HUD.labelText = @"Reloading...";
         [self.appDelegate reloadFeedsView:YES];
     }];
-    [request setTimeOutSeconds:30];
+    request.didFailSelector = @selector(finishedWithError:);
+    request.timeOutSeconds = 30;
     [request startAsynchronous];
 }
 
@@ -433,64 +465,115 @@ static const CGFloat kFolderTitleHeight = 36.0;
         }
         
         [viewController addTitle:title iconName:iconName selectionShouldDismiss:YES handler:^{
-            [self moveToFolder:folder];
+            [self performMoveToFolder:folder];
         }];
     }
     
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.moveItem];
 }
 
+- (void)performDeleteFeeds {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting...";
+    
+    NSArray *selection = self.tableView.indexPathsForSelectedRows;
+    NSMutableArray *feedsByFolder = [NSMutableArray arrayWithCapacity:selection.count];
+    
+    for (NSIndexPath *indexPath in selection) {
+        FeedChooserItem *fromFolder = self.sections[indexPath.section];
+        FeedChooserItem *item = fromFolder.contents[indexPath.row];
+        
+        [feedsByFolder addObject:@[item.identifier, fromFolder.identifier]];
+    }
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_feeds_by_folder", self.appDelegate.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
+    [request setCompletionBlock:^(void) {
+        HUD.labelText = @"Reloading...";
+        [self.appDelegate reloadFeedsView:YES];
+    }];
+    request.didFailSelector = @selector(finishedWithError:);
+    request.timeOutSeconds = 30;
+    [request startAsynchronous];
+}
+
 - (void)deleteFeeds {
     MenuViewController *viewController = [MenuViewController new];
-    NSArray *selection = self.tableView.indexPathsForSelectedRows;
-    
-    NSString *title = selection.count == 1 ? @"Delete selected site?" : [NSString stringWithFormat:@"Delete %@ sites?", @(selection.count)];
+    NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
+    NSString *title = count == 1 ? @"Delete selected site?" : [NSString stringWithFormat:@"Delete %@ sites?", @(count)];
     
     [viewController addTitle:title iconName:@"menu_icn_delete.png" selectionShouldDismiss:YES handler:^{
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        HUD.labelText = @"Deleting...";
-        __block NSUInteger remaining = selection.count;
-        
-        for (NSIndexPath *indexPath in selection) {
-            FeedChooserItem *folder = self.sections[indexPath.section];
-            FeedChooserItem *item = folder.contents[indexPath.row];
-            
-            NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_feed", self.appDelegate.url];
-            NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
-            
-            __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
-            [request setDelegate:self];
-            [request addPostValue:item.identifier forKey:@"feed_id"];
-            [request addPostValue:folder.identifier forKey:@"in_folder"];
-            [request setCompletionBlock:^(void) {
-                remaining--;
-                
-                if (remaining <= 0) {
-                    HUD.labelText = @"Reloading...";
-                    [self.appDelegate reloadFeedsView:YES];
-                }
-            }];
-            [request setTimeOutSeconds:30];
-            [request setTag:item.identifier.integerValue];
-            [request startAsynchronous];
-        }
+        [self performDeleteFeeds];
     }];
     
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.deleteItem];
 }
 
 - (void)finishedLoadingFeedsNotification:(NSNotification *)note {
+    if (self.operation != FeedChooserOperationMuteSites) {
+        [self updateDictFolders];
+    }
+    
     [self rebuildItemsAnimated:YES];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
-- (void)done {
-    if (self.operation == FeedChooserOperationMuteSites) {
-        #warning *** to be implemented ***: save updated mute states
-    }
+- (void)updateDictFolders {
+    NSMutableDictionary *folders = [self.appDelegate.dictFolders mutableCopy];
+    NSDictionary *everything = folders[@"everything"];
     
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [folders removeObjectForKey:@"everything"];
+    [folders setObject:everything forKey:@" "];
+    
+    self.dictFolders = folders;
+}
+
+- (void)performSaveActiveFeeds {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Updating...";
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    for (id identifier in [self selectedItemIdentifiers]) {
+        [request addPostValue:identifier forKey:@"approved_feeds"];
+    }
+    [request setCompletionBlock:^(void) {
+        [self.appDelegate reloadFeedsView:YES];
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }];
+    request.didFailSelector = @selector(finishedWithError:);
+    request.timeOutSeconds = 30;
+    [request startAsynchronous];
+}
+
+- (BOOL)didChangeActiveFeeds {
+    __block BOOL didChange = NO;
+    NSArray *inactiveFeedsIdentifiers = self.inactiveFeeds.allKeys;
+    NSArray *selectedIndexPaths = self.tableView.indexPathsForSelectedRows;
+    
+    [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+        BOOL wasInactive = [inactiveFeedsIdentifiers containsObject:item.identifierString];
+        BOOL isInactive = ![selectedIndexPaths containsObject:indexPath];
+        
+        if (wasInactive != isInactive) {
+            didChange = YES;
+        }
+    }];
+    
+    return didChange;
+}
+
+- (void)done {
+    if (self.operation == FeedChooserOperationMuteSites && [self didChangeActiveFeeds]) {
+        [self performSaveActiveFeeds];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 #pragma mark - Table view data source

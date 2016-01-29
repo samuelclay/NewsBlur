@@ -17,7 +17,8 @@ typedef NS_ENUM(NSUInteger, FeedChooserSort)
     FeedChooserSortOpens
 };
 
-@property (nonatomic, readonly) NSString *identifier;
+@property (nonatomic, readonly) id identifier;
+@property (nonatomic, readonly) NSString *identifierString;
 @property (nonatomic, readonly) NSString *title;
 @property (nonatomic, readonly) UIImage *icon;
 @property (nonatomic, strong) NSDictionary *info;

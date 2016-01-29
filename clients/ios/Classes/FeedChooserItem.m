@@ -30,14 +30,24 @@
     return item;
 }
 
-- (NSString *)identifier {
-    return [self.info[@"id"] description];
+- (id)identifier {
+    id identifier = self.info[@"id"];
+    
+    if ([identifier isEqual:@" "]) {
+        return @"everything";
+    } else {
+        return identifier;
+    }
+}
+
+- (NSString *)identifierString {
+    return [NSString stringWithFormat:@"%@", self.identifier];
 }
 
 - (NSString *)title {
     NSString *title = self.info[@"feed_title"];
     
-    if ([title isEqualToString:@"everything"]) {
+    if ([title isEqualToString:@" "] || [title isEqualToString:@"everything"]) {
         return @"";
     } else {
         return title;
@@ -49,7 +59,7 @@
         if (!self.identifier) {
             self.icon = [UIImage imageNamed:@"g_icn_folder.png"];
         } else {
-            self.icon = [self.appDelegate getFavicon:self.identifier isSocial:NO isSaved:NO];
+            self.icon = [self.appDelegate getFavicon:[self.identifier description] isSocial:NO isSaved:NO];
         }
     }
     
