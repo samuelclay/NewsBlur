@@ -28,13 +28,11 @@ const NSInteger kHeaderHeight = 24;
     tagsTableView = [[UITableView alloc] init];
     tagsTableView.delegate = self;
     tagsTableView.dataSource = self;
-    tagsTableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    tagsTableView.frame = CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0);
     tagsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:tagsTableView];
     
-    addTagBar = [[UISearchBar alloc]
-                 initWithFrame:CGRectMake(0, 0,
-                                          CGRectGetWidth(tagsTableView.frame), 44.)];
+    addTagBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, 44.0)];
     [addTagBar setDelegate:self];
     [addTagBar setImage:[UIImage imageNamed:@"add_tag.png"]
        forSearchBarIcon:UISearchBarIconSearch
@@ -44,13 +42,14 @@ const NSInteger kHeaderHeight = 24;
     [addTagBar setTintColor:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)];
     [addTagBar setSearchBarStyle:UISearchBarStyleMinimal];
     [addTagBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-    tagsTableView.tableHeaderView = addTagBar;
+    [self.view addSubview:addTagBar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    tagsTableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    tagsTableView.frame = CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0);
+    addTagBar.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, 44.0);
     [tagsTableView reloadData];
     [tagsTableView setContentOffset:CGPointZero];
 }
