@@ -376,6 +376,7 @@
     self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, vb.size.height);
     self.dashboardViewController.view.frame = CGRectMake(self.masterWidth, 0, vb.size.width - self.masterWidth, vb.size.height);
     rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
+    self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
 }
 
 - (void)layoutFeedDetailScreen {
