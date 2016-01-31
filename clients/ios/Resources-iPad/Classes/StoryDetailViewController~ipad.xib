@@ -10,7 +10,6 @@
                 <outlet property="activityIndicator" destination="BHa-eI-8aP" id="szf-ha-x2J"/>
                 <outlet property="noStoryMessage" destination="bfM-JE-U7c" id="3Wi-jn-nk8"/>
                 <outlet property="view" destination="1" id="55"/>
-                <outlet property="webView" destination="39" id="54"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -38,20 +37,12 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <webView hidden="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="39">
-                    <rect key="frame" x="0.0" y="0.0" width="768" height="980"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="52"/>
-                    </connections>
-                </webView>
                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" id="BHa-eI-8aP">
                     <rect key="frame" x="366" y="507" width="37" height="37"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                 </activityIndicatorView>
             </subviews>
-            <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+            <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
