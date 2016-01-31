@@ -20,6 +20,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.conf import settings
 from django.db.models.query import QuerySet
+from django.db.utils import DatabaseError
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -226,6 +227,9 @@ class Feed(models.Model):
         
         try:
             super(Feed, self).save(*args, **kwargs)
+        except DatabaseError, e:
+            logging.debug(" ---> ~FBFeed update failed, no change: %s / %s..." % (kwargs.get('update_fields', None), e))
+            pass
         except IntegrityError, e:
             logging.debug(" ---> ~FRFeed save collision (%s), checking dupe..." % e)
             duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
@@ -2484,8 +2488,11 @@ class MStarredStoryCounts(mongo.Document):
         
         if not total_only:
             cls.objects(user_id=user_id).delete()
-            user_tags = cls.count_tags_for_user(user_id)
-            user_feeds = cls.count_feeds_for_user(user_id)
+            try:
+                user_tags = cls.count_tags_for_user(user_id)
+                user_feeds = cls.count_feeds_for_user(user_id)
+            except pymongo.errors.OperationFailure, e:
+                logging.debug(" ---> ~FBOperationError on mongo: ~SB%s" % e)
 
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
         cls.objects(user_id=user_id, tag=None, feed_id=None).update_one(set__count=total_stories_count,

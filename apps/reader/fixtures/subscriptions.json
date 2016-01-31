@@ -21,6 +21,14 @@
             "user": 1
         }
     },
+    {
+        "pk": 2,
+        "model": "reader.usersubscriptionfolders",
+        "fields": {
+            "folders": "[5299728, 644144, 1187026, {\"Brainiacs & Opinion\": [569, 38, 3581, 183139, 1186180, 15]}, {\"Science & Technology\": [731503, 140145, 1272495, 76, 161, 39, {\"Hacker\": [5985150, 3323431]}]}, {\"Humor\": [212379, 3530, 5994357]}, {\"Videos\": [3240, 5168]}]",
+            "user": 2
+        }
+    },
 
     {
         "pk": 2,
@@ -159,6 +167,24 @@
             "user_permissions": [], 
             "password": "sha1$7b94b$ac9e6cf08d0fa16a67e56e319c0935aeb26db2a2", 
             "email": "samuel@newsblur.com", 
+            "date_joined": "2009-01-04 17:32:58"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "Dejal", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": 1, 
+            "is_superuser": 1, 
+            "is_staff": 1, 
+            "last_login": "2009-04-07 19:22:24", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "sha1$7b94b$ac9e6cf08d0fa16a67e56e319c0935aeb26db2a2", 
+            "email": "dejal@newsblur.com", 
             "date_joined": "2009-01-04 17:32:58"
         }
     },

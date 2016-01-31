@@ -1,6 +1,7 @@
 package com.newsblur.domain;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ public class ValueMultimap implements Serializable {
 				final StringBuilder builder = new StringBuilder();
 				builder.append(key);
 				builder.append("=");
-				builder.append(value);
+                builder.append(URLEncoder.encode(value));
 				parameters.add(builder.toString());
 			}
 		}

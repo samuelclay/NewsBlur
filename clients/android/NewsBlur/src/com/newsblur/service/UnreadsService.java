@@ -52,27 +52,28 @@ public class UnreadsService extends SubService {
         NavigableMap<String,String> sortingMap = new TreeMap<String,String>();
         UnreadStoryHashesResponse unreadHashes = parent.apiManager.getUnreadStoryHashes();
         
+        if (parent.stopSync()) return;
         // note all the stories we thought were unread before. if any fail to appear in
         // the API request for unreads, we will mark them as read
         List<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashes();
 
         // process the api response, both bookkeeping no-longer-unread stories and populating
         // the sortation map we will use to create the fetch list for step two
-        for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
+        feedloop: for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
             String feedId = entry.getKey();
             // ignore unreads from orphaned feeds
-            if( ! parent.orphanFeedIds.contains(feedId)) {
+            if(parent.orphanFeedIds.contains(feedId)) continue feedloop;
+            for (String[] newHash : entry.getValue()) {
                 // only fetch the reported unreads if we don't already have them
-                List<String> existingHashes = parent.dbHelper.getStoryHashesForFeed(feedId);
-                for (String[] newHash : entry.getValue()) {
-                    if (!existingHashes.contains(newHash[0])) {
-                        sortingMap.put(newHash[1]+newHash[0], newHash[0]);
-                    }
+                if (!oldUnreadHashes.contains(newHash[0])) {
+                    sortingMap.put(newHash[1]+newHash[0], newHash[0]);
+                } else {
                     oldUnreadHashes.remove(newHash[0]);
                 }
             }
         }
 
+        if (parent.stopSync()) return;
         // now that we have the sorted set of hashes, turn them into a list over which we 
         // can iterate to fetch them
         if (PrefsUtils.getDefaultStoryOrder(parent) == StoryOrder.NEWEST) {
@@ -90,6 +91,7 @@ public class UnreadsService extends SubService {
     }
 
     private void getNewUnreadStories() {
+        int totalCount = StoryHashQueue.size();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) return;
             if(!PrefsUtils.isOfflineEnabled(parent)) return;

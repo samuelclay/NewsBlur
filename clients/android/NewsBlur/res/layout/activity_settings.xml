@@ -44,6 +44,13 @@
             android:entries="@array/default_read_filter_entries"
             android:entryValues="@array/default_read_filter_values"
             android:defaultValue="@string/default_read_filter_value" />
+        <ListPreference
+            android:key="pref_confirm_mark_all_read"
+            android:title="@string/settings_confirm_mark_all_read"
+            android:dialogTitle="@string/settings_confirm_mark_all_read"
+            android:entries="@array/confirm_mark_all_read_entries"
+            android:entryValues="@array/confirm_mark_all_read_values"
+            android:defaultValue="@string/confirm_mark_all_read_value" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_auto_open_first_unread"
