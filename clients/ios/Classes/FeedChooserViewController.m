@@ -46,7 +46,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.selectionItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"barbutton_selection.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSelectionMenu)];
-    self.sortItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"barbutton_sort.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSortMenu)];
+    self.sortItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:[self sortIconName]] style:UIBarButtonItemStylePlain target:self action:@selector(showSortMenu)];
     
     if (self.operation == FeedChooserOperationOrganizeSites) {
         self.moveItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu_icn_move.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showMoveMenu)];
@@ -364,6 +364,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.selectionItem];
 }
 
+- (NSString *)sortIconName {
+    if (self.ascending) {
+        return @"barbutton_sort_asc.png";
+    } else {
+        return @"barbutton_sort_desc.png";
+    }
+}
+
 - (void)sort:(FeedChooserSort)sort {
     NSArray *identifiers = [self selectedItemIdentifiers];
     
@@ -378,23 +386,23 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)showSortMenu {
     MenuViewController *viewController = [MenuViewController new];
     
-    [viewController addTitle:@"Name" iconName:@"barbutton_sort.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Name" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortName];
     }];
     
-    [viewController addTitle:@"Subscribers" iconName:@"barbutton_sort.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Subscribers" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortSubscribers];
     }];
     
-    [viewController addTitle:@"Stories per Month" iconName:@"barbutton_sort.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Stories per Month" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortFrequency];
     }];
     
-    [viewController addTitle:@"Most Recent Story" iconName:@"barbutton_sort.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Most Recent Story" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortRecency];
     }];
     
-    [viewController addTitle:@"Number of Opens" iconName:@"barbutton_sort.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Number of Opens" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortOpens];
     }];
     
@@ -403,6 +411,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [viewController addSegmentedControlWithTitles:@[@"Ascending", @"Descending"] selectIndex:self.ascending ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         NSArray *identifiers = [self selectedItemIdentifiers];
         self.ascending = selectedIndex == 0;
+        self.sortItem.image = [UIImage imageNamed:[self sortIconName]];
         [self sortItemsAnimated:YES];
         [self selectItemsWithIdentifiers:identifiers animated:NO];
     }];
