@@ -43,6 +43,7 @@
 		17CBD3BF1BF66B6C003FCCAE /* MarkReadMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */; };
 		17CBD3C21BF6ED2C003FCCAE /* menu_icn_markread.png in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3C01BF6ED2C003FCCAE /* menu_icn_markread.png */; };
 		17CBD3C31BF6ED2C003FCCAE /* menu_icn_markread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */; };
+		17CF7DD41C5C6AE40067BC5B /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17CF7DD31C5C6AE40067BC5B /* WebKit.framework */; };
 		17E265DE1C0D17340060655F /* storyDetailViewDark.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E265DD1C0D17340060655F /* storyDetailViewDark.css */; };
 		17E57D571C0E592600EB3D4B /* storyDetailViewMedium.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */; };
 		17E57D581C0E592600EB3D4B /* storyDetailViewSepia.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */; };
@@ -560,6 +561,7 @@
 		17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkReadMenuViewController.m; sourceTree = "<group>"; };
 		17CBD3C01BF6ED2C003FCCAE /* menu_icn_markread.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_markread.png; sourceTree = "<group>"; };
 		17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_markread@2x.png"; sourceTree = "<group>"; };
+		17CF7DD31C5C6AE40067BC5B /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		17E265DD1C0D17340060655F /* storyDetailViewDark.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewDark.css; path = static/storyDetailViewDark.css; sourceTree = SOURCE_ROOT; };
 		17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewMedium.css; path = static/storyDetailViewMedium.css; sourceTree = SOURCE_ROOT; };
 		17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewSepia.css; path = static/storyDetailViewSepia.css; sourceTree = SOURCE_ROOT; };
@@ -1220,6 +1222,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17CF7DD41C5C6AE40067BC5B /* WebKit.framework in Frameworks */,
 				FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */,
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
@@ -1408,6 +1411,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				17CF7DD31C5C6AE40067BC5B /* WebKit.framework */,
 				FF308A8018C01043009F986A /* MediaPlayer.framework */,
 				FF308A7E18C01037009F986A /* CoreLocation.framework */,
 				FF308A7C18C01025009F986A /* CoreMotion.framework */,
@@ -2928,6 +2932,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2969,6 +2974,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
