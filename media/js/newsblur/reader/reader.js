@@ -5977,6 +5977,12 @@
                     self.open_intro_modal({page_number: 2});
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-module-premium-button' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_feedchooser_modal({'premium_only': true});
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-module-gettingstarted-hide' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {

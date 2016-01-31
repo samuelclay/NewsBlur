@@ -32,3 +32,21 @@
         </div>
     </div>
 </div>
+
+{% if not user_profile.is_premium %}
+<div class="NB-module NB-module-premium">
+    <h5 class="NB-module-header">
+        Please Upgrade
+    </h5>
+
+    <div class="NB-module-item NB-module-item-intro">
+		<p>NewsBlur is a paid service and relies on premium subscribers.</p>
+		
+		<p><b>Please upgrade your account to premium.</b></p>
+		
+		<div class="NB-modal-submit-green NB-modal-submit-button NB-module-premium-button NB-javascript">Upgrade</div>
+		
+		<p class="NB-module-premium-price">Only $24/year</p>
+    </div>
+</div>
+{% endif %}

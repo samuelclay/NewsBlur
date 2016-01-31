@@ -6400,6 +6400,32 @@ form.opml_import_form input {
     display: none;
 }
 
+/* ========================== */
+/* = Premium Upgrade Module = */
+/* ========================== */
+
+.NB-account .NB-module-premium {
+}
+
+.NB-module-premium .NB-module-item-intro {
+    border: 1px solid #F7E7BC;
+    background-color: #FFFCF3;
+    padding: 12px;
+    overflow: hidden;
+    border-radius: 4px;
+	font-size: 14px;
+	text-align: center;
+}
+.NB-module-premium .NB-module-item .NB-modal-submit-button {
+	float: none;
+}
+.NB-module-premium .NB-module-premium-price {
+	font-size: 12px;
+	text-transform: uppercase;
+	margin: 12px 0 0;
+	color: #909090;
+}
+
 /* ================ */
 /* = Stats Module = */
 /* ================ */
