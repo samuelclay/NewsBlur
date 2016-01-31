@@ -2,6 +2,7 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
     options = options || {};
     var defaults = {
         'width': options.premium_only || options.chooser_only ? 460 : 900,
+		'height': 750,
         'premium_only': false,
         'chooser_only': false,
         'onOpen': _.bind(function() {
