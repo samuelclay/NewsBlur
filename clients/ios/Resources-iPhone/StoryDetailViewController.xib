@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="activityIndicator" destination="LBH-6T-jFu" id="zQr-GD-QKs"/>
                 <outlet property="view" destination="1" id="75"/>
+                <outlet property="webView" destination="39" id="54"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -19,11 +20,22 @@
                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="LBH-6T-jFu">
                     <rect key="frame" x="142" y="212" width="37" height="37"/>
                 </activityIndicatorView>
+                <webView multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="39">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
+                    <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="52"/>
+                    </connections>
+                </webView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="LBH-6T-jFu" firstAttribute="centerX" secondItem="1" secondAttribute="centerX" id="AIu-Em-rhG"/>
+                <constraint firstItem="39" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="DpF-n8-Epm"/>
                 <constraint firstItem="LBH-6T-jFu" firstAttribute="centerY" secondItem="1" secondAttribute="centerY" id="T4x-f0-Y9g"/>
+                <constraint firstAttribute="trailing" secondItem="39" secondAttribute="trailing" id="UNS-0C-ycK"/>
+                <constraint firstItem="39" firstAttribute="top" secondItem="1" secondAttribute="top" id="eYc-te-DnY"/>
+                <constraint firstAttribute="bottom" secondItem="39" secondAttribute="bottom" id="nHf-0B-3lN"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
