@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <WebKit/WebKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import "BaseViewController.h"
 
@@ -16,13 +15,33 @@
 
 @interface StoryDetailViewController : BaseViewController
 <UIScrollViewDelegate, UIGestureRecognizerDelegate,
-UIActionSheetDelegate>
+UIActionSheetDelegate> {
+    NewsBlurAppDelegate *appDelegate;
+    
+    NSString *activeStoryId;
+    NSMutableDictionary *activeStory;
+    UIView *innerView;
+    UIWebView *webView;
+    NSInteger pageIndex;
+    BOOL pullingScrollview;
+    BOOL inTextView;
+    BOOL inDoubleTap;
+    BOOL hasScrolled;
+    NSURL *activeLongPressUrl;
+    NSInteger actionSheetViewImageIndex;
+    NSInteger actionSheetCopyImageIndex;
+    NSInteger actionSheetSaveImageIndex;
+    CGSize preRotateSize;
+    CGFloat scrollPct;
+    
+    UIInterfaceOrientation _orientation;
+}
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSString *activeStoryId;
 @property (nonatomic, readwrite) NSMutableDictionary *activeStory;
 @property (nonatomic) IBOutlet UIView *innerView;
-@property (nonatomic) IBOutlet WKWebView *webView;
+@property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIView *noStoryMessage;
 @property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
@@ -31,17 +50,9 @@ UIActionSheetDelegate>
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
 @property (nonatomic) BOOL hasStory;
-@property (nonatomic) BOOL inDoubleTap;
-@property (nonatomic) CGFloat scrollPct;
-@property (nonatomic) BOOL hasScrolled;
-@property (nonatomic) NSInteger actionSheetCopyImageIndex;
-@property (nonatomic) NSInteger actionSheetSaveImageIndex;
-@property (nonatomic) NSInteger actionSheetViewImageIndex;
-@property (nonatomic) NSURL *activeLongPressUrl;
 
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
-@property (nonatomic) UIInterfaceOrientation cachedOrientation;
 
 - (void)initStory;
 - (void)hideNoStoryMessage;
@@ -80,6 +91,8 @@ UIActionSheetDelegate>
 - (NSString *)getAvatars:(NSString *)key;
 - (void)refreshHeader;
 - (void)refreshSideoptions;
+
+- (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer;
 
 - (void)showTextOrStoryView;
 - (void)showStoryView;
