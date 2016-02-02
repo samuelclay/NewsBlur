@@ -31,6 +31,7 @@ from django.utils import feedgenerator
 from django.utils.html import linebreaks
 from django.utils.encoding import smart_unicode
 from utils import json_functions as json
+from celery.exceptions import SoftTimeLimitExceeded
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -622,6 +623,11 @@ class Dispatcher:
             except Feed.DoesNotExist, e:
                 logging.debug('   ---> [%-30s] ~FRFeed is now gone...' % (unicode(feed_id)[:30]))
                 continue
+            except SoftTimeLimitExceeded, e:
+                logging.debug(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
+                ret_feed = FEED_ERREXC
+                fetched_feed = None
+                feed.save_feed_history(559, 'Timeout', e)
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.title[:30]))
                 feed.save_feed_history(505, 'Timeout', e)
@@ -672,6 +678,10 @@ class Dispatcher:
                 try:
                     page_data = page_importer.fetch_page()
                     page_duration = time.time() - start_duration
+                except SoftTimeLimitExceeded, e:
+                    logging.debug(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
+                    page_data = None
+                    feed.save_feed_history(557, 'Timeout', e)
                 except TimeoutError, e:
                     logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (feed.title[:30]))
                     page_data = None
@@ -698,6 +708,9 @@ class Dispatcher:
                 try:
                     icon_importer.save()
                     icon_duration = time.time() - start_duration
+                except SoftTimeLimitExceeded, e:
+                    logging.debug(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
+                    feed.save_feed_history(558, 'Timeout', e)
                 except TimeoutError, e:
                     logging.debug('   ---> [%-30s] ~FRIcon fetch timed out...' % (feed.title[:30]))
                     feed.save_page_history(556, 'Timeout', '')
