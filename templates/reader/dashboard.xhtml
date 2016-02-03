@@ -32,7 +32,7 @@
 <h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
 
 <div id="NB-splash" style="left: {% firstof user_profile.feed_pane_size 242 %}px">
-    <div class="NB-splash-modules">
+  <div class="NB-splash-modules">
     <div class="NB-modules-center">
     
         {% if not user_profile.hide_getting_started %}
@@ -48,6 +48,8 @@
         {% if user.is_staff and unmoderated_feeds %}
             {% render_recommended_feed unmoderated_feeds 1 %}
         {% endif %}
+
+		{% render_statistics_graphs statistics %}
         
         <div class="NB-module-search NB-module">
             <h5 class="NB-module-header">
@@ -69,15 +71,15 @@
             </div>
         </div>
 
-  </div>
+    </div>
 
-  <div class="NB-account">
-    
-    {% render_account_module %}
-    
-    {% render_statistics_graphs statistics %}
+    <div class="NB-account">
+		{% render_account_module %}
+		{% render_manage_module %}
+	</div>
+	<div class="NB-manage">
+	</div>
 
-  </div>
   </div>
 </div>
 
