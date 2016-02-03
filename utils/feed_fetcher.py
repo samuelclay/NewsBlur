@@ -345,7 +345,7 @@ class ProcessFeed:
                 return FEED_ERRHTTP, ret_values
         
         if not self.fpf:
-            logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. No feedparser feed either!" % (self.feed.title[:30], len(self.fpf.entries)))
+            logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. No feedparser feed either!" % (self.feed.title[:30]))
             self.feed.save_feed_history(551, "Broken feed")
             return FEED_ERRHTTP, ret_values
             
