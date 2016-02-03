@@ -24,7 +24,7 @@ httplib2==0.8
 iconv==1.0
 isodate==0.5.1
 kombu==2.5.7
-# lxml==3.5.0
+lxml==3.5.0
 mongoengine==0.8.2
 nltk==2.0.5
 oauth2==1.5.211
