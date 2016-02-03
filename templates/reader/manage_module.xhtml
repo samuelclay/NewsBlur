@@ -61,12 +61,14 @@
 					</div>
 				</li>
 				<li class="NB-menu-separator"></li>
+				{% if not user.profile.is_premium %}
 				<li class="NB-menu-item NB-menu-manage-premium">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
 						Premium upgrade
 					</div>
 				</li>
+				{% endif %}
 				<li class="NB-menu-item NB-menu-manage-organizer">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
@@ -76,7 +78,11 @@
 				<li class="NB-menu-item NB-menu-manage-feedchooser">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Choose Your 64
+						{% if not user.profile.is_premium %}
+							Choose Your 64
+						{% else %}
+							Mute Sites
+						{% endif %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-trainer">

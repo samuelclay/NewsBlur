@@ -6422,6 +6422,14 @@ form.opml_import_form input {
 	color: #909090;
 }
 
+/* ================= */
+/* = Manage Module = */
+/* ================= */
+
+.NB-module-manage .NB-menu-manage li.NB-menu-item {
+    background-color: #F7F8F5;
+}
+
 /* ================ */
 /* = Stats Module = */
 /* ================ */
