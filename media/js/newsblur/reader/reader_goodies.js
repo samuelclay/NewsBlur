@@ -44,7 +44,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: '/ios/'
               }, 'See the iOS App'),
-              $.make('div', { className: 'NB-goodies-iphone' }),
+              $.make('div', { className: 'NB-goodies-ios' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone/iPad App')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
@@ -70,6 +70,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               }, 'Download for iPhone and iPad'),
               $.make('div', { className: 'NB-goodies-unread-ios' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Unread for iOS')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://addmyfeed.cubesoft.fr'
+              }, 'Download for iPhone'),
+              $.make('div', { className: 'NB-goodies-ios' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Add My Feed for iOS')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
