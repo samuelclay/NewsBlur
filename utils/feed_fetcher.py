@@ -320,6 +320,7 @@ class ProcessFeed:
                 redirects, non_redirects = self.feed.count_redirects_in_history('feed')
                 self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (10-len(redirects)))
                 if len(redirects) >= 10 or len(non_redirects) == 0:
+                    address = self.fpf.href
                     if self.options['force']:
                         address = qurl(self.fpf.href, remove=['_'])
                     self.feed.feed_address = address
