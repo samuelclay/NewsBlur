@@ -321,8 +321,8 @@ class ProcessFeed:
                 self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (10-len(redirects)))
                 if len(redirects) >= 10 or len(non_redirects) == 0:
                     address = self.fpf.href
-                    if self.options['force']:
-                        address = qurl(self.fpf.href, remove=['_'])
+                    if self.options['force'] and address:
+                        address = qurl(address, remove=['_'])
                     self.feed.feed_address = address
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
@@ -411,7 +411,7 @@ class ProcessFeed:
 
         if not self.feed.feed_link_locked:
             new_feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
-            if self.options['force']:
+            if self.options['force'] and new_feed_link:
                 new_feed_link = qurl(new_feed_link, remove=['_'])
             if new_feed_link != self.feed.feed_link:
                 logging.debug("   ---> [%-30s] ~SB~FRFeed's page is different: %s to %s" % (self.feed.title[:30], self.feed.feed_link, new_feed_link))               
