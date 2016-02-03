@@ -203,7 +203,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
               (this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-info' }, [
                     $.make('h2', { className: 'NB-modal-title' }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Mute feeds',
+                        'Mute sites',
                         $.make('div', { className: 'NB-icon-dropdown' })
                     ]),
                     $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Turn every site on'),
