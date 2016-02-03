@@ -343,8 +343,13 @@ class ProcessFeed:
                     self.feed = feed
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, ret_values
-
-        if not self.fpf.entries:
+        
+        if not self.fpf:
+            logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. No feedparser feed either!" % (self.feed.title[:30], len(self.fpf.entries)))
+            self.feed.save_feed_history(551, "Broken feed")
+            return FEED_ERRHTTP, ret_values
+            
+        if self.fpf and not self.fpf.entries:
             if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
                 logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. %s entries. Checking address..." % (self.feed.title[:30], len(self.fpf.entries)))
                 fixed_feed = None

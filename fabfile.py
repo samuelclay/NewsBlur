@@ -446,7 +446,7 @@ def setup_python():
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
-@parallel
+# @parallel
 def pip():
     pull()
     with cd(env.NEWSBLUR_PATH):
@@ -1323,7 +1323,7 @@ def role_for_host():
         if env.host in hosts:
             return role
 
-@parallel
+# @parallel
 def deploy(fast=False, reload=False):
     role = role_for_host()
     if role in ['work', 'search']:
