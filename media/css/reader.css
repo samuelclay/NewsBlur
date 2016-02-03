@@ -8934,7 +8934,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-paypal {
-    min-height: 48px;
+    min-height: 84px;
     width: 50%;
     text-align: center;
     overflow: hidden;
