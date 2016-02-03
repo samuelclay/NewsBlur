@@ -25,7 +25,7 @@ from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, cache_bust_url
+from utils.feed_functions import timelimit, TimeoutError, cache_bust_url, clean_cache_bust_url
 from BeautifulSoup import BeautifulSoup
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
@@ -311,14 +311,14 @@ class ProcessFeed:
                 return FEED_SAME, ret_values
             
             # 302: Temporary redirect: ignore
-            # 301: Permanent redirect: save it (after 20 tries)
+            # 301: Permanent redirect: save it (after 10 tries)
             if self.fpf.status == 301:
                 if self.fpf.href.endswith('feedburner.com/atom.xml'):
                     return FEED_ERRHTTP, ret_values
                 redirects, non_redirects = self.feed.count_redirects_in_history('feed')
                 self.feed.save_feed_history(self.fpf.status, "HTTP Redirect (%d to go)" % (10-len(redirects)))
-                if len(redirects) >= 10 or len(non_redirects) == 0:
-                    self.feed.feed_address = self.fpf.href
+                if len(redirects) >= 10 or len(non_redirects) == 0:                    
+                    self.feed.feed_address = clean_cache_bust_url(self.fpf.href)
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
                     logging.debug("   ---> [%-30s] ~SB~SK~FRFeed is %s'ing. Refetching..." % (self.feed.title[:30], self.fpf.status))
@@ -401,11 +401,12 @@ class ProcessFeed:
 
         if not self.feed.feed_link_locked:
             new_feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
+            new_feed_link = clean_cache_bust_url(new_feed_link)
             if new_feed_link != self.feed.feed_link:
                 logging.debug("   ---> [%-30s] ~SB~FRFeed's page is different: %s to %s" % (self.feed.title[:30], self.feed.feed_link, new_feed_link))               
                 redirects, non_redirects = self.feed.count_redirects_in_history('page')
-                self.feed.save_page_history(301, "HTTP Redirect (%s to go)" % (20-len(redirects)))
-                if len(redirects) >= 20 or len(non_redirects) == 0:
+                self.feed.save_page_history(301, "HTTP Redirect (%s to go)" % (10-len(redirects)))
+                if len(redirects) >= 10 or len(non_redirects) == 0:
                     self.feed.feed_link = new_feed_link
                     self.feed.save(update_fields=['feed_link'])
         
