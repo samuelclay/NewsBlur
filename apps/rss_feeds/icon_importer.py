@@ -61,11 +61,18 @@ class IconImporter(object):
             if len(image_str) > 500000:
                 image = None
             if (image and
-                (self.feed_icon.color != color or
+                (self.force or
                  self.feed_icon.data != image_str or
                  self.feed_icon.icon_url != icon_url or
                  self.feed_icon.not_found or
                  (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
+                logging.debug(" ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
+                    self.feed,
+                    self.feed_icon.color != color, self.feed_icon.color, color,
+                    self.feed_icon.data != image_str,
+                    self.feed_icon.icon_url != icon_url,
+                    self.feed_icon.not_found,
+                    settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))
                 self.feed_icon.data = image_str
                 self.feed_icon.icon_url = icon_url
                 self.feed_icon.color = color
