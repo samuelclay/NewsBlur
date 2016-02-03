@@ -6444,7 +6444,7 @@ form.opml_import_form input {
     overflow: hidden;
     padding: 6px 0;
 }
-.NB-module-stats .NB-module-stats-count {
+.NB-module-account .NB-module-stats-count {
 	float: left;
 	width: 33%;
 	border-bottom: none;
