@@ -90,6 +90,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://www.microsoft.com/en-us/store/apps/hypersonic/9nblggh5wnb6'
+              }, 'View in Windows Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Hypersonic for Windows 10 &amp; Phone')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'http://windowsphone.com/s?appid=900e67fd-9934-e011-854c-00237de2db9e'
               }, 'View in Windows Phone Store'),
               $.make('div', { className: 'NB-goodies-windows' }),
