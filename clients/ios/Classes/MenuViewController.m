@@ -49,6 +49,12 @@ NSString * const MenuHandler = @"handler";
     [self.menuTableView reloadData];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    self.menuTableView.scrollEnabled = self.preferredContentSize.height > self.view.frame.size.height;
+}
+
 - (CGSize)preferredContentSize {
     CGSize size = CGSizeMake(100.0, 0.0);
     UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
