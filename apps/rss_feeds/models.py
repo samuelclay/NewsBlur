@@ -34,7 +34,7 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
-from utils import feedfinder, feedparser
+from utils import feedfinder2 as feedfinder, feedparser
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -400,6 +400,8 @@ class Feed(models.Model):
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         feed = by_url(url)
+        found_feeds = feedfinder.find_feeds(url)
+        print found_feeds
         
         # Create if it looks good
         if feed and len(feed) > offset:
