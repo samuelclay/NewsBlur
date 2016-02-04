@@ -199,6 +199,7 @@ def setup_common():
     setup_psql_client()
     setup_libxml()
     setup_python()
+    setup_pip()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -392,7 +393,7 @@ def setup_repo():
         sudo('ln -sfn /srv/newsblur /home/%s/newsblur' % env.user)
 
 def setup_repo_local_settings():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
@@ -427,7 +428,6 @@ def setup_psycopg():
     sudo('easy_install -U psycopg2')
 
 def setup_python():
-    sudo('easy_install -U pip')
     # sudo('easy_install -U $(<%s)' %
     #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
     pip()
@@ -446,13 +446,24 @@ def setup_python():
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
+@_contextmanager
+def virtualenv():
+    with cd(env.NEWSBLUR_PATH):
+        with prefix("source venv/bin/activate"):
+            yield
+
+def setup_pip():
+    pull()
+    sudo('easy_install -U pip')
+    sudo('pip install --upgrade virtualenv')
+
 @parallel
 def pip():
     pull()
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('easy_install -U pip')
         sudo('pip install --upgrade pip')
-        sudo('pip install --upgrade six') # Stupid cryptography bug requires upgraded six
+        # sudo('pip install --upgrade six') # Stupid cryptography bug requires upgraded six
         sudo('pip install -r requirements.txt')
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
@@ -732,12 +743,12 @@ def copy_certificates():
 @parallel
 def maintenance_on():
     put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('mv templates/maintenance_off.html templates/maintenance_on.html')
 
 @parallel
 def maintenance_off():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
@@ -785,7 +796,7 @@ def config_haproxy(debug=False):
         print " !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code
 
 def upgrade_django():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         sudo('supervisorctl stop gunicorn')
         run('./utils/kill_gunicorn.sh')
         sudo('easy_install -U django gunicorn')
@@ -793,7 +804,7 @@ def upgrade_django():
         sudo('supervisorctl reload')
 
 def upgrade_pil():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         pull()
         sudo('pip install --upgrade pillow')
         # celery_stop()
@@ -802,7 +813,7 @@ def upgrade_pil():
         # kill()
 
 def downgrade_pil():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('apt-get install -y python-imaging')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
         pull()
@@ -811,7 +822,7 @@ def downgrade_pil():
 
 def setup_db_monitor():
     pull()
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('apt-get install -y python-mysqldb')
         sudo('apt-get install -y libpq-dev python-dev')
         sudo('pip install -r flask/requirements.txt')
@@ -1070,7 +1081,7 @@ def setup_db_munin():
 
 
 def enable_celerybeat():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('mkdir -p data')
     put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
     put('config/supervisor_celeryd_work_queue.conf', '/etc/supervisor/conf.d/celeryd_work_queue.conf', use_sudo=True)
@@ -1308,7 +1319,7 @@ def setup_ec2():
 
 @parallel
 def pull():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
 
 def pre_deploy():
@@ -1345,12 +1356,12 @@ def deploy_rebuild(fast=False):
 
 @parallel
 def kill_gunicorn():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('pkill -9 -u %s -f gunicorn_django' % env.user)
                 
 @parallel
 def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
         run('mkdir -p static')
         if rebuild:
@@ -1358,7 +1369,7 @@ def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
         if copy_assets:
             transfer_assets()
         
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         if reload:
             sudo('supervisorctl reload')
         elif fast:
@@ -1376,7 +1387,7 @@ def kill():
             run('./utils/kill_gunicorn.sh')
 
 def deploy_node():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_favicons')
 
@@ -1384,11 +1395,11 @@ def gunicorn_restart():
     restart_gunicorn()
 
 def restart_gunicorn():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         run('sudo supervisorctl restart gunicorn')
 
 def gunicorn_stop():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         run('sudo supervisorctl stop gunicorn')
 
 def staging():
@@ -1411,20 +1422,20 @@ def celery():
     celery_slow()
 
 def celery_slow():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
     celery_stop()
     celery_start()
 
 @parallel
 def celery_fast():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
     celery_reload()
 
 @parallel
 def celery_stop():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('supervisorctl stop celery')
         with settings(warn_only=True):
             if env.user == 'ubuntu':
@@ -1434,18 +1445,18 @@ def celery_stop():
 
 @parallel
 def celery_start():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('sudo supervisorctl start celery')
         run('tail logs/newsblur.log')
 
 @parallel
 def celery_reload():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('sudo supervisorctl reload celery')
         run('tail logs/newsblur.log')
 
 def kill_celery():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         with settings(warn_only=True):
             if env.user == 'ubuntu':
                 sudo('./utils/kill_celery.sh')
