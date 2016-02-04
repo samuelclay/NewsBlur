@@ -41,14 +41,24 @@
     frame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
     self.textLabel.frame = frame;
     
+    frame = self.detailTextLabel.frame;
+    frame.origin.x -= 10.0;
+    self.detailTextLabel.frame = frame;
+    
     self.textLabel.backgroundColor = [UIColor clearColor];
     self.textLabel.textColor = UIColorFromRGB(0x303030);
-    self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
     self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     self.textLabel.shadowOffset = CGSizeMake(0, 1);
     
+    if (self.isMuteOperation) {
+        self.textLabel.highlightedTextColor = UIColorFromRGB(0x808080);
+        self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0xa0a0a0);
+    } else {
+        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+        self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
+    }
+    
     self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
-    self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
     
     self.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);

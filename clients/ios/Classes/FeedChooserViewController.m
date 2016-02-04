@@ -19,8 +19,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 @interface FeedChooserViewController () <FeedChooserTitleDelegate>
 
-@property (nonatomic, strong) UIBarButtonItem *selectionItem;
-@property (nonatomic, strong) UIBarButtonItem *sortItem;
+@property (nonatomic, strong) UIBarButtonItem *optionsItem;
 @property (nonatomic, strong) UIBarButtonItem *moveItem;
 @property (nonatomic, strong) UIBarButtonItem *deleteItem;
 @property (nonatomic, strong) NSArray *sections;
@@ -45,23 +44,27 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [super viewDidLoad];
     
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
-    self.selectionItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"barbutton_selection.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSelectionMenu)];
-    self.sortItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:[self sortIconName]] style:UIBarButtonItemStylePlain target:self action:@selector(showSortMenu)];
+    self.optionsItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"nav_icn_settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showOptionsMenu)];
     
     if (self.operation == FeedChooserOperationOrganizeSites) {
         self.moveItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu_icn_move.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showMoveMenu)];
         self.deleteItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu_icn_delete.png"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteFeeds)];
         
-        self.navigationItem.leftBarButtonItems = @[self.selectionItem, self.sortItem];
-        self.navigationItem.rightBarButtonItems = @[doneItem, self.deleteItem, self.moveItem];
+        self.navigationItem.leftBarButtonItems = @[self.moveItem, self.deleteItem];
+        self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
         self.navigationItem.title = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"Organize Sites" : @"Organize";
+        
+        self.tableView.editing = YES;
     } else {
-        self.navigationItem.leftBarButtonItems = @[self.selectionItem, self.sortItem];
-        self.navigationItem.rightBarButtonItem = doneItem;
+        UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
+        
+        self.navigationItem.leftBarButtonItem = cancelItem;
+        self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
         self.navigationItem.title = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"Mute Sites" : @"Mute";
+        
+        self.tableView.editing = NO;
     }
     
-    self.tableView.editing = YES;
     self.tableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.tableView.separatorColor = UIColorFromRGB(0x909090);
     self.tableView.sectionIndexColor = UIColorFromRGB(0x303030);
@@ -114,7 +117,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self rebuildItemsAnimated:NO];
     
     [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
-        if ([item.info[@"active"] boolValue]) {
+        if (![item.info[@"active"] boolValue]) {
             [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
     }];
@@ -346,24 +349,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 #pragma mark - Target/action methods
 
-- (void)showSelectionMenu {
-    MenuViewController *viewController = [MenuViewController new];
-    
-    [viewController addTitle:@"Select All" iconName:@"barbutton_selection.png" selectionShouldDismiss:YES handler:^{
-        [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
-            [self select:YES section:section];
-        }];
-    }];
-    
-    [viewController addTitle:@"Select None" iconName:@"barbutton_selection_off.png" selectionShouldDismiss:YES handler:^{
-        [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
-            [self select:NO section:section];
-        }];
-    }];
-    
-    [viewController showFromNavigationController:self.navigationController barButtonItem:self.selectionItem];
-}
-
 - (NSString *)sortIconName {
     if (self.ascending) {
         return @"barbutton_sort_asc.png";
@@ -383,8 +368,9 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self selectItemsWithIdentifiers:identifiers animated:NO];
 }
 
-- (void)showSortMenu {
+- (void)showOptionsMenu {
     MenuViewController *viewController = [MenuViewController new];
+    BOOL isMute = self.operation == FeedChooserOperationMuteSites;
     
     [viewController addTitle:@"Name" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortName];
@@ -411,7 +397,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [viewController addSegmentedControlWithTitles:@[@"Ascending", @"Descending"] selectIndex:self.ascending ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         NSArray *identifiers = [self selectedItemIdentifiers];
         self.ascending = selectedIndex == 0;
-        self.sortItem.image = [UIImage imageNamed:[self sortIconName]];
         [self sortItemsAnimated:YES];
         [self selectItemsWithIdentifiers:identifiers animated:NO];
     }];
@@ -423,7 +408,19 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [self selectItemsWithIdentifiers:identifiers animated:NO];
     }];
     
-    [viewController showFromNavigationController:self.navigationController barButtonItem:self.sortItem];
+    [viewController addTitle:isMute ? @"Mute All" : @"Select All" iconName:isMute ? @"mute_feed_off.png" : @"barbutton_selection.png" selectionShouldDismiss:YES handler:^{
+        [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
+            [self select:YES section:section];
+        }];
+    }];
+    
+    [viewController addTitle:isMute ? @"Unmute All" : @"Select None" iconName:isMute ? @"mute_feed_on.png" : @"barbutton_selection_off.png" selectionShouldDismiss:YES handler:^{
+        [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
+            [self select:NO section:section];
+        }];
+    }];
+    
+    [viewController showFromNavigationController:self.navigationController barButtonItem:self.optionsItem];
 }
 
 - (void)performMoveToFolder:(FeedChooserItem *)toFolder {
@@ -548,9 +545,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    for (id identifier in [self selectedItemIdentifiers]) {
-        [request addPostValue:identifier forKey:@"approved_feeds"];
-    }
+    NSArray *mutedIndexPaths = self.tableView.indexPathsForSelectedRows;
+    
+    [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+        if (![mutedIndexPaths containsObject:indexPath]) {
+            [request addPostValue:item.identifier forKey:@"approved_feeds"];
+        }
+    }];
+    
     [request setCompletionBlock:^(void) {
         [self.appDelegate reloadFeedsView:YES];
         [self dismissViewControllerAnimated:YES completion:nil];
@@ -585,6 +587,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
 }
 
+- (void)cancel {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -608,7 +614,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIndentifier = @"FeedChooserCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
+    FeedChooserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     
     if (!cell) {
         cell = [[FeedChooserViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIndentifier];
@@ -616,9 +622,15 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     FeedChooserItem *item = [self itemForIndexPath:indexPath];
     
+    cell.isMuteOperation = self.operation == FeedChooserOperationMuteSites;
     cell.textLabel.text = item.title;
     cell.detailTextLabel.text = [item detailForSort:self.sort];
     cell.imageView.image = item.icon;
+    
+    UIImage *image = [UIImage imageNamed:@"mute_feed_on.png"];
+    UIImage *highlightedImage = [UIImage imageNamed:@"mute_feed_off.png"];
+    
+    cell.accessoryView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
     
     return cell;
 }

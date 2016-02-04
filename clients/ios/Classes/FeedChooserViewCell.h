@@ -10,4 +10,6 @@
 
 @interface FeedChooserViewCell : UITableViewCell
 
+@property (nonatomic) BOOL isMuteOperation;
+
 @end
