@@ -76,8 +76,26 @@
         [readFilterSegmentedControl setSelectedSegmentIndex:1];
     }
     
-    NSInteger menuCount = self.menuOptions.count + 2;
-    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount - 42);
+    NSString *theme = [ThemeManager themeManager].theme;
+    if ([theme isEqualToString:@"sepia"]) {
+        self.themeSegmentedControl.selectedSegmentIndex = 1;
+    } else if ([theme isEqualToString:@"medium"]) {
+        self.themeSegmentedControl.selectedSegmentIndex = 2;
+    } else if ([theme isEqualToString:@"dark"]) {
+        self.themeSegmentedControl.selectedSegmentIndex = 3;
+    } else {
+        self.themeSegmentedControl.selectedSegmentIndex = 0;
+    }
+    
+    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 2 : 3);
+    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 2 : 3);
+    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
 }
 
 - (void)buildMenuOptions {
@@ -114,21 +132,21 @@
     self.menuOptions = options;
 }
 
+- (BOOL)isRiver {
+    return appDelegate.storiesCollection.isSocialRiverView ||
+    appDelegate.storiesCollection.isSocialView ||
+    appDelegate.storiesCollection.isSavedView ||
+    appDelegate.storiesCollection.isReadView;
+}
+
 #pragma mark -
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     [self buildMenuOptions];
-    int filterOptions = 2;
-    if (appDelegate.storiesCollection.isSocialRiverView ||
-        appDelegate.storiesCollection.isSocialView ||
-        appDelegate.storiesCollection.isSavedView ||
-        appDelegate.storiesCollection.isReadView) {
-        filterOptions = 1;
-    }
     
-    return [self.menuOptions count] + filterOptions;
+    return [self.menuOptions count] + ([self isRiver] ? 2 : 3);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -137,8 +155,10 @@
     
     if (indexPath.row == [self.menuOptions count]) {
         return [self makeOrderCell];
-    } else if (indexPath.row == [self.menuOptions count] + 1) {
+    } else if (![self isRiver] && indexPath.row == [self.menuOptions count] + 1) {
         return [self makeReadFilterCell];
+    } else if (indexPath.row == [self.menuOptions count] + 2 || ([self isRiver] && indexPath.row == [self.menuOptions count] + 1)) {
+        return [self makeThemeTableCell];
     }
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
@@ -248,6 +268,45 @@
     return cell;
 }
 
+- (UITableViewCell *)makeThemeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:self.themeSegmentedControl.selectedSegmentIndex == 0];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:self.themeSegmentedControl.selectedSegmentIndex == 1];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:self.themeSegmentedControl.selectedSegmentIndex == 2];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:self.themeSegmentedControl.selectedSegmentIndex == 3];
+    
+    self.themeSegmentedControl.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [self.themeSegmentedControl setImage:lightImage forSegmentAtIndex:0];
+    [self.themeSegmentedControl setImage:sepiaImage forSegmentAtIndex:1];
+    [self.themeSegmentedControl setImage:mediumImage forSegmentAtIndex:2];
+    [self.themeSegmentedControl setImage:darkImage forSegmentAtIndex:3];
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, self.themeSegmentedControl.frame.size.height), NO, 0.0);
+    UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.themeSegmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+    self.themeSegmentedControl.tintColor = [UIColor clearColor];
+    self.themeSegmentedControl.backgroundColor = [UIColor clearColor];
+    
+    [cell addSubview:self.themeSegmentedControl];
+    
+    return cell;
+}
+
+- (UIImage *)themeImageWithName:(NSString *)name selected:(BOOL)selected {
+    if (selected) {
+        name = [name stringByAppendingString:@"-sel"];
+    }
+    
+    return [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+}
+
 - (IBAction)changeOrder:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
@@ -275,6 +334,31 @@
     
     [appDelegate.feedDetailViewController reloadStories];
     
+}
+
+- (IBAction)changeTheme:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *theme = ThemeStyleLight;
+    switch ([sender selectedSegmentIndex]) {
+        case 1:
+            theme = ThemeStyleSepia;
+            break;
+        case 2:
+            theme = ThemeStyleMedium;
+            break;
+        case 3:
+            theme = ThemeStyleDark;
+            break;
+            
+        default:
+            break;
+    }
+    [ThemeManager themeManager].theme = theme;
+    
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    [self.menuTableView reloadData];
+    [userPreferences synchronize];
 }
 
 @end
