@@ -41,9 +41,11 @@
     frame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
     self.textLabel.frame = frame;
     
-    frame = self.detailTextLabel.frame;
-    frame.origin.x -= 10.0;
-    self.detailTextLabel.frame = frame;
+    if (self.isMuteOperation) {
+        frame = self.detailTextLabel.frame;
+        frame.origin.x -= 10.0;
+        self.detailTextLabel.frame = frame;
+    }
     
     self.textLabel.backgroundColor = [UIColor clearColor];
     self.textLabel.textColor = UIColorFromRGB(0x303030);
