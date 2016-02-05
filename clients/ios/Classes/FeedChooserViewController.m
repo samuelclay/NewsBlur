@@ -627,10 +627,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
     cell.detailTextLabel.text = [item detailForSort:self.sort];
     cell.imageView.image = item.icon;
     
-    UIImage *image = [UIImage imageNamed:@"mute_feed_on.png"];
-    UIImage *highlightedImage = [UIImage imageNamed:@"mute_feed_off.png"];
-    
-    cell.accessoryView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
+    if (self.operation == FeedChooserOperationMuteSites) {
+        UIImage *image = [UIImage imageNamed:@"mute_feed_on.png"];
+        UIImage *highlightedImage = [UIImage imageNamed:@"mute_feed_off.png"];
+        
+        cell.accessoryView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
+    } else {
+        cell.accessoryView = nil;
+    }
     
     return cell;
 }
