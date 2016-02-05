@@ -75,6 +75,9 @@
     if ([appDelegate.storiesCollection.activeReadFilter isEqualToString:@"unread"]) {
         [readFilterSegmentedControl setSelectedSegmentIndex:1];
     }
+    
+    NSInteger menuCount = self.menuOptions.count + 2;
+    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount - 42);
 }
 
 - (void)buildMenuOptions {
@@ -102,8 +105,8 @@
     }
     
     if (!appDelegate.storiesCollection.isRiverView && !saved && !read) {
-        [options addObject:[@"Mute this site" uppercaseString]];
         [options addObject:[@"Rename this site" uppercaseString]];
+        [options addObject:[@"Mute this site" uppercaseString]];
         [options addObject:[@"Train this site" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
     }
@@ -153,9 +156,9 @@
     } else if (indexPath.row == 1) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_move.png"];
     } else if (indexPath.row == 2) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_mute.png"];
-    } else if (indexPath.row == 3) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_rename.png"];
+    } else if (indexPath.row == 3) {
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_mute.png"];
     } else if (indexPath.row == 4) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
     } else if (indexPath.row == 5) {
@@ -179,27 +182,34 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    BOOL shouldHide = YES;
+    
     if (indexPath.row == 0) {
         [appDelegate.feedDetailViewController confirmDeleteSite];
+        shouldHide = NO;
     } else if (indexPath.row == 1) {
         [appDelegate.feedDetailViewController openMoveView];
+        shouldHide = NO;
     } else if (indexPath.row == 2) {
-        [appDelegate.feedDetailViewController confirmMuteSite];
-    } else if (indexPath.row == 3) {
         [appDelegate.feedDetailViewController openRenameSite];
+    } else if (indexPath.row == 3) {
+        [appDelegate.feedDetailViewController confirmMuteSite];
+        shouldHide = NO;
     } else if (indexPath.row == 4) {
         [appDelegate.feedDetailViewController openTrainSite];
     } else if (indexPath.row == 5) {
         [appDelegate.feedDetailViewController instafetchFeed];
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.appDelegate hidePopover];
-    } else {
-        [self.appDelegate hidePopoverAnimated:YES];
+    if (shouldHide) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.appDelegate hidePopover];
+        } else {
+            [self.appDelegate hidePopoverAnimated:YES];
+        }
     }
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (UITableViewCell *)makeOrderCell {

@@ -70,11 +70,17 @@ NSString * const MenuHandler = @"handler";
     size.width = MIN(size.width + 50.0, 240.0);
     size.height = size.height + (self.items.count * 38.0);
     
+    if (self.navigationController.viewControllers.count > 1) {
+        size.width = MAX(size.width, self.view.frame.size.width);
+    }
+    
+    self.navigationController.preferredContentSize = size;
+    
     return size;
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
-    [self.items addObject:@{MenuTitle : title.uppercaseString, MenuIcon : [UIImage imageNamed:iconName], MenuDestructive : @([iconName isEqualToString:@"menu_icn_delete.png"]), MenuSelectionShouldDismiss : @(selectionShouldDismiss), MenuHandler : handler}];
+    [self.items addObject:@{MenuTitle : title.uppercaseString, MenuIcon : [UIImage imageNamed:iconName], MenuDestructive : @([iconName isEqualToString:@"menu_icn_delete.png"] || [iconName isEqualToString:@"menu_icn_mute.png"]), MenuSelectionShouldDismiss : @(selectionShouldDismiss), MenuHandler : handler}];
 }
 
 - (void)addSegmentedControlWithTitles:(NSArray *)titles selectIndex:(NSUInteger)selectIndex selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {

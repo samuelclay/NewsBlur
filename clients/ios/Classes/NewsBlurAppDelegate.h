@@ -162,6 +162,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic) IBOutlet FeedDetailMenuViewController *feedDetailMenuViewController;
+@property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet StoryPageControl *storyPageControl;

@@ -37,6 +37,7 @@
 #import "StoriesCollection.h"
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
+#import "MenuViewController.h"
 
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
@@ -1884,53 +1885,43 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.appDelegate.feedDetailMenuViewController view];
     NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuViewController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
+    [self.appDelegate.feedDetailMenuNavigationController popToRootViewControllerAnimated:NO];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount - 42) barButtonItem:self.settingsBarButton];
 }
 
 - (void)confirmDeleteSite {
-    UIAlertView *deleteConfirm = [[UIAlertView alloc] 
-                                  initWithTitle:@"Positive?" 
-                                  message:nil 
-                                  delegate:self 
-                                  cancelButtonTitle:@"Cancel" 
-                                  otherButtonTitles:@"Delete", 
-                                  nil];
-    [deleteConfirm show];
-    [deleteConfirm setTag:0];
+    MenuViewController *viewController = [MenuViewController new];
+    viewController.title = @"Positive?";
+    NSString *title = storiesCollection.isRiverView ? @"Delete Folder" : @"Delete Site";
+    
+    [viewController addTitle:title iconName:@"menu_icn_delete.png" selectionShouldDismiss:YES handler:^{
+        if (storiesCollection.isRiverView) {
+            [self deleteFolder];
+        } else {
+            [self deleteSite];
+        }
+    }];
+    
+    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
 }
 
 - (void)confirmMuteSite {
-    UIAlertView *deleteConfirm = [[UIAlertView alloc]
-                                  initWithTitle:@"Positive?"
-                                  message:nil
-                                  delegate:self
-                                  cancelButtonTitle:@"Cancel"
-                                  otherButtonTitles:@"Mute",
-                                  nil];
-    [deleteConfirm show];
-    [deleteConfirm setTag:2];
+    MenuViewController *viewController = [MenuViewController new];
+    viewController.title = @"Positive?";
+    
+    [viewController addTitle:@"Mute Site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:YES handler:^{
+        [self muteSite];
+    }];
+    
+    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 0) {
-        // Delete
-        if (buttonIndex != alertView.cancelButtonIndex) {
-            if (storiesCollection.isRiverView) {
-                [self deleteFolder];
-            } else {
-                [self deleteSite];
-            }
-        }
-    } else if (alertView.tag == 1) {
+    if (alertView.tag == 1) {
         // Rename
         if (buttonIndex != alertView.cancelButtonIndex) {
             NSString *newTitle = [[alertView textFieldAtIndex:0] text];
             [self renameTo:newTitle];
-        }
-    } else if (alertView.tag == 2) {
-        // Mute
-        if (buttonIndex != alertView.cancelButtonIndex) {
-            [self muteSite];
         }
     }
 }
@@ -2061,9 +2052,99 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [request startAsynchronous];
 }
 
-- (void)openMoveView {
-    [appDelegate showMoveSite];
+- (void)performMoveToFolder:(id)toFolder {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    ASIFormDataRequest *request = nil;
+    
+    if (self.appDelegate.storiesCollection.isRiverView) {
+        HUD.labelText = @"Moving folder...";
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_folder_to_folder", self.appDelegate.url];
+        NSURL *url = [NSURL URLWithString:urlString];
+        request = [ASIFormDataRequest requestWithURL:url];
+        NSString *activeFolder = self.appDelegate.storiesCollection.activeFolder;
+        NSString *parentFolderName = [self.appDelegate extractParentFolderName:activeFolder];
+        NSString *fromFolder = [self.appDelegate extractFolderName:parentFolderName];
+        NSString *toFolderIdentifier = [self.appDelegate extractFolderName:toFolder];
+        NSString *folderName = [self.appDelegate extractFolderName:activeFolder];
+        [request setPostValue:fromFolder forKey:@"in_folder"];
+        [request setPostValue:toFolderIdentifier forKey:@"to_folder"];
+        [request setPostValue:folderName forKey:@"folder_name"];
+    } else {
+        HUD.labelText = @"Moving site...";
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder", self.appDelegate.url];
+        NSURL *url = [NSURL URLWithString:urlString];
+        request = [ASIFormDataRequest requestWithURL:url];
+        NSString *fromFolder = [self.appDelegate extractFolderName:self.appDelegate.storiesCollection.activeFolder];
+        NSString *toFolderIdentifier = [self.appDelegate extractFolderName:toFolder];
+        NSString *feedIdentifier = [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"];
+        [request setPostValue:fromFolder forKey:@"in_folder"];
+        [request setPostValue:toFolderIdentifier forKey:@"to_folder"];
+        [request setPostValue:feedIdentifier forKey:@"feed_id"];
+    }
+    
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(moveToFolderFinished:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setUserInfo:@{@"toFolder" : toFolder}];
+    [request startAsynchronous];
 }
+
+- (void)moveToFolderFinished:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] >= 500) {
+        return [self requestFailed:request];
+    }
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    
+    NSString *responseString = [request responseString];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization
+                             JSONObjectWithData:responseData
+                             options:kNilOptions
+                             error:&error];
+    int code = [[results valueForKey:@"code"] intValue];
+    if (code != -1) {
+        self.appDelegate.storiesCollection.activeFolder = request.userInfo[@"toFolder"];
+        [self.appDelegate reloadFeedsView:NO];
+    }
+}
+
+- (void)openMoveView {
+    MenuViewController *viewController = [MenuViewController new];
+    viewController.title = @"Move To";
+    
+    __weak __typeof(&*self)weakSelf = self;
+    
+    for (NSString *folder in self.appDelegate.dictFoldersArray) {
+        NSString *title = folder;
+        NSString *iconName = @"menu_icn_move.png";
+        
+        if (![title hasPrefix:@"river_"] && ![title hasSuffix:@"_stories"]) {
+            if ([title isEqualToString:@"everything"]) {
+                title = @"Top Level";
+                iconName = @"menu_icn_all.png";
+            } else {
+                NSArray *components = [title componentsSeparatedByString:@" - "];
+                title = components.lastObject;
+                for (NSUInteger idx = 0; idx < components.count; idx++) {
+                    title = [@"\t" stringByAppendingString:title];
+                }
+            }
+            
+            [viewController addTitle:title iconName:iconName selectionShouldDismiss:YES handler:^{
+                [weakSelf performMoveToFolder:folder];
+            }];
+        }
+    }
+    
+    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
+}
+
+//- (void)openMoveView {
+//    [appDelegate showMoveSite];
+//}
 
 - (void)openTrainSite {
     [appDelegate openTrainSite];
@@ -2284,6 +2365,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
