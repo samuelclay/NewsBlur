@@ -10,6 +10,7 @@ from fabric.state import connections
 from vendor import yaml
 from pprint import pprint
 from collections import defaultdict
+from contextlib import contextmanager as _contextmanager
 import os
 import time
 import sys
@@ -200,6 +201,7 @@ def setup_common():
     setup_libxml()
     setup_python()
     setup_pip()
+    setup_virtualenv()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -446,6 +448,13 @@ def setup_python():
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
+def setup_virtualenv():
+    sudo('pip install --upgrade virtualenv')
+    with cd(env.NEWSBLUR_PATH):
+        run('virtualenv venv')
+        run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/lib/python2.7/sitecustomize.py')
+        
+    
 @_contextmanager
 def virtualenv():
     with cd(env.NEWSBLUR_PATH):
@@ -455,7 +464,6 @@ def virtualenv():
 def setup_pip():
     pull()
     sudo('easy_install -U pip')
-    sudo('pip install --upgrade virtualenv')
 
 @parallel
 def pip():
