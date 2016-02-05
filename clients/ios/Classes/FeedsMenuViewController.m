@@ -108,13 +108,11 @@
             break;
             
         case 1:
-            image = [[UIImage imageNamed:@"menu_icn_mute.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            cell.imageView.tintColor = [UIColor blueColor];
+            image = [UIImage imageNamed:@"menu_icn_mute.png"];
             break;
             
         case 2:
-            image = [[UIImage imageNamed:@"menu_icn_organize.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            cell.imageView.tintColor = [UIColor orangeColor];
+            image = [UIImage imageNamed:@"menu_icn_organize.png"];
             break;
             
         case 3:
