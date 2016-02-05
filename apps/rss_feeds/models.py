@@ -400,35 +400,34 @@ class Feed(models.Model):
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         feed = by_url(url)
-        found_feeds = feedfinder.find_feeds(url)
-        print found_feeds
+        found_feed_urls = []
         
         # Create if it looks good
         if feed and len(feed) > offset:
             feed = feed[offset]
         elif create:
             create_okay = False
-            if feedfinder.isFeed(url):
+            found_feed_urls = feedfinder.find_feeds(url)
+            if len(found_feed_urls):
                 create_okay = True
-            elif fetch:
-                # Could still be a feed. Just check if there are entries
-                fp = feedparser.parse(url)
-                if len(fp.entries):
-                    create_okay = True
+            # elif fetch:
+            #     # Could still be a feed. Just check if there are entries
+            #     fp = feedparser.parse(url)
+            #     if len(fp.entries):
+            #         create_okay = True
             if create_okay:
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
         
         # Still nothing? Maybe the URL has some clues.
-        if not feed and fetch:
-            feed_finder_url = feedfinder.feed(url)
-            if feed_finder_url and 'comments' not in feed_finder_url:
-                feed = by_url(feed_finder_url)
-                if not feed and create:
-                    feed = cls.objects.create(feed_address=feed_finder_url)
-                    feed = feed.update()
-                elif feed and len(feed) > offset:
-                    feed = feed[offset]
+        if not feed and fetch and len(found_feed_urls):
+            feed_finder_url = found_feed_urls[0]
+            feed = by_url(feed_finder_url)
+            if not feed and create:
+                feed = cls.objects.create(feed_address=feed_finder_url)
+                feed = feed.update()
+            elif feed and len(feed) > offset:
+                feed = feed[offset]
         
         # Not created and not within bounds, so toss results.
         if isinstance(feed, QuerySet):

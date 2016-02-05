@@ -453,7 +453,6 @@ def setup_virtualenv():
     with cd(env.NEWSBLUR_PATH):
         run('virtualenv venv')
         run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/lib/python2.7/sitecustomize.py')
-        
     
 @_contextmanager
 def virtualenv():
