@@ -85,7 +85,7 @@ def find_feeds(url, check_all=False, user_agent=None):
     logging.info("Looking for <link> tags.")
     tree = BeautifulSoup(text)
     links = []
-    for link in tree.find_all("link"):
+    for link in tree.findAll("link"):
         if link.get("type") in ["application/rss+xml",
                                 "text/xml",
                                 "application/atom+xml",
@@ -102,7 +102,7 @@ def find_feeds(url, check_all=False, user_agent=None):
     # Look for <a> tags.
     logging.info("Looking for <a> tags.")
     local, remote = [], []
-    for a in tree.find_all("a"):
+    for a in tree.findAll("a"):
         href = a.get("href", None)
         if href is None:
             continue

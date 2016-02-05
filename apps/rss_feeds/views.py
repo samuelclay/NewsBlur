@@ -396,14 +396,14 @@ def exception_change_feed_link(request):
     if not feed.known_good and (feed.has_page_exception or feed.has_feed_exception):
         # Fix broken feed
         logging.user(request, "~FRFixing feed exception by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
-        feed_address = feedfinder.feed(feed_link)
-        if feed_address:
+        found_feed_urls = feedfinder.find_feeds(feed_link)
+        if len(found_feed_urls):
             code = 1
             feed.has_page_exception = False
             feed.active = True
             feed.fetched_once = False
             feed.feed_link = feed_link
-            feed.feed_address = feed_address
+            feed.feed_address = found_feed_urls[0]
             duplicate_feed = feed.schedule_feed_fetch_immediately()
             if duplicate_feed:
                 new_feed = Feed.objects.get(pk=duplicate_feed.pk)

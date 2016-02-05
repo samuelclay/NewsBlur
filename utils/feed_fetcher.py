@@ -131,7 +131,7 @@ class FetchFeed:
                     headers['If-Modified-Since'] = modified_header
                 raw_feed = requests.get(address, headers=headers)
                 if raw_feed.text:
-                    self.fpf = feedparser.parse(raw_feed.text)
+                    self.fpf = feedparser.parse(raw_feed.content)
             except Exception, e:
                 logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], e))
             
