@@ -31,6 +31,13 @@
 #import "UIView+ViewController.h"
 #import "JNWThrottledBlock.h"
 
+@interface StoryDetailViewController ()
+
+@property (nonatomic, strong) NSString *loadingHTML;
+@property (nonatomic, strong) NSURL *loadingURL;
+
+@end
+
 @implementation StoryDetailViewController
 
 @synthesize appDelegate;
@@ -45,7 +52,6 @@
 @synthesize storyHUD;
 @synthesize inTextView;
 @synthesize isRecentlyUnread;
-
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -432,7 +438,8 @@
     sharingHtmlString = [self getSideoptions];
 
     NSString *storyHeader = [self getHeader];
-    NSString *htmlString = [NSString stringWithFormat:@
+    
+    NSString *htmlTop = [NSString stringWithFormat:@
                             "<!DOCTYPE html>\n"
                             "<html>"
                             "<head>%@</head>" // header string
@@ -441,18 +448,7 @@
                             "    <div class=\"%@\" id=\"NB-font-size\">"
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
-                            "        %@" // shareBar
-                            "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
-                            "        <div id=\"NB-sideoptions-container\">%@</div>"
-                            "        <div id=\"NB-comments-wrapper\">"
-                            "            %@" // friends comments
-                            "        </div>"
-                            "        %@"
-                            "    </div>" // line-spacing
-                            "    </div>" // font-size
-                            "    </div>" // font-style
-                            "</body>"
-                            "</html>",
+                            "        %@", // shareBar
                             headerString,
                             contentWidthClass,
                             riverClass,
@@ -461,16 +457,42 @@
                             fontSizeClass,
                             lineSpacingClass,
                             storyHeader,
-                            shareBarString,
-                            storyContent,
-                            sharingHtmlString,
-                            commentString,
-                            footerString
+                            shareBarString
                             ];
+    
+    NSString *htmlBottom = [NSString stringWithFormat:@
+                            "    </div>" // line-spacing
+                            "    </div>" // font-size
+                            "    </div>" // font-style
+                            "</body>"
+                            "</html>"
+                            ];
+    
+    NSString *htmlContent = [NSString stringWithFormat:@
+                             "%@" // header
+                             "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                             "        <div id=\"NB-sideoptions-container\">%@</div>"
+                             "        <div id=\"NB-comments-wrapper\">"
+                             "            %@" // friends comments
+                             "        </div>"
+                             "        %@"
+                             "%@", // footer
+                             htmlTop,
+                             storyContent,
+                             sharingHtmlString,
+                             commentString,
+                             footerString,
+                             htmlBottom
+                             ];
+    
+    NSString *htmlString = [htmlTop stringByAppendingString:htmlBottom];
     
 //    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
+    
+    self.loadingURL = baseURL;
+    self.loadingHTML = htmlContent;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         self.hasStory = YES;
@@ -1575,6 +1597,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     self.webView.hidden = NO;
     [self.activityIndicator stopAnimating];
+    
+    if (self.loadingHTML) {
+        [self.webView loadHTMLString:self.loadingHTML baseURL:self.loadingURL];
+        self.loadingHTML = nil;
+        self.loadingURL = nil;
+    }
+    
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
