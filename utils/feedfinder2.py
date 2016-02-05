@@ -38,7 +38,6 @@ class FeedFinder(object):
 
     def get_feed(self, url):
         try:
-            import pdb; pdb.set_trace()
             r = requests.get(url, headers={"User-Agent": self.user_agent})
         except Exception as e:
             logging.warn("Error while getting '{0}'".format(url))
