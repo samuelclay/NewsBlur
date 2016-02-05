@@ -1886,7 +1886,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
     
     [self.appDelegate.feedDetailMenuNavigationController popToRootViewControllerAnimated:NO];
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount - 42) barButtonItem:self.settingsBarButton];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
 }
 
 - (void)confirmDeleteSite {

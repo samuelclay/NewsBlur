@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FeedDetailMenuViewController">
@@ -10,6 +10,7 @@
                 <outlet property="menuTableView" destination="3" id="15"/>
                 <outlet property="orderSegmentedControl" destination="18" id="20"/>
                 <outlet property="readFilterSegmentedControl" destination="19" id="21"/>
+                <outlet property="themeSegmentedControl" destination="KEQ-LR-Qwh" id="VCu-7n-52C"/>
                 <outlet property="view" destination="1" id="16"/>
             </connections>
         </placeholder>
@@ -21,7 +22,6 @@
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="3">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <animations/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="12"/>
@@ -31,7 +31,6 @@
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="19">
                     <rect key="frame" x="43" y="252" width="234" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
                     <segments>
                         <segment title="ALL STORIES"/>
                         <segment title="UNREAD ONLY"/>
@@ -43,7 +42,6 @@
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="18">
                     <rect key="frame" x="43" y="215" width="234" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
                     <segments>
                         <segment title="NEWEST FIRST"/>
                         <segment title="OLDEST"/>
@@ -52,11 +50,29 @@
                         <action selector="changeOrder:" destination="-1" eventType="valueChanged" id="23"/>
                     </connections>
                 </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="KEQ-LR-Qwh">
+                    <rect key="frame" x="43" y="289" width="234" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="" image="theme_color_light.png"/>
+                        <segment title="" image="theme_color_sepia.png"/>
+                        <segment title="" image="theme_color_medium.png"/>
+                        <segment title="" image="theme_color_dark.png"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeTheme:" destination="-1" eventType="valueChanged" id="XZv-tp-Ovk"/>
+                    </connections>
+                </segmentedControl>
             </subviews>
-            <animations/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
     </objects>
+    <resources>
+        <image name="theme_color_dark.png" width="32" height="32"/>
+        <image name="theme_color_light.png" width="32" height="32"/>
+        <image name="theme_color_medium.png" width="32" height="32"/>
+        <image name="theme_color_sepia.png" width="32" height="32"/>
+    </resources>
 </document>
