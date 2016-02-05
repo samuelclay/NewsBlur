@@ -1509,7 +1509,7 @@
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]]) {
+    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]] || [viewController isKindOfClass:[feedDetailMenuViewController class]]) {
         [_navigationController setNavigationBarHidden:YES animated:YES];
     } else {
         [_navigationController setNavigationBarHidden:NO animated:YES];
@@ -1523,6 +1523,15 @@
     }
     
     return _fontSettingsNavigationController;
+}
+
+- (UINavigationController *)feedDetailMenuNavigationController {
+    if (!_feedDetailMenuNavigationController) {
+        self.feedDetailMenuNavigationController = [[UINavigationController alloc] initWithRootViewController:self.feedDetailMenuViewController];
+        self.feedDetailMenuNavigationController.delegate = self;
+    }
+    
+    return _feedDetailMenuNavigationController;
 }
 
 - (void)closeOriginalStory {
