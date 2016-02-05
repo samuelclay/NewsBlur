@@ -533,7 +533,8 @@ class Feed(models.Model):
             try:
                 logging.debug(" ---> Checking: %s" % self.feed_address)
                 found_feed_urls = feedfinder.find_feeds(self.feed_address)
-                feed_address = found_feed_urls[0]
+                if found_feed_urls:
+                    feed_address = found_feed_urls[0]
             except KeyError:
                 is_feed = False
             if not len(found_feed_urls) and self.feed_link:
