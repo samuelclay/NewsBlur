@@ -60,7 +60,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         
         self.navigationItem.leftBarButtonItem = cancelItem;
         self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
-        self.navigationItem.title = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"Mute Sites" : @"Mute";
+        self.navigationItem.title = @"Mute Sites";
         
         self.tableView.editing = NO;
     }
