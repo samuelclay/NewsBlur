@@ -597,6 +597,9 @@ del {
     clear: both !important;
     max-width: none !important;
 }
+.NB-story-comments-group:first-child {
+    margin-top: 32px;
+}
 .NB-story-comments-group:last-child {
     border-bottom: 1px solid #EAECE8;
 }
@@ -839,7 +842,6 @@ a.NB-show-profile {
     line-height: 20px;
     overflow: hidden;
     min-height: 72px;
-    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
 }
 #story_pane .NB-story-comment-friend-shares .NB-story-comment {
     min-height: inherit;
