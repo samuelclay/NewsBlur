@@ -8,13 +8,21 @@
 
 body {
     color: #aaaaaa;
-    background-color: black;
+    background-color: #202020;
 }
 
 /* ========== */
 /* = Header = */
 /* ========== */
 
+.NB-header {
+    color: #bbbbbb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#222222));
+    border-bottom: 1px solid #C2C5BE;
+    text-shadow: 0 1px 0 rgba(12, 12, 12, .4);
+
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 .NB-story-title {
     color: #313330;
 }
@@ -102,15 +110,6 @@ a:active {
     color: rgba(150, 150, 150, .8);
 }
 
-.NB-header {
-    color: #bbbbbb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#111111), to(#444444));
-    border-bottom: 1px solid #C2C5BE;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-
 /* Comments */
 
 .NB-story-comments-group:last-child {
@@ -192,7 +191,6 @@ a:active {
 #story_pane .NB-story-comment {
     border-bottom: 1px solid #222222;
     background:#111111;
-    box-shadow: inset 1px 1px 1px rgba(50, 50, 50, 1);shar
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {

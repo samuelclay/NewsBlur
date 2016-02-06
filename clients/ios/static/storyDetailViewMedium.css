@@ -15,6 +15,15 @@ body {
 /* = Header = */
 /* ========== */
 
+.NB-header {
+    color: #bbbbbb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#606060));
+    border-bottom: 1px solid #bbbbbb;
+    text-shadow: 0 1px 0 rgba(12, 12, 12, .4);
+
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 .NB-story-title {
     color: #313330;
 }
@@ -102,15 +111,6 @@ a:active {
     color: rgba(10, 12, 38, .8);
 }
 
-.NB-header {
-    color: #bbbbbb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#777777));
-    border-bottom: 1px solid #bbbbbb;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-
 /* Comments */
 
 .NB-story-comments-group:last-child {
@@ -192,7 +192,6 @@ a:active {
 #story_pane .NB-story-comment {
     border-bottom: 1px solid #dddddd;
     background:#888888;
-    box-shadow: inset 1px 1px 1px rgba(155, 155, 155, 1);shar
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {
