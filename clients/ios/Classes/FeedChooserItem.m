@@ -101,11 +101,11 @@
 - (NSString *)detailForSort:(FeedChooserSort)sort {
     switch (sort) {
         case FeedChooserSortSubscribers:
-            return [NSString stringWithFormat:@"%@ subscribers", self.info[@"num_subscribers"]];
+            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ subscribers", @"number of subscribers"), self.info[@"num_subscribers"]];
             break;
             
         case FeedChooserSortFrequency:
-            return [NSString stringWithFormat:@"%@ stories/month", self.info[@"average_stories_per_month"]];
+            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ stories/month", @"average stories per month"), self.info[@"average_stories_per_month"]];
             break;
             
         case FeedChooserSortRecency:
@@ -135,7 +135,7 @@
         }
         
         default:
-            return [NSString stringWithFormat:@"%@ opens", self.info[@"feed_opens"]];
+            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ opens", @"number of feed opens"), self.info[@"feed_opens"]];
             break;
     }
 }
