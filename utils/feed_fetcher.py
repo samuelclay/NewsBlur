@@ -130,8 +130,10 @@ class FetchFeed:
                     modified_header = '%s, %02d %s %04d %02d:%02d:%02d GMT' % (short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5])
                     headers['If-Modified-Since'] = modified_header
                 raw_feed = requests.get(address, headers=headers)
-                if raw_feed.text:
-                    self.fpf = feedparser.parse(raw_feed.content)
+                if raw_feed.content:
+                    self.fpf = feedparser.parse(raw_feed.content, response_headers={
+                        'Content-Location': raw_feed.url,
+                    })
             except Exception, e:
                 logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], e))
             
