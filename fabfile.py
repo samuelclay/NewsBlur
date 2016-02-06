@@ -1,12 +1,12 @@
 from fabric.api import cd, lcd, env, local, parallel, serial
-from fabric.api import put, run, settings, sudo
+from fabric.api import put, run, settings, sudo, prefix
 from fabric.operations import prompt
+from fabric.contrib import django
+from fabric.state import connections
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
-from fabric.contrib import django
-from fabric.state import connections
 from vendor import yaml
 from pprint import pprint
 from collections import defaultdict
@@ -329,7 +329,6 @@ def setup_installs():
         'libffi-dev',
         'libevent-dev',
         'make',
-        'pgbouncer',
         'python-setuptools',
         'python-psycopg2',
         'libyaml-0-2',
@@ -344,6 +343,11 @@ def setup_installs():
         'libfreetype6',
         'libfreetype6-dev',
         'python-imaging',
+        'libmysqlclient-dev',
+        'libblas-dev',
+        'liblapack-dev',
+        'libatlas-base-dev',
+        'gfortran',
     ]
     # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
@@ -468,10 +472,15 @@ def setup_pip():
 def pip():
     pull()
     with virtualenv():
+        sudo('fallocate -l 4G /swapfile')
+        sudo('chmod 600 /swapfile')
+        sudo('mkswap /swapfile')
+        sudo('swapon /swapfile')
         sudo('easy_install -U pip')
         sudo('pip install --upgrade pip')
         # sudo('pip install --upgrade six') # Stupid cryptography bug requires upgraded six
         sudo('pip install -r requirements.txt')
+        sudo('swapoff /swapfile')
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -516,13 +525,14 @@ def config_pgbouncer():
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
-def bounce_pgbouncer():
+def kill_pgbouncer(bounce=False):
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     run('sleep 2')
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer')
         run('sleep 2')
-    run('sudo /etc/init.d/pgbouncer start', pty=False)
+    if bounce:
+        run('sudo /etc/init.d/pgbouncer start', pty=False)
 
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
@@ -1626,3 +1636,12 @@ def add_revsys_keys():
     put("~/Downloads/revsys-keys.pub", "revsys_keys")
     run('cat revsys_keys >> ~/.ssh/authorized_keys')
     run('rm revsys_keys')
+
+def upgrade_to_virtualenv(role="task"):
+    if role == "task":
+        celery_stop()
+    kill_pgbouncer()
+    setup_installs()
+    pip()
+    if role == "task":
+        enable_celery_supervisor()
