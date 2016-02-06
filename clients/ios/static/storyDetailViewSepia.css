@@ -112,7 +112,7 @@ a:active {
 /* Comments */
 
 .NB-story-comments-group:last-child {
-    border-bottom: 1px solid #EAECE8;
+    border-bottom: 1px solid rgba(194, 197, 190, .5);
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -188,9 +188,9 @@ a:active {
 /* Story Comments */
 
 #story_pane .NB-story-comment {
-    border-bottom: 1px solid #EAECE8;
+    border-bottom: 1px solid rgba(194, 197, 190, .25);
     background:#ffffd0;
-    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
+    box-shadow: none;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {
@@ -206,7 +206,7 @@ a:active {
 }
 
 #story_pane .NB-story-comment-reply {
-    border-top: 1px solid #EAECE8;
+    border-top: 1px solid rgba(194, 197, 190, .25);
 }
 
 #story_pane .NB-story-comment-reply-content {

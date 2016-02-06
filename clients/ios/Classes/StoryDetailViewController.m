@@ -487,7 +487,7 @@
     
     NSString *htmlString = [htmlTop stringByAppendingString:htmlBottom];
     
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nStory html (%@):\n\n\n%@\n\n\n", self.activeStory[@"story_title"], htmlContent);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -829,7 +829,6 @@
                                              [[story objectForKey:@"comment_count_public"] intValue],
                                              [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
             
-            comments = [comments stringByAppendingString:@"</div>"];
             comments = [comments stringByAppendingString:publicCommentHeader];
             comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
             
@@ -838,6 +837,7 @@
                 NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
+            comments = [comments stringByAppendingString:@"</div>"];
             comments = [comments stringByAppendingString:@"</div>"];
         }
     }
