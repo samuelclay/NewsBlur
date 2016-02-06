@@ -480,8 +480,7 @@ def pip():
             sudo('swapon /swapfile')
         sudo('easy_install -U pip')
         sudo('pip install --upgrade pip')
-        # sudo('pip install --upgrade six') # Stupid cryptography bug requires upgraded six
-        sudo('pip install -r requirements.txt')
+        run('pip install -r requirements.txt')
         sudo('swapoff /swapfile')
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
@@ -1643,9 +1642,14 @@ def upgrade_to_virtualenv(role="task"):
     setup_virtualenv()
     if role == "task":
         celery_stop()
+    elif role == "app":
+        gunicorn_stop()
     kill_pgbouncer()
     setup_installs()
     pip()
     if role == "task":
         enable_celery_supervisor()
+        sudo('reboot')
+    elif role == "app":
+        setup_gunicorn(supervisor=True)
         sudo('reboot')
