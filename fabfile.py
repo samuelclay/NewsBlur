@@ -348,6 +348,7 @@ def setup_installs():
         'liblapack-dev',
         'libatlas-base-dev',
         'gfortran',
+        'libpq-dev',
     ]
     # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
@@ -472,10 +473,11 @@ def setup_pip():
 def pip():
     pull()
     with virtualenv():
-        sudo('fallocate -l 4G /swapfile')
-        sudo('chmod 600 /swapfile')
-        sudo('mkswap /swapfile')
-        sudo('swapon /swapfile')
+        with settings(warn_only=True):
+            sudo('fallocate -l 4G /swapfile')
+            sudo('chmod 600 /swapfile')
+            sudo('mkswap /swapfile')
+            sudo('swapon /swapfile')
         sudo('easy_install -U pip')
         sudo('pip install --upgrade pip')
         # sudo('pip install --upgrade six') # Stupid cryptography bug requires upgraded six
@@ -1638,6 +1640,7 @@ def add_revsys_keys():
     run('rm revsys_keys')
 
 def upgrade_to_virtualenv(role="task"):
+    setup_virtualenv()
     if role == "task":
         celery_stop()
     kill_pgbouncer()
@@ -1645,3 +1648,4 @@ def upgrade_to_virtualenv(role="task"):
     pip()
     if role == "task":
         enable_celery_supervisor()
+        sudo('reboot')
