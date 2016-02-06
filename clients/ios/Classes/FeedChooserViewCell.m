@@ -65,6 +65,19 @@
     self.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
+
+    CGFloat detailTextLabelWidth = self.detailTextLabel.attributedText.size.width;
+    CGRect detailTextLabelFrame = self.detailTextLabel.frame;
+    CGFloat detailTextLabelExtraWidth = detailTextLabelWidth - detailTextLabelFrame.size.width;
+    if (detailTextLabelExtraWidth > 0) {
+        detailTextLabelFrame.origin.x -= detailTextLabelExtraWidth;
+        detailTextLabelFrame.size.width = detailTextLabelWidth;
+        self.detailTextLabel.frame = detailTextLabelFrame;
+
+        CGRect textLabelFrame = self.textLabel.frame;
+        textLabelFrame.size.width -= detailTextLabelExtraWidth;
+        self.textLabel.frame = textLabelFrame;
+    }
 }
 
 @end
