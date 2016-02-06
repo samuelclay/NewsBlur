@@ -52,7 +52,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         
         self.navigationItem.leftBarButtonItems = @[self.moveItem, self.deleteItem];
         self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
-        self.navigationItem.title = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"Organize Sites" : @"Organize";
+        self.navigationItem.title = @"Organize Sites";
         
         self.tableView.editing = YES;
     } else {
