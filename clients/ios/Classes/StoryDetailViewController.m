@@ -487,7 +487,7 @@
     
     NSString *htmlString = [htmlTop stringByAppendingString:htmlBottom];
     
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
