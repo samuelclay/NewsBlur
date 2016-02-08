@@ -52,7 +52,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
         
         self.navigationItem.leftBarButtonItems = @[self.moveItem, self.deleteItem];
         self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
-        self.navigationItem.title = @"Organize Sites";
         
         self.tableView.editing = YES;
     } else {
@@ -60,7 +59,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
         
         self.navigationItem.leftBarButtonItem = cancelItem;
         self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
-        self.navigationItem.title = @"Mute Sites";
         
         self.tableView.editing = NO;
     }
@@ -71,6 +69,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
     self.tableView.sectionIndexBackgroundColor = UIColorFromRGB(0xDCDFD6);
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
+    
+    [self updateTitle];
     
     if (self.operation == FeedChooserOperationMuteSites) {
         [self performGetInactiveFeeds];
@@ -122,6 +122,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         }
     }];
     
+    [self updateControls];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
@@ -329,11 +330,29 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self updateControls];
 }
 
+- (void)updateTitle {
+    if (self.operation == FeedChooserOperationMuteSites) {
+        NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
+        
+        if (count == 0) {
+            self.navigationItem.title = @"Mute Sites";
+        } else if (count == 1) {
+            self.navigationItem.title = @"Mute 1 Site";
+        } else {
+            self.navigationItem.title = [NSString stringWithFormat:@"Mute %@ Sites", @(count)];
+        }
+    } else {
+        self.navigationItem.title = @"Organize Sites";
+    }
+}
+
 - (void)updateControls {
     BOOL hasSelection = self.tableView.indexPathsForSelectedRows.count > 0;
     
     self.moveItem.enabled = hasSelection;
     self.deleteItem.enabled = hasSelection;
+    
+    [self updateTitle];
 }
 
 #pragma mark - Title delegate methods
@@ -569,7 +588,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
         BOOL wasInactive = [inactiveFeedsIdentifiers containsObject:item.identifierString];
-        BOOL isInactive = ![selectedIndexPaths containsObject:indexPath];
+        BOOL isInactive = [selectedIndexPaths containsObject:indexPath];
         
         if (wasInactive != isInactive) {
             didChange = YES;
