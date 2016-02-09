@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.1
-six==1.4.1
+six==1.10.0
 boto==2.8.0
 celery==3.0.17
 chardet==2.1.1
@@ -20,13 +20,13 @@ dnspython==1.12.0
 Fabric==1.10.2
 gunicorn==19.1.1
 psycopg2==2.5.2
+mysql-python==1.2.5
 httplib2==0.8
 iconv==1.0
 isodate==0.5.1
 kombu==2.5.7
 lxml==3.3.5
 mongoengine==0.8.2
-mysql-python==1.2.5
 nltk==2.0.5
 numpy==1.10.4
 scipy==0.17.0

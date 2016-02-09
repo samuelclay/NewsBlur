@@ -455,15 +455,18 @@ def setup_python():
 
 def setup_virtualenv():
     sudo('pip install --upgrade virtualenv')
-    with cd(env.NEWSBLUR_PATH):
-        run('virtualenv venv')
-        run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/lib/python2.7/sitecustomize.py')
+    sudo('pip install --upgrade virtualenvwrapper')
+    setup_local_files()
+    with virtualenv():
+        run('mkvirtualenv newsblur')
+        run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee ~/.virtualenvs/newsblur/lib/python2.7/sitecustomize.py')
     
 @_contextmanager
 def virtualenv():
-    with cd(env.NEWSBLUR_PATH):
-        with prefix("source venv/bin/activate"):
-            yield
+    with prefix('WORKON_HOME=$HOME/.virtualenvs'):
+        with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
+            with cd(env.NEWSBLUR_PATH):
+                yield
 
 def setup_pip():
     pull()
