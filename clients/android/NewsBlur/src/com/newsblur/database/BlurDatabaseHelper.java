@@ -894,7 +894,7 @@ public class BlurDatabaseHelper {
         q.append(" (" + DatabaseConstants.READING_SESSION_STORY_HASH + ") ");
         q.append(sel);
 
-        dbRW.execSQL(q.toString(), selArgs.toArray(new String[selArgs.size()]));
+        synchronized (RW_MUTEX) {dbRW.execSQL(q.toString(), selArgs.toArray(new String[selArgs.size()]));}
     }
 
     /**
