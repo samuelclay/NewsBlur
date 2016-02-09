@@ -457,20 +457,25 @@ def setup_virtualenv():
     sudo('pip install --upgrade virtualenv')
     sudo('pip install --upgrade virtualenvwrapper')
     setup_local_files()
-    with virtualenv():
-        run('mkvirtualenv newsblur')
-        run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee ~/.virtualenvs/newsblur/lib/python2.7/sitecustomize.py')
+    with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
+        with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
+            with cd(env.NEWSBLUR_PATH):
+                # sudo('rmvirtualenv newsblur')
+                # sudo('rm -fr venv')
+                run('mkvirtualenv --no-site-packages newsblur')
+                run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
     
 @_contextmanager
 def virtualenv():
-    with prefix('WORKON_HOME=$HOME/.virtualenvs'):
+    with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
         with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
             with cd(env.NEWSBLUR_PATH):
-                yield
+                with prefix('workon newsblur'):
+                    yield
 
 def setup_pip():
     pull()
-    sudo('easy_install -U pip')
+    run('easy_install -U pip')
 
 @parallel
 def pip():
@@ -481,8 +486,8 @@ def pip():
             sudo('chmod 600 /swapfile')
             sudo('mkswap /swapfile')
             sudo('swapon /swapfile')
-        sudo('easy_install -U pip')
-        sudo('pip install --upgrade pip')
+        run('easy_install -U pip')
+        run('pip install --upgrade pip')
         run('pip install -r requirements.txt')
         sudo('swapoff /swapfile')
     

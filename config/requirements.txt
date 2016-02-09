@@ -28,8 +28,6 @@ kombu==2.5.7
 lxml==3.3.5
 mongoengine==0.8.2
 nltk==2.0.5
-numpy==1.10.4
-scipy==0.17.0
 oauth2==1.5.211
 psutil==2.1.0
 pyes==0.99.5
@@ -53,3 +51,5 @@ django-cors-headers==1.0.0
 pyOpenSSL==0.14
 pyasn1==0.1.7
 ndg-httpsclient==0.3.2
+numpy==1.10.4
+scipy==0.17.0

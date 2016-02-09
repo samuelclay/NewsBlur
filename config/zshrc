@@ -2,15 +2,16 @@ export ZSH=$HOME/.oh-my-zsh
 export CLICOLOR='1'
 export ZSH_THEME="risto"
 export DISABLE_AUTO_UPDATE=true
+
+export WORKON_HOME=/srv/newsblur/venv
+export PROJECT_HOME=/srv/newsblur
+source /usr/local/bin/virtualenvwrapper.sh
+
 plugins=(git github pip zsh-syntax-highlighting virtualenvwrapper)
 source $ZSH/oh-my-zsh.sh
 
 export PYTHONSTARTUP=$HOME/.pystartup
 export LSCOLORS='gxgxcxdxBxegedabagacad'
-
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/newsblur
-source /usr/local/bin/virtualenvwrapper.sh
 
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' list-colors "=(#b) #([0-9]#)*=36=31"
