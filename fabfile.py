@@ -193,15 +193,15 @@ def setup_common():
     setup_user()
     setup_sudoers()
     setup_ulimit()
+    setup_libxml()
+    setup_psql_client()
     setup_repo()
-    setup_repo_local_settings()
     setup_local_files()
     setup_time_calibration()
-    setup_psql_client()
-    setup_libxml()
-    setup_python()
     setup_pip()
     setup_virtualenv()
+    setup_repo_local_settings()
+    pip()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -434,29 +434,30 @@ def setup_libxml_code():
 def setup_psycopg():
     sudo('easy_install -U psycopg2')
 
-def setup_python():
-    # sudo('easy_install -U $(<%s)' %
-    #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
-    pip()
-    put('config/pystartup.py', '.pystartup')
-
-    # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
-    #     sudo('python setup.py install')
-
-    with settings(warn_only=True):
-        sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
-        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
-        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
-        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
-    
-    if env.user == 'ubuntu':
-        with settings(warn_only=True):
-            sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
+# def setup_python():
+#     # sudo('easy_install -U $(<%s)' %
+#     #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
+#     pip()
+#     put('config/pystartup.py', '.pystartup')
+#
+#     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
+#     #     sudo('python setup.py install')
+#
+#     with settings(warn_only=True):
+#         sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
+#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
+#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
+#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
+#
+#     if env.user == 'ubuntu':
+#         with settings(warn_only=True):
+#             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 def setup_virtualenv():
     sudo('pip install --upgrade virtualenv')
     sudo('pip install --upgrade virtualenvwrapper')
     setup_local_files()
+    sudo('rm -fr ~/.cache') # Clean `sudo pip`
     with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
         with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
             with cd(env.NEWSBLUR_PATH):
@@ -475,8 +476,7 @@ def virtualenv():
                     yield
 
 def setup_pip():
-    pull()
-    run('easy_install -U pip')
+    sudo('easy_install -U pip')
 
 @parallel
 def pip():
