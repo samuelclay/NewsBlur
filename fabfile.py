@@ -2,6 +2,7 @@ from fabric.api import cd, lcd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo, prefix
 from fabric.operations import prompt
 from fabric.contrib import django
+from fabric.contrib import files
 from fabric.state import connections
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 from boto.s3.connection import S3Connection
@@ -1151,7 +1152,8 @@ def setup_elasticsearch():
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
-        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
+        if not files.exists('/usr/share/elasticsearch/plugins/head'):
+            sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
 
 def setup_db_search():
     put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
@@ -1654,11 +1656,11 @@ def upgrade_to_virtualenv(role=None):
         print " ---> You must specify a role!"
         return
     setup_virtualenv()
-    if role == "task":
+    if role == "task" or role == "search":
         celery_stop()
     elif role == "app":
         gunicorn_stop()
-        kill_pgbouncer()
+    kill_pgbouncer()
     setup_installs()
     pip()
     if role == "task":
@@ -1667,3 +1669,5 @@ def upgrade_to_virtualenv(role=None):
     elif role == "app":
         setup_gunicorn(supervisor=True, restart=False)
         sudo('reboot')
+    elif role == "search":
+        setup_db_search()
