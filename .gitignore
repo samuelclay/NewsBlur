@@ -58,7 +58,7 @@ clients/android/NewsBlurTest/gen/
 # Local configuration file (sdk path, etc)
 clients/android/NewsBlur/local.properties
 clients/android/NewsBlurTest/local.properties
-originals
+/originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
