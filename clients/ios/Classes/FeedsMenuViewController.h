@@ -20,5 +20,8 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
 @property (nonatomic) IBOutlet UIAlertView *loginAsAlert;
+@property (nonatomic) IBOutlet UISegmentedControl *themeSegmentedControl;
+
+- (IBAction)changeTheme:(id)sender;
 
 @end
