@@ -30,6 +30,10 @@ class TaskFeeds(Task):
         now_timestamp = int(now.strftime("%s"))
         queued_feeds = r.zrangebyscore('scheduled_updates', 0, now_timestamp)
         r.zremrangebyscore('scheduled_updates', 0, now_timestamp)
+        if not queued_feeds:
+            logging.debug(" ---> ~SN~FB~BMNo feeds to queue! Exiting...")
+            return
+            
         r.sadd('queued_feeds', *queued_feeds)
         logging.debug(" ---> ~SN~FBQueuing ~SB%s~SN stale feeds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
                         len(queued_feeds),

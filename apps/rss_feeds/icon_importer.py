@@ -318,7 +318,8 @@ class IconImporter(object):
         # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
             ar = ar.reshape(scipy.product(shape[:2]), shape[2])
-
+            ar = ar.astype(numpy.float)
+            
         # Get NUM_CLUSTERS worth of centroids.
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
 
@@ -347,7 +348,7 @@ class IconImporter(object):
 
         # Find the most frequent color, based on the counts.
         index_max = scipy.argmax(counts)
-        peak = codes[index_max]
+        peak = codes.astype(int)[index_max]
         color = ''.join(chr(c) for c in peak).encode('hex')
 
         return color[:6]

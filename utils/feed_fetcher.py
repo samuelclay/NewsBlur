@@ -15,13 +15,13 @@ import urlparse
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
+from io import BytesIO as StringIO
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
-# from utils import feedparser
 from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
@@ -57,7 +57,7 @@ class FetchFeed:
     @timelimit(30)
     def fetch(self):
         """ 
-        Uses feedparser to download the feed. Will be parsed later.
+        Uses requests to download the feed, parsing it in feedparser. Will be storified later.
         """
         start = time.time()
         identity = self.get_identity()
@@ -113,14 +113,40 @@ class FetchFeed:
 
         if not self.fpf:
             try:
-                self.fpf = feedparser.parse(address,
-                                            agent=USER_AGENT,
-                                            etag=etag,
-                                            modified=modified)
-            except (TypeError, ValueError, KeyError, EOFError), e:
-                logging.debug(u'   ***> [%-30s] ~FRFeed fetch error: %s' % 
-                              (self.feed.title[:30], e))
-                pass
+                headers = {
+                    'User-Agent': USER_AGENT,
+                    'Accept-encoding': 'gzip, deflate',
+                    'A-IM': 'feed',
+                }
+                if etag:
+                    headers['If-None-Match'] = etag
+                if modified:
+                    # format into an RFC 1123-compliant timestamp. We can't use
+                    # time.strftime() since the %a and %b directives can be affected
+                    # by the current locale, but RFC 2616 states that dates must be
+                    # in English.
+                    short_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                    modified_header = '%s, %02d %s %04d %02d:%02d:%02d GMT' % (short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5])
+                    headers['If-Modified-Since'] = modified_header
+                raw_feed = requests.get(address, headers=headers)
+                if raw_feed.content:
+                    self.fpf = feedparser.parse(raw_feed.content, response_headers={
+                        'Content-Location': raw_feed.url,
+                    })
+            except Exception, e:
+                logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], e))
+            
+            if not self.fpf:
+                try:
+                    self.fpf = feedparser.parse(address,
+                                                agent=USER_AGENT,
+                                                etag=etag,
+                                                modified=modified)
+                except (TypeError, ValueError, KeyError, EOFError), e:
+                    logging.debug(u'   ***> [%-30s] ~FRFeed fetch error: %s' % 
+                                  (self.feed.title[:30], e))
+                    pass
                 
         if not self.fpf:
             try:

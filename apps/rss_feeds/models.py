@@ -34,7 +34,7 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
-from utils import feedfinder, feedparser
+from utils import feedfinder2 as feedfinder, feedparser
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -400,33 +400,34 @@ class Feed(models.Model):
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         feed = by_url(url)
+        found_feed_urls = []
         
         # Create if it looks good
         if feed and len(feed) > offset:
             feed = feed[offset]
         elif create:
             create_okay = False
-            if feedfinder.isFeed(url):
+            found_feed_urls = feedfinder.find_feeds(url)
+            if len(found_feed_urls):
                 create_okay = True
-            elif fetch:
-                # Could still be a feed. Just check if there are entries
-                fp = feedparser.parse(url)
-                if len(fp.entries):
-                    create_okay = True
+            # elif fetch:
+            #     # Could still be a feed. Just check if there are entries
+            #     fp = feedparser.parse(url)
+            #     if len(fp.entries):
+            #         create_okay = True
             if create_okay:
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
         
         # Still nothing? Maybe the URL has some clues.
-        if not feed and fetch:
-            feed_finder_url = feedfinder.feed(url)
-            if feed_finder_url and 'comments' not in feed_finder_url:
-                feed = by_url(feed_finder_url)
-                if not feed and create:
-                    feed = cls.objects.create(feed_address=feed_finder_url)
-                    feed = feed.update()
-                elif feed and len(feed) > offset:
-                    feed = feed[offset]
+        if not feed and fetch and len(found_feed_urls):
+            feed_finder_url = found_feed_urls[0]
+            feed = by_url(feed_finder_url)
+            if not feed and create:
+                feed = cls.objects.create(feed_address=feed_finder_url)
+                feed = feed.update()
+            elif feed and len(feed) > offset:
+                feed = feed[offset]
         
         # Not created and not within bounds, so toss results.
         if isinstance(feed, QuerySet):
@@ -528,18 +529,18 @@ class Feed(models.Model):
         def _1():
             feed_address = None
             feed = self
+            found_feed_urls = []
             try:
-                is_feed = feedfinder.isFeed(self.feed_address)
+                logging.debug(" ---> Checking: %s" % self.feed_address)
+                found_feed_urls = feedfinder.find_feeds(self.feed_address)
+                if found_feed_urls:
+                    feed_address = found_feed_urls[0]
             except KeyError:
                 is_feed = False
-            if not is_feed:
-                feed_address = feedfinder.feed(self.feed_address)
-                if not feed_address and self.feed_link:
-                    feed_address = feedfinder.feed(self.feed_link)
-            else:
-                feed_address_from_link = feedfinder.feed(self.feed_link)
-                if feed_address_from_link != self.feed_address:
-                    feed_address = feed_address_from_link
+            if not len(found_feed_urls) and self.feed_link:
+                found_feed_urls = feedfinder.find_feeds(self.feed_link)
+                if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
+                    feed_address = found_feed_urls[0]
         
             if feed_address:
                 if (feed_address.endswith('feedburner.com/atom.xml') or
@@ -607,7 +608,6 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, exception_type='feed', status_code=None, fetch_history=None):
-        logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
         if not fetch_history:
             fetch_history = MFetchHistory.feed(self.pk)
         fh = fetch_history[exception_type + '_fetch_history']
@@ -631,6 +631,9 @@ class Feed(models.Model):
             elif exception_type == 'page':
                 self.has_page_exception = False
             self.save()
+        
+        logging.debug('   ---> [%-30s] ~FBCounting any errors in history: %s (%s non errors)' %
+                      (unicode(self)[:30], len(errors), len(non_errors)))
         
         return errors, non_errors
 
@@ -1868,9 +1871,12 @@ class MFeedPage(mongo.Document):
     
     def save(self, *args, **kwargs):
         if self.page_data:
-            self.page_data = zlib.compress(self.page_data)
+            self.page_data = zlib.compress(self.page_data).decode('utf-8')
         return super(MFeedPage, self).save(*args, **kwargs)
     
+    def page(self):
+        return zlib.decompress(self.page_data)
+        
     @classmethod
     def get_data(cls, feed_id):
         data = None

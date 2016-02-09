@@ -25,10 +25,10 @@ def main(role="app", role2="work", command=None, path=None):
             streams = create_streams_for_roles(role, role2, command=command, path=path)
             print " --- Loading %s App Log Tails ---" % len(streams)
             read_streams(streams)
-        except UnicodeDecodeError: # unexpected end of data
-            print " --- Lost connections - Retrying... ---"
-            time.sleep(1)
-            continue
+        # except UnicodeDecodeError: # unexpected end of data
+        #     print " --- Lost connections - Retrying... ---"
+        #     time.sleep(1)
+        #     continue
         except ConnectionError:
             print " --- Retrying in %s seconds... ---" % delay
             time.sleep(delay)
