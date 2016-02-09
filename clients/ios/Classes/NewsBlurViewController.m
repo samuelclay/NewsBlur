@@ -841,7 +841,7 @@ static UIFont *userLabelFont;
     [self.appDelegate.feedsMenuViewController view];
     NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(200, 38 * menuCount) barButtonItem:self.settingsBarButton];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(220, 38 * (menuCount + 1)) barButtonItem:self.settingsBarButton];
 }
 
 - (IBAction)showInteractionsPopover:(id)sender {
