@@ -406,10 +406,10 @@ def setup_repo_local_settings():
         run('touch logs/newsblur.log')
 
 def setup_local_files():
-    put("config/toprc", "./.toprc")
-    put("config/zshrc", "./.zshrc")
-    put('config/gitconfig.txt', './.gitconfig')
-    put('config/ssh.conf', './.ssh/config')
+    put("config/toprc", "~/.toprc")
+    put("config/zshrc", "~/.zshrc")
+    put('config/gitconfig.txt', '~/.gitconfig')
+    put('config/ssh.conf', '~/.ssh/config')
 
 def setup_psql_client():
     sudo('apt-get -y --force-yes install postgresql-client')
@@ -462,7 +462,8 @@ def setup_virtualenv():
             with cd(env.NEWSBLUR_PATH):
                 # sudo('rmvirtualenv newsblur')
                 # sudo('rm -fr venv')
-                run('mkvirtualenv --no-site-packages newsblur')
+                with settings(warn_only=True):
+                    run('mkvirtualenv --no-site-packages newsblur')
                 run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
     
 @_contextmanager
@@ -706,11 +707,12 @@ def remove_gunicorn():
     with cd(env.VENDOR_PATH):
         sudo('rm -fr gunicorn')
     
-def setup_gunicorn(supervisor=True):
+def setup_gunicorn(supervisor=True, restart=True):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
         sudo('supervisorctl reread')
-        restart_gunicorn()
+        if restart:
+            restart_gunicorn()
     # with cd(env.VENDOR_PATH):
     #     sudo('rm -fr gunicorn')
     #     run('git clone git://github.com/benoitc/gunicorn.git')
@@ -1183,14 +1185,15 @@ def setup_motd(role='app'):
     sudo('chown root.root %s' % motd)
     sudo('chmod a+x %s' % motd)
 
-def enable_celery_supervisor(queue=None):
+def enable_celery_supervisor(queue=None, update=True):
     if not queue:
         put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
     else:
         put('config/supervisor_celeryd_%s.conf' % queue, '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
 
     sudo('supervisorctl reread')
-    sudo('supervisorctl update')
+    if update:
+        sudo('supervisorctl update')
 
 @parallel
 def copy_db_settings():
@@ -1646,18 +1649,21 @@ def add_revsys_keys():
     run('cat revsys_keys >> ~/.ssh/authorized_keys')
     run('rm revsys_keys')
 
-def upgrade_to_virtualenv(role="task"):
+def upgrade_to_virtualenv(role=None):
+    if not role:
+        print " ---> You must specify a role!"
+        return
     setup_virtualenv()
     if role == "task":
         celery_stop()
     elif role == "app":
         gunicorn_stop()
-    kill_pgbouncer()
+        kill_pgbouncer()
     setup_installs()
     pip()
     if role == "task":
-        enable_celery_supervisor()
+        enable_celery_supervisor(update=False)
         sudo('reboot')
     elif role == "app":
-        setup_gunicorn(supervisor=True)
+        setup_gunicorn(supervisor=True, restart=False)
         sudo('reboot')
