@@ -168,13 +168,15 @@ NSString * const MenuHandler = @"handler";
         }
         
         NSString *title = item[MenuTitle];
+        NSInteger indent = 0;
         
         if ([title hasPrefix:@"\t"]) {
             NSArray *components = [title componentsSeparatedByString:@"\t"];
             title = components.lastObject;
-            cell.indentationLevel = components.count;
+            indent = components.count;
         }
         
+        cell.indentationLevel = indent;
         cell.destructive = [item[MenuDestructive] boolValue];
         cell.tintColor = UIColorFromFixedRGB(0x303030);
         cell.textLabel.text = title;
