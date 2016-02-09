@@ -96,6 +96,7 @@
     
     NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 2 : 3);
     self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
+    self.menuTableView.scrollEnabled = self.navigationController.preferredContentSize.height > self.view.frame.size.height;
 }
 
 - (void)buildMenuOptions {
