@@ -273,7 +273,7 @@ class Feed(models.Model):
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
         
     def index_feed_for_search(self):
-        if self.num_subscribers > 1 and not self.branch_from_feed:
+        if self.num_subscribers > 1 and not self.branch_from_feed and not self.is_newsletter:
             SearchFeed.index(feed_id=self.pk, 
                              title=self.feed_title, 
                              address=self.feed_address, 

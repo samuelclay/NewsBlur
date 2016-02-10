@@ -1,5 +1,6 @@
 import datetime
 import re
+from cgi import escape
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -46,7 +47,7 @@ class EmailNewsletter:
             "story_date": datetime.datetime.fromtimestamp(int(params['timestamp'])),
             "story_title": params['subject'],
             "story_content": params['body-html'],
-            "story_author_name": params['from'],
+            "story_author_name": escape(params['from']),
             "story_permalink": reverse('newsletter-story', 
                                        kwargs={'story_hash': story_hash}),
             "story_guid": params['signature'],
@@ -85,4 +86,4 @@ class EmailNewsletter:
         if not tokens:
             return params['sender'].split('@')
         
-        return tokens.group(0), tokens.group(2)
+        return tokens.group(1), tokens.group(3)
