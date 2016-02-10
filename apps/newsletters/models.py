@@ -1,5 +1,6 @@
 import datetime
 import re
+import redis
 from cgi import escape
 from django.db import models
 from django.contrib.auth.models import User
@@ -59,6 +60,11 @@ class EmailNewsletter:
             story = MStory(**story_params)
             story.save()
         
+        usersub.needs_unread_recalc = True
+        usersub.save()
+        
+        self.publish_to_subscribers(feed)
+        
         MFetchHistory.add(feed_id=feed.pk, fetch_type='push')
         logging.user(user, "~FCNewsletter feed story: ~SB%s~SN / ~SB%s" % (story.story_title, feed))
         
@@ -89,3 +95,14 @@ class EmailNewsletter:
             return params['sender'].split('@')
         
         return tokens.group(1), tokens.group(3)
+        
+    def publish_to_subscribers(self, feed):
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            listeners_count = r.publish(str(feed.pk), 'story:new')
+            if listeners_count:
+                logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))
+        except redis.ConnectionError:
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.title[:30],))
+        
+    
