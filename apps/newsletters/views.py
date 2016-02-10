@@ -1,3 +1,4 @@
+from pprint import pprint
 from django.http import HttpResponse, Http404
 from utils import log as logging
 from apps.newsletters.models import EmailNewsletter
@@ -36,6 +37,9 @@ def newsletter_receive(request):
     # }
     response = HttpResponse('OK')
     
+    if settings.DEBUG:
+        logging.debug(" ---> Email newsletter: %s" % pprint(request.REQUEST))
+        
     email_newsletter = EmailNewsletter()
     story = email_newsletter.receive_newsletter(request.REQUEST)
     
