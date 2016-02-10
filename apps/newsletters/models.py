@@ -20,8 +20,8 @@ class EmailNewsletter:
         if not user:
             return
         
-        sender_name, sender_domain = self.split_sender(params['from'])
-        feed_address = self.feed_address(user, params['sender'])
+        sender_name, sender_username, sender_domain = self.split_sender(params['from'])
+        feed_address = self.feed_address(user, "%s@%s" % (sender_username, sender_domain))
         
         usf = UserSubscriptionFolders.objects.get(user=user)
         usf.add_folder('', 'Newsletters')
@@ -95,10 +95,10 @@ class EmailNewsletter:
     
     def split_sender(self, sender):
         tokens = re.search('(.*?) <(.*?)@(.*?)>', sender)
-        if not tokens:
-            return params['sender'].split('@')
-        
-        return tokens.group(1), tokens.group(3)
+        # if not tokens:
+        #     name, domain = params['sender'].split('@')
+        #     return name, sender, domain
+        return tokens.group(1), tokens.group(2), tokens.group(3)
     
     def get_content(self, params):
         if 'body-html' in params:
