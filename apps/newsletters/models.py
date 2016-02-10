@@ -15,7 +15,7 @@ class EmailNewsletter:
         if not user:
             return
         
-        sender_name, sender_domain = params['sender'].split('@')
+        sender_name, sender_domain = self.split_sender(params['from'])
         feed_address = self.feed_address(user, params['sender'])
         
         usf = UserSubscriptionFolders.objects.get(user=user)
@@ -25,7 +25,7 @@ class EmailNewsletter:
             feed = Feed.objects.get(feed_address=feed_address)
         except Feed.DoesNotExist:
             feed = Feed.objects.create(feed_address=feed_address, 
-                                       feed_link=sender_domain,
+                                       feed_link='http://' + sender_domain,
                                        feed_title=sender_name,
                                        fetched_once=True,
                                        known_good=True)
@@ -46,7 +46,7 @@ class EmailNewsletter:
             "story_date": datetime.datetime.fromtimestamp(int(params['timestamp'])),
             "story_title": params['subject'],
             "story_content": params['body-html'],
-            "story_author_name": sender_name,
+            "story_author_name": params['from'],
             "story_permalink": reverse('newsletter-story', 
                                        kwargs={'story_hash': story_hash}),
             "story_guid": params['signature'],
@@ -79,4 +79,10 @@ class EmailNewsletter:
     
     def feed_address(self, user, sender):
         return 'newsletter:%s:%s' % (user.pk, sender)
-            
+    
+    def split_sender(self, sender):
+        tokens = re.search('(.*?) <(.*?)@(.*?)>', sender)
+        if not tokens:
+            return params['sender'].split('@')
+        
+        return tokens.group(0), tokens.group(2)

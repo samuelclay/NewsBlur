@@ -1003,9 +1003,6 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
         
-        if self.is_newsletter:
-            return self.update_newsletter_icon()
-        
         if getattr(settings, 'TEST_DEBUG', False):
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
@@ -1029,9 +1026,12 @@ class Feed(models.Model):
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
         }
-        disp = feed_fetcher.Dispatcher(options, 1)        
-        disp.add_jobs([[self.pk]])
-        feed = disp.run_jobs()
+        if self.is_newsletter:
+            feed = self.update_newsletter_icon()
+        else:
+            disp = feed_fetcher.Dispatcher(options, 1)        
+            disp.add_jobs([[self.pk]])
+            feed = disp.run_jobs()
         
         if feed:
             feed = Feed.get_by_id(feed.pk)

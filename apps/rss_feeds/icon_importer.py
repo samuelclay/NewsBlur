@@ -204,7 +204,7 @@ class IconImporter(object):
         url = self._url_from_html(content)
         if not url:
             try:
-                content = requests.get(self.feed.feed_link).content
+                content = requests.get(self.cleaned_feed_link).content
                 url = self._url_from_html(content)
             except (AttributeError, SocketError, requests.ConnectionError,
                     requests.models.MissingSchema, requests.sessions.InvalidSchema,
@@ -217,7 +217,13 @@ class IconImporter(object):
         if url:
             image, image_file = self.get_image_from_url(url)
         return image, image_file, url
-
+    
+    @property
+    def cleaned_feed_link(self):
+        if self.feed.feed_link.startswith('http'):
+            return self.feed.feed_link
+        return 'http://' + self.feed.feed_link
+    
     def fetch_image_from_path(self, path='favicon.ico', force=False):
         image = None
         url = None
