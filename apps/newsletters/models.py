@@ -33,7 +33,8 @@ class EmailNewsletter:
                                        known_good=True)
             feed.update()
             logging.user(user, "~FCCreating newsletter feed: ~SB%s" % (feed))
-        
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(user.username, 'reload:%s' % feed.pk)
         try:
             usersub = UserSubscription.objects.get(user=user, feed=feed)
         except UserSubscription.DoesNotExist:
