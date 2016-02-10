@@ -66,7 +66,7 @@ class FetchFeed:
                                                             self.feed.id,
                                                             datetime.datetime.now() - self.feed.last_update)
         logging.debug(log_msg)
-                                                 
+        
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         address = self.feed.feed_address

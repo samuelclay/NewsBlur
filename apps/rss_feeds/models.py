@@ -149,6 +149,10 @@ class Feed(models.Model):
         if not feed_address: feed_address = ""
         if not feed_link: feed_link = ""
         return hashlib.sha1(feed_address+feed_link).hexdigest()
+    
+    @property
+    def is_newsletter(self):
+        return self.feed_address.startswith('newsletter:')
         
     def canonical(self, full=False, include_favicon=True):
         feed = {
@@ -166,6 +170,7 @@ class Feed(models.Model):
             'min_to_decay': self.min_to_decay,
             'subs': self.num_subscribers,
             'is_push': self.is_push,
+            'is_newsletter': self.is_newsletter,
             'fetched_once': self.fetched_once,
             'search_indexed': self.search_indexed,
             'not_yet_fetched': not self.fetched_once, # Legacy. Doh.
@@ -369,6 +374,8 @@ class Feed(models.Model):
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
         feed = None
         
+        if url and url.startswith('newsletter:'):
+            return cls.objects.get(feed_address=url)
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
@@ -995,7 +1002,7 @@ class Feed(models.Model):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
-
+        
         if getattr(settings, 'TEST_DEBUG', False):
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
@@ -1019,9 +1026,12 @@ class Feed(models.Model):
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
         }
-        disp = feed_fetcher.Dispatcher(options, 1)        
-        disp.add_jobs([[self.pk]])
-        feed = disp.run_jobs()
+        if self.is_newsletter:
+            feed = self.update_newsletter_icon()
+        else:
+            disp = feed_fetcher.Dispatcher(options, 1)        
+            disp.add_jobs([[self.pk]])
+            feed = disp.run_jobs()
         
         if feed:
             feed = Feed.get_by_id(feed.pk)
@@ -1039,7 +1049,14 @@ class Feed(models.Model):
             r.zrem('error_feeds', feed.pk)
         
         return feed
-
+    
+    def update_newsletter_icon(self):
+        from apps.rss_feeds.icon_importer import IconImporter
+        icon_importer = IconImporter(self)
+        icon_importer.save()
+        
+        return self
+        
     @classmethod
     def get_by_id(cls, feed_id, feed_address=None):
         try:
