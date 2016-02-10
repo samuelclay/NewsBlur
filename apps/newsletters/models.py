@@ -5,6 +5,7 @@ from cgi import escape
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from apps.rss_feeds.models import Feed, MStory, MFetchHistory
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.models import Profile
