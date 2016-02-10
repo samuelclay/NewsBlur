@@ -550,6 +550,7 @@ class Feed(models.Model):
                 try:
                     self.feed_address = feed_address
                     feed = self.save()
+                    feed.count_subscribers()
                     feed.schedule_feed_fetch_immediately()
                     feed.has_feed_exception = False
                     feed.active = True
@@ -1737,6 +1738,10 @@ class Feed(models.Model):
         
     def schedule_feed_fetch_immediately(self, verbose=True):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        if not self.num_subscribers:
+            logging.debug('   ---> [%-30s] Not scheduling feed fetch immediately, no subs.' % (unicode(self)[:30]))
+            return
+            
         if verbose:
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
             
