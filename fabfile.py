@@ -1660,6 +1660,8 @@ def upgrade_to_virtualenv(role=None):
         celery_stop()
     elif role == "app":
         gunicorn_stop()
+    elif role == "work":
+        sudo('/etc/init.d/supervisor stop')
     kill_pgbouncer()
     setup_installs()
     pip()
@@ -1671,3 +1673,6 @@ def upgrade_to_virtualenv(role=None):
         sudo('reboot')
     elif role == "search":
         setup_db_search()
+    elif role == "work":
+        enable_celerybeat()
+        sudo('reboot')

@@ -656,7 +656,8 @@ class Dispatcher:
                                           feed.title[:30], time.time() - start))
             except urllib2.HTTPError, e:
                 logging.debug('   ---> [%-30s] ~FRFeed throws HTTP error: ~SB%s' % (unicode(feed_id)[:30], e.fp.read()))
-                feed.save_feed_history(e.code, e.msg, e.fp.read())
+                feed_code = e.code
+                feed.save_feed_history(feed_code, e.msg, e.fp.read())
                 fetched_feed = None
             except Feed.DoesNotExist, e:
                 logging.debug('   ---> [%-30s] ~FRFeed is now gone...' % (unicode(feed_id)[:30]))
@@ -665,11 +666,12 @@ class Dispatcher:
                 logging.debug(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
                 ret_feed = FEED_ERREXC
                 fetched_feed = None
-                feed.save_feed_history(559, 'Timeout', e)
+                feed_code = 559
+                feed.save_feed_history(feed_code, 'Timeout', e)
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.title[:30]))
-                feed.save_feed_history(505, 'Timeout', e)
                 feed_code = 505
+                feed.save_feed_history(feed_code, 'Timeout', e)
                 fetched_feed = None
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
