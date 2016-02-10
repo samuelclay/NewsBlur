@@ -30,7 +30,7 @@ class EmailNewsletter:
                                        feed_title=sender_name,
                                        fetched_once=True,
                                        known_good=True)
-            feed.set_next_scheduled_update()
+            feed.update()
         
         try:
             usersub = UserSubscription.objects.get(user=user, feed=feed)
