@@ -1002,7 +1002,10 @@ class Feed(models.Model):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
-
+        
+        if self.is_newsletter:
+            return self.update_newsletter_icon()
+        
         if getattr(settings, 'TEST_DEBUG', False):
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
@@ -1046,7 +1049,14 @@ class Feed(models.Model):
             r.zrem('error_feeds', feed.pk)
         
         return feed
-
+    
+    def update_newsletter_icon(self):
+        from apps.rss_feeds.icon_importer import IconImporter
+        icon_importer = IconImporter(self)
+        icon_importer.save()
+        
+        return self
+        
     @classmethod
     def get_by_id(cls, feed_id, feed_address=None):
         try:
