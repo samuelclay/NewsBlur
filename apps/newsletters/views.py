@@ -1,5 +1,6 @@
 from pprint import pprint
 from django.http import HttpResponse, Http404
+from django.conf import settings
 from utils import log as logging
 from apps.newsletters.models import EmailNewsletter
 from apps.rss_feeds.models import Feed, MStory
