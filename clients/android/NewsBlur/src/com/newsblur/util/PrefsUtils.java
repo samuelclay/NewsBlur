@@ -237,10 +237,15 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
     }
 
-    public static boolean isTimeToVacuum(Context context) {
+    private static long getLastVacuumTime(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        long lastTime = prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L);
-        return ( (lastTime + AppConstants.VACUUM_TIME_MILLIS) < (new Date()).getTime() );
+        return prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L);
+    }
+
+    public static boolean isTimeToVacuum(Context context) {
+        long lastTime = getLastVacuumTime(context);
+        long now = (new Date()).getTime();
+        return ( (lastTime + AppConstants.VACUUM_TIME_MILLIS) < now );
     }
 
     public static void updateLastVacuumTime(Context context) {
