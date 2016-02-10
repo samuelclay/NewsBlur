@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.utils.html import linebreaks
 from apps.rss_feeds.models import Feed, MStory, MFetchHistory
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.models import Profile
@@ -50,7 +51,7 @@ class EmailNewsletter:
             "story_feed_id": feed.pk,
             "story_date": datetime.datetime.fromtimestamp(int(params['timestamp'])),
             "story_title": params['subject'],
-            "story_content": params['body-html'],
+            "story_content": self.get_content(params),
             "story_author_name": escape(params['from']),
             "story_permalink": reverse('newsletter-story', 
                                        kwargs={'story_hash': story_hash}),
@@ -97,7 +98,15 @@ class EmailNewsletter:
             return params['sender'].split('@')
         
         return tokens.group(1), tokens.group(3)
-        
+    
+    def get_content(self, params):
+        if 'body-html' in params:
+            return params['body-html']
+        if 'stripped-html' in params:
+            return params['stripped-html']
+        if 'body-plain' in params:
+            return linebreaks(params['body-plain'])
+    
     def publish_to_subscribers(self, feed):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
