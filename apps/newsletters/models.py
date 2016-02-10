@@ -31,6 +31,7 @@ class EmailNewsletter:
                                        fetched_once=True,
                                        known_good=True)
             feed.update()
+            logging.user(user, "~FCCreating newsletter feed: ~SB%s" % (feed))
         
         try:
             usersub = UserSubscription.objects.get(user=user, feed=feed)
@@ -59,6 +60,7 @@ class EmailNewsletter:
             story.save()
         
         MFetchHistory.add(feed_id=feed.pk, fetch_type='push')
+        logging.user(user, "~FCNewsletter feed story: ~SB%s~SN / ~SB%s" % (story.story_title, feed))
         
         return story
         
