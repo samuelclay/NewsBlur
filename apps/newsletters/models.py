@@ -11,6 +11,7 @@ from apps.rss_feeds.models import Feed, MStory, MFetchHistory
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.models import Profile
 from utils import log as logging
+from utils.story_functions import linkify
 
 class EmailNewsletter:
     
@@ -103,9 +104,9 @@ class EmailNewsletter:
         if 'body-html' in params:
             return params['body-html']
         if 'stripped-html' in params:
-            return params['stripped-html']
+            return linkify(linebreaks(params['stripped-html']))
         if 'body-plain' in params:
-            return linebreaks(params['body-plain'])
+            return linkify(linebreaks(params['body-plain']))
     
     def publish_to_subscribers(self, feed):
         try:
