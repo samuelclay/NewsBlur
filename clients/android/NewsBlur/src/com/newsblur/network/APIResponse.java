@@ -13,9 +13,10 @@ import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.util.AppConstants;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * A JSON-encoded response from the API servers.  This class encodes the possible outcomes of
@@ -53,7 +54,7 @@ public class APIResponse {
             this.responseCode = response.code();
 
             if (responseCode != expectedReturnCode) {
-                Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.urlString() + " - expected " + expectedReturnCode);
+                Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.url().toString() + " - expected " + expectedReturnCode);
                 this.isError = true;
                 return;
             }
@@ -65,7 +66,7 @@ public class APIResponse {
                 this.responseBody = response.body().string();
                 readTime = System.currentTimeMillis() - startTime;
             } catch (Exception e) {
-                Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.urlString(), e);
+                Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.url().toString(), e);
                 this.isError = true;
                 return;
             }
@@ -83,11 +84,11 @@ public class APIResponse {
             }
 
             if (AppConstants.VERBOSE_LOG_NET) {
-                Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.urlString(), connectTime, readTime, responseBody.length()));
+                Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.url().toString(), connectTime, readTime, responseBody.length()));
             }
 
         } catch (IOException ioe) {
-            Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.urlString(), ioe);
+            Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url().toString(), ioe);
             this.isError = true;
             return;
         }

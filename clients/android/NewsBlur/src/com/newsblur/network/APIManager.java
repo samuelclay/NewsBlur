@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -52,11 +53,11 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class APIManager {
 
@@ -84,7 +85,11 @@ public class APIManager {
                                 Build.VERSION.RELEASE + " " +
                                 appVersion + ")";
 
-		this.httpClient = new OkHttpClient();
+        this.httpClient = new OkHttpClient.Builder()
+                          .connectTimeout(AppConstants.API_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                          .readTimeout(AppConstants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                          .followSslRedirects(true)
+                          .build();
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -111,8 +116,9 @@ public class APIManager {
         // just get the cookie from the 302 and stop, we directly use a one-off OkHttpClient.
         Request.Builder requestBuilder = new Request.Builder().url(urlString);
         addCookieHeader(requestBuilder);
-        OkHttpClient noredirHttpClient = new OkHttpClient();
-        noredirHttpClient.setFollowRedirects(false);
+        OkHttpClient noredirHttpClient = new OkHttpClient.Builder()
+                                         .followRedirects(false)
+                                         .build();
         try {
             Response response = noredirHttpClient.newCall(requestBuilder.build()).execute();
             if (!response.isRedirect()) return false;
@@ -661,7 +667,7 @@ public class APIManager {
 	}
 
 	private APIResponse post(final String urlString, final ContentValues values) {
-		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
+		FormBody.Builder formEncodingBuilder = new FormBody.Builder();
 		for (Entry<String, Object> entry : values.valueSet()) {
 			formEncodingBuilder.add(entry.getKey(), (String)entry.getValue());
 		}
