@@ -815,11 +815,12 @@ public class NBSyncService extends Service {
         if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
         if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
-        if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
         if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
         if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (!AppConstants.VERBOSE_LOG) return null;
+        if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         return null;
     }
 
