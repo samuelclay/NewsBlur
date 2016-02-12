@@ -850,8 +850,21 @@ public class BlurDatabaseHelper {
             }
         };
     }
-    
+
     private Cursor getActiveStoriesCursor(FeedSet fs, StoryOrder order, CancellationSignal cancellationSignal) {
+        // get the stories for this FS
+        Cursor result = getActiveStoriesCursorNoPrep(fs, order, cancellationSignal);
+        // if the result is blank, try to prime the session table with existing stories, in case we
+        // are offline, but if a session is started, just use what was there so offsets don't change.
+        if (result.getCount() < 1) {
+            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "priming reading session");
+            prepareReadingSession(fs);
+            result = getActiveStoriesCursorNoPrep(fs, order, cancellationSignal);
+        }
+        return result;
+    }
+    
+    private Cursor getActiveStoriesCursorNoPrep(FeedSet fs, StoryOrder order, CancellationSignal cancellationSignal) {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
@@ -871,8 +884,9 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);}
     }
 
-    public void prepareReadingSession(FeedSet fs, StateFilter stateFilter) {
+    private void prepareReadingSession(FeedSet fs) {
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
+        StateFilter stateFilter = PrefsUtils.getStateFilter(context);
         prepareReadingSession(fs, stateFilter, readFilter);
     }
 

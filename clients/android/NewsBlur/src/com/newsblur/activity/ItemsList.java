@@ -253,6 +253,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
+        NBSyncService.resetFetchState(fs);
+        triggerSync();
     }
 
     @Override
@@ -261,6 +263,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
+        NBSyncService.resetFetchState(fs);
+        triggerSync();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
