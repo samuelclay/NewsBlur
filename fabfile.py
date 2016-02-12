@@ -1241,7 +1241,7 @@ def setup_do(name, size=2, image=None):
         if image == "task": 
             image = images["task_07-2015"]
         elif image == "app":
-            image = images[image]
+            image = images["app_02-2016"]
         else:
             images = dict((s.name, s.id) for s in doapi.get_all_images())
             print images
