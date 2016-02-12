@@ -98,16 +98,16 @@ class PageImporter(object):
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
                         self.save_no_page()
                         return
-                    try:
-                        data = response.text
-                    except (LookupError, TypeError):
-                        data = response.content
+                    # try:
+                    data = response.content
+                    # except (LookupError, TypeError):
+                    #     data = response.content
 
-                    if response.encoding and response.encoding != 'utf-8':
-                        try:
-                            data = data.encode(response.encoding)
-                        except LookupError:
-                            pass
+                    # if response.encoding and response.encoding != 'utf-8':
+                    #     try:
+                    #         data = data.encode(response.encoding)
+                    #     except LookupError:
+                    #         pass
             else:
                 try:
                     data = open(feed_link, 'r').read()
@@ -270,8 +270,12 @@ class PageImporter(object):
         if not saved:
             try:
                 feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
-                feed_page.page_data = html
-                feed_page.save()
+                # feed_page.page_data = html.encode('utf-8')
+                if feed_page.page() == html:
+                    logging.debug('   ---> [%-30s] ~FYNo change in page data: %s' % (self.feed.title[:30], self.feed.feed_link))
+                else:
+                    feed_page.page_data = html
+                    feed_page.save()
             except MFeedPage.DoesNotExist:
                 feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
             return feed_page

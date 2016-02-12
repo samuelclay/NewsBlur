@@ -44,7 +44,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: '/ios/'
               }, 'See the iOS App'),
-              $.make('div', { className: 'NB-goodies-iphone' }),
+              $.make('div', { className: 'NB-goodies-ios' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone/iPad App')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
@@ -74,10 +74,26 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://addmyfeed.cubesoft.fr'
+              }, 'Download for iPhone'),
+              $.make('div', { className: 'NB-goodies-ios' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Add My Feed for iOS')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'https://market.android.com/details?id=bitwrit.Blar'
               }, 'View in Android Market'),
               $.make('div', { className: 'NB-goodies-android' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Blar')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://www.microsoft.com/en-us/store/apps/hypersonic/9nblggh5wnb6'
+              }, 'View in Windows Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Hypersonic for Windows 10 &amp; Phone')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {

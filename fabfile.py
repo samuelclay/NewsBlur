@@ -1,15 +1,17 @@
 from fabric.api import cd, lcd, env, local, parallel, serial
-from fabric.api import put, run, settings, sudo
+from fabric.api import put, run, settings, sudo, prefix
 from fabric.operations import prompt
+from fabric.contrib import django
+from fabric.contrib import files
+from fabric.state import connections
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
-from fabric.contrib import django
-from fabric.state import connections
 from vendor import yaml
 from pprint import pprint
 from collections import defaultdict
+from contextlib import contextmanager as _contextmanager
 import os
 import time
 import sys
@@ -192,13 +194,15 @@ def setup_common():
     setup_user()
     setup_sudoers()
     setup_ulimit()
+    setup_libxml()
+    setup_psql_client()
     setup_repo()
-    setup_repo_local_settings()
     setup_local_files()
     setup_time_calibration()
-    setup_psql_client()
-    setup_libxml()
-    setup_python()
+    setup_pip()
+    setup_virtualenv()
+    setup_repo_local_settings()
+    pip()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -326,7 +330,6 @@ def setup_installs():
         'libffi-dev',
         'libevent-dev',
         'make',
-        'pgbouncer',
         'python-setuptools',
         'python-psycopg2',
         'libyaml-0-2',
@@ -341,6 +344,12 @@ def setup_installs():
         'libfreetype6',
         'libfreetype6-dev',
         'python-imaging',
+        'libmysqlclient-dev',
+        'libblas-dev',
+        'liblapack-dev',
+        'libatlas-base-dev',
+        'gfortran',
+        'libpq-dev',
     ]
     # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
@@ -392,16 +401,16 @@ def setup_repo():
         sudo('ln -sfn /srv/newsblur /home/%s/newsblur' % env.user)
 
 def setup_repo_local_settings():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
 
 def setup_local_files():
-    put("config/toprc", "./.toprc")
-    put("config/zshrc", "./.zshrc")
-    put('config/gitconfig.txt', './.gitconfig')
-    put('config/ssh.conf', './.ssh/config')
+    put("config/toprc", "~/.toprc")
+    put("config/zshrc", "~/.zshrc")
+    put('config/gitconfig.txt', '~/.gitconfig')
+    put('config/ssh.conf', '~/.ssh/config')
 
 def setup_psql_client():
     sudo('apt-get -y --force-yes install postgresql-client')
@@ -426,34 +435,63 @@ def setup_libxml_code():
 def setup_psycopg():
     sudo('easy_install -U psycopg2')
 
-def setup_python():
-    sudo('easy_install -U pip')
-    # sudo('easy_install -U $(<%s)' %
-    #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
-    pip()
-    put('config/pystartup.py', '.pystartup')
+# def setup_python():
+#     # sudo('easy_install -U $(<%s)' %
+#     #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
+#     pip()
+#     put('config/pystartup.py', '.pystartup')
+#
+#     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
+#     #     sudo('python setup.py install')
+#
+#     with settings(warn_only=True):
+#         sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
+#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
+#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
+#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
+#
+#     if env.user == 'ubuntu':
+#         with settings(warn_only=True):
+#             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
-    # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
-    #     sudo('python setup.py install')
-
-    with settings(warn_only=True):
-        sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
-        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
-        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
-        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
+def setup_virtualenv():
+    sudo('pip install --upgrade virtualenv')
+    sudo('pip install --upgrade virtualenvwrapper')
+    setup_local_files()
+    sudo('rm -fr ~/.cache') # Clean `sudo pip`
+    with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
+        with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
+            with cd(env.NEWSBLUR_PATH):
+                # sudo('rmvirtualenv newsblur')
+                # sudo('rm -fr venv')
+                with settings(warn_only=True):
+                    run('mkvirtualenv --no-site-packages newsblur')
+                run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
     
-    if env.user == 'ubuntu':
-        with settings(warn_only=True):
-            sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
+@_contextmanager
+def virtualenv():
+    with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
+        with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
+            with cd(env.NEWSBLUR_PATH):
+                with prefix('workon newsblur'):
+                    yield
+
+def setup_pip():
+    sudo('easy_install -U pip')
 
 @parallel
 def pip():
     pull()
-    with cd(env.NEWSBLUR_PATH):
-        sudo('easy_install -U pip')
-        sudo('pip install --upgrade pip')
-        sudo('pip install --upgrade six') # Stupid cryptography bug requires upgraded six
-        sudo('pip install -r requirements.txt')
+    with virtualenv():
+        with settings(warn_only=True):
+            sudo('fallocate -l 4G /swapfile')
+            sudo('chmod 600 /swapfile')
+            sudo('mkswap /swapfile')
+            sudo('swapon /swapfile')
+        run('easy_install -U pip')
+        run('pip install --upgrade pip')
+        run('pip install -r requirements.txt')
+        sudo('swapoff /swapfile')
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -498,13 +536,14 @@ def config_pgbouncer():
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
-def bounce_pgbouncer():
+def kill_pgbouncer(bounce=False):
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     run('sleep 2')
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer')
         run('sleep 2')
-    run('sudo /etc/init.d/pgbouncer start', pty=False)
+    if bounce:
+        run('sudo /etc/init.d/pgbouncer start', pty=False)
 
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
@@ -669,11 +708,12 @@ def remove_gunicorn():
     with cd(env.VENDOR_PATH):
         sudo('rm -fr gunicorn')
     
-def setup_gunicorn(supervisor=True):
+def setup_gunicorn(supervisor=True, restart=True):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
         sudo('supervisorctl reread')
-        restart_gunicorn()
+        if restart:
+            restart_gunicorn()
     # with cd(env.VENDOR_PATH):
     #     sudo('rm -fr gunicorn')
     #     run('git clone git://github.com/benoitc/gunicorn.git')
@@ -732,12 +772,12 @@ def copy_certificates():
 @parallel
 def maintenance_on():
     put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('mv templates/maintenance_off.html templates/maintenance_on.html')
 
 @parallel
 def maintenance_off():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
@@ -785,7 +825,7 @@ def config_haproxy(debug=False):
         print " !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code
 
 def upgrade_django():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         sudo('supervisorctl stop gunicorn')
         run('./utils/kill_gunicorn.sh')
         sudo('easy_install -U django gunicorn')
@@ -793,7 +833,7 @@ def upgrade_django():
         sudo('supervisorctl reload')
 
 def upgrade_pil():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         pull()
         sudo('pip install --upgrade pillow')
         # celery_stop()
@@ -802,7 +842,7 @@ def upgrade_pil():
         # kill()
 
 def downgrade_pil():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('apt-get install -y python-imaging')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
         pull()
@@ -811,7 +851,7 @@ def downgrade_pil():
 
 def setup_db_monitor():
     pull()
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('apt-get install -y python-mysqldb')
         sudo('apt-get install -y libpq-dev python-dev')
         sudo('pip install -r flask/requirements.txt')
@@ -1070,7 +1110,7 @@ def setup_db_munin():
 
 
 def enable_celerybeat():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('mkdir -p data')
     put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
     put('config/supervisor_celeryd_work_queue.conf', '/etc/supervisor/conf.d/celeryd_work_queue.conf', use_sudo=True)
@@ -1112,7 +1152,8 @@ def setup_elasticsearch():
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
-        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
+        if not files.exists('/usr/share/elasticsearch/plugins/head'):
+            sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
 
 def setup_db_search():
     put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
@@ -1146,14 +1187,15 @@ def setup_motd(role='app'):
     sudo('chown root.root %s' % motd)
     sudo('chmod a+x %s' % motd)
 
-def enable_celery_supervisor(queue=None):
+def enable_celery_supervisor(queue=None, update=True):
     if not queue:
         put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
     else:
         put('config/supervisor_celeryd_%s.conf' % queue, '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
 
     sudo('supervisorctl reread')
-    sudo('supervisorctl update')
+    if update:
+        sudo('supervisorctl update')
 
 @parallel
 def copy_db_settings():
@@ -1199,7 +1241,7 @@ def setup_do(name, size=2, image=None):
         if image == "task": 
             image = images["task_07-2015"]
         elif image == "app":
-            image = images[image]
+            image = images["app_02-2016"]
         else:
             images = dict((s.name, s.id) for s in doapi.get_all_images())
             print images
@@ -1308,7 +1350,7 @@ def setup_ec2():
 
 @parallel
 def pull():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
 
 def pre_deploy():
@@ -1345,12 +1387,12 @@ def deploy_rebuild(fast=False):
 
 @parallel
 def kill_gunicorn():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('pkill -9 -u %s -f gunicorn_django' % env.user)
                 
 @parallel
 def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
         run('mkdir -p static')
         if rebuild:
@@ -1358,7 +1400,7 @@ def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
         if copy_assets:
             transfer_assets()
         
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         if reload:
             sudo('supervisorctl reload')
         elif fast:
@@ -1376,7 +1418,7 @@ def kill():
             run('./utils/kill_gunicorn.sh')
 
 def deploy_node():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_favicons')
 
@@ -1384,11 +1426,11 @@ def gunicorn_restart():
     restart_gunicorn()
 
 def restart_gunicorn():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         run('sudo supervisorctl restart gunicorn')
 
 def gunicorn_stop():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with virtualenv(), settings(warn_only=True):
         run('sudo supervisorctl stop gunicorn')
 
 def staging():
@@ -1411,20 +1453,20 @@ def celery():
     celery_slow()
 
 def celery_slow():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
     celery_stop()
     celery_start()
 
 @parallel
 def celery_fast():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('git pull')
     celery_reload()
 
 @parallel
 def celery_stop():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         sudo('supervisorctl stop celery')
         with settings(warn_only=True):
             if env.user == 'ubuntu':
@@ -1434,18 +1476,18 @@ def celery_stop():
 
 @parallel
 def celery_start():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('sudo supervisorctl start celery')
         run('tail logs/newsblur.log')
 
 @parallel
 def celery_reload():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         run('sudo supervisorctl reload celery')
         run('tail logs/newsblur.log')
 
 def kill_celery():
-    with cd(env.NEWSBLUR_PATH):
+    with virtualenv():
         with settings(warn_only=True):
             if env.user == 'ubuntu':
                 sudo('./utils/kill_celery.sh')
@@ -1608,3 +1650,29 @@ def add_revsys_keys():
     put("~/Downloads/revsys-keys.pub", "revsys_keys")
     run('cat revsys_keys >> ~/.ssh/authorized_keys')
     run('rm revsys_keys')
+
+def upgrade_to_virtualenv(role=None):
+    if not role:
+        print " ---> You must specify a role!"
+        return
+    setup_virtualenv()
+    if role == "task" or role == "search":
+        celery_stop()
+    elif role == "app":
+        gunicorn_stop()
+    elif role == "work":
+        sudo('/etc/init.d/supervisor stop')
+    kill_pgbouncer()
+    setup_installs()
+    pip()
+    if role == "task":
+        enable_celery_supervisor(update=False)
+        sudo('reboot')
+    elif role == "app":
+        setup_gunicorn(supervisor=True, restart=False)
+        sudo('reboot')
+    elif role == "search":
+        setup_db_search()
+    elif role == "work":
+        enable_celerybeat()
+        sudo('reboot')
