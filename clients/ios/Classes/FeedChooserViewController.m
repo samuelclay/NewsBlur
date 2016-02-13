@@ -391,23 +391,23 @@ static const CGFloat kFolderTitleHeight = 36.0;
     MenuViewController *viewController = [MenuViewController new];
     BOOL isMute = self.operation == FeedChooserOperationMuteSites;
     
-    [viewController addTitle:@"Name" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Name" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortName];
     }];
     
-    [viewController addTitle:@"Subscribers" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Subscribers" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortSubscribers];
     }];
     
-    [viewController addTitle:@"Stories per Month" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Stories per Month" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortFrequency];
     }];
     
-    [viewController addTitle:@"Most Recent Story" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Most Recent Story" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortRecency];
     }];
     
-    [viewController addTitle:@"Number of Opens" iconName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Number of Opens" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortOpens];
     }];
     
@@ -427,13 +427,13 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [self selectItemsWithIdentifiers:identifiers animated:NO];
     }];
     
-    [viewController addTitle:isMute ? @"Mute All" : @"Select All" iconName:isMute ? @"mute_feed_off.png" : @"barbutton_selection.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:isMute ? @"Mute All" : @"Select All" iconTemplateName:isMute ? @"mute_feed_off.png" : @"barbutton_selection.png" selectionShouldDismiss:YES handler:^{
         [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
             [self select:YES section:section];
         }];
     }];
     
-    [viewController addTitle:isMute ? @"Unmute All" : @"Select None" iconName:isMute ? @"mute_feed_on.png" : @"barbutton_selection_off.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:isMute ? @"Unmute All" : @"Select None" iconTemplateName:isMute ? @"mute_feed_on.png" : @"barbutton_selection_off.png" selectionShouldDismiss:YES handler:^{
         [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
             [self select:NO section:section];
         }];

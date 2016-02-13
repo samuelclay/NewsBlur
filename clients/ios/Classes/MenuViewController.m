@@ -79,8 +79,16 @@ NSString * const MenuHandler = @"handler";
     return size;
 }
 
+- (void)addTitle:(NSString *)title iconImage:(UIImage *)image destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    [self.items addObject:@{MenuTitle: title.uppercaseString, MenuIcon: image, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
+}
+
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
-    [self.items addObject:@{MenuTitle : title.uppercaseString, MenuIcon : [UIImage imageNamed:iconName], MenuDestructive : @([iconName isEqualToString:@"menu_icn_delete.png"] || [iconName isEqualToString:@"menu_icn_mute.png"]), MenuSelectionShouldDismiss : @(selectionShouldDismiss), MenuHandler : handler}];
+    [self addTitle:title iconImage:[UIImage imageNamed:iconName] destructive:[iconName isEqualToString:@"menu_icn_delete.png"] || [iconName isEqualToString:@"menu_icn_mute.png"]selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addTitle:(NSString *)title iconTemplateName:(NSString *)iconTemplateName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    [self addTitle:title iconImage:[[UIImage imageNamed:iconTemplateName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
 }
 
 - (void)addSegmentedControlWithTitles:(NSArray *)titles selectIndex:(NSUInteger)selectIndex selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
@@ -181,7 +189,8 @@ NSString * const MenuHandler = @"handler";
         cell.tintColor = UIColorFromFixedRGB(0x303030);
         cell.textLabel.text = title;
         cell.imageView.image = item[MenuIcon];
-        
+        cell.imageView.tintColor = UIColorFromRGB(0x303030);
+
         if (self.checkedRow == indexPath.row) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         } else {
