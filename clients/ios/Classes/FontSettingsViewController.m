@@ -239,7 +239,8 @@
     cell.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     cell.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     cell.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    
+    cell.imageView.tintColor = UIColorFromRGB(0x303030);
+
     if (indexPath.row == 0) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
@@ -280,7 +281,7 @@
         } else {
             cell.textLabel.text = @"Font...";
         }
-        cell.imageView.image = [UIImage imageNamed:@"choose_font.png"];
+        cell.imageView.image = [[UIImage imageNamed:@"choose_font.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
     
     return cell;
