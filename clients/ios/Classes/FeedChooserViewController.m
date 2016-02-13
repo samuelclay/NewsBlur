@@ -426,19 +426,25 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [self rebuildItemsAnimated:YES];
         [self selectItemsWithIdentifiers:identifiers animated:NO];
     }];
-    
-    [viewController addTitle:isMute ? @"Mute All" : @"Select All" iconTemplateName:isMute ? @"mute_feed_off.png" : @"barbutton_selection.png" selectionShouldDismiss:YES handler:^{
+
+
+    MenuItemHandler selectAllHandler = ^{
         [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
             [self select:YES section:section];
         }];
-    }];
-    
-    [viewController addTitle:isMute ? @"Unmute All" : @"Select None" iconTemplateName:isMute ? @"mute_feed_on.png" : @"barbutton_selection_off.png" selectionShouldDismiss:YES handler:^{
+    }, selectNoneHandler = ^{
         [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
             [self select:NO section:section];
         }];
-    }];
-    
+    };
+    if (isMute) {
+        [viewController addTitle:@"Mute All" iconName:@"mute_feed_off.png" selectionShouldDismiss:YES handler:selectAllHandler];
+        [viewController addTitle:@"Unmute All" iconName:@"mute_feed_on.png" selectionShouldDismiss:YES handler:selectNoneHandler];
+    } else {
+        [viewController addTitle:@"Select All" iconTemplateName:@"barbutton_selection.png" selectionShouldDismiss:YES handler:selectAllHandler];
+        [viewController addTitle:@"Select None" iconTemplateName:@"barbutton_selection_off.png" selectionShouldDismiss:YES handler:selectNoneHandler];
+    }
+
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.optionsItem];
 }
 
