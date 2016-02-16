@@ -10,6 +10,7 @@ import operator
 import gzip
 import datetime
 import requests
+import httplib
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from socket import error as SocketError
 from boto.s3.key import Key
@@ -212,6 +213,7 @@ class IconImporter(object):
                     requests.models.InvalidURL,
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
+                    httplib.IncompleteRead,
                     LocationParseError, OpenSSLError, PyAsn1Error), e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
