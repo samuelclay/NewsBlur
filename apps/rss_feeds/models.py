@@ -406,6 +406,9 @@ class Feed(models.Model):
         
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
+        if not url:
+            return
+        
         feed = by_url(url)
         found_feed_urls = []
         
