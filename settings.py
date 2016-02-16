@@ -525,7 +525,6 @@ REDIS_SESSIONS = {
 }
 
 CELERY_REDIS_DB_NUM = 4
-CELERY_REDIS_DB = CELERY_REDIS_DB_NUM
 SESSION_REDIS_DB = 5
 
 # =================
@@ -566,16 +565,11 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 # = Configurations =
 # ==================
-try:
-    from gunicorn_conf import *
-except ImportError, e:
-    pass
 
 from local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
-        'gunicorn',
         'raven.contrib.django',
         'django_ses',
 

@@ -5,6 +5,15 @@ DEV = process.env.NODE_ENV == 'development'
 MONGODB_SERVER = if DEV then 'localhost' else 'db_mongo'
 MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
+console.log " ---> Starting NewsBlur Favicon server..."
+if !DEV and !process.env.NODE_ENV
+    console.log " ---> Specify NODE_ENV=<development,production>"
+    return
+else if DEV
+    console.log " ---> Running as development server"
+else
+    console.log " ---> Running as production server"
+    
 if DEV
     server = new mongo.Server(MONGODB_SERVER, MONGODB_PORT, 
         auto_reconnect: true

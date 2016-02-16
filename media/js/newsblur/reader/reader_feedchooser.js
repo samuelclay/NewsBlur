@@ -2,6 +2,7 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
     options = options || {};
     var defaults = {
         'width': options.premium_only || options.chooser_only ? 460 : 900,
+        'height': 750,
         'premium_only': false,
         'chooser_only': false,
         'onOpen': _.bind(function() {
@@ -202,7 +203,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
               (this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-info' }, [
                     $.make('h2', { className: 'NB-modal-title' }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Mute feeds',
+                        'Mute sites',
                         $.make('div', { className: 'NB-icon-dropdown' })
                     ]),
                     $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Turn every site on'),

@@ -53,22 +53,6 @@ def utf8encode(tstr):
     warnings.warn(msg, DeprecationWarning)
     return smart_unicode(tstr)
 
-def append_query_string_to_url(url, **kwargs):
-    url_parts = list(urlparse.urlparse(url))
-    query = dict(urlparse.parse_qsl(url_parts[4]))
-
-    if not url_parts[4] or (url_parts[4] and len(query.keys())):
-        # Ensure query string is preserved.
-        # ?atom should be preserved, so ignore
-        # ?feed=atom is fine
-        query.update(kwargs)
-        url_parts[4] = urllib.urlencode(query)
-
-    return urlparse.urlunparse(url_parts)
-    
-def cache_bust_url(url):
-    return append_query_string_to_url(url, _=random.randint(0, 10000))
-
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):
     """Find the Levenshtein distance between two strings."""

@@ -9,8 +9,8 @@ import java.util.Map;
 
 import android.text.TextUtils;
 
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
 
 /**
  * A String-to-String multimap that serializes to JSON or HTTP request params.
@@ -19,7 +19,6 @@ import com.squareup.okhttp.RequestBody;
 public class ValueMultimap implements Serializable {
 	
 	private Map<String, List<String>> multimap;
-	private String TAG = "ValueMultimap";
 	
 	public ValueMultimap() {
 		multimap = new HashMap<String, List<String>>();
@@ -49,7 +48,7 @@ public class ValueMultimap implements Serializable {
 	}
 	
 	public RequestBody asFormEncodedRequestBody() {
-		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
+		FormBody.Builder formEncodingBuilder = new FormBody.Builder();
 		for (String key : multimap.keySet()) {
 			for (String value : multimap.get(key)) {
 				formEncodingBuilder.add(key, value);

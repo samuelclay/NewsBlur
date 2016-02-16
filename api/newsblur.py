@@ -183,6 +183,17 @@ class API:
             data.append( ("feeds", feed) )
         return data
     
+    @request('reader/mark_story_hashes_as_read')
+    def mark_story_hashes_as_read(self, story_hashes):
+        '''
+         Mark stories as read using their unique story_hash.
+        '''
+
+        data = []
+        for hash in story_hashes:
+            data.append( ("story_hash", hash) )
+        return data
+
     @request('reader/mark_story_as_read')
     def mark_story_as_read(self, feed_id, story_ids):
         '''

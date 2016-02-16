@@ -105,6 +105,9 @@ public class NBSyncService extends Service {
     private static Map<FeedSet,Integer> FeedStoriesSeen;
     static { FeedStoriesSeen = new HashMap<FeedSet,Integer>(); }
 
+    /** Feed to reset to zero-state, so it is fetched fresh, presumably with new filters. */
+    private static FeedSet ResetFeed;
+
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
@@ -576,6 +579,14 @@ public class NBSyncService extends Service {
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
     private void syncPendingFeedStories() {
+        // before anything else, see if we need to quickly reset fetch state for a feed
+        if (ResetFeed != null) {
+            ExhaustedFeeds.remove(ResetFeed);
+            FeedStoriesSeen.remove(ResetFeed);
+            FeedPagesSeen.remove(ResetFeed);
+            ResetFeed = null;
+        }
+
         FeedSet fs = PendingFeed;
         boolean finished = false;
         if (fs == null) {
@@ -623,21 +634,19 @@ public class NBSyncService extends Service {
                     return; 
                 }
 
+                insertStories(apiResponse, fs);
+                // re-do any very recent actions that were incorrectly overwritten by this page
+                finishActions();
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
+            
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
                 FeedStoriesSeen.put(fs, totalStoriesSeen);
-
-                insertStories(apiResponse, fs);
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
-            
                 if (apiResponse.stories.length == 0) {
                     ExhaustedFeeds.add(fs);
                     finished = true;
                     return;
                 }
-
-                // re-do any very recent actions that were incorrectly overwritten by this page
-                finishActions();
             }
             finished = true;
 
@@ -806,11 +815,12 @@ public class NBSyncService extends Service {
         if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
         if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
-        if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
         if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
         if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (!AppConstants.VERBOSE_LOG) return null;
+        if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         return null;
     }
 
@@ -853,7 +863,7 @@ public class NBSyncService extends Service {
                 alreadyPending = 0;
             }
 
-            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "have:" + alreadySeen + "  want:" + desiredStoryCount + " pending:" + alreadyPending);
+            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
             if (desiredStoryCount <= alreadySeen) {
                 return false;
             }
@@ -873,10 +883,12 @@ public class NBSyncService extends Service {
         }
     }
 
-    public static void resetFeeds() {
-        ExhaustedFeeds.clear();
-        FeedPagesSeen.clear();
-        FeedStoriesSeen.clear();
+    /**
+     * Reset the API pagniation state for the given feedset, presumably because the order or filter changed.
+     */
+    public static void resetFetchState(FeedSet fs) {
+        Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
+        ResetFeed = fs;
     }
 
     public static void getOriginalText(String hash) {
@@ -909,7 +921,9 @@ public class NBSyncService extends Service {
         clearPendingStoryRequest();
         FollowupActions.clear();
         RecountCandidates.clear();
-        resetFeeds();
+        ExhaustedFeeds.clear();
+        FeedPagesSeen.clear();
+        FeedStoriesSeen.clear();
         OriginalTextService.clear();
         UnreadsService.clear();
         ImagePrefetchService.clear();

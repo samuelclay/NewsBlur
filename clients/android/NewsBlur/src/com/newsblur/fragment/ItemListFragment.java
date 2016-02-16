@@ -123,13 +123,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         super.onActivityCreated(savedInstanceState);
         stopLoading = false;
         if (getLoaderManager().getLoader(ITEMLIST_LOADER) == null) {
-            initReadingSession();
             getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
         }
-    }
-
-    private void initReadingSession() {
-        FeedUtils.prepareReadingSession(getFeedSet(), intelState);
     }
 
     private void triggerRefresh(int desiredStoryCount, int totalSeen) {
@@ -150,7 +145,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     public void resetEmptyState() {
         cursorSeenYet = false;
         FeedUtils.dbHelper.clearStorySession();
-        initReadingSession();
     }
 
     /**
@@ -208,6 +202,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
+        // the framework likes to trigger this on init before we even known counts, so disregard those
+        if (!cursorSeenYet) return;
+
         // load an extra page or two worth of stories past the viewport
         int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
         triggerRefresh(desiredStoryCount, totalCount);
