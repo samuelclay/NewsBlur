@@ -412,19 +412,20 @@ class Feed(models.Model):
         # Create if it looks good
         if feed and len(feed) > offset:
             feed = feed[offset]
-        elif create:
-            create_okay = False
+        else:
             found_feed_urls = feedfinder.find_feeds(url)
             if len(found_feed_urls):
-                create_okay = True
-            # elif fetch:
-            #     # Could still be a feed. Just check if there are entries
-            #     fp = feedparser.parse(url)
-            #     if len(fp.entries):
-            #         create_okay = True
-            if create_okay:
-                feed = cls.objects.create(feed_address=url)
-                feed = feed.update()
+                feed_finder_url = found_feed_urls[0]
+                logging.debug(" ---> Found feed URLs for %s: %s" % (url, found_feed_urls))
+                feed = by_url(feed_finder_url)
+                if feed and len(feed) > offset:
+                    feed = feed[offset]
+                    logging.debug(" ---> Feed exists (%s), updating..." % (feed))
+                    feed = feed.update()
+                elif create:
+                    logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
+                    feed = cls.objects.create(feed_address=feed_finder_url)
+                    feed = feed.update()
         
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):
