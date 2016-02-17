@@ -239,7 +239,10 @@ def setup_app_image():
     copy_app_settings()
     setup_hosts()
     config_pgbouncer()
+    pull()
+    pip()
     deploy_web()
+    done()
 
 def setup_node():
     setup_node_app()

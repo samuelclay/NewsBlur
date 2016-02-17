@@ -68,7 +68,7 @@ class PushSubscriptionManager(models.Manager):
         elif response and response.status_code == 202: # async verification
             subscription.verified = False
         else:
-            error = response and response.content or ""
+            error = response and response.text or ""
             if not force_retry and 'You may only subscribe to' in error:
                 extracted_topic = re.search("You may only subscribe to (.*?) ", error)
                 if extracted_topic:
@@ -76,7 +76,7 @@ class PushSubscriptionManager(models.Manager):
                                                   feed=feed, hub=hub, force_retry=True)
             else:
                 logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s (code: %s)' % (
-                              unicode(subscription.feed)[:30], error, response and response.status_code))
+                              unicode(subscription.feed)[:30], error[:100], response and response.status_code))
 
         subscription.save()
         feed.setup_push()
@@ -141,7 +141,10 @@ class PushSubscription(models.Model):
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
-
+            
+            if hub_url and hub_url.startswith('//'):
+                hub_url = "http:%s" % hub_url
+            
             needs_update = False
             if hub_url and self.hub != hub_url:
                 # hub URL has changed; let's update our subscription
