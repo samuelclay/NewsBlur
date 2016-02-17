@@ -141,7 +141,10 @@ class PushSubscription(models.Model):
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
-
+            
+            if hub_url and hub_url.startswith('//'):
+                hub_url = "http:%s" % hub_url
+            
             needs_update = False
             if hub_url and self.hub != hub_url:
                 # hub URL has changed; let's update our subscription
