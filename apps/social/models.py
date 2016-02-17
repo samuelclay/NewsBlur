@@ -2452,13 +2452,17 @@ class MSocialServices(mongo.Document):
         logging.user(user, "~BG~FMTwitter import starting...")
         
         api = self.twitter_api()
+        try:
+            twitter_user = api.me()
+        except tweepy.TweepError, e:
+            api = None
+        
         if not api:
             logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no api access.")
             self.syncing_twitter = False
             self.save()
             return
-        
-        twitter_user = api.me()
+            
         self.twitter_picture_url = twitter_user.profile_image_url_https
         self.twitter_username = twitter_user.screen_name
         self.twitter_refreshed_date = datetime.datetime.utcnow()
