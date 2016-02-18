@@ -389,10 +389,12 @@
 //        scrollViewFrame.size.height = self.view.bounds.size.height;
 //        self.bottomSize.hidden = YES;
         [self.bottomSizeHeightConstraint setConstant:0];
+        [bottomSize setHidden:YES];
     } else {
 //        scrollViewFrame.size.height = self.view.bounds.size.height - 12;
 //        self.bottomSize.hidden = NO;
         [self.bottomSizeHeightConstraint setConstant:12];
+        [bottomSize setHidden:NO];
     }
     
     [self.view layoutIfNeeded];
