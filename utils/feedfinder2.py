@@ -33,16 +33,18 @@ class FeedFinder(object):
 
     def __init__(self, user_agent=None):
         if user_agent is None:
-            user_agent = "feedfinder2/{0}".format(__version__)
+            user_agent = "NewsBlur Feed Finder"
         self.user_agent = user_agent
 
-    def get_feed(self, url):
+    def get_feed(self, url, skip_user_agent=False):
         try:
-            r = requests.get(url, headers={"User-Agent": self.user_agent})
+            r = requests.get(url, headers={"User-Agent": self.user_agent if not skip_user_agent else None})
         except Exception as e:
             logging.warn("Error while getting '{0}'".format(url))
             logging.warn("{0}".format(e))
             return None
+        if not skip_user_agent and r.status_code == 403:
+            return self.get_feed(url, skip_user_agent=True)
         return r.text
 
     def is_feed_data(self, text):
