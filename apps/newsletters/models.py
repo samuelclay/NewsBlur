@@ -12,6 +12,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.models import Profile
 from utils import log as logging
 from utils.story_functions import linkify
+from utils.scrubber import Scrubber
 
 class EmailNewsletter:
     
@@ -48,11 +49,13 @@ class EmailNewsletter:
             )
         
         story_hash = MStory.ensure_story_hash(params['signature'], feed.pk)
+        story_content = self.get_content(params)
+        story_content = self.clean_content(story_content)
         story_params = {
             "story_feed_id": feed.pk,
             "story_date": datetime.datetime.fromtimestamp(int(params['timestamp'])),
             "story_title": params['subject'],
-            "story_content": self.get_content(params),
+            "story_content": story_content,
             "story_author_name": escape(params['from']),
             "story_permalink": reverse('newsletter-story', 
                                        kwargs={'story_hash': story_hash}),
@@ -108,6 +111,10 @@ class EmailNewsletter:
         if 'body-plain' in params:
             return linkify(linebreaks(params['body-plain']))
     
+    def clean_content(self, content):
+        scrubber = Scrubber()
+        return scrubber.scrub(content)
+        
     def publish_to_subscribers(self, feed):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
