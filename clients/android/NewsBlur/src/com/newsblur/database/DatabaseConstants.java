@@ -77,31 +77,29 @@ public class DatabaseConstants {
 	public static final String STORY_SHARED_DATE = "sharedDate";
     public static final String STORY_CONTENT = "content";
     public static final String STORY_SHORT_CONTENT = "short_content";
-	public static final String STORY_COMMENT_COUNT = "comment_count";
 	public static final String STORY_FEED_ID = "feed_id";
 	public static final String STORY_INTELLIGENCE_AUTHORS = "intelligence_authors";
 	public static final String STORY_INTELLIGENCE_TAGS = "intelligence_tags";
 	public static final String STORY_INTELLIGENCE_FEED = "intelligence_feed";
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
+    public static final String STORY_INTELLIGENCE_TOTAL = "intelligence_total";
 	public static final String STORY_PERMALINK = "permalink";
 	public static final String STORY_READ = "read";
-	public static final String STORY_READ_THIS_SESSION = "read_this_session";
 	public static final String STORY_STARRED = "starred";
 	public static final String STORY_STARRED_DATE = "starred_date";
-	public static final String STORY_SHARE_COUNT = "share_count";
 	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
 	public static final String STORY_FRIEND_USER_IDS = "comment_user_ids";
-	public static final String STORY_PUBLIC_USER_IDS = "public_user_ids";
-	public static final String STORY_SHORTDATE = "shortDate";
 	public static final String STORY_LONGDATE = "longDate";
 	public static final String STORY_SOCIAL_USER_ID = "socialUserId";
 	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
     public static final String STORY_HASH = "story_hash";
-    public static final String STORY_ACTIVE = "active";
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
-    public static final String STORY_SEARCHIT = "search_hit";
+    public static final String STORY_SEARCH_HIT = "search_hit";
+
+    public static final String READING_SESSION_TABLE = "reading_session";
+    public static final String READING_SESSION_STORY_HASH = "session_story_hash";
 
     public static final String STORY_TEXT_TABLE = "storytext";
     public static final String STORY_TEXT_STORY_HASH = "story_hash";
@@ -213,38 +211,37 @@ public class DatabaseConstants {
 		")";
 	
 	static final String STORY_SQL = "CREATE TABLE " + STORY_TABLE + " (" + 
-		STORY_HASH + TEXT + ", " +
+		STORY_HASH + TEXT + " PRIMARY KEY, " +
 		STORY_AUTHORS + TEXT + ", " +
 		STORY_CONTENT + TEXT + ", " +
 		STORY_SHORT_CONTENT + TEXT + ", " +
 		STORY_TIMESTAMP + INTEGER + ", " +
 		STORY_SHARED_DATE + INTEGER + ", " +
-		STORY_SHORTDATE + TEXT + ", " +
 		STORY_LONGDATE + TEXT + ", " +
 		STORY_FEED_ID + INTEGER + ", " +
-		STORY_ID + TEXT + " PRIMARY KEY, " +
+		STORY_ID + TEXT + ", " +
 		STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
 		STORY_INTELLIGENCE_FEED + INTEGER + ", " +
 		STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
 		STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
-		STORY_COMMENT_COUNT + INTEGER + ", " +
-		STORY_SHARE_COUNT + INTEGER + ", " +
+		STORY_INTELLIGENCE_TOTAL + INTEGER + ", " +
 		STORY_SOCIAL_USER_ID + TEXT + ", " +
 		STORY_SOURCE_USER_ID + TEXT + ", " +
 		STORY_SHARED_USER_IDS + TEXT + ", " +
-		STORY_PUBLIC_USER_IDS + TEXT + ", " +
 		STORY_FRIEND_USER_IDS + TEXT + ", " +
 		STORY_TAGS + TEXT + ", " +
 		STORY_PERMALINK + TEXT + ", " + 
 		STORY_READ + INTEGER + ", " +
-		STORY_READ_THIS_SESSION + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
-        STORY_ACTIVE + INTEGER + " DEFAULT 0, " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
-        STORY_SEARCHIT + INTEGER + " DEFAULT 0" +
+        STORY_SEARCH_HIT + TEXT +
+        ")";
+
+    static final String READING_SESSION_SQL = "CREATE TABLE " + READING_SESSION_TABLE + " (" +
+        READING_SESSION_STORY_HASH + TEXT +
         ")";
 
     static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
@@ -300,53 +297,41 @@ public class DatabaseConstants {
 		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_TITLE, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT,
 	};
 
-    public static final String SUM_STORY_TOTAL = "storyTotal";
-	private static String STORY_SUM_TOTAL = " CASE " + 
-	"WHEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") > 0 " + 
-	"THEN MAX(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
-	"WHEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") < 0 " + 
-	"THEN MIN(" + STORY_INTELLIGENCE_AUTHORS + "," + STORY_INTELLIGENCE_TAGS + "," + STORY_INTELLIGENCE_TITLE + ") " +
-	"ELSE " + STORY_INTELLIGENCE_FEED + " " +
-	"END AS " + SUM_STORY_TOTAL;
-	private static final String STORY_INTELLIGENCE_BEST = SUM_STORY_TOTAL + " > 0 ";
-	private static final String STORY_INTELLIGENCE_SOME = SUM_STORY_TOTAL + " >= 0 ";
-	private static final String STORY_INTELLIGENCE_NEUT = SUM_STORY_TOTAL + " = 0 ";
-	private static final String STORY_INTELLIGENCE_NEG = SUM_STORY_TOTAL + " < 0 ";
-
-	public static final String[] STORY_COLUMNS = {
-		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE,
-        STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS,
-        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE,
-        STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS, STORY_SUM_TOTAL, STORY_HASH,
-        STORY_LAST_READ_DATE, STORY_SEARCHIT,
+	private static final String[] BASE_STORY_COLUMNS = {
+		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_LONGDATE,
+        STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID,
+        STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
+        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
+        STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
+        STORY_LAST_READ_DATE,
 	};
 
-    public static final String MULTIFEED_STORIES_QUERY_BASE = 
-        "SELECT " + TextUtils.join(",", STORY_COLUMNS) + ", " + 
+    private static final String STORY_COLUMNS = 
+        TextUtils.join(",", BASE_STORY_COLUMNS) + ", " + 
         FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
 
-    public static final String JOIN_FEEDS_ON_STORIES =
-        " INNER JOIN " + FEED_TABLE + " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID;
+    public static final String STORY_QUERY_BASE = 
+        "SELECT " +
+        STORY_COLUMNS +
+        " FROM " + STORY_TABLE +
+        " INNER JOIN " + FEED_TABLE + 
+        " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID +
+        " WHERE " + STORY_HASH + " IN (" +
+        " SELECT DISTINCT " + READING_SESSION_STORY_HASH +
+        " FROM " + READING_SESSION_TABLE + ")" + 
+        " GROUP BY " + STORY_HASH;
 
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
-
-    public static final String JOIN_SOCIAL_FEEDS_ON_SOCIALFEED_MAP =
-        " INNER JOIN " + SOCIALFEED_TABLE + " ON " + SOCIALFEED_TABLE + "." + SOCIAL_FEED_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_USER_ID;
 
     public static final String READ_STORY_ORDER = STORY_LAST_READ_DATE + " DESC";
 
     /**
      * Appends to the given story query any and all selection statements that are required to satisfy the specified
-     * filtration parameters, dedup column, and ordering requirements.
+     * filtration parameters.
      */ 
-    public static void appendStorySelectionGroupOrder(StringBuilder q, ReadFilter readFilter, StoryOrder order, StateFilter stateFilter, String dedupCol, boolean requireQueryHit) {
+    public static void appendStorySelection(StringBuilder q, List<String> selArgs, ReadFilter readFilter, StateFilter stateFilter, String requireQueryHit) {
         if (readFilter == ReadFilter.UNREAD) {
-            // When a user is viewing "unread only" stories, what they really want are stories that were unread when they started reading,
-            // or else the selection set will constantly change as they see things!
-            q.append(" AND ((" + STORY_READ + " = 0) OR (" + STORY_READ_THIS_SESSION + " = 1))");
-        } else if (readFilter == ReadFilter.PURE_UNREAD) {
-            // This means really just unreads, useful for getting counts
             q.append(" AND (" + STORY_READ + " = 0)");
         }
 
@@ -355,18 +340,9 @@ public class DatabaseConstants {
             q.append(" AND " + stateSelection);
         }
 
-        if (requireQueryHit) {
-            q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCHIT + " = 1)");
-        }
-        
-        q.append(" AND (" + STORY_TABLE + "." + STORY_ACTIVE + " = 1)");
-
-        if (dedupCol != null) {
-            q.append( " GROUP BY " + dedupCol);
-        }
-
-        if (order != null) {
-            q.append(" ORDER BY " + getStorySortOrder(order));
+        if (requireQueryHit != null) {
+            q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCH_HIT + " = ?)");
+            selArgs.add(requireQueryHit);
         }
     }
 
@@ -378,13 +354,13 @@ public class DatabaseConstants {
         case ALL:
             return null;
         case SOME:
-            return STORY_INTELLIGENCE_SOME;
+            return STORY_INTELLIGENCE_TOTAL + " >= 0 ";
         case NEUT:
-            return STORY_INTELLIGENCE_NEUT;
+            return STORY_INTELLIGENCE_TOTAL + " = 0 ";
         case BEST:
-            return STORY_INTELLIGENCE_BEST;
+            return STORY_INTELLIGENCE_TOTAL + " > 0 ";
         case NEG:
-            return STORY_INTELLIGENCE_NEG;
+            return STORY_INTELLIGENCE_TOTAL + " < 0 ";
         default:
             return null;
         }

@@ -45,6 +45,14 @@ public class AppConstants {
     // for how long to back off from background syncs after a hard API failure
     public static final long API_BACKGROUND_BACKOFF_MILLIS = 5L * 60L * 1000L;
 
+    // timeouts for API calls, set to something more sane than the default of infinity
+    public static final long API_CONN_TIMEOUT_SECONDS = 60L;
+    public static final long API_READ_TIMEOUT_SECONDS = 120L;
+
+    // timeouts for image prefetching, which are a bit tighter, since they are only for caching
+    public static final long IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS = 10L;
+    public static final long IMAGE_PREFETCH_READ_TIMEOUT_SECONDS = 30L;
+
     // when generating a request for multiple feeds, limit the total number requested to prevent
     // unworkably long URLs
     public static final int MAX_FEED_LIST_SIZE = 250;
@@ -56,7 +64,7 @@ public class AppConstants {
     public static final int MAX_READ_STORIES_STORED = 500;
 
     // how many unread stories to fetch via hash at a time
-    public static final int UNREAD_FETCH_BATCH_SIZE = 100;
+    public static final int UNREAD_FETCH_BATCH_SIZE = 50;
 
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 6;

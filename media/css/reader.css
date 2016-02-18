@@ -110,6 +110,15 @@ a img {
     display: none;
 }
 
+.NB-manage {
+    position: absolute;
+    right: 204px;
+    z-index: 1;
+    overflow: hidden;
+    width: 180px;
+    margin: 0 24px 32px 0;
+}
+
 .NB-account {
     position: absolute;
     right: 0;
@@ -6064,7 +6073,8 @@ form.opml_import_form input {
     overflow: hidden;
 }
 
-.NB-account h5.NB-module-header {
+.NB-account h5.NB-module-header,
+.NB-manage h5.NB-module-header {
     text-align: center;
 }
 .NB-module .NB-module-header-left {
@@ -6170,12 +6180,16 @@ form.opml_import_form input {
     float: left;
     margin: 4px 0 0 0;
 }
-
+.NB-module .NB-module-item .NB-menu-manage-logout {
+	float: right;
+	margin: 4px 4px 0 0;
+}
 /* =========================== */
 /* = Right Modules - Account = */
 /* =========================== */
 
-.NB-account .NB-module {
+.NB-account .NB-module,
+.NB-manage .NB-module {
     margin: 24px 0;
     padding: 0;
     clear: both;
@@ -6203,24 +6217,6 @@ form.opml_import_form input {
   opacity: .2;
 }
 
-.NB-account .NB-module.NB-module-account .NB-module-account-stats {
-    min-height: 0;
-}
-.NB-account .NB-module.NB-module-account .NB-module-stats-counts {
-    overflow: hidden;
-}
-.NB-account .NB-module.NB-module-account .NB-module-stats-count {
-    margin: 0;
-}
-.NB-account .NB-module.NB-module-account .NB-module-stats-count-graph {
-    width: 33%;
-    margin: 0 0 0 72px;
-    clear: none;
-}
-.NB-account .NB-module-account-stats {
-    margin-top: 0;
-    overflow: hidden;
-}
 .NB-module.NB-module-features .NB-module-content-header {
     border-bottom: 1px solid #E8EAE4;
     padding-bottom: 4px;
@@ -6426,10 +6422,47 @@ form.opml_import_form input {
     display: none;
 }
 
+/* ========================== */
+/* = Premium Upgrade Module = */
+/* ========================== */
+
+.NB-account .NB-module-premium {
+}
+
+.NB-module-premium .NB-module-item-intro {
+    border: 1px solid #F7E7BC;
+    background-color: #FFFCF3;
+    padding: 12px;
+    overflow: hidden;
+    border-radius: 4px;
+	font-size: 14px;
+	text-align: center;
+}
+.NB-module-premium .NB-module-item .NB-modal-submit-button {
+	float: none;
+}
+.NB-module-premium .NB-module-premium-price {
+	font-size: 12px;
+	text-transform: uppercase;
+	margin: 12px 0 0;
+	color: #909090;
+}
+
+/* ================= */
+/* = Manage Module = */
+/* ================= */
+
+.NB-module-manage .NB-menu-manage li.NB-menu-item {
+    background-color: #F7F8F5;
+}
+
 /* ================ */
 /* = Stats Module = */
 /* ================ */
 
+.NB-splash-module-section {
+	overflow: hidden;
+}
 .NB-module-stats-counts {
     border-radius: 4px;
     background-color: #F7F8F5;
@@ -6444,6 +6477,11 @@ form.opml_import_form input {
     font-size: 12px;
     overflow: hidden;
     padding: 6px 0;
+}
+.NB-module-account .NB-module-stats-count {
+	float: left;
+	width: 33%;
+	border-bottom: none;
 }
 .NB-module-stats-count:last-child {
     border-bottom: none;
@@ -6522,6 +6560,7 @@ form.opml_import_form input {
 
 .NB-modules-center .NB-module {
     margin: 0 0 24px;
+	clear: both;
 }
 
 /* ============ */
@@ -8921,7 +8960,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-paypal {
-    min-height: 48px;
+    min-height: 84px;
     width: 50%;
     text-align: center;
     overflow: hidden;
@@ -9369,12 +9408,13 @@ form.opml_import_form input {
 .NB-modal-goodies .NB-goodies-mobile-link {
   float: right;
 }
-.NB-modal-goodies .NB-goodies-iphone {
+.NB-modal-goodies .NB-goodies-ios {
   float: right;
   width: 28px;
   height: 28px;
   margin: 0 6px 0 0;
-  background: transparent url('/media/img/mobile/iphone.png') no-repeat 0 0;
+  background: transparent url('/media/img/mobile/apple.png') no-repeat 0 0;
+  background-size: 28px 28px;
 }
 .NB-modal-goodies .NB-goodies-android {
   float: right;

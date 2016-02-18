@@ -28,16 +28,18 @@ import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LoginAsDialogFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, MarkAllReadDialogListener {
 
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
@@ -100,8 +102,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         NBSyncService.clearPendingStoryRequest();
         NBSyncService.flushRecounts();
-        NBSyncService.setActivationMode(NBSyncService.ActivationMode.ALL);
-        FeedUtils.activateAllStories();
         FeedUtils.clearReadingSession();
 
         updateStatusIndicators();
@@ -172,6 +172,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, false);
             if (syncStatus != null)  {
+                if (AppConstants.VERBOSE_LOG) {
+                    syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
+                }
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);
             } else {
@@ -278,4 +281,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
+    @Override
+    public void onMarkAllRead(FeedSet feedSet) {
+        FeedUtils.markFeedsRead(feedSet, null, null, this);
+    }
 }

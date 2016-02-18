@@ -55,7 +55,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     protected DefaultFeedView defaultFeedView;
 	protected StateFilter intelState;
     private boolean cursorSeenYet = false;
-    private boolean firstStorySeenYet = false;
     private boolean stopLoading = false;
     
     // loading indicator for when stories are present but stale (at top of list)
@@ -145,7 +144,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      */
     public void resetEmptyState() {
         cursorSeenYet = false;
-        firstStorySeenYet = false;
+        FeedUtils.dbHelper.clearStorySession();
     }
 
     /**
@@ -203,6 +202,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
+        // the framework likes to trigger this on init before we even known counts, so disregard those
+        if (!cursorSeenYet) return;
+
         // load an extra page or two worth of stories past the viewport
         int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
         triggerRefresh(desiredStoryCount, totalCount);
@@ -230,7 +232,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             try { getActivity().finish(); } catch (Exception e) {;}
             return null;
         }
-		return FeedUtils.dbHelper.getStoriesLoader(getFeedSet(), intelState);
+		return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
 	}
 
     @Override
@@ -240,20 +242,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             cursorSeenYet = true;
             if (cursor.getCount() < 1) {
                 triggerRefresh(1, 0);
-            } else {
-                if (!firstStorySeenYet) {
-                    // once we have at least a single story, we can instruct the sync service as to how to safely
-                    // activate new stories we recieve
-                    firstStorySeenYet = true;
-                    cursor.moveToFirst();
-                    long cutoff = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
-                    cursor.moveToPosition(-1);
-                    if (activity.getStoryOrder() == StoryOrder.NEWEST) {
-                        NBSyncService.setActivationMode(NBSyncService.ActivationMode.OLDER, cutoff);
-                    } else {
-                        NBSyncService.setActivationMode(NBSyncService.ActivationMode.NEWER, cutoff);
-                    }
-                }
             }
             adapter.swapCursor(cursor);
 		}
@@ -344,7 +332,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         int truePosition = position - 1;
         Story story = adapter.getStory(truePosition);
         if (getActivity().isFinishing()) return;
-        UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity(), false);
+        UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
     }
 
     protected void setupBezelSwipeDetector(View v) {

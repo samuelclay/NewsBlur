@@ -21,10 +21,4 @@ public class SavedStoriesReading extends Reading {
         getLoaderManager().initLoader(0, null, this);
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        // every time we see a set of saved stories, tag them so they don't disappear during this reading session
-        FeedUtils.dbHelper.markSavedReadingSession();
-        super.onLoadFinished(loader, cursor);
-    }
 }

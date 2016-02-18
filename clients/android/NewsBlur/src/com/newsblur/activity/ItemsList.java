@@ -17,13 +17,17 @@ import butterknife.FindView;
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
@@ -32,7 +36,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, MarkAllReadDialogListener {
 
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
@@ -64,7 +68,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
-                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this, false);
+                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
 
@@ -95,6 +99,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (searchQueryInput != null) {
             String q = searchQueryInput.getText().toString().trim();
             if (q.length() > 0) {
@@ -126,6 +131,17 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
 	public void markItemListAsRead() {
+        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
+        if (confirmation.feedSetRequiresConfirmation(fs)) {
+            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
+            dialog.show(fragmentManager, "dialog");
+        } else {
+            onMarkAllRead(fs);
+        }
+    }
+
+    @Override
+    public void onMarkAllRead(FeedSet feedSet) {
         if (itemListFragment != null) {
             // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
             // dataset changes rapidly as happens when marking-all-read and when the fragment is
@@ -205,6 +221,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
             if (syncStatus != null)  {
+                if (AppConstants.VERBOSE_LOG) {
+                    syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
+                }
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);
             } else {
@@ -231,19 +250,21 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
+        NBSyncService.resetFetchState(fs);
+        triggerSync();
     }
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
+        NBSyncService.resetFetchState(fs);
+        triggerSync();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);

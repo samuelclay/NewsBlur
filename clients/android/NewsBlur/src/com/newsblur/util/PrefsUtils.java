@@ -237,10 +237,15 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
     }
 
-    public static boolean isTimeToVacuum(Context context) {
+    private static long getLastVacuumTime(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        long lastTime = prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L);
-        return ( (lastTime + AppConstants.VACUUM_TIME_MILLIS) < (new Date()).getTime() );
+        return prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L);
+    }
+
+    public static boolean isTimeToVacuum(Context context) {
+        long lastTime = getLastVacuumTime(context);
+        long now = (new Date()).getTime();
+        return ( (lastTime + AppConstants.VACUUM_TIME_MILLIS) < now );
     }
 
     public static void updateLastVacuumTime(Context context) {
@@ -566,5 +571,10 @@ public class PrefsUtils {
     public static VolumeKeyNavigation getVolumeKeyNavigation(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return VolumeKeyNavigation.valueOf(prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString()));
+    }
+
+    public static MarkAllReadConfirmation getMarkAllReadConfirmation(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return MarkAllReadConfirmation.valueOf(prefs.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString()));
     }
 }

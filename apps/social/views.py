@@ -47,7 +47,7 @@ def load_social_stories(request, user_id, username=None):
     page           = request.REQUEST.get('page')
     order          = request.REQUEST.get('order', 'newest')
     read_filter    = request.REQUEST.get('read_filter', 'all')
-    query          = request.REQUEST.get('query')
+    query          = request.REQUEST.get('query', '').strip()
     stories        = []
     message        = None
     

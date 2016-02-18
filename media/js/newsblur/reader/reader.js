@@ -595,7 +595,7 @@
             options = options || {};
             
             if (options.manage_menu) {
-                $('.NB-menu-manage :focus').blur();
+                $('.NB-menu-manage-container .NB-menu-manage :focus').blur();
             } else {
                 $(':focus').blur();
             }
@@ -4270,7 +4270,7 @@
         },
         
         hide_confirm_story_share_menu_item: function(shared) {
-            var story_id = $('.NB-menu-manage').data('story_id');
+            var story_id = $('.NB-menu-manage-container .NB-menu-manage').data('story_id');
             var story = NEWSBLUR.assets.get_story(story_id);
             var $share = $('.NB-menu-manage-story-share');
             var $confirm = $('.NB-menu-manage-story-share-confirm');
@@ -5786,10 +5786,11 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-share' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
+                var story_id = $t.parents('.NB-menu-manage').data('story_id');
                 if ($t.hasClass('NB-menu-manage-story-share-cancel')) {
-                    self.hide_confirm_story_share_menu_item();
+                    self.hide_confirm_story_share_menu_item(story_id);
                 } else {
-                    self.show_confirm_story_share_menu_item();
+                    self.show_confirm_story_share_menu_item(story_id);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-share-confirm' }, function($t, $p){
@@ -5975,6 +5976,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_intro_modal({page_number: 2});
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-module-premium-button' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_feedchooser_modal({'premium_only': true});
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-module-gettingstarted-hide' }, function($t, $p){

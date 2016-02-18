@@ -10,6 +10,7 @@ import operator
 import gzip
 import datetime
 import requests
+import httplib
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from socket import error as SocketError
 from boto.s3.key import Key
@@ -61,11 +62,18 @@ class IconImporter(object):
             if len(image_str) > 500000:
                 image = None
             if (image and
-                (self.feed_icon.color != color or
+                (self.force or
                  self.feed_icon.data != image_str or
                  self.feed_icon.icon_url != icon_url or
                  self.feed_icon.not_found or
                  (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
+                logging.debug(" ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
+                    self.feed,
+                    self.feed_icon.color != color, self.feed_icon.color, color,
+                    self.feed_icon.data != image_str,
+                    self.feed_icon.icon_url != icon_url,
+                    self.feed_icon.not_found,
+                    settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))
                 self.feed_icon.data = image_str
                 self.feed_icon.icon_url = icon_url
                 self.feed_icon.color = color
@@ -197,7 +205,7 @@ class IconImporter(object):
         url = self._url_from_html(content)
         if not url:
             try:
-                content = requests.get(self.feed.feed_link).content
+                content = requests.get(self.cleaned_feed_link).content
                 url = self._url_from_html(content)
             except (AttributeError, SocketError, requests.ConnectionError,
                     requests.models.MissingSchema, requests.sessions.InvalidSchema,
@@ -205,12 +213,19 @@ class IconImporter(object):
                     requests.models.InvalidURL,
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
+                    httplib.IncompleteRead,
                     LocationParseError, OpenSSLError, PyAsn1Error), e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
             image, image_file = self.get_image_from_url(url)
         return image, image_file, url
-
+    
+    @property
+    def cleaned_feed_link(self):
+        if self.feed.feed_link.startswith('http'):
+            return self.feed.feed_link
+        return 'http://' + self.feed.feed_link
+    
     def fetch_image_from_path(self, path='favicon.ico', force=False):
         image = None
         url = None
@@ -311,8 +326,9 @@ class IconImporter(object):
         # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
             ar = ar.reshape(scipy.product(shape[:2]), shape[2])
-
+            
         # Get NUM_CLUSTERS worth of centroids.
+        ar = ar.astype(numpy.float)
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
 
         # Pare centroids, removing blacks and whites and shades of really dark and really light.
@@ -340,7 +356,7 @@ class IconImporter(object):
 
         # Find the most frequent color, based on the counts.
         index_max = scipy.argmax(counts)
-        peak = codes[index_max]
+        peak = codes.astype(int)[index_max]
         color = ''.join(chr(c) for c in peak).encode('hex')
 
         return color[:6]

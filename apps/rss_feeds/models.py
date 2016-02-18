@@ -20,6 +20,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.conf import settings
 from django.db.models.query import QuerySet
+from django.db.utils import DatabaseError
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -33,7 +34,7 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
-from utils import feedfinder, feedparser
+from utils import feedfinder2 as feedfinder, feedparser
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -148,6 +149,10 @@ class Feed(models.Model):
         if not feed_address: feed_address = ""
         if not feed_link: feed_link = ""
         return hashlib.sha1(feed_address+feed_link).hexdigest()
+    
+    @property
+    def is_newsletter(self):
+        return self.feed_address.startswith('newsletter:')
         
     def canonical(self, full=False, include_favicon=True):
         feed = {
@@ -165,6 +170,7 @@ class Feed(models.Model):
             'min_to_decay': self.min_to_decay,
             'subs': self.num_subscribers,
             'is_push': self.is_push,
+            'is_newsletter': self.is_newsletter,
             'fetched_once': self.fetched_once,
             'search_indexed': self.search_indexed,
             'not_yet_fetched': not self.fetched_once, # Legacy. Doh.
@@ -226,6 +232,9 @@ class Feed(models.Model):
         
         try:
             super(Feed, self).save(*args, **kwargs)
+        except DatabaseError, e:
+            logging.debug(" ---> ~FBFeed update failed, no change: %s / %s..." % (kwargs.get('update_fields', None), e))
+            pass
         except IntegrityError, e:
             logging.debug(" ---> ~FRFeed save collision (%s), checking dupe..." % e)
             duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
@@ -264,7 +273,7 @@ class Feed(models.Model):
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
         
     def index_feed_for_search(self):
-        if self.num_subscribers > 1 and not self.branch_from_feed:
+        if self.num_subscribers > 1 and not self.branch_from_feed and not self.is_newsletter:
             SearchFeed.index(feed_id=self.pk, 
                              title=self.feed_title, 
                              address=self.feed_address, 
@@ -365,6 +374,8 @@ class Feed(models.Model):
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
         feed = None
         
+        if url and url.startswith('newsletter:'):
+            return cls.objects.get(feed_address=url)
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
@@ -395,34 +406,39 @@ class Feed(models.Model):
         
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
+        if not url:
+            return
+        
         feed = by_url(url)
+        found_feed_urls = []
         
         # Create if it looks good
         if feed and len(feed) > offset:
             feed = feed[offset]
-        elif create:
-            create_okay = False
-            if feedfinder.isFeed(url):
-                create_okay = True
-            elif fetch:
-                # Could still be a feed. Just check if there are entries
-                fp = feedparser.parse(url)
-                if len(fp.entries):
-                    create_okay = True
-            if create_okay:
-                feed = cls.objects.create(feed_address=url)
-                feed = feed.update()
-        
-        # Still nothing? Maybe the URL has some clues.
-        if not feed and fetch:
-            feed_finder_url = feedfinder.feed(url)
-            if feed_finder_url and 'comments' not in feed_finder_url:
+        else:
+            found_feed_urls = feedfinder.find_feeds(url)
+            if len(found_feed_urls):
+                feed_finder_url = found_feed_urls[0]
+                logging.debug(" ---> Found feed URLs for %s: %s" % (url, found_feed_urls))
                 feed = by_url(feed_finder_url)
-                if not feed and create:
+                if feed and len(feed) > offset:
+                    feed = feed[offset]
+                    logging.debug(" ---> Feed exists (%s), updating..." % (feed))
+                    feed = feed.update()
+                elif create:
+                    logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
                     feed = cls.objects.create(feed_address=feed_finder_url)
                     feed = feed.update()
-                elif feed and len(feed) > offset:
-                    feed = feed[offset]
+        
+        # Still nothing? Maybe the URL has some clues.
+        if not feed and fetch and len(found_feed_urls):
+            feed_finder_url = found_feed_urls[0]
+            feed = by_url(feed_finder_url)
+            if not feed and create:
+                feed = cls.objects.create(feed_address=feed_finder_url)
+                feed = feed.update()
+            elif feed and len(feed) > offset:
+                feed = feed[offset]
         
         # Not created and not within bounds, so toss results.
         if isinstance(feed, QuerySet):
@@ -524,18 +540,18 @@ class Feed(models.Model):
         def _1():
             feed_address = None
             feed = self
+            found_feed_urls = []
             try:
-                is_feed = feedfinder.isFeed(self.feed_address)
+                logging.debug(" ---> Checking: %s" % self.feed_address)
+                found_feed_urls = feedfinder.find_feeds(self.feed_address)
+                if found_feed_urls:
+                    feed_address = found_feed_urls[0]
             except KeyError:
                 is_feed = False
-            if not is_feed:
-                feed_address = feedfinder.feed(self.feed_address)
-                if not feed_address and self.feed_link:
-                    feed_address = feedfinder.feed(self.feed_link)
-            else:
-                feed_address_from_link = feedfinder.feed(self.feed_link)
-                if feed_address_from_link != self.feed_address:
-                    feed_address = feed_address_from_link
+            if not len(found_feed_urls) and self.feed_link:
+                found_feed_urls = feedfinder.find_feeds(self.feed_link)
+                if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
+                    feed_address = found_feed_urls[0]
         
             if feed_address:
                 if (feed_address.endswith('feedburner.com/atom.xml') or
@@ -545,6 +561,7 @@ class Feed(models.Model):
                 try:
                     self.feed_address = feed_address
                     feed = self.save()
+                    feed.count_subscribers()
                     feed.schedule_feed_fetch_immediately()
                     feed.has_feed_exception = False
                     feed.active = True
@@ -603,7 +620,6 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, exception_type='feed', status_code=None, fetch_history=None):
-        logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
         if not fetch_history:
             fetch_history = MFetchHistory.feed(self.pk)
         fh = fetch_history[exception_type + '_fetch_history']
@@ -627,6 +643,9 @@ class Feed(models.Model):
             elif exception_type == 'page':
                 self.has_page_exception = False
             self.save()
+        
+        logging.debug('   ---> [%-30s] ~FBCounting any errors in history: %s (%s non errors)' %
+                      (unicode(self)[:30], len(errors), len(non_errors)))
         
         return errors, non_errors
 
@@ -987,7 +1006,7 @@ class Feed(models.Model):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
-
+        
         if getattr(settings, 'TEST_DEBUG', False):
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
@@ -1011,9 +1030,12 @@ class Feed(models.Model):
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
         }
-        disp = feed_fetcher.Dispatcher(options, 1)        
-        disp.add_jobs([[self.pk]])
-        feed = disp.run_jobs()
+        if self.is_newsletter:
+            feed = self.update_newsletter_icon()
+        else:
+            disp = feed_fetcher.Dispatcher(options, 1)        
+            disp.add_jobs([[self.pk]])
+            feed = disp.run_jobs()
         
         if feed:
             feed = Feed.get_by_id(feed.pk)
@@ -1031,7 +1053,14 @@ class Feed(models.Model):
             r.zrem('error_feeds', feed.pk)
         
         return feed
-
+    
+    def update_newsletter_icon(self):
+        from apps.rss_feeds.icon_importer import IconImporter
+        icon_importer = IconImporter(self)
+        icon_importer.save()
+        
+        return self
+        
     @classmethod
     def get_by_id(cls, feed_id, feed_address=None):
         try:
@@ -1730,6 +1759,10 @@ class Feed(models.Model):
         
     def schedule_feed_fetch_immediately(self, verbose=True):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        if not self.num_subscribers:
+            logging.debug('   ---> [%-30s] Not scheduling feed fetch immediately, no subs.' % (unicode(self)[:30]))
+            return
+            
         if verbose:
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
             
@@ -1864,9 +1897,12 @@ class MFeedPage(mongo.Document):
     
     def save(self, *args, **kwargs):
         if self.page_data:
-            self.page_data = zlib.compress(self.page_data)
+            self.page_data = zlib.compress(self.page_data).decode('utf-8')
         return super(MFeedPage, self).save(*args, **kwargs)
     
+    def page(self):
+        return zlib.decompress(self.page_data)
+        
     @classmethod
     def get_data(cls, feed_id):
         data = None
@@ -2484,8 +2520,11 @@ class MStarredStoryCounts(mongo.Document):
         
         if not total_only:
             cls.objects(user_id=user_id).delete()
-            user_tags = cls.count_tags_for_user(user_id)
-            user_feeds = cls.count_feeds_for_user(user_id)
+            try:
+                user_tags = cls.count_tags_for_user(user_id)
+                user_feeds = cls.count_feeds_for_user(user_id)
+            except pymongo.errors.OperationFailure, e:
+                logging.debug(" ---> ~FBOperationError on mongo: ~SB%s" % e)
 
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
         cls.objects(user_id=user_id, tag=None, feed_id=None).update_one(set__count=total_stories_count,
@@ -2600,7 +2639,7 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.push_history or []
 
         history = [[date, code, message]] + history
-        any_exceptions = any([c for d, c, m in history if c >= 400])
+        any_exceptions = any([c for d, c, m in history if c not in [200, 304]])
         if any_exceptions:
             history = history[:25]
         else:
