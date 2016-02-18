@@ -18,7 +18,7 @@ body {
 .NB-header {
     color: #bbbbbb;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#222222));
-    border-bottom: 1px solid #C2C5BE;
+    border-bottom: 1px solid #333532;
     text-shadow: 0 1px 0 rgba(12, 12, 12, .4);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -28,12 +28,12 @@ body {
 }
 
 .NB-story-title-positive {
-    color: #58A353;
-    text-shadow: 0 1px 0 #E9F6E9;
+    color: #6DB764;
+    text-shadow: 0 1px 0 #202020;
 }
 .NB-story-title-negative {
-    color: #B85044;
-    text-shadow: 0 1px 0 #F6E9E9;
+    color: #D07C80;
+    text-shadow: 0 1px 0 #202020;
 }
 
 .NB-story-permalink {
@@ -49,22 +49,22 @@ body {
 
 .NB-story-author {
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 #202020;
 }
 .NB-story-author-positive {
     color: #58A353;
-    text-shadow: 0 1px 0 #E9F6E9;
+    text-shadow: 0 1px 0 #202020;
 }
 .NB-story-author-negative {
     color: #B85044;
-    text-shadow: 0 1px 0 #F6E9E9;
+    text-shadow: 0 1px 0 #202020;
 }
 
 .NB-story-tag {
-    background-color: rgba(0, 0, 0, .1);
+    background-color: rgba(30, 30, 30, .2);
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .2);
 }
 .NB-story-tag-positive {
     background-color: #88B383;
@@ -85,18 +85,19 @@ body {
 
 .NB-user-tag {
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
     border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 }
 
 .NB-user-tag.NB-add-user-tag {
     background: rgba(0, 0, 0, .25) url("add_tag.png") no-repeat 6px 3px;
     color: #E5EBDB;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
 }
 
 .NB-story-starred-date {
     color: #818776;
+    text-shadow: 0 1px 0 #202020;
 }
 
 a {
@@ -107,13 +108,13 @@ a:active {
 }
 
 .NB-story blockquote {
-    color: rgba(150, 150, 150, .8);
+    color: #858A7D;
 }
 
 /* Comments */
 
 .NB-story-comments-group:last-child {
-    border-bottom: 1px solid #EAECE8;
+    border-bottom: 1px solid #000;
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -164,7 +165,7 @@ a:active {
         color-stop(0.50, #444444),
         to(#333333));
     color: #bbbbbb;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
 }
 .NB-button:active div,
 .NB-button.NB-button-active div {
@@ -194,11 +195,11 @@ a:active {
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {
-    color: #dddddd;
-    text-shadow: 0 -1px 0 #333333;
+    color: lightblue;
+    text-shadow: 0 1px 0 #333333;
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
-    color: #bbbbbb;
+    color: #808080;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-content {
@@ -216,23 +217,25 @@ a:active {
 #story_pane .NB-story-comment-reply-form .NB-error {
     color: #6A1000;
 }
-
+#story_pane .NB-story-comment .NB-story-comment-location {
+    color: #606060;
+}
 #story_pane .NB-story-comments-public-teaser,
 #story_pane .NB-story-comments-public-header,
 #story_pane .NB-story-comments-friends-header {
     background-color: #222222;
     color: white;
     text-shadow: 0 1px 0 #505050;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#222222), to(#333333));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#363636), to(#262626));
     color: #dddddd;
-    text-shadow: 0 1px 0 white;
-    border-color: rgba(0, 0, 0, .1) transparent rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 black;
+    border-color: rgba(0, 0, 0, .1) transparent #202020;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
 }
 #story_pane .NB-story-comments-shares-teaser {
     background-color: #333333;
     color: #dddddd;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
+    text-shadow: 0 1px 0 #202020;
     border-bottom: 1px solid #444444;
     -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
 }

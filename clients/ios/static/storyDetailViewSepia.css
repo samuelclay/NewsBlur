@@ -17,7 +17,7 @@ body {
 .NB-header {
     color: black;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffd0), to(#ffffc0));
-    border-bottom: 1px solid #C2C5BE;
+    border-bottom: 1px solid #B4BC8D;
     text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -28,11 +28,11 @@ body {
 
 .NB-story-title-positive {
     color: #58A353;
-    text-shadow: 0 1px 0 #E9F6E9;
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
 }
 .NB-story-title-negative {
     color: #B85044;
-    text-shadow: 0 1px 0 #F6E9E9;
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
 }
 
 .NB-story-permalink {
@@ -106,7 +106,7 @@ a:active {
 }
 
 .NB-story blockquote {
-    color: rgba(10, 12, 38, .8);
+    color: #65725c;
 }
 
 /* Comments */
@@ -223,16 +223,15 @@ a:active {
     background-color: #fffff0;
     color: white;
     text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#f6f6c6), to(#f6f6b0));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f6f6b0), to(#f0f29e));
     color: #404040;
-    border-color: rgba(0, 0, 0, .1) transparent rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    border-color: #e7e998 transparent #d8dd81;
 }
 #story_pane .NB-story-comments-shares-teaser {
     background-color: #fffff0;
     color: #898989;
-    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
-    border-bottom: 1px solid #E3E3DF;
+    text-shadow: 0 1px 0 #FFF;
+    border-bottom: 1px solid #DCDDB6;
     -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
 }
 
