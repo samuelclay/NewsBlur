@@ -41,11 +41,11 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> re-shared <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:6 }}</span>{% if interaction.content %}:{% else %}.{% endif %}
+                </span> re-shared <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:12 }}</span>{% if interaction.content %}:{% else %}.{% endif %}
             </div>
             {% if interaction.content %}
                 <div class="NB-interaction-content">
-                    <span class="NB-interaction-sharedstory-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>
+                    <span class="NB-interaction-sharedstory-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:128 }}</span>
                 </div>
             {% endif %}
             <div class="NB-interaction-date">
@@ -58,7 +58,7 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:6 }}</span>.
+                </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:12 }}</span>.
             </div>
             <div class="NB-interaction-date">
                 {{ interaction.time_since }} ago
