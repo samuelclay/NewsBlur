@@ -196,6 +196,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
 
         if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
             var pruned_description = this.model.content_preview('story_content', 500);
+            return pruned_description;
         } else {
             var pruned_description = this.model.content_preview();
         }
@@ -204,7 +205,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         
         if (pruned_title.substr(0, 30) == pruned_description.substr(0, 30)) return false;
         if (pruned_description.length < 30) return false;
-        
+
         return pruned_description;
     },
     
