@@ -5,7 +5,7 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = false;
+    public static final boolean VERBOSE_LOG = true;
     public static final boolean VERBOSE_LOG_DB = false;
     public static final boolean VERBOSE_LOG_NET = false;
 	
@@ -30,7 +30,7 @@ public class AppConstants {
     public static final long VACUUM_TIME_MILLIS = 12L * 60L * 60L * 1000L;
 
     // how often to clean up the DB
-    public static final long CLEANUP_TIME_MILLIS = 1L * 60L * 60L * 1000L;
+    public static final long CLEANUP_TIME_MILLIS = 3L * 60L * 60L * 1000L;
 
     // how often to trigger the BG service. slightly longer than how often we will find new stories,
     // to account for the fact that it is approximate, and missing a cycle is bad.
@@ -59,9 +59,6 @@ public class AppConstants {
 
     // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
     public static final int READING_STORY_PRELOAD = 10;
-
-    // max old stories to keep in the DB per feed before fetching new unreads
-    public static final int MAX_READ_STORIES_STORED = 500;
 
     // how many unread stories to fetch via hash at a time
     public static final int UNREAD_FETCH_BATCH_SIZE = 50;

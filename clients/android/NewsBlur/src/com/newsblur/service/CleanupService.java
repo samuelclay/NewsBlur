@@ -20,7 +20,10 @@ public class CleanupService extends SubService {
         gotWork();
 
         // do cleanup
-        parent.dbHelper.cleanupStories(PrefsUtils.isKeepOldStories(parent));
+        parent.dbHelper.cleanupVeryOldStories();
+        if (!PrefsUtils.isKeepOldStories(parent)) {
+            parent.dbHelper.cleanupReadStories();
+        }
         parent.dbHelper.cleanupStoryText();
         ImageCache imageCache = new ImageCache(parent);
         imageCache.cleanup(parent.dbHelper.getAllStoryImages());
