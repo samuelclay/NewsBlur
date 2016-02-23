@@ -538,7 +538,7 @@ static UIFont *userLabelFont;
         [settingsBarButton setImage:settingsImage];
     } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-        [addButton setImage:addImage forState:UIControlStateNormal];
+        [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
         [addButton sizeToFit];
         [addButton addTarget:self action:@selector(tapAddSite:)
             forControlEvents:UIControlEventTouchUpInside];
@@ -547,7 +547,7 @@ static UIFont *userLabelFont;
 
         NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
         settingsButton.onRightSide = YES;
-        [settingsButton setImage:settingsImage forState:UIControlStateNormal];
+        [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
         [settingsButton sizeToFit];
         [settingsButton addTarget:self action:@selector(showSettingsPopover:)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -960,10 +960,23 @@ static UIFont *userLabelFont;
     
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.navigationController.toolbar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.feedViewToolbar.tintColor = UIColorFromRGB(0x8F918B);
     self.feedViewToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
+    self.intelligenceControl.tintColor = UIColorFromRGB(0x8F918B);
+    self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        NBBarButtonItem *barButton = self.addBarButton.customView;
+        barButton.imageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]];
+        
+        barButton = self.settingsBarButton.customView;
+        barButton.imageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]];
+    }
     
     [self layoutHeaderCounts:nil];
     [self refreshHeaderCounts];

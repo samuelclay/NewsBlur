@@ -186,6 +186,12 @@ NSString * const ThemeStyleDark = @"dark";
         CIImage *result = [filter valueForKey:kCIOutputImageKey];
         
         return [UIImage imageWithCIImage:result scale:image.scale orientation:image.imageOrientation];
+    } else if ([self.theme isEqualToString:ThemeStyleSepia]) {
+        CIImage *coreImage = [CIImage imageWithCGImage:image.CGImage];
+        CIFilter *filter = [CIFilter filterWithName:@"CISepiaTone" keysAndValues:kCIInputImageKey, coreImage, @"inputIntensity", @0.8, nil];
+        CIImage *result = [filter outputImage];
+        
+        return [UIImage imageWithCIImage:result scale:image.scale orientation:image.imageOrientation];
     } else {
         return image;
     }
