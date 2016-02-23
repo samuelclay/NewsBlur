@@ -255,12 +255,14 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
-    public List<String> getUnreadStoryHashes() {
+    // note method name: this gets a set rather than a list, in case the caller wants to
+    // spend the up-front cost of hashing for better lookup speed rather than iteration!
+    public Set<String> getUnreadStoryHashesAsSet() {
         String q = "SELECT " + DatabaseConstants.STORY_HASH + 
                    " FROM " + DatabaseConstants.STORY_TABLE +
                    " WHERE " + DatabaseConstants.STORY_READ + " = 0" ;
         Cursor c = dbRO.rawQuery(q, null);
-        List<String> hashes = new ArrayList<String>(c.getCount());
+        Set<String> hashes = new HashSet<String>(c.getCount());
         while (c.moveToNext()) {
            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
         }
@@ -436,7 +438,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_LAST_READ_DATE + " < 1 AND " + DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
-    public void markStoryHashesRead(List<String> hashes) {
+    public void markStoryHashesRead(Collection<String> hashes) {
         // NOTE: attempting to wrap these updates in a transaction for speed makes them silently fail
         for (String hash : hashes) {
             setStoryReadState(hash, true);
