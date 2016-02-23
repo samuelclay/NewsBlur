@@ -76,9 +76,6 @@ public class Story implements Serializable {
 	@SerializedName("intelligence")
 	public Intelligence intelligence = new Intelligence();
 
-	@SerializedName("long_parsed_date")
-	public String longDate;
-
     @SerializedName("story_hash")
     public String storyHash;
 
@@ -97,7 +94,6 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_ID, id);
 		values.put(DatabaseConstants.STORY_TITLE, title.replace("\n", " ").replace("\r", " "));
 		values.put(DatabaseConstants.STORY_TIMESTAMP, timestamp);
-		values.put(DatabaseConstants.STORY_LONGDATE, longDate);
         values.put(DatabaseConstants.STORY_CONTENT, content);
         values.put(DatabaseConstants.STORY_SHORT_CONTENT, shortContent);
 		values.put(DatabaseConstants.STORY_PERMALINK, permalink);
@@ -132,7 +128,6 @@ public class Story implements Serializable {
 		story.shortContent = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORT_CONTENT));
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
 		story.timestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
-		story.longDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_LONGDATE));
 		story.socialUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SOCIAL_USER_ID));
 		story.sourceUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SOURCE_USER_ID));
 		story.permalink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_PERMALINK));

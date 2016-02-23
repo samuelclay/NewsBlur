@@ -89,7 +89,6 @@ public class DatabaseConstants {
 	public static final String STORY_STARRED_DATE = "starred_date";
 	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
 	public static final String STORY_FRIEND_USER_IDS = "comment_user_ids";
-	public static final String STORY_LONGDATE = "longDate";
 	public static final String STORY_SOCIAL_USER_ID = "socialUserId";
 	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
@@ -217,7 +216,6 @@ public class DatabaseConstants {
 		STORY_SHORT_CONTENT + TEXT + ", " +
 		STORY_TIMESTAMP + INTEGER + ", " +
 		STORY_SHARED_DATE + INTEGER + ", " +
-		STORY_LONGDATE + TEXT + ", " +
 		STORY_FEED_ID + INTEGER + ", " +
 		STORY_ID + TEXT + ", " +
 		STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
@@ -298,7 +296,7 @@ public class DatabaseConstants {
 	};
 
 	private static final String[] BASE_STORY_COLUMNS = {
-		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE, STORY_LONGDATE,
+		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID,
         STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
