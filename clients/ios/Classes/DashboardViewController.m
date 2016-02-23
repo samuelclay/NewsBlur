@@ -108,6 +108,7 @@
 - (void)updateTheme {
     self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
     self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
     
     self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);
