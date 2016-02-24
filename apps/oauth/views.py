@@ -631,7 +631,7 @@ def api_share_new_story(request):
     story_author = fields.get('story_author', "")
     comments = fields.get('comments', None)
         
-    logging.user(request.user, "~FBFinding feed: %s" % story_url)
+    logging.user(request.user, "~FBFinding feed (api_share_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
     story_hash = MStory.guid_hash_unsaved(story_url)
     if not user.profile.is_premium and MSharedStory.feed_quota(user.pk, original_feed and original_feed.pk or 0, story_hash):
@@ -717,7 +717,7 @@ def api_save_new_story(request):
     user_tags = fields.get('user_tags', "")
     story = None
     
-    logging.user(request.user, "~FBFinding feed: %s" % story_url)
+    logging.user(request.user, "~FBFinding feed (api_save_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url)
     if not story_content or not story_title:
         ti = TextImporter(feed=original_feed, story_url=story_url, request=request)

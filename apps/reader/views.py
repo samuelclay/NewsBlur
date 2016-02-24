@@ -1860,7 +1860,7 @@ def delete_feed_by_url(request):
     if in_folder == ' ':
         in_folder = ""
     
-    logging.user(request.user, "~FBFinding feed: %s" % url)
+    logging.user(request.user, "~FBFinding feed (delete_feed_by_url): %s" % url)
     feed = Feed.get_feed_from_url(url, create=False)
     if feed:
         user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
