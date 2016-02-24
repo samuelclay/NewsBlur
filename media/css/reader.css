@@ -9650,7 +9650,7 @@ form.opml_import_form input {
   vertical-align: middle;
   margin: -4px 6px 0 2px;
 }
-.NB-modal-preferences .NB-preference-hidestorychanges label img {
+.NB-modal-preferences .NB-preference-showstorychanges label img {
   vertical-align: middle;
   margin: -4px 6px 0 2px;
   width: 16px;

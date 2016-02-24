@@ -711,11 +711,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Open links'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-showstorychanges' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-hidestorychanges-1', type: 'radio', name: 'hide_story_changes', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-hidestorychanges-1' }, [
+                                $.make('input', { id: 'NB-preference-showstorychanges-1', type: 'radio', name: 'show_changes', value: 1 }),
+                                $.make('label', { 'for': 'NB-preference-showstorychanges-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_modified.png' }),
                                     'Show ',
                                     $.make('del', 'changes'),
@@ -725,8 +725,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-hidestorychanges-2', type: 'radio', name: 'hide_story_changes', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-hidestorychanges-2' }, [
+                                $.make('input', { id: 'NB-preference-showstorychanges-2', type: 'radio', name: 'show_changes', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showstorychanges-2' }, [
                                     'Hide changes and only show the final story'
                                 ])
                             ])
@@ -1077,8 +1077,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=hide_story_changes]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
+        $('input[name=show_changes]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.show_changes) {
                 $(this).attr('checked', true);
                 return false;
             }

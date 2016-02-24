@@ -165,7 +165,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <div class="NB-feed-story-date">\
                     <% if (story.has_modifications()) { %>\
                         <div class="NB-feed-story-hide-changes" \
-                             title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %> story modifications">\
+                             title="<%= NEWSBLUR.assets.preference("show_changes") ? "Hide" : "Show" %> story modifications">\
                         </div>\
                     <% } %>\
                     <%= story.formatted_long_date() %>\
@@ -689,12 +689,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     hide_story_changes: function() {
         var $button = this.$('.NB-feed-story-hide-changes');
         
-        if (NEWSBLUR.assets.preference('hide_story_changes')) {
-            this.$el.addClass('NB-story-show-changes');
+        if (NEWSBLUR.assets.preference('show_changes')) {
+            this.$el.addClass('NB-story-hide-changes');
             // this.$('ins').css({'text-decoration': 'underline'});
             // this.$('del').css({'display': 'inline'});
         } else {
-            this.$el.addClass('NB-story-hide-changes');
+            this.$el.addClass('NB-story-show-changes');
             // this.$('ins').css({'text-decoration': 'none'});
             // this.$('del').css({'display': 'none'});
         }
