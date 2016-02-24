@@ -32,14 +32,19 @@ IGNORE_AUTOCOMPLETE = [
     "latitude",
 ]
 
+@ajax_login_required
 @json.json_view
 def search_feed(request):
     address = request.REQUEST.get('address')
     offset = int(request.REQUEST.get('offset', 0))
     if not address:
         return dict(code=-1, message="Please provide a URL/address.")
-        
-    feed = Feed.get_feed_from_url(address, create=False, aggressive=True, offset=offset)
+    
+    logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
+    logging.user(request.user, "~FBIP: %s" % ip)
+    aggressive = request.user.is_authenticated()
+    feed = Feed.get_feed_from_url(address, create=False, aggressive=aggressive, offset=offset)
     if feed:
         return feed.canonical()
     else:

@@ -442,7 +442,7 @@
                     gravity: 's',
                     delayIn: 375
                 }).tipsy('enable');
-                $('.NB-narrow .NB-taskbar-button.NB-tipsy, .NB-task-layout-split').tipsy({
+                $('.NB-narrow .NB-taskbar-button.NB-tipsy').tipsy({
                     gravity: 's',
                     delayIn: 175,
                     title: 'tipsy-title'
