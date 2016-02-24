@@ -174,8 +174,6 @@ def check_share_on_site(request, token):
             code = -1
     
     logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % rss_url)
-    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
-    logging.user(request.user, "~FBIP: %s" % ip)
     feed = Feed.get_feed_from_url(rss_url, create=False, fetch=False)
     if not feed:
         logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % story_url)
