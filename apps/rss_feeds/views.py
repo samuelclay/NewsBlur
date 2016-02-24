@@ -32,6 +32,7 @@ IGNORE_AUTOCOMPLETE = [
     "latitude",
 ]
 
+@ajax_login_required
 @json.json_view
 def search_feed(request):
     address = request.REQUEST.get('address')
