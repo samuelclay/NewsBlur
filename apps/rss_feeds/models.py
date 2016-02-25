@@ -1205,6 +1205,7 @@ class Feed(models.Model):
                 existing_story.story_permalink = story_link
                 existing_story.story_guid = story.get('guid')
                 existing_story.story_tags = story_tags
+                existing_story.original_text_z = None # Reset Text view cache
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
                 if replace_story_date:
