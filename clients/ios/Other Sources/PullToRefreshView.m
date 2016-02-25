@@ -99,6 +99,7 @@
 		[self.layer addSublayer:arrowImage];
 
         activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        activityView.color = TEXT_COLOR;
 		activityView.frame = CGRectMake(30.0f, frame.size.height - 38.0f, 20.0f, 20.0f);
 		[self addSubview:activityView];
 
