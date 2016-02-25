@@ -64,7 +64,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <div class="NB-storytitles-star"></div>\
                 <div class="NB-storytitles-share"></div>\
                 <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
-                <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
+                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
                 <% if (show_content_preview) { %>\
                     <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
                 <% } %>\
@@ -110,7 +110,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 </a>\
             </div>\
             <div class="NB-storytitles-grid-bottom">\
-                <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
+                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
                 <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
             </div>\
             <% if (story.get("comment_count_friends")) { %>\
