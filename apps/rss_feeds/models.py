@@ -1365,7 +1365,7 @@ class Feed(models.Model):
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
         if read_stories_last_month == 0:
             original_cutoff = cutoff
-            cutoff = min(cutoff, 25)
+            cutoff = min(cutoff, 10)
             try:
                 logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
             except ValueError, e:
