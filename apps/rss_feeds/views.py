@@ -249,7 +249,8 @@ def load_feed_settings(request, feed_id):
     stats['duplicate_addresses'] = feed.duplicate_addresses.all()
     
     return stats
-    
+
+@ratelimit(minutes=10, requests=10)
 @json.json_view
 def exception_retry(request):
     user = get_user(request)

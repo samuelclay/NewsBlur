@@ -1205,6 +1205,7 @@ class Feed(models.Model):
                 existing_story.story_permalink = story_link
                 existing_story.story_guid = story.get('guid')
                 existing_story.story_tags = story_tags
+                existing_story.original_text_z = None # Reset Text view cache
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
                 if replace_story_date:
@@ -1365,7 +1366,7 @@ class Feed(models.Model):
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
         if read_stories_last_month == 0:
             original_cutoff = cutoff
-            cutoff = min(cutoff, 25)
+            cutoff = min(cutoff, 10)
             try:
                 logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
             except ValueError, e:

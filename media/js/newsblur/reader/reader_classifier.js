@@ -495,10 +495,10 @@ var classifier_prototype = {
                             )
                         ])
                     ])),
-                    (story.get('story_authors') && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story.story_authors() && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Author'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                            this.make_authors([story.get('story_authors')])
+                            this.make_authors([story.story_authors()])
                         )
                     ])),
                     (story.get('story_tags').length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
