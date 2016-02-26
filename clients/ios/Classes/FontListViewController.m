@@ -7,7 +7,7 @@
 //
 
 #import "FontListViewController.h"
-#import "FontTableViewCell.h"
+#import "MenuTableViewCell.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryPageControl.h"
 
@@ -47,7 +47,7 @@
     NSDictionary *font = self.fonts[indexPath.row];
     
     if (!cell) {
-        cell = [[FontTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIndentifier];
+        cell = [[MenuTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIndentifier];
     }
     
     cell.textLabel.attributedText = font[@"name"];
@@ -76,11 +76,11 @@
     NSString *style = font[@"style"];
     
     if (self.selectedIndexPath) {
-        FontTableViewCell *cell = [self.fontTableView cellForRowAtIndexPath:self.selectedIndexPath];
+        MenuTableViewCell *cell = [self.fontTableView cellForRowAtIndexPath:self.selectedIndexPath];
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     
-    FontTableViewCell *cell = [self.fontTableView cellForRowAtIndexPath:indexPath];
+    MenuTableViewCell *cell = [self.fontTableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
     
     self.selectedIndexPath = indexPath;

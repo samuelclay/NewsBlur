@@ -68,7 +68,6 @@
 		17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505B1BE4411E0021358B /* choose_font@2x.png */; };
 		17EB50601BE46A900021358B /* FontListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB505F1BE46A900021358B /* FontListViewController.m */; };
 		17EB50621BE46BB00021358B /* FontListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17EB50611BE46BB00021358B /* FontListViewController.xib */; };
-		17EB50651BE47C160021358B /* FontTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB50641BE47C160021358B /* FontTableViewCell.m */; };
 		17F156711BDABBF60092EBFD /* safari_shadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F156701BDABBF60092EBFD /* safari_shadow@2x.png */; };
 		1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -595,8 +594,6 @@
 		17EB505E1BE46A900021358B /* FontListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontListViewController.h; sourceTree = "<group>"; };
 		17EB505F1BE46A900021358B /* FontListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontListViewController.m; sourceTree = "<group>"; };
 		17EB50611BE46BB00021358B /* FontListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontListViewController.xib; path = Classes/FontListViewController.xib; sourceTree = SOURCE_ROOT; };
-		17EB50631BE47C160021358B /* FontTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontTableViewCell.h; sourceTree = "<group>"; };
-		17EB50641BE47C160021358B /* FontTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontTableViewCell.m; sourceTree = "<group>"; };
 		17F156701BDABBF60092EBFD /* safari_shadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari_shadow@2x.png"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -2040,8 +2037,6 @@
 				17432C7E1C533FBC003F8FD6 /* MenuViewController.m */,
 				FF4130A1162E10CF00DDB6A7 /* MenuTableViewCell.h */,
 				FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */,
-				17EB50631BE47C160021358B /* FontTableViewCell.h */,
-				17EB50641BE47C160021358B /* FontTableViewCell.m */,
 				17CBD3BD1BF66B6C003FCCAE /* MarkReadMenuViewController.h */,
 				17CBD3BE1BF66B6C003FCCAE /* MarkReadMenuViewController.m */,
 				FF6618C6176184560039913B /* NBNotifier.h */,
@@ -2912,7 +2907,6 @@
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,
 				FFA0484119CA5F5B00618DC4 /* UIWebView+Offsets.m in Sources */,
 				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
-				17EB50651BE47C160021358B /* FontTableViewCell.m in Sources */,
 				FF855B5B1794B0670098D48A /* OfflineSyncUnreads.m in Sources */,
 				FF855B5E1794B0760098D48A /* OfflineFetchStories.m in Sources */,
 				FF855B611794B0830098D48A /* OfflineFetchImages.m in Sources */,
