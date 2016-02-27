@@ -453,10 +453,10 @@ a:active {
 }
 
 .NB-story blockquote {
-    border-left: 5px solid #C2C5BE;
-    padding: 0 1.5em;
-    color: #72785F;
-    margin: 20px 0;
+    border-left: 2px solid #ECEFE9;
+    padding: .5em 1.5em;
+    margin: 0px;
+    background-color: #F4F6F2;
 }
 
 div + p {

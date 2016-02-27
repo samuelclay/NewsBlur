@@ -106,7 +106,8 @@ a:active {
 }
 
 .NB-story blockquote {
-    color: #65725c;
+    border-left-color: #E1E3B6;
+    background-color: #F2F2D4;
 }
 
 /* Comments */
