@@ -163,32 +163,37 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-feed-story-manage-icon"></div>\
                     <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
-                <div class="NB-feed-story-date">\
+                <div class="NB-feed-story-date-line">\
                     <% if (story.get("has_modifications")) { %>\
-                        <div class="NB-feed-story-show-changes" \
-                             title="Show story modifications">\
+                        <div class="NB-feed-story-show-changes">\
+                            <span class="NB-feed-story-show-changes-text">\
+                                <%= story.get("showing_diff") ? "Hide" : "Show" %> story changes\
+                            </span>\
+                            <span class="NB-middot">&middot;</span>\
                         </div>\
                     <% } %>\
-                    <%= story.formatted_long_date() %>\
+                    <div class="NB-feed-story-date">\
+                        <%= story.formatted_long_date() %>\
+                    </div>\
+                    <% if (story.story_authors()) { %>\
+                        <div class="NB-feed-story-author-wrapper">\
+                            <span class="NB-middot">&middot;</span>\
+                            <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                                <%= story.story_authors() %>\
+                            </span>\
+                        </div>\
+                    <% } %>\
+                    <% if (story.get("story_tags", []).length) { %>\
+                        <div class="NB-feed-story-tags">\
+                            <span class="NB-middot">&middot;</span>\
+                            <% _.each(story.get("story_tags"), function(tag) { %>\
+                                <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                                    <%= tag %>\
+                                </div>\
+                            <% }) %>\
+                        </div>\
+                    <% } %>\
                 </div>\
-                <% if (story.story_authors()) { %>\
-                    <div class="NB-feed-story-author-wrapper">\
-                        <span class="NB-middot">&middot;</span>\
-                        <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
-                            <%= story.story_authors() %>\
-                        </span>\
-                    </div>\
-                <% } %>\
-                <% if (story.get("story_tags", []).length) { %>\
-                    <div class="NB-feed-story-tags">\
-                        <span class="NB-middot">&middot;</span>\
-                        <% _.each(story.get("story_tags"), function(tag) { %>\
-                            <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
-                                <%= tag %>\
-                            </div>\
-                        <% }) %>\
-                    </div>\
-                <% } %>\
                 <% if (story.get("starred_date")) { %>\
                     <span class="NB-feed-story-starred-date"><%= story.get("starred_date") %></span>\
                 <% } %>\
@@ -294,6 +299,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     render_story_content: function() {
+        this.$(".NB-feed-story-show-changes-text").text((this.model.get('showing_diff') ? "Hide" : "Show") + " story changes");
         this.$(".NB-feed-story-content").html(this.model.get('story_content'));
     },
     
@@ -692,18 +698,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     show_story_changes: function() {
-        var $button = this.$('.NB-feed-story-show-changes');
-        
-        NEWSBLUR.assets.fetch_story_changes(this.model.get('story_hash'), _.bind(function(data) {
+        NEWSBLUR.assets.fetch_story_changes(this.model.get('story_hash'), !this.model.get('showing_diff'), _.bind(function(data) {
+            this.model.set('showing_diff', !this.model.get('showing_diff'));
             this.model.set('story_content', data.story['story_content']);
-            $button.css('opacity', 1).animate({
-                'width': 0,
-                'opacity': 0
-            }, {
-                'queue': false,
-                'duration': 500
-            });
-            $button.tipsy('hide').tipsy('disable');
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();            
         }, this), function() {
             console.log(['Failed to fetch story changes']);

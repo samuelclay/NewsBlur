@@ -3020,7 +3020,6 @@ body {
 }
 .NB-feed-story .NB-feed-story-header .NB-feed-story-date {
     float: left;
-    clear: left;
     font-size: 11px;
     color: #757B6B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
@@ -3031,18 +3030,27 @@ body {
     color: #959B8B;
     text-shadow: none;
 }
+.NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
+    clear: left;
+}
 .NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes {
-    width: 24px;
-    height: 16px;
+    float: left;
+    font-size: 11px;
+    color: #959B8B;
+/*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
+    font-weight: normal;
+    margin: 0 8px 4px 0;
+    padding-left: 24px;
     background: transparent url('/media/embed/icons/circular/g_icn_modified.png') no-repeat 0 0;
     background-size: 16px;
-    float: left;
-    margin: 1px 0 0px 0px;
-    opacity: .6;
     cursor: pointer;
 }
+.NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes .NB-middot {
+    color: #A0A0A0;
+    padding-left: 4px;
+}
 .NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes:hover {
-    opacity: 1;
+    color: #757B6B;
 }
 
 .NB-feed-story .NB-feed-story-header .NB-feed-story-starred-date {

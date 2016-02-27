@@ -719,9 +719,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_story_changes: function(story_hash, callback, error_callback) {
+    fetch_story_changes: function(story_hash, show_changes, callback, error_callback) {
         this.make_request('/rss_feeds/story_changes', {
-            story_hash: story_hash
+            story_hash: story_hash,
+            show_changes: show_changes
         }, callback, error_callback, {
             'request_type': 'GET'
         });
