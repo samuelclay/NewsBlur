@@ -88,18 +88,19 @@ body {
 .NB-user-tag {
     color: #959B8B;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
-    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    border-color: rgba(186, 186, 186, .1) transparent rgba(0, 0, 0, .4);
 }
 
 .NB-user-tag.NB-add-user-tag {
     background: rgba(0, 0, 0, .25) url("add_tag.png") no-repeat 6px 3px;
-    color: #E5EBDB;
+    background-size: 8px;
+    color: #8B8F86;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
 }
 
 .NB-story-starred-date {
     color: #818776;
-    text-shadow: 0 1px 0 #202020;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
 }
 
 a {
