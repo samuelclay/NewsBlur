@@ -301,6 +301,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     render_story_content: function() {
         this.$(".NB-feed-story-show-changes-text").text((this.model.get('showing_diff') ? "Hide" : "Show") + " story changes");
         this.$(".NB-feed-story-content").html(this.model.get('story_content'));
+        
+        this.attach_handlers();
     },
     
     destroy: function() {
