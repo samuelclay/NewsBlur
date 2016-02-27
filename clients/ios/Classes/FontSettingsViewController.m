@@ -52,7 +52,7 @@
     self.fonts = [NSMutableArray array];
     
     // Leave commented out for future use:
-    [self debugOutputFontNames];
+//    [self debugOutputFontNames];
     
     // Available fonts, in alphabetic order.  Remember to add bundled font filenames to the Info.plist.
     [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir" displayName:nil];
@@ -116,6 +116,7 @@
 }
 
 - (void)debugOutputFontNames {
+    NSLog(@"Debugging font names");
     for (NSString *family in [[UIFont familyNames] sortedArrayUsingSelector:@selector(compare:)]) {
         NSLog(@"%@", family);
         
