@@ -18,7 +18,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
         "contextmenu .NB-feed-story-header"     : "show_manage_menu_rightclick",
         "click .NB-feed-story-manage-icon"      : "show_manage_menu",
-        "click .NB-feed-story-hide-changes"     : "hide_story_changes",
+        "click .NB-feed-story-show-changes"     : "show_story_changes",
         "click .NB-feed-story-header-title"     : "open_feed",
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
@@ -38,6 +38,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.model.bind('change:shared', this.render_comments, this);
         this.model.bind('change:comments', this.render_comments, this);
+        this.model.bind('change:story_content', this.render_story_content, this);
         if (this.collection) {
             this.collection.bind('render:intelligence', this.render_intelligence, this);
         }
@@ -163,9 +164,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
                 <div class="NB-feed-story-date">\
-                    <% if (story.has_modifications()) { %>\
-                        <div class="NB-feed-story-hide-changes" \
-                             title="<%= NEWSBLUR.assets.preference("show_changes") ? "Hide" : "Show" %> story modifications">\
+                    <% if (story.get("has_modifications")) { %>\
+                        <div class="NB-feed-story-show-changes" \
+                             title="Show story modifications">\
                         </div>\
                     <% } %>\
                     <%= story.formatted_long_date() %>\
@@ -292,6 +293,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
     
+    render_story_content: function() {
+        this.$(".NB-feed-story-content").html(this.model.get('story_content'));
+    },
+    
     destroy: function() {
         // console.log(["destroy story detail", this.model.get('story_title')]);
         clearTimeout(this.truncate_delay_function);
@@ -353,7 +358,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 delayIn: 375,
                 gravity: 's'
             });
-            this.$('.NB-feed-story-hide-changes').tipsy({
+            this.$('.NB-feed-story-show-changes').tipsy({
                 delayIn: 375
             });
         }
@@ -686,27 +691,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return false;
     },
     
-    hide_story_changes: function() {
-        var $button = this.$('.NB-feed-story-hide-changes');
+    show_story_changes: function() {
+        var $button = this.$('.NB-feed-story-show-changes');
         
-        if (NEWSBLUR.assets.preference('show_changes')) {
-            this.$el.addClass('NB-story-hide-changes');
-            // this.$('ins').css({'text-decoration': 'underline'});
-            // this.$('del').css({'display': 'inline'});
-        } else {
-            this.$el.addClass('NB-story-show-changes');
-            // this.$('ins').css({'text-decoration': 'none'});
-            // this.$('del').css({'display': 'none'});
-        }
-        $button.css('opacity', 1).animate({
-            'width': 0,
-            'opacity': 0
-        }, {
-            'queue': false,
-            'duration': 500
+        NEWSBLUR.assets.fetch_story_changes(this.model.get('story_hash'), _.bind(function(data) {
+            this.model.set('story_content', data.story['story_content']);
+            $button.css('opacity', 1).animate({
+                'width': 0,
+                'opacity': 0
+            }, {
+                'queue': false,
+                'duration': 500
+            });
+            $button.tipsy('hide').tipsy('disable');
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();            
+        }, this), function() {
+            console.log(['Failed to fetch story changes']);
         });
-        $button.tipsy('hide').tipsy('disable');
-        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
     },
     
     open_feed: function() {

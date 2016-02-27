@@ -711,30 +711,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Open links'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-showstorychanges' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showstorychanges-1', type: 'radio', name: 'show_changes', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-showstorychanges-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_modified.png' }),
-                                    'Show ',
-                                    $.make('del', 'changes'),
-                                    ' ',
-                                    $.make('ins', 'revisions'),
-                                    ' in stories'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showstorychanges-2', type: 'radio', name: 'show_changes', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showstorychanges-2' }, [
-                                    'Hide changes and only show the final story'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Story changes'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-fullwidthdstory' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -1073,12 +1049,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=read_story_delay]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.read_story_delay) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
-        $('input[name=show_changes]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.show_changes) {
                 $(this).attr('checked', true);
                 return false;
             }

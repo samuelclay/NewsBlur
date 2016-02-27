@@ -530,3 +530,17 @@ def original_story(request):
     original_page = story.fetch_original_page(force=force, request=request, debug=debug)
 
     return HttpResponse(original_page or "")
+
+@required_params('story_hash')
+@json.json_view
+def story_changes(request):
+    story_hash = request.REQUEST.get('story_hash', None)
+    story, _ = MStory.find_story(story_hash=story_hash)
+    if not story:
+        logging.user(request, "~FYFetching ~FGoriginal~FY story page: ~FRstory not found")
+        return {'code': -1, 'message': 'Story not found.', 'original_page': None, 'failed': True}
+    
+    return {
+        'story': Feed.format_story(story, show_changes=True)
+    }
+    

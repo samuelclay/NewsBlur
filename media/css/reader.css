@@ -3031,7 +3031,7 @@ body {
     color: #959B8B;
     text-shadow: none;
 }
-.NB-feed-story .NB-feed-story-header .NB-feed-story-hide-changes {
+.NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes {
     width: 24px;
     height: 16px;
     background: transparent url('/media/embed/icons/circular/g_icn_modified.png') no-repeat 0 0;
@@ -3041,7 +3041,7 @@ body {
     opacity: .6;
     cursor: pointer;
 }
-.NB-feed-story .NB-feed-story-header .NB-feed-story-hide-changes:hover {
+.NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes:hover {
     opacity: 1;
 }
 
@@ -3068,26 +3068,14 @@ body {
 .NB-feed-story .NB-narrow-content .NB-feed-story-content {
     margin-right: 28px;
 }
-.NB-pref-hide-changes .NB-feed-story-content ins,
-.NB-story-hide-changes .NB-feed-story-content ins {
-    text-decoration: none;
-    color: inherit;
-}
-.NB-pref-hide-changes .NB-feed-story-content del,
-.NB-story-hide-changes .NB-feed-story-content del {
-    display: none;
-}
 .NB-modal-preferences ins,
-.NB-feed-story-content ins,
-.NB-pref-hide-changes .NB-story-show-changes .NB-feed-story-content ins {
-    text-decoration: underline;
-    color: #27652F;
+.NB-feed-story-content ins {
+    background-color: #BEE8BC;
+    text-decoration: none;
 }
 .NB-modal-preferences del,
-.NB-feed-story-content del,
-.NB-pref-hide-changes .NB-story-show-changes .NB-feed-story-content del {
-    display: inline;
-    color: #861616;
+.NB-feed-story-content del {
+    background-color: #eb9c9f;
 }
 
 /* =========================== */

@@ -515,11 +515,11 @@ header {
 .NB-story-content del {
     display: none;
 }
-.NB-pref-show-changes .NB-story-content ins {
+.NB-story-content ins {
     text-decoration: underline;
     color: #27452D;
 }
-.NB-pref-show-changes .NB-story-content del {
+.NB-story-content del {
     display: block;
     color: #661616;
 }
