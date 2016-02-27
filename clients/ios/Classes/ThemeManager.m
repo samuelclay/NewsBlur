@@ -47,7 +47,6 @@ NSString * const ThemeStyleDark = @"dark";
     
     if (![self isValidTheme:theme]) {
         theme = ThemeStyleLight;
-        self.theme = theme;
     }
     
     return theme;
@@ -155,7 +154,7 @@ NSString * const ThemeStyleDark = @"dark";
     CGFloat blue = ((rgbValue & 0xFF)) / 255.0;
     
     // Debug method to log all of the unique colors; leave commented out
-    //    [self debugColor:rgbValue]; 
+//        [self debugColor:rgbValue]; 
     
     if ([theme isEqualToString:ThemeStyleDark]) {
         return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
@@ -218,14 +217,15 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)setupTheme {
-    [UINavigationBar appearance].tintColor = UIColorFromRGB(0x0);
-    [UINavigationBar appearance].barTintColor = UIColorFromRGB(0xE3E6E0);
-    [UIToolbar appearance].barTintColor = UIColorFromRGB(0xE3E6E0);
-    [UISegmentedControl appearance].tintColor = UIColorFromRGB(0x8F918B);
+    [UINavigationBar appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x0, 0x0, 0x9a8f73, 0x9a8f73);
+    [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x6A6A6A, 0x424242);
+    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x6A6A6A, 0x424242);
+    [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8F918B, 0x8F918B, 0x8F918B);
     
     UIBarStyle style = self.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     
     [UINavigationBar appearance].barStyle = style;
+    [UINavigationBar appearance].translucent = YES;
     self.appDelegate.navigationController.navigationBar.barStyle = style;
 }
 

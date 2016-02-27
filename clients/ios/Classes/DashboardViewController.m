@@ -106,7 +106,7 @@
 }
 
 - (void)updateTheme {
-    self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.topToolbar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xE3E6E0, 0xE3E6E0, 0xE3E6E0);
     self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
     self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
     

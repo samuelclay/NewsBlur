@@ -958,12 +958,12 @@ static UIFont *userLabelFont;
     
     [self.appDelegate hidePopoverAnimated:YES];
     
-    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
-    self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.navigationController.toolbar.tintColor = UIColorFromRGB(0x8F918B);
-    self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.feedViewToolbar.tintColor = UIColorFromRGB(0x8F918B);
-    self.feedViewToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationController.toolbar.tintColor = [UIToolbar appearance].tintColor;
+    self.navigationController.toolbar.barTintColor = [UIToolbar appearance].barTintColor;
+    self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+    self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.intelligenceControl.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
