@@ -344,7 +344,7 @@ static UIFont *indicatorFont = nil;
     int storyAuthorDateY = r.size.height - 18;
     
     if (cell.isRead) {
-        textColor = UIColorFromLightSepiaMediumDarkRGB(0xBABDD1, 0xBABDD1, 0x52535d, 0x25262A);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0xBABDD1, 0xBABDD1, 0x52535d, 0x21366e);
         font = [UIFont fontWithName:@"Helvetica" size:10];
     } else {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x262C6C, 0x262C6C, 0x363C5C, 0x21468e);
