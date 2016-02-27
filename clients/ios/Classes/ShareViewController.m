@@ -137,6 +137,8 @@
     
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
+    self.storyTitle.textColor = UIColorFromRGB(0x404040);
+    self.storyTitle.shadowColor = UIColorFromRGB(0xF0F0F0);
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]
