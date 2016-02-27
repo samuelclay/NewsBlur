@@ -19,7 +19,7 @@ body {
     color: #bbbbbb;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#606060));
     border-bottom: 1px solid #535353;
-    text-shadow: 0 1px 0 rgba(12, 12, 12, .4);
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -30,11 +30,11 @@ body {
 
 .NB-story-title-positive {
     color: #6DB764;
-    text-shadow: 0 1px 0 #202020;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 .NB-story-title-negative {
     color: #D07C80;
-    text-shadow: 0 1px 0 #202020;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 
 .NB-story-permalink {
@@ -42,7 +42,7 @@ body {
 }
 .NB-story-date {
     color: #c6c6c6;
-    text-shadow: 0 1px 0 #202020;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 }
 
 .NB-middot {
@@ -51,32 +51,34 @@ body {
 
 .NB-story-author {
     color: #c6c6c6;
-    text-shadow: 0 1px 0 #202020;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 }
 .NB-story-author-positive {
     color: #58A353;
-    text-shadow: 0 1px 0 #202020;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 .NB-story-author-negative {
     color: #B85044;
-    text-shadow: 0 1px 0 #202020;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 
 .NB-story-tag {
     background-color: rgba(40, 40, 40, .2);
     color: #959B8B;
     text-shadow: 0 1px 0 #505050;
-    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    border-color: rgba(186, 186, 186, .2) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag-positive {
     background-color: #88B383;
     color: white;
     text-shadow: 0 1px 0 #588353;
+    border-color: rgba(255, 255, 255, .2) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag-negative {
     background-color: #C89094;
     color: white;
     text-shadow: 0 1px 0 #986064;
+    border-color: rgba(255, 255, 255, .2) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag .NB-highlight,
 .NB-user-tag .NB-highlight,
@@ -103,14 +105,15 @@ body {
 }
 
 a {
-    color: #6EB0EE;
+    color: #A2C8F8;
 }
 a:active {
-    color: #82301A;
+    color: #F99D8A;
 }
 
 .NB-story blockquote {
-    color: #C8CABC;
+    border-left-color: #676264;
+    background-color: #6c696a;
 }
 
 /* Comments */
