@@ -34,7 +34,7 @@ from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_f
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
-from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
+from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics
 # from apps.search.models import SearchStarredStory
@@ -274,6 +274,8 @@ def load_feeds(request):
     if not starred_count and len(starred_counts):
         starred_count = MStarredStory.objects(user_id=user.pk).count()
     
+    saved_searches = MSavedSearch.user_searches(user.pk)
+    
     social_params = {
         'user_id': user.pk,
         'include_favicon': include_favicons,
@@ -301,6 +303,7 @@ def load_feeds(request):
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
         'starred_counts': starred_counts,
+        'saved_searches': saved_searches,
         'categories': categories
     }
     return data

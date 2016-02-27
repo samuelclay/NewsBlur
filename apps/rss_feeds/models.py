@@ -2599,7 +2599,43 @@ class MStarredStoryCounts(mongo.Document):
         if story_count and story_count.count <= 0:
             story_count.delete()
 
+class MSavedSearch(mongo.Document):
+    user_id = mongo.IntField()
+    query = mongo.StringField(max_length=1024)
+    feed_id = mongo.IntField()
+    folder = mongo.StringField()
+    slug = mongo.StringField(max_length=128)
 
+    meta = {
+        'collection': 'saved_searches',
+        'indexes': ['user_id'],
+        'ordering': ['query'],
+        'allow_inheritance': False,
+    }
+
+    @property
+    def rss_url(self, secret_token=None):
+        if not secret_token:
+            user = User.objects.select_related('profile').get(pk=self.user_id)
+            secret_token = user.profile.secret_token
+        
+        slug = self.slug if self.slug else ""
+        return "%s/reader/saved_search/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
+                                                   secret_token, slug)
+    
+    @classmethod
+    def user_searches(cls, user_id):
+        searches = cls.objects.filter(user_id=user_id)
+        searches = sorted([{'query': s.query, 
+                            'count': s.count, 
+                            'feed_address': s.rss_url, 
+                            'feed_id': s.feed_id,
+                            'folder': s.folder,
+                           } for s in searches],
+                          key=lambda x: (x.get('query', '') or '').lower())
+        return searches
+    
+    
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()

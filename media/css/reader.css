@@ -11641,7 +11641,7 @@ form.opml_import_form input {
     font-weight: bold;
     background: transparent;
     width: 82%;
-    padding: 2px 18px 1px 18px;
+    padding: 2px 52px 1px 18px;
     margin: 0;
     display: block;
     font-size: 11px;
@@ -11683,10 +11683,35 @@ form.opml_import_form input {
     -ms-transition: all .22s ease-in-out;
 }
 
+.NB-search-save {
+    display: none;
+    position: absolute;
+    right: 16px;
+    top: 3px;
+    z-index: 1;
+    height: 10px;
+    background-color: #c9cac5;
+    border-radius: 2px;
+    color: #FFFFFF;
+    padding: 1px 6px;
+    font-size: 8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    opacity: .7;
+    -webkit-transition: all .22s ease-in-out;
+    -moz-transition: all .22s ease-in-out;
+    -o-transition: all .22s ease-in-out;
+    -ms-transition: all .22s ease-in-out;
+}
+.NB-search-save:hover {
+    opacity: 1;
+}
+
 .NB-search-close:hover {
     opacity: 1;
 }
-.NB-searching .NB-search-close {
+.NB-searching .NB-search-close,
+.NB-searching .NB-search-save {
     display: block;
 }
 .NB-search-container {
@@ -11707,7 +11732,7 @@ form.opml_import_form input {
     margin: 0;
 }
 .NB-searching .NB-story-title-search-input {
-    width: 174px;
+    width: 154px;
 }
 
 /* ================== */

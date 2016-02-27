@@ -40,6 +40,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.starred_feeds.bind('reset', _.bind(function(models, options) {
             this.make_starred_tags(options);
         }, this));
+        NEWSBLUR.assets.searches_feeds.bind('reset', _.bind(function(models, options) {
+            this.make_saved_searches(options);
+        }, this));
         NEWSBLUR.assets.social_feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.starred_feeds.bind('change:selected', this.scroll_to_selected, this);
@@ -199,6 +202,36 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
         var collapsed = NEWSBLUR.app.sidebar.check_starred_collapsed({skip_animation: true});
         $starred_feeds.animate({'opacity': 1}, {'duration': (collapsed || options.update) ? 0 : 700});
+    },
+    
+    make_saved_searches: function(options) {
+        options = options || {};
+        var $searches_feeds = $('.NB-searches-feeds', this.$s.$searches_feeds);
+        var $feeds = _.compact(NEWSBLUR.assets.searches_feeds.map(function(feed) {
+            var feed_view = new NEWSBLUR.Views.FeedTitleView({
+                model: feed, 
+                type: 'feed', 
+                depth: 0,
+                saved_search: true
+            }).render();
+            feed.views.push(feed_view);
+            return feed_view.el;
+        }));
+
+        $searches_feeds.empty().css({
+            'display': 'block', 
+            'opacity': options.update ? 1 : 0
+        });            
+        $searches_feeds.html($feeds);
+        if (NEWSBLUR.assets.searches_feeds.length) {
+            $('.NB-feeds-header-searches-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({'opacity': 1}, {'duration': options.update ? 0 : 700});
+        }
+
+        var collapsed = NEWSBLUR.app.sidebar.check_searches_collapsed({skip_animation: true});
+        $searches_feeds.animate({'opacity': 1}, {'duration': (collapsed || options.update) ? 0 : 700});
     },
     
     load_router: function() {

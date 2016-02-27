@@ -15,6 +15,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
         this.starred_feeds = new NEWSBLUR.Collections.StarredFeeds();
+        this.searches_feeds = new NEWSBLUR.Collections.SearchesFeeds();
         this.queued_read_stories = {};
         this.classifiers = {};
         this.friends = {};
@@ -442,6 +443,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.folders.reset(_.compact(subscriptions.folders), {parse: true});
             self.starred_count = subscriptions.starred_count;
             self.starred_feeds.reset(subscriptions.starred_counts, {parse: true});
+            self.searches_feeds.reset(subscriptions.saved_searches, {parse: true});
             self.social_feeds.reset(subscriptions.social_feeds, {parse: true});
             self.user_profile.set(subscriptions.social_profile);
             self.social_services = subscriptions.social_services;
@@ -941,6 +943,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             return this.social_feeds.get(feed_id);
         } else if (_.string.startsWith(feed_id, 'starred:')) {
             return this.starred_feeds.get(feed_id);
+        } else if (_.string.startsWith(feed_id, 'search:')) {
+            return this.searches_feeds.get(feed_id);
         } else {
             return this.feeds.get(feed_id);
         }
@@ -971,6 +975,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         return this.starred_feeds;
+    },
+    
+    get_searches_feeds: function() {
+        var self = this;
+        
+        return this.searches_feeds;
     },
     
     get_folders: function() {

@@ -27,6 +27,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             <input type="text" name="feed_search" class="NB-story-title-search-input NB-search-input" value="<%= search %>" />\
             <div class="NB-search-icon"></div>\
             <div class="NB-search-close"></div>\
+            <div class="NB-search-save">Save</div>\
         ', {
             search: NEWSBLUR.reader.flags['search']
         }));

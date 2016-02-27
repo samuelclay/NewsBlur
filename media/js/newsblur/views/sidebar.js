@@ -49,6 +49,37 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         }
     },
     
+    check_searches_collapsed: function(options) {
+        options = options || {};
+        var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, 'searches');
+        
+        if (collapsed) {
+            this.show_collapsed_searches(options);
+        }
+        
+        return collapsed;
+    },
+    
+    show_collapsed_searches: function(options) {
+        options = options || {};
+        var $header = NEWSBLUR.reader.$s.$starred_header;
+        var $folder = this.$('.NB-starred-folder');
+        
+        $header.addClass('NB-folder-collapsed');
+        
+        if (!options.skip_animation) {
+            $header.addClass('NB-feedlist-folder-title-recently-collapsed');
+            $header.one('mouseover', function() {
+                $header.removeClass('NB-feedlist-folder-title-recently-collapsed');
+            });
+        } else {
+            $folder.css({
+                display: 'none',
+                opacity: 0
+            });
+        }
+    },
+    
     check_river_blurblog_collapsed: function(options) {
         options = options || {};
         var show_folder_counts = NEWSBLUR.assets.preference('folder_counts');
