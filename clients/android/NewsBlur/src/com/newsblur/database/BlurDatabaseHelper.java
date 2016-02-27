@@ -32,6 +32,7 @@ import com.newsblur.util.StoryOrder;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -120,19 +121,36 @@ public class BlurDatabaseHelper {
         return feedIds;
     }
 
-    public void cleanupStories(boolean keepOldStories) {
-        // story cleanup happens at a low priority in the background. the goal here is to lock
-        // the DB for as short a time as possible, not absolute efficiency.
-        for (String feedId : getAllFeeds()) {
-            String q = "DELETE FROM " + DatabaseConstants.STORY_TABLE + 
-                       " WHERE " + DatabaseConstants.STORY_ID + " IN " +
-                       "( SELECT " + DatabaseConstants.STORY_ID + " FROM " + DatabaseConstants.STORY_TABLE +
-                       " WHERE " + DatabaseConstants.STORY_READ + " = 1" + // don't cleanup unreads
-                       " AND " + DatabaseConstants.STORY_FEED_ID + " = " + feedId +
-                       " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
-                       " LIMIT -1 OFFSET " + (keepOldStories ? AppConstants.MAX_READ_STORIES_STORED : 0) +
-                       ")";
-            synchronized (RW_MUTEX) {dbRW.execSQL(q);}
+    /**
+     * Clean up stories from more than a month ago. This is the oldest an unread can be,
+     * and a good cutoff point for what it is sane for us to store for users that ask
+     * us to keep a copy of read stories.  This is necessary primarily to catch any
+     * stories that get missed by cleanupReadStories() because their read state might
+     * not have been correctly resolved and they get orphaned in the DB.
+     */
+    public void cleanupVeryOldStories() {
+        Calendar cutoffDate = Calendar.getInstance();
+        cutoffDate.add(Calendar.MONTH, -1);
+        synchronized (RW_MUTEX) {
+            int count = dbRW.delete(DatabaseConstants.STORY_TABLE, 
+                        DatabaseConstants.STORY_TIMESTAMP + " < ?" +
+                        " AND " + DatabaseConstants.STORY_TEXT_STORY_HASH + " NOT IN " +
+                        "( SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")",
+                        new String[]{Long.toString(cutoffDate.getTime().getTime())});
+        }
+    }
+
+    /**
+     * Clean up stories that have already been read, unless they are being actively
+     * displayed to the user.
+     */
+    public void cleanupReadStories() {
+        synchronized (RW_MUTEX) {
+            int count = dbRW.delete(DatabaseConstants.STORY_TABLE, 
+                        DatabaseConstants.STORY_READ + " = 1" +
+                        " AND " + DatabaseConstants.STORY_TEXT_STORY_HASH + " NOT IN " +
+                        "( SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")",
+                        null);
         }
     }
 
@@ -237,12 +255,14 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
-    public List<String> getUnreadStoryHashes() {
+    // note method name: this gets a set rather than a list, in case the caller wants to
+    // spend the up-front cost of hashing for better lookup speed rather than iteration!
+    public Set<String> getUnreadStoryHashesAsSet() {
         String q = "SELECT " + DatabaseConstants.STORY_HASH + 
                    " FROM " + DatabaseConstants.STORY_TABLE +
                    " WHERE " + DatabaseConstants.STORY_READ + " = 0" ;
         Cursor c = dbRO.rawQuery(q, null);
-        List<String> hashes = new ArrayList<String>(c.getCount());
+        Set<String> hashes = new HashSet<String>(c.getCount());
         while (c.moveToNext()) {
            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
         }
@@ -418,7 +438,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_LAST_READ_DATE + " < 1 AND " + DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
-    public void markStoryHashesRead(List<String> hashes) {
+    public void markStoryHashesRead(Collection<String> hashes) {
         // NOTE: attempting to wrap these updates in a transaction for speed makes them silently fail
         for (String hash : hashes) {
             setStoryReadState(hash, true);

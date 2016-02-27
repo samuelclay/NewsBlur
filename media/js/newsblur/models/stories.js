@@ -47,6 +47,11 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         }
     },
     
+    story_authors: function() {
+        return this.get('story_authors').replace(/</g, '&lt;')
+                                        .replace(/>/g, '&gt;');
+    },
+    
     formatted_short_date: function() {
         var timestamp = this.get('story_timestamp');
         var dateformat = NEWSBLUR.assets.preference('dateformat');

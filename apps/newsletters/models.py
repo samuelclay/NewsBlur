@@ -39,6 +39,11 @@ class EmailNewsletter:
             logging.user(user, "~FCCreating newsletter feed: ~SB%s" % (feed))
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(user.username, 'reload:%s' % feed.pk)
+        
+        if feed.feed_title != sender_name:
+            feed.feed_title = sender_name
+            feed.save()
+        
         try:
             usersub = UserSubscription.objects.get(user=user, feed=feed)
         except UserSubscription.DoesNotExist:
@@ -56,7 +61,7 @@ class EmailNewsletter:
             "story_date": datetime.datetime.fromtimestamp(int(params['timestamp'])),
             "story_title": params['subject'],
             "story_content": story_content,
-            "story_author_name": escape(params['from']),
+            "story_author_name": params['from'],
             "story_permalink": reverse('newsletter-story', 
                                        kwargs={'story_hash': story_hash}),
             "story_guid": params['signature'],
@@ -101,7 +106,9 @@ class EmailNewsletter:
         # if not tokens:
         #     name, domain = params['sender'].split('@')
         #     return name, sender, domain
-        return tokens.group(1), tokens.group(2), tokens.group(3)
+        sender_name, sender_username, sender_domain = tokens.group(1), tokens.group(2), tokens.group(3)
+        sender_name = sender_name.replace('"', '')
+        return sender_name, sender_username, sender_domain
     
     def get_content(self, params):
         if 'body-html' in params:
