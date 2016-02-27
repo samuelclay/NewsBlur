@@ -1454,13 +1454,17 @@ class Feed(models.Model):
             story_db.story_content_z = story_db.story_content_z.decode('base64')
         
         story_content = ''
+        latest_story_content = None
         has_changes = False
-        if story_db.story_latest_content_z:
-            if not show_changes:
-                story_content = smart_unicode(zlib.decompress(story_db.story_latest_content_z))
-            has_changes = True
-        if not story_content and story_db.story_content_z:
+        if not show_changes and story_db.story_latest_content_z:
+            latest_story_content = smart_unicode(zlib.decompress(story_db.story_latest_content_z))
+        if story_db.story_content_z:
             story_content = smart_unicode(zlib.decompress(story_db.story_content_z))
+        
+        if '<ins' in story_content or '<del' in story_content:
+            has_changes = True
+        if not show_changes and latest_story_content:
+            story_content = latest_story_content
             
         story                     = {}
         story['story_hash']       = getattr(story_db, 'story_hash', None)
