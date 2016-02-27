@@ -389,8 +389,6 @@ body.NB-iphone {
 }
 
 .NB-user-tag.NB-add-user-tag {
-    text-transform: uppercase;
-    font-size: .9em;
     background: rgba(0, 0, 0, .25) url("add_tag.png") no-repeat 6px 3px;
     background-size: 8px;
     color: #E5EBDB;
