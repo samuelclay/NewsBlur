@@ -3073,9 +3073,15 @@ body {
     background-color: #BEE8BC;
     text-decoration: none;
 }
+.NB-feed-story-content ins img {
+    border: 3px solid #BEE8BC;
+}
 .NB-modal-preferences del,
 .NB-feed-story-content del {
-    background-color: #eb9c9f;
+    background-color: #f5c3c3;
+}
+.NB-feed-story-content del img {
+    border: 3px solid #f5c3c3;
 }
 
 /* =========================== */
