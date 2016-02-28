@@ -439,9 +439,18 @@ public class BlurDatabaseHelper {
     }
 
     public void markStoryHashesRead(Collection<String> hashes) {
-        // NOTE: attempting to wrap these updates in a transaction for speed makes them silently fail
-        for (String hash : hashes) {
-            setStoryReadState(hash, true);
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.STORY_READ, true);
+                for (String hash : hashes) {
+                    dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
         }
     }
 
