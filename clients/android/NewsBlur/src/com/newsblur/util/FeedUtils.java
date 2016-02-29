@@ -94,20 +94,6 @@ public class FeedUtils {
         }.execute();
     }
 
-    public static void clearReadingSession() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                try {
-                    dbHelper.clearStorySession();
-                } catch (Exception e) {
-                    ; // this one call can evade the on-upgrade DB wipe and throw exceptions
-                }
-                return null;
-            }
-        }.execute();
-    }
-
     public static void markStoryUnread(final Story story, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override

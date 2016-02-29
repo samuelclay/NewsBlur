@@ -33,9 +33,6 @@
     
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
 	
-	<string name="reading_shared_count">%s shares</string>
-	<string name="reading_comment_count">%s comments</string>
-	
 	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_shared_stories">ALL SHARED STORIES</string>
     <string name="global_shared_stories">GLOBAL SHARED STORIES</string>

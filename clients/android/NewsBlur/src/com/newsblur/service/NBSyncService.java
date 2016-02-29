@@ -108,6 +108,9 @@ public class NBSyncService extends Service {
     /** Feed to reset to zero-state, so it is fetched fresh, presumably with new filters. */
     private static FeedSet ResetFeed;
 
+    /** Flag to reset the reading session table. */
+    private static boolean ResetSession = false;
+
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
@@ -587,6 +590,15 @@ public class NBSyncService extends Service {
             ResetFeed = null;
         }
 
+        synchronized (PENDING_FEED_MUTEX) {
+            if (ResetSession) {
+                // the next fetch will be the start of a new reading session; clear it so it
+                // will be re-primed
+                dbHelper.clearStorySession();
+                ResetSession = false;
+            }
+        }
+
         FeedSet fs = PendingFeed;
         boolean finished = false;
         if (fs == null) {
@@ -877,9 +889,14 @@ public class NBSyncService extends Service {
         return true;
     }
 
-    public static void clearPendingStoryRequest() {
+    /**
+     * Gracefully stop the loading of the current FeedSet, and set a flag so that the reading
+     * session gets cleared before the next one is populated.
+     */
+    public static void resetReadingSession() {
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
+            ResetSession = true;
         }
     }
 
@@ -918,7 +935,7 @@ public class NBSyncService extends Service {
      * Resets any internal temp vars or queues. Called when switching accounts.
      */
     public static void clearState() {
-        clearPendingStoryRequest();
+        resetReadingSession();
         FollowupActions.clear();
         RecountCandidates.clear();
         ExhaustedFeeds.clear();
