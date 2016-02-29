@@ -21,13 +21,14 @@ p, div, table {
 	line-height: 1.5em;
 }
 
-p, a, table, video, embed, object, iframe, div, figure, dl, dt {
+p, a, table, video, embed, object, iframe, div, figure, dl, dt, center {
     /* virtually all story content wants to be the wrong size for our viewport, so try to fit them horizontally, as we
        can only scroll in vertical. however, do not auto-set height for these, as they tend to ratio down to something
        tiny before dynamic content is done loading. these types will resize well, but exclude images, which distort. */
 	width: auto !important;
     max-width: none !important;
     margin: 0px !important;
+    min-width: 0px !important;
 }
 
 img {
