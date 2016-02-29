@@ -170,11 +170,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% } %>\
                     <%= story.formatted_long_date() %>\
                 </div>\
-                <% if (story.get("story_authors")) { %>\
+                <% if (story.story_authors()) { %>\
                     <div class="NB-feed-story-author-wrapper">\
                         <span class="NB-middot">&middot;</span>\
                         <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
-                            <%= story.get("story_authors") %>\
+                            <%= story.story_authors() %>\
                         </span>\
                     </div>\
                 <% } %>\
