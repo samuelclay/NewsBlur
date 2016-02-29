@@ -173,14 +173,18 @@ def check_share_on_site(request, token):
         except Profile.DoesNotExist:
             code = -1
     
+    logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % rss_url)
     feed = Feed.get_feed_from_url(rss_url, create=False, fetch=False)
     if not feed:
+        logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % story_url)
         feed = Feed.get_feed_from_url(story_url, create=False, fetch=False)
     if not feed:
         parsed_url = urlparse.urlparse(story_url)
         base_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.hostname, parsed_url.path)
+        logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % base_url)
         feed = Feed.get_feed_from_url(base_url, create=False, fetch=False)
     if not feed:
+        logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % (base_url + '/'))
         feed = Feed.get_feed_from_url(base_url+'/', create=False, fetch=False)
     
     if feed and user:
@@ -271,8 +275,10 @@ def share_story(request, token=None):
         feed = Feed.get_by_id(feed_id)
     else:
         if rss_url:
+            logging.user(request.user, "~FBFinding feed (share_story): %s" % rss_url)
             feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
         if not feed:
+            logging.user(request.user, "~FBFinding feed (share_story): %s" % story_url)
             feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
         if feed:
             feed_id = feed.pk

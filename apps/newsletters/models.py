@@ -61,7 +61,7 @@ class EmailNewsletter:
             "story_date": datetime.datetime.fromtimestamp(int(params['timestamp'])),
             "story_title": params['subject'],
             "story_content": story_content,
-            "story_author_name": escape(params['from']),
+            "story_author_name": params['from'],
             "story_permalink": reverse('newsletter-story', 
                                        kwargs={'story_hash': story_hash}),
             "story_guid": params['signature'],
