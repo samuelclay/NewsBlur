@@ -23,30 +23,6 @@ public class ViewUtils {
     private static Drawable tag_green_background, tag_red_background;
     private static int tag_green_text, tag_red_text;
 
-	public static void setupShareCount(Context context, View storyView, int sharedUserCount) {
-		String sharedBy = context.getResources().getString(R.string.reading_shared_count);
-		TextView sharesText = (TextView) storyView.findViewById(R.id.shared_by);
-		if (sharedUserCount > 0) {
-			sharedBy = String.format(sharedBy, sharedUserCount);
-			sharesText.setText(sharedUserCount > 1 ? sharedBy : sharedBy.substring(0, sharedBy.length() - 1));
-		} else {
-			sharesText.setVisibility(View.INVISIBLE);
-		}
-
-	}
-	
-	public static void setupCommentCount(Context context, View storyView, int sharedCommentCount) {
-        if (context == null || context.getResources() == null) return;
-		String commentsBy = context.getResources().getString(R.string.reading_comment_count);
-		TextView sharesText = (TextView) storyView.findViewById(R.id.comment_by);
-		if (sharedCommentCount > 0) {
-			commentsBy = String.format(commentsBy, sharedCommentCount);
-			sharesText.setText(sharedCommentCount > 1 ? commentsBy : commentsBy.substring(0, commentsBy.length() - 1));
-		} else {
-			sharesText.setVisibility(View.INVISIBLE);
-		}
-	}
-
 	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId) {
 		ImageView image = new ImageView(context);
 		int imageLength = UIUtils.dp2px(context, 15);
