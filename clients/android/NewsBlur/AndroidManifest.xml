@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Android v4.8.0b2.
     android:versionCode="120"
     android:versionName="4.8.0b2" >
 =======
