@@ -150,6 +150,7 @@
         // ========
         
         logout: function() {
+            console.log(['Logout']);
             window.location.href = "/reader/logout";
         },
         
@@ -5909,13 +5910,15 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
+                
                 if (!$t.hasClass('NB-disabled')) {
                     self.logout();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-account' }, function($t, $p){
                 e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
+                
+                if (!$t.hasClass('NB-disabled') && !$($t.context).hasClass('NB-menu-manage-logout')) {
                     $.modal.close(function() {
                         self.open_account_modal();
                     });
