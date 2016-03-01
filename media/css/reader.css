@@ -3041,7 +3041,7 @@ body {
     font-weight: normal;
     margin: 0 8px 4px 0;
     padding-left: 24px;
-    background: transparent url('/media/embed/icons/circular/g_icn_modified.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_modified.png') no-repeat 0 center;
     background-size: 16px;
     cursor: pointer;
 }
