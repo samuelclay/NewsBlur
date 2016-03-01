@@ -185,10 +185,10 @@
 }
 
 .NB-iphone .NB-story {
-    padding: 12px 12px;
+    padding: 0 12px 12px;
 }
 
-.NB-iphone .NB-share-inner-wrapper {
+.NB-iphone .NB-share-inner-wrapper {g
     margin: 0 12px;
 }
 /*
@@ -462,7 +462,7 @@ div + p {
 }
 
 .NB-story p {
-    margin: 0px 0px 20px 0;
+    margin: 20px 0px 20px 0;
     clear: both;
 }
 
