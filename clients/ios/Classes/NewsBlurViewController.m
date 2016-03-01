@@ -1289,6 +1289,10 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag {
+    if (self.appDelegate.inFeedDetail) {
+        return;
+    }
+    
     // reset pointer to the cells
     self.currentRowAtIndexPath = nil;
     self.currentSection = tag;
