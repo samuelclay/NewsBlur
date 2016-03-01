@@ -2173,6 +2173,7 @@
     popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
     
     if (barButtonItem) {
+        popoverPresentationController.passthroughViews = @[self.navigationControllerForPopover.navigationBar];
         popoverPresentationController.barButtonItem = barButtonItem;
     } else {
         popoverPresentationController.sourceView = sourceView;
