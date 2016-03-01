@@ -3020,7 +3020,6 @@ body {
 }
 .NB-feed-story .NB-feed-story-header .NB-feed-story-date {
     float: left;
-    clear: left;
     font-size: 11px;
     color: #757B6B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
@@ -3031,18 +3030,27 @@ body {
     color: #959B8B;
     text-shadow: none;
 }
-.NB-feed-story .NB-feed-story-header .NB-feed-story-hide-changes {
-    width: 24px;
-    height: 16px;
+.NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
+    clear: left;
+}
+.NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes {
+    float: left;
+    font-size: 11px;
+    color: #959B8B;
+/*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
+    font-weight: normal;
+    margin: 0 8px 4px 0;
+    padding-left: 24px;
     background: transparent url('/media/embed/icons/circular/g_icn_modified.png') no-repeat 0 0;
     background-size: 16px;
-    float: left;
-    margin: 1px 0 0px 0px;
-    opacity: .6;
     cursor: pointer;
 }
-.NB-feed-story .NB-feed-story-header .NB-feed-story-hide-changes:hover {
-    opacity: 1;
+.NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes .NB-middot {
+    color: #A0A0A0;
+    padding-left: 4px;
+}
+.NB-feed-story .NB-feed-story-header .NB-feed-story-show-changes:hover {
+    color: #757B6B;
 }
 
 .NB-feed-story .NB-feed-story-header .NB-feed-story-starred-date {
@@ -3068,26 +3076,20 @@ body {
 .NB-feed-story .NB-narrow-content .NB-feed-story-content {
     margin-right: 28px;
 }
-.NB-pref-hide-changes .NB-feed-story-content ins,
-.NB-story-hide-changes .NB-feed-story-content ins {
-    text-decoration: none;
-    color: inherit;
-}
-.NB-pref-hide-changes .NB-feed-story-content del,
-.NB-story-hide-changes .NB-feed-story-content del {
-    display: none;
-}
 .NB-modal-preferences ins,
-.NB-feed-story-content ins,
-.NB-pref-hide-changes .NB-story-show-changes .NB-feed-story-content ins {
-    text-decoration: underline;
-    color: #27652F;
+.NB-feed-story-content ins {
+    background-color: #BEE8BC;
+    text-decoration: none;
+}
+.NB-feed-story-content ins img {
+    border: 3px solid #BEE8BC;
 }
 .NB-modal-preferences del,
-.NB-feed-story-content del,
-.NB-pref-hide-changes .NB-story-show-changes .NB-feed-story-content del {
-    display: inline;
-    color: #861616;
+.NB-feed-story-content del {
+    background-color: #f5c3c3;
+}
+.NB-feed-story-content del img {
+    border: 3px solid #f5c3c3;
 }
 
 /* =========================== */
@@ -9650,7 +9652,7 @@ form.opml_import_form input {
   vertical-align: middle;
   margin: -4px 6px 0 2px;
 }
-.NB-modal-preferences .NB-preference-hidestorychanges label img {
+.NB-modal-preferences .NB-preference-showstorychanges label img {
   vertical-align: middle;
   margin: -4px 6px 0 2px;
   width: 16px;
