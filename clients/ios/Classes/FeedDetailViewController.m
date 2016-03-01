@@ -109,6 +109,9 @@
     self.storyTitlesTable.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    if ([ThemeManager themeManager].isDarkTheme) {
+        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+    }
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
     [separatorBarButton setEnabled:NO];
     separatorBarButton.isAccessibilityElement = NO;

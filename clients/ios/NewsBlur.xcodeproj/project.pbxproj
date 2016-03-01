@@ -404,6 +404,8 @@
 		FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ED71BAA33BA00725D8A /* NSObject+SBJSON.m */; };
 		FF8D1EDB1BAA3CCD00725D8A /* JNWThrottledBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */; };
 		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
+		FF9DC9E91C85FC3E006097E1 /* bar_separator_dark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9DC9E81C85FC3E006097E1 /* bar_separator_dark@2x.png */; };
+		FF9DC9EB1C860944006097E1 /* bar_separator_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9DC9EA1C860944006097E1 /* bar_separator_dark.png */; };
 		FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */; };
 		FFA045B419CA49D700618DC4 /* SloppySwiper.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045AF19CA49D700618DC4 /* SloppySwiper.m */; };
 		FFA045B519CA49D700618DC4 /* SSWAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045B119CA49D700618DC4 /* SSWAnimator.m */; };
@@ -1085,6 +1087,8 @@
 		FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JNWThrottledBlock.m; path = "Other Sources/JNWThrottledBlock.m"; sourceTree = "<group>"; };
 		FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBBarButtonItem.h; sourceTree = "<group>"; };
 		FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBBarButtonItem.m; sourceTree = "<group>"; };
+		FF9DC9E81C85FC3E006097E1 /* bar_separator_dark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bar_separator_dark@2x.png"; sourceTree = "<group>"; };
+		FF9DC9EA1C860944006097E1 /* bar_separator_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bar_separator_dark.png; sourceTree = "<group>"; };
 		FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios7_back_button@2x.png"; sourceTree = "<group>"; };
 		FFA045AE19CA49D700618DC4 /* SloppySwiper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SloppySwiper.h; sourceTree = "<group>"; };
 		FFA045AF19CA49D700618DC4 /* SloppySwiper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SloppySwiper.m; sourceTree = "<group>"; };
@@ -1738,6 +1742,8 @@
 				FF4151C216DEDF9D0013E84B /* markread@2x.png */,
 				FF4151BA16DED7D10013E84B /* bar-separator.png */,
 				FF4151BB16DED7D10013E84B /* bar-separator@2x.png */,
+				FF9DC9EA1C860944006097E1 /* bar_separator_dark.png */,
+				FF9DC9E81C85FC3E006097E1 /* bar_separator_dark@2x.png */,
 				FFDD846C16E887D3000AA0A2 /* g_icn_focus.png */,
 				FFDD846D16E887D3000AA0A2 /* g_icn_focus@2x.png */,
 				FFDD846E16E887D3000AA0A2 /* g_icn_folder_add.png */,
@@ -2462,6 +2468,7 @@
 				FF03AFF219F87F2E0063002A /* safari~iPad@2x.png in Resources */,
 				FF62820E1A1160DD00271FDB /* add_tag.png in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
+				FF9DC9E91C85FC3E006097E1 /* bar_separator_dark@2x.png in Resources */,
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
 				17CBD3BC1BF66B07003FCCAE /* MarkReadMenuViewController.xib in Resources */,
 				433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */,
@@ -2476,6 +2483,7 @@
 				433323BF1589022C0025064D /* user@2x.png in Resources */,
 				433323C215895E280025064D /* orange_button.png in Resources */,
 				433323C5158963BB0025064D /* orange_button@2x.png in Resources */,
+				FF9DC9EB1C860944006097E1 /* bar_separator_dark.png in Resources */,
 				433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */,
 				FFB7050D1925921F0052101C /* line_spacing_xl.png in Resources */,
 				43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */,

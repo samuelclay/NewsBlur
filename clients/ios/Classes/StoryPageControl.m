@@ -144,6 +144,9 @@
     spacer3BarButton.width = -6;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    if ([ThemeManager themeManager].isDarkTheme) {
+        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+    }
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
                                                     target:nil
                                                     action:nil];

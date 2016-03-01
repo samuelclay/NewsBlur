@@ -34,13 +34,16 @@
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    if ([ThemeManager themeManager].isDarkTheme) {
+        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+    }
     UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
                                                                      target:nil
                                                                      action:nil];
     [separatorBarButton setEnabled:NO];
     
     UIBarButtonItem *sendToBarButton = [UIBarButtonItem
-                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto.png"]
+                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto"]
                                         target:self
                                         action:@selector(doOpenActionSheet:)];
     
@@ -52,7 +55,7 @@
     }
     
     backBarButton = [UIBarButtonItem
-                     barItemWithImage:[UIImage imageNamed:@"barbutton_back.png"]
+                     barItemWithImage:[UIImage imageNamed:@"barbutton_back"]
                      target:self
                      action:@selector(webViewGoBack:)];
     backBarButton.enabled = NO;

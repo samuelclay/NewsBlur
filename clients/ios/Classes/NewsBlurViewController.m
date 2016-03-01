@@ -560,8 +560,9 @@ static UIFont *userLabelFont;
         NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
         [activityButton setImage:activityImage forState:UIControlStateNormal];
         [activityButton sizeToFit];
-        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
-        [activityButton setFrame:CGRectInset(activityButton.frame, -6, -6)];
+        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, -6, -0, -6)];
+        [activityButton setFrame:CGRectInset(activityButton.frame, 0, -6)];
+        [activityButton setImageEdgeInsets:UIEdgeInsetsMake(12, 12, 12, 12)];
         [activityButton addTarget:self
                            action:@selector(showInteractionsPopover:)
                  forControlEvents:UIControlEventTouchUpInside];
