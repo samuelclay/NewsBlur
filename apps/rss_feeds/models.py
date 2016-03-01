@@ -1456,7 +1456,9 @@ class Feed(models.Model):
         story_content = ''
         latest_story_content = None
         has_changes = False
-        if not show_changes and story_db.story_latest_content_z:
+        if (not show_changes and 
+            hasattr(story_db, 'story_latest_content_z') and 
+            story_db.story_latest_content_z):
             latest_story_content = smart_unicode(zlib.decompress(story_db.story_latest_content_z))
         if story_db.story_content_z:
             story_content = smart_unicode(zlib.decompress(story_db.story_content_z))
