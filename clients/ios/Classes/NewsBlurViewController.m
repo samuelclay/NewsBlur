@@ -845,6 +845,11 @@ static UIFont *userLabelFont;
 }
 
 - (IBAction)showInteractionsPopover:(id)sender {
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+    
     CGSize size = CGSizeMake(self.view.frame.size.width - 36,
                              self.view.frame.size.height - 60);
     
