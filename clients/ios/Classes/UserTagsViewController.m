@@ -7,6 +7,7 @@
 //
 
 #import "UserTagsViewController.h"
+#import "UISearchBar+Field.h"
 #import "FeedTableCell.h"
 #import "FolderTitleView.h"
 #import "StoriesCollection.h"
@@ -38,8 +39,6 @@ const NSInteger kHeaderHeight = 24;
        forSearchBarIcon:UISearchBarIconSearch
                   state:UIControlStateNormal];
     [addTagBar setReturnKeyType:UIReturnKeyDone];
-    [addTagBar setBackgroundColor:UIColorFromRGB(0xDCDFD6)];
-    [addTagBar setTintColor:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)];
     [addTagBar setSearchBarStyle:UISearchBarStyleMinimal];
     [addTagBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [self.view addSubview:addTagBar];
@@ -50,8 +49,14 @@ const NSInteger kHeaderHeight = 24;
 
     tagsTableView.frame = CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0);
     addTagBar.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, 44.0);
+    tagsTableView.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [tagsTableView reloadData];
     [tagsTableView setContentOffset:CGPointZero];
+    
+    [addTagBar setBackgroundColor:UIColorFromRGB(0xDCDFD6)];
+    [addTagBar setTintColor:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)];
+    addTagBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    addTagBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
 }
 
 - (void)didReceiveMemoryWarning {
