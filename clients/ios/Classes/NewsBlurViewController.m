@@ -140,10 +140,10 @@ static UIFont *userLabelFont;
     
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
-                                                               UIColorFromRGB(0x8F918B)}
+                                                               UIColorFromFixedRGB(0x8F918B)}
                                                 forState:UIControlStateNormal];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
-                                                               UIColorFromRGB(0x4C4D4A)}
+                                                               UIColorFromFixedRGB(0x4C4D4A)}
                                                 forState:UIControlStateHighlighted];
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
