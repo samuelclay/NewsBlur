@@ -137,6 +137,9 @@
     
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
+    self.commentField.backgroundColor = UIColorFromRGB(0xDCDFD6);
+    self.commentField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.commentField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     self.storyTitle.textColor = UIColorFromRGB(0x404040);
     self.storyTitle.shadowColor = UIColorFromRGB(0xF0F0F0);
     
