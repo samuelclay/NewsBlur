@@ -2173,14 +2173,15 @@
     popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
     
     if (barButtonItem) {
-        popoverPresentationController.passthroughViews = @[self.navigationControllerForPopover.navigationBar];
         popoverPresentationController.barButtonItem = barButtonItem;
     } else {
         popoverPresentationController.sourceView = sourceView;
         popoverPresentationController.sourceRect = sourceRect;
     }
     
-    [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:nil];
+    [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:^{
+        popoverPresentationController.passthroughViews = nil;
+    }];
 }
 
 - (void)hidePopoverAnimated:(BOOL)animated completion:(void (^)(void))completion {
