@@ -62,8 +62,10 @@ class EmailNewsletter:
             "story_title": params['subject'],
             "story_content": story_content,
             "story_author_name": params['from'],
-            "story_permalink": reverse('newsletter-story', 
-                                       kwargs={'story_hash': story_hash}),
+            "story_permalink": "https://%s%s" % (
+                                    Site.objects.get_current().domain,
+                                    reverse('newsletter-story', 
+                                            kwargs={'story_hash': story_hash})),
             "story_guid": params['signature'],
         }
         try:

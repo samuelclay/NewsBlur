@@ -21,6 +21,7 @@ from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
 from utils.view_functions import required_params
+from utils.view_functions import is_true
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.ratelimit import ratelimit
 
@@ -530,3 +531,18 @@ def original_story(request):
     original_page = story.fetch_original_page(force=force, request=request, debug=debug)
 
     return HttpResponse(original_page or "")
+
+@required_params('story_hash')
+@json.json_view
+def story_changes(request):
+    story_hash = request.REQUEST.get('story_hash', None)
+    show_changes = is_true(request.REQUEST.get('show_changes', True))
+    story, _ = MStory.find_story(story_hash=story_hash)
+    if not story:
+        logging.user(request, "~FYFetching ~FGoriginal~FY story page: ~FRstory not found")
+        return {'code': -1, 'message': 'Story not found.', 'original_page': None, 'failed': True}
+    
+    return {
+        'story': Feed.format_story(story, show_changes=show_changes)
+    }
+    

@@ -1448,11 +1448,26 @@ class Feed(models.Model):
         return stories
     
     @classmethod
-    def format_story(cls, story_db, feed_id=None, text=False, include_permalinks=False):
+    def format_story(cls, story_db, feed_id=None, text=False, include_permalinks=False,
+                     show_changes=False):
         if isinstance(story_db.story_content_z, unicode):
             story_db.story_content_z = story_db.story_content_z.decode('base64')
+        
+        story_content = ''
+        latest_story_content = None
+        has_changes = False
+        if (not show_changes and 
+            hasattr(story_db, 'story_latest_content_z') and 
+            story_db.story_latest_content_z):
+            latest_story_content = smart_unicode(zlib.decompress(story_db.story_latest_content_z))
+        if story_db.story_content_z:
+            story_content = smart_unicode(zlib.decompress(story_db.story_content_z))
+        
+        if '<ins' in story_content or '<del' in story_content:
+            has_changes = True
+        if not show_changes and latest_story_content:
+            story_content = latest_story_content
             
-        story_content = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
         story                     = {}
         story['story_hash']       = getattr(story_db, 'story_hash', None)
         story['story_tags']       = story_db.story_tags or []
@@ -1464,6 +1479,7 @@ class Feed(models.Model):
         story['story_permalink']  = story_db.story_permalink
         story['image_urls']       = story_db.image_urls
         story['story_feed_id']    = feed_id or story_db.story_feed_id
+        story['has_modifications']= has_changes
         story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
         story['comment_user_ids'] = story_db.comment_user_ids if hasattr(story_db, 'comment_user_ids') else []
         story['share_count']      = story_db.share_count if hasattr(story_db, 'share_count') else 0
@@ -1490,8 +1506,6 @@ class Feed(models.Model):
             text = re.sub(r'\n+', '\n\n', text)
             text = re.sub(r'\t+', '\t', text)
             story['text'] = text
-        if '<ins' in story['story_content'] or '<del' in story['story_content']:
-            story['has_modifications'] = True
         
         return story
     

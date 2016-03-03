@@ -18,7 +18,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
         "contextmenu .NB-feed-story-header"     : "show_manage_menu_rightclick",
         "click .NB-feed-story-manage-icon"      : "show_manage_menu",
-        "click .NB-feed-story-hide-changes"     : "hide_story_changes",
+        "click .NB-feed-story-show-changes"     : "show_story_changes",
         "click .NB-feed-story-header-title"     : "open_feed",
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
@@ -38,6 +38,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.model.bind('change:shared', this.render_comments, this);
         this.model.bind('change:comments', this.render_comments, this);
+        this.model.bind('change:story_content', this.render_story_content, this);
         if (this.collection) {
             this.collection.bind('render:intelligence', this.render_intelligence, this);
         }
@@ -162,32 +163,37 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-feed-story-manage-icon"></div>\
                     <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
-                <div class="NB-feed-story-date">\
-                    <% if (story.has_modifications()) { %>\
-                        <div class="NB-feed-story-hide-changes" \
-                             title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %> story modifications">\
+                <div class="NB-feed-story-date-line">\
+                    <% if (story.get("has_modifications")) { %>\
+                        <div class="NB-feed-story-show-changes">\
+                            <span class="NB-feed-story-show-changes-text">\
+                                <%= story.get("showing_diff") ? "Hide" : "Show" %> story changes\
+                            </span>\
+                            <span class="NB-middot">&middot;</span>\
                         </div>\
                     <% } %>\
-                    <%= story.formatted_long_date() %>\
+                    <div class="NB-feed-story-date">\
+                        <%= story.formatted_long_date() %>\
+                    </div>\
+                    <% if (story.story_authors()) { %>\
+                        <div class="NB-feed-story-author-wrapper">\
+                            <span class="NB-middot">&middot;</span>\
+                            <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                                <%= story.story_authors() %>\
+                            </span>\
+                        </div>\
+                    <% } %>\
+                    <% if (story.get("story_tags", []).length) { %>\
+                        <div class="NB-feed-story-tags">\
+                            <span class="NB-middot">&middot;</span>\
+                            <% _.each(story.get("story_tags"), function(tag) { %>\
+                                <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                                    <%= tag %>\
+                                </div>\
+                            <% }) %>\
+                        </div>\
+                    <% } %>\
                 </div>\
-                <% if (story.story_authors()) { %>\
-                    <div class="NB-feed-story-author-wrapper">\
-                        <span class="NB-middot">&middot;</span>\
-                        <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
-                            <%= story.story_authors() %>\
-                        </span>\
-                    </div>\
-                <% } %>\
-                <% if (story.get("story_tags", []).length) { %>\
-                    <div class="NB-feed-story-tags">\
-                        <span class="NB-middot">&middot;</span>\
-                        <% _.each(story.get("story_tags"), function(tag) { %>\
-                            <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
-                                <%= tag %>\
-                            </div>\
-                        <% }) %>\
-                    </div>\
-                <% } %>\
                 <% if (story.get("starred_date")) { %>\
                     <span class="NB-feed-story-starred-date"><%= story.get("starred_date") %></span>\
                 <% } %>\
@@ -292,6 +298,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
     
+    render_story_content: function() {
+        this.$(".NB-feed-story-show-changes-text").text((this.model.get('showing_diff') ? "Hide" : "Show") + " story changes");
+        this.$(".NB-feed-story-content").html(this.model.get('story_content'));
+        
+        this.attach_handlers();
+    },
+    
     destroy: function() {
         // console.log(["destroy story detail", this.model.get('story_title')]);
         clearTimeout(this.truncate_delay_function);
@@ -353,7 +366,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 delayIn: 375,
                 gravity: 's'
             });
-            this.$('.NB-feed-story-hide-changes').tipsy({
+            this.$('.NB-feed-story-show-changes').tipsy({
                 delayIn: 375
             });
         }
@@ -686,27 +699,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return false;
     },
     
-    hide_story_changes: function() {
-        var $button = this.$('.NB-feed-story-hide-changes');
-        
-        if (NEWSBLUR.assets.preference('hide_story_changes')) {
-            this.$el.addClass('NB-story-show-changes');
-            // this.$('ins').css({'text-decoration': 'underline'});
-            // this.$('del').css({'display': 'inline'});
-        } else {
-            this.$el.addClass('NB-story-hide-changes');
-            // this.$('ins').css({'text-decoration': 'none'});
-            // this.$('del').css({'display': 'none'});
-        }
-        $button.css('opacity', 1).animate({
-            'width': 0,
-            'opacity': 0
-        }, {
-            'queue': false,
-            'duration': 500
+    show_story_changes: function() {
+        NEWSBLUR.assets.fetch_story_changes(this.model.get('story_hash'), !this.model.get('showing_diff'), _.bind(function(data) {
+            this.model.set('showing_diff', !this.model.get('showing_diff'));
+            this.model.set('story_content', data.story['story_content']);
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();            
+        }, this), function() {
+            console.log(['Failed to fetch story changes']);
         });
-        $button.tipsy('hide').tipsy('disable');
-        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
     },
     
     open_feed: function() {

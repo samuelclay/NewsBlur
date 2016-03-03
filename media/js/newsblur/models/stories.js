@@ -112,15 +112,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             return date.format("l, F jS Y ") + time;
         }
     },
-    
-    has_modifications: function() {
-        if (this.get('story_content').indexOf('<ins') != -1 ||
-            this.get('story_content').indexOf('<del') != -1) {
-            return true;
-        }
-        return false;
-    },
-    
+
     mark_read: function(options) {
         return NEWSBLUR.assets.stories.mark_read(this, options);
     },
