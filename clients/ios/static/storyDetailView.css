@@ -128,7 +128,7 @@
 
 .NB-iphone-wide .NB-story,
 .NB-ipad-narrow .NB-story {
-    padding: 25px 30px;
+    padding: 20px 30px;
 }
 
 .NB-iphone-wide .NB-share-inner-wrapper,
@@ -185,7 +185,7 @@
 }
 
 .NB-iphone .NB-story {
-    padding: 0 12px 12px;
+    padding: 12px 12px 12px;
 }
 
 .NB-iphone .NB-share-inner-wrapper {
@@ -452,8 +452,8 @@ a:active {
 
 .NB-story blockquote {
     border-left: 2px solid #ECEFE9;
-    padding: .5em 1.5em;
-    margin: 0px;
+    padding: 1em;
+    margin: 20px 0;
     background-color: #F4F6F2;
 }
 
@@ -461,9 +461,13 @@ div + p {
     margin: 20px 0px 20px 0;
 }
 
-.NB-story p {
-    margin: 20px 0px 20px 0;
+.NB-story p,
+.NB-story div {
+    margin: 0px 0px 20px 0;
     clear: both;
+}
+.NB-story blockquote p:last-child {
+    margin-bottom: 0;
 }
 
 .NB-story small {
