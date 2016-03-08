@@ -205,7 +205,7 @@ def setup_common():
     pip()
     setup_supervisor()
     setup_hosts()
-    setup_pgbouncer()
+    # setup_pgbouncer()
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
@@ -334,6 +334,10 @@ def setup_installs():
         'libffi-dev',
         'libevent-dev',
         'make',
+        'postgresql-common',
+        'ssl-cert',
+        'pgbouncer',
+        'openssl-blacklist',
         'python-setuptools',
         'python-psycopg2',
         'libyaml-0-2',
@@ -529,6 +533,7 @@ def setup_pgbouncer():
     config_pgbouncer()
     
 def config_pgbouncer():
+    sudo('mkdir -p /etc/pgbouncer')
     put('config/pgbouncer.conf', 'pgbouncer.conf')
     sudo('mv pgbouncer.conf /etc/pgbouncer/pgbouncer.ini')
     put(os.path.join(env.SECRETS_PATH, 'configs/pgbouncer_auth.conf'), 'userlist.txt')
