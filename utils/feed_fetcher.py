@@ -407,12 +407,13 @@ class ProcessFeed:
             self.feed.save(update_fields=['etag'])
             
         original_last_modified = self.feed.last_modified
-        try:
-            self.feed.last_modified = datetime.datetime.strptime(self.fpf.modified, '%a, %d %b %Y %H:%M:%S %Z')
-        except Exception, e:
-            self.feed.last_modified = None
-            logging.debug("Broken mtime %s: %s" % (self.feed.last_modified, e))
-            pass
+        if hasattr(self.fpf, 'modified') and self.fpf.modified:
+            try:
+                self.feed.last_modified = datetime.datetime.strptime(self.fpf.modified, '%a, %d %b %Y %H:%M:%S %Z')
+            except Exception, e:
+                self.feed.last_modified = None
+                logging.debug("Broken mtime %s: %s" % (self.feed.last_modified, e))
+                pass
         if self.feed.last_modified != original_last_modified:
             self.feed.save(update_fields=['last_modified'])
         
