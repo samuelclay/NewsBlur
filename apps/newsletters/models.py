@@ -122,7 +122,9 @@ class EmailNewsletter:
     
     def clean_content(self, content):
         scrubber = Scrubber()
-        return scrubber.scrub(content)
+        content = scrubber.scrub(content)
+        content = content.replace('!important', '')
+        return content
         
     def publish_to_subscribers(self, feed):
         try:
