@@ -593,8 +593,10 @@
     if ([[self.activeStory objectForKey:@"story_authors"] class] != [NSNull class] &&
         [[self.activeStory objectForKey:@"story_authors"] length]) {
         NSString *author = [NSString stringWithFormat:@"%@",
-                            [self.activeStory objectForKey:@"story_authors"]];
-        if (author && [author class] != [NSNull class]) {
+                            [[[[self.activeStory objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""]
+                            stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"]
+                            stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"]];
+        if (author && author.length) {
             int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
