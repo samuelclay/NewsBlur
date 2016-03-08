@@ -205,6 +205,7 @@ def setup_common():
     pip()
     setup_supervisor()
     setup_hosts()
+    setup_pgbouncer()
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
@@ -515,7 +516,7 @@ def setup_hosts():
 def setup_pgbouncer():
     sudo('apt-get remove -y pgbouncer')
     sudo('apt-get install -y libevent-dev')
-    PGBOUNCER_VERSION = '1.7'
+    PGBOUNCER_VERSION = '1.7.2'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('wget https://pgbouncer.github.io/downloads/files/%s/pgbouncer-%s.tar.gz' % (PGBOUNCER_VERSION, PGBOUNCER_VERSION))
         run('tar -xzf pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
