@@ -1342,7 +1342,7 @@
     }
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor = [[story objectForKey:@"story_authors"] uppercaseString];
+        cell.storyAuthor = [[[story objectForKey:@"story_authors"] uppercaseString] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     } else {
         cell.storyAuthor = @"";
     }
