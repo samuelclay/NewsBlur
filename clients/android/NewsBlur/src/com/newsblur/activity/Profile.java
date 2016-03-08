@@ -30,7 +30,11 @@ public class Profile extends NbActivity {
 		setContentView(R.layout.activity_profile);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		apiManager = new APIManager(this);
-		userId = getIntent().getStringExtra(USER_ID);
+        if (savedInstanceState == null) {
+            userId = getIntent().getStringExtra(USER_ID);
+        } else {
+            userId = savedInstanceState.getString(USER_ID);
+        }
 		
 		fragmentManager = getFragmentManager();
 
@@ -51,7 +55,14 @@ public class Profile extends NbActivity {
 		}
 	}
 
-	@Override
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (userId != null) {
+            outState.putString(USER_ID, userId);
+        }
+    }
+
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
