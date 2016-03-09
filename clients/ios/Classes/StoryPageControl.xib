@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15E61b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
@@ -195,9 +195,10 @@
                             </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="drag_icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="kYw-ba-fFD">
-                            <rect key="frame" x="0.0" y="2" width="414" height="9"/>
+                            <rect key="frame" x="190" y="2" width="34" height="9"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="9" id="Pta-oX-r3A"/>
+                                <constraint firstAttribute="width" constant="34" id="oVQ-MZ-nUk"/>
                             </constraints>
                         </imageView>
                     </subviews>
@@ -215,9 +216,15 @@
                         <constraint firstItem="MK4-IV-OSa" firstAttribute="leading" secondItem="YKz-PZ-s0t" secondAttribute="leading" id="q2z-oJ-uCi"/>
                         <constraint firstAttribute="bottom" secondItem="62E-7z-9mB" secondAttribute="bottom" constant="-1" id="ySe-IZ-lq2"/>
                     </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="5XI-X3-78Q"/>
+                            <exclude reference="9KG-hc-ooV"/>
+                        </mask>
+                    </variation>
                 </view>
             </subviews>
-            <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+            <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="A4p-mh-u6O"/>
                 <constraint firstItem="5" firstAttribute="bottom" secondItem="YKz-PZ-s0t" secondAttribute="top" id="AOS-qV-fjZ"/>
