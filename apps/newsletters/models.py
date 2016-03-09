@@ -4,6 +4,7 @@ import redis
 from cgi import escape
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.utils.html import linebreaks
