@@ -277,6 +277,8 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
+    [self.storyTitlesTable reloadData];
+    
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self setUserAvatarLayout:orientation];
