@@ -1719,6 +1719,10 @@ def mark_feed_as_read(request):
     errors = []
     cutoff_date = datetime.datetime.fromtimestamp(cutoff_timestamp) if cutoff_timestamp else None
     
+    if cutoff_date:
+        logging.user(request, "~FMMark %s feeds read, cutoff: %s/%s" % 
+                     (len(feed_ids), cutoff_timestamp, cutoff_date))
+    
     for feed_id in feed_ids:
         if 'social:' in feed_id:
             user_id = int(feed_id.replace('social:', ''))

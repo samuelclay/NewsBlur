@@ -75,7 +75,7 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
     filter_feed_selector: function(e) {
         var $input = this.$(".NB-feeds-selector-input");
         var input = $input.val().toLowerCase();
-        if (input == this.last_input) return;
+        if (input == this.last_input && input.length) return;
         this.last_input = input;
         
         this.selected_feeds.each(function(feed) {

@@ -4,6 +4,7 @@ import redis
 from cgi import escape
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.utils.html import linebreaks
@@ -122,7 +123,9 @@ class EmailNewsletter:
     
     def clean_content(self, content):
         scrubber = Scrubber()
-        return scrubber.scrub(content)
+        content = scrubber.scrub(content)
+        content = content.replace('!important', '')
+        return content
         
     def publish_to_subscribers(self, feed):
         try:
