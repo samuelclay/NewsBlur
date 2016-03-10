@@ -978,10 +978,10 @@ static UIFont *userLabelFont;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         NBBarButtonItem *barButton = self.addBarButton.customView;
-        barButton.imageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]];
+        [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
         
         barButton = self.settingsBarButton.customView;
-        barButton.imageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]];
+        [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]] forState:UIControlStateNormal];
     }
     
     [self layoutHeaderCounts:nil];

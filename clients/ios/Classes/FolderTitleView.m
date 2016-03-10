@@ -184,11 +184,11 @@
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
-            if ([[ThemeManager themeManager] theme] == ThemeStyleSepia) {
+            if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleSepia]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_sepia"];
-            } else if ([[ThemeManager themeManager] theme] == ThemeStyleMedium) {
+            } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleMedium]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_medium"];
-            } else if ([[ThemeManager themeManager] theme] == ThemeStyleDark) {
+            } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleDark]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
             }
             [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 3, 29, 29)];
