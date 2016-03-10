@@ -40,12 +40,6 @@ from celery.exceptions import SoftTimeLimitExceeded
 # http://feedjack.googlecode.com
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
-
-
-def mtime(ttime):
-    """ datetime auxiliar function.
-    """
-    return datetime.datetime.fromtimestamp(time.mktime(ttime))
     
     
 class FetchFeed:
@@ -131,9 +125,10 @@ class FetchFeed:
                     headers['If-Modified-Since'] = modified_header
                 raw_feed = requests.get(address, headers=headers)
                 if raw_feed.content:
-                    self.fpf = feedparser.parse(raw_feed.content, response_headers={
-                        'Content-Location': raw_feed.url,
-                    })
+                    response_headers = raw_feed.headers
+                    response_headers['Content-Location'] = raw_feed.url
+                    self.fpf = feedparser.parse(smart_unicode(raw_feed.content),
+                                                response_headers=response_headers)
             except Exception, e:
                 logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], e))
             
@@ -412,11 +407,13 @@ class ProcessFeed:
             self.feed.save(update_fields=['etag'])
             
         original_last_modified = self.feed.last_modified
-        try:
-            self.feed.last_modified = mtime(self.fpf.modified)
-        except:
-            self.feed.last_modified = None
-            pass
+        if hasattr(self.fpf, 'modified') and self.fpf.modified:
+            try:
+                self.feed.last_modified = datetime.datetime.strptime(self.fpf.modified, '%a, %d %b %Y %H:%M:%S %Z')
+            except Exception, e:
+                self.feed.last_modified = None
+                logging.debug("Broken mtime %s: %s" % (self.feed.last_modified, e))
+                pass
         if self.feed.last_modified != original_last_modified:
             self.feed.save(update_fields=['last_modified'])
         
