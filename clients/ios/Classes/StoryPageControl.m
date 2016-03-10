@@ -587,7 +587,7 @@
 		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
@@ -595,7 +595,7 @@
 		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
 		pageFrame.origin.y = CGRectGetHeight(self.view.bounds);
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
