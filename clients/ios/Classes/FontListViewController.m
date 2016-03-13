@@ -24,14 +24,25 @@
     
     self.fontTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.fontTableView.separatorColor = UIColorFromRGB(0x909090);
+
+    // eliminate extra separators at bottom of menu, if any
+    self.fontTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     self.title = @"Font";
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    CGSize contentSize = self.fontTableView.contentSize;
+    contentSize.height += self.fontTableView.frame.origin.y * 2;
     
-    self.preferredContentSize = CGSizeMake(240.0, 38.0 * self.fonts.count);
+    self.navigationController.preferredContentSize = contentSize;
+    self.fontTableView.scrollEnabled = contentSize.height > self.view.frame.size.height;
 }
 
 #pragma mark - Table view data source
