@@ -108,7 +108,9 @@
     
     [self.menuTableView reloadData];
     
-    self.preferredContentSize = CGSizeMake(240.0, 296.0);
+    // -[NewsBlurAppDelegate navigationController:willShowViewController:animated:] hides this too late, so this gets mis-measured otherwise
+    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
