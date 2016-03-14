@@ -1641,6 +1641,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 if ([storiesCollection isStoryUnread:story]) {
                     [storiesCollection markStoryRead:story];
+                    [storiesCollection syncStoryAsRead:story];
                 }
             }
             
