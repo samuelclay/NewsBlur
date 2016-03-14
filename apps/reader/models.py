@@ -602,9 +602,14 @@ class UserSubscription(models.Model):
                 cutoff_date = datetime.datetime.utcnow()
                 recount = False
         
-        self.last_read_date = cutoff_date
-        self.mark_read_date = cutoff_date
-        self.oldest_unread_story_date = cutoff_date
+        if cutoff_date > self.mark_read_date or cutoff_date > self.oldest_unread_story_date:
+            self.last_read_date = cutoff_date
+            self.mark_read_date = cutoff_date
+            self.oldest_unread_story_date = cutoff_date
+        else:
+            logging.user(self.user, "Not marking %s as read: %s > %s/%s" % 
+                         (self, cutoff_date, self.mark_read_date, self.oldest_unread_story_date))
+        
         if not recount:
             self.unread_count_negative = 0
             self.unread_count_positive = 0
