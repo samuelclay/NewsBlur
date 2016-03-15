@@ -1,4 +1,4 @@
-body, span, table, td, p, div {
+body, span, table, td, p, div, li {
 	background-color: #1A1A1A !important;
 	color: #FFF !important;
 }
@@ -17,7 +17,7 @@ pre, blockquote, code {
     background-color: #4C4C4C;
 }
 
-blockquote > p, pre > span, code span {
+blockquote *, pre *, code * {
     background-color: #4C4C4C !important;
 }
 
