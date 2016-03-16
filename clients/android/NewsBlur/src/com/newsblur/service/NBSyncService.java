@@ -590,15 +590,6 @@ public class NBSyncService extends Service {
             ResetFeed = null;
         }
 
-        synchronized (PENDING_FEED_MUTEX) {
-            if (ResetSession) {
-                // the next fetch will be the start of a new reading session; clear it so it
-                // will be re-primed
-                dbHelper.clearStorySession();
-                ResetSession = false;
-            }
-        }
-
         FeedSet fs = PendingFeed;
         boolean finished = false;
         if (fs == null) {
@@ -621,6 +612,18 @@ public class NBSyncService extends Service {
 
             StoryOrder order = PrefsUtils.getStoryOrder(this, fs);
             ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
+
+            synchronized (PENDING_FEED_MUTEX) {
+                if (ResetSession) {
+                    // the next fetch will be the start of a new reading session; clear it so it
+                    // will be re-primed
+                    dbHelper.clearStorySession();
+                    // don't just rely on the auto-prepare code when fetching stories, it might be called
+                    // after we insert our first page and not trigger
+                    dbHelper.prepareReadingSession(fs);
+                    ResetSession = false;
+                }
+            }
             
             while (totalStoriesSeen < PendingFeedTarget) {
                 if (stopSync()) return;

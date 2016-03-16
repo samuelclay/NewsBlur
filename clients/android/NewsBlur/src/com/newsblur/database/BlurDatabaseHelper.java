@@ -913,7 +913,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);}
     }
 
-    private void prepareReadingSession(FeedSet fs) {
+    public void prepareReadingSession(FeedSet fs) {
         ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
         StateFilter stateFilter = PrefsUtils.getStateFilter(context);
         prepareReadingSession(fs, stateFilter, readFilter);

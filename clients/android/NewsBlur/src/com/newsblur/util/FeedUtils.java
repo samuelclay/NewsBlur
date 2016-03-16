@@ -49,6 +49,16 @@ public class FeedUtils {
         dbHelper.dropAndRecreateTables();
     }
 
+    public static void clearStorySession() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                dbHelper.clearStorySession();
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
 	public static void setStorySaved(final Story story, final boolean saved, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override
