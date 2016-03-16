@@ -4,7 +4,6 @@ import sys
 sys.path.append('/srv/newsblur')
 
 import subprocess
-import psutil
 import requests
 import settings
 import socket
