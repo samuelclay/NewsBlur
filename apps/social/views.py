@@ -551,6 +551,13 @@ def mark_story_as_shared(request):
             'message': 'Could not find the original story and no copies could be found.'
         })
     
+    feed = Feed.get_by_id(feed_id)
+    if feed and feed.is_newsletter:
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'You cannot share newsletters. Somebody could unsubscribe you!'
+        })
+        
     if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, feed_id, story.story_hash):
         return json.json_response(request, {
             'code': -1, 
