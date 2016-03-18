@@ -167,6 +167,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
+@property (nonatomic, strong) UINavigationController *addSiteNavigationController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet TrainerViewController *trainerViewController;

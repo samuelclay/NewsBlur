@@ -834,7 +834,8 @@ static UIFont *userLabelFont;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteViewController contentSize:CGSizeMake(320, 355) barButtonItem:self.addBarButton];
+    [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
     [self.appDelegate.addSiteViewController reload];
 }
 

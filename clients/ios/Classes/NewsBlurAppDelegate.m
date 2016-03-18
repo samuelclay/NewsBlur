@@ -1516,6 +1516,15 @@
     }
 }
 
+- (UINavigationController *)addSiteNavigationController {
+    if (!_addSiteNavigationController) {
+        self.addSiteNavigationController = [[UINavigationController alloc] initWithRootViewController:self.addSiteViewController];
+        self.addSiteNavigationController.delegate = self;
+    }
+    
+    return _addSiteNavigationController;
+}
+
 - (UINavigationController *)fontSettingsNavigationController {
     if (!_fontSettingsNavigationController) {
         self.fontSettingsNavigationController = [[UINavigationController alloc] initWithRootViewController:self.fontSettingsViewController];
