@@ -575,6 +575,10 @@ def load_single_feed(request, feed_id):
     except UserSubscription.DoesNotExist:
         usersub = None
     
+    if feed.is_newsletter and not usersub:
+        # User must be subscribed to a newsletter in order to read it
+        raise Http404
+        
     if query:
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
