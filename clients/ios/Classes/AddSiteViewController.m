@@ -13,6 +13,7 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "NBContainerViewController.h"
+#import "MenuViewController.h"
 #import "SBJson4.h"
 #import "Base64.h"
 
@@ -25,26 +26,6 @@
 
 @implementation AddSiteViewController
 
-@synthesize appDelegate;
-@synthesize inFolderInput;
-@synthesize addFolderInput;
-@synthesize siteAddressInput;
-@synthesize addButton;
-@synthesize cancelButton;
-@synthesize folderPicker;
-@synthesize siteTable;
-@synthesize siteScrollView;
-@synthesize jsonString;
-@synthesize autocompleteResults;
-@synthesize navBar;
-@synthesize activityIndicator;
-@synthesize siteActivityIndicator;
-@synthesize addingLabel;
-@synthesize errorLabel;
-@synthesize activeTerm_;
-@synthesize searchResults_;
-@synthesize addFolderButton;
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
@@ -52,32 +33,42 @@
     return self;
 }
 
-- (void)viewDidLoad {    
+- (void)viewDidLoad {
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Add Site" style:UIBarButtonItemStyleDone target:self action:@selector(addSite)];
+    
     UIImageView *folderImage = [[UIImageView alloc]
-                                initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
+                                initWithImage:[UIImage imageNamed:@"g_icn_folder_sm.png"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];
-    [inFolderInput setLeftView:folderImage];
-    [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    [self.inFolderInput setLeftView:folderImage];
+    [self.inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    
+    // If you want to show a disclosure arrow; don't really need it, though.
+//    UIImageView *disclosureImage = [[UIImageView alloc]
+//                                initWithImage:[UIImage imageNamed:@"accessory_disclosure.png"]];
+//    disclosureImage.frame = CGRectMake(0, 0, 24, 20);
+//    [disclosureImage setContentMode:UIViewContentModeLeft];
+//    [inFolderInput setRightView:disclosureImage];
+//    [inFolderInput setRightViewMode:UITextFieldViewModeAlways];
     
     UIImageView *folderImage2 = [[UIImageView alloc]
-                                 initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
+                                 initWithImage:[UIImage imageNamed:@"g_icn_folder_rss_sm.png"]];
     folderImage2.frame = CGRectMake(0, 0, 24, 16);
     [folderImage2 setContentMode:UIViewContentModeRight];
-    [addFolderInput setLeftView:folderImage2];
-    [addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    [self.addFolderInput setLeftView:folderImage2];
+    [self.addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
     UIImageView *urlImage = [[UIImageView alloc]
                              initWithImage:[UIImage imageNamed:@"world.png"]];
     urlImage.frame = CGRectMake(0, 0, 24, 16);
     [urlImage setContentMode:UIViewContentModeRight];
-    [siteAddressInput setLeftView:urlImage];
-    [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
+    [self.siteAddressInput setLeftView:urlImage];
+    [self.siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     
+    self.siteTable.hidden = YES;
     self.activeTerm_ = @"";
     self.searchResults_ = [[NSMutableDictionary alloc] init];
-    
-    self.folderPicker.delegate = self;
     
     [super viewDidLoad];
 }
@@ -85,13 +76,10 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
     [self.addingLabel setHidden:YES];
-    [self.folderPicker setHidden:YES];
-    [self.siteScrollView setAlpha:0];
     [self.activityIndicator stopAnimating];
     
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.siteTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    self.folderPicker.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     [super viewWillAppear:animated];
 }
@@ -111,25 +99,24 @@
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
     
-    [self.inFolderInput becomeFirstResponder];
+    [self.siteAddressInput becomeFirstResponder];
+}
+
+- (CGSize)preferredContentSize {
+    CGSize size = CGSizeMake(320.0, 96.0);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.siteTable.hidden = NO;
-        self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
-                                           self.siteScrollView.frame.origin.y,
-                                           self.view.frame.size.width,
-                                           295);
+    if (self.addFolderButton.selected) {
+        size.height += 39.0;
     }
-}
-
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
     
-	// Release any cached data, images, etc that aren't in use.
+    if (!self.siteTable.hidden) {
+        size.height += 215.0;
+    }
+    
+    self.navigationController.preferredContentSize = size;
+    
+    return size;
 }
-
 
 - (IBAction)doCancelButton {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -144,37 +131,31 @@
 }
 
 - (void)reload {
-    [inFolderInput setText:@"— Top Level —"];
-    [siteAddressInput setText:@""];
-    [addFolderInput setText:@""];
-    [folderPicker reloadAllComponents];
+    // Force the view to load.
+    [self view];
     
-    folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, 
-                                    folderPicker.frame.size.width, 
-                                    folderPicker.frame.size.height);
+    [self.inFolderInput setText:@"— Top Level —"];
+    [self.siteAddressInput setText:@""];
+    [self.addFolderInput setText:@""];
 }
 
 #pragma mark -
 #pragma mark Add Site
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    [errorLabel setText:@""];
-    if (textField == inFolderInput && ![inFolderInput isFirstResponder]) {
-        [self showFolderPicker];
+    [self.errorLabel setText:@""];
+    if (textField == self.inFolderInput && ![self.inFolderInput isFirstResponder]) {
+        [self showFolderMenu];
         return NO;
-    } else if (textField == siteAddressInput) {
-        [self hideFolderPicker];
-    } else if (textField == addFolderInput) {
-        [self hideFolderPicker];
     }
     return YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    if (textField == inFolderInput) {
+    if (textField == self.inFolderInput) {
         
-    } else if (textField == siteAddressInput) {
-        if (siteAddressInput.returnKeyType == UIReturnKeySearch) {
+    } else if (textField == self.siteAddressInput) {
+        if (self.siteAddressInput.returnKeyType == UIReturnKeySearch) {
             [self checkSiteAddress];
         } else {
             [self addSite];            
@@ -184,13 +165,11 @@
 }
 
 - (IBAction)checkSiteAddress {
-    NSString *phrase = siteAddressInput.text;
+    NSString *phrase = self.siteAddressInput.text;
     
     if ([phrase length] == 0) {
-        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
-                         animations:^{
-                             [siteScrollView setAlpha:0];
-                         } completion:nil];
+        self.siteTable.hidden = YES;
+        [self preferredContentSize];
         return;
     }
     
@@ -201,16 +180,16 @@
     }
     
     NSInteger periodLoc = [phrase rangeOfString:@"."].location;
-    if (periodLoc != NSNotFound && siteAddressInput.returnKeyType != UIReturnKeyDone) {
+    if (periodLoc != NSNotFound && self.siteAddressInput.returnKeyType != UIReturnKeyDone) {
         // URL
-        [siteAddressInput setReturnKeyType:UIReturnKeyDone];
-        [siteAddressInput resignFirstResponder];
-        [siteAddressInput becomeFirstResponder];
-    } else if (periodLoc == NSNotFound && siteAddressInput.returnKeyType != UIReturnKeySearch) {
+        [self.siteAddressInput setReturnKeyType:UIReturnKeyDone];
+        [self.siteAddressInput resignFirstResponder];
+        [self.siteAddressInput becomeFirstResponder];
+    } else if (periodLoc == NSNotFound && self.siteAddressInput.returnKeyType != UIReturnKeySearch) {
         // Search
-        [siteAddressInput setReturnKeyType:UIReturnKeySearch];
-        [siteAddressInput resignFirstResponder];
-        [siteAddressInput becomeFirstResponder];
+        [self.siteAddressInput setReturnKeyType:UIReturnKeySearch];
+        [self.siteAddressInput resignFirstResponder];
+        [self.siteAddressInput becomeFirstResponder];
     }
     
     [self.siteActivityIndicator startAnimating];
@@ -234,7 +213,7 @@
     
 
     NSString *query = [NSString stringWithFormat:@"%@", [results objectForKey:@"term"]];
-    NSString *phrase = siteAddressInput.text;
+    NSString *phrase = self.siteAddressInput.text;
     
     // cache the results
     [self.searchResults_ setValue:[results objectForKey:@"feeds"] forKey:query];
@@ -249,27 +228,28 @@
 }
 
 - (void)reloadSearchResults {
-    if ([siteAddressInput.text length] > 0 && [autocompleteResults count] > 0) {
+    if ([self.siteAddressInput.text length] > 0 && [self.autocompleteResults count] > 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
                          animations:^{
-                             [siteScrollView setAlpha:1];
+                             [self.siteScrollView setAlpha:1];
                          } completion:nil];
     } else {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
                          animations:^{
-                             [siteScrollView setAlpha:0];
+                             [self.siteScrollView setAlpha:0];
                          } completion:nil];
     }
     
     [self.siteActivityIndicator stopAnimating];
     self.siteTable.hidden = NO;
-    [siteTable reloadData];
+    [self.siteTable reloadData];
+    [self preferredContentSize];
 }
 
 - (IBAction)addSite {
-    [self hideFolderPicker];
     self.siteTable.hidden = YES;
-    [siteAddressInput resignFirstResponder];
+    [self preferredContentSize];
+    [self.siteAddressInput resignFirstResponder];
     [self.addingLabel setHidden:NO];
     [self.addingLabel setText:@"Adding site..."];
     [self.errorLabel setHidden:YES];
@@ -280,9 +260,9 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *parent_folder = [self extractParentFolder];
     [request setPostValue:parent_folder forKey:@"folder"]; 
-    [request setPostValue:[siteAddressInput text] forKey:@"url"];
-    if (addFolderButton.selected && [addFolderInput.text length]) {
-        [request setPostValue:[addFolderInput text] forKey:@"new_folder"];
+    [request setPostValue:[self.siteAddressInput text] forKey:@"url"];
+    if (self.addFolderButton.selected && [self.addFolderInput.text length]) {
+        [request setPostValue:[self.addFolderInput text] forKey:@"new_folder"];
     }
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
@@ -319,7 +299,7 @@
 }
 
 - (NSString *)extractParentFolder {
-    NSString *parent_folder = [inFolderInput text];
+    NSString *parent_folder = [self.inFolderInput text];
     NSInteger folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
     if ([parent_folder length] && folder_loc != NSNotFound) {
         parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
@@ -335,11 +315,11 @@
 #pragma mark Add Folder
 
 - (IBAction)toggleAddFolder:(id)sender {
-    if (!addFolderButton.selected) {
-        addFolderButton.selected = YES;
+    if (!self.addFolderButton.selected) {
+        self.addFolderButton.selected = YES;
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction
                          animations:^{
-                             addFolderInput.alpha = 1;
+                             self.addFolderInput.alpha = 1;
                              self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
                                                                     self.siteScrollView.frame.origin.y + 40,
                                                                     self.view.frame.size.width,
@@ -347,16 +327,18 @@
                          } completion:nil];
 
     } else {
-        addFolderButton.selected = NO;
+        self.addFolderButton.selected = NO;
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction
                          animations:^{
-                             addFolderInput.alpha = 0;
+                             self.addFolderInput.alpha = 0;
                              self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
                                                                     self.siteScrollView.frame.origin.y - 40,
                                                                     self.view.frame.size.width,
                                                                     self.siteScrollView.frame.size.height);
                          } completion:nil];
     }
+    
+    [self preferredContentSize];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -367,13 +349,11 @@
     NSLog(@"Error: %@", error);
     [self.errorLabel setText:error.localizedDescription];
     self.siteTable.hidden = YES;
+    [self preferredContentSize];
 }
 
-#pragma mark -
-#pragma mark Folder Picker
-
 - (NSArray *)folders {
-    return _.without([appDelegate dictFoldersArray],
+    return _.without([self.appDelegate dictFoldersArray],
                      @[@"saved_stories",
                        @"read_stories",
                        @"river_blurblogs",
@@ -381,68 +361,42 @@
                        @"everything"]);
 }
 
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
-    return 1;
-}
-
-- (NSInteger)pickerView:(UIPickerView *)pickerView
-numberOfRowsInComponent:(NSInteger)component {
-    return [[self folders] count] + 1;
-}
-
-- (NSAttributedString *)pickerView:(UIPickerView *)pickerView
-             attributedTitleForRow:(NSInteger)row
-                      forComponent:(NSInteger)component {
-    NSString *title = nil;
-    NSDictionary *attributes = @{NSForegroundColorAttributeName : UIColorFromRGB(NEWSBLUR_BLACK_COLOR)};
+- (void)showFolderMenu {
+    MenuViewController *viewController = [MenuViewController new];
+    viewController.title = @"Add To";
     
-    if (row == 0) {
-        title = @"— Top Level —";
-    } else {
-        title = [[self folders] objectAtIndex:row - 1];
-    }
+    __weak __typeof(&*self)weakSelf = self;
     
-    return [[NSAttributedString alloc] initWithString:title attributes:attributes];
-}
-
-- (void)pickerView:(UIPickerView *)pickerView 
-      didSelectRow:(NSInteger)row 
-       inComponent:(NSInteger)component {
-    NSString *folder_title;
-    if (row == 0) {
-        folder_title = @"— Top Level —";
-    } else {
-        folder_title = [[self folders] objectAtIndex:row-1];
-    }
-    [inFolderInput setText:folder_title];
-}
-
-- (void)showFolderPicker {
-    if (![[self folders] count]) return;
+    [viewController addTitle:@"Top Level" iconName:@"menu_icn_all.png" selectionShouldDismiss:NO handler:^{
+        weakSelf.inFolderInput.text = @"— Top Level —";
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
     
-    [siteAddressInput resignFirstResponder];
-    [addFolderInput resignFirstResponder];
-    [inFolderInput setInputView:folderPicker];
-    [folderPicker selectRow:0 inComponent:0 animated:NO];
-    for (int i=0; i < [[self folders] count]; i++) {
-        if ([[[self folders] objectAtIndex:i] isEqualToString:inFolderInput.text]) {
-            [folderPicker selectRow:i+1 inComponent:0 animated:NO];
-            break;
+    NSArray *folders = self.folders;
+    
+    for (NSString *folder in folders) {
+        NSString *title = folder;
+        NSString *iconName = @"menu_icn_move.png";
+        
+        NSArray *components = [title componentsSeparatedByString:@" - "];
+        title = components.lastObject;
+        for (NSUInteger idx = 0; idx < components.count; idx++) {
+            title = [@"\t" stringByAppendingString:title];
         }
-    }
-    if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
-        folderPicker.hidden = NO;
-        [UIView animateWithDuration:.35 animations:^{
-            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
+        
+        [viewController addTitle:title iconName:iconName selectionShouldDismiss:NO handler:^{
+            weakSelf.inFolderInput.text = folder;
+            [self.navigationController popViewControllerAnimated:YES];
         }];
     }
-    self.siteTable.hidden = YES;
-}
-
-- (void)hideFolderPicker {
-    [UIView animateWithDuration:.35 animations:^{
-        folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);          
-    }];
+    
+    if ([self.inFolderInput.text isEqualToString:@"— Top Level —"]) {
+        viewController.checkedRow = 0;
+    } else {
+        viewController.checkedRow = [folders indexOfObject:self.inFolderInput.text] + 1;
+    }
+    
+    [self.appDelegate.addSiteNavigationController pushViewController:viewController animated:YES];
 }
 
 #pragma mark -
@@ -450,7 +404,7 @@ numberOfRowsInComponent:(NSInteger)component {
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [autocompleteResults count];
+    return [self.autocompleteResults count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -469,7 +423,7 @@ numberOfRowsInComponent:(NSInteger)component {
         }
 	}
     
-    NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
+    NSDictionary *result = [self.autocompleteResults objectAtIndex:indexPath.row];
     int subs = [[result objectForKey:@"num_subscribers"] intValue];
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setPositiveFormat:@"#,###"];
@@ -498,12 +452,10 @@ numberOfRowsInComponent:(NSInteger)component {
 
 - (void)tableView:(UITableView *)tableView 
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
+    NSDictionary *result = [self.autocompleteResults objectAtIndex:indexPath.row];
     [self.siteAddressInput setText:[result objectForKey:@"value"]];
-//    [self addSite]; // Don't auto-add. Let user select folder.
-    [UIView animateWithDuration:.35 animations:^{
-        siteScrollView.alpha = 0;
-    }];
+    self.siteTable.hidden = YES;
+    [self preferredContentSize];
 }
 
 @end
