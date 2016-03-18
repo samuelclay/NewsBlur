@@ -53,7 +53,13 @@ public class FeedUtils {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                dbHelper.clearStorySession();
+                try {
+                    dbHelper.clearStorySession();
+                } catch (Exception e) {
+                    ; // TODO: this can evade DB-ready gating and crash. figure out how to
+                      // defer this call until the DB-ready broadcast is received, as this
+                      // can mask important errors
+                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
