@@ -55,6 +55,11 @@ NSString * const MenuHandler = @"handler";
     self.menuTableView.scrollEnabled = self.preferredContentSize.height > self.view.frame.size.height;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (CGSize)preferredContentSize {
     CGSize size = CGSizeMake(100.0, 0.0);
     UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];

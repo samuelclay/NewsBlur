@@ -63,6 +63,7 @@
 #import "NBActivityItemProvider.h"
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
+#import "UIViewController+HidePopover.h"
 #import <float.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
@@ -2146,20 +2147,8 @@
     self.markReadMenuViewController.olderNewerStory = olderNewerStory;
     self.markReadMenuViewController.extraItems = extraItems;
     self.markReadMenuViewController.completionHandler = completionHandler;
-    
-    UIPopoverPresentationController *popoverPresentationController = self.markReadMenuViewController.popoverPresentationController;
-    popoverPresentationController.delegate = self;
-    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    
-    if (barButtonItem) {
-        popoverPresentationController.barButtonItem = barButtonItem;
-    } else {
-        popoverPresentationController.sourceView = sourceView;
-        popoverPresentationController.sourceRect = sourceRect;
-    }
-    
-    [self.navigationController presentViewController:self.markReadMenuViewController animated:YES completion:nil];
+
+    [self showPopoverWithViewController:self.markReadMenuViewController contentSize:CGSizeZero barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionAny];
 }
 
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem {
@@ -2183,7 +2172,9 @@
     
     viewController.modalPresentationStyle = UIModalPresentationPopover;
     viewController.preferredContentSize = contentSize;
-    
+    [viewController addKeyCommand:[UIKeyCommand keyCommandWithInput:@"." modifierFlags:UIKeyModifierCommand action:@selector(hidePopover)]];
+    [viewController addKeyCommand:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(hidePopover)]];
+
     UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
     popoverPresentationController.delegate = self;
     popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
@@ -2198,6 +2189,8 @@
     
     [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:^{
         popoverPresentationController.passthroughViews = nil;
+        // NSLog(@"%@ canBecomeFirstResponder? %d", viewController, viewController.canBecomeFirstResponder);
+        [viewController becomeFirstResponder];
     }];
 }
 

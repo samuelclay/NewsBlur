@@ -89,6 +89,11 @@
     [self.profileTable reloadData];
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (void)doCancelButton {
     [appDelegate.modalNavigationController dismissViewControllerAnimated:NO completion:nil];
 }
