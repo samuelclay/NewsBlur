@@ -80,7 +80,9 @@
     
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.siteTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    
+    // eliminate extra separators at bottom of site table (e.g., while animating)
+    self.siteTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+
     [super viewWillAppear:animated];
 }
 
