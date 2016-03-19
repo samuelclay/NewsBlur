@@ -896,6 +896,10 @@
     return UIModalPresentationNone;
 }
 
+- (void)popoverPresentationControllerDidDismissPopover:(UIPopoverPresentationController *)popoverPresentationController {
+    [self.navigationController.topViewController becomeFirstResponder];
+}
+
 #pragma mark -
 
 - (void)reloadFeedsView:(BOOL)showLoader {
@@ -2203,6 +2207,7 @@
     }
     
     [presentedViewController dismissViewControllerAnimated:animated completion:completion];
+    [self.navigationController.topViewController becomeFirstResponder];
 }
 
 - (BOOL)hidePopoverAnimated:(BOOL)animated {
@@ -2211,6 +2216,7 @@
         return NO;
     
     [presentedViewController dismissViewControllerAnimated:animated completion:nil];
+    [self.navigationController.topViewController becomeFirstResponder];
     return YES;
 }
 
