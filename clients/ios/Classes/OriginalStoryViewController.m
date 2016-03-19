@@ -104,7 +104,7 @@
     
     [self.webView loadHTMLString:@"" baseURL:nil];
 
-    [self addKeyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(closeOriginalView) discoverabilityTitle:@"Close Original View"];
+    [self addCancelKeyCommandWithAction:@selector(closeOriginalView) discoverabilityTitle:@"Close Original View"];
 }
 
 - (void)dealloc {
