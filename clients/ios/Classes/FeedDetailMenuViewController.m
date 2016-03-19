@@ -99,6 +99,11 @@
     self.menuTableView.scrollEnabled = self.navigationController.preferredContentSize.height > self.view.frame.size.height;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (void)buildMenuOptions {
     BOOL everything = appDelegate.storiesCollection.isRiverView &&
                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
