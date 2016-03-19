@@ -130,7 +130,7 @@ class FetchFeed:
                     self.fpf = feedparser.parse(smart_unicode(raw_feed.content),
                                                 response_headers=response_headers)
             except Exception, e:
-                logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], e))
+                logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], unicode(e)[:100]))
             
             if not self.fpf:
                 try:
