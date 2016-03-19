@@ -39,7 +39,6 @@
     
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
-    self.modalPresentationStyle = UIModalPresentationPopover;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -115,6 +114,11 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 - (void)debugOutputFontNames {

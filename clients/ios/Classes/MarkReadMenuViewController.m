@@ -62,6 +62,11 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
     }
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (CGSize)preferredContentSize {
     CGSize size = CGSizeMake(300.0, 190.0);
     

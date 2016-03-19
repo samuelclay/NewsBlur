@@ -91,6 +91,11 @@
 	return YES;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 #pragma mark -
 #pragma mark - Table view data source
 

@@ -1147,17 +1147,10 @@
 
 
 - (IBAction)toggleFontSize:(id)sender {
-    [self.appDelegate.fontSettingsNavigationController popToRootViewControllerAnimated:NO];
-    self.appDelegate.fontSettingsNavigationController.modalPresentationStyle = UIModalPresentationPopover;
-    UIPopoverPresentationController *popPC = self.appDelegate.fontSettingsNavigationController.popoverPresentationController;
-    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    popPC.delegate = self;
-    popPC.barButtonItem = self.fontSettingsButton;
-//    popPC.sourceView = self.view;
-//    popPC.sourceRect = [sender frame];
-    
-    [self presentViewController:self.appDelegate.fontSettingsNavigationController animated:YES completion:nil];
+    UINavigationController *fontSettingsNavigationController = self.appDelegate.fontSettingsNavigationController;
+
+    [fontSettingsNavigationController popToRootViewControllerAnimated:NO];
+    [self.appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {
@@ -1272,12 +1265,6 @@
 //        
         [self changePage:previousLocation];
     }
-}
-
-#pragma mark - UIPopoverPresentationControllerDelegate
-
-- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
-    return UIModalPresentationNone;
 }
 
 @end

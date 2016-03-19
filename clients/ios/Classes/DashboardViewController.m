@@ -93,6 +93,11 @@
 	return YES;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (IBAction)doLogout:(id)sender {
     [appDelegate confirmLogout];
 }
