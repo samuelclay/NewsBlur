@@ -533,27 +533,22 @@ static UIFont *userLabelFont;
     addBarButton.accessibilityLabel = @"Add site";
     settingsBarButton.enabled = YES;
     settingsBarButton.accessibilityLabel = @"Settings";
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [addBarButton setImage:addImage];
-        [settingsBarButton setImage:settingsImage];
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-        [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
-        [addButton sizeToFit];
-        [addButton addTarget:self action:@selector(tapAddSite:)
-            forControlEvents:UIControlEventTouchUpInside];
-        addButton.accessibilityLabel = @"Add feed";
-        [addBarButton setCustomView:addButton];
+    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
+    [addButton sizeToFit];
+    [addButton addTarget:self action:@selector(tapAddSite:)
+        forControlEvents:UIControlEventTouchUpInside];
+    addButton.accessibilityLabel = @"Add feed";
+    [addBarButton setCustomView:addButton];
 
-        NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-        settingsButton.onRightSide = YES;
-        [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
-        [settingsButton sizeToFit];
-        [settingsButton addTarget:self action:@selector(showSettingsPopover:)
-                 forControlEvents:UIControlEventTouchUpInside];
-        settingsButton.accessibilityLabel = @"Settings";
-        [settingsBarButton setCustomView:settingsButton];
-    }
+    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    settingsButton.onRightSide = YES;
+    [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
+    [settingsButton sizeToFit];
+    [settingsButton addTarget:self action:@selector(showSettingsPopover:)
+             forControlEvents:UIControlEventTouchUpInside];
+    settingsButton.accessibilityLabel = @"Settings";
+    [settingsBarButton setCustomView:settingsButton];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
@@ -836,11 +831,11 @@ static UIFont *userLabelFont;
 - (IBAction)tapAddSite:(id)sender {
     [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton.customView sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
-    } else {
-        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
-    }
+//    } else {
+//        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
+//    }
     
     [self.appDelegate.addSiteViewController reload];
 }
@@ -983,13 +978,11 @@ static UIFont *userLabelFont;
     self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        NBBarButtonItem *barButton = self.addBarButton.customView;
-        [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
-        
-        barButton = self.settingsBarButton.customView;
-        [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]] forState:UIControlStateNormal];
-    }
+    NBBarButtonItem *barButton = self.addBarButton.customView;
+    [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
+    
+    barButton = self.settingsBarButton.customView;
+    [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]] forState:UIControlStateNormal];
     
     [self layoutHeaderCounts:nil];
     [self refreshHeaderCounts];
