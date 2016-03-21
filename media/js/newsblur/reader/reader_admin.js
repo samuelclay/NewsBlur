@@ -87,7 +87,8 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
 
             $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-history", style: "float: left" }, "Update History"));
             $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-opml", style: "float: left" }, "OPML"));
-            
+
+            var training = data.statistics.training;
             $statistics.append($.make('dl', [
                 $.make('dt', 'Created:'),
                 $.make('dd', data.statistics.created_date),
@@ -109,10 +110,30 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $.make('dd', Inflector.commas(data.statistics.read_story_count)),
                 $.make('dt', 'Training:'),
                 $.make('dd', { className: 'NB-admin-training-counts' }, [
-                    $.make('span', { className: data.statistics.training.title ? '' : 'NB-grey' }, 'Title: ' + data.statistics.training.title),
-                    $.make('span', { className: data.statistics.training.author ? '' : 'NB-grey' }, 'Author: ' + data.statistics.training.author),
-                    $.make('span', { className: data.statistics.training.tag ? '' : 'NB-grey' }, 'Tag: ' + data.statistics.training.tag),
-                    $.make('span', { className: data.statistics.training.feed ? '' : 'NB-grey' }, 'Feed: ' + data.statistics.training.feed)
+                    $.make('span', { className: training.title_ps || training.title_ng ? '' : 'NB-grey' }, [
+                        'Title: ',
+                        (training.title_ps && $.make('span', { className: 'NB-green' }, training.title_ps)),
+                        '-',
+                        (training.title_ng && $.make('span', { className: 'NB-red' }, training.title_ng))
+                    ]),
+                    $.make('span', { className: training.author_ps || training.author_ng ? '' : 'NB-grey' }, [
+                        'Author: ',
+                        (training.author_ps && $.make('span', { className: 'NB-green' }, training.author_ps)),
+                        '-',
+                        (training.author_ng && $.make('span', { className: 'NB-red' }, training.author_ng))
+                    ]),
+                    $.make('span', { className: training.tag_ps || training.tag_ng ? '' : 'NB-grey' }, [
+                        'Tag: ',
+                        (training.tag_ps && $.make('span', { className: 'NB-green' }, training.tag_ps)),
+                        '-',
+                        (training.tag_ng && $.make('span', { className: 'NB-red' }, training.tag_ng))
+                    ]),
+                    $.make('span', { className: training.feed_ps || training.feed_ng ? '' : 'NB-grey' }, [
+                        'Feed: ',
+                        (training.feed_ps && $.make('span', { className: 'NB-green' }, training.feed_ps)),
+                        '-',
+                        (training.feed_ng && $.make('span', { className: 'NB-red' }, training.feed_ng))
+                    ])
                 ])
             ]));
             $(window).resize();

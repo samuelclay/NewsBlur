@@ -7818,6 +7818,12 @@ form.opml_import_form input {
 .NB-modal-admin .NB-admin-training-counts span.NB-grey {
     color: #D0D0D0;
 }
+.NB-modal-admin .NB-admin-training-counts span.NB-green {
+    color: #2B8B19;
+}
+.NB-modal-admin .NB-admin-training-counts span.NB-red {
+    color: #761113;
+}
 
 /* ===================== */
 /* = Email Story Modal = */
