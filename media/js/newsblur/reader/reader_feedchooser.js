@@ -77,7 +77,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                       $.make('b', { style: 'display: block; margin: 8px 0' }, [
                           $.make('span', { className: 'NB-raquo' }, '&raquo;'),
                           ' ',
-                          NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
+                          NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire),
+                          (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
                       ]),
                       'You can change your payment method and card details. ',
                       (NEWSBLUR.Globals.premium_expire < new Date) ? 
