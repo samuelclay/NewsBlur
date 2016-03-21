@@ -47,8 +47,6 @@
     // Do any additional setup after loading the view from its nib.
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
 
-    self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
-    
     UITableView *profiles = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
     self.profileTable = profiles;
     self.profileTable.dataSource = self;
@@ -78,6 +76,9 @@
     self.view.frame = vb;
     self.profileTable.frame = vb;
     self.profileBadge.frame = CGRectMake(0, 0, vb.size.width, 140);
+    
+    self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
+    self.profileTable.backgroundColor = UIColorFromRGB(0xd7dadf);
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -86,6 +87,11 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self.profileTable reloadData];
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 - (void)doCancelButton {
@@ -104,7 +110,7 @@
     NSString *urlString = [NSString stringWithFormat:@
                            "%@/social/profile?user_id=%@"
                            "&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];
 

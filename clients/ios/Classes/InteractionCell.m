@@ -33,7 +33,7 @@
         [self.contentView addSubview:avatar];
         
         UILabel *interaction = [[UILabel alloc] initWithFrame:CGRectZero];
-        interaction.backgroundColor = [UIColor whiteColor];
+        interaction.backgroundColor = UIColorFromRGB(0xffffff);
 //        interaction.automaticallyAddLinksForType = NO;
         self.interactionLabel = interaction;
         [self.contentView addSubview:interaction];
@@ -162,6 +162,7 @@
                         range:dateRange];
     }
     
+    self.interactionLabel.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.interactionLabel.attributedText = attrStr;
     [self.interactionLabel sizeToFit];
     

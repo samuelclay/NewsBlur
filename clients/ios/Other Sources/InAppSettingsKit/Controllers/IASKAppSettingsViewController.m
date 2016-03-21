@@ -209,6 +209,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 		[dc addObserver:self selector:@selector(didChangeSettingViaIASK:) name:kIASKAppSettingChanged object:nil];
 		[self userDefaultsDidChange]; // force update in case of changes while we were hidden
 	}
+    
+    if (self.delegate && [self.delegate conformsToProtocol:@protocol(IASKSettingsDelegate)]) {
+        [self.delegate settingsViewControllerWillAppear:self];
+    }
+    
 	[super viewWillAppear:animated];
 }
 

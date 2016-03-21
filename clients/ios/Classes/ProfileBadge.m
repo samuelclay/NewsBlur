@@ -85,6 +85,8 @@
         }
     }
     
+    self.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    
     if (showStats) {
         shouldShowStats = showStats;
     }    
@@ -117,7 +119,7 @@
     
     // username
     UILabel *user = [[UILabel alloc] initWithFrame:CGRectZero];
-    user.textColor = UIColorFromRGB(NEWSBLUR_LINK_COLOR);
+    user.textColor = UIColorFromFixedRGB(NEWSBLUR_LINK_COLOR);
     user.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
     user.backgroundColor = [UIColor clearColor];
     self.username = user;
@@ -129,12 +131,12 @@
     UIButton *follow = [UIButton buttonWithType:UIButtonTypeCustom];
     follow.frame = CGRectMake(10, 96, 80, 24);
     
-    follow.layer.borderColor = [UIColor grayColor].CGColor;
+    follow.layer.borderColor = UIColorFromRGB(0x808080).CGColor;
     follow.layer.borderWidth = 0.5f;
     follow.layer.cornerRadius = 10.0f;
     
-    [follow setTitleColor:UIColorFromRGB(kFollowTextColor) forState:UIControlStateNormal];
-    follow.backgroundColor = UIColorFromRGB(kFollowColor);
+    [follow setTitleColor:UIColorFromFixedRGB(kFollowTextColor) forState:UIControlStateNormal];
+    follow.backgroundColor = UIColorFromFixedRGB(kFollowColor);
     
     // check follow button status    
     if ([[profile objectForKey:@"yourself"] intValue]) {
@@ -142,8 +144,8 @@
         follow.enabled = NO;
     } else if ([[profile objectForKey:@"followed_by_you"] intValue]) {
         [follow setTitle:@"Following" forState:UIControlStateNormal];
-        follow.backgroundColor = UIColorFromRGB(kFollowingColor);
-        [follow setTitleColor:UIColorFromRGB(kFollowingTextColor) forState:UIControlStateNormal];
+        follow.backgroundColor = UIColorFromFixedRGB(kFollowingColor);
+        [follow setTitleColor:UIColorFromFixedRGB(kFollowingTextColor) forState:UIControlStateNormal];
     } else {
         [follow setTitle:@"Follow" forState:UIControlStateNormal];
     }
@@ -224,15 +226,15 @@
     
     if (shouldShowStats) {
         UIView *horizontalBar = [[UIView alloc] initWithFrame:CGRectMake(0, kTopBadgeHeight, width, 1)];
-        horizontalBar.backgroundColor = [UIColor lightGrayColor];
+        horizontalBar.backgroundColor = UIColorFromRGB(0xCBCBCB);
         [self.contentView addSubview:horizontalBar];
         
         UIView *leftVerticalBar = [[UIView alloc] initWithFrame:CGRectMake((width/3), kTopBadgeHeight, 1, 55)];
-        leftVerticalBar.backgroundColor = [UIColor lightGrayColor];
+        leftVerticalBar.backgroundColor = UIColorFromRGB(0xCBCBCB);
         [self.contentView addSubview:leftVerticalBar];
         
         UIView *rightVerticalBar = [[UIView alloc] initWithFrame:CGRectMake((width/3) * 2, kTopBadgeHeight, 1, 55)];
-        rightVerticalBar.backgroundColor = [UIColor lightGrayColor];
+        rightVerticalBar.backgroundColor = UIColorFromRGB(0xCBCBCB);
         [self.contentView addSubview:rightVerticalBar];
         
         // Shared
@@ -242,6 +244,7 @@
         shared.text = sharedStr;
         shared.textAlignment = NSTextAlignmentCenter;
         shared.font = [UIFont boldSystemFontOfSize:20];
+        shared.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         shared.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:shared];
         
@@ -251,6 +254,7 @@
         sharedLabel.text = sharedLabelStr;
         sharedLabel.textAlignment = NSTextAlignmentCenter;
         sharedLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
+        sharedLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         sharedLabel.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:sharedLabel];
         
@@ -262,6 +266,7 @@
         following.text = followingStr;
         following.textAlignment = NSTextAlignmentCenter;
         following.font = [UIFont boldSystemFontOfSize:20];
+        following.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         following.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:following];
         
@@ -270,6 +275,7 @@
         followingLabel.text = followingLabelStr;
         followingLabel.textAlignment = NSTextAlignmentCenter;
         followingLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
+        followingLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         followingLabel.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:followingLabel];
         
@@ -281,6 +287,7 @@
         followers.text = followersStr;
         followers.textAlignment = NSTextAlignmentCenter;
         followers.font = [UIFont boldSystemFontOfSize:20];
+        followers.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         followers.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:followers];
         
@@ -290,6 +297,7 @@
         followersLabel.text = followersLabelStr;
         followersLabel.textAlignment = NSTextAlignmentCenter;
         followersLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
+        followersLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
         followersLabel.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:followersLabel];
     }
@@ -311,10 +319,10 @@
     
     if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
         urlString = [NSString stringWithFormat:@"%@/social/follow",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     } else {
         urlString = [NSString stringWithFormat:@"%@/social/unfollow",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     }
     
     NSURL *url = [NSURL URLWithString:urlString];
@@ -350,8 +358,8 @@
     } 
     
     [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
-    self.followButton.backgroundColor = UIColorFromRGB(kFollowColor);
-    [self.followButton setTitleColor:UIColorFromRGB(kFollowTextColor) forState:UIControlStateNormal];
+    self.followButton.backgroundColor = UIColorFromFixedRGB(kFollowColor);
+    [self.followButton setTitleColor:UIColorFromFixedRGB(kFollowTextColor) forState:UIControlStateNormal];
     [appDelegate reloadFeedsView:NO];
     
     NSMutableDictionary *newProfile = [self.activeProfile mutableCopy];
@@ -382,8 +390,8 @@
     
     NSLog(@"results %@", results);
     [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
-    self.followButton.backgroundColor = UIColorFromRGB(kFollowingColor);
-    [self.followButton setTitleColor:UIColorFromRGB(kFollowingTextColor) forState:UIControlStateNormal];
+    self.followButton.backgroundColor = UIColorFromFixedRGB(kFollowingColor);
+    [self.followButton setTitleColor:UIColorFromFixedRGB(kFollowingTextColor) forState:UIControlStateNormal];
     
     [appDelegate reloadFeedsView:NO];
     

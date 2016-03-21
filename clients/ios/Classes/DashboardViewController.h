@@ -34,10 +34,13 @@
 @property (nonatomic) IBOutlet UINavigationBar *topToolbar;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 @property (nonatomic) IBOutlet UISegmentedControl *segmentedButton;
+@property (nonatomic) IBOutlet UIImageView *logoImageView;
 
 - (IBAction)doLogout:(id)sender;
 - (void)refreshStories;
 - (void)refreshInteractions;
 - (void)refreshActivity;
 - (IBAction)tapSegmentedButton:(id)sender;
+- (void)updateTheme;
+
 @end

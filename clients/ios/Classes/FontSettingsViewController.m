@@ -39,7 +39,6 @@
     
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
-    self.modalPresentationStyle = UIModalPresentationPopover;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -52,7 +51,7 @@
     self.fonts = [NSMutableArray array];
     
     // Leave commented out for future use:
-    [self debugOutputFontNames];
+//    [self debugOutputFontNames];
     
     // Available fonts, in alphabetic order.  Remember to add bundled font filenames to the Info.plist.
     [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir" displayName:nil];
@@ -95,16 +94,35 @@
         }
     }
     
+    NSString *theme = [ThemeManager themeManager].theme;
+    if ([theme isEqualToString:@"sepia"]) {
+        self.themeSegment.selectedSegmentIndex = 1;
+    } else if ([theme isEqualToString:@"medium"]) {
+        self.themeSegment.selectedSegmentIndex = 2;
+    } else if ([theme isEqualToString:@"dark"]) {
+        self.themeSegment.selectedSegmentIndex = 3;
+    } else {
+        self.themeSegment.selectedSegmentIndex = 0;
+    }
+    
     [self.menuTableView reloadData];
     
-    self.preferredContentSize = CGSizeMake(240.0, 259.0);
+    // -[NewsBlurAppDelegate navigationController:willShowViewController:animated:] hides this too late, so this gets mis-measured otherwise
+    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (void)debugOutputFontNames {
+    NSLog(@"Debugging font names");
     for (NSString *family in [[UIFont familyNames] sortedArrayUsingSelector:@selector(compare:)]) {
         NSLog(@"%@", family);
         
@@ -173,10 +191,35 @@
     [userPreferences synchronize];
 }
 
+- (IBAction)changeTheme:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *theme = ThemeStyleLight;
+    switch ([sender selectedSegmentIndex]) {
+        case 1:
+            theme = ThemeStyleSepia;
+            break;
+        case 2:
+            theme = ThemeStyleMedium;
+            break;
+        case 3:
+            theme = ThemeStyleDark;
+            break;
+            
+        default:
+            break;
+    }
+    [ThemeManager themeManager].theme = theme;
+    
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    [self.menuTableView reloadData];
+    [userPreferences synchronize];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 8;
+    return 9;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -188,6 +231,8 @@
         return [self makeFontSizeTableCell];
     } else if (indexPath.row == 7) {
         return [self makeLineSpacingTableCell];
+    } else if (indexPath.row == 8) {
+        return [self makeThemeTableCell];
     }
     
     if (cell == nil) {
@@ -195,7 +240,14 @@
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIndentifier];
     }
-        
+    
+    cell.textLabel.textColor = UIColorFromRGB(0x303030);
+    cell.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+    cell.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+    cell.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    cell.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    cell.imageView.tintColor = UIColorFromRGB(0x303030);
+
     if (indexPath.row == 0) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
@@ -236,7 +288,7 @@
         } else {
             cell.textLabel.text = @"Font...";
         }
-        cell.imageView.image = [UIImage imageNamed:@"choose_font.png"];
+        cell.imageView.image = [[UIImage imageNamed:@"choose_font.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
     
     return cell;
@@ -303,6 +355,7 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
     [self.fontSizeSegment setTitle:@"XS" forSegmentAtIndex:0];
@@ -311,6 +364,7 @@
     [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
     [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
     [self.fontSizeSegment setTintColor:UIColorFromRGB(0x738570)];
+    self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
     [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
@@ -328,6 +382,7 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.lineSpacingSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xs"] forSegmentAtIndex:0];
@@ -336,10 +391,50 @@
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_l"] forSegmentAtIndex:3];
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xl"] forSegmentAtIndex:4];
     [self.lineSpacingSegment setTintColor:UIColorFromRGB(0x738570)];
+    self.lineSpacingSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
     
     [cell addSubview:self.lineSpacingSegment];
     
     return cell;
+}
+
+- (UITableViewCell *)makeThemeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:self.themeSegment.selectedSegmentIndex == 0];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:self.themeSegment.selectedSegmentIndex == 1];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:self.themeSegment.selectedSegmentIndex == 2];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:self.themeSegment.selectedSegmentIndex == 3];
+    
+    self.themeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [self.themeSegment setImage:lightImage forSegmentAtIndex:0];
+    [self.themeSegment setImage:sepiaImage forSegmentAtIndex:1];
+    [self.themeSegment setImage:mediumImage forSegmentAtIndex:2];
+    [self.themeSegment setImage:darkImage forSegmentAtIndex:3];
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, self.themeSegment.frame.size.height), NO, 0.0);
+    UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.themeSegment setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+    self.themeSegment.tintColor = [UIColor clearColor];
+    self.themeSegment.backgroundColor = [UIColor clearColor];
+    
+    [cell addSubview:self.themeSegment];
+    
+    return cell;
+}
+
+- (UIImage *)themeImageWithName:(NSString *)name selected:(BOOL)selected {
+    if (selected) {
+        name = [name stringByAppendingString:@"-sel"];
+    }
+    
+    return [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 }
 
 @end

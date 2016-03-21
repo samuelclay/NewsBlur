@@ -89,23 +89,23 @@
     margin: 0 90px;
 }
 
-.NB-ipad-wide#story_pane .nb-story-comments-public-teaser, 
-.NB-ipad-wide#story_pane .nb-story-comments-public-header,
-.NB-ipad-wide#story_pane .nb-story-comments-friends-header,
+.NB-ipad-wide#story_pane .NB-story-comments-public-teaser,
+.NB-ipad-wide#story_pane .NB-story-comments-public-header,
+.NB-ipad-wide#story_pane .NB-story-comments-friends-header,
 .NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
     padding-left: 90px;
     padding-right: 90px;
 }
 
-.NB-ipad-wide#story_pane .nb-story-comment {
+.NB-ipad-wide#story_pane .NB-story-comment {
     padding: 0 90px 2px 150px;
 }
 
-.NB-ipad-wide#story_pane .nb-story-comment .nb-user-avatar,
+.NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     left: 88px;
 }
-.NB-ipad-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
+.NB-ipad-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     left: 108px;
 }
 
@@ -128,7 +128,7 @@
 
 .NB-iphone-wide .NB-story,
 .NB-ipad-narrow .NB-story {
-    padding: 25px 30px;
+    padding: 20px 30px;
 }
 
 .NB-iphone-wide .NB-share-inner-wrapper,
@@ -136,28 +136,28 @@
     padding: 0 30px;
 }
 
-.NB-iphone-wide#story_pane .nb-story-comments-public-teaser,
-.NB-iphone-wide#story_pane .nb-story-comments-public-header,
-.NB-iphone-wide#story_pane .nb-story-comments-friends-header,
+.NB-iphone-wide#story_pane .NB-story-comments-public-teaser,
+.NB-iphone-wide#story_pane .NB-story-comments-public-header,
+.NB-iphone-wide#story_pane .NB-story-comments-friends-header,
 .NB-iphone-wide#story_pane .NB-story-comments-shares-teaser,
-.NB-ipad-narrow#story_pane .nb-story-comments-public-teaser,
-.NB-ipad-narrow#story_pane .nb-story-comments-public-header,
-.NB-ipad-narrow#story_pane .nb-story-comments-friends-header,
+.NB-ipad-narrow#story_pane .NB-story-comments-public-teaser,
+.NB-ipad-narrow#story_pane .NB-story-comments-public-header,
+.NB-ipad-narrow#story_pane .NB-story-comments-friends-header,
 .NB-ipad-narrow#story_pane .NB-story-comments-shares-teaser {
     padding-left: 30px;
     padding-right: 30px;
 }
 
-.NB-iphone-wide#story_pane .nb-story-comment,
-.NB-ipad-narrow#story_pane .nb-story-comment {
+.NB-iphone-wide#story_pane .NB-story-comment,
+.NB-ipad-narrow#story_pane .NB-story-comment {
     padding: 0 30px 2px 90px;
 }
 .NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar {
     left: 26px;
 }
-.NB-iphone-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar,
-.NB-ipad-narrow#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
+.NB-iphone-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+.NB-ipad-narrow#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     left: 45px;
 }
 
@@ -185,7 +185,7 @@
 }
 
 .NB-iphone .NB-story {
-    padding: 12px 12px;
+    padding: 12px 12px 12px;
 }
 
 .NB-iphone .NB-share-inner-wrapper {
@@ -389,8 +389,6 @@ body.NB-iphone {
 }
 
 .NB-user-tag.NB-add-user-tag {
-    text-transform: uppercase;
-    font-size: .9em;
     background: rgba(0, 0, 0, .25) url("add_tag.png") no-repeat 6px 3px;
     background-size: 8px;
     color: #E5EBDB;
@@ -453,19 +451,23 @@ a:active {
 }
 
 .NB-story blockquote {
-    border-left: 5px solid #C2C5BE;
-    padding: 0 1.5em;
-    color: rgba(10, 12, 38, .8);
+    border-left: 2px solid #ECEFE9;
+    padding: 1em;
     margin: 20px 0;
+    background-color: #F4F6F2;
 }
 
 div + p {
     margin: 20px 0px 20px 0;
 }
 
-.NB-story p {
+.NB-story p,
+.NB-story div {
     margin: 0px 0px 20px 0;
     clear: both;
+}
+.NB-story blockquote p:last-child {
+    margin-bottom: 0;
 }
 
 .NB-story small {
@@ -597,6 +599,9 @@ del {
     clear: both !important;
     max-width: none !important;
 }
+.NB-story-comments-group:first-child {
+    margin-top: 32px;
+}
 .NB-story-comments-group:last-child {
     border-bottom: 1px solid #EAECE8;
 }
@@ -635,13 +640,13 @@ del {
     float: none;
 }
 
-.nb-story-comments-label {
+.NB-story-comments-label {
     float: left;
     margin-right: 2px;
     white-space: nowrap;
 }
 
-.nb-story-share-label {
+.NB-story-share-label {
     float: right;
     margin-left: 2px;
     white-space: nowrap;
@@ -682,7 +687,8 @@ a.NB-show-profile {
     white-space: nowrap;
     float: right;
     
-    line-height: 20px;
+    line-height: 0px;
+    height: 20px;
     font-family: Helvetica, sans-serif;
     font-size: 14px;
     display: block;
@@ -838,7 +844,6 @@ a.NB-show-profile {
     line-height: 20px;
     overflow: hidden;
     min-height: 72px;
-    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
 }
 #story_pane .NB-story-comment-friend-shares .NB-story-comment {
     min-height: inherit;
@@ -1072,9 +1077,9 @@ a.NB-show-profile {
     color: #404040;
     text-shadow: 0 1px 0 white;
     border: 1px solid transparent;
-    border-color: rgba(0, 0, 0, .1) transparent rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    border-color: #E0E0E0 transparent #D0D0D0;
 }
+
 #story_pane .NB-story-comments-shares-teaser {
     background-color: #F5F5EF;
     color: #898989;
@@ -1121,7 +1126,7 @@ a.NB-show-profile {
     vertical-align: middle;
     height: 22px;
     width: 22px;
-    margin: 0 4px 6px 0;
+    margin: 0 4px 0 0;
     cursor: pointer;
 }
 

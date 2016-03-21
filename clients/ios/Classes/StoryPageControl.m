@@ -45,7 +45,6 @@
 @synthesize buttonBack;
 @synthesize bottomSize;
 @synthesize bottomSizeHeightConstraint;
-@synthesize popoverController;
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
 @synthesize isDraggingScrollview;
@@ -102,9 +101,7 @@
     [self.scrollView sizeToFit];
 //    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
     
-    popoverClass = [WYPopoverController class];
-    
-    // adding HUD for progress bar    
+    // adding HUD for progress bar
     CGFloat radius = 8;
     circularProgressView = [[THCircularProgressView alloc]
                             initWithCenter:CGPointMake(self.buttonNext.frame.origin.x + 2*radius,
@@ -147,6 +144,9 @@
     spacer3BarButton.width = -6;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    if ([ThemeManager themeManager].isDarkTheme) {
+        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+    }
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
                                                     target:nil
                                                     action:nil];
@@ -188,7 +188,7 @@
     [self.view addSubview:self.notifier];
     [self.notifier hideNow];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
                                                    separatorBarButton,
@@ -200,11 +200,31 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
+
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
+    [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
+    [self addKeyCommandWithInput:@"k" modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
+    [self addKeyCommandWithInput:@"\r" modifierFlags:UIKeyModifierShift action:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
+    [self addKeyCommandWithInput:@" " modifierFlags:0 action:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
+    [self addKeyCommandWithInput:@" " modifierFlags:UIKeyModifierShift action:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
+    [self addKeyCommandWithInput:@"n" modifierFlags:0 action:@selector(doNextUnreadStory:) discoverabilityTitle:@"Next Unread Story"];
+    [self addKeyCommandWithInput:@"u" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+    [self addKeyCommandWithInput:@"m" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+    [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(toggleStorySaved:) discoverabilityTitle:@"Save/Unsave Story"];
+    [self addKeyCommandWithInput:@"o" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+    [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+    [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
+    [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
+    [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+    [self addCancelKeyCommandWithAction:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
+    [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierShift action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
 
@@ -213,7 +233,7 @@
                          isEqualToString:@"pop_to_story_list"];;
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (self.isPhoneOrCompact) {
         if (!appDelegate.storiesCollection.isSocialView) {
             UIImage *titleImage;
             if (appDelegate.storiesCollection.isSocialRiverView &&
@@ -286,7 +306,7 @@
     [super viewDidAppear:animated];
     
     // set the subscribeButton flag
-    if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (appDelegate.isTryFeedView && !self.isPhoneOrCompact) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
@@ -296,6 +316,7 @@
     [self reorientPages];
 //    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+    [self becomeFirstResponder];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -314,6 +335,11 @@
     
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+}
+
+- (BOOL)becomeFirstResponder {
+    // delegate to current page
+    return [currentPage becomeFirstResponder];
 }
 
 - (void)transitionFromFeedDetail {
@@ -361,15 +387,17 @@
 //    CGRect scrollViewFrame = self.scrollView.frame;
 //    CGRect traverseViewFrame = self.traverseView.frame;
 
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ||
+    if (self.isPhoneOrCompact ||
         UIInterfaceOrientationIsLandscape(orientation)) {
 //        scrollViewFrame.size.height = self.view.bounds.size.height;
 //        self.bottomSize.hidden = YES;
         [self.bottomSizeHeightConstraint setConstant:0];
+        [bottomSize setHidden:YES];
     } else {
 //        scrollViewFrame.size.height = self.view.bounds.size.height - 12;
 //        self.bottomSize.hidden = NO;
         [self.bottomSizeHeightConstraint setConstant:12];
+        [bottomSize setHidden:NO];
     }
     
     [self.view layoutIfNeeded];
@@ -487,7 +515,7 @@
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
         CGPoint tappedPt = [theTouch locationInView:self.view];
@@ -507,13 +535,38 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         if (self.inTouchMove) {
             self.inTouchMove = NO;
             [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
         }
     }
+}
+
+- (BOOL)isPhoneOrCompact {
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+}
+
+- (void)updateTraverseBackground {
+    self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    self.dragBarImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"drag_icon.png"]];
+    self.bottomSize.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+}
+
+- (void)updateTheme {
+    [super updateTheme];
+    
+    [self updateTraverseBackground];
+    [self setNextPreviousButtons];
+    [self setTextButton];
+    [self drawStories];
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 #pragma mark -
@@ -534,7 +587,7 @@
 		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
@@ -542,7 +595,7 @@
 		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
 		pageFrame.origin.y = CGRectGetHeight(self.view.bounds);
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
@@ -700,7 +753,7 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
         CGFloat pageWidth = self.scrollView.frame.size.width;
@@ -710,7 +763,7 @@
         if (![appDelegate.storiesCollection.activeFeedStories count]) return;
         
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:nearestNumber];
-        if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory]) {
+        if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory] && storyIndex != NSNotFound) {
             appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories
                                        objectAtIndex:storyIndex];
             [appDelegate changeActiveFeedDetailRow];
@@ -720,7 +773,7 @@
 
 - (void)animateIntoPlace:(BOOL)animated {
     // Move view into position if no story is selected yet
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!self.isPhoneOrCompact &&
         !self.isAnimatedIntoPlace) {
         CGRect frame = self.scrollView.frame;
         frame.origin.x = frame.size.width;
@@ -765,6 +818,27 @@
             [self setStoryFromScroll];
         }
     }
+    [self becomeFirstResponder];
+}
+
+- (void)changeToNextPage:(id)sender {
+    NSInteger nextPageIndex = nextPage.pageIndex;
+    if (nextPageIndex < 0 && currentPage.pageIndex < 0) {
+        // just displaying a placeholder - display the first story instead
+        [self changePage:0 animated:YES];
+        return;
+    }
+    [self changePage:nextPageIndex animated:YES];
+}
+
+- (void)changeToPreviousPage:(id)sender {
+    NSInteger previousPageIndex = previousPage.pageIndex;
+    if (previousPageIndex < 0) {
+        if (currentPage.pageIndex < 0)
+            [self changeToNextPage:sender];
+        return;
+    }
+    [self changePage:previousPageIndex animated:YES];
 }
 
 - (void)setStoryFromScroll {
@@ -805,7 +879,7 @@
     previousPage.webView.scrollView.scrollsToTop = NO;
     currentPage.webView.scrollView.scrollsToTop = YES;
     currentPage.isRecentlyUnread = NO;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (!self.isPhoneOrCompact) {
         appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
     }
     self.scrollView.scrollsToTop = NO;
@@ -822,6 +896,8 @@
         }
         [appDelegate.feedDetailViewController redrawUnreadStory];
     }
+
+    [currentPage becomeFirstResponder];
 }
 
 - (void)advanceToNextUnread {
@@ -882,6 +958,9 @@
         [buttonPrevious setEnabled:YES];
     }
     
+    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_previous.png"]]
+                              forState:UIControlStateNormal];
+    
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
     NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
@@ -890,11 +969,11 @@
     if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
         nextIndex != -1) {
         [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"]
+        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_next.png"]]
                               forState:UIControlStateNormal];
     } else {
         [buttonNext setTitle:[@"Done" uppercaseString] forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_done.png"]
+        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_done.png"]]
                               forState:UIControlStateNormal];
     }
     
@@ -922,14 +1001,17 @@
         [buttonSend setAlpha:.4];
     }
     
+    [buttonSend setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_send.png"]]
+                          forState:UIControlStateNormal];
+    
     if (storyViewController.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text_on.png"]
+        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
                               forState:nil];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
         [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text.png"]
+        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
                               forState:nil];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
     }
@@ -937,10 +1019,12 @@
 
 - (IBAction)openSendToDialog:(id)sender {
     [self endTouchDown:sender];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSendToPopover:sender];
-    }
     [appDelegate showSendTo:self sender:sender];
+}
+
+- (void)openStoryTrainerFromKeyboard:(id)sender {
+    // don't have a tap target for the popover, but the settings button at least doesn't move
+    [appDelegate openTrainStory:self.fontSettingsButton];
 }
 
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
@@ -996,7 +1080,7 @@
 }
 
 - (IBAction)showOriginalSubview:(id)sender {
-    [appDelegate.masterContainerViewController hidePopover];
+    [appDelegate hidePopover];
 
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
@@ -1034,41 +1118,39 @@
     [self.previousPage showTextOrStoryView];
 }
 
+- (void)toggleStorySaved:(id)sender {
+    [appDelegate.storiesCollection toggleStorySaved];
+}
+
+- (void)toggleStoryUnread:(id)sender {
+    [appDelegate.storiesCollection toggleStoryUnread];
+    [appDelegate.feedDetailViewController redrawUnreadStory]; // XXX only if successful?
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    if (action == @selector(toggleTextView:) ||
+        action == @selector(scrollPageDown:) ||
+        action == @selector(scrollPageUp:) ||
+        action == @selector(toggleStoryUnread:) ||
+        action == @selector(toggleStorySaved:) ||
+        action == @selector(showOriginalSubview:) ||
+        action == @selector(openShareDialog) ||
+        action == @selector(scrolltoComment) ||
+        action == @selector(openStoryTrainerFromKeyboard:)) {
+        return (currentPage.pageIndex >= 0);
+    }
+    return [super canPerformAction:action withSender:sender];
+}
+
 #pragma mark -
 #pragma mark Styles
 
 
 - (IBAction)toggleFontSize:(id)sender {
-    [self.appDelegate.fontSettingsNavigationController popToRootViewControllerAnimated:NO];
-    self.appDelegate.fontSettingsNavigationController.modalPresentationStyle = UIModalPresentationPopover;
-    UIPopoverPresentationController *popPC = self.appDelegate.fontSettingsNavigationController.popoverPresentationController;
-    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    popPC.delegate = self;
-    popPC.barButtonItem = self.fontSettingsButton;
-//    popPC.sourceView = self.view;
-//    popPC.sourceRect = [sender frame];
-    
-    [self presentViewController:self.appDelegate.fontSettingsNavigationController animated:YES completion:nil];
-    return;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFontSettingsPopover:self.fontSettingsButton];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.fontSettingsNavigationController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [self.popoverController setPopoverContentSize:CGSizeMake(240.0, 302.0)];
-        [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                       animated:YES];
-    }
+    UINavigationController *fontSettingsNavigationController = self.appDelegate.fontSettingsNavigationController;
+
+    [fontSettingsNavigationController popToRootViewControllerAnimated:NO];
+    [self.appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {
@@ -1087,6 +1169,19 @@
     [self.currentPage changeLineSpacing:lineSpacing];
     [self.nextPage changeLineSpacing:lineSpacing];
     [self.previousPage changeLineSpacing:lineSpacing];
+}
+
+- (void)drawStories {
+    [self.currentPage drawStory];
+    [self.nextPage drawStory];
+    [self.previousPage drawStory];
+}
+
+- (void)backToDashboard:(id)sender {
+    UINavigationController *feedDetailNavigationController = appDelegate.feedDetailViewController.navigationController;
+    if (feedDetailNavigationController != nil)
+        [feedDetailNavigationController popViewControllerAnimated: YES];
+    [self transitionFromFeedDetail];
 }
 
 #pragma mark -
@@ -1170,25 +1265,6 @@
 //        
         [self changePage:previousLocation];
     }
-}
-
-#pragma mark -
-#pragma mark WYPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
-	//Safe to release the popover here
-	self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
-	//The popover is automatically dismissed if you click outside it, unless you return NO here
-	return YES;
-}
-
-#pragma mark - UIPopoverPresentationControllerDelegate
-
-- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
-    return UIModalPresentationNone;
 }
 
 @end

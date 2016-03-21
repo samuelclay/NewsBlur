@@ -6,7 +6,7 @@
 //  Copyright © 2015 NewsBlur. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "StoriesCollection.h"
 
 @interface MarkReadMenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
@@ -15,6 +15,9 @@
 @property (nonatomic, strong) NSString *collectionTitle;
 @property (nonatomic, strong) NSArray *feedIds;
 @property (nonatomic) NSInteger visibleUnreadCount;
+@property (nonatomic, strong) StoriesCollection *olderNewerStoriesCollection;
+@property (nonatomic, strong) NSDictionary *olderNewerStory;
+@property (nonatomic, strong) NSArray *extraItems;
 @property (nonatomic, copy) void (^completionHandler)(BOOL marked);
 
 @end

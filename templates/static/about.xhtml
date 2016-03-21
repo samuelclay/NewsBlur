@@ -74,6 +74,23 @@
       </ul>
     </div>
   </div>
+  <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Who:</span> Writing the iOS App</h5>
+    <div class="NB-module-content">
+    <ul class="NB-about-who">
+        <li>
+            <img src="{{ MEDIA_URL }}img/static/David.jpg">
+            <div class="NB-about-who-name">David Sinclair</div>
+            <div class="NB-acount-who-github"><a href="https://github.com/Dejal">@Dejal</a></div>
+        </li>
+        <li>
+            <img src="{{ MEDIA_URL }}img/static/Nicholas.jpg">
+            <div class="NB-about-who-name">Nicholas Riley</div>
+            <div class="NB-acount-who-github"><a href="https://github.com/nriley">@nriley</a></div>
+        </li>
+      </ul>
+    </div>
+  </div>
 
   <div class="NB-module">
     <h5 class="NB-module-title"><span class="NB-module-title-prefix">When:</span> The story behind NewsBlur</h5>
@@ -96,6 +113,7 @@
         <li><a href="http://www.mongodb.com">MongoDB</a>, <a href="http://www.mongodb.com/pymongo">Pymongo</a>, &amp; <a href="http://www.github.com/hmarr/mongoengine">Mongoengine</a>: Non-relational database, used to store stories, read stories, feed/page fetch histories, and proxied sites.</li>
         <li class=""><a href="http://www.postgresql.com">PostgreSQL</a>: Relational database, used to store feeds, subscriptions, and user accounts.</li>
         <li class="last"><a href="http://www.redis.io">Redis</a>: Non-relational database, used to calculate unread stories, and used to store friendships and unread story lists. Also used for pub/sub for real-time story updates. Also used as celery's queue backend. Fantastic database technology that changed the game for NewsBlur.</li>
+        <li class="last"><a href="http://www.nodejs.org">Node</a>: Event-driven I/O server-side JavaScript. Used to support real-time story updates, syncing multiple open sessions for a single user (reading a story on your phone will instantly update the web), and a better favicon server.</li>
       </ul>
     </div>
   </div>

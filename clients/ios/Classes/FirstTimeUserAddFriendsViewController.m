@@ -115,7 +115,7 @@
 
 - (void)connectToSocial {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     [request setValidatesSecureCertificate:NO];
@@ -199,7 +199,7 @@
     
     NSURL *preferenceURL = [NSURL URLWithString:
                           [NSString stringWithFormat:@"%@/profile/set_preference",
-                           NEWSBLUR_URL]];
+                           self.appDelegate.url]];
     
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:preferenceURL];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]

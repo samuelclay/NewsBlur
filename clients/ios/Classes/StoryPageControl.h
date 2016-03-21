@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "WYPopoverController.h"
 #import "THCircularProgressView.h"
 #import "NBNotifier.h"
 
@@ -17,7 +16,7 @@
 @class ASIHTTPRequest;
 
 @interface StoryPageControl : BaseViewController
-<UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate, WYPopoverControllerDelegate> {
+<UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
 
@@ -30,9 +29,6 @@
     UIView *traverseView;
     UIView *progressView;
     UIView *progressViewContainer;
-    
-    WYPopoverController *popoverController;
-	Class popoverClass;
     
     BOOL isDraggingScrollview;
     BOOL isAnimatedIntoPlace;
@@ -50,6 +46,8 @@
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic) IBOutlet UIImageView *textStorySendBackgroundImageView;
+@property (nonatomic) IBOutlet UIImageView *prevNextBackgroundImageView;
 @property (nonatomic) IBOutlet THCircularProgressView *circularProgressView;
 @property (nonatomic) IBOutlet UIButton *buttonPrevious;
 @property (nonatomic) IBOutlet UIButton *buttonNext;
@@ -69,6 +67,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
+@property (nonatomic) IBOutlet UIImageView *dragBarImageView;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
 @property (readwrite) CGFloat inTouchMove;
@@ -78,8 +77,6 @@
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
-
-@property (nonatomic, strong) WYPopoverController *popoverController;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
@@ -115,6 +112,7 @@
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (void)changeLineSpacing:(NSString *)lineSpacing;
+- (void)drawStories;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;
 - (void)hideNotifier;

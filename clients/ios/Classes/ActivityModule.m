@@ -43,6 +43,7 @@
     self.activitiesTable.delegate = self;
     self.activitiesTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);;
     self.activitiesTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.activitiesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     [self addSubview:self.activitiesTable];   
 }
@@ -97,7 +98,7 @@
         NSString *urlString = [NSString stringWithFormat:@
                                "%@/social/activities?user_id=%@&page=%i&limit=10"
                                "&category=signup&category=star&category=feedsub&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
-                               NEWSBLUR_URL,
+                               self.appDelegate.url,
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
         
@@ -243,6 +244,7 @@
         UIView *myBackView = [[UIView alloc] initWithFrame:self.frame];
         myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
         cell.selectedBackgroundView = myBackView;
+        cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     }
     
     return cell;
@@ -317,6 +319,7 @@
                              reuseIdentifier:@"NoReuse"];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     if (self.pageFinished) {
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
@@ -331,7 +334,7 @@
         fleuron.frame = CGRectMake(0, 0, self.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
-        fleuron.backgroundColor = [UIColor whiteColor];
+        fleuron.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     } else {
         cell.textLabel.text = @"Loading...";
         

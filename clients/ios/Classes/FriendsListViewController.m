@@ -12,6 +12,7 @@
 #import "ASIHTTPRequest.h"
 #import "ProfileBadge.h"
 #import "MBProgressHUD.h"
+#import "UISearchBar+Field.h"
 
 @implementation UINavigationController (DelegateAutomaticDismissKeyboard)
 - (BOOL)disablesAutomaticKeyboardDismissal {
@@ -70,6 +71,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.friendsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    
     [self.friendSearchBar becomeFirstResponder];
 }
 
@@ -112,7 +117,7 @@
 
 - (void)loadFriendsList:(NSString *)query {    
     NSString *urlString = [NSString stringWithFormat:@"%@/social/find_friends?query=%@&limit=10",
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            query];
     NSURL *url = [NSURL URLWithString:urlString];
     
@@ -126,7 +131,7 @@
 
 - (void)loadSuggestedFriendsList {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -239,7 +244,7 @@ viewForHeaderInSection:(NSInteger)section {
     headerLabel.backgroundColor = [UIColor clearColor];
     headerLabel.opaque = NO;
     headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-    headerLabel.highlightedTextColor = [UIColor whiteColor];
+    headerLabel.highlightedTextColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     headerLabel.font = [UIFont boldSystemFontOfSize:11];
     headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
@@ -367,8 +372,10 @@ viewForHeaderInSection:(NSInteger)section {
 //            [cell.contentView addSubview:badge];
 //        }
 //    }
-
+    
+    cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     return cell;
 }
 

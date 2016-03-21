@@ -82,7 +82,7 @@
         NSString *feedId = [self feedId];
         NSURL *url = [NSURL URLWithString:[NSString
                                            stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
-                                           NEWSBLUR_URL, feedId]];
+                                           self.appDelegate.url, feedId]];
 
         __weak __typeof(&*self)weakSelf = self;
         AFHTTPRequestOperation *request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];
@@ -104,7 +104,7 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^() {
                 if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                    [appDelegate.masterContainerViewController hidePopover];
+                    [appDelegate hidePopover];
                 } else {
                     [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
                 }
@@ -544,7 +544,7 @@
 #pragma mark Actions
 
 - (IBAction)doCloseDialog:(id)sender {
-    [appDelegate.masterContainerViewController hidePopover];
+    [appDelegate hidePopover];
     [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -15,6 +15,8 @@
 
 @implementation FeedsMenuViewController
 
+#define kMenuOptionHeight 38
+
 @synthesize appDelegate;
 @synthesize menuOptions;
 @synthesize menuTableView;
@@ -37,6 +39,8 @@
     if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
+                                            [@"Mute Sites" uppercaseString],
+                                            [@"Organize Sites" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString],
                                             [@"Login as..." uppercaseString],
@@ -44,6 +48,8 @@
     } else {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
+                                            [@"Mute Sites" uppercaseString],
+                                            [@"Organize Sites" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString], nil];
     }
@@ -68,10 +74,26 @@
     [super viewWillAppear:animated];
     
     [self.menuTableView reloadData];
+    
+    NSString *theme = [ThemeManager themeManager].theme;
+    if ([theme isEqualToString:@"sepia"]) {
+        self.themeSegmentedControl.selectedSegmentIndex = 1;
+    } else if ([theme isEqualToString:@"medium"]) {
+        self.themeSegmentedControl.selectedSegmentIndex = 2;
+    } else if ([theme isEqualToString:@"dark"]) {
+        self.themeSegmentedControl.selectedSegmentIndex = 3;
+    } else {
+        self.themeSegmentedControl.selectedSegmentIndex = 0;
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 #pragma mark -
@@ -79,12 +101,16 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
-    return [self.menuOptions count];
+    return [self.menuOptions count] + 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIndentifier = @"Cell";
+    
+    if (indexPath.row == [self.menuOptions count]) {
+        return [self makeThemeTableCell];
+    }
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
     
@@ -96,15 +122,38 @@
     
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
     
-    if (indexPath.row == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_preferences.png"];
-    } else if (indexPath.row == 1) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_followers.png"];
-    } else if (indexPath.row == 2) {
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
-    } else if (indexPath.row == 3) {
-        cell.imageView.image = [UIImage imageNamed:@"barbutton_sendto.png"];
+    UIImage *image = nil;
+    
+    switch (indexPath.row) {
+        case 0:
+            image = [UIImage imageNamed:@"menu_icn_preferences.png"];
+            break;
+            
+        case 1:
+            image = [UIImage imageNamed:@"menu_icn_mute.png"];
+            break;
+            
+        case 2:
+            image = [UIImage imageNamed:@"menu_icn_organize.png"];
+            break;
+            
+        case 3:
+            image = [UIImage imageNamed:@"menu_icn_followers.png"];
+            break;
+            
+        case 4:
+            image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
+            break;
+            
+        case 5:
+            image = [UIImage imageNamed:@"barbutton_sendto.png"];
+            break;
+            
+        default:
+            break;
     }
+    
+    cell.imageView.image = image;
     
     return cell;
 }
@@ -115,21 +164,39 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    if (indexPath.row == 0) {
-        [appDelegate showPreferences];
-    } else if (indexPath.row == 1) {
-        [appDelegate showFindFriends];
-    } else if (indexPath.row == 2) {
-        [appDelegate confirmLogout];
-    } else if (indexPath.row == 3) {
-        [self showLoginAsDialog];
+    switch (indexPath.row) {
+        case 0:
+            [appDelegate showPreferences];
+            break;
+            
+        case 1:
+            [appDelegate showMuteSites];
+            break;
+            
+        case 2:
+            [appDelegate showOrganizeSites];
+            break;
+            
+        case 3:
+            [appDelegate showFindFriends];
+            break;
+            
+        case 4:
+            [appDelegate confirmLogout];
+            break;
+            
+        case 5:
+            [self showLoginAsDialog];
+            break;
+            
+        default:
+            break;
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController hidePopover];
+        [self.appDelegate hidePopover];
     } else {
-        [appDelegate.feedsViewController.popoverController dismissPopoverAnimated:YES];
-         appDelegate.feedsViewController.popoverController = nil;
+        [self.appDelegate hidePopoverAnimated:YES];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
@@ -154,7 +221,7 @@
     }
     if (buttonIndex == 1) {
         NSString *urlS = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
-                          NEWSBLUR_URL, alertTextField.text];
+                          self.appDelegate.url, alertTextField.text];
         NSURL *url = [NSURL URLWithString:urlS];
         
         __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -179,6 +246,72 @@
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:appDelegate.feedsViewController.view animated:YES];
         HUD.labelText = [NSString stringWithFormat:@"Login: %@", alertTextField.text];
     }
+}
+
+#pragma mark - Theme Options
+
+- (UITableViewCell *)makeThemeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:self.themeSegmentedControl.selectedSegmentIndex == 0];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:self.themeSegmentedControl.selectedSegmentIndex == 1];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:self.themeSegmentedControl.selectedSegmentIndex == 2];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:self.themeSegmentedControl.selectedSegmentIndex == 3];
+    
+    self.themeSegmentedControl.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [self.themeSegmentedControl setImage:lightImage forSegmentAtIndex:0];
+    [self.themeSegmentedControl setImage:sepiaImage forSegmentAtIndex:1];
+    [self.themeSegmentedControl setImage:mediumImage forSegmentAtIndex:2];
+    [self.themeSegmentedControl setImage:darkImage forSegmentAtIndex:3];
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, self.themeSegmentedControl.frame.size.height), NO, 0.0);
+    UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.themeSegmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+    self.themeSegmentedControl.tintColor = [UIColor clearColor];
+    self.themeSegmentedControl.backgroundColor = [UIColor clearColor];
+    
+    [cell addSubview:self.themeSegmentedControl];
+    
+    return cell;
+}
+
+- (UIImage *)themeImageWithName:(NSString *)name selected:(BOOL)selected {
+    if (selected) {
+        name = [name stringByAppendingString:@"-sel"];
+    }
+    
+    return [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+}
+
+- (IBAction)changeTheme:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *theme = ThemeStyleLight;
+    switch ([sender selectedSegmentIndex]) {
+        case 1:
+            theme = ThemeStyleSepia;
+            break;
+        case 2:
+            theme = ThemeStyleMedium;
+            break;
+        case 3:
+            theme = ThemeStyleDark;
+            break;
+            
+        default:
+            break;
+    }
+    [ThemeManager themeManager].theme = theme;
+    
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    [self.menuTableView reloadData];
+    [userPreferences synchronize];
 }
 
 @end

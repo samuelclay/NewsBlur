@@ -65,7 +65,7 @@
         scrollView = scroll;
         [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
 
-        UIColor *bgColor = UIColorFromRGB(0xF2F2F2);
+        UIColor *bgColor = UIColorFromRGB(0xF4F4F4);
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		self.backgroundColor = bgColor;
 
@@ -73,8 +73,6 @@
 		lastUpdatedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		lastUpdatedLabel.font = [UIFont systemFontOfSize:12.0f];
 		lastUpdatedLabel.textColor = TEXT_COLOR;
-		lastUpdatedLabel.shadowColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
-		lastUpdatedLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
 		lastUpdatedLabel.backgroundColor = [UIColor clearColor];
 		lastUpdatedLabel.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:lastUpdatedLabel];
@@ -83,8 +81,6 @@
 		statusLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		statusLabel.font = [UIFont boldSystemFontOfSize:13.0f];
 		statusLabel.textColor = TEXT_COLOR;
-		statusLabel.shadowColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
-		statusLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
 		statusLabel.backgroundColor = [UIColor clearColor];
 		statusLabel.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:statusLabel];
@@ -103,6 +99,7 @@
 		[self.layer addSublayer:arrowImage];
 
         activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        activityView.color = TEXT_COLOR;
 		activityView.frame = CGRectMake(30.0f, frame.size.height - 38.0f, 20.0f, 20.0f);
 		[self addSubview:activityView];
 
