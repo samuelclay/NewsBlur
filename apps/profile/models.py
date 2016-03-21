@@ -385,10 +385,10 @@ class Profile(models.Model):
             paypal.manage_recurring_payments_profile_status(profileid=profileid, action='Cancel')
         except PayPalAPIResponseError:
             logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % profileid)
-        elif second_most_recent_only:
-            logging.user(self.user, "~FRCanceling ~BR~FWsecond-oldest~SB~FR Paypal subscription: %s" % profileid)
         else:
-            logging.user(self.user, "~FRCanceling Paypal subscription: %s" % profileid)
+            if second_most_recent_only:
+                logging.user(self.user, "~FRCanceling ~BR~FWsecond-oldest~SB~FR Paypal subscription: %s" % profileid)  else:
+                logging.user(self.user, "~FRCanceling Paypal subscription: %s" % profileid)
         
         return True
         
