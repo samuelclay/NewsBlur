@@ -419,10 +419,14 @@ def payment_history(request):
         "read_story_count": RUserStory.read_story_count(user.pk),
         "feed_opens": UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum'],
         "training": {
-            'title': MClassifierTitle.objects.filter(user_id=user.pk).count(),
-            'tag': MClassifierTag.objects.filter(user_id=user.pk).count(),
-            'author': MClassifierAuthor.objects.filter(user_id=user.pk).count(),
-            'feed': MClassifierFeed.objects.filter(user_id=user.pk).count(),
+            'title_ps': MClassifierTitle.objects.filter(user_id=user.pk, score__gt=0).count(),
+            'title_ng': MClassifierTitle.objects.filter(user_id=user.pk, score__lt=0).count(),
+            'tag_ps': MClassifierTag.objects.filter(user_id=user.pk, score__gt=0).count(),
+            'tag_ng': MClassifierTag.objects.filter(user_id=user.pk, score__lt=0).count(),
+            'author_ps': MClassifierAuthor.objects.filter(user_id=user.pk, score__gt=0).count(),
+            'author_ng': MClassifierAuthor.objects.filter(user_id=user.pk, score__lt=0).count(),
+            'feed_ps': MClassifierFeed.objects.filter(user_id=user.pk, score__gt=0).count(),
+            'feed_ng': MClassifierFeed.objects.filter(user_id=user.pk, score__lt=0).count(),
         }
     }
     
