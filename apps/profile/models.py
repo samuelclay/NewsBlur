@@ -387,7 +387,8 @@ class Profile(models.Model):
             logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % profileid)
         else:
             if second_most_recent_only:
-                logging.user(self.user, "~FRCanceling ~BR~FWsecond-oldest~SB~FR Paypal subscription: %s" % profileid)  else:
+                logging.user(self.user, "~FRCanceling ~BR~FWsecond-oldest~SB~FR Paypal subscription: %s" % profileid)
+            else:
                 logging.user(self.user, "~FRCanceling Paypal subscription: %s" % profileid)
         
         return True
