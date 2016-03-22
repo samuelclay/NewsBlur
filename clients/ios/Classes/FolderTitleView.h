@@ -14,8 +14,7 @@
 @class NewsBlurAppDelegate;
 
 @interface FolderTitleView : UIView
-<UIGestureRecognizerDelegate,
-UIActionSheetDelegate> {
+<UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     UIFontDescriptor *fontDescriptorSize;
 }

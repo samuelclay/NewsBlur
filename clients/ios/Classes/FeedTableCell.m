@@ -44,6 +44,11 @@ static UIFont *textFont = nil;
         cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
         
+        // Clear out half pixel border on top and bottom that the draw code can't touch
+        UIView *selectedBackground = [[UIView alloc] init];
+        [selectedBackground setBackgroundColor:[UIColor clearColor]];
+        self.selectedBackgroundView = selectedBackground;
+
         [self.contentView addSubview:cellContent];
 
         [self setupGestures];
@@ -141,19 +146,19 @@ static UIFont *textFont = nil;
     UIColor *backgroundColor;
     
     backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromRGB(0xFFFFD2) :
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x405060, 0x000022) :
                       cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
                       cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
                       UIColorFromRGB(0xF7F8F5);
 
     [backgroundColor set];
-    CGContextFillRect(context, r);
+    CGContextFillRect(context, self.frame);
     
     if (cell.highlighted || cell.selected) {
 //        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
         
         // top border
-        UIColor *highlightBorderColor = UIColorFromRGB(0xE3D0AE);
+        UIColor *highlightBorderColor = UIColorFromLightDarkRGB(0xE3D0AE, 0x1F1F72);
         CGFloat lineWidth = 0.5f;
         CGContextSetStrokeColor(context, CGColorGetComponents([highlightBorderColor CGColor]));
         CGContextSetLineWidth(context, lineWidth);
@@ -169,14 +174,14 @@ static UIFont *textFont = nil;
         CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f*lineWidth);
         CGContextStrokePath(context);
     }
-    
+
     [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
                         listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)];
 
     
     UIColor *textColor = cell.highlighted || cell.selected ?
-                         [UIColor blackColor]:
-                         UIColorFromRGB(0x3a3a3a);
+                         UIColorFromRGB(NEWSBLUR_BLACK_COLOR):
+                         UIColorFromRGB(0x3A3A3A);
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {

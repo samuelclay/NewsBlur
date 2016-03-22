@@ -84,9 +84,9 @@
         [_txtLabel setFont:[UIFont fontWithName: @"Helvetica" size: 16]];
         [_txtLabel setBackgroundColor:[UIColor clearColor]];
         
-        [_txtLabel setTextColor:[UIColor whiteColor]];
+        _txtLabel.textColor = [UIColor whiteColor];
         
-        _txtLabel.layer.shadowOffset =CGSizeMake(0, -0.5);
+        _txtLabel.layer.shadowOffset = CGSizeMake(0, -0.5);
         _txtLabel.layer.shadowColor = [UIColor blackColor].CGColor;
         _txtLabel.layer.shadowOpacity = 1.0;
         _txtLabel.layer.shadowRadius = 1;

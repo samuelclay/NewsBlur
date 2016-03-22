@@ -15,11 +15,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        self.textLabel.backgroundColor = [UIColor clearColor];
-        self.textLabel.textColor = UIColorFromRGB(0x303030);
-        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-        self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-        self.textLabel.shadowOffset = CGSizeMake(0, 1);
+        self.destructive = NO;
         self.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
         [self setSeparatorInset:UIEdgeInsetsMake(0, 38, 0, 0)];
         UIView *background = [[UIView alloc] init];
@@ -35,13 +31,36 @@
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.imageView.bounds = CGRectMake(0, 0, self.frame.size.height, self.frame.size.height);
-    self.imageView.frame = CGRectMake(0, 0, self.frame.size.height, self.frame.size.height);
+    
+    CGFloat indent = self.indentationLevel * self.indentationWidth;
+    
+    self.imageView.bounds = CGRectMake(indent, 0, self.frame.size.height, self.frame.size.height);
+    self.imageView.frame = CGRectMake(indent, 0, self.frame.size.height, self.frame.size.height);
     self.imageView.contentMode = UIViewContentModeCenter;
     
-    self.textLabel.frame = CGRectMake(self.imageView.frame.size.width, 0,
-                                      self.frame.size.width - self.imageView.frame.size.width,
+    self.textLabel.frame = CGRectMake(indent + self.imageView.frame.size.width, 0,
+                                      self.frame.size.width - self.imageView.frame.size.width - indent,
                                       self.frame.size.height);
+    
+    if (self.destructive) {
+        self.textLabel.backgroundColor = [UIColor clearColor];
+        self.textLabel.textColor = UIColorFromRGB(0xffffff);
+        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+        self.textLabel.shadowColor = UIColorFromRGB(0xa0a0a0);
+        self.textLabel.shadowOffset = CGSizeMake(0, 1);
+        self.backgroundColor = UIColorFromRGB(0xff0000);
+        self.backgroundView.backgroundColor = UIColorFromRGB(0xff0000);
+        self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xffdada);
+    } else {
+        self.textLabel.backgroundColor = [UIColor clearColor];
+        self.textLabel.textColor = UIColorFromRGB(0x303030);
+        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+        self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+        self.textLabel.shadowOffset = CGSizeMake(0, 1);
+        self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+        self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+        self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

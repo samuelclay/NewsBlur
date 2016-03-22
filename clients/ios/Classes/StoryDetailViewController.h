@@ -44,9 +44,12 @@ UIActionSheetDelegate> {
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIView *noStoryMessage;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
+@property (nonatomic) BOOL hasStory;
 
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
@@ -63,6 +66,7 @@ UIActionSheetDelegate> {
 - (void)toggleLikeComment:(BOOL)likeComment;
 - (void)flashCheckmarkHud:(NSString *)messageType;
 - (void)scrolltoComment;
+- (void)tryScrollingDown:(BOOL)down;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)checkTryFeedStory;

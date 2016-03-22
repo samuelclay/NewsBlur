@@ -12,7 +12,7 @@
 @class NewsBlurAppDelegate;
 
 @interface NBContainerViewController : UIViewController
-<UIPopoverControllerDelegate> {
+<UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL interactiveOriginalTransition;
@@ -25,9 +25,12 @@
 @property (nonatomic) CALayer *leftBorder;
 @property (nonatomic) CALayer *rightBorder;
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, readonly) UINavigationController *masterNavigationController;
 
 
 - (void)syncNextPreviousButtons;
+
+- (void)updateTheme;
 
 - (void)layoutDashboardScreen;
 - (void)layoutFeedDetailScreen;
@@ -47,12 +50,6 @@
 
 - (void)dragStoryToolbar:(int)yCoordinate;
 - (void)showUserProfilePopover:(id)sender;
-- (void)showFeedMenuPopover:(id)sender;
-- (void)showFeedDetailMenuPopover:(id)sender;
-- (void)showFontSettingsPopover:(id)sender;
 - (void)showTrainingPopover:(id)sender;
-- (void)showUserTagsPopover:(id)sender;
-- (void)showSendToPopover:(id)sender;
-- (void)showSitePopover:(id)sender;
-- (void)hidePopover;
+
 @end

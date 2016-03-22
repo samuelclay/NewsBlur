@@ -111,7 +111,7 @@
 
 - (void)addPopular {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow/",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -124,7 +124,7 @@
 
 - (void)addSite:(NSString *)siteUrl {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url/",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     

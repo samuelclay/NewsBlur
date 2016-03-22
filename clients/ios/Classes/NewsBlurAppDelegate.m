@@ -26,6 +26,7 @@
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "FontSettingsViewController.h"
+#import "FeedChooserViewController.h"
 #import "UserProfileViewController.h"
 #import "AFHTTPRequestOperation.h"
 #import "ASINetworkQueue.h"
@@ -61,10 +62,13 @@
 #import "NBURLCache.h"
 #import "NBActivityItemProvider.h"
 #import "NSNull+JSON.h"
+#import "UISearchBar+Field.h"
+#import "UIViewController+HidePopover.h"
 #import <float.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
 
+@property (nonatomic, strong) NSString *cachedURL;
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 
@@ -102,14 +106,12 @@
 @synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
 @synthesize preferencesViewController;
-@synthesize popoverController;
 
 @synthesize firstTimeUserViewController;
 @synthesize firstTimeUserAddSitesViewController;
 @synthesize firstTimeUserAddFriendsViewController;
 @synthesize firstTimeUserAddNewsBlurViewController;
 
-@synthesize tintColor;
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
@@ -204,11 +206,7 @@
     
     [window makeKeyAndVisible];
     
-    [self setTintColor:UIColorFromRGB(0x8F918B)];
-    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE3E6E0)];
-    [[UIToolbar appearance] setBarTintColor:      UIColorFromRGB(0xE3E6E0)];
-    [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
-//    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
+    [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -255,20 +253,27 @@
 
 - (BOOL)handleShortcutItem:(UIApplicationShortcutItem *)shortcutItem {
     NSString *type = shortcutItem.type;
+    NSString *prefix = [[NSBundle mainBundle].bundleIdentifier stringByAppendingString:@"."];
     BOOL handled = YES;
     
-    if (!self.dictFeeds) {
+    if (!self.activeUsername) {
         handled = NO;
-    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AddFeed"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
-    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.AllStories"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.feedsViewController didSelectSectionHeaderWithTag:2];
-    } else if ([type isEqualToString:@"com.newsblur.NewsBlur.Search"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.feedsViewController didSelectSectionHeaderWithTag:2];
-        [self.feedDetailViewController.searchBar performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.5];
+    } else if ([type startsWith:prefix]) {
+        type = [type substringFromIndex:[prefix length]];
+        if ([type isEqualToString:@"AddFeed"]) {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
+        } else if ([type isEqualToString:@"AllStories"]) {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self.feedsViewController didSelectSectionHeaderWithTag:2];
+        } else if ([type isEqualToString:@"Search"]) {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self.feedsViewController didSelectSectionHeaderWithTag:2];
+            self.feedDetailViewController.storiesCollection.searchQuery = @"";
+            self.feedDetailViewController.storiesCollection.inSearch = YES;
+        } else {
+            handled = NO;
+        }
     } else {
         handled = NO;
     }
@@ -343,7 +348,7 @@
 }
 
 - (void)setupReachability {
-    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+    Reachability* reach = [Reachability reachabilityWithHostname:self.host];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
@@ -360,13 +365,43 @@
 
 - (void)reachabilityChanged:(id)something {
     NSLog(@"Reachability changed: %@", something);
-//    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+//    Reachability* reach = [Reachability reachabilityWithHostname:self.host];
 
 //    if (reach.isReachable && feedsViewController.isOffline) {
 //        [feedsViewController loadOfflineFeeds:NO];
 ////    } else {
 ////        [feedsViewController loadOfflineFeeds:NO];
 //    }
+}
+
+- (NSString *)url {
+    if (!self.cachedURL) {
+        NSString *url = [[NSUserDefaults standardUserDefaults] objectForKey:@"custom_domain"];
+        
+        if (url.length) {
+            if ([url rangeOfString:@"://"].location == NSNotFound) {
+                url = [@"http://" stringByAppendingString:url];
+            }
+        } else {
+            url = DEFAULT_NEWSBLUR_URL;
+        }
+        
+        self.cachedURL = url;
+    }
+    
+    return self.cachedURL;
+}
+
+- (NSString *)host {
+    NSString *url = self.url;
+    NSString *host = nil;
+    NSRange range = [url rangeOfString:@"://"];
+    
+    if (url.length && range.location != NSNotFound) {
+        host = [url substringFromIndex:range.location + range.length];
+    }
+    
+    return host;
 }
 
 #pragma mark -
@@ -398,6 +433,7 @@
 }
 
 - (void)showUserProfileModal:(id)sender {
+    [self hidePopoverAnimated:NO];
     UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
     self.userProfileViewController = newUserProfile; 
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
@@ -449,7 +485,7 @@
 
 - (void)hideUserProfileModal {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController hidePopover];
+        [self hidePopover];
     } else {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
@@ -458,7 +494,10 @@
 - (void)showPreferences {
     if (!preferencesViewController) {
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];
+        [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.preferencesViewController.view];
     }
+    
+    [self hidePopover];
 
     preferencesViewController.delegate = self.feedsViewController;
     preferencesViewController.showDoneButton = YES;
@@ -475,6 +514,12 @@
     if (system_font_enabled) {
         [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
     }
+    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
+    if (theme_auto_toggle) {
+        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
+    } else {
+        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
+    }
     preferencesViewController.hiddenKeys = hiddenSet;
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
@@ -482,7 +527,7 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
     self.modalNavigationController.navigationBar.translucent = NO;
-
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -492,7 +537,37 @@
     }
 }
 
+- (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
+    [self hidePopover];
+    
+    self.feedChooserViewController = [FeedChooserViewController new];
+    self.feedChooserViewController.operation = operation;
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.feedChooserViewController];
+    
+    self.modalNavigationController = nav;
+    self.modalNavigationController.navigationBar.translucent = NO;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    } else {
+        [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
+    }
+}
+
+
+- (void)showMuteSites {
+    [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
+}
+
+- (void)showOrganizeSites {
+    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites];
+}
+
 - (void)showFindFriends {
+    [self hidePopover];
+    
     FriendsListViewController *friendsBVC = [[FriendsListViewController alloc] init];
     UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
     
@@ -607,11 +682,13 @@
     }];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:activityViewController animated: YES completion:nil];
+        BOOL fromPopover = [self hidePopoverAnimated:NO];
+        [self.masterContainerViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
         popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+        popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
         
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             popPC.barButtonItem = sender;
@@ -668,6 +745,7 @@
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
+        [self.storyPageControl becomeFirstResponder];
     } else {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
@@ -707,6 +785,10 @@
     } else {
         [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
         if (navigationController.isViewLoaded && navigationController.view.window) {
+            if ([self.navigationController visibleViewController] == loginViewController) {
+                NSLog(@"Already showing login!");
+                return;
+            }
             [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
         }
     }
@@ -746,11 +828,13 @@
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     } else {
+        [self hidePopover];
         [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     }
 }
 
 - (void)openTrainSite {
+    [self hidePopover];
     // Needs a delay because the menu will close the popover.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{
@@ -802,27 +886,9 @@
         self.userTagsViewController = [[UserTagsViewController alloc] init];
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController showUserTagsPopover:sender];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:self.userTagsViewController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [self.userTagsViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(220, 38 * MIN(6.5, [[self.dictSavedStoryTags allKeys] count] + [self.activeStory[@"user_tags"] count] + 1))];
-        CGRect frame = [sender CGRectValue];
-        [self.popoverController presentPopoverFromRect:frame
-                                                inView:self.storyPageControl.currentPage.view
-                              permittedArrowDirections:WYPopoverArrowDirectionAny
-                                              animated:YES];
-    }
+    [self.userTagsViewController view]; // Force viewDidLoad
+    CGRect frame = [sender CGRectValue];
+    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPageControl.view sourceRect:frame];
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
@@ -831,17 +897,8 @@
     return UIModalPresentationNone;
 }
 
-#pragma mark -
-#pragma mark WYPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
-    //Safe to release the popover here
-    self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
-    //The popover is automatically dismissed if you click outside it, unless you return NO here
-    return YES;
+- (void)popoverPresentationControllerDidDismissPopover:(UIPopoverPresentationController *)popoverPresentationController {
+    [self.navigationController.topViewController becomeFirstResponder];
 }
 
 #pragma mark -
@@ -920,16 +977,15 @@
         [self loadFeedDetailView];
     } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:YES];
-        }
-        if (self.navigationController.presentedViewController) {
-            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+        [self hidePopoverAnimated:YES completion:^{
+            if (self.navigationController.presentedViewController) {
+                [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                    [self loadFeedDetailView];
+                }];
+            } else {
                 [self loadFeedDetailView];
-            }];
-        } else {
-            [self loadFeedDetailView];
-        }
+            }
+        }];
     }
 }
 
@@ -938,9 +994,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
-        }
+        [self hidePopoverAnimated:NO];
     }
 
     self.inFindingStoryMode = YES;
@@ -1007,6 +1061,10 @@
     }
 }
 
+- (BOOL)isCompactWidth {
+    return self.compactWidth > 0.0;
+}
+
 - (void)confirmLogout {
     UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" 
                                                             message:nil 
@@ -1038,7 +1096,7 @@
 
 - (void)refreshUserProfile:(void(^)())callback {
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/social/load_user_profile",
-                                       NEWSBLUR_URL]];
+                                       self.url]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
     [request setValidatesSecureCertificate:NO];
@@ -1076,7 +1134,7 @@
         } else {
             NSLog(@"Logging out...");
             NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
-                              NEWSBLUR_URL];
+                              self.url];
             NSURL *url = [NSURL URLWithString:urlS];
             
             __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -1222,9 +1280,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-        if (self.feedsViewController.popoverController) {
-            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
-        }
+        [self hidePopoverAnimated:NO];
     }
     
     self.inFindingStoryMode = YES;
@@ -1334,7 +1390,7 @@
 }
 
 - (void)loadStoryDetailView {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
         [navigationController pushViewController:storyPageControl animated:YES];
         navigationController.navigationItem.hidesBackButton = YES;
     }
@@ -1346,11 +1402,22 @@
         [self.storyPageControl view];
         [self.storyPageControl.view setNeedsLayout];
         [self.storyPageControl.view layoutIfNeeded];
-        [self.storyPageControl changePage:activeStoryLocation animated:animated];
-        [self.storyPageControl animateIntoPlace:YES];
+        
+        NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
+        
+        if (self.isCompactWidth) {
+            [self performSelector:@selector(deferredChangePage:) withObject:params afterDelay:0.0];
+        } else {
+            [self deferredChangePage:params];
+        }
     }
 
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
+}
+
+- (void)deferredChangePage:(NSDictionary *)params {
+    [self.storyPageControl changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
+    [self.storyPageControl animateIntoPlace:YES];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -1447,11 +1514,20 @@
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]]) {
+    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]] || [viewController isKindOfClass:[feedDetailMenuViewController class]]) {
         [_navigationController setNavigationBarHidden:YES animated:YES];
     } else {
         [_navigationController setNavigationBarHidden:NO animated:YES];
     }
+}
+
+- (UINavigationController *)addSiteNavigationController {
+    if (!_addSiteNavigationController) {
+        self.addSiteNavigationController = [[UINavigationController alloc] initWithRootViewController:self.addSiteViewController];
+        self.addSiteNavigationController.delegate = self;
+    }
+    
+    return _addSiteNavigationController;
 }
 
 - (UINavigationController *)fontSettingsNavigationController {
@@ -1461,6 +1537,15 @@
     }
     
     return _fontSettingsNavigationController;
+}
+
+- (UINavigationController *)feedDetailMenuNavigationController {
+    if (!_feedDetailMenuNavigationController) {
+        self.feedDetailMenuNavigationController = [[UINavigationController alloc] initWithRootViewController:self.feedDetailMenuViewController];
+        self.feedDetailMenuNavigationController.delegate = self;
+    }
+    
+    return _feedDetailMenuNavigationController;
 }
 
 - (void)closeOriginalStory {
@@ -2038,14 +2123,18 @@
 }
 
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler {
-    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero completionHandler:completionHandler];
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount olderNewerCollection:nil olderNewerStory:nil barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero extraItems:nil completionHandler:completionHandler];
 }
 
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
-    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 barButtonItem:nil sourceView:sourceView sourceRect:sourceRect completionHandler:completionHandler];
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 olderNewerCollection:nil olderNewerStory:nil barButtonItem:nil sourceView:sourceView sourceRect:sourceRect extraItems:nil completionHandler:completionHandler];
 }
 
-- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+- (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect extraItems:(NSArray *)extraItems completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:nil collectionTitle:nil visibleUnreadCount:0 olderNewerCollection:storiesCollection olderNewerStory:olderNewerStory barButtonItem:nil sourceView:sourceView sourceRect:sourceRect extraItems:extraItems completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount olderNewerCollection:(StoriesCollection *)olderNewerCollection olderNewerStory:(NSDictionary *)olderNewerStory barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect extraItems:(NSArray *)extraItems completionHandler:(void (^)(BOOL marked))completionHandler {
     if (!self.markReadMenuViewController) {
         self.markReadMenuViewController = [MarkReadMenuViewController new];
         self.markReadMenuViewController.modalPresentationStyle = UIModalPresentationPopover;
@@ -2054,11 +2143,42 @@
     self.markReadMenuViewController.collectionTitle = collectionTitle;
     self.markReadMenuViewController.feedIds = feedIds;
     self.markReadMenuViewController.visibleUnreadCount = visibleUnreadCount;
+    self.markReadMenuViewController.olderNewerStoriesCollection = olderNewerCollection;
+    self.markReadMenuViewController.olderNewerStory = olderNewerStory;
+    self.markReadMenuViewController.extraItems = extraItems;
     self.markReadMenuViewController.completionHandler = completionHandler;
+
+    [self showPopoverWithViewController:self.markReadMenuViewController contentSize:CGSizeZero barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionAny];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero permittedArrowDirections:UIPopoverArrowDirectionAny];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionAny];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:permittedArrowDirections];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+    if (viewController == self.navigationControllerForPopover.presentedViewController) {
+        return; // nothing to do, already showing this controller
+    }
     
-    UIPopoverPresentationController *popoverPresentationController = self.markReadMenuViewController.popoverPresentationController;
+    [self hidePopoverAnimated:YES];
+    
+    viewController.modalPresentationStyle = UIModalPresentationPopover;
+    viewController.preferredContentSize = contentSize;
+    [viewController addKeyCommand:[UIKeyCommand keyCommandWithInput:@"." modifierFlags:UIKeyModifierCommand action:@selector(hidePopover)]];
+    [viewController addKeyCommand:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(hidePopover)]];
+
+    UIPopoverPresentationController *popoverPresentationController = viewController.popoverPresentationController;
     popoverPresentationController.delegate = self;
-    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     
     if (barButtonItem) {
         popoverPresentationController.barButtonItem = barButtonItem;
@@ -2067,7 +2187,47 @@
         popoverPresentationController.sourceRect = sourceRect;
     }
     
-    [self.navigationController presentViewController:self.markReadMenuViewController animated:YES completion:nil];
+    [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:^{
+        popoverPresentationController.passthroughViews = nil;
+        // NSLog(@"%@ canBecomeFirstResponder? %d", viewController, viewController.canBecomeFirstResponder);
+        [viewController becomeFirstResponder];
+    }];
+}
+
+- (void)hidePopoverAnimated:(BOOL)animated completion:(void (^)(void))completion {
+    UIViewController *presentedViewController = self.navigationControllerForPopover.presentedViewController;
+    if (!presentedViewController || presentedViewController.presentationController.presentationStyle != UIModalPresentationPopover) {
+        if (completion) {
+            completion();
+        }
+        return;
+    }
+    
+    [presentedViewController dismissViewControllerAnimated:animated completion:completion];
+    [self.navigationController.topViewController becomeFirstResponder];
+}
+
+- (BOOL)hidePopoverAnimated:(BOOL)animated {
+    UIViewController *presentedViewController = self.navigationControllerForPopover.presentedViewController;
+    if (!presentedViewController || presentedViewController.presentationController.presentationStyle != UIModalPresentationPopover)
+        return NO;
+    
+    [presentedViewController dismissViewControllerAnimated:animated completion:nil];
+    [self.navigationController.topViewController becomeFirstResponder];
+    return YES;
+}
+
+- (void)hidePopover {
+    [self hidePopoverAnimated:YES];
+    [self.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (UINavigationController *)navigationControllerForPopover {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return self.masterContainerViewController.masterNavigationController;
+    } else {
+        return self.navigationController;
+    }
 }
 
 #pragma mark -
@@ -2214,7 +2374,7 @@
     NSScanner *scanner = [NSScanner scannerWithString:colorString];
     [scanner scanHexInt:&color];
 
-    return UIColorFromRGB(color);
+    return UIColorFromFixedRGB(color);
 }
 
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor {
@@ -2233,7 +2393,7 @@
     
     CALayer *whiteBackground = [CALayer layer];
     whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
-    whiteBackground.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.7].CGColor;
+    whiteBackground.backgroundColor = [UIColorFromRGB(NEWSBLUR_WHITE_COLOR) colorWithAlphaComponent:0.7].CGColor;
     [gradientView.layer addSublayer:whiteBackground];
     
     [gradientView.layer addSublayer:gradient];
@@ -2281,12 +2441,12 @@
             UIColor *borderColor = [NewsBlurAppDelegate faviconColor:[feed objectForKey:@"favicon_border"]];
 
             titleLabel.textColor = lightText ?
-            [UIColor whiteColor] :
-            [UIColor blackColor];            
+            UIColorFromFixedRGB(NEWSBLUR_WHITE_COLOR) :
+            UIColorFromFixedRGB(NEWSBLUR_BLACK_COLOR);
             titleLabel.shadowColor = lightText ? borderColor : fadeColor;
         } else {
-            titleLabel.textColor = [UIColor whiteColor];
-            titleLabel.shadowColor = [UIColor blackColor];
+            titleLabel.textColor = UIColorFromFixedRGB(NEWSBLUR_WHITE_COLOR);
+            titleLabel.shadowColor = UIColorFromFixedRGB(NEWSBLUR_BLACK_COLOR);
         }
         titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         
@@ -2440,7 +2600,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2488,7 +2648,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2540,7 +2700,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2586,7 +2746,7 @@
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
@@ -2677,7 +2837,7 @@
     
     NSArray *cachePaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *dbPath = [cachePaths objectAtIndex:0];
-    NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_HOST];
+    NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", self.host];
     NSString *path = [dbPath stringByAppendingPathComponent:dbName];
     [self applicationDocumentsDirectory];
     
@@ -2984,7 +3144,7 @@
 
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
-                           NEWSBLUR_URL];
+                           self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableArray *completedHashes = [NSMutableArray array];
     for (NSArray *storyHashes in [hashes allValues]) {

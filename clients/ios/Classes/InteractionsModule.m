@@ -37,7 +37,6 @@
     return self;
 }
 
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.interactionsTable = [[UITableView alloc] init];
@@ -45,6 +44,7 @@
     self.interactionsTable.delegate = self;
     self.interactionsTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     self.interactionsTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.interactionsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     [self addSubview:self.interactionsTable];  
 }
@@ -101,7 +101,7 @@
         NSString *urlString = [NSString stringWithFormat:@
                                "%@/social/interactions?user_id=%@&page=%i&limit=10"
                                "&category=follow&category=comment_reply&category=comment_like&category=reply_reply&category=story_reshare",
-                               NEWSBLUR_URL,
+                               self.appDelegate.url,
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
 
@@ -234,6 +234,8 @@
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
         
+        cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+        
         // update the cell information
         [cell setInteraction:interaction withWidth: self.frame.size.width - 20];
         [cell layoutSubviews];
@@ -292,6 +294,7 @@
                              reuseIdentifier:@"NoReuse"];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     if (self.pageFinished) {
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
@@ -307,7 +310,7 @@
         fleuron.frame = CGRectMake(0, 0, self.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
-        fleuron.backgroundColor = [UIColor whiteColor];
+        fleuron.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     } else {
         cell.textLabel.text = @"Loading...";
         

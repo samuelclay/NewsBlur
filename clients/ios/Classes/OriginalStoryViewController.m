@@ -34,13 +34,16 @@
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    if ([ThemeManager themeManager].isDarkTheme) {
+        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+    }
     UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
                                                                      target:nil
                                                                      action:nil];
     [separatorBarButton setEnabled:NO];
     
     UIBarButtonItem *sendToBarButton = [UIBarButtonItem
-                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto.png"]
+                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto"]
                                         target:self
                                         action:@selector(doOpenActionSheet:)];
     
@@ -52,7 +55,7 @@
     }
     
     backBarButton = [UIBarButtonItem
-                     barItemWithImage:[UIImage imageNamed:@"barbutton_back.png"]
+                     barItemWithImage:[UIImage imageNamed:@"barbutton_back"]
                      target:self
                      action:@selector(webViewGoBack:)];
     backBarButton.enabled = NO;
@@ -85,14 +88,23 @@
     progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
     progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
+    
+    // This makes the theme gesture work reliably, but makes scrolling more "sticky", so isn't acceptable:
+//    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
+//    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(handlePanGesture:)];
         gesture.delegate = self;
         [self.webView.scrollView addGestureRecognizer:gesture];
+//        [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:gesture];
     }
     
     [self.webView loadHTMLString:@"" baseURL:nil];
+
+    [self addCancelKeyCommandWithAction:@selector(closeOriginalView) discoverabilityTitle:@"Close Original View"];
 }
 
 - (void)dealloc {
@@ -139,6 +151,12 @@
     self.navigationController.delegate = appDelegate;
 }
 
+- (void)updateTheme {
+    [super updateTheme];
+    
+    titleView.textColor = UIColorFromRGB(0x303030);
+}
+
 - (void)resetProgressBar {
     if (finishedLoading) return;
     
@@ -164,6 +182,16 @@
         // Make sure to call the superclass's implementation in the else block in case it is also implementing KVO
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (BOOL)becomeFirstResponder {
+    // delegate to Web view
+    return [webView becomeFirstResponder];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {

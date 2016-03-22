@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 NewsBlur. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "NewsBlurAppDelegate.h"
 
 @interface StoriesCollection : NSObject {
     NSDictionary * activeFeed;

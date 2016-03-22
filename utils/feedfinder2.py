@@ -49,7 +49,7 @@ class FeedFinder(object):
 
     def is_feed_data(self, text):
         data = text.lower()
-        if data.count("<html"):
+        if data and data[:100].count("<html"):
             return False
         return data.count("<rss")+data.count("<rdf")+data.count("<feed")
 
@@ -75,17 +75,17 @@ def find_feeds(url, check_all=False, user_agent=None):
     url = coerce_url(url)
 
     # Download the requested URL.
-    text = finder.get_feed(url)
-    if text is None:
+    feed_text = finder.get_feed(url)
+    if feed_text is None:
         return []
 
     # Check if it is already a feed.
-    if finder.is_feed_data(text):
+    if finder.is_feed_data(feed_text):
         return [url]
 
     # Look for <link> tags.
     logging.info("Looking for <link> tags.")
-    tree = BeautifulSoup(text)
+    tree = BeautifulSoup(feed_text)
     links = []
     for link in tree.findAll("link"):
         if link.get("type") in ["application/rss+xml",

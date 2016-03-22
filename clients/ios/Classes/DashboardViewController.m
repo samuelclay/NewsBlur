@@ -14,6 +14,7 @@
 #import "UserProfileViewController.h"
 #import "TMCache.h"
 #import "StoriesCollection.h"
+#import "UISearchBar+Field.h"
 
 #define FEEDBACK_URL @"http://www.newsblur.com/about"
 
@@ -80,6 +81,8 @@
         [self addChildViewController:self.storiesModule];
         [self.storiesModule didMoveToParentViewController:self];
     }
+    
+    [self updateLogo];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -90,8 +93,41 @@
 	return YES;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (IBAction)doLogout:(id)sender {
     [appDelegate confirmLogout];
+}
+
+- (void)updateLogo {
+    if ([ThemeManager themeManager].isDarkTheme) {
+        self.logoImageView.image = [UIImage imageNamed:@"logo_newsblur_blur-dark.png"];
+    } else {
+        self.logoImageView.image = [UIImage imageNamed:@"logo_newsblur_blur.png"];
+    }
+}
+
+- (void)updateTheme {
+    self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
+    
+    self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);
+    self.storiesModule.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
+    
+    self.storiesModule.storyTitlesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.interactionsModule.interactionsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.activitiesModule.activitiesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    
+    [self.storiesModule.storyTitlesTable reloadData];
+    [self.interactionsModule.interactionsTable reloadData];
+    [self.activitiesModule.activitiesTable reloadData];
+    
+    [self updateLogo];
 }
 
 # pragma mark
@@ -133,6 +169,7 @@
     [appDelegate.cachedStoryImages removeAllObjects:^(TMCache *cache) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
+            appDelegate.inFeedDetail = NO;
         });
     }];
 }

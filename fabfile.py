@@ -816,6 +816,7 @@ def setup_haproxy(debug=False):
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
     put('config/haproxy_rsyslog.conf', '/etc/rsyslog.d/49-haproxy.conf', use_sudo=True)
     sudo('restart rsyslog')
+    sudo('update-rc.d -f haproxy defaults')
 
     sudo('/etc/init.d/haproxy stop')
     run('sleep 1')

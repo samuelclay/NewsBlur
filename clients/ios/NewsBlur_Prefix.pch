@@ -2,6 +2,8 @@
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
     #import "Underscore.h"
+    #import "Utilities.h"
+    #import "ThemeManager.h"
     #import <SystemConfiguration/SystemConfiguration.h>
     #import <MobileCoreServices/MobileCoreServices.h>
 
@@ -10,31 +12,20 @@
 
 #ifdef DEBUG
     #define BACKGROUND_REFRESH_SECONDS -5
-    #define NEWSBLUR_URL [NSString stringWithFormat:@"http://nb.local.com"]
-    #define NEWSBLUR_HOST [NSString stringWithFormat:@"nb.local.com"]
-    #define ICONS_HOST [NSString stringWithFormat:@"http://nb.local.com/rss_feeds/icon"]
+    #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"http://nb.local.com"]
+    #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"http://nb.local.com/rss_feeds/icon"]
 #elif PROD_DEBUG
     #define BACKGROUND_REFRESH_SECONDS -5
-    #define NEWSBLUR_URL [NSString stringWithFormat:@"http://debug.newsblur.com"]
-    #define NEWSBLUR_HOST [NSString stringWithFormat:@"debug.newsblur.com"]
-    #define ICONS_HOST [NSString stringWithFormat:@"https://s3.amazonaws.com/icons.newsblur.com"]
+    #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"http://debug.newsblur.com"]
+    #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"https://s3.amazonaws.com/icons.newsblur.com"]
 #else
     #define BACKGROUND_REFRESH_SECONDS -10*60
-    #define NEWSBLUR_URL [NSString stringWithFormat:@"https://www.newsblur.com"]
-    #define NEWSBLUR_HOST [NSString stringWithFormat:@"www.newsblur.com"]
-    #define ICONS_HOST [NSString stringWithFormat:@"https://s3.amazonaws.com/icons.newsblur.com"]
+    #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"https://www.newsblur.com"]
+    #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"https://s3.amazonaws.com/icons.newsblur.com"]
 #endif
 
     #define _ Underscore
-
-    #define UIColorFromRGB(rgbValue) [UIColor \
-    colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
-    green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
-    blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
-
-    #define NEWSBLUR_LINK_COLOR 0x405BA8
-    #define NEWSBLUR_HIGHLIGHT_COLOR 0xd2e6fd
-
+    
     #define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
     #define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
     #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)

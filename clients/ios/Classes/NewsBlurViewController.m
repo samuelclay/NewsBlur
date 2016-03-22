@@ -70,7 +70,6 @@ static UIFont *userLabelFont;
 @synthesize pull;
 @synthesize lastUpdate;
 @synthesize imageCache;
-@synthesize popoverController;
 @synthesize currentRowAtIndexPath;
 @synthesize currentSection;
 @synthesize noFocusMessage;
@@ -103,9 +102,9 @@ static UIFont *userLabelFont;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    popoverClass = [WYPopoverController class];
-
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
+    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
 
@@ -141,10 +140,10 @@ static UIFont *userLabelFont;
     
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
-                                                               UIColorFromRGB(0x8F918B)}
+                                                               UIColorFromFixedRGB(0x8F918B)}
                                                 forState:UIControlStateNormal];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
-                                                               UIColorFromRGB(0x4C4D4A)}
+                                                               UIColorFromFixedRGB(0x4C4D4A)}
                                                 forState:UIControlStateHighlighted];
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
@@ -157,13 +156,14 @@ static UIFont *userLabelFont;
     longpress.delegate = self;
     [self.feedTitlesTable addGestureRecognizer:longpress];
     
+    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
+    
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
                                                inView:self.view
                                            withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
     
-    UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-    self.feedTitlesTable.backgroundColor = bgColor;
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
     userAvatarButton.customView.hidden = YES;
@@ -171,6 +171,10 @@ static UIFont *userLabelFont;
     
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
+    [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierShift action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
+    [self addKeyCommandWithInput:@"a" modifierFlags:0 action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -231,6 +235,8 @@ static UIFont *userLabelFont;
     [self refreshHeaderCounts];
 
     self.interactiveFeedDetailTransition = NO;
+
+    [self becomeFirstResponder];
 }
 
 - (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
@@ -320,8 +326,7 @@ static UIFont *userLabelFont;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [self.popoverController dismissPopoverAnimated:YES];
-    self.popoverController = nil;
+    [self.appDelegate hidePopoverAnimated:YES];
     [super viewWillDisappear:animated];
 }
 
@@ -364,6 +369,10 @@ static UIFont *userLabelFont;
     [self refreshHeaderCounts];
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
 
 #pragma mark -
 #pragma mark Initialization
@@ -385,11 +394,11 @@ static UIFont *userLabelFont;
     if (self.inPullToRefresh_) {
         urlFeedList = [NSURL URLWithString:
                       [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
-                      NEWSBLUR_URL]];
+                      self.appDelegate.url]];
     } else {
         urlFeedList = [NSURL URLWithString:
                        [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
-                        NEWSBLUR_URL]];
+                        self.appDelegate.url]];
     }
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
@@ -426,6 +435,7 @@ static UIFont *userLabelFont;
     }
 
     [self showOfflineNotifier];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
@@ -523,35 +533,31 @@ static UIFont *userLabelFont;
     addBarButton.accessibilityLabel = @"Add site";
     settingsBarButton.enabled = YES;
     settingsBarButton.accessibilityLabel = @"Settings";
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [addBarButton setImage:addImage];
-        [settingsBarButton setImage:settingsImage];
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-        [addButton setImage:addImage forState:UIControlStateNormal];
-        [addButton sizeToFit];
-        [addButton addTarget:self action:@selector(tapAddSite:)
-            forControlEvents:UIControlEventTouchUpInside];
-        addButton.accessibilityLabel = @"Add feed";
-        [addBarButton setCustomView:addButton];
+    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
+    [addButton sizeToFit];
+    [addButton addTarget:self action:@selector(tapAddSite:)
+        forControlEvents:UIControlEventTouchUpInside];
+    addButton.accessibilityLabel = @"Add feed";
+    [addBarButton setCustomView:addButton];
 
-        NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-        settingsButton.onRightSide = YES;
-        [settingsButton setImage:settingsImage forState:UIControlStateNormal];
-        [settingsButton sizeToFit];
-        [settingsButton addTarget:self action:@selector(showSettingsPopover:)
-                 forControlEvents:UIControlEventTouchUpInside];
-        settingsButton.accessibilityLabel = @"Settings";
-        [settingsBarButton setCustomView:settingsButton];
-    }
+    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    settingsButton.onRightSide = YES;
+    [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
+    [settingsButton sizeToFit];
+    [settingsButton addTarget:self action:@selector(showSettingsPopover:)
+             forControlEvents:UIControlEventTouchUpInside];
+    settingsButton.accessibilityLabel = @"Settings";
+    [settingsBarButton setCustomView:settingsButton];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
         NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
         [activityButton setImage:activityImage forState:UIControlStateNormal];
         [activityButton sizeToFit];
-        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
-        [activityButton setFrame:CGRectInset(activityButton.frame, -6, -6)];
+        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, -6, -0, -6)];
+        [activityButton setFrame:CGRectInset(activityButton.frame, 0, -6)];
+        [activityButton setImageEdgeInsets:UIEdgeInsetsMake(12, 12, 12, 12)];
         [activityButton addTarget:self
                            action:@selector(showInteractionsPopover:)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -743,6 +749,8 @@ static UIFont *userLabelFont;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -821,68 +829,35 @@ static UIFont *userLabelFont;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSitePopover:self.addBarButton];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.addSiteViewController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
-                                                                 MIN(self.view.frame.size.height - 28, 355))];
-        [self.popoverController presentPopoverFromBarButtonItem:self.addBarButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionDown
-                                                       animated:YES];
-    }
+    [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
     
-    [appDelegate.addSiteViewController reload];
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton.customView sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
+//    } else {
+//        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
+//    }
+    
+    [self.appDelegate.addSiteViewController reload];
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFeedMenuPopover:self.settingsBarButton];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WYPopoverController alloc]
-                                      initWithContentViewController:appDelegate.feedsMenuViewController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        [appDelegate.feedsMenuViewController view]; // Force viewDidLoad
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 38 * [appDelegate.feedsMenuViewController.menuOptions count])];
-        [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionDown
-                                                       animated:YES];
-    }
+    [self.appDelegate.feedsMenuViewController view];
+    NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
+    
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(220, 38 * (menuCount + 1)) barButtonItem:self.settingsBarButton];
 }
 
-- (IBAction)showInteractionsPopover:(id)sender {    
-    if (self.popoverController == nil) {
-        self.popoverController = [[WYPopoverController alloc]
-                                  initWithContentViewController:appDelegate.dashboardViewController];
-        
-        self.popoverController.delegate = self;
-    } else {
-        [self.popoverController dismissPopoverAnimated:YES];
-        self.popoverController = nil;
+- (IBAction)showInteractionsPopover:(id)sender {
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        return;
     }
     
-    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
-                                                             self.view.frame.size.height - 60)];
-    [self.popoverController presentPopoverFromBarButtonItem:self.activitiesButton
-                                   permittedArrowDirections:UIPopoverArrowDirectionUp
-                                                   animated:YES];
-
+    CGSize size = CGSizeMake(self.view.frame.size.width - 36,
+                             self.view.frame.size.height - 60);
+    
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.dashboardViewController contentSize:size barButtonItem:self.activitiesButton];
+    
     [appDelegate.dashboardViewController refreshInteractions];
     [appDelegate.dashboardViewController refreshActivity];
 }
@@ -954,37 +929,12 @@ static UIFont *userLabelFont;
     }
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSString *feedId = actionSheet.accessibilityValue;
-    
-    switch (buttonIndex) {
-        case 0:
-            [self markFeedRead:feedId cutoffDays:0];
-            break;
-        case 1:
-            [self markFeedRead:feedId cutoffDays:1];
-            break;
-        case 2:
-            [self markFeedRead:feedId cutoffDays:3];
-            break;
-        case 3:
-            [self markFeedRead:feedId cutoffDays:7];
-            break;
-        case 4:
-            [self markFeedRead:feedId cutoffDays:14];
-            break;
-    }
-    
-    for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
-        if (cell.highlighted) {
-            [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
-            break;
-        }
-    }
-}
-
 #pragma mark -
 #pragma mark Preferences
+
+- (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender {
+    [[ThemeManager themeManager] updatePreferencesTheme];
+}
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -1007,22 +957,75 @@ static UIFont *userLabelFont;
     }
 }
 
+- (void)updateTheme {
+    [super updateTheme];
+    
+    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || (((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController && ![((UINavigationController *)self.presentedViewController).topViewController conformsToProtocol:@protocol(IASKViewController)])) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    [self.appDelegate hidePopoverAnimated:YES];
+    
+    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationController.toolbar.tintColor = [UIToolbar appearance].tintColor;
+    self.navigationController.toolbar.barTintColor = [UIToolbar appearance].barTintColor;
+    self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+    self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
+    self.intelligenceControl.tintColor = UIColorFromRGB(0x8F918B);
+    self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
+    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    
+    NBBarButtonItem *barButton = self.addBarButton.customView;
+    [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
+    
+    barButton = self.settingsBarButton.customView;
+    [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]] forState:UIControlStateNormal];
+    
+    [self layoutHeaderCounts:nil];
+    [self refreshHeaderCounts];
+    
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    [self.feedTitlesTable reloadData];
+}
+
+- (void)updateThemeBrightness {
+    if ([[ThemeManager themeManager] autoChangeTheme]) {
+        [[ThemeManager themeManager] updateTheme];
+    }
+}
+
+- (void)updateThemeStyle {
+    [[ThemeManager themeManager] updateTheme];
+}
+
 - (void)settingDidChange:(NSNotification*)notification {
-	if ([notification.object isEqual:@"offline_allowed"]) {
-		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"offline_allowed"] intValue];
+    NSString *identifier = notification.object;
+    
+	if ([identifier isEqual:@"offline_allowed"]) {
+		BOOL enabled = [[notification.userInfo objectForKey:@"offline_allowed"] boolValue];
 		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
          [NSSet setWithObjects:@"offline_image_download",
           @"offline_download_connection",
           @"offline_store_limit",
           nil] animated:YES];
-	} else if ([notification.object isEqual:@"use_system_font_size"]) {
-		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"use_system_font_size"] intValue];
+	} else if ([identifier isEqual:@"use_system_font_size"]) {
+		BOOL enabled = [[notification.userInfo objectForKey:@"use_system_font_size"] boolValue];
 		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
          [NSSet setWithObjects:@"feed_list_font_size",
           nil] animated:YES];
-    } else if ([notification.object isEqual:@"feed_list_font_size"]) {
+    } else if ([identifier isEqual:@"feed_list_font_size"]) {
         [self resizeFontSize];
-    } else if ([notification.object isEqual:@"story_list_preview_images"]) {
+    } else if ([identifier isEqual:@"theme_auto_toggle"]) {
+        BOOL enabled = [[notification.userInfo objectForKey:@"theme_auto_toggle"] boolValue];
+        [appDelegate.preferencesViewController setHiddenKeys:!enabled ? [NSSet setWithObject:@"theme_auto_brightness"] : [NSSet setWithObjects:@"theme_style", @"theme_gesture", nil] animated:YES];
+    } else if ([identifier isEqual:@"theme_auto_brightness"]) {
+        [self updateThemeBrightness];
+    } else if ([identifier isEqual:@"theme_style"]) {
+        [self updateThemeStyle];
+    } else if ([identifier isEqual:@"story_list_preview_images"]) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [appDelegate.dashboardViewController.storiesModule reloadData];
         }
@@ -1102,7 +1105,7 @@ static UIFont *userLabelFont;
         CellIdentifier = @"FeedCellIdentifier";
     }
     
-    FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
+    FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[FeedTableCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
@@ -1287,6 +1290,10 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag {
+    if (self.appDelegate.inFeedDetail) {
+        return;
+    }
+    
     // reset pointer to the cells
     self.currentRowAtIndexPath = nil;
     self.currentSection = tag;
@@ -1309,7 +1316,9 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
 }
 
-
+- (void)selectEverything:(id)sender {
+    [self didSelectSectionHeaderWithTag:2];
+}
 
 #pragma mark - MCSwipeTableViewCellDelegate
 
@@ -1373,7 +1382,7 @@ heightForHeaderInSection:(NSInteger)section {
     cutoffTimestamp -= (days * 60*60*24);
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     for (NSString *feedId in feedIds) {
@@ -1405,7 +1414,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSArray *feedIds = [appDelegate allFeedIds];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInteger:days]
@@ -1429,7 +1438,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)markVisibleStoriesRead {
     NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
@@ -1543,6 +1552,22 @@ heightForHeaderInSection:(NSInteger)section {
     [userPreferences synchronize];
 }
 
+- (void)selectPreviousIntelligence:(id)sender {
+    NSInteger selectedSegmentIndex = intelligenceControl.selectedSegmentIndex;
+    if (selectedSegmentIndex <= 0)
+        return;
+    [intelligenceControl setSelectedSegmentIndex:selectedSegmentIndex - 1];
+    [self selectIntelligence];
+}
+
+- (void)selectNextIntelligence:(id)sender {
+    NSInteger selectedSegmentIndex = intelligenceControl.selectedSegmentIndex;
+    if (selectedSegmentIndex >= intelligenceControl.numberOfSegments)
+        return;
+    [intelligenceControl setSelectedSegmentIndex:selectedSegmentIndex + 1];
+    [self selectIntelligence];
+}
+
 - (IBAction)selectIntelligence {
     [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.innerView animated:YES];
@@ -1583,7 +1608,7 @@ heightForHeaderInSection:(NSInteger)section {
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:1];
     }
-
+    
     [self calculateFeedLocations];
     [self.feedTitlesTable reloadData];
 
@@ -1688,7 +1713,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)loadFavicons {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
     
@@ -1779,10 +1804,10 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *urlString;
     if (feedId) {
         urlString = [NSString stringWithFormat:@"%@/reader/feed_unread_count?feed_id=%@",
-                     NEWSBLUR_URL, feedId];
+                     self.appDelegate.url, feedId];
     } else {
         urlString = [NSString stringWithFormat:@"%@/reader/refresh_feeds",
-                     NEWSBLUR_URL];
+                     self.appDelegate.url];
     }
     NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
@@ -1906,19 +1931,6 @@ heightForHeaderInSection:(NSInteger)section {
     return self.lastUpdate;
 }
 
-#pragma mark -
-#pragma mark WYPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WYPopoverController *)thePopoverController {
-	//Safe to release the popover here
-	self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)thePopoverController {
-	//The popover is automatically dismissed if you click outside it, unless you return NO here
-	return YES;
-}
-
 - (void)resetToolbar {
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.titleView = nil;
@@ -1977,7 +1989,6 @@ heightForHeaderInSection:(NSInteger)section {
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
-    userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
     userLabel.accessibilityLabel = [NSString stringWithFormat:@"Logged in as %@", appDelegate.activeUsername];
     [userLabel sizeToFit];
     [userInfoView addSubview:userLabel];

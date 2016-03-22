@@ -70,7 +70,7 @@
     // Do any additional setup after loading the view from its nib.
     commentField.layer.borderWidth = 1.0f;
     commentField.layer.cornerRadius = 4;
-    commentField.layer.borderColor = [[UIColor grayColor] CGColor];
+    commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
     
     twitterButton.layer.borderWidth = 1.0f;
     twitterButton.layer.cornerRadius = 1.0f;
@@ -134,6 +134,14 @@
     
     [self adjustCommentField:CGSizeZero];
     [self adjustShareButtons];
+    
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
+    self.commentField.backgroundColor = UIColorFromRGB(0xDCDFD6);
+    self.commentField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.commentField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.storyTitle.textColor = UIColorFromRGB(0x404040);
+    self.storyTitle.shadowColor = UIColorFromRGB(0xF0F0F0);
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]
@@ -345,7 +353,7 @@
 - (IBAction)doShareThisStory:(id)sender {
     [appDelegate.storyPageControl showShareHUD:@"Sharing"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
 
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -424,7 +432,7 @@
     
 //    NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
     NSString *urlString = [NSString stringWithFormat:@"%@/social/save_comment_reply",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
