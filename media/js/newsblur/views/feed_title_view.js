@@ -17,7 +17,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-statistics"              : "open_statistics",
         "click .NB-feedlist-manage-icon"            : "show_manage_menu",
         "click .NB-feedbar-options"                 : "open_options_popover",
-        "click .NB-story-title-indicator"           : "show_hidden_story_titles",
         "click"                                     : "open",
         "mousedown"                                 : "highlight_event",
         "mouseenter"                                : "add_hover_inverse",
@@ -292,7 +291,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     open: function(e, options) {
         options = options || {};
-        if (this.options.feed_chooser) return;
+        if (this.options.feed_chooser && !options.ignore_feed_selector) return;
         if (this.options.type != 'feed') return;
         if (e.which >= 2) return;
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
@@ -308,7 +307,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
 
         e.preventDefault();
         e.stopPropagation();
-        
+
         if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
         } else if (this.model.is_social()) {
@@ -325,6 +324,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     highlight_event: function(e) {
+        if (this.$el.hasClass('NB-feed-selector-active')) {
+            return this.open(e, {'ignore_feed_selector': true});
+        }
         return this.highlight();
     },
     
@@ -490,10 +492,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: this.model.id
         });
-    },
-    
-    show_hidden_story_titles: function() {
-        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     }
     
 });

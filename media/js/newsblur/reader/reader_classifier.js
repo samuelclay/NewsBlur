@@ -356,7 +356,7 @@ var classifier_prototype = {
             $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what happens next:'),
             $.make('ol', { className: 'NB-trainer-points' }, [
                 $.make('li', [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135, height: 20 }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135 }),
                     $.make('b', 'You can change your opinions.'),
                     ' You can click the ',
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_up.png', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
@@ -366,13 +366,13 @@ var classifier_prototype = {
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
                     $.make('b', 'As a reminder, use the intelligence slider to select a filter:'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_hidden.png'}),
                     ' are stories you don\'t like',
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
                     ' are stories you have not yet rated',
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_focus.png'}),
                     ' are stories you like'
 
                 ]),
@@ -495,10 +495,10 @@ var classifier_prototype = {
                             )
                         ])
                     ])),
-                    (story.get('story_authors') && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story.story_authors() && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Author'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                            this.make_authors([story.get('story_authors')])
+                            this.make_authors([story.story_authors()])
                         )
                     ])),
                     (story.get('story_tags').length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [

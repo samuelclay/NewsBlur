@@ -207,6 +207,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 feedbar_view: this
             }).render();
             this.$(".NB-search-container").html(this.search_view.$el);
+            if (NEWSBLUR.reader.flags.searching) {
+                this.search_view.focus_search();
+                var $search = this.$("input[name=feed_search]");
+                $search.focus();
+            }
         }
         return $folder;
     },

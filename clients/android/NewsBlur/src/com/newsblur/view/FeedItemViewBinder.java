@@ -48,7 +48,7 @@ public class FeedItemViewBinder implements ViewBinder {
 				((TextView) view).setText(cursor.getString(columnIndex).toUpperCase());
 			}
 			return true;
-		} else if (TextUtils.equals(columnName, DatabaseConstants.SUM_STORY_TOTAL)) {
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_TOTAL)) {
             int score = cursor.getInt(columnIndex);
 			Drawable icon;
             if (score > 0) {

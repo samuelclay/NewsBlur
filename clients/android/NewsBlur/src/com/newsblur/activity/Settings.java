@@ -25,7 +25,7 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
         preferenceManager.setSharedPreferencesName(PrefConstants.PREFERENCES);
         SharedPreferences prefs = getSharedPreferences(PrefConstants.PREFERENCES, 0);
         prefs.registerOnSharedPreferenceChangeListener(this);
-        addPreferencesFromResource(R.layout.activity_settings);
+        addPreferencesFromResource(R.xml.activity_settings);
 
         // Remove the reading category of references on pre-4.4 devices as it only contains
         // the single tap for immersive preference

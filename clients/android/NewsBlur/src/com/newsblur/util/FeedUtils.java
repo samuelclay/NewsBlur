@@ -49,6 +49,22 @@ public class FeedUtils {
         dbHelper.dropAndRecreateTables();
     }
 
+    public static void clearStorySession() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                try {
+                    dbHelper.clearStorySession();
+                } catch (Exception e) {
+                    ; // TODO: this can evade DB-ready gating and crash. figure out how to
+                      // defer this call until the DB-ready broadcast is received, as this
+                      // can mask important errors
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
 	public static void setStorySaved(final Story story, final boolean saved, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -92,35 +108,6 @@ public class FeedUtils {
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
             }
         }.execute();
-    }
-
-    public static void clearReadingSession() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                NBSyncService.resetFeeds();
-                try {
-                    dbHelper.clearReadingSession();
-                } catch (Exception e) {
-                    ; // this one call can evade the on-upgrade DB wipe and throw exceptions
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public static void activateAllStories() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                try {
-                    dbHelper.markStoriesActive(NBSyncService.ActivationMode.ALL, 0L);
-                } catch (Exception e) {
-                    ; // this call can evade the on-upgrade DB wipe and throw exceptions
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void markStoryUnread(final Story story, final Context context) {

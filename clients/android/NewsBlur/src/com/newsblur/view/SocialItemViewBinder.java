@@ -39,7 +39,7 @@ public class SocialItemViewBinder implements ViewBinder {
 			String faviconUrl = cursor.getString(columnIndex);
 			FeedUtils.imageLoader.displayImage(faviconUrl, ((ImageView) view), true);
 			return true;
-		} else if (TextUtils.equals(columnName, DatabaseConstants.SUM_STORY_TOTAL)) {
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_TOTAL)) {
             if (! this.ignoreIntel) {
                 int score = cursor.getInt(columnIndex);
                 Drawable icon;

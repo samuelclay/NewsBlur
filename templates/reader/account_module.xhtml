@@ -1,34 +1,20 @@
 {% load utils_tags %}
 
-<div class="NB-module NB-module-account">
+
+{% if not user_profile.is_premium %}
+<div class="NB-module NB-module-premium">
     <h5 class="NB-module-header">
-        <div class="NB-module-account-settings NB-javascript"></div>
-        Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
+        Please Upgrade
     </h5>
 
-    <div class="NB-module-item">
-        <h3 class="NB-module-content-header">
-            <div class="NB-module-content-subtitle NB-module-content-account-realtime-subtitle"></div>
-            <div class="NB-module-content-account-realtime" title=""></div>
-            {% if user_profile.is_premium %}
-            Premium Account
-            {% else %}
-            Free Account
-            {% endif %}
-        </h3>
-        <div class="NB-module-stats-counts">
-            <div class="NB-module-stats-count">
-                <div class="NB-module-stats-count-number NB-module-stats-count-number-sites">{{ feed_count|commify }}</div>
-                <div class="NB-module-stats-count-description">{{ feed_count|pluralize:"Site,Sites" }}</div>
-            </div>
-            <div class="NB-module-stats-count">
-                <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
-                <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
-            </div>
-            <div class="NB-module-stats-count">
-                <div class="NB-module-stats-count-number">{{ social_profile.follower_count|commify }}</div>
-                <div class="NB-module-stats-count-description">Follower{{ social_profile.follower_count|pluralize }}</div>
-            </div>
-        </div>
+    <div class="NB-module-item NB-module-item-intro">
+		<p>NewsBlur is a paid service and relies on premium subscribers.</p>
+		
+		<p><b>Please upgrade your account to premium.</b></p>
+		
+		<div class="NB-modal-submit-green NB-modal-submit-button NB-module-premium-button NB-javascript">Upgrade</div>
+		
+		<p class="NB-module-premium-price">Only $24/year</p>
     </div>
 </div>
+{% endif %}
