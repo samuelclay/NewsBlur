@@ -18,6 +18,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.StoriesResponse;
@@ -200,7 +201,8 @@ public class BlurDatabaseHelper {
 
     public void setFeedsFolders(List<ContentValues> folderValues,
                                 List<ContentValues> feedValues,
-                                List<ContentValues> socialFeedValues) {
+                                List<ContentValues> socialFeedValues,
+                                List<ContentValues> starredCountValues) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
@@ -210,9 +212,11 @@ public class BlurDatabaseHelper {
                 dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, null);
                 dbRW.delete(DatabaseConstants.COMMENT_TABLE, null, null);
                 dbRW.delete(DatabaseConstants.REPLY_TABLE, null, null);
+                dbRW.delete(DatabaseConstants.STARREDCOUNTS_TABLE, null, null);
                 bulkInsertValuesExtSync(DatabaseConstants.FOLDER_TABLE, folderValues);
                 bulkInsertValuesExtSync(DatabaseConstants.FEED_TABLE, feedValues);
                 bulkInsertValuesExtSync(DatabaseConstants.SOCIALFEED_TABLE, socialFeedValues);
+                bulkInsertValuesExtSync(DatabaseConstants.STARREDCOUNTS_TABLE, starredCountValues);
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
@@ -220,12 +224,17 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void updateStarredStoriesCount(int count) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STARRED_STORY_COUNT_COUNT, count);
-        // this DB just has one row and one column.  blow it away and replace it.
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null);}
-        synchronized (RW_MUTEX) {dbRW.insert(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values);}
+    public void setStarredCounts(List<ContentValues> values) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                dbRW.delete(DatabaseConstants.STARREDCOUNTS_TABLE, null, null);
+                bulkInsertValuesExtSync(DatabaseConstants.STARREDCOUNTS_TABLE, values);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public List<String> getStoryHashesForFeed(String feedId) {
@@ -720,8 +729,9 @@ public class BlurDatabaseHelper {
                 dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
                 // adjust counts
                 String operator = (starred ? " + 1" : " - 1");
-                StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARRED_STORY_COUNT_TABLE);
-                q.append(" SET ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(" = ").append(DatabaseConstants.STARRED_STORY_COUNT_COUNT).append(operator);
+                StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARREDCOUNTS_TABLE);
+                q.append(" SET ").append(DatabaseConstants.STARREDCOUNTS_COUNT).append(" = ").append(DatabaseConstants.STARREDCOUNTS_COUNT).append(operator);
+                q.append(" WHERE ").append(DatabaseConstants.STARREDCOUNTS_TAG).append(" = ").append(StarredCount.TOTAL_STARRED);
                 dbRW.execSQL(q.toString());
                 dbRW.setTransactionSuccessful();
             } finally {
@@ -881,14 +891,15 @@ public class BlurDatabaseHelper {
         return query(false, DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
-    public Loader<Cursor> getSavedStoryCountLoader() {
+    public Loader<Cursor> getSavedStoryCountsLoader() {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getSavedStoryCountCursor();}
+            protected Cursor createCursor() {return getSavedStoryCountsCursor(cancellationSignal);}
         };
     }
 
-    public Cursor getSavedStoryCountCursor() {
-        return dbRO.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null, null, null, null, null);
+    private Cursor getSavedStoryCountsCursor(CancellationSignal cancellationSignal) {
+        Cursor c = query(false, DatabaseConstants.STARREDCOUNTS_TABLE, null, null, null, null, null, null, null, cancellationSignal);
+        return c;
     }
 
     public Loader<Cursor> getStoriesLoader(final FeedSet fs, final StateFilter stateFilter) {

@@ -83,7 +83,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             case FEEDS_LOADER:
                 return FeedUtils.dbHelper.getFeedsLoader(currentState);
             case SAVEDCOUNT_LOADER:
-                return FeedUtils.dbHelper.getSavedStoryCountLoader();
+                return FeedUtils.dbHelper.getSavedStoryCountsLoader();
             default:
                 throw new IllegalArgumentException("unknown loader created");
         }
@@ -105,7 +105,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     firstCursorSeenYet = true;
                     break;
                 case SAVEDCOUNT_LOADER:
-                    adapter.setSavedCountCursor(cursor);
+                    adapter.setStarredCountCursor(cursor);
                     break;
                 default:
                     throw new IllegalArgumentException("unknown loader created");

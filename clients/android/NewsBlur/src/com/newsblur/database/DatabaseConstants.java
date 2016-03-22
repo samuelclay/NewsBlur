@@ -54,9 +54,6 @@ public class DatabaseConstants {
 	public static final String SOCIALFEED_STORY_USER_ID = "socialfeed_story_user_id";
 	public static final String SOCIALFEED_STORY_STORYID = "socialfeed_story_storyid";
 
-    public static final String STARRED_STORY_COUNT_TABLE = "starred_story_count";
-    public static final String STARRED_STORY_COUNT_COUNT = "count";
-
 	public static final String CLASSIFIER_TABLE = "classifiers";
 	public static final String CLASSIFIER_ID = BaseColumns._ID;
 	public static final String CLASSIFIER_TYPE = "type";
@@ -147,6 +144,11 @@ public class DatabaseConstants {
     public static final String ACTION_STORY_ID = "story_id";
     public static final String ACTION_SOURCE_USER_ID = "source_user_id";
     public static final String ACTION_COMMENT_ID = "comment_id";
+
+    public static final String STARREDCOUNTS_TABLE = "starred_counts";
+    public static final String STARREDCOUNTS_COUNT = "count";
+    public static final String STARREDCOUNTS_TAG = "tag";
+    public static final String STARREDCOUNTS_FEEDID = "feed_id";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -265,10 +267,6 @@ public class DatabaseConstants {
 		"PRIMARY KEY (" + SOCIALFEED_STORY_STORYID  + ", " + SOCIALFEED_STORY_USER_ID + ") " + 
 	    ")";
 
-    static final String STARRED_STORIES_COUNT_SQL = "CREATE TABLE " + STARRED_STORY_COUNT_TABLE + " (" +
-        STARRED_STORY_COUNT_COUNT + INTEGER + " NOT NULL" +
-        ")";
-
     static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
@@ -289,6 +287,12 @@ public class DatabaseConstants {
         ACTION_STORY_ID + TEXT + ", " +
         ACTION_SOURCE_USER_ID + TEXT + ", " +
         ACTION_COMMENT_ID + TEXT +
+        ")";
+
+	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
+        STARREDCOUNTS_COUNT + INTEGER + " NOT NULL, " +
+	    STARREDCOUNTS_TAG + TEXT + ", " +
+	    STARREDCOUNTS_FEEDID + TEXT +
         ")";
 
 	public static final String[] FEED_COLUMNS = {
