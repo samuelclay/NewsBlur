@@ -29,6 +29,7 @@ import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
+import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.AppConstants;
@@ -78,10 +79,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     /** List of foler positive counts, ordered the same as activeFolderNames. */
     private List<Integer> folderPosCounts;
 
+    /** Starred story sets in display order. */
+    private List<StarredCount> starredCounts = Collections.emptyList();
+
+    private int savedStoriesTotalCount;
+
     /** Flat names of folders explicity closed by the user. */
     private Set<String> closedFolders = new HashSet<String>();
-
-    private int savedStoriesCount;
 
 	private Context context;
 	private LayoutInflater inflater;
@@ -138,7 +142,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             if (convertView == null) {
                 v = inflater.inflate(R.layout.row_saved_stories, null, false);
             }
-            ((TextView) v.findViewById(R.id.row_foldersum)).setText(Integer.toString(savedStoriesCount));
+            ((TextView) v.findViewById(R.id.row_foldersum)).setText(Integer.toString(savedStoriesTotalCount));
 		} else {
 			if (convertView == null) {
 				v = inflater.inflate((isExpanded) ? R.layout.row_folder_collapsed : R.layout.row_folder_collapsed, parent, false);
@@ -375,11 +379,18 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
 	}
 
-	public void setSavedCountCursor(Cursor cursor) {
-        cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            savedStoriesCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STARRED_STORY_COUNT_COUNT));
+	public void setStarredCountCursor(Cursor cursor) {
+        if (!cursor.isBeforeFirst()) return;
+        starredCounts = new ArrayList<StarredCount>(cursor.getCount());
+        while (cursor.moveToNext()) {
+            StarredCount sc = StarredCount.fromCursor(cursor);
+            if (sc.isTotalCount()) {
+                savedStoriesTotalCount = sc.count;
+            } else {
+                starredCounts.add(sc);
+            }
         }
+        //Collections.sort(starredCounts);
         notifyDataSetChanged();
 	}
     
@@ -513,9 +524,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         totalNeutCount = 0;
         totalPosCount = 0;
 
-        safeClear(closedFolders);
+        safeClear(starredCounts);
 
-        savedStoriesCount = 0;
+        safeClear(closedFolders);
     }
 
     public Feed getFeed(String feedId) {
