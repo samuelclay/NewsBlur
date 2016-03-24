@@ -294,6 +294,9 @@
 }
 
 - (void)updateTheme {
+    self.leftBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
+    self.rightBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
+    
     self.masterNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.masterNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
     
