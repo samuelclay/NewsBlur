@@ -745,8 +745,9 @@ public class BlurDatabaseHelper {
                 // adjust counts
                 String operator = (starred ? " + 1" : " - 1");
                 StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.STARREDCOUNTS_TABLE);
-                q.append(" SET ").append(DatabaseConstants.STARREDCOUNTS_COUNT).append(" = ").append(DatabaseConstants.STARREDCOUNTS_COUNT).append(operator);
-                q.append(" WHERE ").append(DatabaseConstants.STARREDCOUNTS_TAG).append(" = ").append(StarredCount.TOTAL_STARRED);
+                q.append(" SET " + DatabaseConstants.STARREDCOUNTS_COUNT + " = " + DatabaseConstants.STARREDCOUNTS_COUNT).append(operator);
+                q.append(" WHERE " + DatabaseConstants.STARREDCOUNTS_TAG + " = '" + StarredCount.TOTAL_STARRED + "'");
+                // TODO: adjust counts per feed (and tags?)
                 dbRW.execSQL(q.toString());
                 dbRW.setTransactionSuccessful();
             } finally {
