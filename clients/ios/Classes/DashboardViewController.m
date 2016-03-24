@@ -123,6 +123,10 @@
     self.interactionsModule.interactionsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.activitiesModule.activitiesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
+    self.storiesModule.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    self.interactionsModule.interactionsTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    self.activitiesModule.activitiesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    
     [self.storiesModule.storyTitlesTable reloadData];
     [self.interactionsModule.interactionsTable reloadData];
     [self.activitiesModule.activitiesTable reloadData];
