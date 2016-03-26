@@ -31,7 +31,6 @@ import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.Main;
 import com.newsblur.activity.ReadStoriesItemsList;
-import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.domain.Feed;
@@ -218,6 +217,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			break;
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
+            if (adapter.isRowSavedStories(groupPosition)) break;
 			inflater.inflate(R.menu.context_feed, menu);
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
@@ -310,10 +310,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             Intent i = new Intent(getActivity(), ReadStoriesItemsList.class);
             startActivity(i);
             return true;
-        } else if (adapter.isRowSavedStories(groupPosition)) {
-            Intent i = new Intent(getActivity(), SavedStoriesItemsList.class);
-            startActivity(i);
-            return true;
         } else {
             // the intents started by clicking on folder group names are handled in the Adapter, this
             // just handles clicks on the expandos
@@ -332,12 +328,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @OnGroupExpand(R.id.folderfeed_list) void onGroupExpand(int groupPosition) {
         // these shouldn't ever be collapsible
         if (adapter.isFolderRoot(groupPosition)) return;
-        if (adapter.isRowSavedStories(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the expanded preference, since the widget likes to forget it
         sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true).commit();
+
+        if (adapter.isRowSavedStories(groupPosition)) return;
+
         // trigger display/hide of sub-folders
         adapter.setFolderClosed(flatGroupName, false);
         adapter.forceRecount();
@@ -348,12 +346,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @OnGroupCollapse(R.id.folderfeed_list) void onGroupCollapse(int groupPosition) {
         // these shouldn't ever be collapsible
         if (adapter.isFolderRoot(groupPosition)) return;
-        if (adapter.isRowSavedStories(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the collapsed preference, since the widget likes to forget it
         sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, false).commit();
+
+        if (adapter.isRowSavedStories(groupPosition)) return;
+
         // trigger display/hide of sub-folders
         adapter.setFolderClosed(flatGroupName, true);
         adapter.forceRecount();
@@ -366,6 +366,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
 			intent.putExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED, socialFeed);
 			getActivity().startActivity(intent);
+        } else if (adapter.isRowSavedStories(groupPosition)) {
+            ; // TODO
 		} else {
             Feed feed = adapter.getFeed(childName);
 			String folderName = adapter.getGroup(groupPosition);
