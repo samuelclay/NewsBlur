@@ -43,23 +43,19 @@ public class StarredCount {
         return sc;
     }
 
+    public boolean isTag() {
+        return (tag != null);
+    }
+
     public boolean isTotalCount() {
         if (tag == null) return false;
         return tag.equals(TOTAL_STARRED);
     }
 
-    public final static Comparator<StarredCount> StarredCountComparator = new Comparator<StarredCount>() {
+    public final static Comparator<StarredCount> StarredCountComparatorByTag = new Comparator<StarredCount>() {
         @Override
         public int compare(StarredCount sc1, StarredCount sc2) {
-            // tags come before feeds
-            if ((sc1.tag != null) && (sc2.feedId != null)) return -1;
-            if ((sc2.tag != null) && (sc1.feedId != null)) return 1;
-            // then tags are in order
-            if ((sc1.tag != null) && (sc2.tag != null)) return String.CASE_INSENSITIVE_ORDER.compare(sc1.tag, sc2.tag);
-            // then feeds are in order by name
-            if ((sc1.feedTitle != null) && (sc2.feedTitle != null)) return String.CASE_INSENSITIVE_ORDER.compare(sc1.feedTitle, sc2.feedTitle);
-            // sensible default if anything is missing
-            return String.CASE_INSENSITIVE_ORDER.compare(sc1.feedId, sc2.feedId);
+            return String.CASE_INSENSITIVE_ORDER.compare(sc1.tag, sc2.tag);
         }
     };
 

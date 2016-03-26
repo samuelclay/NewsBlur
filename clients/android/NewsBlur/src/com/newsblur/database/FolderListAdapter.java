@@ -27,6 +27,7 @@ import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
+import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.StarredCount;
@@ -44,7 +45,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public static final int ALL_SHARED_STORIES_GROUP_POSITION = 1;
 
     private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_STORIES }
-    private enum ChildType { SOCIAL_FEED, FEED }
+    private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG }
 
     /** Social feeds, indexed by feed ID. */
     private Map<String,SocialFeed> socialFeeds = Collections.emptyMap();
@@ -80,7 +81,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private List<Integer> folderPosCounts;
 
     /** Starred story sets in display order. */
-    private List<StarredCount> starredCounts = Collections.emptyList();
+    private List<StarredCount> starredCountsByTag = Collections.emptyList();
 
     private int savedStoriesTotalCount;
 
@@ -143,6 +144,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 v = inflater.inflate(R.layout.row_saved_stories, null, false);
             }
             ((TextView) v.findViewById(R.id.row_foldersum)).setText(Integer.toString(savedStoriesTotalCount));
+			((TextView) v.findViewById(R.id.row_saved_text)).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent(context, SavedStoriesItemsList.class);
+					context.startActivity(i);
+				}
+			});
 		} else {
 			if (convertView == null) {
 				v = inflater.inflate((isExpanded) ? R.layout.row_folder_collapsed : R.layout.row_folder_collapsed, parent, false);
@@ -200,6 +208,15 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             } else {
                 posCounter.setVisibility(View.GONE);
             }
+        } else if (isRowSavedStories(groupPosition)) {
+            if (convertView == null) {
+                v = inflater.inflate(R.layout.row_saved_tag, parent, false);
+			} else {
+				v = convertView;
+			}
+            StarredCount sc = starredCountsByTag.get(childPosition);
+            ((TextView) v.findViewById(R.id.row_tag_name)).setText(sc.tag);
+            ((TextView) v.findViewById(R.id.row_saved_tag_sum)).setText(Integer.toString(checkNegativeUnreads(sc.count)));
 		} else {
             Feed f = activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
 			if (convertView == null) {
@@ -275,7 +292,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	public synchronized int getChildrenCount(int groupPosition) {
 		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			return socialFeedsOrdered.size();
-        } else if (isRowReadStories(groupPosition) || isRowSavedStories(groupPosition) || groupPosition == GLOBAL_SHARED_STORIES_GROUP_POSITION) {
+        } else if (isRowSavedStories(groupPosition)) {
+            return starredCountsByTag.size();
+        } else if (isRowReadStories(groupPosition) || groupPosition == GLOBAL_SHARED_STORIES_GROUP_POSITION) {
             return 0; // these rows never have children
 		} else {
             return activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).size();
@@ -286,6 +305,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	public synchronized String getChild(int groupPosition, int childPosition) {
 		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             return socialFeedsOrdered.get(childPosition).userId;
+        } else if (isRowSavedStories(groupPosition)) {
+            return starredCountsByTag.get(childPosition).tag;
         } else {
 			return activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition).feedId;
 		}
@@ -381,16 +402,16 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	public void setStarredCountCursor(Cursor cursor) {
         if (!cursor.isBeforeFirst()) return;
-        starredCounts = new ArrayList<StarredCount>(cursor.getCount());
+        starredCountsByTag = new ArrayList<StarredCount>(cursor.getCount());
         while (cursor.moveToNext()) {
             StarredCount sc = StarredCount.fromCursor(cursor);
             if (sc.isTotalCount()) {
                 savedStoriesTotalCount = sc.count;
-            } else {
-                starredCounts.add(sc);
+            } else if (sc.isTag()) {
+                starredCountsByTag.add(sc);
             }
         }
-        //Collections.sort(starredCounts);
+        Collections.sort(starredCountsByTag, StarredCount.StarredCountComparatorByTag);
         notifyDataSetChanged();
 	}
     
@@ -524,7 +545,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         totalNeutCount = 0;
         totalPosCount = 0;
 
-        safeClear(starredCounts);
+        safeClear(starredCountsByTag);
 
         safeClear(closedFolders);
     }
@@ -591,6 +612,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	public int getChildType(int groupPosition, int childPosition) {
 		if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
 			return ChildType.SOCIAL_FEED.ordinal();
+        } else if (isRowSavedStories(groupPosition)) {
+            return ChildType.SAVED_BY_TAG.ordinal();
 		} else {
 			return ChildType.FEED.ordinal();
 		}
