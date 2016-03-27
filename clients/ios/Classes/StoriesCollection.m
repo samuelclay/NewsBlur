@@ -109,10 +109,18 @@
     self.visibleUnreadCount = 0;
     self.activeFeedStoryLocations = [NSMutableArray array];
     self.activeFeedStoryLocationIds = [NSMutableArray array];
+    
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        if (score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue]) {
+        BOOL want = NO;
+        if (self.appDelegate.isSavedStoriesIntelligenceMode) {
+            want = [story[@"starred"] boolValue];
+        } else {
+            want = score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue];
+        }
+        
+        if (want) {
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];
             [self.activeFeedStoryLocationIds addObject:[story objectForKey:@"story_hash"]];
@@ -225,6 +233,10 @@
 }
 
 - (NSString *)activeReadFilter {
+    if (self.appDelegate.isSavedStoriesIntelligenceMode) {
+        return @"starred";
+    }
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *readFilterFeedPrefDefault = [userPreferences stringForKey:@"default_feed_read_filter"];
     NSString *readFilterFolderPrefDefault = [userPreferences stringForKey:@"default_folder_read_filter"];
