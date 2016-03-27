@@ -39,7 +39,9 @@ const int COUNT_HEIGHT = 15;
     if (listType == NBFeedListSaved) {
         blueCount = ps;
         psCount = ps;
+        ntCount = 0;
     } else {
+        blueCount = 0;
         psCount = ps;
         ntCount = nt;
     }
