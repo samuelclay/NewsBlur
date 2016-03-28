@@ -58,6 +58,8 @@
 @property (nonatomic) IBOutlet UIButton *selectSignUpButton;
 @property (nonatomic) IBOutlet UIButton *selectLoginButton;
 @property (nonatomic) IBOutlet UIButton *onePasswordButton;
+@property (nonatomic) IBOutlet UILabel *loginOptionalLabel;
+@property (nonatomic) IBOutlet UIButton *forgotPasswordButton;
 
 @property (nonatomic) IBOutlet UIView *buttonsView;
 @property (nonatomic) IBOutlet UIView *signUpView;
@@ -72,5 +74,7 @@
 @property (nonatomic) IBOutlet UILabel *passwordLabel;
 @property (nonatomic) IBOutlet UILabel *emailLabel;
 @property (nonatomic) IBOutlet UILabel *passwordOptionalLabel;
+
+- (IBAction)forgotPassword:(id)sender;
 
 @end
