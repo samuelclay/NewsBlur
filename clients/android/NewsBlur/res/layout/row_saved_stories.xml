@@ -15,6 +15,16 @@
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/clock" />
 
+    <ImageView
+        android:id="@+id/row_folder_indicator"
+        android:layout_width="34dp"
+        android:layout_height="30dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/indicator_collapsed" />
+
     <TextView
         android:id="@+id/row_saved_text"
         android:layout_width="wrap_content"
@@ -33,8 +43,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="12dp"
+        android:layout_toLeftOf="@id/row_folder_indicator"
+        android:layout_marginRight="2dp"
         android:background="@drawable/saved_count_rect"
         android:gravity="center"
         android:paddingLeft="3dp"
