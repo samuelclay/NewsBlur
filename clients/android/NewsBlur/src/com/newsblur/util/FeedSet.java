@@ -100,6 +100,17 @@ public class FeedSet implements Serializable {
     }
 
     /**
+     * Convenience constructor for a single saved tag.
+     */
+    public static FeedSet singleSavedTag(String tag) {
+        FeedSet fs = new FeedSet();
+        fs.savedTags = new HashSet<String>(1);
+        fs.savedTags.add(tag);
+        fs.savedTags = Collections.unmodifiableSet(fs.savedTags);
+        return fs;
+    }
+
+    /**
      * Convenience constructor for global shared stories feed.
      */
     public static FeedSet globalShared() {
@@ -170,6 +181,14 @@ public class FeedSet implements Serializable {
 
     public boolean isAllSaved() {
         return (((savedFeeds != null) && (savedFeeds.size() < 1)) || ((savedTags != null) && (savedTags.size() < 1)));
+    }
+
+    /**
+     * Gets a single saved tag iff there is only one or null otherwise.
+     */
+    public String getSingleSavedTag() {
+        if (folderName != null) return null;
+        if (savedTags != null && savedTags.size() == 1) return savedTags.iterator().next(); else return null;
     }
 
     public boolean isSingleSocial() {

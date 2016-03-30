@@ -8,8 +8,6 @@ import android.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.fragment.FolderItemListFragment;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
@@ -23,7 +21,6 @@ public class FolderItemsList extends ItemsList {
 	protected void onCreate(Bundle bundle) {
 		folderName = getIntent().getStringExtra(EXTRA_FOLDER_NAME);
 
-        // note: onCreate triggers createFeedSet() so it has to wait until we have the folder name
 		super.onCreate(bundle);
 
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, folderName);
@@ -37,11 +34,6 @@ public class FolderItemsList extends ItemsList {
 			listTransaction.commit();
 		}
 	}
-
-    @Override
-    protected FeedSet createFeedSet() {
-        return FeedUtils.feedSetFromFolderName(this.folderName);
-    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

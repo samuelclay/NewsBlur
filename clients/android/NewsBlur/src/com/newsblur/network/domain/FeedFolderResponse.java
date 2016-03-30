@@ -16,6 +16,7 @@ import com.google.gson.JsonParser;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.domain.StarredCount;
 import com.newsblur.util.AppConstants;
 
 public class FeedFolderResponse {
@@ -28,6 +29,7 @@ public class FeedFolderResponse {
     public Set<Folder> folders;
 	public Set<Feed> feeds;
 	public Set<SocialFeed> socialFeeds;
+    public Set<StarredCount> starredCounts;
 	
 	public boolean isAuthenticated;
     public boolean isPremium;
@@ -96,6 +98,16 @@ public class FeedFolderResponse {
             folders.add(emptyRootFolder);
             Log.d( this.getClass().getName(), "root folder was missing.  added it.");
         } 
+
+        starredCounts = new HashSet<StarredCount>();
+        JsonArray starredCountsArray = (JsonArray) asJsonObject.get("starred_counts");
+        if (starredCountsArray != null) {
+            for (int i=0; i<starredCountsArray.size(); i++) {
+                JsonElement jsonElement = starredCountsArray.get(i);
+                StarredCount sc = gson.fromJson(jsonElement, StarredCount.class);
+                starredCounts.add(sc);
+            }
+        }
 
         parseTime = System.currentTimeMillis() - startTime;
 	}

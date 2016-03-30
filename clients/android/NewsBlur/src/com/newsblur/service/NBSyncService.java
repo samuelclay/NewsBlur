@@ -19,6 +19,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
@@ -491,10 +492,19 @@ public class NBSyncService extends Service {
                 socialFeedValues.add(feed.getValues());
             }
             
-            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues);
-
             // populate the starred stories count table
-            dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
+            List<ContentValues> starredCountValues = new ArrayList<ContentValues>();
+            for (StarredCount sc : feedResponse.starredCounts) {
+                starredCountValues.add(sc.getValues());
+            }
+            // the API vends the starred total as a different element, roll it into
+            // the starred counts table using a special tag
+            StarredCount totalStarred = new StarredCount();
+            totalStarred.count = feedResponse.starredCount;
+            totalStarred.tag = StarredCount.TOTAL_STARRED;
+            starredCountValues.add(totalStarred.getValues());
+
+            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues);
 
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();
@@ -713,6 +723,14 @@ public class NBSyncService extends Service {
             for (Story story : apiResponse.stories) {
                 story.intelligence.intelligenceFeed--;
             }
+        }
+
+        if (fs.getSingleSavedTag() != null) {
+            // Workaround: the API doesn't vend an embedded 'feeds' block with metadata for feeds
+            // to which the user is not subscribed but that contain saved stories. In order to
+            // prevent these stories being invisible due to failed metadata joins, insert fake
+            // feed data like with the zero-ID generic feed to match the web UI behaviour
+            dbHelper.fixMissingStoryFeeds(apiResponse.stories);
         }
 
         if (fs.getSearchQuery() != null) {
