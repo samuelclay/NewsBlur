@@ -15,7 +15,11 @@ public class SavedStoriesReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        UIUtils.setCustomActionBar(this, R.drawable.clock, getResources().getString(R.string.saved_stories_title));
+        String title = getResources().getString(R.string.saved_stories_title);
+        if (fs.getSingleSavedTag() != null) {
+            title = title + " - " + fs.getSingleSavedTag();
+        }
+        UIUtils.setCustomActionBar(this, R.drawable.clock, title);
         readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, null);
 
         getLoaderManager().initLoader(0, null, this);

@@ -168,6 +168,8 @@ public class UIUtils {
         Class activityClass;
 		if (fs.isAllSaved()) {
             activityClass = SavedStoriesReading.class;
+        } else if (fs.getSingleSavedTag() != null) {
+            activityClass = SavedStoriesReading.class;
         } else if (fs.isGlobalShared()) {
             activityClass = GlobalSharedStoriesReading.class;
         } else if (fs.isAllSocial()) {

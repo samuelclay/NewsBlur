@@ -725,6 +725,14 @@ public class NBSyncService extends Service {
             }
         }
 
+        if (fs.getSingleSavedTag() != null) {
+            // Workaround: the API doesn't vend an embedded 'feeds' block with metadata for feeds
+            // to which the user is not subscribed but that contain saved stories. In order to
+            // prevent these stories being invisible due to failed metadata joins, insert fake
+            // feed data like with the zero-ID generic feed to match the web UI behaviour
+            dbHelper.fixMissingStoryFeeds(apiResponse.stories);
+        }
+
         if (fs.getSearchQuery() != null) {
             // If this set of stories was found in response to the active search query, note
             // them as such in the DB so the UI can filter for them

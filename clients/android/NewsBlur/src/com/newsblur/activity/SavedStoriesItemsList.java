@@ -19,7 +19,11 @@ public class SavedStoriesItemsList extends ItemsList {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-        UIUtils.setCustomActionBar(this, R.drawable.clock, getResources().getString(R.string.saved_stories_title));
+        String title = getResources().getString(R.string.saved_stories_title);
+        if (fs.getSingleSavedTag() != null) {
+            title = title + " - " + fs.getSingleSavedTag();
+        }
+        UIUtils.setCustomActionBar(this, R.drawable.clock, title);
 
 		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {

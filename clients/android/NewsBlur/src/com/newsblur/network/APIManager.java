@@ -325,6 +325,9 @@ public class APIManager {
             uri = Uri.parse(APIConstants.URL_READ_STORIES);
         } else if (fs.isAllSaved()) {
             uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
+        } else if (fs.getSingleSavedTag() != null) {
+            uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
+            values.put(APIConstants.PARAMETER_TAG, fs.getSingleSavedTag());
         } else if (fs.isGlobalShared()) {
             uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
             values.put(APIConstants.PARAMETER_GLOBAL_FEED, Boolean.TRUE.toString());

@@ -376,6 +376,8 @@ public class PrefsUtils {
     public static DefaultFeedView getDefaultFeedView(Context context, FeedSet fs) {
 		if (fs.isAllSaved()) {
             return getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleSavedTag() != null) {
+            return getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
         } else if (fs.isGlobalShared()) {
             return getDefaultFeedViewForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
         } else if (fs.isAllSocial()) {
@@ -413,6 +415,8 @@ public class PrefsUtils {
             return StoryOrder.NEWEST;
         } else if (fs.isAllSaved()) {
             return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleSavedTag() != null) {
+            return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
         } else if (fs.isGlobalShared()) {
             return StoryOrder.NEWEST;
         } else {
@@ -437,6 +441,8 @@ public class PrefsUtils {
             throw new IllegalArgumentException( "AllRead FeedSet type has fixed ordering" );
         } else if (fs.isAllSaved()) {
             setStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder);
+        } else if (fs.getSingleSavedTag() != null) {
+            setStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder);
         } else if (fs.isGlobalShared()) {
             throw new IllegalArgumentException( "GlobalShared FeedSet type has fixed ordering" );
         } else {
@@ -447,37 +453,26 @@ public class PrefsUtils {
     public static ReadFilter getReadFilter(Context context, FeedSet fs) {
         if (fs.isAllNormal()) {
             return getReadFilterForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
-        }
-        if (fs.getSingleFeed() != null) {
+        } else if (fs.getSingleFeed() != null) {
             return getReadFilterForFeed(context, fs.getSingleFeed());
-        }
-        if (fs.getMultipleFeeds() != null) {
+        } else if (fs.getMultipleFeeds() != null) {
             return getReadFilterForFolder(context, fs.getFolderName());
-        }
-
-        if (fs.isAllSocial()) {
+        } else if (fs.isAllSocial()) {
             return getReadFilterForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-        }
-        if (fs.getSingleSocialFeed() != null) {
+        } else if (fs.getSingleSocialFeed() != null) {
             return getReadFilterForFeed(context, fs.getSingleSocialFeed().getKey());
-        }
-        if (fs.getMultipleSocialFeeds() != null) {
+        } else if (fs.getMultipleSocialFeeds() != null) {
             throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
-        }
-
-        if (fs.isAllRead()) {
+        } else if (fs.isAllRead()) {
             // dummy value, not really used
             return ReadFilter.ALL;
-        }
-
-        if (fs.isAllSaved()) {
+        } else if (fs.isAllSaved()) {
             return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
-        }
-
-        if (fs.isGlobalShared()) {
+        } else if (fs.getSingleSavedTag() != null) {
+            return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        } else if (fs.isGlobalShared()) {
             return ReadFilter.UNREAD;
         }
-
         throw new IllegalArgumentException( "unknown type of feed set" );
     }
 
