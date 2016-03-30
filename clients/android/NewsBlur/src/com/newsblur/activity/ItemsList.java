@@ -38,6 +38,8 @@ import com.newsblur.util.UIUtils;
 
 public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, MarkAllReadDialogListener {
 
+    public static final String EXTRA_FEED_SET = "feed_set";
+
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
@@ -49,7 +51,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     @FindView(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
 
-    private FeedSet fs;
+    protected FeedSet fs;
 	
 	@Override
     protected void onCreate(Bundle bundle) {
@@ -57,8 +59,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 
+		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
+
 		intelState = PrefsUtils.getStateFilter(this);
-        this.fs = createFeedSet();
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
@@ -107,8 +110,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             }
         }
     }
-
-    protected abstract FeedSet createFeedSet();
 
     public FeedSet getFeedSet() {
         return this.fs;

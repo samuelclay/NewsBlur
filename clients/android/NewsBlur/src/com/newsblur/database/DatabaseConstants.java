@@ -54,9 +54,6 @@ public class DatabaseConstants {
 	public static final String SOCIALFEED_STORY_USER_ID = "socialfeed_story_user_id";
 	public static final String SOCIALFEED_STORY_STORYID = "socialfeed_story_storyid";
 
-    public static final String STARRED_STORY_COUNT_TABLE = "starred_story_count";
-    public static final String STARRED_STORY_COUNT_COUNT = "count";
-
 	public static final String CLASSIFIER_TABLE = "classifiers";
 	public static final String CLASSIFIER_ID = BaseColumns._ID;
 	public static final String CLASSIFIER_TYPE = "type";
@@ -92,6 +89,7 @@ public class DatabaseConstants {
 	public static final String STORY_SOCIAL_USER_ID = "socialUserId";
 	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
+	public static final String STORY_USER_TAGS = "user_tags";
     public static final String STORY_HASH = "story_hash";
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
@@ -144,6 +142,11 @@ public class DatabaseConstants {
     public static final String ACTION_STORY_ID = "story_id";
     public static final String ACTION_SOURCE_USER_ID = "source_user_id";
     public static final String ACTION_COMMENT_ID = "comment_id";
+
+    public static final String STARREDCOUNTS_TABLE = "starred_counts";
+    public static final String STARREDCOUNTS_COUNT = "count";
+    public static final String STARREDCOUNTS_TAG = "tag";
+    public static final String STARREDCOUNTS_FEEDID = "feed_id";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -228,6 +231,7 @@ public class DatabaseConstants {
 		STORY_SHARED_USER_IDS + TEXT + ", " +
 		STORY_FRIEND_USER_IDS + TEXT + ", " +
 		STORY_TAGS + TEXT + ", " +
+		STORY_USER_TAGS + TEXT + ", " +
 		STORY_PERMALINK + TEXT + ", " + 
 		STORY_READ + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
@@ -260,10 +264,6 @@ public class DatabaseConstants {
 		"PRIMARY KEY (" + SOCIALFEED_STORY_STORYID  + ", " + SOCIALFEED_STORY_USER_ID + ") " + 
 	    ")";
 
-    static final String STARRED_STORIES_COUNT_SQL = "CREATE TABLE " + STARRED_STORY_COUNT_TABLE + " (" +
-        STARRED_STORY_COUNT_COUNT + INTEGER + " NOT NULL" +
-        ")";
-
     static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
@@ -286,6 +286,12 @@ public class DatabaseConstants {
         ACTION_COMMENT_ID + TEXT +
         ")";
 
+	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
+        STARREDCOUNTS_COUNT + INTEGER + " NOT NULL, " +
+	    STARREDCOUNTS_TAG + TEXT + ", " +
+	    STARREDCOUNTS_FEEDID + TEXT +
+        ")";
+
 	public static final String[] FEED_COLUMNS = {
 		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOR, FEED_TABLE + "." + FEED_FAVICON_BORDER, FEED_TABLE + "." + FEED_FAVICON_TEXT,
 		FEED_TABLE + "." + FEED_POSITIVE_COUNT, FEED_TABLE + "." + FEED_NEUTRAL_COUNT, FEED_TABLE + "." + FEED_NEGATIVE_COUNT,
@@ -299,7 +305,7 @@ public class DatabaseConstants {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID,
         STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
-        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
+        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_USER_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
         STORY_LAST_READ_DATE,
 	};

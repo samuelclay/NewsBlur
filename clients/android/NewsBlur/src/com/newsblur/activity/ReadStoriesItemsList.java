@@ -8,11 +8,9 @@ import android.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.fragment.ReadStoriesItemListFragment;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
 public class ReadStoriesItemsList extends ItemsList {
@@ -32,11 +30,6 @@ public class ReadStoriesItemsList extends ItemsList {
 			listTransaction.commit();
 		}
 	}
-
-    @Override
-    protected FeedSet createFeedSet() {
-        return FeedSet.allRead();
-    }
 
 	@Override
 	public void markItemListAsRead() {
