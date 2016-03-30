@@ -183,6 +183,14 @@ public class FeedSet implements Serializable {
         return (((savedFeeds != null) && (savedFeeds.size() < 1)) || ((savedTags != null) && (savedTags.size() < 1)));
     }
 
+    /**
+     * Gets a single saved tag iff there is only one or null otherwise.
+     */
+    public String getSingleSavedTag() {
+        if (folderName != null) return null;
+        if (savedTags != null && savedTags.size() == 1) return savedTags.iterator().next(); else return null;
+    }
+
     public boolean isSingleSocial() {
         return ((socialFeeds != null) && (socialFeeds.size() == 1));
     }

@@ -51,7 +51,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     @FindView(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
 
-    private FeedSet fs;
+    protected FeedSet fs;
 	
 	@Override
     protected void onCreate(Bundle bundle) {

@@ -89,6 +89,7 @@ public class DatabaseConstants {
 	public static final String STORY_SOCIAL_USER_ID = "socialUserId";
 	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
+	public static final String STORY_USER_TAGS = "user_tags";
     public static final String STORY_HASH = "story_hash";
     public static final String STORY_IMAGE_URLS = "image_urls";
     public static final String STORY_LAST_READ_DATE = "last_read_date";
@@ -230,6 +231,7 @@ public class DatabaseConstants {
 		STORY_SHARED_USER_IDS + TEXT + ", " +
 		STORY_FRIEND_USER_IDS + TEXT + ", " +
 		STORY_TAGS + TEXT + ", " +
+		STORY_USER_TAGS + TEXT + ", " +
 		STORY_PERMALINK + TEXT + ", " + 
 		STORY_READ + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
@@ -303,7 +305,7 @@ public class DatabaseConstants {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID,
         STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
-        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_TITLE,
+        STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_USER_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
         STORY_LAST_READ_DATE,
 	};

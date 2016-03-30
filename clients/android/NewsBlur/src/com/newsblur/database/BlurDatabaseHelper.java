@@ -428,6 +428,42 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void fixMissingStoryFeeds(Story[] stories) {
+        // start off with feeds mentioned by the set of stories
+        Set<String> feedIds = new HashSet<String>();
+        for (Story story : stories) {
+            feedIds.add(story.feedId);
+        }
+        // now prune any we already have
+        String q1 = "SELECT " + DatabaseConstants.FEED_ID +
+                    " FROM " + DatabaseConstants.FEED_TABLE;
+        Cursor c = dbRO.rawQuery(q1, null);
+        while (c.moveToNext()) {
+           feedIds.remove(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_ID)));
+        }
+        c.close();
+        // if any feeds are left, they are phantoms and need a fake entry
+        if (feedIds.size() < 1) return;
+        android.util.Log.i(this.getClass().getName(), "inserting missing metadata for " + feedIds.size() + " feeds used by new stories");
+        List<ContentValues> feedValues = new ArrayList<ContentValues>(feedIds.size());
+        for (String feedId : feedIds) {
+            Feed missingFeed = Feed.getZeroFeed();
+            missingFeed.feedId = feedId;
+            feedValues.add(missingFeed.getValues());
+        }
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                for (ContentValues values : feedValues) {
+                    dbRW.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
     public Folder getFolder(String folderName) {
         String[] selArgs = new String[] {folderName};
         String selection = DatabaseConstants.FOLDER_NAME + " = ?";
@@ -1003,6 +1039,16 @@ public class BlurDatabaseHelper {
             sel.append(" WHERE (" + DatabaseConstants.STORY_STARRED + " = 1)");
             DatabaseConstants.appendStorySelection(sel, selArgs, ReadFilter.ALL, StateFilter.ALL, fs.getSearchQuery());
 
+        } else if (fs.getSingleSavedTag() != null) {
+
+            sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            sel.append(" WHERE (" + DatabaseConstants.STORY_STARRED + " = 1)");
+            sel.append(" AND (" + DatabaseConstants.STORY_USER_TAGS + " LIKE ?)");
+            StringBuilder tagArg = new StringBuilder("%");
+            tagArg.append(fs.getSingleSavedTag()).append("%");
+            selArgs.add(tagArg.toString());
+            DatabaseConstants.appendStorySelection(sel, selArgs, ReadFilter.ALL, StateFilter.ALL, fs.getSearchQuery());
+            
         } else if (fs.isGlobalShared()) {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
