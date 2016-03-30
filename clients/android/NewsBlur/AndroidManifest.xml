@@ -6,6 +6,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> Android v4.8.0b2.
     android:versionCode="120"
@@ -21,6 +22,10 @@
 >>>>>>> Forgot to issue v4.8.0b3 with latest changes.
     android:versionName="4.8.0b3" >
 >>>>>>> Android v4.8.0b3.
+=======
+    android:versionCode="123"
+    android:versionName="4.8.0" >
+>>>>>>> v4.8.0
 =======
     android:versionCode="123"
     android:versionName="4.8.0" >
