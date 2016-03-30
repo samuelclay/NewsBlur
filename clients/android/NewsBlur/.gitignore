@@ -16,3 +16,7 @@ libs/ActionBarSherlock/
 .settings/
 .classpath
 .project
+.gradle/
+app/
+gradle/
+*.gradle
