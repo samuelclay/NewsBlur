@@ -53,6 +53,7 @@ venv
 # generated files
 clients/android/NewsBlur/bin/
 clients/android/NewsBlur/gen/
+clients/android/NewsBlur/app/
 clients/android/NewsBlurTest/bin/
 clients/android/NewsBlurTest/gen/
 
@@ -64,3 +65,7 @@ media/safari/NewsBlur.safariextz
 
 # IDE files
 clients/android/NewsBlur/.idea
+clients/android/NewsBlur/.gradle
+clients/android/NewsBlur/build.gradle
+clients/android/NewsBlur/gradle*
+clients/android/NewsBlur/settings.gradle
