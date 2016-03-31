@@ -263,7 +263,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else {
             String folderName = getGroupFolderName(groupPosition);
             // TODO: technically we have the data this util method gives us, could we save a DB call?
-            return FeedUtils.feedSetFromFolderName(folderName);
+            FeedSet fs = FeedUtils.feedSetFromFolderName(folderName);
+            if (currentState == StateFilter.SAVED) fs.setFilterSaved(true);
+            return fs;
         }
 	}
 
