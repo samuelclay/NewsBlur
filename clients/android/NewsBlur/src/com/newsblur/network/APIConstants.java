@@ -90,6 +90,7 @@ public class APIConstants {
     public static final String VALUE_OLDER = "older";
     public static final String VALUE_NEWER = "newer";
     public static final String VALUE_TRUE = "true";
+    public static final String VALUE_STARRED = "starred";
 	
     public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
     public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";

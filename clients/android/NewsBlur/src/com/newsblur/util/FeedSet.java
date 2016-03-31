@@ -26,13 +26,13 @@ public class FeedSet implements Serializable {
     private Set<String> feeds;
     /** Mapping of social feed IDs to usernames. */
     private Map<String,String> socialFeeds;
-    private Set<String> savedFeeds;
     private Set<String> savedTags;
     private boolean isAllRead;
     private boolean isGlobalShared;
 
     private String folderName;
     private String searchQuery;
+    private boolean isFilterSaved = false;
 
     private FeedSet() {
         // must use factory methods
@@ -95,7 +95,7 @@ public class FeedSet implements Serializable {
      */
     public static FeedSet allSaved() {
         FeedSet fs = new FeedSet();
-        fs.savedFeeds = Collections.EMPTY_SET;
+        fs.savedTags = Collections.EMPTY_SET;
         return fs;
     }
 
@@ -180,7 +180,7 @@ public class FeedSet implements Serializable {
     }
 
     public boolean isAllSaved() {
-        return (((savedFeeds != null) && (savedFeeds.size() < 1)) || ((savedTags != null) && (savedTags.size() < 1)));
+        return ((savedTags != null) && (savedTags.size() < 1));
     }
 
     /**
@@ -219,6 +219,14 @@ public class FeedSet implements Serializable {
         return this.searchQuery;
     }
 
+    public void setFilterSaved(boolean isFilterSaved) {
+        this.isFilterSaved = isFilterSaved;
+    }
+
+    public boolean isFilterSaved() {
+        return this.isFilterSaved;
+    }
+
     /**
      * Gets a flat set of feed IDs that can be passed to API calls that take raw numeric IDs or
      * social IDs prefixed with "social:". Returns an empty set for feed sets that don't track
@@ -254,9 +262,9 @@ public class FeedSet implements Serializable {
 
         if ( !TextUtils.equals(searchQuery, s.searchQuery)) return false;
         if ( !TextUtils.equals(folderName, s.folderName)) return false;
+        if ( isFilterSaved != s.isFilterSaved ) return false;
         if ( (feeds != null) && (s.feeds != null) && s.feeds.equals(feeds) ) return true;
         if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
-        if ( (savedFeeds != null) && (s.savedFeeds != null) && s.savedFeeds.equals(savedFeeds) ) return true;
         if ( (savedTags != null) && (s.savedTags != null) && s.savedTags.equals(savedTags) ) return true;
         if ( isAllRead && s.isAllRead ) return true;
         if ( isGlobalShared && s.isGlobalShared ) return true;
@@ -275,8 +283,8 @@ public class FeedSet implements Serializable {
         if (socialFeeds != null) result = 37 * result + socialFeeds.hashCode();
         if (folderName != null) result = 41 * result + folderName.hashCode();
         if (searchQuery != null) result = 43 * result + searchQuery.hashCode();
-        if (savedFeeds != null) result = 47 * result + savedFeeds.hashCode();
         if (savedTags != null) result = 53 * result + savedTags.hashCode();
+        if (isFilterSaved) result = 59 * result;
         return result;
     }
 

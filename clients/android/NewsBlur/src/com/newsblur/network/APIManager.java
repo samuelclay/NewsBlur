@@ -301,6 +301,9 @@ public class APIManager {
             uri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(fs.getSingleFeed()).build();
             values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed());
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            if (fs.isFilterSaved()) {
+                values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED);
+            }
         } else if (fs.getMultipleFeeds() != null) {
             uri = Uri.parse(APIConstants.URL_RIVER_STORIES);
             for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDS, feedId);
@@ -337,7 +340,7 @@ public class APIManager {
 
 		// request params common to most story sets
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-        if (!(fs.isAllRead() || fs.isAllSaved())) {
+        if (!(fs.isAllRead() || fs.isAllSaved() || fs.isFilterSaved())) {
 		    values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
         }
         if (!fs.isAllRead()) {

@@ -622,6 +622,8 @@ public class BlurDatabaseHelper {
      * Get the unread count for the given feedset based on the totals in the feeds table.
      */
     public int getUnreadCount(FeedSet fs, StateFilter stateFilter) {
+        // if reading in starred-only mode, there are no unreads, since stories vended as starred are never unread
+        if (fs.isFilterSaved()) return 0;
         if (fs.isAllNormal()) {
             return getFeedsUnreadCount(stateFilter, null, null);
         } else if (fs.isAllSocial()) {
@@ -993,6 +995,11 @@ public class BlurDatabaseHelper {
      * both to populate a reading session or to count local unreads.
      */
     private void getLocalStorySelectionAndArgs(StringBuilder sel, List<String> selArgs, FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
+        // if the user has requested saved stories, ignore the unreads filter, as saveds do not have this state
+        if (fs.isFilterSaved()) {
+            readFilter = ReadFilter.ALL;
+        }
+
         sel.append("SELECT " + DatabaseConstants.STORY_HASH);
         if (fs.getSingleFeed() != null) {
 

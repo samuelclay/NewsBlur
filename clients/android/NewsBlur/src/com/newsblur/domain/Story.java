@@ -198,8 +198,10 @@ public class Story implements Serializable {
             return (score > 0);
         case NEG:
             return (score < 0);
+        case SAVED:
+            return (starred == true);
         default:
-            return false;
+            return true;
         }
     }
 

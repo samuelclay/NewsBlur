@@ -365,6 +365,8 @@ public class DatabaseConstants {
             return STORY_INTELLIGENCE_TOTAL + " > 0 ";
         case NEG:
             return STORY_INTELLIGENCE_TOTAL + " < 0 ";
+        case SAVED:
+            return STORY_STARRED + " = 1";
         default:
             return null;
         }
