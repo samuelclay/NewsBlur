@@ -43,10 +43,6 @@ public class StarredCount {
         return sc;
     }
 
-    public boolean isTag() {
-        return (tag != null);
-    }
-
     public boolean isTotalCount() {
         if (tag == null) return false;
         return tag.equals(TOTAL_STARRED);

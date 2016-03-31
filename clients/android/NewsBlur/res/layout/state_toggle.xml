@@ -1,82 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:gravity="center_vertical"
     android:orientation="horizontal" >
 
-    <!-- TODO: use @drawable/intel_toggle_background_selector for backgrounds -->
+    <TextView
+        android:id="@+id/toggle_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:paddingLeft="15dp"
+        android:paddingRight="5dp"
+        android:text="ALL"
+        android:textColor="@color/button_state_text_selector"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:paddingRight="4dp"
+            android:src="@drawable/g_icn_unread" />
+
         <TextView
-            android:id="@+id/toggle_all"
+            android:id="@+id/toggle_some"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_weight="1"
-            android:paddingLeft="15dp"
-            android:paddingRight="5dp"
-            android:text="ALL"
+            android:enabled="false"
+            android:text="UNREAD"
             android:textColor="@color/button_state_text_selector"
             android:textSize="16sp"
             android:textStyle="bold" />
+    </LinearLayout>
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:paddingRight="4dp"
+            android:src="@drawable/g_icn_focus" />
+
+        <TextView
+            android:id="@+id/toggle_focus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" >
+            android:gravity="center"
+            android:text="FOCUS"
+            android:textColor="@color/button_state_text_selector"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-            <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:paddingRight="4dp"
-                android:src="@drawable/g_icn_unread" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="5dp"
+        android:paddingRight="15dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
 
-            <TextView
-                android:id="@+id/toggle_some"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:enabled="false"
-                android:text="UNREAD"
-                android:textColor="@color/button_state_text_selector"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:paddingRight="4dp"
+            android:src="@drawable/clock" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/toggle_saved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="5dp"
-            android:paddingRight="15dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" >
-
-            <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:paddingRight="4dp"
-                android:src="@drawable/g_icn_focus" />
-
-            <TextView
-                android:id="@+id/toggle_focus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="FOCUS"
-                android:textColor="@color/button_state_text_selector"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            android:gravity="center"
+            android:text="SAVED"
+            android:textColor="@color/button_state_text_selector"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>

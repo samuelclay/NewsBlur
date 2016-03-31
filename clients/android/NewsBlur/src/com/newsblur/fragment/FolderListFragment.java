@@ -103,12 +103,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             switch (loader.getId()) {
                 case SOCIALFEEDS_LOADER:
                     adapter.setSocialFeedCursor(cursor);
+                    pushUnreadCounts();
                     break;
                 case FOLDERS_LOADER:
                     adapter.setFoldersCursor(cursor);
+                    pushUnreadCounts();
+                    checkOpenFolderPreferences();
                     break;
                 case FEEDS_LOADER:
                     adapter.setFeedCursor(cursor);
+                    checkOpenFolderPreferences();
                     firstCursorSeenYet = true;
                     break;
                 case SAVEDCOUNT_LOADER:
@@ -117,8 +121,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 default:
                     throw new IllegalArgumentException("unknown loader created");
             }
-            checkOpenFolderPreferences();
-            pushUnreadCounts();
         } catch (Exception e) {
             // for complex folder sets, these ops can take so long that they butt heads
             // with the destruction of the fragment and adapter. crashes can ensue.
@@ -197,15 +199,17 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		for (int i = 0; i < adapter.getGroupCount(); i++) {
 			String flatGroupName = adapter.getGroupUniqueName(i);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true)) {
-				if (list.isGroupExpanded(i) == false) list.expandGroup(i);
-                adapter.setFolderClosed(flatGroupName, false);
+				if (list.isGroupExpanded(i) == false) {
+                    list.expandGroup(i);
+                    adapter.setFolderClosed(flatGroupName, false);
+                }
 			} else {
-				if (list.isGroupExpanded(i) == true) list.collapseGroup(i);
-                adapter.setFolderClosed(flatGroupName, true);
+				if (list.isGroupExpanded(i) == true) {
+                    list.collapseGroup(i);
+                    adapter.setFolderClosed(flatGroupName, true);
+                }
 			}
 		}
-        // we might have just initialised the closed set of folders in the adapter
-        adapter.forceRecount();
 	}
 
 	@Override
@@ -336,7 +340,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         // trigger display/hide of sub-folders
         adapter.setFolderClosed(flatGroupName, false);
-        adapter.forceRecount();
         // re-check open/closed state of sub folders, since the list will have forgot them
         checkOpenFolderPreferences();
     }
@@ -354,7 +357,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         // trigger display/hide of sub-folders
         adapter.setFolderClosed(flatGroupName, true);
-        adapter.forceRecount();
     }
 
 	@OnChildClick(R.id.folderfeed_list) boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
