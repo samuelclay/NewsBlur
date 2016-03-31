@@ -5,5 +5,6 @@ public enum StateFilter {
     SOME,
     NEUT,
     BEST,
-    NEG;
+    NEG,
+    SAVED;
 }
