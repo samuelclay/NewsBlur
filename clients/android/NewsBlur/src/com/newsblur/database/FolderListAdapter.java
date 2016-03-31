@@ -332,7 +332,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.singleSavedTag(starredCountsByTag.get(childPosition).tag);
         } else {
             Feed feed = activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
-            return FeedSet.singleFeed(feed.feedId);
+            FeedSet fs = FeedSet.singleFeed(feed.feedId);
+            if (currentState == StateFilter.SAVED) fs.setFilterSaved(true);
+            return fs;
 		}
 	}
 

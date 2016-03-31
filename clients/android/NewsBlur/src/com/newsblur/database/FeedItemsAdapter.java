@@ -19,8 +19,9 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 
 	private final Feed feed;
 	private int storyTitleUnread, storyTitleRead, storyContentUnread, storyContentRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
+    private boolean ignoreReadStatus;
 
-	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to) {
+	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to, boolean ignoreReadStatus) {
 		super(context, layout, c, from, to);
 		this.feed = feed;
 
@@ -32,6 +33,8 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 		storyAuthorRead = ThemeUtils.getStoryAuthorReadColor(context);
 		storyDateUnread = ThemeUtils.getStoryDateUnreadColor(context);
 		storyDateRead = ThemeUtils.getStoryDateReadColor(context);
+
+        this.ignoreReadStatus = ignoreReadStatus;
 	}
 
 	@Override
@@ -51,7 +54,7 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 
         Story story = Story.fromCursor(cursor);
 
-		if (! story.read) {
+		if (this.ignoreReadStatus || (! story.read)) {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
             ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);

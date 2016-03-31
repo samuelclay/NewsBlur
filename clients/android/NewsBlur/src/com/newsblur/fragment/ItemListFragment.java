@@ -39,7 +39,6 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
@@ -53,7 +52,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@FindView(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
-	protected StateFilter intelState;
     private boolean cursorSeenYet = false;
     private boolean stopLoading = false;
     
@@ -67,7 +65,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        intelState = PrefsUtils.getStateFilter(getActivity());
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
     }
@@ -205,9 +202,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         // the framework likes to trigger this on init before we even known counts, so disregard those
         if (!cursorSeenYet) return;
 
+        // there are two fake rows for header/footer that don't count
+        int storiesSeen = totalCount - 2;
+        if (storiesSeen < 0) storiesSeen = 0;
+
         // load an extra page or two worth of stories past the viewport
         int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
-        triggerRefresh(desiredStoryCount, totalCount);
+        triggerRefresh(desiredStoryCount, storiesSeen);
 	}
 
 	@Override
@@ -268,7 +269,10 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         int truePosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position - 1;
         Story story = adapter.getStory(truePosition);
-        if (story.read) {
+        if (getFeedSet().isFilterSaved()) {
+            menu.removeItem(R.id.menu_mark_story_as_read);
+            menu.removeItem(R.id.menu_mark_story_as_unread);
+        } else if (story.read) {
             menu.removeItem(R.id.menu_mark_story_as_read);
         } else {
             menu.removeItem(R.id.menu_mark_story_as_unread);
