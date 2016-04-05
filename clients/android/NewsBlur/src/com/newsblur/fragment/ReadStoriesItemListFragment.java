@@ -10,7 +10,7 @@ import android.view.View;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.MultipleFeedItemsAdapter;
-import com.newsblur.view.SocialItemViewBinder;
+import com.newsblur.view.FeedItemViewBinder;
 
 public class ReadStoriesItemListFragment extends ItemListFragment {
 
@@ -32,7 +32,7 @@ public class ReadStoriesItemListFragment extends ItemListFragment {
             String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_TOTAL, DatabaseConstants.FEED_TITLE };
             int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
             adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo);
-            adapter.setViewBinder(new SocialItemViewBinder(getActivity(), true));
+            adapter.setViewBinder(new FeedItemViewBinder(getActivity(), true));
             itemList.setAdapter(adapter);
        }
        super.onLoadFinished(loader, cursor);
