@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
@@ -47,8 +47,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
-    @FindView(R.id.itemlist_sync_status) TextView overlayStatusText;
-    @FindView(R.id.itemlist_search_query) EditText searchQueryInput;
+    @Bind(R.id.itemlist_sync_status) TextView overlayStatusText;
+    @Bind(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
 
     protected FeedSet fs;

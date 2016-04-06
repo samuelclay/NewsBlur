@@ -31,7 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -65,20 +65,20 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private LayoutInflater inflater;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	@FindView(R.id.reading_webview) NewsblurWebview web;
-    @FindView(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
-    @FindView(R.id.reading_scrollview) View fragmentScrollview;
+	@Bind(R.id.reading_webview) NewsblurWebview web;
+    @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
+    @Bind(R.id.reading_scrollview) View fragmentScrollview;
 	private BroadcastReceiver receiver;
-    @FindView(R.id.reading_item_authors) TextView itemAuthors;
-	@FindView(R.id.reading_feed_title) TextView itemFeed;
+    @Bind(R.id.reading_item_authors) TextView itemAuthors;
+	@Bind(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
-	@FindView(R.id.reading_item_tags) FlowLayout tagContainer;
+	@Bind(R.id.reading_item_tags) FlowLayout tagContainer;
 	private View view;
 	private UserDetails user;
     private Reading activity;
     private DefaultFeedView selectedFeedView;
-    @FindView(R.id.save_story_button) Button saveButton;
-    @FindView(R.id.share_story_button) Button shareButton;
+    @Bind(R.id.save_story_button) Button saveButton;
+    @Bind(R.id.share_story_button) Button shareButton;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;

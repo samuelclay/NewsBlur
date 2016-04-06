@@ -15,7 +15,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewSwitcher;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -24,12 +24,12 @@ import com.newsblur.activity.RegisterProgress;
 
 public class LoginRegisterFragment extends Fragment {
 
-	@FindView(R.id.login_username) EditText username;
-    @FindView(R.id.login_password) EditText password;
-    @FindView(R.id.registration_username) EditText register_username;
-    @FindView(R.id.registration_password) EditText register_password;
-    @FindView(R.id.registration_email) EditText register_email;
-	@FindView(R.id.login_viewswitcher) ViewSwitcher viewSwitcher;
+	@Bind(R.id.login_username) EditText username;
+    @Bind(R.id.login_password) EditText password;
+    @Bind(R.id.registration_username) EditText register_username;
+    @Bind(R.id.registration_password) EditText register_password;
+    @Bind(R.id.registration_email) EditText register_email;
+	@Bind(R.id.login_viewswitcher) ViewSwitcher viewSwitcher;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -28,9 +28,9 @@ public class ClassifierDialogFragment extends DialogFragment {
 	private static final String CALLBACK = "callback";
 	private static final String CLASSIFIER = "classifier";
 
-    @FindView(R.id.tag_negative) ImageView classifyNegative;
-    @FindView(R.id.tag_positive) ImageView classifyPositive;
-    @FindView(R.id.dialog_message) TextView message;
+    @Bind(R.id.tag_negative) ImageView classifyNegative;
+    @Bind(R.id.tag_positive) ImageView classifyPositive;
+    @Bind(R.id.dialog_message) TextView message;
 
 	private String key, feedId;
 	private Classifier classifier;

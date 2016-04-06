@@ -14,7 +14,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -31,9 +31,9 @@ public class RegisterProgressFragment extends Fragment {
     private String password;
     private String email;
     private RegisterTask registerTask;
-    @FindView(R.id.register_viewswitcher) ViewSwitcher switcher;
-    @FindView(R.id.registering_next_1) Button next;
-    @FindView(R.id.registerprogress_logo) ImageView registerProgressLogo;
+    @Bind(R.id.register_viewswitcher) ViewSwitcher switcher;
+    @Bind(R.id.registering_next_1) Button next;
+    @Bind(R.id.registerprogress_logo) ImageView registerProgressLogo;
 
     public static RegisterProgressFragment getInstance(String username, String password, String email) {
         RegisterProgressFragment fragment = new RegisterProgressFragment();
