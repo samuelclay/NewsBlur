@@ -11,7 +11,7 @@ import android.view.WindowManager;
 import android.widget.RadioButton;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -25,8 +25,8 @@ public class DefaultFeedViewDialogFragment extends DialogFragment {
 
     private static String CURRENT_VIEW = "currentView";
     private DefaultFeedView currentValue;
-    @FindView(R.id.radio_story) RadioButton storyButton;
-    @FindView(R.id.radio_text) RadioButton textButton;
+    @Bind(R.id.radio_story) RadioButton storyButton;
+    @Bind(R.id.radio_text) RadioButton textButton;
 
     public static DefaultFeedViewDialogFragment newInstance(DefaultFeedView currentValue) {
         DefaultFeedViewDialogFragment dialog = new DefaultFeedViewDialogFragment();

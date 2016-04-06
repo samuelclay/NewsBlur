@@ -20,7 +20,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -46,14 +46,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private boolean isLightTheme;
     private SwipeRefreshLayout swipeLayout;
     private boolean wasSwipeEnabled = false;
-    @FindView(R.id.main_sync_status) TextView overlayStatusText;
-    @FindView(R.id.empty_view_image) ImageView emptyViewImage;
-    @FindView(R.id.empty_view_text) TextView emptyViewText;
-    @FindView(R.id.main_menu_button) Button menuButton;
-    @FindView(R.id.main_user_image) ImageView userImage;
-    @FindView(R.id.main_user_name) TextView userName;
-    @FindView(R.id.main_unread_count_neut_text) TextView unreadCountNeutText;
-    @FindView(R.id.main_unread_count_posi_text) TextView unreadCountPosiText;
+    @Bind(R.id.main_sync_status) TextView overlayStatusText;
+    @Bind(R.id.empty_view_image) ImageView emptyViewImage;
+    @Bind(R.id.empty_view_text) TextView emptyViewText;
+    @Bind(R.id.main_menu_button) Button menuButton;
+    @Bind(R.id.main_user_image) ImageView userImage;
+    @Bind(R.id.main_user_name) TextView userName;
+    @Bind(R.id.main_unread_count_neut_text) TextView unreadCountNeutText;
+    @Bind(R.id.main_unread_count_posi_text) TextView unreadCountPosiText;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {

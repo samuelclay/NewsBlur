@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -19,10 +19,10 @@ public class StateToggleButton extends LinearLayout {
 
 	private StateChangedListener stateChangedListener;
 
-	@FindView(R.id.toggle_all) View allButton;
-	@FindView(R.id.toggle_some) View someButton;
-	@FindView(R.id.toggle_focus) View focusButton;
-    @FindView(R.id.toggle_saved) View savedButton;
+	@Bind(R.id.toggle_all) View allButton;
+	@Bind(R.id.toggle_some) View someButton;
+	@Bind(R.id.toggle_focus) View focusButton;
+    @Bind(R.id.toggle_saved) View savedButton;
 
 	public StateToggleButton(Context context, AttributeSet art) {
 		super(context, art);
