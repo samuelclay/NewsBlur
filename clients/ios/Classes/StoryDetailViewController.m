@@ -31,6 +31,8 @@
 #import "UIView+ViewController.h"
 #import "JNWThrottledBlock.h"
 
+#define iPadPro ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
+
 @interface StoryDetailViewController ()
 
 @property (nonatomic, strong) NSString *loadingHTML;
@@ -384,9 +386,17 @@
 //    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-wide";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        } else {
+            contentWidthClass = @"NB-ipad-wide";
+        }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-narrow";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        } else {
+            contentWidthClass = @"NB-ipad-narrow";
+        }
     } else if (UIInterfaceOrientationIsLandscape(orientation) && self.isPhoneOrCompact) {
         contentWidthClass = @"NB-iphone-wide";
     } else {
@@ -2170,9 +2180,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *contentWidthClass;
 
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-wide";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        } else {
+            contentWidthClass = @"NB-ipad-wide";
+        }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-narrow";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        } else {
+            contentWidthClass = @"NB-ipad-narrow";
+        }
     } else if (UIInterfaceOrientationIsLandscape(orientation) && self.isPhoneOrCompact) {
         contentWidthClass = @"NB-iphone-wide";
     } else {

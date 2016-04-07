@@ -544,10 +544,22 @@ div + p {
     width: 500px !important;
 }
 
+.NB-ipad-pro-narrow .NB-story img.NB-large-image {
+    max-width: 754px;
+    margin-left: -30px !important;
+    width: 754px !important;
+}
+
 .NB-ipad-wide .NB-story img.NB-large-image {
     max-width: 656px;
     margin-left: -90px !important;
     width: 656px !important;
+}
+
+.NB-ipad-pro-wide .NB-story img.NB-large-image {
+    max-width: 996px;
+    margin-left: -90px !important;
+    width: 996px !important;
 }
 
 .NB-iphone-wide .NB-story img.NB-large-image {
