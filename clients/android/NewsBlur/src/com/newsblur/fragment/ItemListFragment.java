@@ -27,7 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
@@ -49,7 +49,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public static int ITEMLIST_LOADER = 0x01;
 
     protected ItemsList activity;
-	@FindView(R.id.itemlistfragment_list) ListView itemList;
+	@Bind(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
     protected DefaultFeedView defaultFeedView;
     private boolean cursorSeenYet = false;
@@ -60,7 +60,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     // loading indicator for when stories are present and fresh (at bottom of list)
     protected ProgressThrobber footerProgressView;
     // loading indicator for when no stories are loaded yet (instead of list)
-    @FindView(R.id.empty_view_loading_throb) ProgressThrobber emptyProgressView;
+    @Bind(R.id.empty_view_loading_throb) ProgressThrobber emptyProgressView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {

@@ -24,7 +24,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -36,7 +36,7 @@ public class ChooseFoldersFragment extends DialogFragment {
 
 	private Feed feed;
 
-    @FindView(R.id.choose_folders_list) ListView listView;
+    @Bind(R.id.choose_folders_list) ListView listView;
 
     public static ChooseFoldersFragment newInstance(Feed feed) {
 		ChooseFoldersFragment fragment = new ChooseFoldersFragment();
