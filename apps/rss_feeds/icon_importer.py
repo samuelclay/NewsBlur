@@ -88,8 +88,10 @@ class IconImporter(object):
 
         if not image:
             self.feed_icon.not_found = True
+            self.feed_icon.save()
             self.feed.favicon_not_found = True
-
+            self.feed.save()
+            
         return not self.feed.favicon_not_found
 
     def save_to_s3(self, image_str):
@@ -103,6 +105,7 @@ class IconImporter(object):
         k.set_acl('public-read')
 
         self.feed.s3_icon = True
+        self.feed.save()
 
     def load_icon(self, image_file, index=None):
         '''
