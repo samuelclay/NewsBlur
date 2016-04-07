@@ -4,7 +4,7 @@ The NewsBlur Android application should build with virtually any supported Andro
 
 It is the goal of this repository to stay agnostic to build environments or tools.  Please consider augmenting the .gitignore file to catch any developer-specific build artifacts or environment configuration you may discover while building.
 
-## How To Build from the Command Line
+## How to Build from the Command Line with Ant
 
 *an abridged version of the official guide found [here](https://developer.android.com/tools/building/building-cmdline.html)*
 
@@ -14,6 +14,13 @@ It is the goal of this repository to stay agnostic to build environments or tool
 4. `android update sdk --no-ui` (this could take a while; you can use the --filter option to just get the SDK, platform tools, and support libs)
 5. go to the clients/android/ NewsBlur directory and run `android update project --name NewsBlur --path .`
 6. build a test APK with `ant clean && ant debug` (.apk will be in `/bin` under the working directory)
+
+## How to Build from the Command Line with Gradle
+
+*gradle support is intentionally minimal and your environment may require additional preparation*
+
+1. install gradle v1.5 or better
+2. build a test APK with `gradle build` (.apk will be in `/build/outputs/apk/` under the working directory)
 
 ## How to Build from Android Studio
 
