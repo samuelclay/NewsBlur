@@ -763,6 +763,7 @@
     self.dictFeeds = nil;
     self.dictSocialFeeds = nil;
     self.dictSavedStoryTags = nil;
+    self.dictSavedStoryFeedCounts = nil;
     self.dictFolders = nil;
     self.dictFoldersArray = nil;
     self.userActivitiesArray = nil;
@@ -1028,6 +1029,14 @@
 
 - (BOOL)isSavedFeed:(NSString *)feedIdStr {
     return [feedIdStr startsWith:@"saved:"];
+}
+
+- (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr {
+    return [self.dictSavedStoryFeedCounts[feedIdStr] integerValue];
+}
+
+- (BOOL)isSavedStoriesIntelligenceMode {
+    return self.selectedIntelligence == 2;
 }
 
 - (NSArray *)allFeedIds {
@@ -1329,7 +1338,7 @@
 
         NSMutableDictionary *newStory = [story mutableCopy];
 
-        // If the story is visible, mark it as sticky so it doesn;t go away on page loads.
+        // If the story is visible, mark it as sticky so it doesn't go away on page loads.
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         if (score >= self.selectedIntelligence) {
             [newStory setObject:[NSNumber numberWithBool:YES] forKey:@"sticky"];
@@ -1657,6 +1666,10 @@
     }
     
     total += [[feed objectForKey:@"ps"] intValue];
+    if (self.isSavedStoriesIntelligenceMode) {
+        NSInteger savedCount = [self.dictSavedStoryFeedCounts[feedId] integerValue];
+        total += savedCount;
+    }
     if ([self selectedIntelligence] <= 0) {
         total += [[feed objectForKey:@"nt"] intValue];
     }
@@ -2082,8 +2095,9 @@
     }
     
     if (!self.savedStoriesCount) return [[NSArray alloc] init];
-
-    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
+    
+    NSMutableDictionary *savedStoryDict = [NSMutableDictionary dictionary];
+    NSMutableDictionary *savedStoryFeedCounts = [NSMutableDictionary dictionary];
     NSMutableArray *savedStories = [NSMutableArray array];
     
     if (![results objectForKey:@"starred_counts"] ||
@@ -2092,6 +2106,15 @@
     }
     
     for (NSDictionary *userTag in [results objectForKey:@"starred_counts"]) {
+        id feedId = [userTag objectForKey:@"feed_id"];
+        
+        if (![feedId isKindOfClass:[NSNull class]]) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            savedStoryFeedCounts[feedIdStr] = userTag[@"count"];
+            
+            continue;
+        }
+        
         if ([[userTag objectForKey:@"tag"] isKindOfClass:[NSNull class]] ||
             [[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
         NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", [userTag objectForKey:@"tag"]];
@@ -2108,6 +2131,7 @@
     }
 
     self.dictSavedStoryTags = savedStoryDict;
+    self.dictSavedStoryFeedCounts = savedStoryFeedCounts;
     
     return savedStories;
 }

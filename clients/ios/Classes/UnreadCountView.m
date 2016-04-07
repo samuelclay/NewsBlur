@@ -36,10 +36,12 @@ const int COUNT_HEIGHT = 15;
     rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
-    if (listType == NBFeedListSaved) {
+    if (listType == NBFeedListSaved || (listType == NBFeedListFolder && self.blueCount)) {
         blueCount = ps;
         psCount = ps;
+        ntCount = 0;
     } else {
+        blueCount = 0;
         psCount = ps;
         ntCount = nt;
     }

@@ -32,6 +32,7 @@
 @property (assign, nonatomic) int positiveCount;
 @property (assign, nonatomic) int neutralCount;
 @property (assign, nonatomic) int negativeCount;
+@property (assign, nonatomic) int savedStoriesCount;
 @property (assign, nonatomic) BOOL isSocial;
 @property (assign, nonatomic) BOOL isSaved;
 @property (nonatomic) NSString *negativeCountStr;

@@ -174,10 +174,13 @@ static UIFont *textFont = nil;
         CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f*lineWidth);
         CGContextStrokePath(context);
     }
-
-    [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
+    
+    if (cell.savedStoriesCount > 0) {
+        [cell.unreadCount drawInRect:r ps:cell.savedStoriesCount nt:0 listType:NBFeedListSaved];
+    } else {
+        [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
                         listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)];
-
+    }
     
     UIColor *textColor = cell.highlighted || cell.selected ?
                          UIColorFromRGB(NEWSBLUR_BLACK_COLOR):
@@ -227,7 +230,9 @@ static UIFont *textFont = nil;
 }
 
 - (void)redrawUnreadCounts {
-    if (cell.isSaved) {
+    if (cell.savedStoriesCount) {
+        cell.unreadCount.blueCount = cell.savedStoriesCount;
+    } else if (cell.isSaved) {
         cell.unreadCount.blueCount = cell.positiveCount;
     } else {
         cell.unreadCount.psCount = cell.positiveCount;

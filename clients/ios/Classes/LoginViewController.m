@@ -99,7 +99,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self.errorLabel setHidden:YES];
+    [self showError:nil];
     [super viewWillAppear:animated];
     [usernameInput becomeFirstResponder];
 }
@@ -127,6 +127,21 @@
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [self rearrangeViews];
+}
+
+- (void)showError:(NSString *)error {
+    BOOL hasError = error.length > 0;
+    
+    if (hasError) {
+        self.errorLabel.text = error;
+    }
+    
+    self.errorLabel.hidden = !hasError;
+    self.forgotPasswordButton.hidden = !hasError;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.loginOptionalLabel.hidden = hasError;
+    }
 }
 
 - (IBAction)findLoginFrom1Password:(id)sender {
@@ -177,7 +192,7 @@
 }
 
 - (void)checkPassword {
-    [self.errorLabel setHidden:YES];
+    [self showError:nil];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Authenticating";
@@ -213,11 +228,10 @@
     if (code == -1) {
         NSDictionary *errors = [results valueForKey:@"errors"];
         if ([errors valueForKey:@"username"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];   
+            [self showError:[[errors valueForKey:@"username"] firstObject]];
         } else if ([errors valueForKey:@"__all__"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
+            [self showError:[[errors valueForKey:@"__all__"] firstObject]];
         }
-        [self.errorLabel setHidden:NO];
     } else {
         [self.passwordInput setText:@""];
         [self.signUpPasswordInput setText:@""];
@@ -232,7 +246,7 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Registering...";
-    [self.errorLabel setHidden:YES];
+    [self showError:nil];
     NSString *urlString = [NSString stringWithFormat:@"%@/api/signup",
                            self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -270,14 +284,12 @@
     if (code == -1) {
         NSDictionary *errors = [results valueForKey:@"errors"];
         if ([errors valueForKey:@"email"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"email"] objectAtIndex:0]];
+            [self showError:[[errors valueForKey:@"email"] objectAtIndex:0]];
         } else if ([errors valueForKey:@"username"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];
+            [self showError:[[errors valueForKey:@"username"] objectAtIndex:0]];
         } else if ([errors valueForKey:@"__all__"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
+            [self showError:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
         }
-
-        [self.errorLabel setHidden:NO];
     } else {
         [self.passwordInput setText:@""];
         [self.signUpPasswordInput setText:@""];
@@ -296,13 +308,20 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
+- (IBAction)forgotPassword:(id)sender {
+    NSURL *url = [NSURL URLWithString:@"http://www.newsblur.com/folder_rss/forgot_password"];
+    SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:NO];
+    [self presentViewController:safariViewController animated:YES completion:nil];
+}
+
 #pragma mark -
 #pragma mark iPad: Sign Up/Login Toggle
 
 - (void)updateControls {
     self.selectSignUpButton.selected = isOnSignUpScreen;
     self.selectLoginButton.selected = !isOnSignUpScreen;
-    self.errorLabel.hidden = YES;
+    
+    [self showError:nil];
     
     self.signUpUsernameInput.enabled = isOnSignUpScreen;
     self.signUpPasswordInput.enabled = isOnSignUpScreen;
@@ -401,6 +420,8 @@
         [usernameInput resignFirstResponder];
         [usernameInput becomeFirstResponder];
     }
+    
+    self.forgotPasswordButton.hidden = YES;
 }
 
 @end

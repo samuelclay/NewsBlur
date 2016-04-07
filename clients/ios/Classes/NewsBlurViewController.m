@@ -125,18 +125,13 @@ static UIFont *userLabelFont;
      name:kIASKAppSettingChanged
      object:nil];
     
-    [self.intelligenceControl setWidth:52 forSegmentAtIndex:0];
-    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
-    [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
-    [self.intelligenceControl sizeToFit];
-    CGRect intelFrame = self.intelligenceControl.frame;
-    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) -
-                          (intelFrame.size.width / 2) + 20;
-    self.intelligenceControl.frame = intelFrame;
+    [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
+    
     self.intelligenceControl.hidden = YES;
-    [self.intelligenceControl.subviews objectAtIndex:2].accessibilityLabel = @"All";
-    [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Unread";
-    [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Focus";
+    [self.intelligenceControl.subviews objectAtIndex:3].accessibilityLabel = @"All";
+    [self.intelligenceControl.subviews objectAtIndex:2].accessibilityLabel = @"Unread";
+    [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus";
+    [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Saved";
     
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
@@ -189,12 +184,17 @@ static UIFont *userLabelFont;
     [super viewWillAppear:animated];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];
     
-    if ([userPreferences integerForKey:@"selectedIntelligence"] == 1) {
+    if (intelligenceLevel == 2) {
+        self.viewShowingAllFeeds = NO;
+        [self.intelligenceControl setSelectedSegmentIndex:3];
+        [appDelegate setSelectedIntelligence:2];
+    } else if (intelligenceLevel == 1) {
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:2];
         [appDelegate setSelectedIntelligence:1];
-    } else if ([userPreferences integerForKey:@"selectedIntelligence"] == 0) {
+    } else if (intelligenceLevel == 0) {
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:1];
         [appDelegate setSelectedIntelligence:0];
@@ -354,19 +354,47 @@ static UIFont *userLabelFont;
     self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
     self.notifier.offset = CGPointMake(0, self.feedViewToolbar.frame.size.height);
     
-    int height = 16;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
-        UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-        height = 8;
-    }
-
-    self.intelligenceControl.frame = CGRectMake(self.intelligenceControl.frame.origin.x,
-                                                self.intelligenceControl.frame.origin.y,
-                                                self.intelligenceControl.frame.size.width,
-                                                self.feedViewToolbar.frame.size.height -
-                                                height);
+    [self updateIntelligenceControlForOrientation:interfaceOrientation];
     [self layoutHeaderCounts:interfaceOrientation];
     [self refreshHeaderCounts];
+}
+
+- (void)updateIntelligenceControlForOrientation:(UIInterfaceOrientation)orientation {
+    if (orientation == UIInterfaceOrientationUnknown) {
+        orientation = [UIApplication sharedApplication].statusBarOrientation;
+    }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green_icn.png"] forSegmentAtIndex:2];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue_icn.png"] forSegmentAtIndex:3];
+        
+        [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
+        [self.intelligenceControl setWidth:40 forSegmentAtIndex:1];
+        [self.intelligenceControl setWidth:40 forSegmentAtIndex:2];
+        [self.intelligenceControl setWidth:40 forSegmentAtIndex:3];
+    } else {
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:1];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:2];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue.png"] forSegmentAtIndex:3];
+        
+        [self.intelligenceControl setWidth:52 forSegmentAtIndex:0];
+        [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
+        [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
+        [self.intelligenceControl setWidth:62 forSegmentAtIndex:3];
+    }
+    
+    [self.intelligenceControl sizeToFit];
+    
+    NSInteger height = 16;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
+        height = 8;
+    }
+    
+    CGRect intelFrame = self.intelligenceControl.frame;
+    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) - (intelFrame.size.width / 2) + 20;
+    intelFrame.size.height = self.feedViewToolbar.frame.size.height - height;
+    self.intelligenceControl.frame = intelFrame;
 }
 
 // allow keyboard comands
@@ -879,7 +907,7 @@ static UIFont *userLabelFont;
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 //    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-    BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
+    BOOL isSaved = [appDelegate isSavedFeed:feedIdStr] || self.appDelegate.isSavedStoriesIntelligenceMode;
     
     if (isSaved) return;
     
@@ -1087,6 +1115,7 @@ static UIFont *userLabelFont;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
+    BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode && [self.appDelegate savedStoriesCountForFeed:feedIdStr] > 0;
     BOOL isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
     
     NSString *CellIdentifier;
@@ -1121,11 +1150,20 @@ static UIFont *userLabelFont;
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
     cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
-    cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
-    cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
-    cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
     cell.isSaved       = isSaved;
+    
+    if (isSavedStoriesFeed) {
+        cell.positiveCount = 0;
+        cell.neutralCount = 0;
+        cell.negativeCount = 0;
+        cell.savedStoriesCount = (int)[self.appDelegate savedStoriesCountForFeed:feedIdStr];
+    } else {
+        cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
+        cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
+        cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
+        cell.savedStoriesCount = 0;
+    }
     
     if (cell.neutralCount) {
         cell.accessibilityLabel = [NSString stringWithFormat:@"%@ feed, %@ unread stories", cell.feedTitle, @(cell.neutralCount)];
@@ -1529,9 +1567,11 @@ heightForHeaderInSection:(NSInteger)section {
     if (![feedId isKindOfClass:[NSString class]]) {
         feedId = [NSString stringWithFormat:@"%@",feedId];
     }
-    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedId];
-    NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedId];
-    if (!stillVisible &&
+    NSDictionary *unreadCounts = self.appDelegate.dictUnreadCounts[feedId];
+    NSIndexPath *stillVisible = self.stillVisibleFeeds[feedId];
+    if (!stillVisible && self.appDelegate.isSavedStoriesIntelligenceMode) {
+        return [self.appDelegate savedStoriesCountForFeed:feedId] > 0 || [self.appDelegate isSavedFeed:feedId];
+    } else if (!stillVisible &&
         appDelegate.selectedIntelligence >= 1 &&
         [[unreadCounts objectForKey:@"ps"] intValue] <= 0) {
         return NO;
@@ -1562,7 +1602,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)selectNextIntelligence:(id)sender {
     NSInteger selectedSegmentIndex = intelligenceControl.selectedSegmentIndex;
-    if (selectedSegmentIndex >= intelligenceControl.numberOfSegments)
+    if (selectedSegmentIndex >= intelligenceControl.numberOfSegments - 1)
         return;
     [intelligenceControl setSelectedSegmentIndex:selectedSegmentIndex + 1];
     [self selectIntelligence];
@@ -1591,7 +1631,7 @@ heightForHeaderInSection:(NSInteger)section {
         direction = -1;
         self.viewShowingAllFeeds = YES;
         [appDelegate setSelectedIntelligence:0];
-    } else if(selectedSegmentIndex == 1) {
+    } else if (selectedSegmentIndex == 1) {
         hud.labelText = @"Unread Stories";
         [userPreferences setInteger:0 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
@@ -1599,7 +1639,7 @@ heightForHeaderInSection:(NSInteger)section {
         direction = self.viewShowingAllFeeds ? 1 : -1;
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:0];
-    } else {
+    } else if (selectedSegmentIndex == 2) {
         hud.labelText = @"Focus Stories";
         [userPreferences setInteger:1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
@@ -1607,6 +1647,14 @@ heightForHeaderInSection:(NSInteger)section {
         direction = 1;
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:1];
+    } else {
+        hud.labelText = @"Saved Stories";
+        [userPreferences setInteger:2 forKey:@"selectedIntelligence"];
+        [userPreferences synchronize];
+        
+        direction = 1;
+        self.viewShowingAllFeeds = NO;
+        [appDelegate setSelectedIntelligence:2];
     }
     
     [self calculateFeedLocations];
@@ -1633,9 +1681,13 @@ heightForHeaderInSection:(NSInteger)section {
     [self showExplainerOnEmptyFeedlist];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController.storiesModule.storiesCollection
-         calculateStoryLocations];
-        [appDelegate.dashboardViewController.storiesModule reloadData];
+        FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
+        
+        storiesModule.storiesCollection.feedPage = 0;
+        storiesModule.storiesCollection.storyCount = 0;
+        storiesModule.pageFinished = NO;
+        [storiesModule.storiesCollection calculateStoryLocations];
+        [storiesModule reloadData];
     }
 }
 
@@ -1802,6 +1854,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)refreshFeedList:(id)feedId {
     // refresh the feed
     NSString *urlString;
+    
     if (feedId) {
         urlString = [NSString stringWithFormat:@"%@/reader/feed_unread_count?feed_id=%@",
                      self.appDelegate.url, feedId];
