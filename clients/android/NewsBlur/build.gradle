@@ -46,17 +46,5 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
     }
-// quick and easy signing of a 'release' with your debug key:
-/*
-    signingConfigs {
-        release {
-            storeFile file('PATH-TO-HOME-GOES-HERE/.android/debug.keystore')
-            keyAlias 'androiddebugkey'
-            storePassword 'android'
-            keyPassword 'android'
-        }
-    }
-    buildTypes.release.signingConfig = signingConfigs.release
-*/
 }
 

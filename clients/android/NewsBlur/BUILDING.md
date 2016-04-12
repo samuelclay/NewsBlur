@@ -8,6 +8,8 @@ It is the goal of this repository to stay agnostic to build environments or tool
 
 *an abridged version of the official guide found [here](https://developer.android.com/tools/building/building-cmdline.html)*
 
+*this type of build will use the vendored dependencies in `clients/android/NewsBlur/libs`*
+
 1. install java and ant (prefer official JDK over OpenJDK)
 2. download the Android SDK from [android.com](https://developer.android.com/sdk/index.html)
 3. get the `tools/` and/or `platform-tools/` directories ifrom the SDK on your path
@@ -17,18 +19,56 @@ It is the goal of this repository to stay agnostic to build environments or tool
 
 ## How to Build from the Command Line with Gradle
 
-*gradle support is intentionally minimal and your environment may require additional preparation*
+*this type of build will pull dependencies as prescribed in the gradle configuration*
 
-1. install gradle v1.5 or better
+1. install gradle v2.8 or better
 2. build a test APK with `gradle build` (.apk will be in `/build/outputs/apk/` under the working directory)
 
 ## How to Build from Android Studio
 
+*this type of build will pull dependencies as prescribed in the gradle configuration*
+
 1. install and fully update [Android Studio](http://developer.android.com/tools/studio/index.html)
 2. run AS and choose `import project`
 3. within your local copy of this repo, select the directory/path where this file is located
-4. uncheck `replace jars with dependencies` or `replace library sources with dependencies`
-5. select `finish`
+4. select `OK` to let AS manage Gradle for your project
 6. select `Build -> Make Project from the menu`
 7. select `Build -> Build APK from the menu`
 
+## Building Releases
+
+*tip: a debug-compatible release key is usually located at `~/.android/debug.keystore` with the alias `androiddebugkey` and the passwords `android`.*
+
+### Ant Builds
+
+1. Create a `local.properties` file with the following values:
+
+```
+has.keystore=true
+key.store=<path to your keystore file>
+key.alias=<alias of the key with which you would like to sign the APK>
+```
+
+2. run `ant clean && ant release`
+
+### Gradle Builds
+
+1. Add the following lines to the `android` section of the `build.gradle` file:
+
+```
+signingConfigs {
+    release {
+        storeFile file('<absolute path to your keystore file>')
+        keyAlias '<alias of the key with which you would like to sign the APK>'
+        storePassword '<keystore password>'
+        keyPassword '<key password>'
+    }
+}
+buildTypes.release.signingConfig = signingConfigs.release
+```
+
+2. run `gradle assembleRelease`
+
+### Android Studio Builds
+
+1. See the AS documentation on (signing release builds)[http://developer.android.com/tools/publishing/app-signing.html#studio]
