@@ -71,4 +71,4 @@ buildTypes.release.signingConfig = signingConfigs.release
 
 ### Android Studio Builds
 
-1. See the AS documentation on (signing release builds)[http://developer.android.com/tools/publishing/app-signing.html#studio]
+1. See the AS documentation on [signing release builds](http://developer.android.com/tools/publishing/app-signing.html#studio)
