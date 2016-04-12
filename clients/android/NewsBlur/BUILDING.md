@@ -41,7 +41,7 @@ It is the goal of this repository to stay agnostic to build environments or tool
 
 ### Ant Builds
 
-1. Create a `local.properties` file with the following values:
+* Create a `local.properties` file with the following values:
 
 ```
 has.keystore=true
@@ -49,11 +49,11 @@ key.store=<path to your keystore file>
 key.alias=<alias of the key with which you would like to sign the APK>
 ```
 
-2. run `ant clean && ant release`
+* run `ant clean && ant release`
 
 ### Gradle Builds
 
-1. Add the following lines to the `android` section of the `build.gradle` file:
+* Add the following lines to the `android` section of the `build.gradle` file:
 
 ```
 signingConfigs {
@@ -67,8 +67,8 @@ signingConfigs {
 buildTypes.release.signingConfig = signingConfigs.release
 ```
 
-2. run `gradle assembleRelease`
+* run `gradle assembleRelease`
 
 ### Android Studio Builds
 
-1. See the AS documentation on [signing release builds](http://developer.android.com/tools/publishing/app-signing.html#studio)
+* See the AS documentation on [signing release builds](http://developer.android.com/tools/publishing/app-signing.html#studio)
