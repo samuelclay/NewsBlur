@@ -21,6 +21,10 @@ blockquote *, pre *, code * {
     background-color: #4C4C4C !important;
 }
 
+blockquote a, blockquote a span {
+    background-color: #4C4C4C !important;
+}
+
 .NB-story > table {
     background-color: #4C4C4C !important;
 }
