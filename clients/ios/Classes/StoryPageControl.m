@@ -639,9 +639,11 @@
                     NSLog(@"Stale story, already drawn. Was: %@, Now: %@", originalStoryId, blockPageController.activeStoryId);
                     return;
                 }
-                [blockPageController initStory];
-                [blockPageController drawStory];
-                [blockPageController showTextOrStoryView];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [blockPageController initStory];
+                    [blockPageController drawStory];
+                    [blockPageController showTextOrStoryView];
+                });
             });
         } else {
 //            [pageController clearStory];
