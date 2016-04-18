@@ -1062,7 +1062,6 @@ class PaymentHistory(models.Model):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y-1) - datetime.timedelta(seconds=1)
-            print start_date, end_date
             if end_date > now: end_date = now
             year_totals[now.year - y] = _counter(start_date, end_date)
 
