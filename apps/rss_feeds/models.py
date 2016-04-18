@@ -554,9 +554,12 @@ class Feed(models.Model):
                     feed_address = found_feed_urls[0]
         
             if feed_address:
-                if (feed_address.endswith('feedburner.com/atom.xml') or
-                    feed_address.endswith('feedburner.com/feed/')):
-                    logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
+                if any(ignored_domain in feed_address for ignored_domain in [
+                        'feedburner.com/atom.xml',
+                        'feedburner.com/feed/',
+                        'feedsportal.com',
+                    ]):
+                    logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
                     return False, self
                 try:
                     self.feed_address = feed_address
