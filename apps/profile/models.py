@@ -1033,7 +1033,7 @@ class PaymentHistory(models.Model):
         }
     
     @classmethod
-    def report(cls, months=25):
+    def report(cls, months=26):
         def _counter(start_date, end_date):
             payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
             payments = payments.aggregate(avg=Avg('payment_amount'), 
@@ -1042,7 +1042,7 @@ class PaymentHistory(models.Model):
             print "%s-%02d-%02d - %s-%02d-%02d:\t$%.2f\t$%-6s\t%-4s" % (
                 start_date.year, start_date.month, start_date.day,
                 end_date.year, end_date.month, end_date.day,
-                round(payments['avg'], 2), payments['sum'], payments['count'])
+                round(payments['avg'] if payments['avg'] else 0, 2), payments['sum'] if payments['sum'] else 0, payments['count'])
             return payments['sum']
 
         print "\nMonthly Totals:"
@@ -1061,8 +1061,18 @@ class PaymentHistory(models.Model):
         for y in reversed(range(years)):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
-            end_time = start_date + datetime.timedelta(days=365)
-            end_date = datetime.datetime(end_time.year, end_time.month, 30) - datetime.timedelta(seconds=1)
+            end_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y-1) - datetime.timedelta(seconds=1)
+            print start_date, end_date
+            if end_date > now: end_date = now
+            year_totals[now.year - y] = _counter(start_date, end_date)
+
+        print "\nYTD Totals:"
+        year_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_date = now - dateutil.relativedelta.relativedelta(years=y)
             if end_date > now: end_date = now
             year_totals[now.year - y] = _counter(start_date, end_date)
 
