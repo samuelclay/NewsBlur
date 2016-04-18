@@ -74,7 +74,7 @@ def pre_process_story(entry):
     if not publish_date and entry.get('published'):
         try:
             publish_date = dateutil.parser.parse(entry.get('published')).replace(tzinfo=None)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, OverflowError):
             pass
     
     if publish_date:
