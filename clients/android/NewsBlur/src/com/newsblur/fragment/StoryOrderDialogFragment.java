@@ -48,7 +48,6 @@ public class StoryOrderDialogFragment extends DialogFragment {
 		newestButton.setChecked(currentValue == StoryOrder.NEWEST);
 		oldestButton.setChecked(currentValue == StoryOrder.OLDEST);
 		
-		getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 		

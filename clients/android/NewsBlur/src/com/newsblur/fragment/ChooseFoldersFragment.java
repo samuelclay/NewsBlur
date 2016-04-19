@@ -113,7 +113,6 @@ public class ChooseFoldersFragment extends DialogFragment {
         listView.setAdapter(adapter);
 
         Dialog dialog = builder.create();
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
         dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
         return dialog;
 	}

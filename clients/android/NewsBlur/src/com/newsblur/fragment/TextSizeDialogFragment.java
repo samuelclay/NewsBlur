@@ -49,7 +49,6 @@ public class TextSizeDialogFragment extends DialogFragment {
 		seekBar = (SeekBar) v.findViewById(R.id.textSizeSlider);
 		seekBar.setProgress(currentSizeIndex);
 		
-		getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 		

@@ -51,7 +51,6 @@ public class DefaultFeedViewDialogFragment extends DialogFragment {
         storyButton.setChecked(currentValue == DefaultFeedView.STORY);
         textButton.setChecked(currentValue == DefaultFeedView.TEXT);
 
-        getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 
