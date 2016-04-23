@@ -577,7 +577,6 @@ if not DEBUG:
     # RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
     
-
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30

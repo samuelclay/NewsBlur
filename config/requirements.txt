@@ -53,3 +53,5 @@ pyasn1==0.1.7
 ndg-httpsclient==0.3.2
 numpy==1.10.4
 scipy==0.17.0
+mock==2.0.0
+pysqlite==2.6.0
