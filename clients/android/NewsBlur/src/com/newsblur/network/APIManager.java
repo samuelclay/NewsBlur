@@ -18,8 +18,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -226,12 +224,6 @@ public class APIManager {
         RegisterResponse registerResponse = response.getRegisterResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
-
-			CookieSyncManager.createInstance(context.getApplicationContext());
-			CookieManager cookieManager = CookieManager.getInstance();
-
-			cookieManager.setCookie(APIConstants.COOKIE_DOMAIN, response.getCookie());
-			CookieSyncManager.getInstance().sync();
 		}
         return registerResponse;
 	}
