@@ -4,9 +4,11 @@
 -keepattributes *Annotation*
 
 -dontwarn okio.**
+-dontnote okio.**
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
 -dontwarn okhttp3.**
+-dontnote okhttp3.**
 
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
@@ -17,3 +19,4 @@
 -keepclasseswithmembernames class * {
     @butterknife.* <methods>;
 }
+
