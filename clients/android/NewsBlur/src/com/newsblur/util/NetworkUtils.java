@@ -6,7 +6,9 @@ import android.net.NetworkInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -49,4 +51,14 @@ public class NetworkUtils {
         }
         return bytesRead;
     }
+
+    public static String encodeURL(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException ueex) {
+            android.util.Log.wtf("device does not support UTF-8", ueex);
+            return null;
+        }
+    }
+
 }

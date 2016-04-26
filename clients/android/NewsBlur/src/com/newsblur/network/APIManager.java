@@ -1,7 +1,6 @@
 package com.newsblur.network;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -618,7 +617,7 @@ public class APIManager {
             StringBuilder builder = new StringBuilder();
             builder.append((String) entry.getKey());
             builder.append("=");
-            builder.append(URLEncoder.encode((String) entry.getValue()));
+            builder.append(NetworkUtils.encodeURL((String) entry.getValue()));
             parameters.add(builder.toString());
         }
         return TextUtils.join("&", parameters);
