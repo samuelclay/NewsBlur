@@ -270,7 +270,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
-            FeedSet fs = adapter.getChild(groupPosition, childPosition);
+            FeedSet fs = adapter.getGroup(groupPosition);
             markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_choose_folders) {
