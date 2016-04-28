@@ -10,9 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -202,4 +204,40 @@ public class UIUtils {
         memInfo = memInfo + (mi[0].getTotalPss() / 1024) + "MB used)";
         return memInfo;
     }
+
+    @SuppressWarnings("deprecation")
+    public static int getColor(Context activity, int rid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return activity.getResources().getColor(rid, activity.getTheme());
+        } else {
+            return activity.getResources().getColor(rid);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Drawable getDrawable(Context activity, int rid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return activity.getResources().getDrawable(rid, activity.getTheme());
+        } else {
+            return activity.getResources().getDrawable(rid);
+        }
+    }
+
+    /**
+     * Sets the background resource of a view, working around a platform bug that causes the declared
+     * padding to get reset.
+     */
+    public static void setViewBackground(View v, Drawable background) {
+        // due to a framework bug, the below modification of background resource also resets the declared
+        // padding on the view.  save a copy of said padding so it can be re-applied after the change.
+        int oldPadL = v.getPaddingLeft();
+        int oldPadT = v.getPaddingTop();
+        int oldPadR = v.getPaddingRight();
+        int oldPadB = v.getPaddingBottom();
+
+        v.setBackground(background);
+
+        v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
+    }
+
 }

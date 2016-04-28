@@ -173,7 +173,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
         ButterKnife.bind(this, v);
 
-        list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
+        list.setGroupIndicator(UIUtils.getDrawable(getActivity(), R.drawable.transparent));
         list.setOnCreateContextMenuListener(this);
         list.setOnChildClickListener(this);
         list.setOnGroupClickListener(this);
@@ -185,7 +185,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 display.getWidth() - UIUtils.dp2px(getActivity(), 20),
                 display.getWidth() - UIUtils.dp2px(getActivity(), 10));
 
-        list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
         adapter.listBackref = new WeakReference(list); // see note in adapter about backref
         list.setAdapter(adapter);
 

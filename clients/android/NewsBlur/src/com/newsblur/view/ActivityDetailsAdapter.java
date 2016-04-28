@@ -18,6 +18,7 @@ import com.newsblur.network.APIConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ThemeUtils;
 
 public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetails> {
 
@@ -37,15 +38,9 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
         Resources resources = context.getResources();
         ago = resources.getString(R.string.profile_ago);
 
-        if (PrefsUtils.isLightThemeSelected(context)) {
-            linkColor = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
-            contentColor = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
-            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.midgray));
-        } else {
-            linkColor = new ForegroundColorSpan(resources.getColor(R.color.dark_linkblue));
-            contentColor = new ForegroundColorSpan(resources.getColor(R.color.white));
-            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.lightgray));
-        }
+        linkColor = new ForegroundColorSpan(ThemeUtils.getProfileActivitiesLinkColor(context));
+        contentColor = new ForegroundColorSpan(ThemeUtils.getProfileActivitiesContentColor(context));
+        quoteColor = new ForegroundColorSpan(ThemeUtils.getProfileActivitiesQuoteColor(context));
 
         userIsYou = user.userId == null;
     }
