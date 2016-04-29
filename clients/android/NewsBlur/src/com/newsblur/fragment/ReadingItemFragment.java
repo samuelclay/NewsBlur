@@ -323,9 +323,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             Color.parseColor(feedColor),
             Color.parseColor(feedFade),
         };
-        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                colors);
-        feedHeader.setBackgroundDrawable(gradient);
+        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, colors);
+        UIUtils.setViewBackground(feedHeader, gradient);
         feedHeaderBorder.setBackgroundColor(Color.parseColor(feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
