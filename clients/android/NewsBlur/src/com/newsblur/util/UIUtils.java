@@ -227,6 +227,7 @@ public class UIUtils {
      * Sets the background resource of a view, working around a platform bug that causes the declared
      * padding to get reset.
      */
+    @SuppressWarnings("deprecation")
     public static void setViewBackground(View v, Drawable background) {
         // due to a framework bug, the below modification of background resource also resets the declared
         // padding on the view.  save a copy of said padding so it can be re-applied after the change.
@@ -235,7 +236,11 @@ public class UIUtils {
         int oldPadR = v.getPaddingRight();
         int oldPadB = v.getPaddingBottom();
 
-        v.setBackground(background);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            v.setBackground(background);
+        } else {
+            v.setBackgroundDrawable(background);
+        }
 
         v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
     }
