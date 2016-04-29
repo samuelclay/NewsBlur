@@ -123,7 +123,7 @@ public class UIUtils {
                 activity.finish();
             }
         });
-        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
+        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         return iconView;
     }
 
