@@ -245,4 +245,13 @@ public class UIUtils {
         v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
     }
 
+    @SuppressWarnings("deprecation")
+    public static void setImageViewAlpha(ImageView v, int alpha) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            v.setImageAlpha(alpha);
+        } else {
+            v.setAlpha(alpha);
+        }
+    }
+
 }

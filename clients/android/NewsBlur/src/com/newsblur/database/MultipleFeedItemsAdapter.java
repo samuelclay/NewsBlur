@@ -14,6 +14,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ThemeUtils;
+import com.newsblur.util.UIUtils;
 
 public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
@@ -76,7 +77,7 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.BOLD);
 			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.BOLD);
 
-			((ImageView) v.findViewById(R.id.row_item_feedicon)).setAlpha(255);
+			UIUtils.setImageViewAlpha(((ImageView) v.findViewById(R.id.row_item_feedicon)), 255);
 			borderOne.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
@@ -92,7 +93,7 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
             ((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
             ((TextView) v.findViewById(R.id.row_item_content)).setTypeface(null, Typeface.NORMAL);
 
-			((ImageView) v.findViewById(R.id.row_item_feedicon)).setAlpha(125);
+			UIUtils.setImageViewAlpha(((ImageView) v.findViewById(R.id.row_item_feedicon)), 125);
 			borderOne.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}
