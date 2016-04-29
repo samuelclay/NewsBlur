@@ -29,6 +29,8 @@ import com.newsblur.R;
 import com.newsblur.activity.*;
 
 public class UIUtils {
+
+    private UIUtils() {} // util class - no instances
 	
 	/*
 	 * Based on the RoundedCorners code from Square / Eric Burke's "Android UI" talk 

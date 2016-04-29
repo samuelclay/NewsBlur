@@ -25,6 +25,8 @@ import com.newsblur.service.NBSyncService;
 
 public class FeedUtils {
 
+    private FeedUtils() {} // util class - no instances
+
     // these are app-level singletons stored here for convenience. however, they
     // cannot be created lazily or via static init, they have to be created when
     // the main app context is created and it offers a reference

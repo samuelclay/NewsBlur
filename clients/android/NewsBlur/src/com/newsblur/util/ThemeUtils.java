@@ -9,6 +9,8 @@ import com.newsblur.R;
  */
 public class ThemeUtils {
 
+    private ThemeUtils() {} // util class - no instances
+
     // Resources.getColor(rid) was deprecated for a version that actually has a native
     // understanding of themes, but isn't available unless platform version > Build.M.
     // If we ever bump min platform version to M or higher, we could greatly simplify

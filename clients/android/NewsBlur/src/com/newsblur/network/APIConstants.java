@@ -2,6 +2,8 @@ package com.newsblur.network;
 
 public class APIConstants {
 
+    private APIConstants() {} // util class - no instances
+
     public static final String NEWSBLUR_URL = "https://www.newsblur.com";
     public static final String COOKIE_DOMAIN = ".newsblur.com";
     public static final String URL_AUTOFOLLOW_PREF = NEWSBLUR_URL + "/profile/set_preference";

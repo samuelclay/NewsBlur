@@ -31,7 +31,6 @@ import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
-import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;

@@ -2,6 +2,8 @@ package com.newsblur.util;
 
 public class PrefConstants {
 
+    private PrefConstants() {} // util class - no instances
+
 	public static final String PREFERENCES = "preferences";
 	public static final String PREF_COOKIE = "login_cookie";
 	public static final String PREF_UNIQUE_LOGIN = "login_unique";

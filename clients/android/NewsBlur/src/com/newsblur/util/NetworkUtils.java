@@ -20,6 +20,8 @@ import okio.Okio;
 
 public class NetworkUtils {
 
+    private NetworkUtils() {} // util class - no instances
+
     private static OkHttpClient ImageFetchHttpClient;
 
     static {

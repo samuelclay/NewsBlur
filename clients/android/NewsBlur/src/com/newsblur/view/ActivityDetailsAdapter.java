@@ -16,8 +16,6 @@ import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ThemeUtils;
 
 public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetails> {

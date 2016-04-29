@@ -2,11 +2,9 @@ package com.newsblur.activity;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.newsblur.R;
 import com.newsblur.fragment.SettingsFragment;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;

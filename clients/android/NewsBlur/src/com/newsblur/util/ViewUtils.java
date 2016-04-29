@@ -1,23 +1,19 @@
 package com.newsblur.util;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.newsblur.R;
 import com.newsblur.activity.Profile;
-import com.newsblur.domain.Classifier;
-import com.newsblur.fragment.ClassifierDialogFragment;
 import com.newsblur.view.FlowLayout;
 
 public class ViewUtils {
+
+    private ViewUtils() {} // util class - no instances
 
 	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId) {
 		ImageView image = new ImageView(context);
