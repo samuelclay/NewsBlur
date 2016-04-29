@@ -75,7 +75,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	@Bind(R.id.reading_item_tags) FlowLayout tagContainer;
 	private View view;
 	private UserDetails user;
-    private Reading activity;
     private DefaultFeedView selectedFeedView;
     @Bind(R.id.save_story_button) Button saveButton;
     @Bind(R.id.share_story_button) Button shareButton;
@@ -118,14 +117,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 		return readingFragment;
 	}
-
-    @Override
-    public void onAttach(Activity activity) {
-        if (activity instanceof Reading) {
-            this.activity = (Reading) activity;
-        }
-        super.onAttach(activity);
-    }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -188,9 +179,11 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
 
+        Reading activity = (Reading) getActivity();
+
         // the share/save buttons us compound drawables for layout speed, but they
         // cannot correctly compute padding.  hard resize the icons to use padding.
-        int iconSizePx = UIUtils.dp2px(this.activity, 30);
+        int iconSizePx = UIUtils.dp2px(activity, 30);
         Drawable shareButtonIcon = shareButton.getCompoundDrawables()[0];
         shareButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
         shareButton.setCompoundDrawables(shareButtonIcon, null, null, null);
@@ -210,7 +203,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         setupItemCommentsAndShares();
 
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
-        scrollView.registerScrollChangeListener(this.activity);
+        scrollView.registerScrollChangeListener(activity);
 
         setupImmersiveViewGestureDetector();
 
@@ -275,9 +268,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
     @OnClick(R.id.save_story_button) void clickSave() {
         if (story.starred) {
-            FeedUtils.setStorySaved(story, false, activity);
+            FeedUtils.setStorySaved(story, false, getActivity());
         } else {
-            FeedUtils.setStorySaved(story,true, activity);
+            FeedUtils.setStorySaved(story,true, getActivity());
         }
     }
 

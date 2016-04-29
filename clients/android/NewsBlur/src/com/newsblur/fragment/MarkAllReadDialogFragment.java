@@ -18,20 +18,12 @@ public class MarkAllReadDialogFragment extends DialogFragment {
         void onMarkAllRead(FeedSet feedSet);
     }
     
-    private MarkAllReadDialogListener listener;
-    
     public static MarkAllReadDialogFragment newInstance(FeedSet feedSet) {
         MarkAllReadDialogFragment fragment = new MarkAllReadDialogFragment();
         Bundle args = new Bundle();
         args.putSerializable(FEED_SET, feedSet);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        listener = (MarkAllReadDialogListener)activity;
     }
 
     @Override
@@ -50,6 +42,7 @@ public class MarkAllReadDialogFragment extends DialogFragment {
             title = FeedUtils.getFeed(feedSet.getSingleFeed()).title;
         }
 
+        final MarkAllReadDialogListener listener = (MarkAllReadDialogListener) getActivity();
         builder.setTitle(title)
                .setItems(R.array.mark_all_read_options, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int which) {
