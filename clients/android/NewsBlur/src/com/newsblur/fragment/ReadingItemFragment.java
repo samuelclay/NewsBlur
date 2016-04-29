@@ -395,8 +395,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private void setupTags() {
         int tag_green_text = UIUtils.getColor(getActivity(), R.color.tag_green_text);
         int tag_red_text = UIUtils.getColor(getActivity(), R.color.tag_red_text);
-        Drawable tag_green_background = getActivity().getResources().getDrawable(R.drawable.tag_background_positive);
-        Drawable tag_red_background = getActivity().getResources().getDrawable(R.drawable.tag_background_negative);
+        Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
+        Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
 		for (final String tag : story.tags) {
             View v = inflater.inflate(R.layout.tag_view, null);
 
