@@ -12,7 +12,6 @@ import android.app.DialogFragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -179,11 +178,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         list.setOnGroupClickListener(this);
         list.setOnGroupCollapseListener(this);
         list.setOnGroupExpandListener(this);
-
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        list.setIndicatorBounds(
-                display.getWidth() - UIUtils.dp2px(getActivity(), 20),
-                display.getWidth() - UIUtils.dp2px(getActivity(), 10));
 
         adapter.listBackref = new WeakReference(list); // see note in adapter about backref
         list.setAdapter(adapter);
