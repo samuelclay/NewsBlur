@@ -20,3 +20,8 @@
     @butterknife.* <methods>;
 }
 
+# we use proguard only as an APK shrinker and many of our dependencies throw
+# all manner of gross warnings. kept silent by default, the following lines
+# can be commented out to help diagnose shrinkage errors.
+-dontwarn **
+-dontnote **
