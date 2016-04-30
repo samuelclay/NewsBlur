@@ -219,29 +219,19 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 savedCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.VISIBLE);
                 posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
-            } else if (currentState == StateFilter.SOME) {
+            } else {
                 savedCounter.setVisibility(View.GONE);
-                neutCounter.setVisibility(View.VISIBLE);
-                neutCounter.setText(Integer.toString(checkNegativeUnreads(f.neutralCount)));
-                if (f.positiveCount > 0) {
-                    posCounter.setVisibility(View.VISIBLE);
-                    posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
-                } else {
-                    posCounter.setVisibility(View.GONE);
-                }
-            } else if (currentState == StateFilter.ALL) {
-                savedCounter.setVisibility(View.GONE);
-                if (f.positiveCount > 0) {
-                    posCounter.setVisibility(View.VISIBLE);
-                    posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
-                } else {
-                    posCounter.setVisibility(View.GONE);
-                }
                 if (f.neutralCount > 0) {
                     neutCounter.setVisibility(View.VISIBLE);
                     neutCounter.setText(Integer.toString(checkNegativeUnreads(f.neutralCount)));
                 } else {
                     neutCounter.setVisibility(View.GONE);
+                }
+                if (f.positiveCount > 0) {
+                    posCounter.setVisibility(View.VISIBLE);
+                    posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
+                } else {
+                    posCounter.setVisibility(View.GONE);
                 }
             }
 		}
