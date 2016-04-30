@@ -1031,6 +1031,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            if (stateFilter == StateFilter.SAVED) stateFilter = StateFilter.SOME;
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.isAllRead()) {
@@ -1058,6 +1059,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            if (stateFilter == StateFilter.SAVED) stateFilter = StateFilter.SOME;
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else {
