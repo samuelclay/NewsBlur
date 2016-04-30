@@ -578,6 +578,13 @@ public class NBSyncService extends Service {
                     }
                 }
                 RecountCandidates.clear();
+
+                // if there was a mismatch, some stories might have been missed at the head of the
+                // pagination loop, so reset it
+                for (FeedSet fs : dirtySets) {
+                    FeedPagesSeen.put(fs, 0);
+                    FeedStoriesSeen.put(fs, 0);
+                }
             }
         } finally {
             if (RecountsRunning) {
