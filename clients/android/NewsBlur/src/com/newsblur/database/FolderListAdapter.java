@@ -245,6 +245,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             return FeedSet.allSocialFeeds();
         } else if (isFolderRoot(groupPosition)) {
+            if (currentState == StateFilter.SAVED) return FeedSet.allSaved();
             return FeedSet.allFeeds();
         } else if (isRowReadStories(groupPosition)) {
             return FeedSet.allRead();
