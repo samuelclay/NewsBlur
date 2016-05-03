@@ -109,7 +109,6 @@
         android:background="@color/lightgray" />
 
     <include
-        android:layout_width="fill_parent"
         layout="@layout/profile_user_statistics" />
 
     <View
