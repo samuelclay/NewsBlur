@@ -69,9 +69,6 @@
     <color name="share_bar_background">#F5F5EF</color>
     <color name="dark_share_bar_background">#303030</color>
     
-    <color name="primary_text">#DD000000</color>
-    <color name="primary_text_dark">#DDFFFFFF</color>
-
     <color name="half_black">#7000</color>
     
     <color name="half_darkgray">#77434343</color>
