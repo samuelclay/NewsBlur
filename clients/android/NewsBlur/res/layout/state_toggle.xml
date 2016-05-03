@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:enabled="false"
-            android:text="ALL"
+            android:text="@string/state_all"
             style="?toggleText"
         />
     </LinearLayout>
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:enabled="false"
-            android:text="UNREAD"
+            android:text="@string/state_unread"
             style="?toggleText"
         />
     </LinearLayout>
@@ -98,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="FOCUS"
+            android:text="@string/state_focus"
             style="?toggleText"
         />
     </LinearLayout>
@@ -129,7 +129,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="SAVED"
+            android:text="@string/state_saved"
             style="?toggleText"
         />
     </LinearLayout>
