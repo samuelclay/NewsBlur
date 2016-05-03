@@ -5,6 +5,7 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:background="@drawable/toggle_set_border"
+    android:baselineAligned="false"
     android:animateLayoutChanges="true"
 >
 
