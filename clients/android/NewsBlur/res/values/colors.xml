@@ -69,6 +69,9 @@
     <color name="share_bar_background">#F5F5EF</color>
     <color name="dark_share_bar_background">#303030</color>
     
+    <color name="primary_text">#DD000000</color>
+    <color name="primary_text_dark">#DDFFFFFF</color>
+
     <color name="half_black">#7000</color>
     
     <color name="half_darkgray">#77434343</color>
@@ -109,13 +112,11 @@
 
     <color name="story_buttons_dark">#90928b</color>
 
+    <color name="bg_midgray">#55898989</color>
+
     <color name="refresh_1">#c56125</color>
     <color name="refresh_2">#db8d36</color>
     <color name="refresh_3">#e9a941</color>
     <color name="refresh_4">#fae576</color>
-
-    <!-- To use a selector on a bg color, the options must be drawables, not colors. -->
-    <drawable name="toggle_bg_selected">#fdfdfd</drawable>
-    <drawable name="toggle_bg_normal">#dfe1dd</drawable>
 
 </resources>
