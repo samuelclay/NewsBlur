@@ -51,8 +51,6 @@
             android:id="@+id/row_feedsaved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
             android:layout_marginRight="3dp"
             android:background="@drawable/saved_count_rect"
             android:gravity="center"
