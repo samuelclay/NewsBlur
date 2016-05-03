@@ -25,7 +25,7 @@
         android:paddingTop="10dp"
         android:text="@string/global_shared_stories"
         style="?selectorRowFeedName"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <View

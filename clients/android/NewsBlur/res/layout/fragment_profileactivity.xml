@@ -18,7 +18,7 @@
             android:gravity="center"
             android:text="@string/empty_list_view_loading"
             style="?defaultText"
-            android:textSize="13dp"
+            android:textSize="13sp"
             android:textStyle="italic" />
 
         <com.newsblur.view.ProgressThrobber

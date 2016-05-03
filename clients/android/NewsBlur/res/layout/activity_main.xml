@@ -34,7 +34,7 @@
             android:layout_toRightOf="@id/main_user_image"
             android:layout_alignParentTop="true"
             android:textStyle="bold"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/main_unread_count_neut_icon"
@@ -135,7 +135,7 @@
             android:gravity="center_horizontal"
             style="?explainerText"
             android:visibility="invisible"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/empty_view_image"

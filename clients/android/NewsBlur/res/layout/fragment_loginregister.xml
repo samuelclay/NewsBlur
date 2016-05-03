@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/login_username_hint"
                 android:inputType="textEmailAddress"
-                android:textSize="22dp" />
+                android:textSize="22sp" />
 
             <EditText
                 android:id="@+id/login_password"
@@ -61,7 +61,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
                 android:nextFocusDown="@+id/login_button"
-                android:textSize="22dp" />
+                android:textSize="22sp" />
         </LinearLayout>
     </RelativeLayout>
     
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/login_username_hint"
                     android:inputType="textEmailAddress"
-                    android:textSize="22dp" >
+                    android:textSize="22sp" >
 
                 </EditText>
 
@@ -125,7 +125,7 @@
                     android:hint="@string/login_password_hint"
                     android:inputType="textPassword"
                     android:nextFocusDown="@+id/registration_email"
-                    android:textSize="22dp" />
+                    android:textSize="22sp" />
 
                 <EditText
                     android:id="@+id/registration_email"
@@ -136,7 +136,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"
                     android:nextFocusDown="@+id/registration_button"
-                    android:textSize="22dp" />
+                    android:textSize="22sp" />
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

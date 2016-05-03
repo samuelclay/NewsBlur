@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/description_follow_button"
                 android:text="@string/profile_button_follow"
-                android:textSize="11dp"
+                android:textSize="11sp"
                 android:visibility="gone" />
             
             <Button
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/description_follow_button"
                 android:text="@string/profile_button_unfollow"
-                android:textSize="11dp"
+                android:textSize="11sp"
                 android:visibility="gone" />            
         </LinearLayout>
 
@@ -56,7 +56,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/newsblur_blue"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -67,7 +67,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
                 android:textColor="@color/darkgray"
-                android:textSize="12dp"
+                android:textSize="12sp"
                 android:textStyle="italic" />
 
             <ImageView
@@ -89,7 +89,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_toRightOf="@id/profile_location_icon"
                 android:textColor="@color/darkgray"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/profile_website"
@@ -99,7 +99,7 @@
                 android:autoLink="web"
                 android:clickable="true"
                 android:textColor="@color/newsblur_blue"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
         </RelativeLayout>
     </LinearLayout>
 

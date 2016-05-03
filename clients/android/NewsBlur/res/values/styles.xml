@@ -4,14 +4,14 @@
     <style name="classifyDialog" parent="@android:style/Theme.Dialog">
         <item name="android:background">@drawable/actionbar_background</item>
         <item name="android:textColor">@color/darkgray</item>
-        <item name="android:textSize">15dp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:padding">10dp</item>
     </style>
 
     <style name="darkClassifyDialog" parent="@android:style/Theme.Dialog">
         <item name="android:background">@drawable/dark_actionbar_background</item>
         <item name="android:textColor">@color/lightgray</item>
-        <item name="android:textSize">15dp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:padding">10dp</item>
     </style>
 

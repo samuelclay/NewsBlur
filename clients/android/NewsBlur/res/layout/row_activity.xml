@@ -23,7 +23,7 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@id/row_activity_icon"
         style="?defaultText"
-        android:textSize="13dp" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/row_activity_time"
@@ -33,6 +33,6 @@
         android:layout_marginTop="10dp"
         android:layout_below="@id/row_activity_text"
         style="?defaultText"
-        android:textSize="10dp" />
+        android:textSize="10sp" />
 
 </RelativeLayout>

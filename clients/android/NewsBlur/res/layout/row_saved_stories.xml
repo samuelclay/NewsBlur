@@ -35,7 +35,7 @@
         android:paddingTop="9dp"
         android:text="@string/saved_stories_row_title"
         style="?selectorRowFeedName"
-        android:textSize="13dp"
+        android:textSize="13sp"
         android:textStyle="bold" />
 
     <TextView

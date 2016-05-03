@@ -46,6 +46,6 @@
         style="?selectorRowFeedName"
         android:paddingBottom="7dp"
     	android:paddingTop="7dp" 
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
 </RelativeLayout>
