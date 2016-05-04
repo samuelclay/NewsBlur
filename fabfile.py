@@ -244,6 +244,7 @@ def setup_app_image():
     pip()
     deploy_web()
     done()
+    sudo('reboot')
 
 def setup_node():
     setup_node_app()
