@@ -1055,6 +1055,17 @@ class PaymentHistory(models.Model):
             total = _counter(start_date, end_date)
             month_totals[start_date.strftime("%Y-%m")] = total
 
+        print "\nCurrent Month Totals:"
+        month_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_time = start_date + datetime.timedelta(days=31)
+            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+            if end_date > now: end_date = now
+            month_totals[start_date.strftime("%Y-%m")] = _counter(start_date, end_date)
+
         print "\nMTD Totals:"
         month_totals = {}
         years = datetime.datetime.now().year - 2009
