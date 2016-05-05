@@ -198,9 +198,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             }
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_tag, parent, false);
-            StarredCount sc = starredCountsByTag.get(childPosition);
-            ((TextView) v.findViewById(R.id.row_tag_name)).setText(sc.tag);
-            ((TextView) v.findViewById(R.id.row_saved_tag_sum)).setText(Integer.toString(checkNegativeUnreads(sc.count)));
+            if (starredCountsByTag.size() > childPosition) {
+                StarredCount sc = starredCountsByTag.get(childPosition);
+                ((TextView) v.findViewById(R.id.row_tag_name)).setText(sc.tag);
+                ((TextView) v.findViewById(R.id.row_saved_tag_sum)).setText(Integer.toString(checkNegativeUnreads(sc.count)));
+            }
 		} else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
