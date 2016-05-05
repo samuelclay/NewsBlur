@@ -692,7 +692,7 @@ class Feed(models.Model):
     def count_subscribers(self, recount=True, verbose=False):
         if recount or not self.counts_converted_to_redis:
             from apps.profile.models import Profile
-            Profile.count_feed_subscribers(feed_id=self.pk)
+            Profile.count_feed_subscribers(feed_id=self.original_feed_id)
         SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         subscriber_expire = int(SUBSCRIBER_EXPIRE_DATE.strftime('%s'))
         now = int(datetime.datetime.now().strftime('%s'))
@@ -723,10 +723,10 @@ class Feed(models.Model):
                 results = pipeline.execute()
             
                 # -1 due to key=-1 signaling counts_converted_to_redis
-                total += results[0] - 1
-                active += results[1] - 1
-                premium += results[2] - 1
-                active_premium += results[3] - 1
+                total += results[0]
+                active += results[1]
+                premium += results[2]
+                active_premium += results[3]
                 
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
