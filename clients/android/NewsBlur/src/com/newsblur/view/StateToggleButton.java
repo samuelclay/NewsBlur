@@ -15,12 +15,18 @@ import butterknife.OnClick;
 
 import com.newsblur.R;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.UIUtils;
 
 public class StateToggleButton extends LinearLayout {
 
-	private StateFilter currentState = StateFilter.SOME;
+    /** the parent width in dp under which the widget will auto-collapse to a compact form */
+    private final static int COLLAPSE_WIDTH_DP = 450;
+
+	private StateFilter state = StateFilter.SOME;
 
 	private StateChangedListener stateChangedListener;
+
+    private int parentWidthPX = 0;
 
 	@Bind(R.id.toggle_all) ViewGroup allButton;
 	@Bind(R.id.toggle_all_icon) View allButtonIcon;
@@ -49,7 +55,7 @@ public class StateToggleButton extends LinearLayout {
             savedButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         }
 
-		setState(currentState);
+		setState(state);
 	}
 
 	public void setStateListener(final StateChangedListener stateChangedListener) {
@@ -59,42 +65,51 @@ public class StateToggleButton extends LinearLayout {
 	@OnClick({R.id.toggle_all, R.id.toggle_some, R.id.toggle_focus, R.id.toggle_saved})
 	public void onClickToggle(View v) {
         if (v.getId() == R.id.toggle_all) {
-		    changeState(StateFilter.ALL);
+		    setState(StateFilter.ALL);
         } else if (v.getId() == R.id.toggle_some) {
-            changeState(StateFilter.SOME);
+            setState(StateFilter.SOME);
         } else if (v.getId() == R.id.toggle_focus) {
-            changeState(StateFilter.BEST);
+            setState(StateFilter.BEST);
         } else if (v.getId() == R.id.toggle_saved) {
-            changeState(StateFilter.SAVED);
+            setState(StateFilter.SAVED);
         }
 	}
 
-	public void changeState(StateFilter state) {
-		setState(state);
-		if (stateChangedListener != null) {
-			stateChangedListener.changedState(currentState);
-		}
-	}
-
 	public void setState(StateFilter state) {
-        currentState = state;
+        this.state = state;
+        updateButtonStates();
+		if (stateChangedListener != null) {
+			stateChangedListener.changedState(this.state);
+		}
+    }
 
-        allButtonText.setVisibility(state == StateFilter.ALL ? View.VISIBLE : View.GONE);
+    public void setParentWidthPX(int parentWidthPX) {
+        this.parentWidthPX = parentWidthPX;
+        updateButtonStates();
+    }
+
+    public void updateButtonStates() {
+        boolean compactMode = true;
+        if (parentWidthPX > 0) {
+            float widthDP = UIUtils.px2dp(getContext(), parentWidthPX);
+            if (widthDP > COLLAPSE_WIDTH_DP) compactMode = false;
+        }
+
+        allButtonText.setVisibility((!compactMode || state == StateFilter.ALL) ? View.VISIBLE : View.GONE);
         allButton.setEnabled(state != StateFilter.ALL);
         allButtonIcon.setAlpha(state == StateFilter.ALL ? 1.0f : 0.6f);
 
-        someButtonText.setVisibility(state == StateFilter.SOME ? View.VISIBLE : View.GONE);
+        someButtonText.setVisibility((!compactMode || state == StateFilter.SOME) ? View.VISIBLE : View.GONE);
         someButton.setEnabled(state != StateFilter.SOME);
         someButtonIcon.setAlpha(state == StateFilter.SOME ? 1.0f : 0.6f);
 
-        focusButtonText.setVisibility(state == StateFilter.BEST ? View.VISIBLE : View.GONE);
+        focusButtonText.setVisibility((!compactMode || state == StateFilter.BEST) ? View.VISIBLE : View.GONE);
         focusButton.setEnabled(state != StateFilter.BEST);
         focusButtonIcon.setAlpha(state == StateFilter.BEST ? 1.0f : 0.6f);
 
-        savedButtonText.setVisibility(state == StateFilter.SAVED ? View.VISIBLE : View.GONE);
+        savedButtonText.setVisibility((!compactMode || state == StateFilter.SAVED) ? View.VISIBLE : View.GONE);
         savedButton.setEnabled(state != StateFilter.SAVED);
         savedButtonIcon.setAlpha(state == StateFilter.SAVED ? 1.0f : 0.6f);
-
 	}
 
 	public interface StateChangedListener {
