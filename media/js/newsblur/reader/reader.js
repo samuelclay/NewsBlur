@@ -3190,6 +3190,7 @@
                 if (!feed) return;
                 var unread_count = this.get_total_unread_count(feed_id);
                 var tab_unread_count = Math.min(25, unread_count);
+                var muted = !feed.get('active');
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-feed' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
                     (feed.get('has_exception') && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
@@ -3235,10 +3236,14 @@
                             $.make('div', { className: 'NB-change-folders' })
                         ])
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-mute NB-menu-manage-feed-mute' }, [
+                    (muted && $.make('li', { className: 'NB-menu-item NB-menu-manage-unmute NB-menu-manage-feed-unmute' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Un-mute this site')
+                    ])),
+                    (!muted && $.make('li', { className: 'NB-menu-item NB-menu-manage-mute NB-menu-manage-feed-mute' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mute this site')
-                    ]),
+                    ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
@@ -4151,8 +4156,11 @@
             this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
         
-        manage_menu_mute_feed: function(feed_id) {
+        manage_menu_mute_feed: function(feed_id, unmute) {
             var approve_list = _.pluck(NEWSBLUR.assets.feeds.filter(function(feed) {
+                if (unmute) {
+                    return feed.get('active') || feed.get('id') == feed_id;
+                }
                 return feed.get('active') && feed.get('id') != feed_id;
             }), 'id');
 
@@ -5749,7 +5757,12 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-mute' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
-                self.manage_menu_mute_feed($t.parents('.NB-menu-manage').data('feed_id'));
+                self.manage_menu_mute_feed($t.parents('.NB-menu-manage').data('feed_id'), false);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-unmute' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                self.manage_menu_mute_feed($t.parents('.NB-menu-manage').data('feed_id'), true);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-rename' }, function($t, $p){
                 e.preventDefault();
