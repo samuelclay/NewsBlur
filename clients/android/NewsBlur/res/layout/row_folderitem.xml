@@ -52,7 +52,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/lightgray"
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/row_item_saved_icon"
@@ -101,7 +101,7 @@
         android:paddingBottom="4dp"
         android:paddingRight="8dp"
         android:textColor="@color/darkgray"
-        android:textSize="11dp" />
+        android:textSize="11sp" />
 
     <TextView
         android:id="@+id/row_item_author"

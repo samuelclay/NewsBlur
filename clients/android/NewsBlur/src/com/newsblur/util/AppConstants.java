@@ -2,6 +2,8 @@ package com.newsblur.util;
 
 public class AppConstants {
 
+    private AppConstants() {} // util class - no instances
+
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!

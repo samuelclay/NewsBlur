@@ -63,6 +63,11 @@
     <string name="overlay_text">TEXT</string>
     <string name="overlay_story">STORY</string>
 
+    <string name="state_all">ALL</string>
+    <string name="state_unread">UNREAD</string>
+    <string name="state_focus">FOCUS</string>
+    <string name="state_saved">SAVED</string>
+
 	<string name="reply_to">Reply to \"%s\"</string>
 	
 	<string name="alert_dialog_ok">OKAY</string>

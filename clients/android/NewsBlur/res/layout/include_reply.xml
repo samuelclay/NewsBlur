@@ -58,6 +58,6 @@
         android:autoLink="web"
         android:layout_toRightOf="@id/reply_user_image"
         style="?defaultText"
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
 </RelativeLayout>

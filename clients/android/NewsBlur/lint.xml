@@ -4,4 +4,7 @@
     <issue id="RtlHardcoded" severity="ignore" />
     <issue id="RtlSymmetry" severity="ignore" />
     <issue id="IconLocation" severity="ignore" />
+    <issue id="InvalidPackage">
+        <ignore regexp="okio-.*.jar" />
+    </issue>
 </lint>

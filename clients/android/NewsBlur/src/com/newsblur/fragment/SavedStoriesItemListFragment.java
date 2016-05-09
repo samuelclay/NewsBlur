@@ -10,7 +10,6 @@ import android.view.View;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.MultipleFeedItemsAdapter;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.view.FeedItemViewBinder;
 
 public class SavedStoriesItemListFragment extends ItemListFragment {

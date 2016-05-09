@@ -1,7 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 
 import com.newsblur.database.MixedFeedsReadingAdapter;

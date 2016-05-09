@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Window;
 
-import com.newsblur.R;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtils;
 
 /**
  * The very first activity we launch. Checks to see if there is a user logged in yet and then

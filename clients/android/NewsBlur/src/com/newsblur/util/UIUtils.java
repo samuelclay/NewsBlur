@@ -10,9 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +29,8 @@ import com.newsblur.R;
 import com.newsblur.activity.*;
 
 public class UIUtils {
+
+    private UIUtils() {} // util class - no instances
 	
 	/*
 	 * Based on the RoundedCorners code from Square / Eric Burke's "Android UI" talk 
@@ -121,7 +125,7 @@ public class UIUtils {
                 activity.finish();
             }
         });
-        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
+        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         return iconView;
     }
 
@@ -202,4 +206,54 @@ public class UIUtils {
         memInfo = memInfo + (mi[0].getTotalPss() / 1024) + "MB used)";
         return memInfo;
     }
+
+    @SuppressWarnings("deprecation")
+    public static int getColor(Context activity, int rid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return activity.getResources().getColor(rid, activity.getTheme());
+        } else {
+            return activity.getResources().getColor(rid);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Drawable getDrawable(Context activity, int rid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return activity.getResources().getDrawable(rid, activity.getTheme());
+        } else {
+            return activity.getResources().getDrawable(rid);
+        }
+    }
+
+    /**
+     * Sets the background resource of a view, working around a platform bug that causes the declared
+     * padding to get reset.
+     */
+    @SuppressWarnings("deprecation")
+    public static void setViewBackground(View v, Drawable background) {
+        // due to a framework bug, the below modification of background resource also resets the declared
+        // padding on the view.  save a copy of said padding so it can be re-applied after the change.
+        int oldPadL = v.getPaddingLeft();
+        int oldPadT = v.getPaddingTop();
+        int oldPadR = v.getPaddingRight();
+        int oldPadB = v.getPaddingBottom();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            v.setBackground(background);
+        } else {
+            v.setBackgroundDrawable(background);
+        }
+
+        v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void setImageViewAlpha(ImageView v, int alpha) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            v.setImageAlpha(alpha);
+        } else {
+            v.setAlpha(alpha);
+        }
+    }
+
 }

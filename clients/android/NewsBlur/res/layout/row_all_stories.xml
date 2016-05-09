@@ -16,7 +16,6 @@
         android:src="@drawable/ak_icon_allstories" />
 
     <TextView
-        android:id="@+id/row_everythingtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -25,7 +24,7 @@
         android:paddingTop="10dp"
         android:text="@string/all_stories_row_title"
         style="?selectorRowFeedName"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <View

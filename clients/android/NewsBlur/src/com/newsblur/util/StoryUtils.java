@@ -12,6 +12,8 @@ import java.util.Date;
  */
 public class StoryUtils {
 
+    private StoryUtils() {} // util class - no instances
+
     private static final ThreadLocal<SimpleDateFormat> todayLongFormat = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {

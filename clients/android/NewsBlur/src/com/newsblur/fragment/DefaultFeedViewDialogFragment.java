@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RadioButton;
 
 import butterknife.ButterKnife;
@@ -51,7 +50,6 @@ public class DefaultFeedViewDialogFragment extends DialogFragment {
         storyButton.setChecked(currentValue == DefaultFeedView.STORY);
         textButton.setChecked(currentValue == DefaultFeedView.TEXT);
 
-        getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 

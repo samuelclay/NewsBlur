@@ -93,7 +93,7 @@
             android:layout_marginBottom="4dp"
             android:layout_toRightOf="@id/comment_user_image"
             style="?defaultText"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
 
         <TextView
                 android:id="@+id/comment_location"
@@ -104,7 +104,7 @@
                 android:layout_marginBottom="4dp"
                 android:layout_toRightOf="@id/comment_user_image"
                 android:textColor="@color/lightgray"
-                android:textSize="12dp"
+                android:textSize="12sp"
                 />
 
         <com.newsblur.view.FlowLayout

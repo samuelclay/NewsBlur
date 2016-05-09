@@ -130,7 +130,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             if (v == null) v = inflater.inflate(R.layout.row_saved_stories, null, false);
             ((TextView) v.findViewById(R.id.row_foldersum)).setText(Integer.toString(savedStoriesTotalCount));
 		} else {
-			if (v == null) v = inflater.inflate(R.layout.row_folder_collapsed, parent, false);
+			if (v == null) v = inflater.inflate(R.layout.row_folder, parent, false);
             String folderName = activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition));
 			TextView folderTitle = ((TextView) v.findViewById(R.id.row_foldername));
 		    folderTitle.setText(folderName);
@@ -198,9 +198,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             }
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_tag, parent, false);
-            StarredCount sc = starredCountsByTag.get(childPosition);
-            ((TextView) v.findViewById(R.id.row_tag_name)).setText(sc.tag);
-            ((TextView) v.findViewById(R.id.row_saved_tag_sum)).setText(Integer.toString(checkNegativeUnreads(sc.count)));
+            if (starredCountsByTag.size() > childPosition) {
+                StarredCount sc = starredCountsByTag.get(childPosition);
+                ((TextView) v.findViewById(R.id.row_tag_name)).setText(sc.tag);
+                ((TextView) v.findViewById(R.id.row_saved_tag_sum)).setText(Integer.toString(checkNegativeUnreads(sc.count)));
+            }
 		} else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
@@ -219,29 +221,19 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 savedCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.VISIBLE);
                 posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
-            } else if (currentState == StateFilter.SOME) {
+            } else {
                 savedCounter.setVisibility(View.GONE);
-                neutCounter.setVisibility(View.VISIBLE);
-                neutCounter.setText(Integer.toString(checkNegativeUnreads(f.neutralCount)));
-                if (f.positiveCount > 0) {
-                    posCounter.setVisibility(View.VISIBLE);
-                    posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
-                } else {
-                    posCounter.setVisibility(View.GONE);
-                }
-            } else if (currentState == StateFilter.ALL) {
-                savedCounter.setVisibility(View.GONE);
-                if (f.positiveCount > 0) {
-                    posCounter.setVisibility(View.VISIBLE);
-                    posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
-                } else {
-                    posCounter.setVisibility(View.GONE);
-                }
                 if (f.neutralCount > 0) {
                     neutCounter.setVisibility(View.VISIBLE);
                     neutCounter.setText(Integer.toString(checkNegativeUnreads(f.neutralCount)));
                 } else {
                     neutCounter.setVisibility(View.GONE);
+                }
+                if (f.positiveCount > 0) {
+                    posCounter.setVisibility(View.VISIBLE);
+                    posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
+                } else {
+                    posCounter.setVisibility(View.GONE);
                 }
             }
 		}
@@ -255,6 +247,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             return FeedSet.allSocialFeeds();
         } else if (isFolderRoot(groupPosition)) {
+            if (currentState == StateFilter.SAVED) return FeedSet.allSaved();
             return FeedSet.allFeeds();
         } else if (isRowReadStories(groupPosition)) {
             return FeedSet.allRead();

@@ -2,7 +2,6 @@ package com.newsblur.database;
 
 import java.util.List;
 
-import android.database.Cursor;
 import android.text.TextUtils;
 import android.provider.BaseColumns;
 
@@ -14,6 +13,8 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 public class DatabaseConstants {
+
+    private DatabaseConstants(){} // util class - no instances
 
 	private static final String TEXT = " TEXT";
 	private static final String INTEGER = " INTEGER";

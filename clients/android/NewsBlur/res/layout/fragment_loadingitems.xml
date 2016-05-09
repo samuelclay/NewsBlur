@@ -15,7 +15,7 @@
         android:shadowRadius="15"
         android:text="@string/loading"
         android:textColor="@color/white"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"/>
 
 </LinearLayout>

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RadioButton;
 
 import butterknife.ButterKnife;
@@ -48,7 +47,6 @@ public class StoryOrderDialogFragment extends DialogFragment {
 		newestButton.setChecked(currentValue == StoryOrder.NEWEST);
 		oldestButton.setChecked(currentValue == StoryOrder.OLDEST);
 		
-		getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 		

@@ -1,6 +1,6 @@
 package com.newsblur.view;
 
-import android.content.Context;
+import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.widget.SimpleCursorAdapter.ViewBinder;
@@ -15,20 +15,21 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryUtils;
+import com.newsblur.util.UIUtils;
 
 import java.util.Date;
 
 public class FeedItemViewBinder implements ViewBinder {
 
-	private final Context context;
+	private final Activity context;
     private boolean ignoreIntel;
 
-	public FeedItemViewBinder(Context context, boolean ignoreIntel) {
+	public FeedItemViewBinder(Activity context, boolean ignoreIntel) {
 		this.context = context;
         this.ignoreIntel = ignoreIntel;
 	}
 
-	public FeedItemViewBinder(Context context) {
+	public FeedItemViewBinder(Activity context) {
         this(context, false);
     }
 	
@@ -53,16 +54,16 @@ public class FeedItemViewBinder implements ViewBinder {
                 int score = cursor.getInt(columnIndex);
                 Drawable icon;
                 if (score > 0) {
-                    icon = view.getResources().getDrawable(R.drawable.g_icn_focus);
+                    icon = UIUtils.getDrawable(context, R.drawable.g_icn_focus);
                 } else if (score == 0) {
-                    icon = view.getResources().getDrawable(R.drawable.g_icn_unread);
+                    icon = UIUtils.getDrawable(context, R.drawable.g_icn_unread);
                 } else {
-                    icon = view.getResources().getDrawable(R.drawable.g_icn_hidden);
+                    icon = UIUtils.getDrawable(context, R.drawable.g_icn_hidden);
                 }
                 icon.mutate().setAlpha(hasBeenRead == 0 ? 255 : 127);
-                view.setBackgroundDrawable(icon);
+                UIUtils.setViewBackground(view, icon);
             } else {
-                view.setBackgroundDrawable(null);
+                UIUtils.setViewBackground(view, null);
             }
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {

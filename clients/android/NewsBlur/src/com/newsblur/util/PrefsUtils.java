@@ -30,6 +30,8 @@ import com.newsblur.service.NBSyncService;
 
 public class PrefsUtils {
 
+    private PrefsUtils() {} // util class - no instances
+
 	public static void saveLogin(final Context context, final String userName, final String cookie) {
         NBSyncService.resumeFromInterrupt();
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);

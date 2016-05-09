@@ -1,7 +1,6 @@
 package com.newsblur.network;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,8 +17,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -226,12 +223,6 @@ public class APIManager {
         RegisterResponse registerResponse = response.getRegisterResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
-
-			CookieSyncManager.createInstance(context.getApplicationContext());
-			CookieManager cookieManager = CookieManager.getInstance();
-
-			cookieManager.setCookie(APIConstants.COOKIE_DOMAIN, response.getCookie());
-			CookieSyncManager.getInstance().sync();
 		}
         return registerResponse;
 	}
@@ -626,7 +617,7 @@ public class APIManager {
             StringBuilder builder = new StringBuilder();
             builder.append((String) entry.getKey());
             builder.append("=");
-            builder.append(URLEncoder.encode((String) entry.getValue()));
+            builder.append(NetworkUtils.encodeURL((String) entry.getValue()));
             parameters.add(builder.toString());
         }
         return TextUtils.join("&", parameters);

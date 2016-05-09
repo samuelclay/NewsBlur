@@ -34,7 +34,7 @@
             android:layout_toRightOf="@id/main_user_image"
             android:layout_alignParentTop="true"
             android:textStyle="bold"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/main_unread_count_neut_icon"
@@ -93,7 +93,7 @@
         android:id="@+id/fragment_feedintelligenceselector"
         android:name="com.newsblur.fragment.FeedIntelligenceSelectorFragment"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:tag="feedIntelligenceSelector" />
 
@@ -135,7 +135,7 @@
             android:gravity="center_horizontal"
             style="?explainerText"
             android:visibility="invisible"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/empty_view_image"

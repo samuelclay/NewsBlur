@@ -71,7 +71,6 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/row_everythingtext"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
@@ -81,7 +80,7 @@
         android:paddingTop="10dp"
         android:text="@string/all_shared_stories"
         style="?selectorRowFeedName"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <View

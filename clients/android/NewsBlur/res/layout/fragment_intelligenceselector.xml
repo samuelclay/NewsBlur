@@ -10,10 +10,10 @@
         android:id="@+id/fragment_intelligence_statebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="5dp" />
+     />
 
 </LinearLayout>

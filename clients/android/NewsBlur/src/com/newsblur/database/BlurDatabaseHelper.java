@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
-import static android.database.DatabaseUtils.dumpCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,7 +21,6 @@ import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.StoriesResponse;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefsUtils;
@@ -1033,6 +1031,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            if (stateFilter == StateFilter.SAVED) stateFilter = StateFilter.SOME;
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.isAllRead()) {
@@ -1060,6 +1059,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            if (stateFilter == StateFilter.SAVED) stateFilter = StateFilter.SOME;
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else {

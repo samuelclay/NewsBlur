@@ -51,19 +51,19 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
         activityList = (ListView) v.findViewById(R.id.profile_details_activitylist);
 
         loadingProgressView = (ProgressThrobber) v.findViewById(R.id.empty_view_loading_throb);
-        loadingProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                      getResources().getColor(R.color.refresh_2),
-                                      getResources().getColor(R.color.refresh_3),
-                                      getResources().getColor(R.color.refresh_4));
+        loadingProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+                                      UIUtils.getColor(getActivity(), R.color.refresh_2),
+                                      UIUtils.getColor(getActivity(), R.color.refresh_3),
+                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
         activityList.setFooterDividersEnabled(false);
         activityList.setEmptyView(v.findViewById(R.id.empty_view));
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
-        footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                     getResources().getColor(R.color.refresh_2),
-                                     getResources().getColor(R.color.refresh_3),
-                                     getResources().getColor(R.color.refresh_4));
+        footerProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_2),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_3),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_4));
         activityList.addFooterView(footerView, null, false);
 
         if (adapter != null) {
