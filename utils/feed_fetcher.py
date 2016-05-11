@@ -462,7 +462,7 @@ class ProcessFeed:
         story_hashes = []
         stories = []
         for entry in self.fpf.entries:
-            story = pre_process_story(entry)
+            story = pre_process_story(entry, self.fpf.encoding)
             if story.get('published') < start_date:
                 start_date = story.get('published')
             if replace_guids:

@@ -13,6 +13,7 @@ from django.utils.html import strip_tags as strip_tags_django
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 from vendor import reseekfile
+from utils import feedparser
 
 # COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 COMMENTS_RE = re.compile('\<!--.*?--\>')
@@ -67,7 +68,7 @@ def _extract_date_tuples(date):
     
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
-def pre_process_story(entry):
+def pre_process_story(entry, encoding):
     publish_date = entry.get('published_parsed') or entry.get('updated_parsed')
     if publish_date:
         publish_date = datetime.datetime(*publish_date[:6])
@@ -110,6 +111,9 @@ def pre_process_story(entry):
     else:
         entry['story_content'] = summary.strip()
     
+    if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
+        entry['story_content'] = feedparser._sanitizeHTML(entry['story_content'], encoding, 'text/plain')
+        
     # Add each media enclosure as a Download link
     for media_content in chain(entry.get('media_content', [])[:5], entry.get('links', [])[:5]):
         media_url = media_content.get('url', '')
