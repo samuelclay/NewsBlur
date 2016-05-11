@@ -113,6 +113,8 @@ def pre_process_story(entry, encoding):
     
     if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
         entry['story_content'] = feedparser._sanitizeHTML(entry['story_content'], encoding, 'text/plain')
+        if encoding and not isinstance(entry['story_content'], unicode):
+            entry['story_content'] = entry['story_content'].decode(encoding, 'ignore')
         
     # Add each media enclosure as a Download link
     for media_content in chain(entry.get('media_content', [])[:5], entry.get('links', [])[:5]):
