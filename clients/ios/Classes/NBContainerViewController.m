@@ -213,19 +213,12 @@
             leftBorder.hidden = NO;
         }
         
-        if (!self.feedDetailIsVisible) {
-            [self layoutDashboardScreen];
-        } else if (!self.originalViewIsVisible) {
-            [self layoutFeedDetailScreen];
-        }
+        [self adjustLayout];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
-        if (!self.feedDetailIsVisible) {
-            [self layoutDashboardScreen];
-        } else if (!self.originalViewIsVisible) {
-            [self layoutFeedDetailScreen];
-        }
+        [self adjustLayout];
+        
         if (self.feedDetailIsVisible) {
             // Defer this in the background, to avoid misaligning the detail views
             if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
@@ -239,6 +232,18 @@
             }
         }
     }];
+}
+
+- (void)adjustLayout {
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        return;
+    }
+    
+    if (!self.feedDetailIsVisible) {
+        [self layoutDashboardScreen];
+    } else if (!self.originalViewIsVisible) {
+        [self layoutFeedDetailScreen];
+    }
 }
 
 - (void)delayedReorientPages {
