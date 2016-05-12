@@ -3006,6 +3006,10 @@
             NEWSBLUR.goodies = new NEWSBLUR.ReaderGoodies();
         },
                         
+        open_newsletters_modal: function() {
+            NEWSBLUR.newsletters = new NEWSBLUR.ReaderNewsletters();
+        },
+                        
         open_preferences_modal: function() {
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
         },
@@ -3160,6 +3164,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-newsletters' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Email Newsletters')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-import' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -5882,6 +5890,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function() {
                         self.open_goodies_modal();
+                    });
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-newsletters' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_newsletters_modal();
                     });
                 }
             });  
