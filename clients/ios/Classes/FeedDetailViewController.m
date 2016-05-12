@@ -821,14 +821,12 @@
 }
 
 - (void)showOfflineNotifier {
-//    [self.notifier hide];
     self.notifier.style = NBOfflineStyle;
     self.notifier.title = @"Offline";
     [self.notifier show];
 }
 
 - (void)showLoadingNotifier {
-    [self.notifier hide];
     self.notifier.style = NBLoadingStyle;
     self.notifier.title = @"Fetching recent stories...";
     [self.notifier show];
