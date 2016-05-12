@@ -1944,6 +1944,7 @@ def rename_folder(request):
     folder_to_rename = request.POST.get('folder_name') or request.POST.get('folder_to_rename')
     new_folder_name = request.POST['new_folder_name']
     in_folder = request.POST.get('in_folder', '')
+    if 'Top Level' in in_folder: in_folder = ''
     code = 0
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
