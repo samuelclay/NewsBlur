@@ -198,11 +198,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             }
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_tag, parent, false);
-            if (starredCountsByTag.size() > childPosition) {
-                StarredCount sc = starredCountsByTag.get(childPosition);
-                ((TextView) v.findViewById(R.id.row_tag_name)).setText(sc.tag);
-                ((TextView) v.findViewById(R.id.row_saved_tag_sum)).setText(Integer.toString(checkNegativeUnreads(sc.count)));
-            }
+            StarredCount sc = starredCountsByTag.get(childPosition);
+            ((TextView) v.findViewById(R.id.row_tag_name)).setText(sc.tag);
+            ((TextView) v.findViewById(R.id.row_saved_tag_sum)).setText(Integer.toString(checkNegativeUnreads(sc.count)));
 		} else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
@@ -551,28 +549,33 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
     }
 
-    public synchronized void reset() {
-        socialFeeds = Collections.emptyMap();
-        socialFeedsOrdered = Collections.emptyList();
-        totalSocialNeutCount = 0;
-        totalSocialPosiCount = 0;
+    public void reset() {
+        notifyDataSetInvalidated();
 
-        folders = Collections.emptyMap();
-        flatFolders = Collections.emptyMap();
-        safeClear(activeFolderNames);
-        safeClear(activeFolderChildren);
-        safeClear(folderNeutCounts);
-        safeClear(folderPosCounts);
+        synchronized (this) {
+            socialFeeds = Collections.emptyMap();
+            socialFeedsOrdered = Collections.emptyList();
+            totalSocialNeutCount = 0;
+            totalSocialPosiCount = 0;
 
-        feeds = Collections.emptyMap();
-        safeClear(feedNeutCounts);
-        safeClear(feedPosCounts);
-        totalNeutCount = 0;
-        totalPosCount = 0;
+            folders = Collections.emptyMap();
+            flatFolders = Collections.emptyMap();
+            safeClear(activeFolderNames);
+            safeClear(activeFolderChildren);
+            safeClear(folderNeutCounts);
+            safeClear(folderPosCounts);
 
-        safeClear(starredCountsByTag);
+            feeds = Collections.emptyMap();
+            safeClear(feedNeutCounts);
+            safeClear(feedPosCounts);
+            totalNeutCount = 0;
+            totalPosCount = 0;
 
-        safeClear(closedFolders);
+            safeClear(starredCountsByTag);
+            safeClear(closedFolders);
+
+            notifyDataSetChanged();
+        }
     }
 
     /** Get the cached Feed object for the feed at the given list location. */
