@@ -9279,6 +9279,23 @@ form.opml_import_form input {
     background-size: 28px;
 }
 
+.NB-modal-newsletters .NB-newsletters-email {
+    margin: 0 0 0 24px;
+    font-size: 18px;
+    width: 80%;
+}
+.NB-modal-newsletters p {
+    margin-left: 24px;
+    font-size: 14px;
+}
+.NB-modal-newsletters .NB-newsletters-gmail {
+    width: 700px;
+    margin: 0 auto;
+    display: block;
+    padding: 12px;
+    border: 1px solid #F0F0F0;
+    
+}
 /* ================= */
 /* = Goodies Modal = */
 /* ================= */
