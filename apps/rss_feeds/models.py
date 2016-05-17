@@ -676,7 +676,8 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
         total_key = "s:%s" % self.original_feed_id
         premium_key = "sp:%s" % self.original_feed_id
-        last_recount = r.zscore(total_key, -1)
+        last_recount = r.zscore(total_key, -1) # Need to subtract this extra when counting subs
+        last_recount = r.zscore(premium_key, -1) # Need to subtract this extra when counting subs
 
         # Check for expired feeds with no active users who would have triggered a cleanup
         if last_recount and last_recount > subscriber_expire:
@@ -722,18 +723,18 @@ class Feed(models.Model):
 
                 results = pipeline.execute()
             
-                # -1 due to key=-1 signaling counts_converted_to_redis
-                total += results[0]
-                active += results[1]
-                premium += results[2]
-                active_premium += results[3]
+                # -1 due to counts_converted_to_redis using key=-1 for last_recount date
+                total += results[0] - 1
+                active += results[1] - 1
+                premium += results[2] - 1
+                active_premium += results[3] - 1
                 
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
             original_premium_subscribers = self.premium_subscribers
             original_active_premium_subscribers = self.active_premium_subscribers
-            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
-                          (self.title[:30], total, active, premium, active_premium))
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s ~SN~FC%s" % 
+                          (self.title[:30], total, active, premium, active_premium, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
         else:
             from apps.reader.models import UserSubscription
             

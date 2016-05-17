@@ -383,6 +383,7 @@ class UserSubscription(models.Model):
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
                 
             feed.setup_feed_for_premium_subscribers()
+            feed.count_subscribers()
         
         return code, message, us
     
