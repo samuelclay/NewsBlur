@@ -86,7 +86,7 @@ class EmailNewsletter:
         return story
         
     def user_from_email(self, email):
-        tokens = re.search('(\w+)\+(\w+)@newsletters.newsblur.com', email)
+        tokens = re.search('(\w+)[\+\-\.](\w+)@newsletters.newsblur.com', email)
         if not tokens:
             return
         
