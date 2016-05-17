@@ -3,6 +3,8 @@
 
     <item>
         <shape>
+            <!-- on API 14 and 15, the default solid is a black square, not nothing. -->
+            <solid android:color="@android:color/transparent" />
             <padding
                 android:bottom="1.5dp" 
                 android:top="1.5dp" 
