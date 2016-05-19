@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
     android:versionCode="125"
-    android:versionName="4.8.1b2" >
+    android:versionName="4.9.0b2" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -24,6 +24,7 @@
         <activity
             android:name=".activity.InitActivity"
             android:label="@string/newsblur"
+            android:theme="@style/initStyle"
             android:noHistory="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />

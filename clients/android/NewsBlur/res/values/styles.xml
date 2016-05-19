@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="initStyle" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
+
     <style name="classifyDialog" parent="@android:style/Theme.Dialog">
         <item name="android:background">@drawable/actionbar_background</item>
         <item name="android:textColor">@color/darkgray</item>

@@ -24,8 +24,6 @@ public class InitActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_init);
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        getActionBar().hide();
 
         // do actual app launch after just a moment so the init screen smoothly loads
         new AsyncTask<Void, Void, Void>() {
