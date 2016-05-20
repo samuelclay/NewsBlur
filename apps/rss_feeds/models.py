@@ -729,10 +729,10 @@ class Feed(models.Model):
                 results = pipeline.execute()
             
                 # -1 due to counts_converted_to_redis using key=-1 for last_recount date
-                total += results[0] - 1
-                active += results[1] - 1
-                premium += results[2] - 1
-                active_premium += results[3] - 1
+                total += max(0, results[0] - 1)
+                active += max(0, results[1] - 1)
+                premium += max(0, results[2] - 1)
+                active_premium += max(0, results[3] - 1)
                 
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
