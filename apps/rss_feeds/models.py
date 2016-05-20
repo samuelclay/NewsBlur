@@ -240,17 +240,20 @@ class Feed(models.Model):
                 feed_address = self.feed_address or ""
                 feed_link = self.feed_link or ""
                 hash_address_and_link = self.generate_hash_address_and_link(feed_address, feed_link)
+                logging.debug(" ---> ~FRNo dupes, checking hash collision: %s" % hash_address_and_link)
                 duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
                 logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
                 logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
                 return
-
+            
             if self.pk != duplicate_feeds[0].pk:
                 logging.debug(" ---> ~FRFound different feed (%s), merging %s in..." % (duplicate_feeds[0], self.pk))
                 feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
+            else:
+                logging.debug(" ---> ~FRFeed is its own dupe? %s == %s" % (feed, duplicate_feeds))
         except DatabaseError, e:
             logging.debug(" ---> ~FBFeed update failed, no change: %s / %s..." % (kwargs.get('update_fields', None), e))
             pass
