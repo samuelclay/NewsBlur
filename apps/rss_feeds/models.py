@@ -232,9 +232,6 @@ class Feed(models.Model):
         
         try:
             super(Feed, self).save(*args, **kwargs)
-        except DatabaseError, e:
-            logging.debug(" ---> ~FBFeed update failed, no change: %s / %s..." % (kwargs.get('update_fields', None), e))
-            pass
         except IntegrityError, e:
             logging.debug(" ---> ~FRFeed save collision (%s), checking dupe..." % e)
             duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
@@ -254,6 +251,9 @@ class Feed(models.Model):
                 logging.debug(" ---> ~FRFound different feed (%s), merging %s in..." % (duplicate_feeds[0], self.pk))
                 feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
+        except DatabaseError, e:
+            logging.debug(" ---> ~FBFeed update failed, no change: %s / %s..." % (kwargs.get('update_fields', None), e))
+            pass
         
         return self
     
