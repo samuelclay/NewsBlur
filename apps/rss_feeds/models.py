@@ -1873,6 +1873,10 @@ class FeedData(models.Model):
             super(FeedData, self).save(*args, **kwargs)
         except (IntegrityError, OperationError):
             if hasattr(self, 'id') and self.id: self.delete()
+        except DatabaseError, e:
+            # Nothing updated
+            logging.debug(" ---> ~FRNothing updated in FeedData (%s): %s" % (feed, e))
+            pass
 
 
 class MFeedIcon(mongo.Document):
