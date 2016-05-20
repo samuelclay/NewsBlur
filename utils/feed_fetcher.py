@@ -569,10 +569,7 @@ class Dispatcher:
 
     def refresh_feed(self, feed_id):
         """Update feed, since it may have changed"""
-        try:
-            return Feed.objects.using('default').get(pk=feed_id)
-        except Feed.DoesNotExist:
-            return
+        return Feed.get_by_id(self.feed_id)
         
     def process_feed_wrapper(self, feed_queue):
         delta = None
