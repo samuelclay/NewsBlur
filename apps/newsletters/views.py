@@ -36,13 +36,15 @@ def newsletter_receive(request):
     #     'Content-Type':'multipart/mixed; boundary="------------020601070403020003080006"',
     #     'Subject':'Test Newsletter #1'
     # }
+    params = request.REQUEST
+    
     response = HttpResponse('OK')
     
     if settings.DEBUG:
-        logging.debug(" ---> Email newsletter: %s" % pprint(request.REQUEST))
+        logging.debug(" ---> Email newsletter: %s" % pprint(params))
         
     email_newsletter = EmailNewsletter()
-    story = email_newsletter.receive_newsletter(request.REQUEST)
+    story = email_newsletter.receive_newsletter(params)
     
     if not story:
         raise Http404

@@ -53,9 +53,14 @@ class EmailNewsletter:
                 feed_address=feed_address,
                 folder='Newsletters'
             )
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(user.username, 'reload:feeds')            
         
         story_hash = MStory.ensure_story_hash(params['signature'], feed.pk)
         story_content = self.get_content(params)
+        plain_story_content = self.get_content(params, force_plain=True)
+        if len(plain_story_content) > len(story_content):
+            story_content = plain_story_content
         story_content = self.clean_content(story_content)
         story_params = {
             "story_feed_id": feed.pk,
@@ -116,8 +121,10 @@ class EmailNewsletter:
         
         return sender_name, sender_username, sender_domain
     
-    def get_content(self, params):
-        if 'body-html' in params:
+    def get_content(self, params, force_plain=False):
+        if 'body-enriched' in params and not force_plain:
+            return params['body-enriched']
+        if 'body-html' in params and not force_plain:
             return params['body-html']
         if 'stripped-html' in params:
             return linkify(linebreaks(params['stripped-html']))
