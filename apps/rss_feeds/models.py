@@ -1875,7 +1875,7 @@ class FeedData(models.Model):
             if hasattr(self, 'id') and self.id: self.delete()
         except DatabaseError, e:
             # Nothing updated
-            logging.debug(" ---> ~FRNothing updated in FeedData (%s): %s" % (feed, e))
+            logging.debug(" ---> ~FRNothing updated in FeedData (%s): %s" % (self.feed, e))
             pass
 
 
