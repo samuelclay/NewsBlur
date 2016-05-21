@@ -2730,7 +2730,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         return original_feed_id
     
     heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
-    branched_original = original_feed.branch_from_feed
+    branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
     if (heavier_dupe or branched_original) and not force:
         original_feed, duplicate_feed = duplicate_feed, original_feed
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
