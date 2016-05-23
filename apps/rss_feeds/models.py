@@ -384,9 +384,13 @@ class Feed(models.Model):
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
+            youtube = True
         if url and 'youtube.com/channel/' in url:
             channel_id = re.search('youtube.com/channel/([-_\w]+)', url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
+            youtube = True
+        if 'youtube.com/feeds' in url:
+            youtube = True
             
         def criteria(key, value):
             if aggressive:
@@ -434,6 +438,11 @@ class Feed(models.Model):
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
                     feed = cls.objects.create(feed_address=feed_finder_url)
                     feed = feed.update()
+            elif youtube:
+                logging.debug(" ---> Found youtube feed: %s" % (url))
+                feed = cls.objects.create(feed_address=url)
+                feed = feed.update()
+                
         
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):
