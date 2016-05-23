@@ -126,8 +126,8 @@ class EmailNewsletter:
             return params['body-enriched']
         if 'body-html' in params and not force_plain:
             return params['body-html']
-        if 'stripped-html' in params:
-            return linkify(linebreaks(params['stripped-html']))
+        if 'stripped-html' in params and not force_plain:
+            return params['stripped-html']
         if 'body-plain' in params:
             return linkify(linebreaks(params['body-plain']))
     
