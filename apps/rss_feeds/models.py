@@ -378,6 +378,7 @@ class Feed(models.Model):
     @classmethod
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
         feed = None
+        youtube = False
         
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
