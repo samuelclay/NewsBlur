@@ -707,7 +707,7 @@ class Feed(models.Model):
     def count_subscribers(self, recount=True, verbose=False):
         if recount or not self.counts_converted_to_redis:
             from apps.profile.models import Profile
-            Profile.count_feed_subscribers(feed_id=self.original_feed_id)
+            Profile.count_feed_subscribers(feed_id=self.pk)
         SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         subscriber_expire = int(SUBSCRIBER_EXPIRE_DATE.strftime('%s'))
         now = int(datetime.datetime.now().strftime('%s'))
