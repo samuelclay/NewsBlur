@@ -1687,3 +1687,7 @@ def upgrade_to_virtualenv(role=None):
     elif role == "work":
         enable_celerybeat()
         sudo('reboot')
+
+def stress_test():
+    sudo('apt-get install -y sysbench')
+    run('sysbench --test=cpu --cpu-max-prime=20000 run')
