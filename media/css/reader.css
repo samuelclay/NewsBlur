@@ -2457,7 +2457,7 @@ a img {
 /* ==================== */
 
 body {
-    font-family: "Lucida Sans", "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    font-family:  "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .NB-theme-sans-serif-alt1 #story_pane {
@@ -4826,7 +4826,7 @@ background: transparent;
     padding: 1px 4px;
     line-height: 10px;
     margin: 2px 4px 0;
-    font-family: "Lucida Sans", "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
 .NB-style-popover .NB-premium-explainer {
     font-size: 10px;
@@ -5060,7 +5060,7 @@ form.opml_import_form input {
     margin: 0;
     padding: 0;
     font-weight: 300;
-    font-family: "Lucida Sans", "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .NB-splash-info .NB-splash-links .NB-splash-link {
@@ -7750,7 +7750,7 @@ form.opml_import_form input {
   padding: 8px;
   margin: 0;
   border: 1px solid #E0E0E0;
-  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-recommend .NB-modal-recommend-credit {
   color: #505050;
@@ -7881,7 +7881,7 @@ form.opml_import_form input {
   padding: 8px 0 0 8px;
   margin: 0;
   border: 1px solid #808080;
-  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-email .NB-modal-email-to-container,
 .NB-modal-email .NB-modal-email-from-container {
@@ -9622,7 +9622,7 @@ form.opml_import_form input {
   margin: -2px 6px 0 2px;
 }
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-sans-serif {
-  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-serif {
   font-family: "Palatino Linotype", Georgia, "URW Palladio L", "Century Schoolbook L", serif;  
