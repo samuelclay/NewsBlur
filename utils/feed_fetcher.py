@@ -106,7 +106,7 @@ class FetchFeed:
                               (self.feed.title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(youtube_feed)
-        elif 'twitter.com' in address:
+        elif re.match('https?://twitter.com/\w+/?$', address):
             # try:
             twitter_feed = self.fetch_twitter(address)
             # except Exception, e:
