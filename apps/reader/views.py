@@ -5,6 +5,7 @@ import redis
 import requests
 import random
 import zlib
+import re
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -58,7 +59,7 @@ from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.view_functions import required_params
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
-
+from vendor import tweepy
 
 BANNED_URLS = [
     "brentozar.com",
@@ -1800,6 +1801,17 @@ def add_url(request):
         code = -1
         message = "The publisher of this website has banned NewsBlur."
     else:
+        if re.match('(https?://)?twitter.com/\w+/?$', url):
+            # Check if Twitter API is active for user
+            ss = MSocialServices.get_user(request.user.pk)
+            try:
+                if not ss.twitter_uid:
+                    raise tweepy.TweepError("No API token")
+                ss.twitter_api().me()
+            except tweepy.TweepError, e:
+                code = -1
+                message = "Your Twitter connection isn't setup. Go to Manage - Friends and reconnect Twitter."
+                return dict(code=code, message=message)
         if new_folder:
             usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
             usf.add_folder(folder, new_folder)
