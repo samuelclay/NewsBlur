@@ -287,7 +287,13 @@ class SearchStory:
         logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across %s feed%s)" % 
                      (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
         
-        return [r.get_id() for r in results]
+        try:
+            result_ids = [r.get_id() for r in results]
+        except pyes.InvalidQuery(), e:
+            logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
+            return []
+        
+        return result_ids
 
 
 class SearchFeed:
