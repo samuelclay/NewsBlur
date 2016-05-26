@@ -416,6 +416,8 @@ class FetchFeed:
                 categories.append('liked')
             if tweet.retweet_count:
                 categories.append('retweeted')            
+            if 'http' in tweet.text:
+                categories.append('link')
             
             story_data = {
                 'title': tweet.text,
