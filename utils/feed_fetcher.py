@@ -354,8 +354,14 @@ class FetchFeed:
         rss = feedgenerator.Atom1Feed(**data)
 
         for tweet in tweets:
+            entities = ""
+            for media in tweet.entities.get('media', []):
+                if 'media_url_https' not in media: continue
+                if media['type'] == 'photo':
+                    entities += "<img src=\"%s\"> " % media['media_url_https']
             content = """<div class="NB-twitter-rss">
                              <div class="NB-twitter-rss-tweet">%s</div><hr />
+                             <div class="NB-twitter-rss-entities">%s</div>
                              <div class="NB-twitter-rss-author">
                                  Posted by
                                      <a href="https://twitter.com/%s"><img src="%s" style="height: 32px" /> %s</a>
@@ -363,6 +369,7 @@ class FetchFeed:
                              <div class="NB-twitter-rss-stats">%s %s%s %s</div>
                         </div>""" % (
                 linkify(linebreaks(tweet.text)),
+                entities,
                 username,
                 tweet.user.profile_image_url_https,
                 username,
