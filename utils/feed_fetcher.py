@@ -385,14 +385,16 @@ class FetchFeed:
                 ("<b>%s</b> %s" % (tweet.retweet_count, "retweet" if tweet.retweet_count == 1 else "retweets")) if tweet.retweet_count else "",
             )
             
-            if tweet.in_reply_to_status_id:
+            if tweet.text.startswith('RT @'):
+                categories.append('retweet')
+            elif tweet.in_reply_to_status_id:
                 categories.append('reply')
             else:
                 categories.append('tweet')
             if tweet.favorite_count:
-                categories.append('likes')
+                categories.append('liked')
             if tweet.retweet_count:
-                categories.append('retweets')
+                categories.append('retweeted')            
             
             story_data = {
                 'title': tweet.text,
