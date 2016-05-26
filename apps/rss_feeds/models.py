@@ -382,7 +382,7 @@ class Feed(models.Model):
         
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
-        if url and re.match('https?://twitter.com/\w+/?$', url):
+        if url and re.match('(https?://)?twitter.com/\w+/?$', url):
             without_rss = True
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
