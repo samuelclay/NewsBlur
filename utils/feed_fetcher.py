@@ -324,22 +324,35 @@ class FetchFeed:
         except IndexError:
             return
         
+        twitter_api = None
         if self.options.get('requesting_user_id', None):
             social_services = MSocialServices.get_user(self.options.get('requesting_user_id'))
+            try:
+                twitter_api = social_services.twitter_api()
+            except tweepy.TweepError, e:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                return
         else:
             usersubs = UserSubscription.objects.filter(feed=self.feed)
             if not usersubs:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No subscriptions' % 
                               (self.feed.title[:30], address))
                 return
-            social_services = MSocialServices.get_user(usersubs[0].user_id)
+            for sub in usersubs:
+                social_services = MSocialServices.get_user(sub.user_id)
+                try:
+                    twitter_api = social_services.twitter_api()
+                except tweepy.TweepError, e:
+                    logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
+                                  (self.feed.title[:30], address, e))
+                    continue
         
-        twitter_api = social_services.twitter_api()
         if not twitter_api:
             logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No twitter API for %s' % 
                           (self.feed.title[:30], address, usersubs[0].user.username))
             return
-            
+        
         twitter_user = twitter_api.get_user(username)
         tweets = twitter_user.timeline()
         
