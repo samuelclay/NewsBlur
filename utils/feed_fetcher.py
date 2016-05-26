@@ -354,11 +354,16 @@ class FetchFeed:
         rss = feedgenerator.Atom1Feed(**data)
 
         for tweet in tweets:
+            categories = []
             entities = ""
+
             for media in tweet.entities.get('media', []):
                 if 'media_url_https' not in media: continue
                 if media['type'] == 'photo':
                     entities += "<img src=\"%s\"> " % media['media_url_https']
+                    if 'photo' not in categories:
+                        categories.append('photo')
+
             content = """<div class="NB-twitter-rss">
                              <div class="NB-twitter-rss-tweet">%s</div><hr />
                              <div class="NB-twitter-rss-entities">%s</div>
@@ -380,7 +385,6 @@ class FetchFeed:
                 ("<b>%s</b> %s" % (tweet.retweet_count, "retweet" if tweet.retweet_count == 1 else "retweets")) if tweet.retweet_count else "",
             )
             
-            categories = []
             if tweet.in_reply_to_status_id:
                 categories.append('reply')
             else:
