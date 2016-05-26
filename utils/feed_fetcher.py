@@ -325,6 +325,7 @@ class FetchFeed:
             return
         
         twitter_api = None
+        social_services = None
         if self.options.get('requesting_user_id', None):
             social_services = MSocialServices.get_user(self.options.get('requesting_user_id'))
             try:
@@ -353,7 +354,14 @@ class FetchFeed:
                           (self.feed.title[:30], address, usersubs[0].user.username))
             return
         
-        twitter_user = twitter_api.get_user(username)
+        try:
+            twitter_user = twitter_api.get_user(username)
+        except TypeError, e:
+            logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed, disconnecting twitter: %s: %s' % 
+                          (self.feed.title[:30], address, e))
+            social_services.disconnect_twitter()
+            return
+        
         tweets = twitter_user.timeline()
         
         data = {}
