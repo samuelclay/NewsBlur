@@ -339,7 +339,7 @@ class UserSubscription(models.Model):
         logging.user(user, "~FRAdding URL: ~SB%s (in %s) %s" % (feed_address, folder, 
                                                                 "~FCAUTO-ADD" if not auto_active else ""))
     
-        feed = Feed.get_feed_from_url(feed_address)
+        feed = Feed.get_feed_from_url(feed_address, user=user)
 
         if not feed:    
             code = -1

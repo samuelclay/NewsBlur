@@ -21,6 +21,7 @@ from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
 from apps.push.models import PushSubscription
+from apps.social.models import MSocialServices
 from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
@@ -33,6 +34,7 @@ from django.utils.html import linebreaks
 from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
+from vendor import tweepy
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -104,7 +106,19 @@ class FetchFeed:
                               (self.feed.title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(youtube_feed)
-
+        elif 'twitter.com' in address:
+            # try:
+            twitter_feed = self.fetch_twitter(address)
+            # except Exception, e:
+            #     logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %e' %
+            #                   (self.feed.title[:30], address, e))
+            #     twitter_feed = None
+            if not twitter_feed:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s' % 
+                              (self.feed.title[:30], address))
+                return FEED_ERRHTTP, None
+            self.fpf = feedparser.parse(twitter_feed)
+        
         if not self.fpf:
             try:
                 headers = {
@@ -295,6 +309,88 @@ class FetchFeed:
                 'categories': [],
                 'unique_id': "tag:youtube.com,2008:video:%s" % video['id'],
                 'pubdate': dateutil.parser.parse(video['snippet']['publishedAt']),
+            }
+            rss.add_item(**story_data)
+        
+        return rss.writeString('utf-8')
+    
+    def fetch_twitter(self, address):
+        username = None
+        try:
+            username_groups = re.search('twitter.com/(\w+)/?', address)
+            if not username_groups:
+                return
+            username = username_groups.group(1)
+        except IndexError:
+            return
+        
+        if self.options.get('requesting_user_id', None):
+            social_services = MSocialServices.get_user(self.options.get('requesting_user_id'))
+        else:
+            usersubs = UserSubscription.objects.filter(feed=self.feed)
+            if not usersubs:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No subscriptions' % 
+                              (self.feed.title[:30], address))
+                return
+            social_services = MSocialServices.get_user(usersubs[0].user_id)
+        
+        twitter_api = social_services.twitter_api()
+        if not twitter_api:
+            logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No twitter API for %s' % 
+                          (self.feed.title[:30], address, usersubs[0].user.username))
+            return
+            
+        twitter_user = twitter_api.get_user(username)
+        tweets = twitter_user.timeline()
+        
+        data = {}
+        data['title'] = "%s on Twitter" % username
+        data['link'] = "https://twitter.com/%s" % username
+        data['description'] = "%s on Twitter" % username
+        data['lastBuildDate'] = datetime.datetime.utcnow()
+        data['generator'] = 'NewsBlur Twitter API Decrapifier - %s' % settings.NEWSBLUR_URL
+        data['docs'] = None
+        data['feed_url'] = address
+        rss = feedgenerator.Atom1Feed(**data)
+
+        for tweet in tweets:
+            content = """<div class="NB-twitter-rss">
+                             <div class="NB-twitter-rss-tweet">%s</div><hr />
+                             <div class="NB-twitter-rss-author">
+                                 Posted by
+                                     <a href="https://twitter.com/%s"><img src="%s" style="height: 32px" /> %s</a>
+                                on %s.</div>
+                             <div class="NB-twitter-rss-stats">%s %s%s %s</div>
+                        </div>""" % (
+                linkify(linebreaks(tweet.text)),
+                username,
+                tweet.user.profile_image_url_https,
+                username,
+                tweet.created_at.strftime("%c"),
+                ("<br /><br />" if tweet.favorite_count or tweet.retweet_count else ""),
+                ("<b>%s</b> %s" % (tweet.favorite_count, "like" if tweet.favorite_count == 1 else "likes")) if tweet.favorite_count else "",
+                (", " if tweet.favorite_count and tweet.retweet_count else ""),
+                ("<b>%s</b> %s" % (tweet.retweet_count, "retweet" if tweet.retweet_count == 1 else "retweets")) if tweet.retweet_count else "",
+            )
+            
+            categories = []
+            if tweet.in_reply_to_status_id:
+                categories.append('reply')
+            else:
+                categories.append('tweet')
+            if tweet.favorite_count:
+                categories.append('likes')
+            if tweet.retweet_count:
+                categories.append('retweets')
+            
+            story_data = {
+                'title': tweet.text,
+                'link': "https://twitter.com/status/%s" % tweet.id,
+                'description': content,
+                'author_name': username,
+                'categories': categories,
+                'unique_id': "tweet:%s" % tweet.id,
+                'pubdate': tweet.created_at,
             }
             rss.add_item(**story_data)
         

@@ -376,22 +376,24 @@ class Feed(models.Model):
         return bool(not (self.favicon_not_found or self.favicon_color))
         
     @classmethod
-    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
         feed = None
-        youtube = False
+        without_rss = False
         
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
+        if url and 'twitter.com/' in url:
+            without_rss = True
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
-            youtube = True
+            without_rss = True
         if url and 'youtube.com/channel/' in url:
             channel_id = re.search('youtube.com/channel/([-_\w]+)', url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
-            youtube = True
+            without_rss = True
         if 'youtube.com/feeds' in url:
-            youtube = True
+            without_rss = True
             
         def criteria(key, value):
             if aggressive:
@@ -439,10 +441,10 @@ class Feed(models.Model):
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
                     feed = cls.objects.create(feed_address=feed_finder_url)
                     feed = feed.update()
-            elif youtube:
-                logging.debug(" ---> Found youtube feed: %s" % (url))
+            elif without_rss:
+                logging.debug(" ---> Found without_rss feed: %s" % (url))
                 feed = cls.objects.create(feed_address=url)
-                feed = feed.update()
+                feed = feed.update(requesting_user_id=user.pk if user else None)
                 
         
         # Still nothing? Maybe the URL has some clues.
@@ -1048,6 +1050,7 @@ class Feed(models.Model):
             'debug': kwargs.get('debug'),
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
+            'requesting_user_id': kwargs.get('requesting_user_id', None)
         }
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
