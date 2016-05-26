@@ -392,7 +392,7 @@ class Feed(models.Model):
             channel_id = re.search('youtube.com/channel/([-_\w]+)', url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
             without_rss = True
-        if 'youtube.com/feeds' in url:
+        if url and 'youtube.com/feeds' in url:
             without_rss = True
             
         def criteria(key, value):
