@@ -1014,7 +1014,7 @@ def load_follow_requests(request):
         'request_profiles': request_profiles,
     }
 
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=100)
 @json.json_view
 def load_user_friends(request):
     user = get_user(request.user)

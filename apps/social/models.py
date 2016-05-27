@@ -8,6 +8,7 @@ import mongoengine as mongo
 import random
 import requests
 import HTMLParser
+import tweepy
 from collections import defaultdict
 from BeautifulSoup import BeautifulSoup
 from mongoengine.queryset import Q
@@ -26,7 +27,6 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.rss_feeds.page_importer import PageImporter
 from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
-from vendor import tweepy
 from vendor import appdotnet
 from vendor import pynliner
 from utils import log as logging
