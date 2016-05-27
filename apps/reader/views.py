@@ -1800,8 +1800,11 @@ def add_url(request):
     elif any([(banned_url in url) for banned_url in BANNED_URLS]):
         code = -1
         message = "The publisher of this website has banned NewsBlur."
-    else:
-        if re.match('(https?://)?twitter.com/\w+/?$', url):
+    elif re.match('(https?://)?twitter.com/\w+/?$', url):
+        if not request.user.profile.is_premium:
+            message = "You must be a premium subscriber to add Twitter feeds."
+            code = -1
+        else:
             # Check if Twitter API is active for user
             ss = MSocialServices.get_user(request.user.pk)
             try:
@@ -1811,20 +1814,23 @@ def add_url(request):
             except tweepy.TweepError, e:
                 code = -1
                 message = "Your Twitter connection isn't setup. Go to Manage - Friends and reconnect Twitter."
-                return dict(code=code, message=message)
-        if new_folder:
-            usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
-            usf.add_folder(folder, new_folder)
-            folder = new_folder
+    
+    if code == -1:
+        return dict(code=code, message=message)
 
-        code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
-                                                             folder=folder, auto_active=auto_active,
-                                                             skip_fetch=skip_fetch)
-        feed = us and us.feed
-        if feed:
-            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-            r.publish(request.user.username, 'reload:%s' % feed.pk)
-            MUserSearch.schedule_index_feeds_for_search(feed.pk, request.user.pk)
+    if new_folder:
+        usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
+        usf.add_folder(folder, new_folder)
+        folder = new_folder
+
+    code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
+                                                         folder=folder, auto_active=auto_active,
+                                                         skip_fetch=skip_fetch)
+    feed = us and us.feed
+    if feed:
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(request.user.username, 'reload:%s' % feed.pk)
+        MUserSearch.schedule_index_feeds_for_search(feed.pk, request.user.pk)
         
     return dict(code=code, message=message, feed=feed)
 
