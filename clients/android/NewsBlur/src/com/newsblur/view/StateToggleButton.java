@@ -2,7 +2,6 @@ package com.newsblur.view;
 
 import android.animation.LayoutTransition;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,19 +48,10 @@ public class StateToggleButton extends LinearLayout {
 
         // smooth layout transitions are enabled in our layout XML; this smooths out toggle
         // transitions on newer devices
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            allButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-            someButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-            focusButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-            savedButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-        } else {
-            // however, layout transitions are so buggy on 14/15 devices, just don't even try
-            this.setLayoutTransition(null);
-            someButton.setLayoutTransition(null);
-            focusButton.setLayoutTransition(null);
-            savedButton.setLayoutTransition(null);
-            allButton.setLayoutTransition(null);
-        }
+        allButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        someButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        focusButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        savedButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
 		setState(state);
 	}

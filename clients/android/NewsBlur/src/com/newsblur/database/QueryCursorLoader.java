@@ -4,7 +4,6 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.CancellationSignal;
-import android.os.Build;
 import android.os.OperationCanceledException;
 import android.util.Log;
 
@@ -29,12 +28,10 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
        synchronized (this) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                if (isLoadInBackgroundCanceled()) {
-                    throw new OperationCanceledException();
-                }
-                cancellationSignal = new CancellationSignal();
+            if (isLoadInBackgroundCanceled()) {
+                throw new OperationCanceledException();
             }
+            cancellationSignal = new CancellationSignal();
         }
         try {
             long startTime = System.nanoTime();

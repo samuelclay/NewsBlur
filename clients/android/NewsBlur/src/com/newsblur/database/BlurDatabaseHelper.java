@@ -6,7 +6,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
@@ -1214,11 +1213,7 @@ public class BlurDatabaseHelper {
         if (AppConstants.VERBOSE_LOG_DB) {
             Log.d(this.getClass().getName(), String.format("DB rawQuery: '%s' with args: %s", sql, java.util.Arrays.toString(selectionArgs)));
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            return dbRO.rawQuery(sql, selectionArgs, cancellationSignal);
-        } else {
-            return dbRO.rawQuery(sql, selectionArgs);
-        }
+        return dbRO.rawQuery(sql, selectionArgs, cancellationSignal);
     }
 
     /**
@@ -1226,11 +1221,7 @@ public class BlurDatabaseHelper {
      * only if the device's platform provides support.
      */
     private Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
-        } else {
-            return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-        }
+        return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
     }
 
 }
