@@ -251,7 +251,11 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
                         i.setData(Uri.parse(finalURL));
-                        startActivity(i);
+                        try {
+                            startActivity(i);
+                        } catch (Exception e) {
+                            android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
+                        }
                     }
                 });
                 builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {

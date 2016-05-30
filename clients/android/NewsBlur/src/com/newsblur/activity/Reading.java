@@ -352,7 +352,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		} else if (item.getItemId() == R.id.menu_reading_original) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(story.permalink));
-            startActivity(i);
+            try {
+                startActivity(i);
+            } catch (Exception e) {
+                android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
+            }
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
             DialogFragment newFragment = ShareDialogFragment.newInstance(story, readingAdapter.getSourceUserId());
