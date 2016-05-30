@@ -86,4 +86,7 @@ public class AppConstants {
     // cap duty cycle backoffs to prevent unnecessarily large backoffs
     public final static long DUTY_CYCLE_BACKOFF_CAP_MILLIS = 5L * 1000L;
 
+    // link to the web-based forgot password flow
+    public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
+
 }
