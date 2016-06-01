@@ -61,6 +61,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     // loading indicator for when no stories are loaded yet (instead of list)
     @Bind(R.id.empty_view_loading_throb) ProgressThrobber emptyProgressView;
 
+    private View fleuronFooter;
+
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,6 +102,10 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
         itemList.addFooterView(footerView, null, false);
         itemList.setFooterDividersEnabled(false);
+
+        fleuronFooter = inflater.inflate(R.layout.row_fleuron, null);
+        fleuronFooter.setVisibility(View.GONE);
+        itemList.addFooterView(fleuronFooter, null, false);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
         setupBezelSwipeDetector(itemList);
@@ -148,7 +154,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * loading indicator requires a cursor and is handled below.
      */
     public void setLoading(boolean isLoading) {
-        if (footerProgressView != null ) {
+        if (fleuronFooter != null) {
             if (isLoading) {
                 if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
                     headerProgressView.setVisibility(View.INVISIBLE);
@@ -158,10 +164,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                     footerProgressView.setVisibility(View.GONE);
                 }
                 emptyProgressView.setVisibility(View.VISIBLE);
+                fleuronFooter.setVisibility(View.GONE);
             } else {
                 headerProgressView.setVisibility(View.INVISIBLE);
                 footerProgressView.setVisibility(View.GONE);
                 emptyProgressView.setVisibility(View.GONE);
+                fleuronFooter.setVisibility(View.VISIBLE);
             }
         }
     }
