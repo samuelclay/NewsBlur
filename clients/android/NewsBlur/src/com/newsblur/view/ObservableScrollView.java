@@ -5,29 +5,18 @@ import java.util.Set;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
-import android.webkit.WebView;
 import android.widget.ScrollView;
 
-public class NonfocusScrollview extends ScrollView {
+public class ObservableScrollView extends ScrollView {
 
     private Set<ScrollChangeListener> changeListeners = new HashSet<ScrollChangeListener>();
 
-	public NonfocusScrollview(Context context) {
+	public ObservableScrollView(Context context) {
 		super(context);
 	}
 	
-	public NonfocusScrollview(Context context, AttributeSet attrs) {
+	public ObservableScrollView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-	}
-
-	@Override 
-	public void requestChildFocus(View child, View focused) { 
-		if (focused instanceof WebView ) {
-			return;
-		}
-		super.requestChildFocus(child, focused);
 	}
 
     @Override

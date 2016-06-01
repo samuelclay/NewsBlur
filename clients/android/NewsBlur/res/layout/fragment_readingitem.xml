@@ -5,7 +5,7 @@
 
     <!-- The two views in this top FrameLayout are swapped when HTML5 webview custom content wants to be displayed -->
 
-    <com.newsblur.view.NonfocusScrollview
+    <com.newsblur.view.ObservableScrollView
         android:id="@+id/reading_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -49,7 +49,7 @@
             
         </LinearLayout>
 
-    </com.newsblur.view.NonfocusScrollview>
+    </com.newsblur.view.ObservableScrollView>
 
     <FrameLayout
         android:id="@+id/custom_view_container"
