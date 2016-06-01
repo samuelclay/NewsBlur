@@ -9,7 +9,8 @@
         android:id="@+id/reading_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="?itemBackground" >
+        style="?readingBackground"
+     >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,7 +38,7 @@
                 android:id="@+id/reading_webview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="?itemBackground"
+                style="?readingBackground"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="12dp"

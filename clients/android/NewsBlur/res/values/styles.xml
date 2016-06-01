@@ -93,6 +93,14 @@
         <item name="android:background">@color/dark_item_background</item>
     </style>
 
+    <style name="readingBackground">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="readingBackground.dark">
+        <item name="android:background">@color/dark_item_background</item>
+    </style>
+
     <style name="defaultText">
         <item name="android:textColorLink">@color/linkblue</item>
         <item name="android:textColor">@color/darkgray</item>

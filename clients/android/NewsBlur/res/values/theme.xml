@@ -10,6 +10,7 @@
         <item name="actionbarBackground">@style/actionbarBackground</item>
         <item name="listBackground">@style/listBackground</item>
         <item name="itemBackground">@style/itemBackground</item>
+        <item name="readingBackground">@style/readingBackground</item>
         <item name="defaultText">@style/defaultText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
@@ -43,6 +44,7 @@
         <item name="actionbarBackground">@style/actionbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="itemBackground">@style/itemBackground.dark</item>
+        <item name="readingBackground">@style/readingBackground.dark</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>

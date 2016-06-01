@@ -9,6 +9,7 @@
     <attr name="actionbarBackground" format="string" />
     <attr name="listBackground" format="string" />
     <attr name="itemBackground" format="string" />
+    <attr name="readingBackground" format="string" />
     <attr name="defaultText" format="string" />
     <attr name="selectorStoryBackground" format="string" />
     <attr name="rowItemHeaderBackground" format="string" />
