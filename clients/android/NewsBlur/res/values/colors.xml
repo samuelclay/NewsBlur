@@ -32,7 +32,7 @@
     <color name="feed_background_selected_start">#E3D0AE</color>
     <color name="dark_feed_background_selected_end">#4C4C4C</color>
     <color name="dark_feed_background_selected_start">#1A1A1A</color>
-    <color name="story_background">#F7F8F5</color>
+    <color name="story_background">#F4F4F4</color>
     <color name="story_background_end">#FFFDEF</color>
     <color name="story_background_start">#DFDDCF</color>
     <color name="dark_story_background">#1A1A1A</color>
@@ -65,7 +65,7 @@
     <color name="dark_item_header_background_end">#303030</color>
     <color name="item_header_border">#C2C5BE</color>
     <color name="dark_item_header_border">#42453E</color>
-    <color name="item_background">#FFF</color>
+    <color name="item_background">#F4F4F4</color>
     <color name="dark_item_background">#1A1A1A</color>
     <color name="share_bar_background">#F5F5EF</color>
     <color name="dark_share_bar_background">#303030</color>
