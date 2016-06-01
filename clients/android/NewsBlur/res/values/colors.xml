@@ -33,11 +33,9 @@
     <color name="dark_feed_background_selected_end">#4C4C4C</color>
     <color name="dark_feed_background_selected_start">#1A1A1A</color>
     <color name="story_background">#F4F4F4</color>
-    <color name="story_background_end">#FFFDEF</color>
-    <color name="story_background_start">#DFDDCF</color>
+    <color name="story_background_selected">#FFFDEF</color>
     <color name="dark_story_background">#1A1A1A</color>
-    <color name="dark_story_background_end">#4C4C4C</color>
-    <color name="dark_story_background_start">#1A1A1A</color>
+    <color name="dark_story_background_selected">#4C4C4C</color>
 
     <color name="story_title_unread">#333333</color>
     <color name="dark_story_title_unread">#FFFDEF</color>
