@@ -23,7 +23,6 @@
         android:paddingBottom="9dp"
         android:paddingTop="9dp"
         android:text="@string/read_stories_row_title"
-        style="?selectorRowFeedName"
         android:textSize="13sp"
         android:textStyle="bold" />
 

@@ -19,8 +19,6 @@
     <color name="folder_background_selected_start">#CDD0C7</color>
     <color name="dark_folder_background_selected_end">#4C4C4C</color>
     <color name="dark_folder_background_selected_start">#1A1A1A</color>
-    <color name="folder_text">#4C4C4C</color>
-    <color name="dark_folder_text">#FDFDFD</color>
     <color name="folder_border_top">#FDFDFD</color>
     <color name="folder_border_bottom">#B7BBAA</color>
     <color name="dark_folder_border_top">#434343</color>

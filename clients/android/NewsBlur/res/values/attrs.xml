@@ -4,8 +4,7 @@
     <attr name="imageViewSize" format="integer" />
     <attr name="selectorFolderBackground" format="string" />
     <attr name="selectorFeedBackground" format="string" />
-    <attr name="selectorRowFolderName" format="string" />
-    <attr name="selectorRowFeedName" format="string" />
+    <attr name="feedRowNeutCountText" format="string" />
     <attr name="actionbarBackground" format="string" />
     <attr name="listBackground" format="string" />
     <attr name="itemBackground" format="string" />

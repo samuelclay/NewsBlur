@@ -5,8 +5,7 @@
         <item name="android:expandableListViewStyle">@style/expandableListView</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground</item>
-        <item name="selectorRowFolderName">@style/selectorRowFolderName</item>
-        <item name="selectorRowFeedName">@style/selectorRowFeedName</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText</item>
         <item name="actionbarBackground">@style/actionbarBackground</item>
         <item name="listBackground">@style/listBackground</item>
         <item name="itemBackground">@style/itemBackground</item>
@@ -39,8 +38,7 @@
         <item name="android:expandableListViewStyle">@style/expandableListView.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.dark</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
-        <item name="selectorRowFolderName">@style/selectorRowFolderName.dark</item>
-        <item name="selectorRowFeedName">@style/selectorRowFeedName.dark</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="itemBackground">@style/itemBackground.dark</item>
