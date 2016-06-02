@@ -142,7 +142,7 @@
     </style>
 
     <style name="tag">
-        <item name="android:textColor">@color/tag_gray_text</item>
+        <item name="android:textColor">@color/midgray</item>
         <item name="android:background">@drawable/tag_background_neutral</item>
     </style>
 
