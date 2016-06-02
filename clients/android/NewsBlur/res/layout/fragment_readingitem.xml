@@ -15,7 +15,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+        >
 
             <include layout="@layout/include_reading_item_metadata" />
 
@@ -43,7 +46,6 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="12dp"
                 android:scrollbars="none"
-                android:focusable="true"
             />
 
            <include
