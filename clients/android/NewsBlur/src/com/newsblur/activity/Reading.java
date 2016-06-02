@@ -48,7 +48,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.util.VolumeKeyNavigation;
-import com.newsblur.view.ObservableScrollView.ScrollChangeListener;
+import com.newsblur.view.ReadingScrollView.ScrollChangeListener;
 
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 

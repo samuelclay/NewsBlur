@@ -50,7 +50,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
-import com.newsblur.view.ObservableScrollView;
+import com.newsblur.view.ReadingScrollView;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -202,7 +202,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	    updateSaveButton();
         setupItemCommentsAndShares();
 
-        ObservableScrollView scrollView = (ObservableScrollView) view.findViewById(R.id.reading_scrollview);
+        ReadingScrollView scrollView = (ReadingScrollView) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(activity);
 
         setupImmersiveViewGestureDetector();
