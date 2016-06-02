@@ -8,6 +8,9 @@
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
 
+    <color name="bar_background">#E3E6E0</color>
+    <color name="dark_bar_background">#212121</color>
+
     <color name="folder_background_end">#E9EBE4</color>
     <color name="folder_background_start">#DDE0D7</color>
     <color name="dark_folder_background_end">#000000</color>
