@@ -249,7 +249,7 @@
 		FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */; };
 		FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */; };
 		FF191E4F18A323F400473252 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF191E4E18A323F400473252 /* Images.xcassets */; };
-		FF1C4E171A3FB1F4000995E3 /* NBActivityItemProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C4E161A3FB1F4000995E3 /* NBActivityItemProvider.m */; };
+		FF1C4E171A3FB1F4000995E3 /* NBActivityItemSource.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C4E161A3FB1F4000995E3 /* NBActivityItemSource.m */; };
 		FF1F13D318A9C2BE00FDA816 /* TMCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13CE18A9C2BE00FDA816 /* TMCache.m */; };
 		FF1F13D418A9C2BE00FDA816 /* TMDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13D018A9C2BE00FDA816 /* TMDiskCache.m */; };
 		FF1F13D518A9C2BE00FDA816 /* TMMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13D218A9C2BE00FDA816 /* TMMemoryCache.m */; };
@@ -862,8 +862,8 @@
 		FF1660CB16D6FD8A00AF8541 /* SmallInteractionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmallInteractionCell.h; sourceTree = "<group>"; };
 		FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmallInteractionCell.m; sourceTree = "<group>"; };
 		FF191E4E18A323F400473252 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NewsBlur/Images.xcassets; sourceTree = SOURCE_ROOT; };
-		FF1C4E151A3FB1F4000995E3 /* NBActivityItemProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBActivityItemProvider.h; sourceTree = "<group>"; };
-		FF1C4E161A3FB1F4000995E3 /* NBActivityItemProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBActivityItemProvider.m; sourceTree = "<group>"; };
+		FF1C4E151A3FB1F4000995E3 /* NBActivityItemSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBActivityItemSource.h; sourceTree = "<group>"; };
+		FF1C4E161A3FB1F4000995E3 /* NBActivityItemSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBActivityItemSource.m; sourceTree = "<group>"; };
 		FF1F13CD18A9C2BE00FDA816 /* TMCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMCache.h; sourceTree = "<group>"; };
 		FF1F13CE18A9C2BE00FDA816 /* TMCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TMCache.m; sourceTree = "<group>"; };
 		FF1F13CF18A9C2BE00FDA816 /* TMDiskCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMDiskCache.h; sourceTree = "<group>"; };
@@ -2131,8 +2131,8 @@
 				FFAD89C118AC45A100D68567 /* StoriesCollection.m */,
 				FFA0483C19CA5B8400618DC4 /* EventWindow.h */,
 				FFA0483D19CA5B8400618DC4 /* EventWindow.m */,
-				FF1C4E151A3FB1F4000995E3 /* NBActivityItemProvider.h */,
-				FF1C4E161A3FB1F4000995E3 /* NBActivityItemProvider.m */,
+				FF1C4E151A3FB1F4000995E3 /* NBActivityItemSource.h */,
+				FF1C4E161A3FB1F4000995E3 /* NBActivityItemSource.m */,
 			);
 			name = Foundation;
 			sourceTree = "<group>";
@@ -2898,7 +2898,7 @@
 				FFD660611BACA46D006E4B8D /* AFHTTPRequestOperation.m in Sources */,
 				78095E39128EF30D00230C8E /* ASINetworkQueue.m in Sources */,
 				78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */,
-				FF1C4E171A3FB1F4000995E3 /* NBActivityItemProvider.m in Sources */,
+				FF1C4E171A3FB1F4000995E3 /* NBActivityItemSource.m in Sources */,
 				17C4954B1C129863004805A7 /* UISearchBar+Field.m in Sources */,
 				FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */,
 				FF3A3E171BFC3F1300ADC01A /* NSNull+JSON.m in Sources */,

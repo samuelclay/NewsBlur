@@ -1,5 +1,5 @@
 //
-//  NBActivityItemProvider.h
+//  NBActivityItemSource.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 12/15/14.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NBActivityItemProvider : UIActivityItemProvider <UIActivityItemSource> {
+@interface NBActivityItemSource : NSObject <UIActivityItemSource> {
     NSURL *url;
     NSString *authorName;
     NSString *text;
