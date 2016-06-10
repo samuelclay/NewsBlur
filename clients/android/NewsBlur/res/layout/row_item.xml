@@ -81,7 +81,6 @@
         android:layout_below="@id/row_item_content"
         android:paddingBottom="4dp"
         android:paddingRight="8dp"
-        android:textColor="@color/darkgray"
         android:textSize="11sp" />
 
     <TextView
@@ -95,7 +94,6 @@
         android:paddingBottom="4dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/darkgray"
         android:textSize="11sp" />
 
 </RelativeLayout>

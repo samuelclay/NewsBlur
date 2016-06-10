@@ -18,15 +18,13 @@ import com.newsblur.util.ThemeUtils;
 public class FeedItemsAdapter extends StoryItemsAdapter {
 
 	private final Feed feed;
-	private int storyTitleUnread, storyTitleRead, storyContentUnread, storyContentRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
+	private int storyContentUnread, storyContentRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
     private boolean ignoreReadStatus;
 
 	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to, boolean ignoreReadStatus) {
 		super(context, layout, c, from, to);
 		this.feed = feed;
 
-        storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
-        storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
         storyContentUnread = ThemeUtils.getStoryContentUnreadColor(context);
         storyContentRead = ThemeUtils.getStoryContentReadColor(context);
         storyAuthorUnread = ThemeUtils.getStoryAuthorUnreadColor(context);
@@ -55,9 +53,10 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
         Story story = Story.fromCursor(cursor);
 
 		if (this.ignoreReadStatus || (! story.read)) {
+            v.findViewById(R.id.row_item_title).setAlpha(1.0f);
+
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
-            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
             ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentUnread);
 			
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.BOLD);
@@ -67,17 +66,18 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 			borderOne.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
+            v.findViewById(R.id.row_item_title).setAlpha(0.5f);
+
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorRead);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateRead);
-            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
             ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentRead);
 			
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.NORMAL);
 			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.NORMAL);
             ((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
             ((TextView) v.findViewById(R.id.row_item_content)).setTypeface(null, Typeface.NORMAL);
-			borderOne.getBackground().setAlpha(125);
-			borderTwo.getBackground().setAlpha(125);
+			borderOne.getBackground().setAlpha(96);
+			borderTwo.getBackground().setAlpha(96);
 		}
 
         if (story.starred) {

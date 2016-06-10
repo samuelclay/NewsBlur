@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/reply_shareddate"
         android:layout_toRightOf="@id/reply_user_image"
-        android:textColor="@color/newsblur_blue"
+        style="?linkText"
         android:layout_marginTop="5dp"
         android:textSize="12sp" />
 

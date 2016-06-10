@@ -18,22 +18,18 @@ import com.newsblur.util.UIUtils;
 
 public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
-	private int storyTitleUnread, storyContentUnread, storyAuthorUnread, storyTitleRead, storyContentRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
+	private int storyContentUnread, storyAuthorUnread, storyContentRead, storyAuthorRead, storyDateUnread, storyDateRead;
     private boolean ignoreReadStatus;
 
 	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, boolean ignoreReadStatus) {
 		super(context, layout, c, from, to);
 
-        storyTitleUnread = ThemeUtils.getStoryTitleUnreadColor(context);
-        storyTitleRead = ThemeUtils.getStoryTitleReadColor(context);
         storyContentUnread = ThemeUtils.getStoryContentUnreadColor(context);
         storyContentRead = ThemeUtils.getStoryContentReadColor(context);
         storyAuthorUnread = ThemeUtils.getStoryAuthorUnreadColor(context);
         storyAuthorRead = ThemeUtils.getStoryAuthorReadColor(context);
         storyDateUnread = ThemeUtils.getStoryDateUnreadColor(context);
         storyDateRead = ThemeUtils.getStoryDateReadColor(context);
-		storyFeedUnread = ThemeUtils.getStoryFeedUnreadColor(context);
-		storyFeedRead = ThemeUtils.getStoryFeedReadColor(context);
 
         this.ignoreReadStatus = ignoreReadStatus;
 	}
@@ -66,10 +62,11 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
         Story story = Story.fromCursor(cursor);
 
 		if (this.ignoreReadStatus || (! story.read)) {
+            v.findViewById(R.id.row_item_title).setAlpha(1.0f);
+			v.findViewById(R.id.row_item_feedtitle).setAlpha(1.0f);
+
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
-			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedUnread);
-            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
             ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentUnread);
 			
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.BOLD);
@@ -81,10 +78,11 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			borderOne.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
+            v.findViewById(R.id.row_item_title).setAlpha(0.5f);
+            v.findViewById(R.id.row_item_feedtitle).setAlpha(0.5f);
+
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorRead);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateRead);
-			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedRead);
-            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
             ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentRead);
 			
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.NORMAL);
@@ -93,9 +91,9 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
             ((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
             ((TextView) v.findViewById(R.id.row_item_content)).setTypeface(null, Typeface.NORMAL);
 
-			UIUtils.setImageViewAlpha(((ImageView) v.findViewById(R.id.row_item_feedicon)), 125);
-			borderOne.getBackground().setAlpha(125);
-			borderTwo.getBackground().setAlpha(125);
+			UIUtils.setImageViewAlpha(((ImageView) v.findViewById(R.id.row_item_feedicon)), 96);
+			borderOne.getBackground().setAlpha(96);
+			borderTwo.getBackground().setAlpha(96);
 		}
 
         if (story.starred) {

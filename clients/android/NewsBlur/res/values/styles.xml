@@ -101,6 +101,16 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="linkText">
+        <item name="android:textColorLink">@color/linkblue</item>
+        <item name="android:textColor">@color/linkblue</item>
+    </style>
+
+    <style name="linkText.dark">
+        <item name="android:textColorLink">@color/dark_linkblue</item>
+        <item name="android:textColor">@color/dark_linkblue</item>
+    </style>
+
     <style name="selectorStoryBackground">
         <item name="android:background">@drawable/selector_story_background</item>
     </style>
