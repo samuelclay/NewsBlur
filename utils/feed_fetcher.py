@@ -421,7 +421,7 @@ class FetchFeed:
             
             story_data = {
                 'title': tweet.text,
-                'link': "https://twitter.com/statuses/%s" % tweet.id,
+                'link': "https://twitter.com/%s/status/%s" % (username, tweet.id),
                 'description': content,
                 'author_name': username,
                 'categories': categories,
