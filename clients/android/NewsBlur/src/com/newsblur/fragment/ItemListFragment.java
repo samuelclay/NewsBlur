@@ -169,7 +169,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                 headerProgressView.setVisibility(View.INVISIBLE);
                 footerProgressView.setVisibility(View.GONE);
                 emptyProgressView.setVisibility(View.GONE);
-                if (cursorSeenYet) {
+                if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet())) {
                     fleuronFooter.setVisibility(View.VISIBLE);
                 }
             }

@@ -841,6 +841,10 @@ public class NBSyncService extends Service {
         return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
+    public static boolean isFeedSetExhausted(FeedSet fs) {
+        return ExhaustedFeeds.contains(fs);
+    }
+
     public static boolean isFeedSetStoriesFresh(FeedSet fs) {
         Integer count = FeedStoriesSeen.get(fs);
         if (count == null) return false;
