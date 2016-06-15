@@ -3136,6 +3136,11 @@
 }
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
+    if (self.feedsViewController.isOffline) {
+        if (callback) callback();
+        return;
+    }
+    
     if (self.hasQueuedReadStories || forceCheck) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                  (unsigned long)NULL), ^(void) {
