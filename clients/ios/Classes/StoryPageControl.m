@@ -359,6 +359,9 @@
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
+        [self.view setNeedsLayout];
+        [self.view layoutIfNeeded];
+        [self refreshPages];
     }];
 }
 
