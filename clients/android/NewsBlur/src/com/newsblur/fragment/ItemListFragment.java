@@ -38,6 +38,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
@@ -191,7 +192,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             textView.setTypeface(null, Typeface.ITALIC);
             imageView.setVisibility(View.INVISIBLE);
         } else {
-            textView.setText(R.string.empty_list_view_no_stories);
+            ReadFilter readFilter = PrefsUtils.getReadFilter(activity, getFeedSet());
+            if (readFilter == ReadFilter.UNREAD) {
+                textView.setText(R.string.empty_list_view_no_stories_unread);
+            } else {
+                textView.setText(R.string.empty_list_view_no_stories);
+            }
             textView.setTypeface(null, Typeface.NORMAL);
             imageView.setVisibility(View.VISIBLE);
         }
