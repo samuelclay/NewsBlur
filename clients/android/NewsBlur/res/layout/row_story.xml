@@ -26,8 +26,8 @@
         android:layout_height="match_parent"
         android:layout_toRightOf="@id/row_item_favicon_borderbar_1" />
 
-    <View
-        android:id="@+id/row_item_sidebar"
+    <ImageView
+        android:id="@+id/row_item_inteldot"
         android:layout_width="9dp"
         android:layout_height="9dp"
         android:layout_toRightOf="@id/row_item_favicon_borderbar_2"
@@ -36,12 +36,31 @@
         android:layout_centerVertical="true" />
 
     <ImageView
+        android:id="@+id/row_item_feedicon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/row_item_inteldot" />
+
+    <TextView
+        android:id="@+id/row_item_feedtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/row_item_feedicon"
+        android:ellipsize="end"
+        android:singleLine="true"
+        style="?storyFeedTitleText"
+        android:textSize="13sp" />
+
+    <ImageView
         android:id="@+id/row_item_saved_icon"
         android:src="@drawable/clock"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_below="@id/row_item_feedtitle"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
         android:layout_marginTop="2dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="8dp"
@@ -51,27 +70,28 @@
         android:id="@+id/row_item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_toRightOf="@id/row_item_inteldot"
         android:layout_toLeftOf="@id/row_item_saved_icon"
-        android:layout_marginTop="2dp"
+        android:layout_below="@id/row_item_feedicon"
+        android:paddingTop="6dp"
+        android:paddingBottom="4dp"
+        android:paddingRight="4dp"
         android:maxLines="2"
         android:ellipsize="end"
-        android:paddingBottom="4dp"
-        android:paddingTop="4dp"
-        android:paddingRight="4dp"
         android:textSize="14sp" />
 
     <TextView
         android:id="@+id/row_item_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_toRightOf="@id/row_item_inteldot"
         android:layout_below="@id/row_item_title"
-        android:maxLines="2"
-        android:ellipsize="end"
         android:paddingBottom="4dp"
         android:paddingRight="4dp"
-        android:textSize="14sp" />
+        android:maxLines="2"
+        android:ellipsize="end"
+        style="?storySnippetText"
+        android:textSize="14sp"/>
 
     <TextView
         android:id="@+id/row_item_date"
@@ -81,6 +101,7 @@
         android:layout_below="@id/row_item_content"
         android:paddingBottom="4dp"
         android:paddingRight="8dp"
+        style="?storyDateText"
         android:textSize="11sp" />
 
     <TextView
@@ -88,15 +109,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/row_item_content"
-        android:layout_toRightOf="@id/row_item_sidebar"
+        android:layout_toRightOf="@id/row_item_inteldot"
         android:layout_toLeftOf="@id/row_item_date"
         android:layout_alignLeft="@id/row_item_content"
         android:paddingBottom="4dp"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textColor="@color/story_author_text"
         android:textSize="11sp" />
 
 </RelativeLayout>
 
 </LinearLayout>
-

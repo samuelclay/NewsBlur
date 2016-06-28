@@ -12,10 +12,12 @@
         <item name="readingBackground">@style/readingBackground</item>
         <item name="defaultText">@style/defaultText</item>
         <item name="linkText">@style/linkText</item>
+        <item name="storySnippetText">@style/storySnippetText</item>
+        <item name="storyDateText">@style/storyDateText</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader</item>
-        <item name="storyTitleUnread">@style/storyTitleUnread</item>
         <item name="readingItemMetadata">@style/readingItemMetadata</item>
         <item name="tag">@style/tag</item>
         <item name="storyButtons">@style/storyButtons</item>
@@ -46,10 +48,12 @@
         <item name="readingBackground">@style/readingBackground.dark</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
+        <item name="storySnippetText">@style/storySnippetText.dark</item>
+        <item name="storyDateText">@style/storyDateText.dark</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader.dark</item>
-        <item name="storyTitleUnread">@style/storyTitleUnread.dark</item>
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
         <item name="tag">@style/tag.dark</item>
         <item name="storyButtons">@style/storyButtons.dark</item>

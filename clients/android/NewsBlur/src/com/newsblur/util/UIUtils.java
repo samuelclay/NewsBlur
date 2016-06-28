@@ -242,8 +242,4 @@ public class UIUtils {
         v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
     }
 
-    public static void setImageViewAlpha(ImageView v, int alpha) {
-        v.setImageAlpha(alpha);
-    }
-
 }

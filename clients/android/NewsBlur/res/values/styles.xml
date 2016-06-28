@@ -111,6 +111,30 @@
         <item name="android:textColor">@color/dark_linkblue</item>
     </style>
 
+    <style name="storySnippetText">
+        <item name="android:textColor">@color/story_content_text</item>
+    </style>
+
+    <style name="storySnippetText.dark">
+        <item name="android:textColor">@color/dark_story_content_text</item>
+    </style>
+
+    <style name="storyDateText">
+        <item name="android:textColor">@color/story_date_text</item>
+    </style>
+
+    <style name="storyDateText.dark">
+        <item name="android:textColor">@color/dark_story_date_text</item>
+    </style>
+
+    <style name="storyFeedTitleText">
+        <item name="android:textColor">@color/story_feed_title_text</item>
+    </style>
+
+    <style name="storyFeedTitleText.dark">
+        <item name="android:textColor">@color/dark_story_feed_title_text</item>
+    </style>
+
     <style name="selectorStoryBackground">
         <item name="android:background">@drawable/selector_story_background</item>
     </style>
@@ -133,14 +157,6 @@
 
     <style name="rowItemFeedHeader.dark">
         <item name="android:background">@drawable/dark_row_item_feed_header</item>
-    </style>
-
-    <style name="storyTitleUnread">
-        <item name="android:textColor">@color/story_title_unread</item>
-    </style>
-
-    <style name="storyTitleUnread.dark">
-        <item name="android:textColor">@color/dark_story_title_unread</item>
     </style>
 
     <style name="readingItemMetadata">

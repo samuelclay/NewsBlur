@@ -11,10 +11,12 @@
     <attr name="readingBackground" format="string" />
     <attr name="defaultText" format="string" />
     <attr name="linkText" format="string" />
+    <attr name="storySnippetText" format="string" />
+    <attr name="storyDateText" format="string" />
+    <attr name="storyFeedTitleText" format="string" />
     <attr name="selectorStoryBackground" format="string" />
     <attr name="rowItemHeaderBackground" format="string" />
     <attr name="rowItemFeedHeader" format="string" />
-    <attr name="storyTitleUnread" format="string" />
     <attr name="readingItemMetadata" format="string" />
     <attr name="tag" format="string" />
     <attr name="storyButtons" format="string" />
