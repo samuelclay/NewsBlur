@@ -3,6 +3,7 @@ import base64
 import urlparse
 import datetime
 import lxml.html
+from django import forms
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -55,10 +56,13 @@ def signup(request):
         if form.errors:
             errors = form.errors
         if form.is_valid():
-            new_user = form.save()
-            login_user(request, new_user)
-            logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s / %s" % (new_user.email, ip))
-            code = 1
+            try:
+                new_user = form.save()
+                login_user(request, new_user)
+                logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s / %s" % (new_user.email, ip))
+                code = 1
+            except forms.ValidationError, e:
+                errors = [e.args[0]]
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
         
