@@ -84,15 +84,19 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.hide_loading();
         
         var $endline = $.make('div', { className: "NB-end-line NB-short" });
-        $endline.css({'background': '#E1EBFF'});
+        $endline.css({'background': '#FFF'});
         this.$(".NB-"+this.options.tab+"-container").append($endline);
         
-        $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+        $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
+                .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        this.interactions_loading = setInterval(function() {
-            $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
-                    .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        }, 1500);        
+        _.delay(_.bind(function() {
+            this.interactions_loading = setInterval(function() {
+                $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                        .animate({'backgroundColor': '#E1EBFF'}, 1050);
+            }, 1700);
+        }, this), (550+1550+1050) - 1700);
+     
     },
     
     hide_loading: function() {
