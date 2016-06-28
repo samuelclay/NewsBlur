@@ -361,8 +361,26 @@ class FetchFeed:
                           (self.feed.title[:30], address, e))
             social_services.disconnect_twitter()
             return
+        except tweepy.TweepError, e:
+            if e.args[2] == 63:
+                # Suspended
+                logging.debug(u'   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            else:
+                raise
         
-        tweets = twitter_user.timeline()
+        try:
+            tweets = twitter_user.timeline()
+        except tweepy.TweepError, e:
+            if 'Not authorized' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+            else:
+                raise
+                
         
         data = {}
         data['title'] = "%s on Twitter" % username

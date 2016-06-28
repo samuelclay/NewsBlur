@@ -1248,7 +1248,6 @@ def setup_do(name, size=2, image=None):
         image = "ubuntu-14-04-x64"
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
-        print images
         if image == "task": 
             image = images["task_07-2015"]
         elif image == "app":
