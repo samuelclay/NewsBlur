@@ -362,7 +362,8 @@ class FetchFeed:
             social_services.disconnect_twitter()
             return
         except tweepy.TweepError, e:
-            if e.args[2] == 63:
+            if ((len(e.args) >= 2 and e.args[2] == 63) or
+                ('temporarily locked' in e.args[0])):
                 # Suspended
                 logging.debug(u'   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
