@@ -124,7 +124,7 @@ a img {
     right: 0;
     z-index: 1;
     overflow: hidden;
-    width: 180px;
+    width: 188px;
     margin: 0 24px 32px 0;
 }
 
@@ -6554,7 +6554,7 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modules-center {
-    margin: 24px 204px 0 0px;
+    margin: 24px 212px 0 0px;
     padding: 0 24px;
     max-width: 500px;
     float: left;
@@ -7265,6 +7265,10 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_goodies.png') no-repeat  0 1px;
+    background-size: 18px;
+}
+.NB-menu-manage .NB-menu-manage-newsletters .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat  0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-import .NB-menu-manage-image {
@@ -9263,6 +9267,35 @@ form.opml_import_form input {
     height: 96px;
 }
 
+/* ===================== */
+/* = Newsletters Modal = */
+/* ===================== */
+
+.NB-modal-newsletters fieldset {
+    margin: 32px 0;
+}
+.NB-modal-newsletters .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_mail.png');
+    background-size: 28px;
+}
+
+.NB-modal-newsletters .NB-newsletters-email {
+    margin: 0 0 0 24px;
+    font-size: 18px;
+    width: 80%;
+}
+.NB-modal-newsletters p {
+    margin-left: 24px;
+    font-size: 14px;
+}
+.NB-modal-newsletters .NB-newsletters-gmail {
+    width: 700px;
+    margin: 0 auto;
+    display: block;
+    padding: 12px;
+    border: 1px solid #F0F0F0;
+    
+}
 /* ================= */
 /* = Goodies Modal = */
 /* ================= */
