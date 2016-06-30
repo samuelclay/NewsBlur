@@ -48,7 +48,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.util.VolumeKeyNavigation;
-import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
+import com.newsblur.view.ReadingScrollView.ScrollChangeListener;
 
 public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -352,7 +352,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		} else if (item.getItemId() == R.id.menu_reading_original) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(story.permalink));
-            startActivity(i);
+            try {
+                startActivity(i);
+            } catch (Exception e) {
+                android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
+            }
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
             DialogFragment newFragment = ShareDialogFragment.newInstance(story, readingAdapter.getSourceUserId());
@@ -365,7 +369,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			FeedUtils.sendStoryFull(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
-			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this), TextSizeDialogFragment.TextSizeType.ReadingText);
 			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {

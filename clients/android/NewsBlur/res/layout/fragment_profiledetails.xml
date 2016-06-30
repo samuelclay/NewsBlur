@@ -55,7 +55,6 @@
                 android:id="@+id/profile_username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/newsblur_blue"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 

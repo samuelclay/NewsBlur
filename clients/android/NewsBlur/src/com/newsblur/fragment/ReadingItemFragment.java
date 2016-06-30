@@ -50,7 +50,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
-import com.newsblur.view.NonfocusScrollview;
+import com.newsblur.view.ReadingScrollView;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -202,7 +202,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	    updateSaveButton();
         setupItemCommentsAndShares();
 
-        NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
+        ReadingScrollView scrollView = (ReadingScrollView) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(activity);
 
         setupImmersiveViewGestureDetector();
@@ -251,7 +251,11 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
                         i.setData(Uri.parse(finalURL));
-                        startActivity(i);
+                        try {
+                            startActivity(i);
+                        } catch (Exception e) {
+                            android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
+                        }
                     }
                 });
                 builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {

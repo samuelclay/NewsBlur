@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -21,6 +23,7 @@ import com.newsblur.fragment.MarkAllReadDialogFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
+import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
@@ -36,7 +39,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, MarkAllReadDialogListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, MarkAllReadDialogListener, OnSeekBarChangeListener {
 
     public static final String EXTRA_FEED_SET = "feed_set";
 
@@ -176,6 +179,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
             readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
             return true;
+		} else if (item.getItemId() == R.id.menu_textsize) {
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
+			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
+			return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
             if (searchQueryInput.getVisibility() != View.VISIBLE) {
                 searchQueryInput.setVisibility(View.VISIBLE);
@@ -268,6 +275,24 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         NBSyncService.resetFetchState(fs);
         triggerSync();
     }
+
+    // NB: this callback is for the text size slider
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        float size = AppConstants.LIST_FONT_SIZE[progress];
+	    PrefsUtils.setListTextSize(this, size);
+        if (itemListFragment != null) itemListFragment.setTextSize(size);
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
 

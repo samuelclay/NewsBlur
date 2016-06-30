@@ -6,25 +6,25 @@
     </style>
 
     <style name="classifyDialog" parent="@android:style/Theme.Dialog">
-        <item name="android:background">@drawable/actionbar_background</item>
+        <item name="android:background">@color/bar_background</item>
         <item name="android:textColor">@color/darkgray</item>
         <item name="android:textSize">15sp</item>
         <item name="android:padding">10dp</item>
     </style>
 
     <style name="darkClassifyDialog" parent="@android:style/Theme.Dialog">
-        <item name="android:background">@drawable/dark_actionbar_background</item>
+        <item name="android:background">@color/dark_bar_background</item>
         <item name="android:textColor">@color/lightgray</item>
         <item name="android:textSize">15sp</item>
         <item name="android:padding">10dp</item>
     </style>
 
     <style name="actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@drawable/actionbar_background</item>
+        <item name="android:background">@color/bar_background</item>
     </style>
 
     <style name="actionbar.dark" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">@drawable/dark_actionbar_background</item>
+        <item name="android:background">@color/dark_bar_background</item>
     </style>
 
     <style name="expandableListView" parent="@android:style/Widget.Holo.Light.ExpandableListView">
@@ -51,30 +51,20 @@
         <item name="android:background">@drawable/dark_selector_feed_background</item>
     </style>
 
-    <style name="selectorRowFolderName">
-        <item name="android:textColor">@color/folder_text</item>
-        <item name="android:shadowColor">@color/white</item>
+    <style name="feedRowNeutCountText">
+        <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="selectorRowFolderName.dark">
-        <item name="android:textColor">@color/dark_folder_text</item>
-        <item name="android:shadowColor">@color/white</item>
-    </style>
-
-    <style name="selectorRowFeedName">
-        <item name="android:textColor">@color/folder_text</item>
-    </style>
-
-    <style name="selectorRowFeedName.dark">
-        <item name="android:textColor">@color/dark_folder_text</item>
+    <style name="feedRowNeutCountText.dark">
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="actionbarBackground">
-        <item name="android:background">@drawable/actionbar_background</item>
+        <item name="android:background">@color/bar_background</item>
     </style>
 
     <style name="actionbarBackground.dark">
-        <item name="android:background">@drawable/dark_actionbar_background</item>
+        <item name="android:background">@color/dark_bar_background</item>
     </style>
 
     <style name="listBackground">
@@ -93,6 +83,14 @@
         <item name="android:background">@color/dark_item_background</item>
     </style>
 
+    <style name="readingBackground">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="readingBackground.dark">
+        <item name="android:background">@color/dark_item_background</item>
+    </style>
+
     <style name="defaultText">
         <item name="android:textColorLink">@color/linkblue</item>
         <item name="android:textColor">@color/darkgray</item>
@@ -101,6 +99,40 @@
     <style name="defaultText.dark">
         <item name="android:textColorLink">@color/dark_linkblue</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="linkText">
+        <item name="android:textColorLink">@color/linkblue</item>
+        <item name="android:textColor">@color/linkblue</item>
+    </style>
+
+    <style name="linkText.dark">
+        <item name="android:textColorLink">@color/dark_linkblue</item>
+        <item name="android:textColor">@color/dark_linkblue</item>
+    </style>
+
+    <style name="storySnippetText">
+        <item name="android:textColor">@color/story_content_text</item>
+    </style>
+
+    <style name="storySnippetText.dark">
+        <item name="android:textColor">@color/dark_story_content_text</item>
+    </style>
+
+    <style name="storyDateText">
+        <item name="android:textColor">@color/story_date_text</item>
+    </style>
+
+    <style name="storyDateText.dark">
+        <item name="android:textColor">@color/dark_story_date_text</item>
+    </style>
+
+    <style name="storyFeedTitleText">
+        <item name="android:textColor">@color/story_feed_title_text</item>
+    </style>
+
+    <style name="storyFeedTitleText.dark">
+        <item name="android:textColor">@color/dark_story_feed_title_text</item>
     </style>
 
     <style name="selectorStoryBackground">
@@ -127,14 +159,6 @@
         <item name="android:background">@drawable/dark_row_item_feed_header</item>
     </style>
 
-    <style name="storyTitleUnread">
-        <item name="android:textColor">@color/story_title_unread</item>
-    </style>
-
-    <style name="storyTitleUnread.dark">
-        <item name="android:textColor">@color/dark_story_title_unread</item>
-    </style>
-
     <style name="readingItemMetadata">
         <item name="android:textColor">@color/half_darkgray</item>
     </style>
@@ -144,7 +168,7 @@
     </style>
 
     <style name="tag">
-        <item name="android:textColor">@color/tag_gray_text</item>
+        <item name="android:textColor">@color/midgray</item>
         <item name="android:background">@drawable/tag_background_neutral</item>
     </style>
 

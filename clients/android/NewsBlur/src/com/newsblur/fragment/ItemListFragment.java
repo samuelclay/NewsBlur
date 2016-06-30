@@ -38,6 +38,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
@@ -60,6 +61,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     protected ProgressThrobber footerProgressView;
     // loading indicator for when no stories are loaded yet (instead of list)
     @Bind(R.id.empty_view_loading_throb) ProgressThrobber emptyProgressView;
+
+    private View fleuronFooter;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,10 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
         itemList.addFooterView(footerView, null, false);
         itemList.setFooterDividersEnabled(false);
+
+        fleuronFooter = inflater.inflate(R.layout.row_fleuron, null);
+        fleuronFooter.setVisibility(View.GONE);
+        itemList.addFooterView(fleuronFooter, null, false);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
         setupBezelSwipeDetector(itemList);
@@ -148,7 +155,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * loading indicator requires a cursor and is handled below.
      */
     public void setLoading(boolean isLoading) {
-        if (footerProgressView != null ) {
+        if (fleuronFooter != null) {
             if (isLoading) {
                 if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
                     headerProgressView.setVisibility(View.INVISIBLE);
@@ -158,10 +165,14 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                     footerProgressView.setVisibility(View.GONE);
                 }
                 emptyProgressView.setVisibility(View.VISIBLE);
+                fleuronFooter.setVisibility(View.GONE);
             } else {
                 headerProgressView.setVisibility(View.INVISIBLE);
                 footerProgressView.setVisibility(View.GONE);
                 emptyProgressView.setVisibility(View.GONE);
+                if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet())) {
+                    fleuronFooter.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
@@ -181,7 +192,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             textView.setTypeface(null, Typeface.ITALIC);
             imageView.setVisibility(View.INVISIBLE);
         } else {
-            textView.setText(R.string.empty_list_view_no_stories);
+            ReadFilter readFilter = PrefsUtils.getReadFilter(activity, getFeedSet());
+            if (readFilter == ReadFilter.UNREAD) {
+                textView.setText(R.string.empty_list_view_no_stories_unread);
+            } else {
+                textView.setText(R.string.empty_list_view_no_stories);
+            }
             textView.setTypeface(null, Typeface.NORMAL);
             imageView.setVisibility(View.VISIBLE);
         }
@@ -336,6 +352,14 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         Story story = adapter.getStory(truePosition);
         if (getActivity().isFinishing()) return;
         UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
+    }
+
+    public void setTextSize(Float size) {
+        if (adapter != null) {
+            adapter.setTextSize(size);
+            adapter.notifyDataSetChanged();
+        }
+
     }
 
     protected void setupBezelSwipeDetector(View v) {

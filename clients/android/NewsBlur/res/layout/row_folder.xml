@@ -48,7 +48,7 @@
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:textColor="@color/white"
+            style="?feedRowNeutCountText"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -78,10 +78,8 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@+id/row_foldersums"
-        style="?selectorRowFolderName"
         android:paddingBottom="9dp"
     	android:paddingTop="9dp"
-        android:textSize="13sp"
         android:textStyle="bold"
         android:shadowDy="1"
         android:shadowRadius="1"

@@ -13,8 +13,11 @@ public class AppConstants {
 	
 	public static final String FOLDER_PRE = "folder_collapsed";
 
-    // reading view font sizes, in em
+    // reading view font sizes. in em
 	public static final float[] READING_FONT_SIZE = {0.75f, 0.9f, 1.0f, 1.2f, 1.5f, 2.0f};
+
+    // story list view font sizes. as a fraction of the default font sizes used
+	public static final float[] LIST_FONT_SIZE = {0.7f, 0.85f, 1.0f, 1.2f, 1.4f, 1.8f};
 	
     // the name to give the "root" folder in the local DB since the API does not assign it one.
     // this name should be unique and such that it will sort to the beginning of a list, ideally.
@@ -85,5 +88,8 @@ public class AppConstants {
 
     // cap duty cycle backoffs to prevent unnecessarily large backoffs
     public final static long DUTY_CYCLE_BACKOFF_CAP_MILLIS = 5L * 1000L;
+
+    // link to the web-based forgot password flow
+    public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
 
 }

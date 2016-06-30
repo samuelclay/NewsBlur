@@ -117,6 +117,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     adapter.setFeedCursor(cursor);
                     checkOpenFolderPreferences();
                     firstCursorSeenYet = true;
+                    pushUnreadCounts();
                     break;
                 case SAVEDCOUNT_LOADER:
                     adapter.setStarredCountCursor(cursor);
@@ -390,5 +391,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		}
 		return true;
 	}
+
+    public void setTextSize(Float size) {
+        if (adapter != null) {
+            adapter.setTextSize(size);
+            adapter.notifyDataSetChanged();
+        }
+
+    }
 
 }

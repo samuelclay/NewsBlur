@@ -6,6 +6,7 @@
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
     <string name="login_button_login">Log In</string>
+    <string name="forgot_password"><u>I forgot my password</u></string>
     <string name="login_message_error">There was problem logging in to NewsBlur.</string>
     <string name="login_logging_in">Logging in…</string>
     <string name="login_logged_in">Logged in!</string>
@@ -148,6 +149,7 @@
 
     <string name="empty_list_view_loading">Loading…</string>
     <string name="empty_list_view_no_stories">No stories to read</string>
+    <string name="empty_list_view_no_stories_unread">No unread stories</string>
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>

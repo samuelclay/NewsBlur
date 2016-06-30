@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="?selectorFeedBackground"
-    android:orientation="vertical" >
+    style="?selectorFeedBackground" >
 
     <LinearLayout
         android:id="@+id/row_feedcounters"
@@ -27,7 +26,7 @@
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:textColor="@color/white"
+            style="?feedRowNeutCountText"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -85,7 +84,6 @@
         android:layout_toRightOf="@id/row_feedfavicon"
         android:ellipsize="end"
         android:singleLine="true"
-        style="?selectorRowFeedName"
         android:textSize="14sp"
         android:textStyle="bold" />
 
