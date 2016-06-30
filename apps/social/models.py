@@ -2757,7 +2757,8 @@ class MSocialServices(mongo.Document):
             api = self.twitter_api()
             api.update_status(status=message)
         except tweepy.TweepError, e:
-            print e
+            user = User.objects.get(pk=self.user_id)
+            logging.user(user, "~FRTwitter error: ~SB%s" % e)
             return
             
         return True
