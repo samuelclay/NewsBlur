@@ -60,8 +60,8 @@ class EmailNewsletter:
             r.publish(user.username, 'reload:feeds')            
         
         story_hash = MStory.ensure_story_hash(params['signature'], feed.pk)
-        story_content = self.get_content(params)
-        plain_story_content = self.get_content(params, force_plain=True)
+        story_content = self._get_content(params)
+        plain_story_content = self._get_content(params, force_plain=True)
         if len(plain_story_content) > len(story_content):
             story_content = plain_story_content
         story_content = self._clean_content(story_content)
