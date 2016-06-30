@@ -126,14 +126,8 @@ class EmailNewsletter:
         
         logging.user(user, "~BB~FM~SBSending first newsletter email to: %s" % user.email)
         
-<<<<<<< HEAD
-    
     def _user_from_email(self, email):
-        tokens = re.search('(\w+)\+(\w+)@newsletters.newsblur.com', email)
-=======
-    def user_from_email(self, email):
         tokens = re.search('(\w+)[\+\-\.](\w+)@newsletters.newsblur.com', email)
->>>>>>> master
         if not tokens:
             return
         
