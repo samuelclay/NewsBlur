@@ -354,6 +354,14 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
     }
 
+    public void setTextSize(Float size) {
+        if (adapter != null) {
+            adapter.setTextSize(size);
+            adapter.notifyDataSetChanged();
+        }
+
+    }
+
     protected void setupBezelSwipeDetector(View v) {
         final GestureDetector gestureDetector = new GestureDetector(getActivity(), new BezelSwipeDetector());
         v.setOnTouchListener(new OnTouchListener() {

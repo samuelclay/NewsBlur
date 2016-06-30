@@ -369,7 +369,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			FeedUtils.sendStoryFull(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
-			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this), TextSizeDialogFragment.TextSizeType.ReadingText);
 			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {

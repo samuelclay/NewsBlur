@@ -25,6 +25,12 @@ import com.newsblur.util.StoryUtils;
  * bindings to handle images and visual tweaks like read stories being de-emphasized.
  */
 public class StoryItemsAdapter extends SimpleCursorAdapter {
+    
+    private final static float defaultTextSize_row_item_title = 14f;
+    private final static float defaultTextSize_row_item_feedtitle = 13f;
+    private final static float defaultTextSize_row_item_date = 11f;
+    private final static float defaultTextSize_row_item_author = 11f;
+    private final static float defaultTextSize_row_item_content = 12f;
 
     private final static String[] COL_NAME_MAPPINGS = new String[] {
         DatabaseConstants.STORY_TITLE, 
@@ -50,6 +56,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
     private boolean ignoreReadStatus;
     private boolean ignoreIntel;
     private boolean singleFeed;
+    private float textSize;
 
 	public StoryItemsAdapter(Context context, Cursor c, boolean ignoreReadStatus, boolean ignoreIntel, boolean singleFeed) {
 		super(context, R.layout.row_story, c, COL_NAME_MAPPINGS, RES_ID_MAPPINGS, 0);
@@ -61,6 +68,8 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         this.ignoreReadStatus = ignoreReadStatus;
         this.ignoreIntel = ignoreIntel;
         this.singleFeed = singleFeed;
+
+        textSize = PrefsUtils.getListTextSize(context);
 
         this.setViewBinder(new StoryItemViewBinder());
 	}
@@ -81,9 +90,19 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         return Story.fromCursor(cursor);
     }
 
+    public void setTextSize(float textSize) {
+        this.textSize = textSize;
+    }
+
 	@Override
 	public void bindView(View v, Context context, Cursor cursor) {
         super.bindView(v, context, cursor);
+
+        TextView itemTitle = (TextView) v.findViewById(R.id.row_item_title);
+        TextView itemFeedTitle = (TextView) v.findViewById(R.id.row_item_feedtitle);
+        TextView itemAuthor = (TextView) v.findViewById(R.id.row_item_author);
+        TextView itemDate = (TextView) v.findViewById(R.id.row_item_date);
+        TextView itemContent = (TextView) v.findViewById(R.id.row_item_content);
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
@@ -107,30 +126,37 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
             borderOne.setBackgroundColor(Color.GRAY);
             borderTwo.setBackgroundColor(Color.LTGRAY);
         }
+
+        // dynamic text sizing
+        itemTitle.setTextSize(textSize * defaultTextSize_row_item_title);
+        itemFeedTitle.setTextSize(textSize * defaultTextSize_row_item_feedtitle);
+        itemAuthor.setTextSize(textSize * defaultTextSize_row_item_author);
+        itemDate.setTextSize(textSize * defaultTextSize_row_item_date);
+        itemContent.setTextSize(textSize * defaultTextSize_row_item_content);
 		
+        // read/unread fading
         Story story = Story.fromCursor(cursor);
-
 		if (this.ignoreReadStatus || (! story.read)) {
-            v.findViewById(R.id.row_item_title).setAlpha(1.0f);
-			v.findViewById(R.id.row_item_feedtitle).setAlpha(1.0f);
-            v.findViewById(R.id.row_item_author).setAlpha(1.0f);
-            v.findViewById(R.id.row_item_date).setAlpha(1.0f);
-            v.findViewById(R.id.row_item_content).setAlpha(1.0f);
+            itemTitle.setAlpha(1.0f);
+			itemFeedTitle.setAlpha(1.0f);
+            itemAuthor.setAlpha(1.0f);
+            itemDate.setAlpha(1.0f);
+            itemContent.setAlpha(1.0f);
 
-			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.BOLD);
+			itemTitle.setTypeface(null, Typeface.BOLD);
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setImageAlpha(255);
 			((ImageView) v.findViewById(R.id.row_item_inteldot)).setImageAlpha(255);
 			borderOne.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
-            v.findViewById(R.id.row_item_title).setAlpha(READ_STORY_ALPHA);
-            v.findViewById(R.id.row_item_feedtitle).setAlpha(READ_STORY_ALPHA);
-            v.findViewById(R.id.row_item_author).setAlpha(READ_STORY_ALPHA);
-            v.findViewById(R.id.row_item_date).setAlpha(READ_STORY_ALPHA);
-            v.findViewById(R.id.row_item_content).setAlpha(READ_STORY_ALPHA);
+            itemTitle.setAlpha(READ_STORY_ALPHA);
+            itemFeedTitle.setAlpha(READ_STORY_ALPHA);
+            itemAuthor.setAlpha(READ_STORY_ALPHA);
+            itemDate.setAlpha(READ_STORY_ALPHA);
+            itemContent.setAlpha(READ_STORY_ALPHA);
 
-            ((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
+            itemTitle.setTypeface(null, Typeface.NORMAL);
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setImageAlpha(READ_STORY_ALPHA_B255);
 			((ImageView) v.findViewById(R.id.row_item_inteldot)).setImageAlpha(READ_STORY_ALPHA_B255);
@@ -145,7 +171,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         }
 
         if (!PrefsUtils.isShowContentPreviews(context)) {
-            v.findViewById(R.id.row_item_content).setVisibility(View.GONE);
+            itemContent.setVisibility(View.GONE);
         }
 	}
 

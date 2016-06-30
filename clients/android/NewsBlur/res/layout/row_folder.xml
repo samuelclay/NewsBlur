@@ -80,7 +80,6 @@
         android:layout_toLeftOf="@+id/row_foldersums"
         android:paddingBottom="9dp"
     	android:paddingTop="9dp"
-        android:textSize="13sp"
         android:textStyle="bold"
         android:shadowDy="1"
         android:shadowRadius="1"

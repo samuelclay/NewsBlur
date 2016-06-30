@@ -392,4 +392,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		return true;
 	}
 
+    public void setTextSize(Float size) {
+        if (adapter != null) {
+            adapter.setTextSize(size);
+            adapter.notifyDataSetChanged();
+        }
+
+    }
+
 }

@@ -6,6 +6,10 @@
     <item android:id="@+id/menu_default_view"
           android:title="@string/menu_default_view"
           android:showAsAction="never" />
+    <item
+        android:id="@+id/menu_textsize"
+        android:showAsAction="never"
+        android:title="@string/menu_textsize"/>
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
           android:showAsAction="ifRoom" android:icon="@drawable/search" />

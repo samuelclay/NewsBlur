@@ -16,14 +16,14 @@
         android:src="@drawable/ak_icon_global" />
 
     <TextView
+        android:id="@+id/row_foldername"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_everything_icon"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
+        android:paddingBottom="9dp"
+        android:paddingTop="9dp"
         android:text="@string/global_shared_stories"
-        android:textSize="14sp"
         android:textStyle="bold" />
 
     <View

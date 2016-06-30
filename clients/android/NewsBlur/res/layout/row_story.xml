@@ -51,8 +51,7 @@
         android:layout_toRightOf="@id/row_item_feedicon"
         android:ellipsize="end"
         android:singleLine="true"
-        style="?storyFeedTitleText"
-        android:textSize="13sp" />
+        style="?storyFeedTitleText" />
 
     <ImageView
         android:id="@+id/row_item_saved_icon"
@@ -77,8 +76,7 @@
         android:paddingBottom="4dp"
         android:paddingRight="4dp"
         android:maxLines="2"
-        android:ellipsize="end"
-        android:textSize="14sp" />
+        android:ellipsize="end" />
 
     <TextView
         android:id="@+id/row_item_content"
@@ -90,8 +88,7 @@
         android:paddingRight="4dp"
         android:maxLines="2"
         android:ellipsize="end"
-        style="?storySnippetText"
-        android:textSize="14sp"/>
+        style="?storySnippetText" />
 
     <TextView
         android:id="@+id/row_item_date"
@@ -101,8 +98,7 @@
         android:layout_below="@id/row_item_content"
         android:paddingBottom="4dp"
         android:paddingRight="8dp"
-        style="?storyDateText"
-        android:textSize="11sp" />
+        style="?storyDateText" />
 
     <TextView
         android:id="@+id/row_item_author"
@@ -115,8 +111,7 @@
         android:paddingBottom="4dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/story_author_text"
-        android:textSize="11sp" />
+        android:textColor="@color/story_author_text" />
 
 </RelativeLayout>
 
