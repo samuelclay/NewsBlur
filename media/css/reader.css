@@ -7070,7 +7070,7 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-mute .NB-menu-manage-image,
 .NB-menu-manage .NB-menu-manage-unmute .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/color_swatch_bw.png') no-repeat  1px 2px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mute.png') no-repeat  0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-rename .NB-menu-manage-image {
@@ -7292,7 +7292,8 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feedchooser .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/color_swatch.png') no-repeat  1px 2px;
+    background: transparent url('/media/embed/icons/circular/g_icn_mute.png') no-repeat  0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-organizer .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_book.png') no-repeat  0 0;
@@ -8855,7 +8856,7 @@ form.opml_import_form input {
     margin: 0 auto;
 }
 .NB-modal-feedchooser .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/silk/color_swatch.png');
+    background: transparent url('/media/embed/icons/circular/g_icn_mute.png');
     background-size: 28px;
 }
 
