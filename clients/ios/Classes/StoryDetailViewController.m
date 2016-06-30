@@ -1607,13 +1607,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    self.webView.hidden = NO;
+//    self.webView.hidden = NO;
     [self.activityIndicator stopAnimating];
     
     if (self.loadingHTML) {
         [self.webView loadHTMLString:self.loadingHTML baseURL:self.loadingURL];
         self.loadingHTML = nil;
         self.loadingURL = nil;
+    } else {
+        self.webView.hidden = NO;
+        [self.webView setNeedsDisplay];
     }
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];

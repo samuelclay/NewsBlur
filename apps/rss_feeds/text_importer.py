@@ -4,6 +4,7 @@ from requests.packages.urllib3.exceptions import LocationParseError
 from socket import error as SocketError
 from mongoengine.queryset import NotUniqueError
 from vendor.readability import readability
+from lxml.etree import ParserError
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
@@ -61,7 +62,8 @@ class TextImporter:
                                                  positive_keywords=["postContent", "postField"])
         try:
             content = original_text_doc.summary(html_partial=True)
-        except readability.Unparseable:
+        except (readability.Unparseable, ParserError), e:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
 
         try:

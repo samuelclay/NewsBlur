@@ -1248,7 +1248,6 @@ def setup_do(name, size=2, image=None):
         image = "ubuntu-14-04-x64"
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
-        print images
         if image == "task": 
             image = images["task_07-2015"]
         elif image == "app":
@@ -1687,3 +1686,7 @@ def upgrade_to_virtualenv(role=None):
     elif role == "work":
         enable_celerybeat()
         sudo('reboot')
+
+def stress_test():
+    sudo('apt-get install -y sysbench')
+    run('sysbench --test=cpu --cpu-max-prime=20000 run')

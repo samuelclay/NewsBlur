@@ -232,28 +232,33 @@ class Feed(models.Model):
         
         try:
             super(Feed, self).save(*args, **kwargs)
-        except DatabaseError, e:
-            logging.debug(" ---> ~FBFeed update failed, no change: %s / %s..." % (kwargs.get('update_fields', None), e))
-            pass
         except IntegrityError, e:
-            logging.debug(" ---> ~FRFeed save collision (%s), checking dupe..." % e)
-            duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
-                                                  feed_link=self.feed_link)
+            logging.debug(" ---> ~FRFeed save collision (%s), checking dupe hash..." % e)
+            feed_address = self.feed_address or ""
+            feed_link = self.feed_link or ""
+            hash_address_and_link = self.generate_hash_address_and_link(feed_address, feed_link)
+            logging.debug(" ---> ~FRNo dupes, checking hash collision: %s" % hash_address_and_link)
+            duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
+            
             if not duplicate_feeds:
-                feed_address = self.feed_address or ""
-                feed_link = self.feed_link or ""
-                hash_address_and_link = self.generate_hash_address_and_link(feed_address, feed_link)
-                duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
+                duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
+                                                      feed_link=self.feed_link)
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
                 logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
                 logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
                 return
-
-            if self.pk != duplicate_feeds[0].pk:
-                logging.debug(" ---> ~FRFound different feed (%s), merging %s in..." % (duplicate_feeds[0], self.pk))
-                feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
-                return feed
+            
+            for duplicate_feed in duplicate_feeds:
+                if duplicate_feed.pk != self.pk:
+                    logging.debug(" ---> ~FRFound different feed (%s), merging %s in..." % (duplicate_feeds[0], self.pk))
+                    feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
+                    return feed
+            else:
+                logging.debug(" ---> ~FRFeed is its own dupe? %s == %s" % (self, duplicate_feeds))
+        except DatabaseError, e:
+            logging.debug(" ---> ~FBFeed update failed, no change: %s / %s..." % (kwargs.get('update_fields', None), e))
+            pass
         
         return self
     
@@ -371,17 +376,26 @@ class Feed(models.Model):
         return bool(not (self.favicon_not_found or self.favicon_color))
         
     @classmethod
-    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
         feed = None
+        without_rss = False
         
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
+        if url and re.match('(https?://)?twitter.com/\w+/?$', url):
+            without_rss = True
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
+            without_rss = True
         if url and 'youtube.com/channel/' in url:
             channel_id = re.search('youtube.com/channel/([-_\w]+)', url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
+            without_rss = True
+        if url and 'youtube.com/feeds' in url:
+            without_rss = True
+        if url and 'youtube.com/playlist' in url:
+            without_rss = True
             
         def criteria(key, value):
             if aggressive:
@@ -429,6 +443,11 @@ class Feed(models.Model):
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
                     feed = cls.objects.create(feed_address=feed_finder_url)
                     feed = feed.update()
+            elif without_rss:
+                logging.debug(" ---> Found without_rss feed: %s" % (url))
+                feed = cls.objects.create(feed_address=url)
+                feed = feed.update(requesting_user_id=user.pk if user else None)
+                
         
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):
@@ -676,7 +695,8 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
         total_key = "s:%s" % self.original_feed_id
         premium_key = "sp:%s" % self.original_feed_id
-        last_recount = r.zscore(total_key, -1)
+        last_recount = r.zscore(total_key, -1) # Need to subtract this extra when counting subs
+        last_recount = r.zscore(premium_key, -1) # Need to subtract this extra when counting subs
 
         # Check for expired feeds with no active users who would have triggered a cleanup
         if last_recount and last_recount > subscriber_expire:
@@ -692,7 +712,7 @@ class Feed(models.Model):
     def count_subscribers(self, recount=True, verbose=False):
         if recount or not self.counts_converted_to_redis:
             from apps.profile.models import Profile
-            Profile.count_feed_subscribers(feed_id=self.original_feed_id)
+            Profile.count_feed_subscribers(feed_id=self.pk)
         SUBSCRIBER_EXPIRE_DATE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         subscriber_expire = int(SUBSCRIBER_EXPIRE_DATE.strftime('%s'))
         now = int(datetime.datetime.now().strftime('%s'))
@@ -722,18 +742,18 @@ class Feed(models.Model):
 
                 results = pipeline.execute()
             
-                # -1 due to key=-1 signaling counts_converted_to_redis
-                total += results[0]
-                active += results[1]
-                premium += results[2]
-                active_premium += results[3]
+                # -1 due to counts_converted_to_redis using key=-1 for last_recount date
+                total += max(0, results[0] - 1)
+                active += max(0, results[1] - 1)
+                premium += max(0, results[2] - 1)
+                active_premium += max(0, results[3] - 1)
                 
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
             original_premium_subscribers = self.premium_subscribers
             original_active_premium_subscribers = self.active_premium_subscribers
-            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
-                          (self.title[:30], total, active, premium, active_premium))
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s ~SN~FC%s" % 
+                          (self.title[:30], total, active, premium, active_premium, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
         else:
             from apps.reader.models import UserSubscription
             
@@ -1032,6 +1052,7 @@ class Feed(models.Model):
             'debug': kwargs.get('debug'),
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
+            'requesting_user_id': kwargs.get('requesting_user_id', None)
         }
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
@@ -1867,6 +1888,10 @@ class FeedData(models.Model):
             super(FeedData, self).save(*args, **kwargs)
         except (IntegrityError, OperationError):
             if hasattr(self, 'id') and self.id: self.delete()
+        except DatabaseError, e:
+            # Nothing updated
+            logging.debug(" ---> ~FRNothing updated in FeedData (%s): %s" % (self.feed, e))
+            pass
 
 
 class MFeedIcon(mongo.Document):
@@ -2720,7 +2745,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         return original_feed_id
     
     heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
-    branched_original = original_feed.branch_from_feed
+    branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
     if (heavier_dupe or branched_original) and not force:
         original_feed, duplicate_feed = duplicate_feed, original_feed
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id

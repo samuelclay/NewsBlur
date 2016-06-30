@@ -60,7 +60,7 @@
 #import "NSString+HTML.h"
 #import "UIView+ViewController.h"
 #import "NBURLCache.h"
-#import "NBActivityItemProvider.h"
+#import "NBActivityItemSource.h"
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
 #import "UIViewController+HidePopover.h"
@@ -623,12 +623,8 @@
         text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
     }
 
-    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-//    if (title) [activityItems addObject:title];
-//    if (url) [activityItems addObject:url];
-//    if (text) [activityItems addObject:text];
-    NBActivityItemProvider *activityItemProvider = [[NBActivityItemProvider alloc] initWithUrl:url authorName:authorName text:text title:title feedTitle:feedTitle];
-    [activityItems addObject:activityItemProvider];
+    NBActivityItemSource *activityItemSource = [[NBActivityItemSource alloc] initWithUrl:url authorName:authorName text:text title:title feedTitle:feedTitle];
+    NSArray *activityItems = @[activityItemSource, url];
 
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
@@ -3140,6 +3136,11 @@
 }
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
+    if (self.feedsViewController.isOffline) {
+        if (callback) callback();
+        return;
+    }
+    
     if (self.hasQueuedReadStories || forceCheck) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                  (unsigned long)NULL), ^(void) {

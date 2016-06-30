@@ -85,6 +85,8 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
             } else if (data.status == 503) {
                 message = "NewsBlur is in maintenance mode. <br> Try again soon.";
                 this.show_maintenance_page();
+            } else if (data.status == 429) {
+                message = "You're being rate limited.<br> Try again soon, but not too soon.";
             }
             NEWSBLUR.assets.flags['no_more_stories'] = true;
             NEWSBLUR.app.story_titles.end_loading();

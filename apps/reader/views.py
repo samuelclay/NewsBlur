@@ -5,6 +5,7 @@ import redis
 import requests
 import random
 import zlib
+import re
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -58,7 +59,7 @@ from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.view_functions import required_params
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
-
+from vendor import tweepy
 
 BANNED_URLS = [
     "brentozar.com",
@@ -747,7 +748,8 @@ def load_single_feed(request, feed_id):
     
     # if page <= 3:
     #     import random
-    #     time.sleep(random.randint(2, 4))
+    #     time.sleep(random.randint(2, 7) / 10.0)
+    #     # time.sleep(random.randint(2, 14))
     
     # if page == 2:
     #     assert False
@@ -1799,20 +1801,37 @@ def add_url(request):
     elif any([(banned_url in url) for banned_url in BANNED_URLS]):
         code = -1
         message = "The publisher of this website has banned NewsBlur."
-    else:
-        if new_folder:
-            usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
-            usf.add_folder(folder, new_folder)
-            folder = new_folder
+    elif re.match('(https?://)?twitter.com/\w+/?$', url):
+        if not request.user.profile.is_premium:
+            message = "You must be a premium subscriber to add Twitter feeds."
+            code = -1
+        else:
+            # Check if Twitter API is active for user
+            ss = MSocialServices.get_user(request.user.pk)
+            try:
+                if not ss.twitter_uid:
+                    raise tweepy.TweepError("No API token")
+                ss.twitter_api().me()
+            except tweepy.TweepError, e:
+                code = -1
+                message = "Your Twitter connection isn't setup. Go to Manage - Friends and reconnect Twitter."
+    
+    if code == -1:
+        return dict(code=code, message=message)
 
-        code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
-                                                             folder=folder, auto_active=auto_active,
-                                                             skip_fetch=skip_fetch)
-        feed = us and us.feed
-        if feed:
-            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-            r.publish(request.user.username, 'reload:%s' % feed.pk)
-            MUserSearch.schedule_index_feeds_for_search(feed.pk, request.user.pk)
+    if new_folder:
+        usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
+        usf.add_folder(folder, new_folder)
+        folder = new_folder
+
+    code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
+                                                         folder=folder, auto_active=auto_active,
+                                                         skip_fetch=skip_fetch)
+    feed = us and us.feed
+    if feed:
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(request.user.username, 'reload:%s' % feed.pk)
+        MUserSearch.schedule_index_feeds_for_search(feed.pk, request.user.pk)
         
     return dict(code=code, message=message, feed=feed)
 

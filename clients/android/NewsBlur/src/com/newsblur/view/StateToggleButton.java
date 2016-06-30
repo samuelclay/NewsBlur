@@ -47,12 +47,20 @@ public class StateToggleButton extends LinearLayout {
 		View view = inflater.inflate(R.layout.state_toggle, this);
         ButterKnife.bind(this, view);
 
-        // this just smooths out toggle transitions on newer devices
+        // smooth layout transitions are enabled in our layout XML; this smooths out toggle
+        // transitions on newer devices
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             allButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
             someButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
             focusButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
             savedButton.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        } else {
+            // however, layout transitions are so buggy on 14/15 devices, just don't even try
+            this.setLayoutTransition(null);
+            someButton.setLayoutTransition(null);
+            focusButton.setLayoutTransition(null);
+            savedButton.setLayoutTransition(null);
+            allButton.setLayoutTransition(null);
         }
 
 		setState(state);

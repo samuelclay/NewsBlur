@@ -56,9 +56,14 @@ class EmailNewsletter:
                 feed_address=feed_address,
                 folder='Newsletters'
             )
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(user.username, 'reload:feeds')            
         
         story_hash = MStory.ensure_story_hash(params['signature'], feed.pk)
-        story_content = self._get_content(params)
+        story_content = self.get_content(params)
+        plain_story_content = self.get_content(params, force_plain=True)
+        if len(plain_story_content) > len(story_content):
+            story_content = plain_story_content
         story_content = self._clean_content(story_content)
         story_params = {
             "story_feed_id": feed.pk,
@@ -121,9 +126,14 @@ class EmailNewsletter:
         
         logging.user(user, "~BB~FM~SBSending first newsletter email to: %s" % user.email)
         
+<<<<<<< HEAD
     
     def _user_from_email(self, email):
         tokens = re.search('(\w+)\+(\w+)@newsletters.newsblur.com', email)
+=======
+    def user_from_email(self, email):
+        tokens = re.search('(\w+)[\+\-\.](\w+)@newsletters.newsblur.com', email)
+>>>>>>> master
         if not tokens:
             return
         
@@ -153,11 +163,13 @@ class EmailNewsletter:
         
         return sender_name, sender_username, sender_domain
     
-    def _get_content(self, params):
-        if 'body-html' in params:
+    def _get_content(self, params, force_plain=False):
+        if 'body-enriched' in params and not force_plain:
+            return params['body-enriched']
+        if 'body-html' in params and not force_plain:
             return params['body-html']
-        if 'stripped-html' in params:
-            return linkify(linebreaks(params['stripped-html']))
+        if 'stripped-html' in params and not force_plain:
+            return params['stripped-html']
         if 'body-plain' in params:
             return linkify(linebreaks(params['body-plain']))
     

@@ -8,6 +8,7 @@ import mongoengine as mongo
 import random
 import requests
 import HTMLParser
+import tweepy
 from collections import defaultdict
 from BeautifulSoup import BeautifulSoup
 from mongoengine.queryset import Q
@@ -26,7 +27,6 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.rss_feeds.page_importer import PageImporter
 from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
-from vendor import tweepy
 from vendor import appdotnet
 from vendor import pynliner
 from utils import log as logging
@@ -2757,7 +2757,8 @@ class MSocialServices(mongo.Document):
             api = self.twitter_api()
             api.update_status(status=message)
         except tweepy.TweepError, e:
-            print e
+            user = User.objects.get(pk=self.user_id)
+            logging.user(user, "~FRTwitter error: ~SB%s" % e)
             return
             
         return True
