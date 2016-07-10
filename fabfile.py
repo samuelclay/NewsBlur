@@ -1690,3 +1690,6 @@ def upgrade_to_virtualenv(role=None):
 def stress_test():
     sudo('apt-get install -y sysbench')
     run('sysbench --test=cpu --cpu-max-prime=20000 run')
+    run('sysbench --test=fileio --file-total-size=150G prepare')
+    run('sysbench --test=fileio --file-total-size=150G --file-test-mode=rndrw --init-rng=on --max-time=300 --max-requests=0 run')
+    run('sysbench --test=fileio --file-total-size=150G cleanup')
