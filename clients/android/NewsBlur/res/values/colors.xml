@@ -2,14 +2,19 @@
 <resources>
 
     <color name="white">#FFF</color>
-    <color name="darkgray">#434343</color>
-    <color name="midgray">#898989</color>
-    <color name="lightgray">#ccc</color>
+    <color name="gray13">#212121</color>
+    <color name="gray20">#333333</color>
+    <color name="gray55">#8C8C8C</color>
+    <color name="gray80">#CCCCCC</color>
+    <color name="gray90">#E6E6E6</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
 
-    <color name="bar_background">#E3E6E0</color>
-    <color name="dark_bar_background">#212121</color>
+    <color name="bar_background">@color/gray90</color>
+    <color name="dark_bar_background">@color/gray13</color>
+
+    <color name="text">@color/gray20</color>
+    <color name="dark_text">@color/gray80</color>
 
     <color name="folder_background_end">#E9EBE4</color>
     <color name="folder_background_start">#DDE0D7</color>

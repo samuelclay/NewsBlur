@@ -78,6 +78,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            float textSize = PrefsUtils.getListTextSize(getActivity());
+            adapter.setTextSize(textSize);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 		sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);

@@ -30,7 +30,7 @@ public class ThemeUtils {
 
     public static int getProfileActivitiesContentColor(Context context) {
         if (PrefsUtils.isLightThemeSelected(context)) {
-            return getColor(context, R.color.darkgray);
+            return getColor(context, R.color.text);
         } else {
             return getColor(context, R.color.white);
         }
@@ -38,9 +38,9 @@ public class ThemeUtils {
 
     public static int getProfileActivitiesQuoteColor(Context context) {
         if (PrefsUtils.isLightThemeSelected(context)) {
-            return getColor(context, R.color.midgray);
+            return getColor(context, R.color.gray55);
         } else {
-            return getColor(context, R.color.lightgray);
+            return getColor(context, R.color.gray80);
         }
     }
 }

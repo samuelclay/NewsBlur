@@ -7,14 +7,14 @@
 
     <style name="classifyDialog" parent="@android:style/Theme.Dialog">
         <item name="android:background">@color/bar_background</item>
-        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textColor">@color/text</item>
         <item name="android:textSize">15sp</item>
         <item name="android:padding">10dp</item>
     </style>
 
     <style name="darkClassifyDialog" parent="@android:style/Theme.Dialog">
         <item name="android:background">@color/dark_bar_background</item>
-        <item name="android:textColor">@color/lightgray</item>
+        <item name="android:textColor">@color/dark_text</item>
         <item name="android:textSize">15sp</item>
         <item name="android:padding">10dp</item>
     </style>
@@ -93,7 +93,7 @@
 
     <style name="defaultText">
         <item name="android:textColorLink">@color/linkblue</item>
-        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <style name="defaultText.dark">
@@ -168,7 +168,7 @@
     </style>
 
     <style name="tag">
-        <item name="android:textColor">@color/midgray</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:background">@drawable/tag_background_neutral</item>
     </style>
 
@@ -178,11 +178,21 @@
     </style>
 
     <style name="storyButtons">
-        <item name="android:textColor">@color/half_darkgray</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="storyButtons.dark">
-        <item name="android:textColor">@color/story_buttons_dark</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:background">@drawable/button_background_dark</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="shareBarBackground">
@@ -194,7 +204,7 @@
     </style>
 
     <style name="shareBarText">
-        <item name="android:textColor">@color/midgray</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:shadowColor">@color/white</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">1</item>
@@ -202,7 +212,7 @@
     </style>
 
     <style name="shareBarText.dark">
-        <item name="android:textColor">@color/midgray</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">0</item>
         <item name="android:shadowRadius">0</item>
@@ -210,22 +220,22 @@
 
     <style name="commentsHeader">
         <item name="android:background">@drawable/gradient_background_default</item>
-        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <style name="commentsHeader.dark">
         <item name="android:background">@drawable/dark_gradient_background_default</item>
-        <item name="android:textColor">@color/midgray</item>
+        <item name="android:textColor">@color/gray55</item>
     </style>
 
     <style name="activityDetailsPager">
         <item name="android:background">@drawable/gradient_background_default</item>
-        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <style name="activityDetailsPager.dark">
         <item name="android:background">@drawable/dark_gradient_background_default</item>
-        <item name="android:textColor">@color/lightgray</item>
+        <item name="android:textColor">@color/dark_text</item>
     </style>
 
     <style name="folderBorderTop">
@@ -254,7 +264,7 @@
 
     <style name="profileCount">
         <item name="android:background">@color/item_background</item>
-        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <style name="profileCount.dark">
@@ -289,21 +299,21 @@
     </style>
 
     <style name="explainerText">
-        <item name="android:textColor">@color/midgray</item>
+        <item name="android:textColor">@color/gray55</item>
     </style>
 
     <style name="explainerText.dark">
-        <item name="android:textColor">@color/lightgray</item>
+        <item name="android:textColor">@color/dark_text</item>
     </style>
 
     <style name="toggleText">
-        <item name="android:textColor">@color/midgray</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="toggleText.dark">
-        <item name="android:textColor">@color/midgray</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
     </style>

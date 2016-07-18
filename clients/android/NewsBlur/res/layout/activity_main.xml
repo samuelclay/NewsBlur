@@ -171,14 +171,14 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:background="@color/midgray"
+        android:background="@color/gray55"
         android:layout_above="@id/swipe_container" />
 
     <!-- feedintelligenceselector_border -->
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:background="@color/midgray"
+        android:background="@color/gray55"
         android:layout_below="@id/swipe_container" />
 
     <TextView
