@@ -939,7 +939,7 @@ def setup_postgres(standby=False):
     sudo('apt-get update')
     sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
     put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    put('config/postgresql_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
+    put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
@@ -961,12 +961,17 @@ def copy_postgres_to_standby(master='db01'):
     
     # Make sure you can ssh from master to slave and back with the postgres user account.
     # Need to give postgres accounts keys in authroized_keys.
-
-    # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
-    # sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.4/main postgres@%s:/var/lib/postgresql/9.4/ --exclude postmaster.pid\"' % slave, pty=False)
-    # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
-
-    # sudo('su postgres -c "pg_basebackup -h %s -D /var/lib/postgresql/9.4/main -v -P -X fetch"' % master)
+    
+    # new: sudo su postgres
+    #    : ssh-keygen
+    # Copy old:/var/lib/postgresql/.ssh/id_dsa.pub to new:/var/lib/postgresql/.ssh/authorized_keys and vice-versa
+    # new: ssh old
+    # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
+    # new: sudo su postgres -c "rsync -a --stats --progress postgres@db01:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"
+    # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
+    
+    # Don't forget to add 'setup_postgres_backups' to new
+    
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     
 def setup_mongo():
