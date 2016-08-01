@@ -1100,13 +1100,14 @@ def copy_munin_data(from_server):
     sudo('/etc/init.d/nginx reload')
 
     run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/var/lib/munin/ /srv/munin" % from_server)
+    sudo('rm -fr /var/lib/bak-munin')
     sudo("mv /var/lib/munin /var/lib/bak-munin")
     sudo("mv /srv/munin /var/lib/")
     sudo("chown munin.munin -R /var/lib/munin")
 
-    # run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/etc/munin/ /srv/munin-etc" % from_server)
-    # sudo("mv /srv/munin-etc /etc/munin")
-    # sudo("chown munin.munin -R /etc/munin")
+    run("sudo rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/etc/munin/ /srv/munin-etc" % from_server)
+    sudo("mv /srv/munin-etc /etc/munin")
+    sudo("chown munin.munin -R /etc/munin")
 
     sudo("/etc/init.d/munin restart")
     sudo("/etc/init.d/munin-node restart")
