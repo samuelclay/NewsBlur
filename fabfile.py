@@ -963,7 +963,7 @@ def copy_postgres_to_standby(master='db01'):
     # Need to give postgres accounts keys in authroized_keys.
     
     # new: sudo su postgres
-    #    : ssh-keygen
+    # new: ssh-keygen
     # Copy old:/var/lib/postgresql/.ssh/id_dsa.pub to new:/var/lib/postgresql/.ssh/authorized_keys and vice-versa
     # new: ssh old
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
