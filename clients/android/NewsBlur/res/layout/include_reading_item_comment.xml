@@ -12,14 +12,14 @@
 
         <Button
             android:id="@+id/share_story_button"
-            android:layout_width="175dp"
+            android:layout_width="170dp"
             android:layout_height="36dp"
             style="?storyButtons"
             android:text="@string/share_this" />
         
         <Button
             android:id="@+id/save_story_button"
-            android:layout_width="175dp"
+            android:layout_width="170dp"
             android:layout_height="36dp"
             style="?storyButtons"
             android:text="@string/save_this" />
