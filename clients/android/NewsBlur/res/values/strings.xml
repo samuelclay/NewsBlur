@@ -111,8 +111,8 @@
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_original">View original</string>
-    <string name="menu_send_story">Send to…</string>
-    <string name="menu_send_story_full">Send full story to…</string>
+    <string name="menu_send_story">Send link to…</string>
+    <string name="menu_send_story_full">Send story to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
     <string name="menu_unfollow">Unfollow user</string>
