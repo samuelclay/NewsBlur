@@ -257,6 +257,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		if (cursor != null) {
             if (NBSyncService.ResetSession) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
+                triggerRefresh(1, 0);
                 return;
             }
             cursorSeenYet = true;
