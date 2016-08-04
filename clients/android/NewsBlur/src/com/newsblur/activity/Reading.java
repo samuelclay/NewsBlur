@@ -45,6 +45,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.ThemeUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.util.VolumeKeyNavigation;
@@ -538,7 +539,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
+        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? ThemeUtils.getSelectorOverlayBackgroundRight(this) : ThemeUtils.getSelectorOverlayBackgroundRightDone(this));
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
@@ -561,10 +562,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 ReadingItemFragment item = getReadingFragment();
                 if (item == null) return;
                 if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
-                    overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
+                    overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundText(Reading.this));
                     overlayText.setText(R.string.overlay_text);
                 } else {
-                    overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
+                    overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundStory(Reading.this));
                     overlayText.setText(R.string.overlay_story);
                 }
             }

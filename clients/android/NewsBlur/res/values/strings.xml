@@ -95,8 +95,8 @@
     <string name="profile_shared_story">shared</string>
     <string name="profile_comment">comment</string>
     <string name="profile_reply">reply</string>
-    <string name="profile_button_follow">Follow</string>
-    <string name="profile_button_unfollow">Following</string>
+    <string name="profile_button_follow">FOLLOW</string>
+    <string name="profile_button_unfollow">FOLLOWING</string>
     <string name="profile_subscribed_to">subscribed to</string>
     <string name="profile_saved">saved</string>
     <string name="profile_reshared">re-shared</string>

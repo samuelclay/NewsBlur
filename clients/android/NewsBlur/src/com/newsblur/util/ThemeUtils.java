@@ -43,4 +43,36 @@ public class ThemeUtils {
             return getColor(context, R.color.gray80);
         }
     }
+
+    public static int getSelectorOverlayBackgroundText(Context context) {
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return R.drawable.selector_overlay_bg_text;
+        } else {
+            return R.drawable.selector_overlay_bg_dark_text;
+        }
+    }
+
+    public static int getSelectorOverlayBackgroundStory(Context context) {
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return R.drawable.selector_overlay_bg_story;
+        } else {
+            return R.drawable.selector_overlay_bg_dark_story;
+        }
+    }
+    
+    public static int getSelectorOverlayBackgroundRight(Context context) {
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return R.drawable.selector_overlay_bg_right;
+        } else {
+            return R.drawable.selector_overlay_bg_dark_right;
+        }
+    }
+
+    public static int getSelectorOverlayBackgroundRightDone(Context context) {
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return R.drawable.selector_overlay_bg_right_done;
+        } else {
+            return R.drawable.selector_overlay_bg_dark_right_done;
+        }
+    }
 }
