@@ -116,8 +116,6 @@
     <color name="status_overlay_text">#CCFFFFFF</color>
     <color name="status_overlay_background">#AA777777</color>
 
-    <color name="story_buttons_dark">#90928b</color>
-
     <color name="bg_midgray">#55898989</color>
 
     <color name="refresh_1">#c56125</color>
