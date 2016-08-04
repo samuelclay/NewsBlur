@@ -110,7 +110,7 @@ public class NBSyncService extends Service {
     private static FeedSet ResetFeed;
 
     /** Flag to reset the reading session table. */
-    private static boolean ResetSession = false;
+    public static boolean ResetSession = false;
 
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
