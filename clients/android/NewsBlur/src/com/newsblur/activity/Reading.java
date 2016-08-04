@@ -64,6 +64,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /** special value for starting story hash that jumps to the first unread. */
     public static final String FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD";
 
+    private static final float OVERLAY_ELEVATION_DP = 1.5f;
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
 
@@ -162,6 +163,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         this.overlayRangeBotPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP);
 
         this.pageHistory = new ArrayList<Story>();
+
+        ViewUtils.setViewElevation(overlayLeft, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayRight, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayText, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlaySend, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayProgress, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayProgressLeft, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayProgressRight, OVERLAY_ELEVATION_DP);
 
         // this likes to default to 'on' for some platforms
         enableProgressCircle(overlayProgressLeft, false);

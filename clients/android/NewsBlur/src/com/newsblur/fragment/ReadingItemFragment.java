@@ -181,16 +181,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
         Reading activity = (Reading) getActivity();
 
-        // the share/save buttons us compound drawables for layout speed, but they
-        // cannot correctly compute padding.  hard resize the icons to use padding.
-        /*int iconSizePx = UIUtils.dp2px(activity, 30);
-        Drawable shareButtonIcon = shareButton.getCompoundDrawables()[0];
-        shareButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
-        shareButton.setCompoundDrawables(shareButtonIcon, null, null, null);
-        Drawable saveButtonIcon = saveButton.getCompoundDrawables()[0];
-        saveButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
-        saveButton.setCompoundDrawables(saveButtonIcon, null, null, null);*/
-
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
         web.setWebviewWrapperLayout(fragmentScrollview);

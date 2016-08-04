@@ -71,6 +71,11 @@ public class UIUtils {
 		return (int) (dp * scale + 0.5f);
 	}
 
+	public static float dp2px(Context context, float dp) {
+		float scale = context.getResources().getDisplayMetrics().density;
+		return dp * scale;
+	}
+
     public static float px2dp(Context context, int px) {
         return ((float) px) / context.getResources().getDisplayMetrics().density;
     }
