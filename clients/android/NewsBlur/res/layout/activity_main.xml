@@ -79,7 +79,7 @@
             android:layout_width="34dp"
             android:layout_height="34dp"
             android:layout_margin="8dp"
-            android:background="@drawable/ic_menu_profile"
+            android:background="@drawable/ic_menu_profile_gray55"
             android:contentDescription="@string/menu_profile"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true" />
@@ -112,7 +112,7 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_margin="4dp"
-        android:background="@drawable/ic_menu_add"
+        android:background="@drawable/ic_menu_add_gray55"
         android:contentDescription="@string/menu_add_feed"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true" />

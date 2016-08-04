@@ -12,5 +12,5 @@
         android:title="@string/menu_textsize"/>
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
-          android:showAsAction="ifRoom" android:icon="@drawable/search" />
+          android:showAsAction="ifRoom" android:icon="@drawable/ic_menu_search_gray55" />
 </menu>
