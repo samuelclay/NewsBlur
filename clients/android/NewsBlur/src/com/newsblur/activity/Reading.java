@@ -45,6 +45,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.ThemeUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.util.VolumeKeyNavigation;
@@ -63,6 +64,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     /** special value for starting story hash that jumps to the first unread. */
     public static final String FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD";
 
+    private static final float OVERLAY_ELEVATION_DP = 1.5f;
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
 
@@ -161,6 +163,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         this.overlayRangeBotPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP);
 
         this.pageHistory = new ArrayList<Story>();
+
+        ViewUtils.setViewElevation(overlayLeft, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayRight, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayText, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlaySend, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayProgress, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayProgressLeft, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(overlayProgressRight, OVERLAY_ELEVATION_DP);
 
         // this likes to default to 'on' for some platforms
         enableProgressCircle(overlayProgressLeft, false);
@@ -538,7 +548,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
+        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? ThemeUtils.getSelectorOverlayBackgroundRight(this) : ThemeUtils.getSelectorOverlayBackgroundRightDone(this));
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
@@ -561,10 +571,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 ReadingItemFragment item = getReadingFragment();
                 if (item == null) return;
                 if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
-                    overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
+                    overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundText(Reading.this));
                     overlayText.setText(R.string.overlay_text);
                 } else {
-                    overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
+                    overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundStory(Reading.this));
                     overlayText.setText(R.string.overlay_story);
                 }
             }

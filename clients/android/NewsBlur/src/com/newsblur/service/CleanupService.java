@@ -2,6 +2,8 @@ package com.newsblur.service;
 
 import android.util.Log;
 
+import com.newsblur.util.AppConstants;
+import com.newsblur.util.FileCache;
 import com.newsblur.util.ImageCache;
 import com.newsblur.util.PrefsUtils;
 
@@ -19,14 +21,22 @@ public class CleanupService extends SubService {
 
         gotWork();
 
-        // do cleanup
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up old stories");
         parent.dbHelper.cleanupVeryOldStories();
         if (!PrefsUtils.isKeepOldStories(parent)) {
             parent.dbHelper.cleanupReadStories();
         }
+
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up old story texts");
         parent.dbHelper.cleanupStoryText();
+
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up image cache");
         ImageCache imageCache = new ImageCache(parent);
         imageCache.cleanup(parent.dbHelper.getAllStoryImages());
+
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up icon cache");
+        FileCache iconCache = new FileCache(parent);
+        iconCache.cleanup();
 
         PrefsUtils.updateLastCleanupTime(parent);
     }

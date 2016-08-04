@@ -137,7 +137,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             if (v == null) v = inflater.inflate(R.layout.row_read_stories, null, false);
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_stories, null, false);
-            ((TextView) v.findViewById(R.id.row_foldersum)).setText(Integer.toString(savedStoriesTotalCount));
+            TextView savedSum = ((TextView) v.findViewById(R.id.row_foldersum));
+            if (savedStoriesTotalCount > 0) {
+                savedSum.setVisibility(View.VISIBLE);
+                savedSum.setText(Integer.toString(savedStoriesTotalCount));
+            } else {
+                savedSum.setVisibility(View.GONE);
+            }
 		} else {
 			if (v == null) v = inflater.inflate(R.layout.row_folder, parent, false);
             String folderName = activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition));

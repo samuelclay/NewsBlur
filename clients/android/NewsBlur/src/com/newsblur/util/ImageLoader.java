@@ -29,7 +29,7 @@ public class ImageLoader {
 
 	public ImageLoader(Context context) {
 		fileCache = new FileCache(context);
-		executorService = Executors.newFixedThreadPool(5);
+		executorService = Executors.newFixedThreadPool(2);
 	}
 	
 	public void displayImage(String url, ImageView imageView) {

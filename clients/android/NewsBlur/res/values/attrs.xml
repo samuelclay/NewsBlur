@@ -19,6 +19,7 @@
     <attr name="rowItemFeedHeader" format="string" />
     <attr name="readingItemMetadata" format="string" />
     <attr name="tag" format="string" />
+    <attr name="actionButtons" format="string" />
     <attr name="storyButtons" format="string" />
     <attr name="shareBarBackground" format="string" />
     <attr name="shareBarText" format="string" />
@@ -33,6 +34,12 @@
     <attr name="activityDetailsPager" format="string" />
     <attr name="explainerText" format="string" />
     <attr name="toggleText" format="string" />
+    <attr name="selectorOverlayBackgroundLeft" format="string" />
+    <attr name="selectorOverlayBackgroundRight" format="string" />
+    <attr name="selectorOverlayBackgroundRightDone" format="string" />
+    <attr name="selectorOverlayBackgroundSend" format="string" />
+    <attr name="selectorOverlayBackgroundStory" format="string" />
+    <attr name="selectorOverlayBackgroundText" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />

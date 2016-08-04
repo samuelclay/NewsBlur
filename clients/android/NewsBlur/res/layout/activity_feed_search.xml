@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:text="@string/empty_search_notice"
-        android:textColor="@color/darkgray"
+        android:textColor="@color/text"
         android:textSize="13sp"
         android:textStyle="italic" />
     

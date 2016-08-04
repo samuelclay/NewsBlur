@@ -20,6 +20,7 @@
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader</item>
         <item name="readingItemMetadata">@style/readingItemMetadata</item>
         <item name="tag">@style/tag</item>
+        <item name="actionButtons">@style/actionButtons</item>
         <item name="storyButtons">@style/storyButtons</item>
         <item name="shareBarBackground">@style/shareBarBackground</item>
         <item name="shareBarText">@style/shareBarText</item>
@@ -34,6 +35,12 @@
         <item name="activityDetailsPager">@style/activityDetailsPager</item>
         <item name="explainerText">@style/explainerText</item>
         <item name="toggleText">@style/toggleText</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -56,6 +63,7 @@
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader.dark</item>
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
         <item name="tag">@style/tag.dark</item>
+        <item name="actionButtons">@style/actionButtons.dark</item>
         <item name="storyButtons">@style/storyButtons.dark</item>
         <item name="shareBarBackground">@style/shareBarBackground.dark</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
@@ -70,5 +78,11 @@
         <item name="activityDetailsPager">@style/activityDetailsPager.dark</item>
         <item name="explainerText">@style/explainerText.dark</item>
         <item name="toggleText">@style/toggleText.dark</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.dark</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.dark</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.dark</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend.dark</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
     </style>
 </resources>

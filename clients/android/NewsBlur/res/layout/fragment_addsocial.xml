@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:text="@string/connect_with_your_friends"
-        android:textColor="@color/darkgray"
+        android:textColor="@color/text"
         android:textSize="18sp"
         android:gravity="center" />
 
@@ -79,7 +79,7 @@
         android:layout_marginTop="30dp"
         android:textSize="16sp"
         android:text="@string/auto_follow_friends"
-        android:textColor="@color/darkgray" />
+        android:textColor="@color/text" />
 
     <CheckBox
         android:id="@+id/addsocial_autofollow_checkbox"

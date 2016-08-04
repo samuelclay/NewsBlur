@@ -3,9 +3,10 @@ package com.newsblur.util;
 import java.io.File;
 
 import android.content.Context;
-import android.util.Log;
 
 public class FileCache {
+
+    private static final long MAX_FILE_AGE_MILLIS = 30L * 24L * 60L * 60L * 1000L;
 
 	private File cacheDir;
 
@@ -23,14 +24,25 @@ public class FileCache {
 		return f;
 	}
 
-	public void clear() {
-		final File[] files = cacheDir.listFiles();
-		if (files != null) {
-			for (final File f : files) {
-				f.delete();
-			}
-		}
-	}
+    /**
+     * Clean up any very old cached icons in the current cache dir.  This should be
+     * done periodically so that new favicons are picked up and ones from removed
+     * feeds don't clog up the system.
+     */
+    public void cleanup() {
+        try {
+            File[] files = cacheDir.listFiles();
+            if (files == null) return;
+            for (File f : files) {
+                long timestamp = f.lastModified();
+                if (System.currentTimeMillis() > (timestamp + MAX_FILE_AGE_MILLIS)) {
+                    f.delete();
+                }
+            }
+        } catch (Exception e) {
+            android.util.Log.e(FileCache.class.getName(), "exception cleaning up icon cache", e);
+        }
+    }
 
     /**
      * Looks for and cleans up any remains of the old, mis-located legacy cache directory.
@@ -46,7 +58,7 @@ public class FileCache {
             }
             dir.delete();
         } catch (Exception e) {
-            Log.e(FileCache.class.getName(), "exception cleaning up legacy cache", e);
+            android.util.Log.e(FileCache.class.getName(), "exception cleaning up legacy cache", e);
         }
     }
 }

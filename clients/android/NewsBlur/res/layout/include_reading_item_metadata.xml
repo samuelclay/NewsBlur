@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@id/row_item_feed_header"
-            android:background="@color/darkgray"/>
+            android:background="@color/gray55"/>
 
         <TextView
             android:id="@+id/reading_item_title"

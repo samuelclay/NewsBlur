@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+<item>
+    <shape android:shape="rectangle">
+        <corners 
+            android:bottomRightRadius="20dp"
+            android:bottomLeftRadius="2dp"
+            android:topLeftRadius="2dp"
+            android:topRightRadius="20dp"/>
+        <solid android:color="@color/col_button_background_pressed" />
+    </shape>
+</item>
+
+<item
+    android:drawable="@drawable/ic_arrow_forward_gray46"
+    android:bottom="12dp"
+    android:left="92dp"
+    android:right="12dp"
+    android:top="12dp"/>
+
+</layer-list>

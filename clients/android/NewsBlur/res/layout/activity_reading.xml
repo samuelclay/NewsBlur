@@ -19,73 +19,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingBottom="4dp"
+    <Button
+        android:id="@+id/reading_overlay_text"
+        android:layout_width="110dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" >
+        android:layout_alignParentLeft="true" 
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/overlay_text"
+        android:textSize="14sp"
+        android:paddingLeft="10dp"
+        style="?selectorOverlayBackgroundText"
+        android:onClick="overlayText" />
 
-        <Button
-            android:id="@+id/reading_overlay_text"
-            android:layout_width="110.6dp"
-            android:layout_height="40dp"
-            android:background="@drawable/selector_overlay_bg_text"
-            android:text="@string/overlay_text"
-            android:textColor="@color/half_darkgray"
-            android:textSize="14sp"
-            android:gravity="left|center_vertical"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:paddingLeft="40dp"
-            android:paddingRight="6dp"
-            android:onClick="overlayText" />
-
-        <Button
-            android:id="@+id/reading_overlay_send"
-            android:layout_width="51.8dp"
-            android:layout_height="40dp"
-            android:background="@drawable/selector_overlay_bg_send"
-            android:textSize="14sp"
-            android:padding="6dp"
-            android:layout_marginLeft="1dp"
-            android:onClick="overlaySend" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingRight="8dp"
-        android:paddingBottom="4dp"
+    <Button
+        android:id="@+id/reading_overlay_send"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" >
+        android:layout_toRightOf="@id/reading_overlay_text"
+        android:layout_marginLeft="2dp"
+        android:layout_marginBottom="4dp"
+        style="?selectorOverlayBackgroundSend"
+        android:onClick="overlaySend" />
 
-        <Button
-            android:id="@+id/reading_overlay_left"
-            android:layout_width="50.6dp"
-            android:layout_height="40dp"
-            android:background="@drawable/selector_overlay_bg_left"
-            android:textSize="14sp"
-            android:padding="6dp"
-            android:layout_marginRight="1dp"
-            android:onClick="overlayLeft" />
+    <Button
+        android:id="@+id/reading_overlay_right"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" 
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/overlay_next"
+        android:textSize="14sp"
+        style="?selectorOverlayBackgroundRight"
+        android:onClick="overlayRight" />
 
-        <Button
-            android:id="@+id/reading_overlay_right"
-            android:layout_width="122.4dp"
-            android:layout_height="40dp"
-            android:background="@drawable/selector_overlay_bg_right"
-            android:text="@string/overlay_next"
-            android:textColor="@color/half_darkgray"
-            android:textSize="14sp"
-            android:padding="6dp"
-            android:onClick="overlayRight" />
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/reading_overlay_left"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/reading_overlay_right"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="4dp"
+        style="?selectorOverlayBackgroundLeft"
+        android:onClick="overlayLeft" />
 
     <com.newsblur.view.ProgressCircle
         android:id="@+id/reading_overlay_progress"

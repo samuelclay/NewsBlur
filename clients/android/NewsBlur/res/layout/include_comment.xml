@@ -103,7 +103,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="4dp"
                 android:layout_toRightOf="@id/comment_user_image"
-                android:textColor="@color/lightgray"
+                android:textColor="@color/gray80"
                 android:textSize="12sp"
                 />
 

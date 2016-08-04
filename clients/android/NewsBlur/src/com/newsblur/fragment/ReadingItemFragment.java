@@ -181,16 +181,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
         Reading activity = (Reading) getActivity();
 
-        // the share/save buttons us compound drawables for layout speed, but they
-        // cannot correctly compute padding.  hard resize the icons to use padding.
-        int iconSizePx = UIUtils.dp2px(activity, 30);
-        Drawable shareButtonIcon = shareButton.getCompoundDrawables()[0];
-        shareButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
-        shareButton.setCompoundDrawables(shareButtonIcon, null, null, null);
-        Drawable saveButtonIcon = saveButton.getCompoundDrawables()[0];
-        saveButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
-        saveButton.setCompoundDrawables(saveButtonIcon, null, null, null);
-
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
         web.setWebviewWrapperLayout(fragmentScrollview);
@@ -325,7 +315,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         feedHeaderBorder.setBackgroundColor(Color.parseColor(feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
-            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.darkgray));
+            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
             itemFeed.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_white));
         } else {
             itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.white));
@@ -691,10 +681,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
 				break;
 			case Classifier.CLEAR_DISLIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.darkgray));
+				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
 				break;
 			case Classifier.CLEAR_LIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.darkgray));
+				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
 				break;
 			}
 			break;
