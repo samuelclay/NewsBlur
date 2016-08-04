@@ -854,15 +854,15 @@ public class NBSyncService extends Service {
 
     public static String getSyncStatusMessage(Context context, boolean brief) {
         if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
-        if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
+        if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
+        if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
         if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
-        if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
         if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
         if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
-        if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
         if (!AppConstants.VERBOSE_LOG) return null;
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         return null;
