@@ -381,11 +381,11 @@ public class DatabaseConstants {
         case ALL:
             return null; // don't filter
         case SOME:
-            return "((" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0)";
+            return FEED_ACTIVE + " = 'true' AND ((" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0)";
         case BEST:
-            return "(" + FEED_POSITIVE_COUNT + " > 0)";
+            return FEED_ACTIVE + " = 'true' AND (" + FEED_POSITIVE_COUNT + " > 0)";
         case SAVED:
-            return null; // due to API structure, we can't filter for saveds, so the caller will have to sort that out
+            return FEED_ACTIVE + " = 'true'"; // due to API structure, we can't filter for saveds, so the caller will have to sort that out
         default:
             return null;
         }

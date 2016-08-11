@@ -69,6 +69,8 @@ public class UnreadsService extends SubService {
             String feedId = entry.getKey();
             // ignore unreads from orphaned feeds
             if (parent.orphanFeedIds.contains(feedId)) continue feedloop;
+            // ignore unreads from disabled feeds
+            if (parent.disabledFeedIds.contains(feedId)) continue feedloop;
             for (String[] newUnread : entry.getValue()) {
                 // only fetch the reported unreads if we don't already have them
                 if (!oldUnreadHashes.contains(newUnread[0])) {
