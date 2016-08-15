@@ -136,7 +136,7 @@ def pre_process_story(entry, encoding):
             elif 'image' in media_type and media_url:
                 entry['story_content'] += """<br><br><img src="%s" />"""  % media_url
                 continue
-            elif media_content.get('rel') == 'alternative' or 'text' in media_content.get('type'):
+            elif media_content.get('rel', '') == 'alternative' or 'text' in media_content.get('type', ''):
                 continue
             elif media_type_name in ['application']:
                 continue
