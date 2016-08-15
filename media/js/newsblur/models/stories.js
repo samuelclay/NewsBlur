@@ -41,9 +41,10 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return _.string.prune(_.string.trim(content), length || 150, "...");
     },
     
-    image_url: function() {
-        if (this.get('image_urls').length) {
-            return this.get('image_urls')[0];
+    image_url: function(index) {
+        if (!index) index = 0;
+        if (this.get('image_urls').length >= index+1) {
+            return this.get('image_urls')[index];
         }
     },
     

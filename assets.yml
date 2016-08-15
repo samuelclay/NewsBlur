@@ -69,6 +69,7 @@ javascripts:
         - media/js/vendor/bootstrap-transition.js
         - media/js/vendor/highlight.js
         - media/js/vendor/fitvid.js
+        - media/js/vendor/imagesLoaded-*.js
         - media/js/newsblur/reader/reader_utils.js
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/reader_popover.js
