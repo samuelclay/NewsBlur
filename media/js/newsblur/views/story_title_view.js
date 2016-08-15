@@ -262,7 +262,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var $img = $("<img>");
         $img.imagesLoaded(function() {
             // console.log(["Loaded", index, $img[0].width, $img.attr('src'), self.model.get('story_title').substr(0, 30)]);
-            if ($img[0].width > 60) {
+            if ($img[0].width > 60 && $img[0].height > 60) {
                 self.$(".NB-storytitles-story-image").css({
                     'background-image': "none, url(\'" + $img.attr('src') + "\')",
                     'display': 'block'
