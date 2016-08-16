@@ -3,7 +3,6 @@ package com.newsblur.domain;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.Serializable;
 
@@ -84,7 +83,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 			cursor.moveToFirst();
 		}
 		Feed feed = new Feed();
-		feed.active = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)));
+		feed.active = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)).equals("1");
 		feed.address = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
 		feed.faviconColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
         feed.faviconFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
