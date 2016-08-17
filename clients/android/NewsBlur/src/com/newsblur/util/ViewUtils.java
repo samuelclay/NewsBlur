@@ -30,7 +30,7 @@ public class ViewUtils {
 		image.setMaxWidth(imageLength);
 		
 		image.setLayoutParams(imageParameters);
-		FeedUtils.imageLoader.displayImage(photoUrl, image, 10f);
+		FeedUtils.imageLoader.displayImage(photoUrl, image, 10f, false);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

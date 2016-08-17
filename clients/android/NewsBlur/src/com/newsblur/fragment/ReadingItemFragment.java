@@ -326,7 +326,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
 		} else {
-			FeedUtils.imageLoader.displayImage(feedIconUrl, feedIcon, false);
+			FeedUtils.imageLoader.displayImage(feedIconUrl, feedIcon, 0, false);
 			itemFeed.setText(feedTitle);
 		}
 

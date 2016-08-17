@@ -107,7 +107,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
             String faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
-            FeedUtils.imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), false);
+            FeedUtils.imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), 0, false);
             ((TextView) v.findViewById(R.id.row_item_feedtitle)).setText(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE)));
         } else {
             v.findViewById(R.id.row_item_feedicon).setVisibility(View.GONE);
@@ -172,6 +172,19 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
         if (!PrefsUtils.isShowContentPreviews(context)) {
             itemContent.setVisibility(View.GONE);
+        }
+
+
+        ImageView thumbnailView = ((ImageView) v.findViewById(R.id.row_item_thumbnail));
+        if (PrefsUtils.isShowContentPreviews(context)) {
+            if (story.thumbnailUrl != null ) {
+                thumbnailView.setVisibility(View.VISIBLE);
+                FeedUtils.imageLoader.displayImage(story.thumbnailUrl, thumbnailView, 0, true);
+            } else {
+                thumbnailView.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            thumbnailView.setVisibility(View.GONE);
         }
 	}
 

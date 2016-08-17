@@ -9,11 +9,14 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -32,33 +35,29 @@ public class UIUtils {
 
     private UIUtils() {} // util class - no instances
 	
-	/*
-	 * Based on the RoundedCorners code from Square / Eric Burke's "Android UI" talk 
-	 * and the GitHub Android code.
-	 * https://github.com/github/android
-	 */
-	
-	public static Bitmap roundCorners(Bitmap source, final float radius) {
-        int width = source.getWidth();
-        int height = source.getHeight();
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(WHITE);
-
-        Bitmap clipped = Bitmap.createBitmap(width, height, ARGB_8888);
-        Canvas canvas = new Canvas(clipped);
-        canvas.drawRoundRect(new RectF(0, 0, width, height), radius, radius, paint);
-        paint.setXfermode(new PorterDuffXfermode(DST_IN));
-        
-        Bitmap rounded = Bitmap.createBitmap(width, height, ARGB_8888);
-        canvas = new Canvas(rounded);
-        canvas.drawBitmap(source, 0, 0, null);
-        canvas.drawBitmap(clipped, 0, 0, paint);
-
-        clipped.recycle();
-
-        return rounded;
+	public static Bitmap clipAndRound(Bitmap source, float radius, boolean clipSquare) {
+        Bitmap result = source;
+        if (clipSquare) {
+            int width = result.getWidth();
+            int height = result.getHeight();
+            int newSize = Math.min(width, height);
+            int x = (width-newSize) / 2;
+            int y = (height-newSize) / 2;
+            result = Bitmap.createBitmap(result, x, y, newSize, newSize);
+        }
+        if (radius > 0f) {
+            int width = result.getWidth();
+            int height = result.getHeight();
+            Bitmap canvasMap = Bitmap.createBitmap(width, height, ARGB_8888);
+            Canvas canvas = new Canvas(canvasMap);
+            BitmapShader shader = new BitmapShader(result, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setShader(shader);
+            canvas.drawRoundRect(0, 0, width, height, radius, radius, paint);
+            result = canvasMap;
+        }
+        return result;
     }
 	
 	/*
@@ -99,7 +98,7 @@ public class UIUtils {
      */
     public static void setCustomActionBar(Activity activity, String imageUrl, String title) { 
         ImageView iconView = setupCustomActionbar(activity, title);
-        FeedUtils.imageLoader.displayImage(imageUrl, iconView, false);
+        FeedUtils.imageLoader.displayImage(imageUrl, iconView, 0, false);
     }
 
     public static void setCustomActionBar(Activity activity, int imageId, String title) { 
