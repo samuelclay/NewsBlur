@@ -176,7 +176,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
 
         ImageView thumbnailView = ((ImageView) v.findViewById(R.id.row_item_thumbnail));
-        if (PrefsUtils.isShowContentPreviews(context)) {
+        if (PrefsUtils.isShowThumbnails(context)) {
             if (story.thumbnailUrl != null ) {
                 thumbnailView.setVisibility(View.VISIBLE);
                 FeedUtils.imageLoader.displayImage(story.thumbnailUrl, thumbnailView, 0, true);
