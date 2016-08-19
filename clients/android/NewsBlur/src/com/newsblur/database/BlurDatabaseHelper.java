@@ -288,6 +288,16 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
+    public Set<String> getAllStoryThumbnails() {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_THUMBNAIL_URL}, null, null, null, null, null);
+        Set<String> urls = new HashSet<String>(c.getCount());
+        while (c.moveToNext()) {
+            urls.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_THUMBNAIL_URL)));
+        }
+        c.close();
+        return urls;
+    }
+
     public void insertStories(StoriesResponse apiResponse, boolean forImmediateReading) {
         StateFilter intelState = PrefsUtils.getStateFilter(context);
         synchronized (RW_MUTEX) {

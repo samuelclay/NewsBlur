@@ -142,6 +142,9 @@ public class UnreadsService extends SubService {
                         parent.imagePrefetchService.addUrl(url);
                     }
                 }
+                if (story.thumbnailUrl != null) {
+                    parent.imagePrefetchService.addThumbnailUrl(story.thumbnailUrl);
+                }
                 DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(parent, story.feedId);
                 if (mode == DefaultFeedView.TEXT) {
                     parent.originalTextService.addHash(story.storyHash);

@@ -39,7 +39,7 @@ public class CleanupService extends SubService {
 
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up thumbnail cache");
         FileCache thumbCache = FileCache.asThumbnailCache(parent);
-        // TODO iconCache.cleanupUnusedOrOld();
+        thumbCache.cleanupUnusedOrOld(parent.dbHelper.getAllStoryThumbnails());
 
         PrefsUtils.updateLastCleanupTime(parent);
     }
