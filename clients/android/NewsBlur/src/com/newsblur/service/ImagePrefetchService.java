@@ -3,7 +3,7 @@ package com.newsblur.service;
 import android.util.Log;
 
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.ImageCache;
+import com.newsblur.util.FileCache;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.Collections;
@@ -14,7 +14,7 @@ public class ImagePrefetchService extends SubService {
 
     private static volatile boolean Running = false;
 
-    ImageCache imageCache;
+    FileCache storyImageCache;
 
     /** URLs of images contained in recently fetched stories that are candidates for prefetch. */
     static Set<String> ImageQueue;
@@ -22,7 +22,7 @@ public class ImagePrefetchService extends SubService {
 
     public ImagePrefetchService(NBSyncService parent) {
         super(parent);
-        imageCache = new ImageCache(parent);
+        storyImageCache = FileCache.asStoryImageCache(parent);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ImagePrefetchService extends SubService {
                     // dont fetch the image if the associated story was marked read before we got to it
                     if (unreadImages.contains(url)) {
                         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetching image: " + url);
-                        imageCache.cacheImage(url);
+                        storyImageCache.cacheFile(url);
                     }
                     fetchedImages.add(url);
                 }

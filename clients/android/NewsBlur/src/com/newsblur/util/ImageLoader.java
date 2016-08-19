@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Process;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -22,40 +23,54 @@ import com.newsblur.network.APIConstants;
 
 public class ImageLoader {
 
-	private final MemoryCache memoryCache = new MemoryCache();
+	private final MemoryCache memoryCache;
 	private final FileCache fileCache;
 	private final ExecutorService executorService;
-	private final Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+    private final int emptyRID;
+    private final int minImgHeight;
 
-	public ImageLoader(Context context) {
-		fileCache = new FileCache(context);
+    // some image loads can happen after the imageview in question is already reused for some other image. keep
+    // track of what image each view wants so that when it comes time to load them, they aren't stale
+	private final Map<ImageView, String> imageViewMappings = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+
+	private ImageLoader(FileCache fileCache, int emptyRID, int minImgHeight, long memoryCacheSize) {
+        this.memoryCache = new MemoryCache(memoryCacheSize);
+		this.fileCache = fileCache;
 		executorService = Executors.newFixedThreadPool(2);
+        this.emptyRID = emptyRID;
+        this.minImgHeight = minImgHeight;
 	}
+
+    public static ImageLoader asIconLoader(Context context) {
+        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, 2, (Runtime.getRuntime().maxMemory()/50));
+    }
+
+    public static ImageLoader asThumbnailLoader(Context context) {
+        return new ImageLoader(FileCache.asThumbnailCache(context), android.R.color.transparent, 32, (Runtime.getRuntime().maxMemory()/5));
+    }
 	
 	public void displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
         if (url == null) {
-			imageView.setImageResource(R.drawable.world);
+			imageView.setImageResource(emptyRID);
             return;
         }
 
-		imageViews.put(imageView, url);
+        if (url.startsWith("/")) {
+            url = APIConstants.NEWSBLUR_URL + url;
+        }
+
+		imageViewMappings.put(imageView, url);
         PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare);
 
         // try from memory
 		Bitmap bitmap = memoryCache.get(url);
-        // try from file
-		if (bitmap == null) {
-			File f = fileCache.getFile(url);
-			bitmap = decodeBitmap(f);
-		}
 
 		if (bitmap != null) {
-            // if already loaded, set immediately
             setViewImage(bitmap, photoToLoad);
 		} else {
             // if not loaded, fetch and set in background
             executorService.submit(new PhotosLoader(photoToLoad));
-			imageView.setImageResource(R.drawable.world);
+			imageView.setImageResource(emptyRID);
 		}
 	}
 	
@@ -81,62 +96,26 @@ public class ImageLoader {
 
 		@Override
 		public void run() {
-			if (imageViewReused(photoToLoad)) {
-				return;
-			}
-			
-			Bitmap bmp = null;
-            String url = photoToLoad.url;
-
-            File f = fileCache.getFile(url);
-            Bitmap bitmap = decodeBitmap(f);
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
             
-            if (bitmap != null) {
-                memoryCache.put(url, bitmap);			
-                bmp = bitmap;
-            } else {
-                FileInputStream fis = null;
-                try {
-                    if (url.startsWith("/")) {
-                        url = APIConstants.NEWSBLUR_URL + url;
-                    }
-                    long bytesRead = NetworkUtils.loadURL(new URL(url), f);
-                    if (bytesRead == 0) bmp = null;
-
-                    fis = new FileInputStream(f);
-                    bitmap = BitmapFactory.decodeStream(fis);
-                    memoryCache.put(url, bitmap);
-                    if (bitmap == null) bmp = null;
-                    bmp = bitmap;
-                } catch (Exception e) {
-                    Log.e(this.getClass().getName(), "Error loading image from network: " + url, e);
-                    bmp = null;
-                } finally {
-                    if (fis != null) {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
-                    }
-                }
+            File f = fileCache.getCachedFile(photoToLoad.url);
+            Bitmap bitmap = decodeBitmap(f);
+            if (bitmap == null) {
+                fileCache.cacheFile(photoToLoad.url);
+                f = fileCache.getCachedFile(photoToLoad.url);
+                bitmap = decodeBitmap(f);
             }
 
-			memoryCache.put(photoToLoad.url, bmp);
-			if (imageViewReused(photoToLoad)) {
-				return;
-			}
-			
-            setViewImage(bmp, photoToLoad);
+            if (bitmap != null) {
+                memoryCache.put(photoToLoad.url, bitmap);			
+                setViewImage(bitmap, photoToLoad);
+            }
 		}
 	}
 
-	private boolean imageViewReused(PhotoToLoad photoToLoad){
-		final String tag = imageViews.get(photoToLoad.imageView);
-		return (tag == null || !tag.equals(photoToLoad.url));
-	}
-
     private void setViewImage(Bitmap bitmap, PhotoToLoad photoToLoad) {
+        if (bitmap == null) return;
+        if (bitmap.getHeight() < minImgHeight) return;
         BitmapDisplayer bitmapDisplayer = new BitmapDisplayer(bitmap, photoToLoad);
         Activity a = (Activity) photoToLoad.imageView.getContext();
         a.runOnUiThread(bitmapDisplayer);
@@ -151,13 +130,14 @@ public class ImageLoader {
 			photoToLoad = p;
 		}
 		public void run() {
-			if (imageViewReused(photoToLoad)) {
-				return;
-			} else if (bitmap != null) {
+            // ensure this imageview even still wants this image
+            String latestMappedUrl = imageViewMappings.get(photoToLoad.imageView);
+            if (latestMappedUrl == null || !latestMappedUrl.equals(photoToLoad.url)) return;
+			if (bitmap != null) {
                 bitmap = UIUtils.clipAndRound(bitmap, photoToLoad.roundRadius, photoToLoad.cropSquare);
 				photoToLoad.imageView.setImageBitmap(bitmap);
 			} else {
-				photoToLoad.imageView.setImageResource(R.drawable.world);
+				photoToLoad.imageView.setImageResource(emptyRID);
 			}
 		}
 	}

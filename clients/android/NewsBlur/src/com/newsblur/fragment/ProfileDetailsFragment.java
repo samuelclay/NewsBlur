@@ -99,7 +99,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		followingCount.setText("" + user.followingCount);
 		
 		if (!viewingSelf) {
-			FeedUtils.imageLoader.displayImage(user.photoUrl, imageView, 5, false);
+			FeedUtils.iconLoader.displayImage(user.photoUrl, imageView, 5, false);
 			if (user.followedByYou) {
 				unfollowButton.setVisibility(View.VISIBLE);
 				followButton.setVisibility(View.GONE);

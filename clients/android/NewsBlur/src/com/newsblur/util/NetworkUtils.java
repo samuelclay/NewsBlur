@@ -45,8 +45,12 @@ public class NetworkUtils {
             Response response = ImageFetchHttpClient.newCall(requestBuilder.build()).execute();
             if (response.isSuccessful()) {
                 BufferedSink sink = Okio.buffer(Okio.sink(file));
-                bytesRead = sink.writeAll(response.body().source());
-                sink.close();
+                try {
+                    bytesRead = sink.writeAll(response.body().source());
+                } finally {
+                    sink.close();
+                    response.close();
+                }
             }
         } catch (Throwable t) {
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
