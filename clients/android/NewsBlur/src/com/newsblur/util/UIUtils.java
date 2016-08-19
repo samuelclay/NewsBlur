@@ -35,6 +35,7 @@ public class UIUtils {
 
     private UIUtils() {} // util class - no instances
 	
+    @SuppressWarnings("deprecation")
 	public static Bitmap clipAndRound(Bitmap source, float radius, boolean clipSquare) {
         Bitmap result = source;
         if (clipSquare) {
@@ -45,7 +46,7 @@ public class UIUtils {
             int y = (height-newSize) / 2;
             result = Bitmap.createBitmap(result, x, y, newSize, newSize);
         }
-        if (radius > 0f) {
+        if ((radius > 0f) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
             int width = result.getWidth();
             int height = result.getHeight();
             Bitmap canvasMap = Bitmap.createBitmap(width, height, ARGB_8888);
