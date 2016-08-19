@@ -292,7 +292,10 @@ public class BlurDatabaseHelper {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_THUMBNAIL_URL}, null, null, null, null, null);
         Set<String> urls = new HashSet<String>(c.getCount());
         while (c.moveToNext()) {
-            urls.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_THUMBNAIL_URL)));
+            String url = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_THUMBNAIL_URL));
+            if (url != null) {
+                urls.add(url);
+            }
         }
         c.close();
         return urls;
