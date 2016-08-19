@@ -147,6 +147,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setImageAlpha(255);
 			((ImageView) v.findViewById(R.id.row_item_inteldot)).setImageAlpha(255);
+			((ImageView) v.findViewById(R.id.row_item_thumbnail)).setImageAlpha(255);
 			borderOne.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
@@ -160,6 +161,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setImageAlpha(READ_STORY_ALPHA_B255);
 			((ImageView) v.findViewById(R.id.row_item_inteldot)).setImageAlpha(READ_STORY_ALPHA_B255);
+			((ImageView) v.findViewById(R.id.row_item_thumbnail)).setImageAlpha(READ_STORY_ALPHA_B255);
 			borderOne.getBackground().setAlpha(READ_STORY_ALPHA_B255);
 			borderTwo.getBackground().setAlpha(READ_STORY_ALPHA_B255);
 		}
