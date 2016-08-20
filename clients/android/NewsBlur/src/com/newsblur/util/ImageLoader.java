@@ -36,13 +36,13 @@ public class ImageLoader {
 	private ImageLoader(FileCache fileCache, int emptyRID, int minImgHeight, long memoryCacheSize) {
         this.memoryCache = new MemoryCache(memoryCacheSize);
 		this.fileCache = fileCache;
-		executorService = Executors.newFixedThreadPool(2);
+		executorService = Executors.newFixedThreadPool(3);
         this.emptyRID = emptyRID;
         this.minImgHeight = minImgHeight;
 	}
 
     public static ImageLoader asIconLoader(Context context) {
-        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, 2, (Runtime.getRuntime().maxMemory()/50));
+        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, 2, (Runtime.getRuntime().maxMemory()/20));
     }
 
     public static ImageLoader asThumbnailLoader(Context context) {
