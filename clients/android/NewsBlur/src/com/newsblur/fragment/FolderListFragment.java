@@ -229,6 +229,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+        int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 
 		switch(type) {
@@ -248,6 +249,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_choose_folders);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
+
+                Feed feed = adapter.getFeed(groupPosition, childPosition);
+                if (feed.active) {
+                    menu.removeItem(R.id.menu_unmute_feed);
+                } else {
+                    menu.removeItem(R.id.menu_mute_feed);
+                }
             }
 			break;
 		}
