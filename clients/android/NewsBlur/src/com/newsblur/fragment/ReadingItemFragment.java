@@ -43,7 +43,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ImageCache;
+import com.newsblur.util.FileCache;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
@@ -326,7 +326,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
 		} else {
-			FeedUtils.imageLoader.displayImage(feedIconUrl, feedIcon, false);
+			FeedUtils.iconLoader.displayImage(feedIconUrl, feedIcon, 0, false);
 			itemFeed.setText(feedTitle);
 		}
 
@@ -597,12 +597,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     }
 
     private String swapInOfflineImages(String html) {
-        ImageCache cache = new ImageCache(getActivity());
-
         Matcher imageTagMatcher = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
         while (imageTagMatcher.find()) {
             String url = imageTagMatcher.group(2);
-            String localPath = cache.getCachedLocation(url);
+            String localPath = FeedUtils.storyImageCache.getCachedLocation(url);
             if (localPath == null) continue;
             html = html.replace(imageTagMatcher.group(1)+"\""+url+"\"", "src=\""+localPath+"\"");
             imageUrlRemaps.put(localPath, url);

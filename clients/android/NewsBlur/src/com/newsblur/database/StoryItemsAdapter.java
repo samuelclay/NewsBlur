@@ -107,7 +107,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
             String faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
-            FeedUtils.imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), false);
+            FeedUtils.iconLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), 0, false);
             ((TextView) v.findViewById(R.id.row_item_feedtitle)).setText(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE)));
         } else {
             v.findViewById(R.id.row_item_feedicon).setVisibility(View.GONE);
@@ -147,6 +147,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setImageAlpha(255);
 			((ImageView) v.findViewById(R.id.row_item_inteldot)).setImageAlpha(255);
+			((ImageView) v.findViewById(R.id.row_item_thumbnail)).setImageAlpha(255);
 			borderOne.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
@@ -160,6 +161,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setImageAlpha(READ_STORY_ALPHA_B255);
 			((ImageView) v.findViewById(R.id.row_item_inteldot)).setImageAlpha(READ_STORY_ALPHA_B255);
+			((ImageView) v.findViewById(R.id.row_item_thumbnail)).setImageAlpha(READ_STORY_ALPHA_B255);
 			borderOne.getBackground().setAlpha(READ_STORY_ALPHA_B255);
 			borderTwo.getBackground().setAlpha(READ_STORY_ALPHA_B255);
 		}
@@ -172,6 +174,19 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
         if (!PrefsUtils.isShowContentPreviews(context)) {
             itemContent.setVisibility(View.GONE);
+        }
+
+
+        ImageView thumbnailView = ((ImageView) v.findViewById(R.id.row_item_thumbnail));
+        if (PrefsUtils.isShowThumbnails(context)) {
+            if (story.thumbnailUrl != null ) {
+                thumbnailView.setVisibility(View.VISIBLE);
+                FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, thumbnailView, 0, true);
+            } else {
+                thumbnailView.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            thumbnailView.setVisibility(View.GONE);
         }
 	}
 

@@ -288,6 +288,19 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
+    public Set<String> getAllStoryThumbnails() {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_THUMBNAIL_URL}, null, null, null, null, null);
+        Set<String> urls = new HashSet<String>(c.getCount());
+        while (c.moveToNext()) {
+            String url = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_THUMBNAIL_URL));
+            if (url != null) {
+                urls.add(url);
+            }
+        }
+        c.close();
+        return urls;
+    }
+
     public void insertStories(StoriesResponse apiResponse, boolean forImmediateReading) {
         StateFilter intelState = PrefsUtils.getStateFilter(context);
         synchronized (RW_MUTEX) {
@@ -322,8 +335,10 @@ public class BlurDatabaseHelper {
                 // handle story content
                 List<ContentValues> socialStoryValues = new ArrayList<ContentValues>();
                 for (Story story : apiResponse.stories) {
+                    // pick a thumbnail for the story
+                    story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
+                    // insert the story data
                     ContentValues values = story.getValues();
-                    // immediate insert the story data
                     dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                     // if a story was shared by a user, also insert it into the social table under their userid, too
                     for (String sharedUserId : story.sharedUserIds) {

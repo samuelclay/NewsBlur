@@ -207,7 +207,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView nameView = ((TextView) v.findViewById(R.id.row_socialfeed_name));
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            FeedUtils.imageLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), false);
+            FeedUtils.iconLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), 0, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -239,7 +239,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView nameView =((TextView) v.findViewById(R.id.row_feedname));
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            FeedUtils.imageLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), false);
+            FeedUtils.iconLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), 0, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));

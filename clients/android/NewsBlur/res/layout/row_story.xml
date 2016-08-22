@@ -54,12 +54,22 @@
         style="?storyFeedTitleText" />
 
     <ImageView
+        android:id="@+id/row_item_thumbnail"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
+        android:layout_alignParentRight="true"
+        android:visibility="gone" />
+
+    <ImageView
         android:id="@+id/row_item_saved_icon"
         android:src="@drawable/clock"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/row_item_feedtitle"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@id/row_item_thumbnail"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_marginTop="2dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="8dp"
@@ -83,6 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/row_item_inteldot"
+        android:layout_toLeftOf="@id/row_item_thumbnail"
         android:layout_below="@id/row_item_title"
         android:paddingBottom="4dp"
         android:paddingRight="4dp"
@@ -94,7 +105,8 @@
         android:id="@+id/row_item_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@id/row_item_thumbnail"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_below="@id/row_item_content"
         android:paddingBottom="4dp"
         android:paddingRight="8dp"
