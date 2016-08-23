@@ -288,6 +288,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		} else if (item.getItemId() == R.id.menu_choose_folders) {
             DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
             chooseFoldersFragment.show(getFragmentManager(), "dialog");
+        } else if (item.getItemId() == R.id.menu_mute_feed) {
+            FeedUtils.muteFeed(getActivity(), adapter.getFeed(groupPosition, childPosition));
+        } else if (item.getItemId() == R.id.menu_unmute_feed) {
+            FeedUtils.unmuteFeed(getActivity(), adapter.getFeed(groupPosition, childPosition));
         }
 
 		return super.onContextItemSelected(item);

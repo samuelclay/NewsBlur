@@ -571,6 +571,15 @@ public class APIManager {
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
+    public NewsBlurResponse saveFeedChooser(Set<String> feeds) {
+        ValueMultimap values = new ValueMultimap();
+        for (String feed : feeds) {
+            values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed);
+        }
+        APIResponse response = post(APIConstants.URL_SAVE_FEED_CHOOSER, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     /* HTTP METHODS */
    
 	private APIResponse get(final String urlString) {

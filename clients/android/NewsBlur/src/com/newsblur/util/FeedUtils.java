@@ -263,6 +263,34 @@ public class FeedUtils {
         }.execute();
     }
 
+    public static void muteFeed(final Context context, final Feed feed) {
+        updateFeedActiveState(context, feed, false);
+    }
+
+    public static void unmuteFeed(final Context context, final Feed feed) {
+        updateFeedActiveState(context, feed, true);
+    }
+
+    private static void updateFeedActiveState(final Context context, final Feed feed, final boolean active) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                Set<String> activeFeeds = dbHelper.getAllActiveFeeds();
+                if (active) {
+                    activeFeeds.add(feed.feedId);
+                }
+                return apiManager.saveFeedChooser(activeFeeds);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                feed.active = active;
+                dbHelper.setFeedActive(feed.feedId, active);
+                triggerSync(context);
+            }
+        }.execute();
+    }
+
     public static FeedSet feedSetFromFolderName(String folderName) {
         return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));
     }
