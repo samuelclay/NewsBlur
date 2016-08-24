@@ -279,6 +279,8 @@ public class FeedUtils {
                 Set<String> activeFeeds = dbHelper.getAllActiveFeeds();
                 if (active) {
                     activeFeeds.add(feed.feedId);
+                } else {
+                    activeFeeds.remove(feed.feedId);
                 }
                 return apiManager.saveFeedChooser(activeFeeds);
             }
