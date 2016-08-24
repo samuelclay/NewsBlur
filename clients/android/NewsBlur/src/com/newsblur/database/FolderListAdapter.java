@@ -367,6 +367,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else {
             Feed feed = activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
             FeedSet fs = FeedSet.singleFeed(feed.feedId);
+            if (!feed.active) fs.setMuted(true);
             if (currentState == StateFilter.SAVED) fs.setFilterSaved(true);
             return fs;
 		}

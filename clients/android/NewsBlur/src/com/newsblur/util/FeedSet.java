@@ -32,6 +32,7 @@ public class FeedSet implements Serializable {
     private String folderName;
     private String searchQuery;
     private boolean isFilterSaved = false;
+    private boolean muted = false;
 
     private FeedSet() {
         // must use factory methods
@@ -225,6 +226,12 @@ public class FeedSet implements Serializable {
     public boolean isFilterSaved() {
         return this.isFilterSaved;
     }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
+
+    public boolean isMuted() { return this.muted; }
 
     /**
      * Gets a flat set of feed IDs that can be passed to API calls that take raw numeric IDs or

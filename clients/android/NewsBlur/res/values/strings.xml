@@ -152,6 +152,7 @@
     <string name="empty_list_view_loading">Loading…</string>
     <string name="empty_list_view_no_stories">No stories to read</string>
     <string name="empty_list_view_no_stories_unread">No unread stories</string>
+    <string name="empty_list_view_muted_feed">Feed is muted</string>
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
