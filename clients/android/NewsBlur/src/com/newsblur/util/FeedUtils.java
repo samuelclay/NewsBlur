@@ -288,6 +288,7 @@ public class FeedUtils {
             protected void onPostExecute(NewsBlurResponse result) {
                 feed.active = active;
                 dbHelper.setFeedActive(feed.feedId, active);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 triggerSync(context);
             }
         }.execute();
