@@ -3,7 +3,7 @@ logs/*.log.*
 logs/*.pid
 *.pyc
 static/*
-local_settings.py
+./local_settings.py
 celerybeat-schedule
 celerybeat.pid
 media/iphone/NewsBlur/build
