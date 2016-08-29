@@ -2125,14 +2125,17 @@ def feeds_trainer(request):
 def save_feed_chooser(request):
     is_premium = request.user.profile.is_premium
     approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id]
+    approve_all = False
     if not is_premium:
         approved_feeds = approved_feeds[:64]
+    elif is_premium and not approved_feeds:
+        approve_all = True
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds:
+            if sub.feed_id in approved_feeds or approve_all:
                 activated += 1
                 if not sub.active:
                     sub.active = True

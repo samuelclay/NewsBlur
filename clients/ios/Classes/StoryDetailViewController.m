@@ -35,8 +35,7 @@
 
 @interface StoryDetailViewController ()
 
-@property (nonatomic, strong) NSString *loadingHTML;
-@property (nonatomic, strong) NSURL *loadingURL;
+@property (nonatomic, strong) NSString *fullStoryHTML;
 
 @end
 
@@ -330,6 +329,16 @@
     [appDelegate hideShareView:NO];
 }
 
+- (void)loadHTMLString:(NSString *)html {
+    static NSURL *baseURL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        baseURL = [NSBundle mainBundle].bundleURL;
+    });
+
+    [self.webView loadHTMLString:html baseURL:baseURL];
+}
+
 - (void)hideNoStoryMessage {
     self.noStoryMessage.hidden = YES;
 }
@@ -495,23 +504,18 @@
                              htmlBottom
                              ];
     
-    NSString *htmlString = [htmlTop stringByAppendingString:htmlBottom];
+    NSString *htmlTopAndBottom = [htmlTop stringByAppendingString:htmlBottom];
     
 //    NSLog(@"\n\n\n\nStory html (%@):\n\n\n%@\n\n\n", self.activeStory[@"story_title"], htmlContent);
-    NSString *path = [[NSBundle mainBundle] bundlePath];
-    NSURL *baseURL = [NSURL fileURLWithPath:path];
-    
-    self.loadingURL = baseURL;
-    self.loadingHTML = htmlContent;
+    self.hasStory = NO;
+    self.fullStoryHTML = htmlContent;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.hasStory = YES;
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self.webView setMediaPlaybackRequiresUserAction:NO];
-        [self.webView loadHTMLString:htmlString baseURL:baseURL];
+        [self loadHTMLString:htmlTopAndBottom];
         [appDelegate.storyPageControl setTextButton:self];
     });
-
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
 }
@@ -587,13 +591,12 @@
         themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView%@.css\">", themeStyle];
     }
     
-    NSURL *baseURL = [NSBundle mainBundle].bundleURL;
     NSString *html = [NSString stringWithFormat:@"<html>"
                       "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\">%@</head>" // header string
                       "<body></body>"
                       "</html>", themeStyle];
-    
-    [self.webView loadHTMLString:html baseURL:baseURL];
+
+    [self loadHTMLString:html];
 }
 
 - (NSString *)getHeader {
@@ -1197,6 +1200,8 @@
     return repliesString;
 }
 
+#pragma mark - Scrolling
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqual:@"contentOffset"]) {
         if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.scrollIndicatorInsets.top)) {
@@ -1600,42 +1605,40 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
-    [self changeLineSpacing:[userPreferences stringForKey:@"story_line_spacing"]];
+    if (!self.hasStory) // other Web page loads aren't visible
+        return;
 
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-//    self.webView.hidden = NO;
-    [self.activityIndicator stopAnimating];
-    
-    if (self.loadingHTML) {
-        [self.webView loadHTMLString:self.loadingHTML baseURL:self.loadingURL];
-        self.loadingHTML = nil;
-        self.loadingURL = nil;
-    } else {
-        self.webView.hidden = NO;
-        [self.webView setNeedsDisplay];
-    }
-    
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    // DOM should already be set up here
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
     [self changeLineSpacing:[userPreferences stringForKey:@"story_line_spacing"]];
     [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.webkitTouchCallout='none';"];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [self.activityIndicator stopAnimating];
+
+    if (!self.fullStoryHTML)
+        return; // if we're loading anything other than a full story, the view will be hidden
+    
+    [self loadHTMLString:self.fullStoryHTML];
+    self.fullStoryHTML = nil;
+    self.hasStory = YES;
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 
     if ([appDelegate.storiesCollection.activeFeedStories count] &&
-        self.activeStoryId && self.hasStory) {
+        self.activeStoryId) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
             [self checkTryFeedStory];
         });
     }
 
-    if ([[self.webView stringByEvaluatingJavaScriptFromString:@"document.readyState"] isEqualToString:@"complete"]) {
-        [self scrollToLastPosition:YES];
-    }
+    [self scrollToLastPosition:YES];
+
+    self.webView.hidden = NO;
+    [self.webView setNeedsDisplay];
 }
 
 - (void)checkTryFeedStory {

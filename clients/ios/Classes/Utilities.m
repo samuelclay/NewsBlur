@@ -8,7 +8,6 @@
 
 #import "Utilities.h"
 #import <CommonCrypto/CommonCrypto.h>
-#import "TMCache.h"
 
 void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor, 
                         CGColorRef  endColor) {

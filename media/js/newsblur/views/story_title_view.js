@@ -25,7 +25,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render: function() {
         var template_name = !this.model.get('selected') && this.options.is_grid ? 
                             'grid_template' : 'template';
-        // console.log(['render story title', template_name, this.$el[0]]);
+        // console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview()]);
         this.$el.html(this[template_name]({
             story    : this.model,
             feed     : (NEWSBLUR.reader.flags.river_view || NEWSBLUR.reader.flags.social_view) &&
@@ -38,8 +38,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.toggle_classes();
         this.toggle_read_status();
         this.color_feedbar();
+        this.load_youtube_embeds();
+        var story_layout = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         if (this.options.is_grid) this.watch_grid_image();
-        if (!this.options.is_grid && this.show_image_preview()) this.watch_grid_image();
+        if (_.contains(['list'], story_layout) && this.show_image_preview()) this.watch_grid_image();
+        if (_.contains(['split'], story_layout) && this.show_image_preview() && NEWSBLUR.assets.preference('feed_view_single_story')) this.watch_grid_image();
         
         return this;
     },
@@ -232,22 +235,42 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         $inner.css('background-color', '#' + feed.get('favicon_fade'));
         $outer.css('background-color', '#' + feed.get('favicon_color'));
     },
-
-    watch_grid_image: function() {
-        var self = this;
+    
+    found_largest_image: function(image_url) {
         if (this.load_youtube_embeds()) {
             return;
         }
-        
-        $('<img>').load(function() {
-            // console.log(['Loaded', this, this.width, self.model.image_url(), self.$(".NB-storytitles-story-image")]);
-            if (this.width > 100) {
+
+        this.$(".NB-storytitles-story-image").css({
+            'background-image': "none, url(\'" + image_url + "\')",
+            'display': 'block'
+        });
+    },
+    
+    watch_grid_image: function(index) {
+        if (!index) index = 0;
+        var self = this;
+        if (!index && this.load_youtube_embeds()) {
+            return;
+        }
+        if (!this.model.image_url(index)) {
+            // console.log(["no more image urls", index, this.model.get('story_title').substr(0, 30)]);
+            return;
+        }
+        // console.log(["watch_grid_image", index, this.model.image_url(index), this.model.get('story_title').substr(0, 30)]);
+        // this.model == NEWSBLUR.assets.stories.at(5) && console.log(["Watching images", index, this.model.image_url(index), this.model.get('story_title').substr(0, 30)]);
+        var $img = $("<img>");
+        $img.imagesLoaded(function() {
+            // console.log(["Loaded", index, $img[0].width, $img.attr('src'), self.model.get('story_title').substr(0, 30)]);
+            if ($img[0].width > 60 && $img[0].height > 60) {
                 self.$(".NB-storytitles-story-image").css({
-                    'display': 'block',
-                    'background-image': "none, url(" + self.model.image_url() + ")"
+                    'background-image': "none, url(\'" + $img.attr('src') + "\')",
+                    'display': 'block'
                 });
+            } else {
+                self.watch_grid_image(index+1);
             }
-        }).attr('src', this.model.image_url()).each(function() {
+        }).attr('src', this.model.image_url(index)).each(function() {
             // fail-safe for cached images which sometimes don't trigger "load" events
             if (this.complete) $(this).load();
         });

@@ -31,14 +31,22 @@ public class FeedUtils {
     // cannot be created lazily or via static init, they have to be created when
     // the main app context is created and it offers a reference
     public static BlurDatabaseHelper dbHelper;
-    public static ImageLoader imageLoader;
+    public static ImageLoader iconLoader;
+    public static ImageLoader thumbnailLoader;
+    public static FileCache storyImageCache;
 
     public static void offerInitContext(Context context) {
         if (dbHelper == null) {
             dbHelper = new BlurDatabaseHelper(context.getApplicationContext());
         }
-        if (imageLoader == null) {
-            imageLoader = new ImageLoader(context.getApplicationContext());
+        if (iconLoader == null) {
+            iconLoader = ImageLoader.asIconLoader(context.getApplicationContext());
+        }
+        if (thumbnailLoader == null) {
+            thumbnailLoader = ImageLoader.asThumbnailLoader(context.getApplicationContext());
+        }
+        if (storyImageCache == null) {
+            storyImageCache = FileCache.asStoryImageCache(context.getApplicationContext());
         }
     }
 

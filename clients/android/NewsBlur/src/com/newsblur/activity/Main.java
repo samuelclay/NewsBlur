@@ -93,7 +93,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         Bitmap userPicture = PrefsUtils.getUserImage(this);
         if (userPicture != null) {
-            userPicture = UIUtils.roundCorners(userPicture, 5);
+            userPicture = UIUtils.clipAndRound(userPicture, 5, false);
             userImage.setImageBitmap(userPicture);
         }
         userName.setText(PrefsUtils.getUserDetails(this).username);

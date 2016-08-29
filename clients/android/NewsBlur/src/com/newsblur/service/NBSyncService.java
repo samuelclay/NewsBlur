@@ -270,13 +270,16 @@ public class NBSyncService extends Service {
             if (upgraded) {
                 HousekeepingRunning = true;
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS | NbActivity.UPDATE_REBUILD);
-                // wipe the local DB
-                dbHelper.dropAndRecreateTables();
-                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+                // wipe the local DB if this is a first background run. if this is a first foreground
+                // run, InitActivity will have wiped for us
+                if (NbActivity.getActiveActivityCount() < 1) {
+                    dbHelper.dropAndRecreateTables();
+                }
                 // in case this is the first time we have run since moving the cache to the new location,
                 // blow away the old version entirely. This line can be removed some time well after
                 // v61+ is widely deployed
-                FileCache.cleanUpOldCache(this);
+                FileCache.cleanUpOldCache1(this);
+                FileCache.cleanUpOldCache2(this);
                 PrefsUtils.updateVersion(this);
             }
 

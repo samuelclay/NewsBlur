@@ -60,6 +60,10 @@
             android:defaultValue="true"
             android:key="pref_show_content_preview"
             android:title="@string/settings_show_content_preview" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_show_thumbnails"
+            android:title="@string/settings_show_thumbnails" />
     </PreferenceCategory>
 
     <PreferenceCategory

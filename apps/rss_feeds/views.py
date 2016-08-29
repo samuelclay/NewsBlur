@@ -316,9 +316,9 @@ def exception_change_feed_address(request):
     timezone = request.user.profile.timezone
     code = -1
 
-    if (feed.has_page_exception or feed.has_feed_exception):
+    if False and (feed.has_page_exception or feed.has_feed_exception):
         # Fix broken feed
-        logging.user(request, "~FRFixing feed exception by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
+        logging.user(request, "~FRFixing feed exception by address: %s - ~SB%s~SN to ~SB%s" % (feed, feed.feed_address, feed_address))
         feed.has_feed_exception = False
         feed.active = True
         feed.fetched_once = False
@@ -400,7 +400,7 @@ def exception_change_feed_link(request):
     timezone = request.user.profile.timezone
     code = -1
     
-    if (feed.has_page_exception or feed.has_feed_exception):
+    if False and (feed.has_page_exception or feed.has_feed_exception):
         # Fix broken feed
         logging.user(request, "~FRFixing feed exception by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
         found_feed_urls = feedfinder.find_feeds(feed_link)

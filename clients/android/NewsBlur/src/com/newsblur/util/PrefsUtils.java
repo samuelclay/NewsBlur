@@ -52,7 +52,7 @@ public class PrefsUtils {
 
         String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
-            Log.i(PrefsUtils.class.getName(), "detected new version of app");
+            Log.i(PrefsUtils.class.getName(), "detected new version of app:" + version);
             return true;
         }
         return false;
@@ -509,6 +509,11 @@ public class PrefsUtils {
     public static boolean isShowContentPreviews(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
+    }
+
+    public static boolean isShowThumbnails(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS, false);
     }
 
     public static boolean isAutoOpenFirstUnread(Context context) {

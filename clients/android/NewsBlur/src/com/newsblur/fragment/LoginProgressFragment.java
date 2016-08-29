@@ -95,7 +95,7 @@ public class LoginProgressFragment extends Fragment {
 				updateStatus.startAnimation(a);
 
 				loginProfilePicture.setVisibility(View.VISIBLE);
-				loginProfilePicture.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(c), 10f));
+				loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(PrefsUtils.getUserImage(c), 10f, false));
 				feedProgress.setVisibility(View.VISIBLE);
 
 				final Animation b = AnimationUtils.loadAnimation(c, R.anim.text_up);

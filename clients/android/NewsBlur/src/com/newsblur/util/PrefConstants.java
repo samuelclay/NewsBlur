@@ -52,6 +52,7 @@ public class PrefConstants {
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
+    public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
     public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
