@@ -460,12 +460,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         while (cursor.moveToNext()) {
             Feed f = Feed.fromCursor(cursor);
             feeds.put(f.feedId, f);
-            if (f.positiveCount > 0) {
+            if (f.active && f.positiveCount > 0) {
                 int pos = checkNegativeUnreads(f.positiveCount);
                 feedPosCounts.put(f.feedId, pos);
                 totalPosCount += pos;
             }
-            if (f.neutralCount > 0) {
+            if (f.active && f.neutralCount > 0) {
                 int neut = checkNegativeUnreads(f.neutralCount);
                 feedNeutCounts.put(f.feedId, neut);
                 totalNeutCount += neut;
