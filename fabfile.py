@@ -1273,9 +1273,10 @@ def setup_do(name, size=2, image=None):
                                     region='nyc1',
                                     ssh_keys=ssh_key_ids)
     instance.create()
-    print "Booting droplet: %s/%s (size: %s)" % (instance.id, image, instance_size)
 
     instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
+    print "Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size)
+
     i = 0
     while True:
         if instance.status == 'active':
