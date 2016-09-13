@@ -229,7 +229,7 @@ static UIFont *indicatorFont = nil;
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x808080, 0xB0B0B0, 0x707070);
         } else {
             UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-            font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+            font = [UIFont fontWithDescriptor: boldFontDescriptor size:fontDescriptor.pointSize];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x606060, 0x606060, 0xD0D0D0, 0x909090);
             
         }
@@ -260,7 +260,7 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
     } else {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+        font = [UIFont fontWithDescriptor: boldFontDescriptor size:fontDescriptor.pointSize];
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xD0D0D0, 0xCCCCCC);
     }
     if (cell.highlighted || cell.selected) {
