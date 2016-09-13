@@ -22,7 +22,6 @@
 #import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "AFHTTPRequestOperation.h"
-#import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
 #import "SBJson4.h"
@@ -67,7 +66,6 @@ static UIFont *userLabelFont;
 @synthesize stillVisibleFeeds;
 @synthesize visibleFolders;
 @synthesize viewShowingAllFeeds;
-@synthesize pull;
 @synthesize lastUpdate;
 @synthesize imageCache;
 @synthesize currentRowAtIndexPath;
@@ -102,12 +100,13 @@ static UIFont *userLabelFont;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
-    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
-    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    [pull setDelegate:self];
-    [self.feedTitlesTable addSubview:pull];
-
+    
+    self.refreshControl = [UIRefreshControl new];
+    self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
+    [self.feedTitlesTable addSubview:self.refreshControl];
+    
     userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
     imageCache = [[NSCache alloc] init];
@@ -450,7 +449,6 @@ static UIFont *userLabelFont;
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [pull finishedLoading];
     
     // User clicking on another link before the page loads is OK.
     [self informError:[request error]];
@@ -471,11 +469,9 @@ static UIFont *userLabelFont;
         NSLog(@"Showing login");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] >= 400) {
-        [pull finishedLoading];
         if ([request responseStatusCode] == 429) {
             [self informError:@"Slow down. You're rate-limited."];
         } else if ([request responseStatusCode] == 503) {
-            [pull finishedLoading];
             [self informError:@"In maintenance mode"];
         } else {
             [self informError:@"The server barfed!"];
@@ -546,7 +542,6 @@ static UIFont *userLabelFont;
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
-    [pull finishedLoading];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
     if (appDelegate.activeUsername) {
@@ -1003,8 +998,8 @@ static UIFont *userLabelFont;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.intelligenceControl.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
-    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
-    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
@@ -1841,10 +1836,11 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark -
 #pragma mark PullToRefresh
 
-// called when the user pulls-to-refresh
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+- (void)refresh:(UIRefreshControl *)refreshControl {
     self.inPullToRefresh_ = YES;
     [appDelegate reloadFeedsView:NO];
+    
+    [refreshControl endRefreshing];
 }
 
 - (void)refreshFeedList {
@@ -1896,10 +1892,8 @@ heightForHeaderInSection:(NSInteger)section {
         NSLog(@"Showing login after refresh");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] == 503) {
-        [pull finishedLoading];
         return [self informError:@"In maintenance mode"];
     } else if ([request responseStatusCode] >= 500) {
-        [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }
     
@@ -1977,11 +1971,6 @@ heightForHeaderInSection:(NSInteger)section {
             [self loadFavicons];
         });
     });
-}
-
-// called when the date shown needs to be updated, optional
-- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
-    return self.lastUpdate;
 }
 
 - (void)resetToolbar {

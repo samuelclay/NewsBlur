@@ -10,7 +10,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "FolderTitleView.h"
 #import "ASIHTTPRequest.h"
-#import "PullToRefreshView.h"
 #import "BaseViewController.h"
 #import "NBNotifier.h"
 #import "IASKAppSettingsViewController.h"
@@ -20,7 +19,7 @@
 
 @interface NewsBlurViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
-UIAlertViewDelegate, PullToRefreshViewDelegate,
+UIAlertViewDelegate,
 ASIHTTPRequestDelegate, NSCacheDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,
@@ -35,7 +34,6 @@ UIGestureRecognizerDelegate> {
     BOOL isOffline;
     BOOL viewShowingAllFeeds;
     BOOL interactiveFeedDetailTransition;
-    PullToRefreshView *pull;
     NSDate *lastUpdate;
     NSCache *imageCache;
     
@@ -72,7 +70,7 @@ UIGestureRecognizerDelegate> {
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, readwrite) BOOL interactiveFeedDetailTransition;
 @property (nonatomic, readwrite) BOOL isOffline;
-@property (nonatomic) PullToRefreshView *pull;
+@property (nonatomic) UIRefreshControl *refreshControl;
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
@@ -115,12 +113,10 @@ UIGestureRecognizerDelegate> {
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)refreshFeedList;
 - (void)refreshFeedList:(id)feedId;
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (void)loadOfflineFeeds:(BOOL)failed;
 - (void)showUserProfile;
 - (IBAction)showSettingsPopover:(id)sender;
 - (IBAction)showInteractionsPopover:(id)sender;
-- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)fadeSelectedCell;
 - (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;
