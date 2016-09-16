@@ -59,7 +59,7 @@ from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.view_functions import required_params
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
-from vendor import tweepy
+import tweepy
 
 BANNED_URLS = [
     "brentozar.com",

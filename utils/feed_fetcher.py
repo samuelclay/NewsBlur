@@ -34,7 +34,7 @@ from django.utils.html import linebreaks
 from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
-from vendor import tweepy
+import tweepy
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
