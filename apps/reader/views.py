@@ -733,7 +733,7 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
     
-    data = dict(stories=stories, 
+    data = dict(stories=stories,
                 user_profiles=user_profiles,
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 
