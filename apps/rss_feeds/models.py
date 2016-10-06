@@ -1461,6 +1461,7 @@ class Feed(models.Model):
             feed_id, story_id = MStory.split_story_hash(story_hash)
             if feed_id not in popularity:
                 feed = Feed.get_by_id(feed_id)
+                if not feed: continue
                 popularity[feed_id] = {
                     'feed_title': feed.feed_title,
                     'num_subscribers': feed.num_subscribers,
