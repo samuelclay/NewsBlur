@@ -1482,13 +1482,16 @@ class Feed(models.Model):
                 if story['story_authors'] not in feed['authors']:
                     feed['authors'][story['story_authors']] = {
                         'count': 0,
-                        'tags': {}
+                        'tags': {},
+                        'story_titles': [],
                     }
                 feed['authors'][story['story_authors']]['count'] += 1
+                feed['authors'][story['story_authors']]['story_titles'].append(story['story_title'])
                 for tag in story['story_tags']:
                     if tag not in feed['authors'][story['story_authors']]['tags']:
                         feed['authors'][story['story_authors']]['tags'][tag] = 0
                     feed['authors'][story['story_authors']]['tags'][tag] += 1
+                
         
         pprint(sorted_popularity)
         
