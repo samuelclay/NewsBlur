@@ -685,7 +685,7 @@
     }
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved && ![newStory objectForKey:@"starred_date"]) {
-        [newStory setObject:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
+        [newStory setObject:[Utilities formatLongDateFromTimestamp:0] forKey:@"starred_date"];
         appDelegate.savedStoriesCount += 1;
         firstSaved = YES;
     } else if (!saved) {

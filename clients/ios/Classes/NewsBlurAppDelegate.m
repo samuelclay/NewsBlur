@@ -423,7 +423,7 @@
             user = [NSJSONSerialization
                     JSONObjectWithData:[[cursor stringForColumn:@"user_json"]
                                         dataUsingEncoding:NSUTF8StringEncoding]
-                    options:nil error:nil];
+                    options:0 error:nil];
             if (user) break;
         }
         [cursor close];
@@ -742,7 +742,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
         [self.storyPageControl becomeFirstResponder];
-    } else {
+    } else if (!self.showingSafariViewController) {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
     }
@@ -1883,7 +1883,7 @@
                 [stories addObject:[NSJSONSerialization
                                     JSONObjectWithData:[[story objectForKey:@"story_json"]
                                                         dataUsingEncoding:NSUTF8StringEncoding]
-                                    options:nil error:nil]];
+                                    options:0 error:nil]];
             }
             
             [cursor close];
@@ -1979,7 +1979,7 @@
     NSArray *feedIds = [request.userInfo objectForKey:@"feeds"];
     NSDictionary *stories = [request.userInfo objectForKey:@"stories"];
     
-    [self markStoriesRead:stories inFeeds:feedIds cutoffTimestamp:nil];
+    [self markStoriesRead:stories inFeeds:feedIds cutoffTimestamp:0];
 }
 
 - (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {

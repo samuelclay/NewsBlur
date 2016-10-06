@@ -67,6 +67,8 @@ UIActionSheetDelegate> {
 - (void)flashCheckmarkHud:(NSString *)messageType;
 - (void)scrolltoComment;
 - (void)tryScrollingDown:(BOOL)down;
+- (void)scrollPageDown:(id)sender;
+- (void)scrollPageUp:(id)sender;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)checkTryFeedStory;
@@ -98,7 +100,5 @@ UIActionSheetDelegate> {
 - (void)showStoryView;
 - (void)fetchTextView;
 - (void)finishFetchTextView:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
-
 
 @end

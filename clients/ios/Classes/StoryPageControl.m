@@ -167,7 +167,7 @@
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
-                                     style:UIBarButtonSystemItemAction
+                                     style:UIBarButtonItemStylePlain
                                      target:self
                                      action:@selector(subscribeToBlurblog)
                                      ];
@@ -1012,12 +1012,12 @@
     if (storyViewController.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
-                              forState:nil];
+                              forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
         [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
-                              forState:nil];
+                              forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
     }
 }

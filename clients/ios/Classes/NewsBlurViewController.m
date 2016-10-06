@@ -230,7 +230,7 @@ static UIFont *userLabelFont;
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
-    [self layoutHeaderCounts:nil];
+    [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
 
     self.interactiveFeedDetailTransition = NO;
@@ -766,7 +766,7 @@ static UIFont *userLabelFont;
     self.intelligenceControl.hidden = NO;
     
     [self showExplainerOnEmptyFeedlist];
-    [self layoutHeaderCounts:nil];
+    [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
@@ -830,7 +830,7 @@ static UIFont *userLabelFont;
             results = [NSJSONSerialization
                        JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
                                            dataUsingEncoding:NSUTF8StringEncoding]
-                       options:nil error:nil];
+                       options:0 error:nil];
             break;
         }
         
@@ -1007,7 +1007,7 @@ static UIFont *userLabelFont;
     barButton = self.settingsBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]] forState:UIControlStateNormal];
     
-    [self layoutHeaderCounts:nil];
+    [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
@@ -1186,7 +1186,7 @@ static UIFont *userLabelFont;
     
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
-    self.currentSection = nil;
+    self.currentSection = 0;
     
     NSString *folderName;
     if (indexPath.section == 0) {

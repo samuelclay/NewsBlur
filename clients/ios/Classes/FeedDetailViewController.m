@@ -780,7 +780,7 @@
             [offlineStories addObject:[NSJSONSerialization
                                        JSONObjectWithData:[[story objectForKey:@"story_json"]
                                                            dataUsingEncoding:NSUTF8StringEncoding]
-                                       options:nil error:nil]];
+                                       options:0 error:nil]];
         }
         [cursor close];
         
