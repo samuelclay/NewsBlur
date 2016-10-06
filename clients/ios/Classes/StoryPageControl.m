@@ -343,8 +343,15 @@
 }
 
 - (void)transitionFromFeedDetail {
-//    [self performSelector:@selector(resetPages) withObject:self afterDelay:0.5];
-    [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+        [appDelegate.navigationController
+         popToViewController:[appDelegate.navigationController.viewControllers
+                              objectAtIndex:0]
+         animated:YES];
+        [appDelegate hideStoryDetailView];
+    } else {
+        [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
