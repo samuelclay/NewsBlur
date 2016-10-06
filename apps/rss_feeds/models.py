@@ -11,6 +11,7 @@ import redis
 import pymongo
 import HTMLParser
 from collections import defaultdict
+from pprint import pprint
 from operator import itemgetter
 from bson.objectid import ObjectId
 from BeautifulSoup import BeautifulSoup
@@ -1449,6 +1450,47 @@ class Feed(models.Model):
         stories = cls.format_stories(stories_db)
         
         return stories
+    
+    @classmethod
+    def query_popularity(cls, query, limit=5000, order='newest'):
+        popularity = {}
+        
+        # Collect stories, sort by feed
+        story_ids = SearchStory.global_query(query, order=order, offset=0, limit=limit)
+        for story_hash in story_ids:
+            feed_id, story_id = MStory.split_story_hash(story_hash)
+            if feed_id not in popularity:
+                feed = Feed.get_by_id(feed_id)
+                popularity[feed_id] = {
+                    'feed_title': feed.feed_title,
+                    'num_subscribers': feed.num_subscribers,
+                    'feed_id': feed.pk,
+                    'story_ids': [],
+                    'authors': {},
+                }
+            popularity[feed_id]['story_ids'].append(story_hash)
+        
+        sorted_popularity = sorted(popularity.values(), key=lambda x: x['num_subscribers'],
+                                   reverse=True)
+        
+        # Extract story authors from feeds
+        for feed in sorted_popularity:
+            story_ids = feed['story_ids']
+            stories_db = MStory.objects(story_hash__in=story_ids)
+            stories = cls.format_stories(stories_db)
+            for story in stories:
+                if story['story_authors'] not in feed['authors']:
+                    feed['authors'][story['story_authors']] = {
+                        'count': 0,
+                        'tags': {}
+                    }
+                feed['authors'][story['story_authors']]['count'] += 1
+                for tag in story['story_tags']:
+                    if tag not in feed['authors'][story['story_authors']]['tags']:
+                        feed['authors'][story['story_authors']]['tags'][tag] = 0
+                    feed['authors'][story['story_authors']]['tags'][tag] += 1
+        
+        pprint(sorted_popularity)
         
     def find_stories(self, query, order="newest", offset=0, limit=25):
         story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,
