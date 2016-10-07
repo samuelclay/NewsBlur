@@ -1454,14 +1454,18 @@ class Feed(models.Model):
     @classmethod
     def query_popularity(cls, query, limit, order='newest'):
         popularity = {}
+        seen_feeds = set()
         
         # Collect stories, sort by feed
         story_ids = SearchStory.global_query(query, order=order, offset=0, limit=limit)
         for story_hash in story_ids:
             feed_id, story_id = MStory.split_story_hash(story_hash)
+            feed = Feed.get_by_id(feed_id)
+            if not feed: continue
+            if feed.feed_title in seen_feeds:
+                continue
+            seen_feeds.add(feed.feed_title)
             if feed_id not in popularity:
-                feed = Feed.get_by_id(feed_id)
-                if not feed: continue
                 popularity[feed_id] = {
                     'feed_title': feed.feed_title,
                     'feed_url': feed.feed_link,
