@@ -452,7 +452,7 @@ static UIFont *userLabelFont;
     
     // User clicking on another link before the page loads is OK.
     [self informError:[request error]];
-    self.inPullToRefresh_ = NO;
+    [self finishRefresh];
     
     self.isOffline = YES;
 
@@ -749,7 +749,6 @@ static UIFont *userLabelFont;
         }
         
         if (self.inPullToRefresh_) {
-            self.inPullToRefresh_ = NO;
             [self showSyncingNotifier];
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
                 [self refreshFeedList];
@@ -1839,8 +1838,11 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)refresh:(UIRefreshControl *)refreshControl {
     self.inPullToRefresh_ = YES;
     [appDelegate reloadFeedsView:NO];
-    
-    [refreshControl endRefreshing];
+}
+
+- (void)finishRefresh {
+    self.inPullToRefresh_ = NO;
+    [self.refreshControl endRefreshing];
 }
 
 - (void)refreshFeedList {
@@ -2136,6 +2138,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.notifier.title = @"All done";
     [self.notifier setProgress:0];
     [self.notifier show];
+    [self finishRefresh];
 }
 
 - (void)showSyncingNotifier:(float)progress hoursBack:(int)hours {
