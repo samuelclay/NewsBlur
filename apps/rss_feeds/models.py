@@ -1455,6 +1455,7 @@ class Feed(models.Model):
     def query_popularity(cls, query, limit, order='newest'):
         popularity = {}
         seen_feeds = set()
+        feed_title_to_id = dict()
         
         # Collect stories, sort by feed
         story_ids = SearchStory.global_query(query, order=order, offset=0, limit=limit)
@@ -1463,7 +1464,9 @@ class Feed(models.Model):
             feed = Feed.get_by_id(feed_id)
             if not feed: continue
             if feed.feed_title in seen_feeds:
-                continue
+                feed_id = feed_title_to_id[feed.feed_title]
+            else:
+                feed_title_to_id[feed.feed_title] = feed_id
             seen_feeds.add(feed.feed_title)
             if feed_id not in popularity:
                 popularity[feed_id] = {
