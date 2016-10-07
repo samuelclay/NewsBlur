@@ -16,6 +16,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        settings.LOG_TO_STREAM = True
+        # settings.LOG_TO_STREAM = True
 
-        Feed.query_popularity(options['query'], limit=options['limit'])
+        # Feed.query_popularity(options['query'], limit=options['limit'])
+        Feed.xls_query_popularity(options['query'], limit=options['limit'])

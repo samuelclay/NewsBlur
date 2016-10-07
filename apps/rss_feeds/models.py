@@ -1452,7 +1452,7 @@ class Feed(models.Model):
         return stories
     
     @classmethod
-    def query_popularity(cls, query, limit=5000, order='newest'):
+    def query_popularity(cls, query, limit, order='newest'):
         popularity = {}
         
         # Collect stories, sort by feed
@@ -1464,6 +1464,7 @@ class Feed(models.Model):
                 if not feed: continue
                 popularity[feed_id] = {
                     'feed_title': feed.feed_title,
+                    'feed_url': feed.feed_link,
                     'num_subscribers': feed.num_subscribers,
                     'feed_id': feed.pk,
                     'story_ids': [],
@@ -1482,19 +1483,83 @@ class Feed(models.Model):
             for story in stories:
                 if story['story_authors'] not in feed['authors']:
                     feed['authors'][story['story_authors']] = {
+                        'name': story['story_authors'],
                         'count': 0,
                         'tags': {},
-                        'story_titles': [],
+                        'stories': [],
                     }
-                feed['authors'][story['story_authors']]['count'] += 1
-                feed['authors'][story['story_authors']]['story_titles'].append(story['story_title'])
+                authors = feed['authors'][story['story_authors']]
+                authors['count'] += 1
+                authors['stories'].append({
+                    'title': story['story_title'],
+                    'url': story['story_permalink'],
+                    'date': story['story_date'],
+                })
                 for tag in story['story_tags']:
-                    if tag not in feed['authors'][story['story_authors']]['tags']:
-                        feed['authors'][story['story_authors']]['tags'][tag] = 0
-                    feed['authors'][story['story_authors']]['tags'][tag] += 1
+                    if tag not in authors['tags']:
+                        authors['tags'][tag] = 0
+                    authors['tags'][tag] += 1
+            sorted_authors = sorted(feed['authors'].values(), key=lambda x: x['count'])
+            feed['authors'] = sorted_authors
                 
-        
         pprint(sorted_popularity)
+        return sorted_popularity
+            
+    def well_read_score(self):
+        # Average percentage of stories read vs published across recently active subscribers
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    
+    @classmethod
+    def xls_query_popularity(cls, queries, limit):
+        import xlsxwriter
+        workbook = xlsxwriter.Workbook('NewsBlurPopularity.xlsx')
+        bold = workbook.add_format({'bold': 1})
+        date_format = workbook.add_format({'num_format': 'mmm d yyyy'})
+        if isinstance(queries, str):
+            queries = [q.strip() for q in queries.split(',')]
+            
+        for query in queries:
+            worksheet = workbook.add_worksheet(query)
+            row = 1
+            col = 0
+            worksheet.write(0, col,   'Feed', bold)
+            worksheet.write(0, col+1, 'Feed URL', bold)
+            worksheet.write(0, col+2, 'Subscribers', bold)
+            worksheet.write(0, col+3, 'Author', bold)
+            worksheet.write(0, col+4, 'Story Title', bold)
+            worksheet.write(0, col+5, 'Story URL', bold)
+            worksheet.write(0, col+6, 'Story Date', bold)
+            worksheet.write(0, col+7, 'Tag', bold)
+            worksheet.write(0, col+8, 'Tag Count', bold)
+            worksheet.set_column(col, col,   15)
+            worksheet.set_column(col+1, col+1, 20)
+            worksheet.set_column(col+2, col+2, 8)
+            worksheet.set_column(col+3, col+3, 15)
+            worksheet.set_column(col+4, col+4, 30)
+            worksheet.set_column(col+5, col+5, 20)
+            worksheet.set_column(col+6, col+6, 10)
+            worksheet.set_column(col+7, col+7, 15)
+            worksheet.set_column(col+8, col+8, 8)
+            popularity = cls.query_popularity(query, limit=limit)
+            
+            worksheet.write(row, col, query)
+            for feed in popularity:
+                worksheet.write(row, col+0, feed['feed_title'])
+                worksheet.write_url(row, col+1, feed['feed_url'])
+                worksheet.write(row, col+2, feed['num_subscribers'])
+                for author in feed['authors']:
+                    worksheet.write(row, col+3, author['name'])
+                    for story in author['stories']:
+                        worksheet.write(row, col+4, story['title'])
+                        worksheet.write_url(row, col+5, story['url'])
+                        worksheet.write_datetime(row, col+6, story['date'], date_format)
+                        row += 1
+                    for tag, count in author['tags'].items():
+                        worksheet.write(row, col+7, tag)
+                        worksheet.write(row, col+8, count)
+                        row += 1
+            
+        workbook.close()
         
     def find_stories(self, query, order="newest", offset=0, limit=25):
         story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,
