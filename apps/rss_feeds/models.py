@@ -1497,11 +1497,15 @@ class Feed(models.Model):
                     }
                 authors = feed['authors'][story['story_authors']]
                 authors['count'] += 1
-                authors['stories'].append({
-                    'title': story['story_title'],
-                    'url': story['story_permalink'],
-                    'date': story['story_date'],
-                })
+                for seen_story in authors['stories']:
+                    if seen_story['url'] == story['story_permalink']:
+                        break
+                else:
+                    authors['stories'].append({
+                        'title': story['story_title'],
+                        'url': story['story_permalink'],
+                        'date': story['story_date'],
+                    })
                 for tag in story['story_tags']:
                     if tag not in authors['tags']:
                         authors['tags'][tag] = 0
