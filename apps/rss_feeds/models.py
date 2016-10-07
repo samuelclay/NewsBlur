@@ -1497,8 +1497,10 @@ class Feed(models.Model):
                     }
                 authors = feed['authors'][story['story_authors']]
                 authors['count'] += 1
+                seen = False
                 for seen_story in authors['stories']:
                     if seen_story['url'] == story['story_permalink']:
+                        seen = True
                         break
                 else:
                     authors['stories'].append({
@@ -1506,6 +1508,7 @@ class Feed(models.Model):
                         'url': story['story_permalink'],
                         'date': story['story_date'],
                     })
+                if seen: continue # Don't recount tags
                 for tag in story['story_tags']:
                     if tag not in authors['tags']:
                         authors['tags'][tag] = 0
