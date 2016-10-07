@@ -1469,7 +1469,7 @@ class Feed(models.Model):
                 feed_title_to_id[feed.feed_title] = feed_id
             seen_feeds.add(feed.feed_title)
             if feed_id not in popularity:
-                read_pct, story_count = feed.well_read_score()
+                read_pct, reader_count, story_count = feed.well_read_score()
                 popularity[feed_id] = {
                     'feed_title': feed.feed_title,
                     'feed_url': feed.feed_link,
@@ -1478,6 +1478,7 @@ class Feed(models.Model):
                     'story_ids': [],
                     'authors': {},
                     'read_pct': read_pct,
+                    'reader_count': reader_count,
                     'story_count': story_count
                 }
             popularity[feed_id]['story_ids'].append(story_hash)
@@ -1519,28 +1520,35 @@ class Feed(models.Model):
             sorted_authors = sorted(feed['authors'].values(), key=lambda x: x['count'])
             feed['authors'] = sorted_authors
                 
-        # pprint(sorted_popularity)
+        pprint(sorted_popularity)
         return sorted_popularity
             
     def well_read_score(self):
+        from apps.reader.models import UserSubscription
+        
         # Average percentage of stories read vs published across recently active subscribers
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
-        rs_keys = r.keys('RS:*:%s' % self.pk) # Expensive!
-
-        for user_rs in rs_keys:
+        
+        subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values('user_id')
+        subscribing_user_ids = [sub['user_id'] for sub in subscribing_users]
+        
+        for user_id in subscribing_user_ids:
+            user_rs = "RS:%s:%s" % (user_id, self.pk)
             p.scard(user_rs)
         
         counts = p.execute()
+        counts = [c for c in counts if c > 0]
+        reader_count = len(counts)
         
         story_count = MStory.objects(story_feed_id=self.pk,
                                      story_date__gte=self.unread_cutoff).count()
-        if len(counts) and story_count:
-            average_pct = (sum(counts) / float(len(counts))) / float(story_count)
+        if reader_count and story_count:
+            average_pct = (sum(counts) / float(reader_count)) / float(story_count)
         else:
             average_pct = 0
         
-        return average_pct, story_count
+        return average_pct, reader_count, story_count
     
     @classmethod
     def xls_query_popularity(cls, queries, limit):
@@ -1558,26 +1566,28 @@ class Feed(models.Model):
             col = 0
             worksheet.write(0, col,   'Feed', bold)
             worksheet.write(0, col+1, 'Feed URL', bold)
-            worksheet.write(0, col+2, 'Subscribers', bold)
-            worksheet.write(0, col+3, 'Read %', bold)
-            worksheet.write(0, col+4, '# Stories 30d', bold)
-            worksheet.write(0, col+5, 'Author', bold)
-            worksheet.write(0, col+6, 'Story Title', bold)
-            worksheet.write(0, col+7, 'Story URL', bold)
-            worksheet.write(0, col+8, 'Story Date', bold)
-            worksheet.write(0, col+9, 'Tag', bold)
-            worksheet.write(0, col+10, 'Tag Count', bold)
+            worksheet.write(0, col+2, '# Subs', bold)
+            worksheet.write(0, col+3, '# Readers', bold)
+            worksheet.write(0, col+4, 'Read %', bold)
+            worksheet.write(0, col+5, '# stories 30d', bold)
+            worksheet.write(0, col+6, 'Author', bold)
+            worksheet.write(0, col+7, 'Story Title', bold)
+            worksheet.write(0, col+8, 'Story URL', bold)
+            worksheet.write(0, col+9, 'Story Date', bold)
+            worksheet.write(0, col+10, 'Tag', bold)
+            worksheet.write(0, col+11, 'Tag Count', bold)
             worksheet.set_column(col, col,   15)
             worksheet.set_column(col+1, col+1, 20)
             worksheet.set_column(col+2, col+2, 8)
             worksheet.set_column(col+3, col+3, 8)
             worksheet.set_column(col+4, col+4, 8)
-            worksheet.set_column(col+5, col+5, 15)
-            worksheet.set_column(col+6, col+6, 30)
-            worksheet.set_column(col+7, col+7, 20)
-            worksheet.set_column(col+8, col+8, 10)
-            worksheet.set_column(col+9, col+9, 15)
-            worksheet.set_column(col+10, col+10, 8)
+            worksheet.set_column(col+5, col+5, 8)
+            worksheet.set_column(col+6, col+6, 15)
+            worksheet.set_column(col+7, col+7, 30)
+            worksheet.set_column(col+8, col+8, 20)
+            worksheet.set_column(col+9, col+9, 10)
+            worksheet.set_column(col+10, col+10, 15)
+            worksheet.set_column(col+11, col+11, 8)
             popularity = cls.query_popularity(query, limit=limit)
             
             worksheet.write(row, col, query)
@@ -1585,22 +1595,23 @@ class Feed(models.Model):
                 worksheet.write(row, col+0, feed['feed_title'])
                 worksheet.write_url(row, col+1, feed['feed_url'])
                 worksheet.write(row, col+2, feed['num_subscribers'])
-                worksheet.write(row, col+3, feed['read_pct'])
-                worksheet.write(row, col+4, feed['story_count'])
-                worksheet.conditional_format(row, col+3, row, col+4, {'type': 'cell',
+                worksheet.write(row, col+3, feed['reader_count'])
+                worksheet.write(row, col+4, feed['read_pct'])
+                worksheet.write(row, col+5, feed['story_count'])
+                worksheet.conditional_format(row, col+3, row, col+5, {'type': 'cell',
                                                                 'criteria': '==',
                                                                 'value': 0,
                                                                 'format': unread_format})
                 for author in feed['authors']:
-                    worksheet.write(row, col+5, author['name'])
+                    worksheet.write(row, col+6, author['name'])
                     for story in author['stories']:
-                        worksheet.write(row, col+6, story['title'])
-                        worksheet.write_url(row, col+7, story['url'])
-                        worksheet.write_datetime(row, col+8, story['date'], date_format)
+                        worksheet.write(row, col+7, story['title'])
+                        worksheet.write_url(row, col+8, story['url'])
+                        worksheet.write_datetime(row, col+9, story['date'], date_format)
                         row += 1
                     for tag, count in author['tags'].items():
-                        worksheet.write(row, col+9, tag)
-                        worksheet.write(row, col+10, count)
+                        worksheet.write(row, col+10, tag)
+                        worksheet.write(row, col+11, count)
                         row += 1
             
         workbook.close()
