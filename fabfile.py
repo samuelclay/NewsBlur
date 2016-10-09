@@ -1695,7 +1695,7 @@ def upgrade_to_virtualenv(role=None):
         enable_celerybeat()
         sudo('reboot')
 
-def stress_test():
+def benchmark():
     sudo('apt-get install -y sysbench')
     run('sysbench --test=cpu --cpu-max-prime=20000 run')
     run('sysbench --test=fileio --file-total-size=150G prepare')
