@@ -312,7 +312,7 @@ def setup_task_image():
 
 def done():
     print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n              %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
+    print "\n\n    %s / %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string, env.host_string)
     print "\n\n-----------------------------------------------------\n\n\n\n"
 
 def setup_installs():
@@ -1274,7 +1274,7 @@ def setup_do(name, size=2, image=None):
                                     region='nyc1',
                                     ssh_keys=ssh_key_ids)
     instance.create()
-
+    time.sleep(2)
     instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
     print "Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size)
 
