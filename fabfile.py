@@ -546,9 +546,10 @@ def config_pgbouncer():
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
-def kill_pgbouncer(bounce=False):
+def kill_pgbouncer(bounce=True):
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     run('sleep 2')
+    sudo('rm /var/log/postgresql/pgbouncer.pid')
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer')
         run('sleep 2')
@@ -1680,7 +1681,7 @@ def upgrade_to_virtualenv(role=None):
         gunicorn_stop()
     elif role == "work":
         sudo('/etc/init.d/supervisor stop')
-    kill_pgbouncer()
+    kill_pgbouncer(bounce=False)
     setup_installs()
     pip()
     if role == "task":
