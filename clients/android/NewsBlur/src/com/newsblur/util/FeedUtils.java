@@ -2,6 +2,7 @@ package com.newsblur.util;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
@@ -287,31 +288,35 @@ public class FeedUtils {
         }.execute();
     }
 
-    public static void muteFeed(final Context context, final Feed feed) {
-        updateFeedActiveState(context, feed, false);
+    public static void muteFeeds(final Context context, final List<Feed> feeds) {
+        updateFeedActiveState(context, feeds, false);
     }
 
-    public static void unmuteFeed(final Context context, final Feed feed) {
-        updateFeedActiveState(context, feed, true);
+    public static void unmuteFeeds(final Context context, final  List<Feed> feeds) {
+        updateFeedActiveState(context, feeds, true);
     }
 
-    private static void updateFeedActiveState(final Context context, final Feed feed, final boolean active) {
+    private static void updateFeedActiveState(final Context context, final List<Feed> feeds, final boolean active) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
                 APIManager apiManager = new APIManager(context);
                 Set<String> activeFeeds = dbHelper.getAllActiveFeeds();
-                if (active) {
-                    activeFeeds.add(feed.feedId);
-                } else {
-                    activeFeeds.remove(feed.feedId);
+                for (Feed feed : feeds) {
+                    if (active) {
+                        activeFeeds.add(feed.feedId);
+                    } else {
+                        activeFeeds.remove(feed.feedId);
+                    }
                 }
                 return apiManager.saveFeedChooser(activeFeeds);
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
-                feed.active = active;
-                dbHelper.setFeedActive(feed.feedId, active);
+                for (Feed feed : feeds) {
+                    feed.active = active;
+                }
+                dbHelper.setFeedsActive(feeds, active);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 triggerSync(context);
             }

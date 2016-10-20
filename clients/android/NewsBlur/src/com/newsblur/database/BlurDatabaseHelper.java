@@ -522,10 +522,20 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setFeedActive(String feedId, boolean active) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.FEED_ACTIVE, active);
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
+    public void setFeedsActive(List<Feed> feeds, boolean active) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.FEED_ACTIVE, active);
+                for (Feed feed : feeds) {
+                    dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feed.feedId});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     /**

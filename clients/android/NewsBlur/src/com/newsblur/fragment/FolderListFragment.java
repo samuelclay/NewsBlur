@@ -1,6 +1,8 @@
 package com.newsblur.fragment;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.LoaderManager;
 import android.content.Loader;
@@ -289,9 +291,17 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
             chooseFoldersFragment.show(getFragmentManager(), "dialog");
         } else if (item.getItemId() == R.id.menu_mute_feed) {
-            FeedUtils.muteFeed(getActivity(), adapter.getFeed(groupPosition, childPosition));
+            List<Feed> feeds = new ArrayList<Feed>();
+            feeds.add(adapter.getFeed(groupPosition, childPosition));
+            FeedUtils.muteFeeds(getActivity(), feeds);
         } else if (item.getItemId() == R.id.menu_unmute_feed) {
-            FeedUtils.unmuteFeed(getActivity(), adapter.getFeed(groupPosition, childPosition));
+            List<Feed> feeds = new ArrayList<Feed>();
+            feeds.add(adapter.getFeed(groupPosition, childPosition));
+            FeedUtils.unmuteFeeds(getActivity(), feeds);
+        } else if (item.getItemId() == R.id.menu_mute_folder) {
+            FeedUtils.muteFeeds(getActivity(), adapter.getFeeds(groupPosition));
+        } else if (item.getItemId() == R.id.menu_unmute_folder) {
+            FeedUtils.unmuteFeeds(getActivity(), adapter.getFeeds(groupPosition));
         }
 
 		return super.onContextItemSelected(item);
