@@ -59,7 +59,7 @@ from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.view_functions import required_params
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
-from vendor import tweepy
+import tweepy
 
 BANNED_URLS = [
     "brentozar.com",
@@ -558,6 +558,7 @@ def load_single_feed(request, feed_id):
     query                   = request.REQUEST.get('query', '').strip()
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
     include_hidden          = is_true(request.REQUEST.get('include_hidden', False))
+    include_feeds           = is_true(request.REQUEST.get('include_feeds', False))
     message                 = None
     user_search             = None
 
@@ -698,6 +699,10 @@ def load_single_feed(request, feed_id):
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
     feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
     
+    if include_feeds:
+        feeds = Feed.objects.filter(pk__in=set([story['story_feed_id'] for story in stories]))
+        feeds = [feed.canonical(include_favicon=False) for feed in feeds]
+    
     if usersub:
         usersub.feed_opens += 1
         usersub.needs_unread_recalc = True
@@ -728,7 +733,7 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
     
-    data = dict(stories=stories, 
+    data = dict(stories=stories,
                 user_profiles=user_profiles,
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 
@@ -739,6 +744,7 @@ def load_single_feed(request, feed_id):
                 elapsed_time=round(float(timediff), 2),
                 message=message)
     
+    if include_feeds: data['feeds'] = feeds
     if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
@@ -1206,6 +1212,7 @@ def load_river_stories__redis(request):
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     query             = request.REQUEST.get('query', '').strip()
     include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
+    include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1342,9 +1349,12 @@ def load_river_stories__redis(request):
             'title':  apply_classifier_titles(classifier_titles, story),
         }
         story['score'] = UserSubscription.score_story(story['intelligence'])
-        
     
-    if not user.profile.is_premium:
+    if include_feeds:
+        feeds = Feed.objects.filter(pk__in=set([story['story_feed_id'] for story in stories]))
+        feeds = [feed.canonical(include_favicon=False) for feed in feeds]
+    
+    if not user.profile.is_premium and not include_feeds:
         message = "The full River of News is a premium feature."
         code = 0
         # if page > 1:
@@ -1380,7 +1390,8 @@ def load_river_stories__redis(request):
                 elapsed_time=timediff, 
                 user_search=user_search, 
                 user_profiles=user_profiles)
-                
+    
+    if include_feeds: data['feeds'] = feeds
     if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
     
     return data

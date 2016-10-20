@@ -1,0 +1,13 @@
+{% extends "mail/email_base.txt" %}
+
+{% load utils_tags %}
+
+{% block body %}Introducing Turn Touch
+
+Turn Touch is a solid wood remote... for NewsBlur.
+
+Your favorite RSS news reader just dropped a gorgeous new piece of hardware on the world and it's built just for you. The you that would enjoy a new way of reading the news.
+
+This is for real and you bet it does more. It controls lights, smart devices, and basically whatever talks to wifi. Turn Touch is on Kickstarter and my recommendation is to purchase the complete set. Keep two and give one as a gift.
+
+https://turntouch.com/kickstarter{% endblock body %}

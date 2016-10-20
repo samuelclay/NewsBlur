@@ -67,8 +67,13 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
             bytes[length++] = (buffer[2] << 6) | buffer[3];
     }
     
-    realloc(bytes, length);
-    return [NSData dataWithBytesNoCopy:bytes length:length];
+    char *temp = realloc(bytes, length);
+    
+    if (temp) {
+        return [NSData dataWithBytesNoCopy:bytes length:length];
+    } else {
+        return nil;
+    }
 }
 
 - (NSString *)base64Encoding;

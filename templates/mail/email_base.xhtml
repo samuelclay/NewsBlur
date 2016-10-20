@@ -15,7 +15,7 @@
                     <tr>
                         <td align="center">
                             {% block header %}
-                            <a href="http://{% current_domain %}{{ user.profile.autologin_url }}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur_blur.png" title="NewsBlur" style="width:306px;height:59px;border: none;"></a>
+                            <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur_blur.png" title="NewsBlur" style="width:306px;height:59px;border: none;"></a>
                             {% endblock header %}
                         </td>
                     </tr>
@@ -52,7 +52,7 @@
                                             <ul style="list-style: none;">
                                                 <li style="line-height:22px;"><a href="http://{% current_domain %}/ios/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free iPad/iPhone App</a></li>
                                                 <li style="line-height:22px;"><a href="http://{% current_domain %}/android/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/android_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free Android App</a></li>
-                                                <li style="line-height:22px;"><a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=goodies" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download browser extensions for Safari, Firefox, and Chrome</a></li>
+                                                <li style="line-height:22px;"><a href="http://{% current_domain %}?next=goodies" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download browser extensions for Safari, Firefox, and Chrome</a></li>
                                             </ul>
                                         </p>
                                     </td>
@@ -76,7 +76,7 @@
                     {% endblock footer %}
                     <tr>
                         <td align="center" style="padding-top: 12px;">
-                            <a href="http://{% current_domain %}{{ user.profile.autologin_url }}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:60px;border: none;"></a>
+                            <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:60px;border: none;"></a>
                         </td>
                     </tr>
                 </table>

@@ -48,7 +48,7 @@
     
     self.navigationItem.title = @"Find Friends";
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
-                                                                     style: UIBarButtonSystemItemCancel 
+                                                                     style: UIBarButtonItemStylePlain 
                                                                     target: self 
                                                                     action: @selector(doCancelButton)];
     [self.navigationItem setRightBarButtonItem:cancelButton];

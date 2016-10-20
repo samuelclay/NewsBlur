@@ -247,7 +247,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
+    
     if (!self.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
@@ -2293,7 +2293,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [request addPostValue:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
     [request setUserInfo:@{@"storyId": [self.activeStory objectForKey:@"id"]}];
     [request setDidFinishSelector:@selector(finishFetchTextView:)];
-    [request setDidFailSelector:@selector(failedFetchText::)];
+    [request setDidFailSelector:@selector(failedFetchText:)];
     [request setDelegate:self];
     [request startAsynchronous];
 }

@@ -279,6 +279,7 @@ def setup_db(engine=None, skip_common=False):
     setup_db_munin()
     setup_db_monitor()
     setup_usage_monitor()
+    benchmark()
     done()
 
     # if env.user == 'ubuntu':
@@ -312,7 +313,7 @@ def setup_task_image():
 
 def done():
     print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n              %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
+    print "\n\n    %s / %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string, env.host_string)
     print "\n\n-----------------------------------------------------\n\n\n\n"
 
 def setup_installs():
@@ -546,9 +547,10 @@ def config_pgbouncer():
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
-def kill_pgbouncer(bounce=False):
+def kill_pgbouncer(bounce=True):
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     run('sleep 2')
+    sudo('rm /var/log/postgresql/pgbouncer.pid')
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer')
         run('sleep 2')
@@ -1273,9 +1275,10 @@ def setup_do(name, size=2, image=None):
                                     region='nyc1',
                                     ssh_keys=ssh_key_ids)
     instance.create()
-    print "Booting droplet: %s/%s (size: %s)" % (instance.id, image, instance_size)
-
+    time.sleep(2)
     instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
+    print "Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size)
+
     i = 0
     while True:
         if instance.status == 'active':
@@ -1679,7 +1682,7 @@ def upgrade_to_virtualenv(role=None):
         gunicorn_stop()
     elif role == "work":
         sudo('/etc/init.d/supervisor stop')
-    kill_pgbouncer()
+    kill_pgbouncer(bounce=False)
     setup_installs()
     pip()
     if role == "task":
@@ -1694,7 +1697,7 @@ def upgrade_to_virtualenv(role=None):
         enable_celerybeat()
         sudo('reboot')
 
-def stress_test():
+def benchmark():
     sudo('apt-get install -y sysbench')
     run('sysbench --test=cpu --cpu-max-prime=20000 run')
     run('sysbench --test=fileio --file-total-size=150G prepare')

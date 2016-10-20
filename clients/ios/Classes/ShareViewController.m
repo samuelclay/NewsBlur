@@ -53,14 +53,14 @@
     
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc]
                                initWithTitle:@"Cancel"
-                               style:UIBarButtonSystemItemCancel
+                               style:UIBarButtonItemStylePlain
                                target:self
                                action:@selector(doCancelButton:)];
     self.navigationItem.leftBarButtonItem = cancel;
     
     UIBarButtonItem *submit = [[UIBarButtonItem alloc]
                                initWithTitle:@"Post"
-                               style:UIBarButtonSystemItemDone
+                               style:UIBarButtonItemStyleDone
                                target:self
                                action:@selector(doShareThisStory:)];
     self.submitButton = submit;

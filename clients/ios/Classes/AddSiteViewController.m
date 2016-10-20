@@ -423,6 +423,10 @@
                 cell = (AddSiteAutocompleteCell *)oneObject;
             }
         }
+        
+        if (cell == nil) {
+            cell = [AddSiteAutocompleteCell new];
+        }
 	}
     
     NSDictionary *result = [self.autocompleteResults objectAtIndex:indexPath.row];

@@ -189,7 +189,7 @@ static UIFont *textFont = nil;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor:boldFontDescriptor size:0.0];
+        font = [UIFont fontWithDescriptor:boldFontDescriptor size:fontDescriptor.pointSize];
     } else {
         font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
     }

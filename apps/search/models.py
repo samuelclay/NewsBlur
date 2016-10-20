@@ -294,7 +294,34 @@ class SearchStory:
             return []
         
         return result_ids
+    
+    @classmethod
+    def global_query(cls, query, order, offset, limit):
+        cls.create_elasticsearch_mapping()
+        cls.ES.indices.refresh()
 
+        query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric        
+        sort     = "date:desc" if order == "newest" else "date:asc"
+        string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
+        q        = pyes.query.BoolQuery(must=[string_q])
+        try:
+            results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
+                                     partial_fields={}, sort=sort, start=offset, size=limit)
+        except pyes.exceptions.NoServerAvailable:
+            logging.debug(" ***> ~FRNo search server available.")
+            return []
+
+        logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across all feeds)" % 
+                     (query))
+        
+        try:
+            result_ids = [r.get_id() for r in results]
+        except pyes.InvalidQuery(), e:
+            logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
+            return []
+        
+        return result_ids
+        
 
 class SearchFeed:
     

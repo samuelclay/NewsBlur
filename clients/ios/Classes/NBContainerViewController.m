@@ -56,7 +56,6 @@
 @property (readwrite) BOOL isHidingStory;
 @property (readwrite) BOOL feedDetailIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
-@property (readwrite) UIDeviceOrientation rotatingToOrientation;
 @property (nonatomic) UIBackgroundTaskIdentifier reorientBackgroundTask;
 
 @end
@@ -204,7 +203,6 @@
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-        self.rotatingToOrientation = orientation;
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
