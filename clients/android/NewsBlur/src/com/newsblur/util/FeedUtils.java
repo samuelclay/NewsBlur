@@ -163,14 +163,30 @@ public class FeedUtils {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                ReadingAction ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                // Only active feed IDs should be passed to the API call.
+                ReadingAction ra = null;
                 if (fs.isAllNormal() && (olderThan != null || newerThan != null)) {
                     // the mark-all-read API doesn't support range bounding, so we need to pass each and every
                     // feed ID to the API instead.
-                    FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllFeeds());
+                    FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllActiveFeeds());
                     ra = ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan);
+                } else {
+                    if (fs.getSingleFeed() != null) {
+                        if (!fs.isMuted()) {
+                            ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                        }
+                    } else if (fs.getMultipleFeeds() != null) {
+                        // TODO new FeedSet is it always a folder?
+                        ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                    } else {
+                        ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                    }
                 }
-                dbHelper.enqueueAction(ra);
+
+                if (ra != null) {
+                    dbHelper.enqueueAction(ra);
+                }
+
                 triggerSync(context);
                 return null;
             }
