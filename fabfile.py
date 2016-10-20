@@ -279,6 +279,7 @@ def setup_db(engine=None, skip_common=False):
     setup_db_munin()
     setup_db_monitor()
     setup_usage_monitor()
+    benchmark()
     done()
 
     # if env.user == 'ubuntu':
