@@ -241,6 +241,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
             inflater.inflate(R.menu.context_folder, menu);
+
+            if (adapter.isFolderRoot(groupPosition)) {
+                menu.removeItem(R.id.menu_mute_folder);
+                menu.removeItem(R.id.menu_unmute_folder);
+            }
+
 			break;
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
