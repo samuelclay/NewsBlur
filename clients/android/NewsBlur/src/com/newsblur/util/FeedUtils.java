@@ -288,35 +288,32 @@ public class FeedUtils {
         }.execute();
     }
 
-    public static void muteFeeds(final Context context, final List<Feed> feeds) {
-        updateFeedActiveState(context, feeds, false);
+    public static void muteFeeds(final Context context, final List<String> feedIds) {
+        updateFeedActiveState(context, feedIds, false);
     }
 
-    public static void unmuteFeeds(final Context context, final  List<Feed> feeds) {
-        updateFeedActiveState(context, feeds, true);
+    public static void unmuteFeeds(final Context context, final List<String> feedIds) {
+        updateFeedActiveState(context, feedIds, true);
     }
 
-    private static void updateFeedActiveState(final Context context, final List<Feed> feeds, final boolean active) {
+    private static void updateFeedActiveState(final Context context, final List<String> feedIds, final boolean active) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
                 APIManager apiManager = new APIManager(context);
                 Set<String> activeFeeds = dbHelper.getAllActiveFeeds();
-                for (Feed feed : feeds) {
+                for (String feedId : feedIds) {
                     if (active) {
-                        activeFeeds.add(feed.feedId);
+                        activeFeeds.add(feedId);
                     } else {
-                        activeFeeds.remove(feed.feedId);
+                        activeFeeds.remove(feedId);
                     }
                 }
                 return apiManager.saveFeedChooser(activeFeeds);
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
-                for (Feed feed : feeds) {
-                    feed.active = active;
-                }
-                dbHelper.setFeedsActive(feeds, active);
+                dbHelper.setFeedsActive(feedIds, active);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 triggerSync(context);
             }

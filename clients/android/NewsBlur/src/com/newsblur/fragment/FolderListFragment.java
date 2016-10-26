@@ -291,17 +291,17 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
             chooseFoldersFragment.show(getFragmentManager(), "dialog");
         } else if (item.getItemId() == R.id.menu_mute_feed) {
-            List<Feed> feeds = new ArrayList<Feed>();
-            feeds.add(adapter.getFeed(groupPosition, childPosition));
-            FeedUtils.muteFeeds(getActivity(), feeds);
+            List<String> feedIds = new ArrayList<String>();
+            feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
+            FeedUtils.muteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_unmute_feed) {
-            List<Feed> feeds = new ArrayList<Feed>();
-            feeds.add(adapter.getFeed(groupPosition, childPosition));
-            FeedUtils.unmuteFeeds(getActivity(), feeds);
+            List<String> feedIds = new ArrayList<String>();
+            feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
+            FeedUtils.unmuteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_mute_folder) {
-            FeedUtils.muteFeeds(getActivity(), adapter.getFeeds(groupPosition));
+            FeedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         } else if (item.getItemId() == R.id.menu_unmute_folder) {
-            FeedUtils.unmuteFeeds(getActivity(), adapter.getFeeds(groupPosition));
+            FeedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         }
 
 		return super.onContextItemSelected(item);
