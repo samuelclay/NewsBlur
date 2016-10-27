@@ -97,6 +97,7 @@ public class PrefsUtils {
         }
         s.append("%0Aprefetch: ").append(isOfflineEnabled(context) ? "yes" : "no");
         s.append("%0Akeepread: ").append(isKeepOldStories(context) ? "yes" : "no");
+        s.append("%0Athumbs: ").append(isShowThumbnails(context) ? "yes" : "no");
         return s.toString();
     }
 
