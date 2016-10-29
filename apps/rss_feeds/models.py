@@ -1493,6 +1493,7 @@ class Feed(models.Model):
             stories_db = MStory.objects(story_hash__in=story_ids)
             stories = cls.format_stories(stories_db)
             for story in stories:
+                story['story_permalink'] = story['story_permalink'][:250]
                 if story['story_authors'] not in feed['authors']:
                     feed['authors'][story['story_authors']] = {
                         'name': story['story_authors'],
