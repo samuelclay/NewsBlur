@@ -69,6 +69,8 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		super.onCreate(savedInstanceState);
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
+        // tell the sync service to discard the reading session at the start of the next sync, just in case
+        NBSyncService.resetReadingSession();
     }
 
 	@Override
