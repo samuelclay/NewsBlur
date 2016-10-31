@@ -15,7 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Process;
-import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.newsblur.R;
@@ -28,25 +28,27 @@ public class ImageLoader {
 	private final ExecutorService executorService;
     private final int emptyRID;
     private final int minImgHeight;
+    private final boolean hideMissing;
 
     // some image loads can happen after the imageview in question is already reused for some other image. keep
     // track of what image each view wants so that when it comes time to load them, they aren't stale
 	private final Map<ImageView, String> imageViewMappings = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 
-	private ImageLoader(FileCache fileCache, int emptyRID, int minImgHeight, long memoryCacheSize) {
+	private ImageLoader(FileCache fileCache, int emptyRID, int minImgHeight, boolean hideMissing, long memoryCacheSize) {
         this.memoryCache = new MemoryCache(memoryCacheSize);
 		this.fileCache = fileCache;
 		executorService = Executors.newFixedThreadPool(3);
         this.emptyRID = emptyRID;
         this.minImgHeight = minImgHeight;
+        this.hideMissing = hideMissing;
 	}
 
     public static ImageLoader asIconLoader(Context context) {
-        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, 2, (Runtime.getRuntime().maxMemory()/20));
+        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, 2, false, (Runtime.getRuntime().maxMemory()/20));
     }
 
     public static ImageLoader asThumbnailLoader(Context context) {
-        return new ImageLoader(FileCache.asThumbnailCache(context), android.R.color.transparent, 32, (Runtime.getRuntime().maxMemory()/5));
+        return new ImageLoader(FileCache.asThumbnailCache(context), android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/5));
     }
 	
 	public void displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
@@ -108,14 +110,12 @@ public class ImageLoader {
 
             if (bitmap != null) {
                 memoryCache.put(photoToLoad.url, bitmap);			
-                setViewImage(bitmap, photoToLoad);
             }
+            setViewImage(bitmap, photoToLoad);
 		}
 	}
 
     private void setViewImage(Bitmap bitmap, PhotoToLoad photoToLoad) {
-        if (bitmap == null) return;
-        if (bitmap.getHeight() < minImgHeight) return;
         BitmapDisplayer bitmapDisplayer = new BitmapDisplayer(bitmap, photoToLoad);
         Activity a = (Activity) photoToLoad.imageView.getContext();
         a.runOnUiThread(bitmapDisplayer);
@@ -133,11 +133,16 @@ public class ImageLoader {
             // ensure this imageview even still wants this image
             String latestMappedUrl = imageViewMappings.get(photoToLoad.imageView);
             if (latestMappedUrl == null || !latestMappedUrl.equals(photoToLoad.url)) return;
-			if (bitmap != null) {
+
+            if ((bitmap == null) || (bitmap.getHeight() < minImgHeight)) {
+                if (hideMissing) {
+                    photoToLoad.imageView.setVisibility(View.GONE);
+                } else {
+                    photoToLoad.imageView.setImageResource(emptyRID);
+                }
+            } else {
                 bitmap = UIUtils.clipAndRound(bitmap, photoToLoad.roundRadius, photoToLoad.cropSquare);
 				photoToLoad.imageView.setImageBitmap(bitmap);
-			} else {
-				photoToLoad.imageView.setImageResource(emptyRID);
 			}
 		}
 	}
