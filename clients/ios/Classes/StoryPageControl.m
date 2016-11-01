@@ -368,7 +368,9 @@
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
-        [self refreshPages];
+        
+        // This causes the story to reload on rotation (or when going to the background), but doesn't seem necessary?
+//        [self refreshPages];
     }];
 }
 

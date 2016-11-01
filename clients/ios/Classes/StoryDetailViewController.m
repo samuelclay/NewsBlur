@@ -2176,6 +2176,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
+    // Don't do this in the background, to avoid scrolling to the top unnecessarily
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        return;
+    }
+    
 //    [webView setNeedsLayout];
 //    [webView layoutIfNeeded];
     
