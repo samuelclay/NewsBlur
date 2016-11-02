@@ -125,6 +125,17 @@
         android:singleLine="true"
         android:textColor="@color/story_author_text" />
 
+    <View 
+        android:layout_height="0.5dp"
+        android:layout_width="match_parent"
+        style="?rowBorderTop"
+        android:layout_alignParentTop="true" />
+    <View 
+        android:layout_height="0.5dp"
+        android:layout_width="match_parent"
+        style="?rowBorderBottom"
+        android:layout_alignParentBottom="true" />
+
 </RelativeLayout>
 
 </LinearLayout>

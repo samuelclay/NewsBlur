@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
-    <gradient
-            android:angle=     "270"
-            android:type=      "linear"
-            android:startColor="@color/dark_feed_background_start"
-            android:endColor=  "@color/dark_feed_background_end" />
-</shape>

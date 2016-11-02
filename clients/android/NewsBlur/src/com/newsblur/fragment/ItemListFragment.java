@@ -94,7 +94,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                                      UIUtils.getColor(getActivity(), R.color.refresh_3),
                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
         itemList.addHeaderView(headerView, null, false);
-        itemList.setHeaderDividersEnabled(false);
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
@@ -104,7 +103,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                                      UIUtils.getColor(getActivity(), R.color.refresh_3),
                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
         itemList.addFooterView(footerView, null, false);
-        itemList.setFooterDividersEnabled(false);
 
         fleuronFooter = inflater.inflate(R.layout.row_fleuron, null);
         fleuronFooter.setVisibility(View.GONE);
