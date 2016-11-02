@@ -14,7 +14,9 @@
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
 
-    <color name="bar_background">@color/gray90</color>
+    <color name="nb_gren_gray91">#E4E7E1</color>
+
+    <color name="bar_background">@color/nb_gren_gray91</color>
     <color name="dark_bar_background">@color/gray13</color>
 
     <color name="text">@color/gray20</color>
