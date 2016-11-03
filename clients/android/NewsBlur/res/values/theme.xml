@@ -39,6 +39,7 @@
         <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend</item>
         <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory</item>
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText</item>
+        <item name="muteicon">@style/muteicon</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -80,5 +81,6 @@
         <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend.dark</item>
         <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
+        <item name="muteicon">@style/muteicon.dark</item>
     </style>
 </resources>

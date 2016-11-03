@@ -243,21 +243,26 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
+            ImageView muteIcon = ((ImageView) v.findViewById(R.id.row_feedmuteicon));
             if (!f.active) {
+                muteIcon.setVisibility(View.VISIBLE);
                 neutCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
             } else if (currentState == StateFilter.SAVED) {
+                muteIcon.setVisibility(View.GONE);
                 neutCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.VISIBLE);
                 savedCounter.setText(Integer.toString(zeroForNull(feedSavedCounts.get(f.feedId))));
             } else if (currentState == StateFilter.BEST) {
+                muteIcon.setVisibility(View.GONE);
                 neutCounter.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.VISIBLE);
                 posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
             } else {
+                muteIcon.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
                 if (f.neutralCount > 0) {
                     neutCounter.setVisibility(View.VISIBLE);
