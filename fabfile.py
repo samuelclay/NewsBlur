@@ -978,17 +978,21 @@ def copy_postgres_to_standby(master='db01'):
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     
 def setup_mongo():
+    MONGODB_VERSION = "2.6.12"
+    
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
-    # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
-    sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
+    sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
+    # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
     sudo('apt-get update')
-    sudo('apt-get -y install mongodb-10gen')
+    sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
+         (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongodb.conf', use_sudo=True)
     run('echo "ulimit -n 100000" > mongodb.defaults')
     sudo('mv mongodb.defaults /etc/default/mongodb')
-    sudo('/etc/init.d/mongodb restart')
-    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
+    sudo('cp mongodb.defaults /etc/default/mongod')
+    sudo('/etc/init.d/mongod restart')
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
 
     # Reclaim 5% disk space used for root logs. Set to 1%.
     with settings(warn_only=True):
