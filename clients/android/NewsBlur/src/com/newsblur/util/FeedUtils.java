@@ -168,6 +168,8 @@ public class FeedUtils {
                     ra = ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan);
                 }
                 dbHelper.enqueueAction(ra);
+                ra.doLocal(dbHelper);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA | NbActivity.UPDATE_STORY);
                 triggerSync(context);
                 return null;
             }
