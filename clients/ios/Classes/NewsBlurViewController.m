@@ -2124,6 +2124,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.notifier.title = @"Counting is difficult...";
     [self.notifier setProgress:0];
     [self.notifier show];
+    [self finishRefresh];
 }
 
 - (void)showSyncingNotifier {
@@ -2131,6 +2132,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.notifier.title = @"Syncing stories...";
     [self.notifier setProgress:0];
     [self.notifier show];
+    [self finishRefresh];
 }
 
 - (void)showDoneNotifier {

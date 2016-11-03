@@ -1493,6 +1493,7 @@ class Feed(models.Model):
             stories_db = MStory.objects(story_hash__in=story_ids)
             stories = cls.format_stories(stories_db)
             for story in stories:
+                story['story_permalink'] = story['story_permalink'][:250]
                 if story['story_authors'] not in feed['authors']:
                     feed['authors'][story['story_authors']] = {
                         'name': story['story_authors'],
@@ -1571,8 +1572,8 @@ class Feed(models.Model):
             worksheet.write(0, col,   'Feed', bold)
             worksheet.write(0, col+1, 'Feed URL', bold)
             worksheet.write(0, col+2, '# Subs', bold)
-            worksheet.write(0, col+3, 'Reach score', bold)
             worksheet.write(0, col+4, '# Readers', bold)
+            worksheet.write(0, col+3, 'Reach score', bold)
             worksheet.write(0, col+5, 'Read %', bold)
             worksheet.write(0, col+6, '# stories 30d', bold)
             worksheet.write(0, col+7, 'Author', bold)
@@ -1601,8 +1602,8 @@ class Feed(models.Model):
                 worksheet.write(row, col+0, feed['feed_title'])
                 worksheet.write_url(row, col+1, feed['feed_url'])
                 worksheet.write(row, col+2, feed['num_subscribers'])
-                worksheet.write(row, col+3, feed['reach_score'])
                 worksheet.write(row, col+4, feed['reader_count'])
+                worksheet.write(row, col+3, feed['reach_score'])
                 worksheet.write(row, col+5, feed['read_pct'])
                 worksheet.write(row, col+6, feed['story_count'])
                 worksheet.conditional_format(row, col+3, row, col+6, {'type': 'cell',

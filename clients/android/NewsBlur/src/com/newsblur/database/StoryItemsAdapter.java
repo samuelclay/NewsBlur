@@ -183,7 +183,8 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
                 thumbnailView.setVisibility(View.VISIBLE);
                 FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, thumbnailView, 0, true);
             } else {
-                thumbnailView.setVisibility(View.INVISIBLE);
+                // to GONE rather than INVIS makes start titles misalign on the right side, but this is by design
+                thumbnailView.setVisibility(View.GONE);
             }
         } else {
             thumbnailView.setVisibility(View.GONE);

@@ -87,14 +87,14 @@
         android:ellipsize="end" />
     
     <View 
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_width="match_parent"
-        style="?folderBorderTop"
+        style="?rowBorderTop"
         android:layout_alignParentTop="true" />
     <View 
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_width="match_parent"
-        style="?folderBorderBottom"
+        style="?rowBorderBottom"
         android:layout_alignParentBottom="true" />
    
 </RelativeLayout>

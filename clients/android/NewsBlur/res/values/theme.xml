@@ -17,7 +17,6 @@
         <item name="storyFeedTitleText">@style/storyFeedTitleText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
-        <item name="rowItemFeedHeader">@style/rowItemFeedHeader</item>
         <item name="readingItemMetadata">@style/readingItemMetadata</item>
         <item name="tag">@style/tag</item>
         <item name="actionButtons">@style/actionButtons</item>
@@ -25,9 +24,8 @@
         <item name="shareBarBackground">@style/shareBarBackground</item>
         <item name="shareBarText">@style/shareBarText</item>
         <item name="commentsHeader">@style/commentsHeader</item>
-        <item name="folderBorderTop">@style/folderBorderTop</item>
-        <item name="folderBorderBottom">@style/folderBorderBottom</item>
-        <item name="divider">@style/divider</item>
+        <item name="rowBorderTop">@style/rowBorderTop</item>
+        <item name="rowBorderBottom">@style/rowBorderBottom</item>
         <item name="profileCount">@style/profileCount</item>
         <item name="profileActivityList">@style/profileActivityList</item>
         <item name="itemHeaderDivider">@style/itemHeaderDivider</item>
@@ -60,7 +58,6 @@
         <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
-        <item name="rowItemFeedHeader">@style/rowItemFeedHeader.dark</item>
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
         <item name="tag">@style/tag.dark</item>
         <item name="actionButtons">@style/actionButtons.dark</item>
@@ -68,9 +65,8 @@
         <item name="shareBarBackground">@style/shareBarBackground.dark</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.dark</item>
-        <item name="folderBorderTop">@style/folderBorderTop.dark</item>
-        <item name="folderBorderBottom">@style/folderBorderBottom.dark</item>
-        <item name="divider">@style/divider.dark</item>
+        <item name="rowBorderTop">@style/rowBorderTop.dark</item>
+        <item name="rowBorderBottom">@style/rowBorderBottom.dark</item>
         <item name="profileCount">@style/profileCount.dark</item>
         <item name="profileActivityList">@style/profileActivityList.dark</item>
         <item name="itemHeaderDivider">@style/itemHeaderDivider.dark</item>
