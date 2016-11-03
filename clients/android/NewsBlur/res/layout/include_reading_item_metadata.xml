@@ -17,8 +17,7 @@
             android:layout_width="match_parent"
             android:minHeight="6dp"
             android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            style="?rowItemFeedHeader">
+            android:paddingBottom="4dp" >
 
             <ImageView
                 android:id="@+id/reading_feed_icon"

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="white">#FFF</color>
+    <color name="black">#000000</color>
+    <color name="gray07">#121212</color>
+    <color name="gray10">#1A1A1A</color>
     <color name="gray13">#212121</color>
     <color name="gray20">#333333</color>
     <color name="gray30">#4D4D4D</color>
@@ -11,10 +13,13 @@
     <color name="gray75">#BFBFBF</color>
     <color name="gray80">#CCCCCC</color>
     <color name="gray90">#E6E6E6</color>
-    <color name="black">#000000</color>
+    <color name="gray96">#F4F4F4</color>
+    <color name="white">#FFF</color>
     <color name="transparent">#00000000</color>
 
-    <color name="bar_background">@color/gray90</color>
+    <color name="nb_green_gray91">#E4E7E1</color>
+
+    <color name="bar_background">@color/nb_green_gray91</color>
     <color name="dark_bar_background">@color/gray13</color>
 
     <color name="text">@color/gray20</color>
@@ -29,28 +34,23 @@
 
     <color name="folder_background_end">#E9EBE4</color>
     <color name="folder_background_start">#DDE0D7</color>
-    <color name="dark_folder_background_end">#1A1A1A</color>
-    <color name="dark_folder_background_start">#212121</color>
+    <color name="dark_folder_background_end">@color/gray07</color>
+    <color name="dark_folder_background_start">@color/gray13</color>
     <color name="folder_background_selected_end">#D9DBD4</color>
     <color name="folder_background_selected_start">#CDD0C7</color>
     <color name="dark_folder_background_selected_end">#4C4C4C</color>
     <color name="dark_folder_background_selected_start">#1A1A1A</color>
-    <color name="folder_border_top">#FDFDFD</color>
-    <color name="folder_border_bottom">#B7BBAA</color>
-    <color name="dark_folder_border_top">#434343</color>
-    <color name="dark_folder_border_bottom">#3B3B3B</color>
-    <color name="feed_background">#F7F8F5</color>
-    <color name="feed_background_end">#303030</color>
-    <color name="feed_background_start">#505050</color>
-    <color name="dark_feed_background_end">#303030</color>
-    <color name="dark_feed_background_start">#505050</color>
+    <color name="row_border_top">@color/white</color>
+    <color name="row_border_bottom">@color/gray80</color>
+    <color name="dark_row_border_top">@color/gray20</color>
+    <color name="dark_row_border_bottom">@color/gray13</color>
     <color name="feed_background_selected_end">#FFFFD2</color>
     <color name="feed_background_selected_start">#E3D0AE</color>
     <color name="dark_feed_background_selected_end">#4C4C4C</color>
     <color name="dark_feed_background_selected_start">#1A1A1A</color>
-    <color name="story_background">#F4F4F4</color>
+    <color name="story_background">@color/gray96</color>
     <color name="story_background_selected">#FFFDEF</color>
-    <color name="dark_story_background">#1A1A1A</color>
+    <color name="dark_story_background">@color/gray07</color>
     <color name="dark_story_background_selected">#4C4C4C</color>
 
     <color name="story_feed_title_text">#606060</color>

@@ -72,4 +72,7 @@ public class PrefConstants {
 
     public static final String VOLUME_KEY_NAVIGATION = "volume_key_navigation";
     public static final String MARK_ALL_READ_CONFIRMATION = "pref_confirm_mark_all_read";
+
+    public static final String LTR_GESTURE_ACTION = "ltr_gesture_action";
+    public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
 }

@@ -243,13 +243,13 @@ public class NBSyncService extends Service {
 
             syncMetadata(startId);
 
-            checkRecounts();
-
             unreadsService.start(startId);
 
             imagePrefetchService.start(startId);
 
             finishActions();
+
+            checkRecounts();
 
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
@@ -633,16 +633,20 @@ public class NBSyncService extends Service {
             StoryOrder order = PrefsUtils.getStoryOrder(this, fs);
             ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
 
+            boolean doReset = false;
             synchronized (PENDING_FEED_MUTEX) {
                 if (ResetSession) {
-                    // the next fetch will be the start of a new reading session; clear it so it
-                    // will be re-primed
-                    dbHelper.clearStorySession();
-                    // don't just rely on the auto-prepare code when fetching stories, it might be called
-                    // after we insert our first page and not trigger
-                    dbHelper.prepareReadingSession(fs);
+                    doReset = true;
                     ResetSession = false;
                 }
+            }
+            if (doReset) {
+                // the next fetch will be the start of a new reading session; clear it so it
+                // will be re-primed
+                dbHelper.clearStorySession();
+                // don't just rely on the auto-prepare code when fetching stories, it might be called
+                // after we insert our first page and not trigger
+                dbHelper.prepareReadingSession(fs);
             }
             
             while (totalStoriesSeen < PendingFeedTarget) {

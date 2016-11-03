@@ -16,7 +16,6 @@
     <attr name="storyFeedTitleText" format="string" />
     <attr name="selectorStoryBackground" format="string" />
     <attr name="rowItemHeaderBackground" format="string" />
-    <attr name="rowItemFeedHeader" format="string" />
     <attr name="readingItemMetadata" format="string" />
     <attr name="tag" format="string" />
     <attr name="actionButtons" format="string" />
@@ -24,8 +23,8 @@
     <attr name="shareBarBackground" format="string" />
     <attr name="shareBarText" format="string" />
     <attr name="commentsHeader" format="string" />
-    <attr name="folderBorderTop" format="string" />
-    <attr name="folderBorderBottom" format="string" />
+    <attr name="rowBorderTop" format="string" />
+    <attr name="rowBorderBottom" format="string" />
     <attr name="divider" format="string" />
     <attr name="profileCount" format="string" />
     <attr name="profileActivityList" format="string" />

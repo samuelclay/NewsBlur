@@ -61,7 +61,7 @@
             android:key="pref_show_content_preview"
             android:title="@string/settings_show_content_preview" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="pref_show_thumbnails"
             android:title="@string/settings_show_thumbnails" />
     </PreferenceCategory>
@@ -101,6 +101,24 @@
             android:entries="@array/default_theme_entries"
             android:entryValues="@array/default_theme_values"
             android:defaultValue="@string/default_theme_value" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_gestures">
+        <ListPreference
+            android:key="ltr_gesture_action"
+            android:title="@string/settings_ltr_gesture_action"
+            android:dialogTitle="@string/settings_ltr_gesture_action"
+            android:entries="@array/ltr_gesture_action_entries"
+            android:entryValues="@array/ltr_gesture_action_values"
+            android:defaultValue="@string/ltr_gesture_action_value" />
+        <ListPreference
+            android:key="rtl_gesture_action"
+            android:title="@string/settings_rtl_gesture_action"
+            android:dialogTitle="@string/settings_rtl_gesture_action"
+            android:entries="@array/rtl_gesture_action_entries"
+            android:entryValues="@array/rtl_gesture_action_values"
+            android:defaultValue="@string/rtl_gesture_action_value" />
     </PreferenceCategory>
 
 </PreferenceScreen>

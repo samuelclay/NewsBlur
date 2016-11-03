@@ -304,6 +304,7 @@ public class ReadingAction {
                     dbHelper.setStoryReadState(storyHash, true);
                 } else if (feedSet != null) {
                     dbHelper.markStoriesRead(feedSet, olderThan, newerThan);
+                    dbHelper.updateLocalFeedCounts(feedSet);
                 }
                 impact |= NbActivity.UPDATE_METADATA;
                 break;

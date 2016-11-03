@@ -137,13 +137,6 @@
         <item name="android:background">@drawable/dark_row_item_header_background</item>
     </style>
 
-    <style name="rowItemFeedHeader">
-      <item name="android:background">@drawable/row_item_feed_header</item>
-    </style>
-    <style name="rowItemFeedHeader.dark">
-        <item name="android:background">@drawable/dark_row_item_feed_header</item>
-    </style>
-
     <style name="readingItemMetadata">
         <item name="android:textColor">@color/half_darkgray</item>
     </style>
@@ -227,25 +220,18 @@
         <item name="android:textColor">@color/dark_text</item>
     </style>
 
-    <style name="folderBorderTop">
-        <item name="android:background">@color/folder_border_top</item>
+    <style name="rowBorderTop">
+        <item name="android:background">@color/row_border_top</item>
     </style>
-    <style name="folderBorderTop.dark">
-        <item name="android:background">@color/dark_folder_border_top</item>
-    </style>
-
-    <style name="folderBorderBottom">
-        <item name="android:background">@color/folder_border_bottom</item>
-    </style>
-    <style name="folderBorderBottom.dark">
-        <item name="android:background">@color/dark_folder_border_bottom</item>
+    <style name="rowBorderTop.dark">
+        <item name="android:background">@color/dark_row_border_top</item>
     </style>
 
-    <style name="divider">
-        <item name="android:divider">@drawable/divider_light</item>
+    <style name="rowBorderBottom">
+        <item name="android:background">@color/row_border_bottom</item>
     </style>
-    <style name="divider.dark">
-        <item name="android:divider">@drawable/divider_dark</item>
+    <style name="rowBorderBottom.dark">
+        <item name="android:background">@color/dark_row_border_bottom</item>
     </style>
 
     <style name="profileCount">
