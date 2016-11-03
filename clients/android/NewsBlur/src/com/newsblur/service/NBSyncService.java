@@ -243,13 +243,13 @@ public class NBSyncService extends Service {
 
             syncMetadata(startId);
 
-            checkRecounts();
-
             unreadsService.start(startId);
 
             imagePrefetchService.start(startId);
 
             finishActions();
+
+            checkRecounts();
 
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
