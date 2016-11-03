@@ -258,6 +258,8 @@
     </string-array>
     <string name="default_theme_value">light</string>
 
+    <string name="settings_gestures">Gestures</string>
+
     <string name="sync_status_housekeeping">Tidying up...</string>
     <string name="sync_status_actions">Catching up %d reading actions...</string>
     <string name="sync_status_recounts">Catching up reading actions...</string>
@@ -300,4 +302,33 @@
         <item>NONE</item>
     </string-array>
     <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
+
+    <string name="settings_ltr_gesture_action">Rightward Swipe on Story Title</string>
+    <string name="gest_action_none">No Action</string>
+    <string name="gest_action_markread">Mark Story Read</string>
+    <string name="gest_action_markunread">Mark Story Unread</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+    </string-array>
+    <string-array name="ltr_gesture_action_values">
+        <item>GEST_ACTION_NONE</item>
+        <item>GEST_ACTION_MARKREAD</item>
+        <item>GEST_ACTION_MARKUNREAD</item>
+    </string-array>
+    <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
+
+    <string name="settings_rtl_gesture_action">Leftward Swipe on Story Title</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+    </string-array>
+    <string-array name="rtl_gesture_action_values">
+        <item>GEST_ACTION_NONE</item>
+        <item>GEST_ACTION_MARKREAD</item>
+        <item>GEST_ACTION_MARKUNREAD</item>
+    </string-array>
+    <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 </resources>
