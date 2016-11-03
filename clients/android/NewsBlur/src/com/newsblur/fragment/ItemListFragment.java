@@ -435,6 +435,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             case GEST_ACTION_MARKUNREAD:
                 FeedUtils.markStoryUnread(story, getActivity());;
                 break;
+            case GEST_ACTION_SAVE:
+                FeedUtils.setStorySaved(story, true, getActivity());;
+                break;
+            case GEST_ACTION_UNSAVE:
+                FeedUtils.setStorySaved(story, false, getActivity());;
+                break;
             case GEST_ACTION_NONE:
             default:
         }

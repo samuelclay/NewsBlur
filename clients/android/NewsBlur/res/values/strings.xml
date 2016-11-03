@@ -307,15 +307,21 @@
     <string name="gest_action_none">No Action</string>
     <string name="gest_action_markread">Mark Story Read</string>
     <string name="gest_action_markunread">Mark Story Unread</string>
+    <string name="gest_action_save">Save Story</string>
+    <string name="gest_action_unsave">Unsave Story</string>
     <string-array name="ltr_gesture_action_entries">
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
     </string-array>
     <string-array name="ltr_gesture_action_values">
         <item>GEST_ACTION_NONE</item>
         <item>GEST_ACTION_MARKREAD</item>
         <item>GEST_ACTION_MARKUNREAD</item>
+        <item>GEST_ACTION_SAVE</item>
+        <item>GEST_ACTION_UNSAVE</item>
     </string-array>
     <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
 
@@ -324,11 +330,15 @@
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
     </string-array>
     <string-array name="rtl_gesture_action_values">
         <item>GEST_ACTION_NONE</item>
         <item>GEST_ACTION_MARKREAD</item>
         <item>GEST_ACTION_MARKUNREAD</item>
+        <item>GEST_ACTION_SAVE</item>
+        <item>GEST_ACTION_UNSAVE</item>
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 </resources>
