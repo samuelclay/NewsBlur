@@ -1558,21 +1558,21 @@ def cleanup_assets():
 
 def setup_redis_backups(name=None):
     # crontab for redis backups
-    crontab = ("0 4 * * * python /srv/newsblur/utils/backups/backup_redis%s.py" % 
+    crontab = ("0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py" % 
                 (("_%s"%name) if name else ""))
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
 
 def setup_mongo_backups():
     # crontab for mongo backups
-    crontab = "0 4 * * * python /srv/newsblur/utils/backups/backup_mongo.py"
+    crontab = "0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py"
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
     
 def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
-0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
+0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py
 0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
 0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
 
@@ -1580,13 +1580,13 @@ def setup_postgres_backups():
     run('crontab -l')
     
 def backup_redis(name=None):
-    run('python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
     
 def backup_mongo():
-    run('python /srv/newsblur/utils/backups/backup_mongo.py')
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py')
 
 def backup_postgresql():
-    run('python /srv/newsblur/utils/backups/backup_psql.py')
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py')
 
 # ===============
 # = Calibration =
