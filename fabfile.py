@@ -979,7 +979,7 @@ def copy_postgres_to_standby(master='db01'):
     
 def setup_mongo():
     MONGODB_VERSION = "2.6.12"
-    
+    pull()
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
@@ -987,10 +987,12 @@ def setup_mongo():
     sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
-        '/etc/mongodb.conf', use_sudo=True)
+        '/etc/mongod.conf', use_sudo=True)
     run('echo "ulimit -n 100000" > mongodb.defaults')
-    sudo('mv mongodb.defaults /etc/default/mongodb')
-    sudo('cp mongodb.defaults /etc/default/mongod')
+    # sudo('cp mongodb.defaults /etc/default/mongodb')
+    sudo('mv mongodb.defaults /etc/default/mongod')
+    sudo('mkdir -p /var/log/mongod')
+    sudo('chown mongodb /var/log/mongod')
     sudo('/etc/init.d/mongod restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
 
@@ -1556,21 +1558,21 @@ def cleanup_assets():
 
 def setup_redis_backups(name=None):
     # crontab for redis backups
-    crontab = ("0 4 * * * python /srv/newsblur/utils/backups/backup_redis%s.py" % 
+    crontab = ("0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py" % 
                 (("_%s"%name) if name else ""))
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
 
 def setup_mongo_backups():
     # crontab for mongo backups
-    crontab = "0 4 * * * python /srv/newsblur/utils/backups/backup_mongo.py"
+    crontab = "0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py"
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
     
 def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
-0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
+0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py
 0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
 0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
 
@@ -1578,13 +1580,13 @@ def setup_postgres_backups():
     run('crontab -l')
     
 def backup_redis(name=None):
-    run('python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
     
 def backup_mongo():
-    run('python /srv/newsblur/utils/backups/backup_mongo.py')
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py')
 
 def backup_postgresql():
-    run('python /srv/newsblur/utils/backups/backup_psql.py')
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py')
 
 # ===============
 # = Calibration =
@@ -1684,6 +1686,9 @@ def upgrade_to_virtualenv(role=None):
         celery_stop()
     elif role == "app":
         gunicorn_stop()
+    elif role == "node":
+        run('sudo supervisorctl stop node_unread')
+        run('sudo supervisorctl stop node_favicons')
     elif role == "work":
         sudo('/etc/init.d/supervisor stop')
     kill_pgbouncer(bounce=False)
@@ -1695,6 +1700,8 @@ def upgrade_to_virtualenv(role=None):
     elif role == "app":
         setup_gunicorn(supervisor=True, restart=False)
         sudo('reboot')
+    elif role == "node":
+        deploy_node()
     elif role == "search":
         setup_db_search()
     elif role == "work":
