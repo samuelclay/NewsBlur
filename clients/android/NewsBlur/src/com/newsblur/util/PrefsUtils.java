@@ -514,7 +514,7 @@ public class PrefsUtils {
 
     public static boolean isShowThumbnails(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS, false);
+        return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS,  true);
     }
 
     public static boolean isAutoOpenFirstUnread(Context context) {
