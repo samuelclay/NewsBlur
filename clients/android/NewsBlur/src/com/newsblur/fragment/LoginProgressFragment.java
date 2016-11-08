@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,8 +95,11 @@ public class LoginProgressFragment extends Fragment {
 				loggingInProgress.setVisibility(View.GONE);
 				updateStatus.startAnimation(a);
 
-				loginProfilePicture.setVisibility(View.VISIBLE);
-				loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(PrefsUtils.getUserImage(c), 10f, false));
+                Bitmap userImage = PrefsUtils.getUserImage(c);
+                if (userImage != null ) {
+                    loginProfilePicture.setVisibility(View.VISIBLE);
+                    loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(userImage, 10f, false));
+                }
 				feedProgress.setVisibility(View.VISIBLE);
 
 				final Animation b = AnimationUtils.loadAnimation(c, R.anim.text_up);
