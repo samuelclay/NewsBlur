@@ -437,7 +437,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
                 story['shared_by_user'] = True
                 shared_story = MSharedStory.objects.get(user_id=user.pk, 
                                                         story_feed_id=story['story_feed_id'],
-                                                        story_hash=story['story_hash'])
+                                                        story_hash=story['story_hash'])\
+                                                   .hint([('story_hash', 1)])
                 story['user_comments'] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
@@ -451,7 +452,9 @@ def load_social_page(request, user_id, username=None, **kwargs):
         social_services = MSocialServices.get_user(social_user.pk)
 
         active_story_db = MSharedStory.objects.filter(user_id=social_user.pk,
-                                                      story_hash=story_id).limit(1)
+                                                      story_hash=story_id)\
+                                               .hint([('story_hash', 1)])\
+                                               .limit(1)
         if active_story_db:
             active_story_db = active_story_db[0]
             if user_social_profile.bb_permalink_direct:
@@ -567,7 +570,9 @@ def mark_story_as_shared(request):
         })
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
-                                               story_hash=story['story_hash']).limit(1).first()
+                                               story_hash=story['story_hash'])\
+                                        .hint([('story_hash', 1)])\
+                                        .limit(1).first()
     if not shared_story:
         story_db = {
             "story_guid": story.story_guid,

@@ -647,6 +647,7 @@ def load_single_feed(request, feed_id):
         if shared_story_hashes:
             shared_stories = MSharedStory.objects(user_id=user.pk, 
                                                   story_hash__in=shared_story_hashes)\
+                                         .hint([('story_hash', 1)])\
                                          .only('story_hash', 'shared_date', 'comments')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags))
