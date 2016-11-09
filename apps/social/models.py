@@ -2051,7 +2051,7 @@ class MSharedStory(mongo.Document):
         return "%sstory/%s/%s" % (
             profile.blurblog_url,
             slugify(self.story_title)[:20],
-            self.guid_hash[:6]
+            self.story_hash
         )
     
     def generate_post_to_service_message(self, truncate=None, include_url=True):

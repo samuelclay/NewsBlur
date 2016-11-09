@@ -449,7 +449,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         social_services = MSocialServices.get_user(social_user.pk)
 
         active_story_db = MSharedStory.objects.filter(user_id=social_user.pk,
-                                                      story_guid_hash=story_id).limit(1)
+                                                      story_hash=story_id).limit(1)
         if active_story_db:
             active_story_db = active_story_db[0]
             if user_social_profile.bb_permalink_direct:
