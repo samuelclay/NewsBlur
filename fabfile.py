@@ -989,13 +989,14 @@ def setup_mongo():
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongod.conf', use_sudo=True)
     run('echo "ulimit -n 100000" > mongodb.defaults')
-    # sudo('cp mongodb.defaults /etc/default/mongodb')
     sudo('mv mongodb.defaults /etc/default/mongod')
     sudo('mkdir -p /var/log/mongod')
     sudo('chown mongodb /var/log/mongod')
     sudo('/etc/init.d/mongod restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
 
+    sudo('pip install pymongo==2.6') # For munin
+    
     # Reclaim 5% disk space used for root logs. Set to 1%.
     with settings(warn_only=True):
         sudo('tune2fs -m 1 /dev/vda')
