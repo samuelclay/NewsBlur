@@ -1916,7 +1916,8 @@ class MSharedStory(mongo.Document):
                         'story_hash': story['story_hash'],
                         'user_id__in': sharer_user_ids,
                     }
-                    shared_stories = cls.objects.filter(**params)
+                    shared_stories = cls.objects.filter(**params)\
+                                                .hint([('story_hash', 1)])
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
                     story['reply_count'] += len(comments['replies'])
@@ -1964,7 +1965,8 @@ class MSharedStory(mongo.Document):
                         'story_hash': story['story_hash'],
                         'user_id__in': story['shared_by_friends'],
                     }
-                    shared_stories = cls.objects.filter(**params)
+                    shared_stories = cls.objects.filter(**params)\
+                                                .hint([('story_hash', 1)])
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
                     story['reply_count'] += len(comments['replies'])
