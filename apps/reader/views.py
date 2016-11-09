@@ -874,6 +874,7 @@ def load_starred_stories(request):
     if shared_story_hashes:
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_hash__in=shared_story_hashes)\
+                                     .hint([('story_hash', 1)])\
                                      .only('story_hash', 'shared_date', 'comments')
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
@@ -1155,6 +1156,7 @@ def load_read_stories(request):
 
     shared_stories = MSharedStory.objects(user_id=user.pk, 
                                           story_hash__in=story_hashes)\
+                                 .hint([('story_hash', 1)])\
                                  .only('story_hash', 'shared_date', 'comments')
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
