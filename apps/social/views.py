@@ -115,6 +115,7 @@ def load_social_stories(request, user_id, username=None):
                                    .only('story_hash', 'starred_date', 'user_tags')
     shared_stories = MSharedStory.objects(user_id=user.pk, 
                                           story_hash__in=story_hashes)\
+                                 .hint([('story_hash', 1)])\
                                  .only('story_hash', 'shared_date', 'comments')
     starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                     user_tags=story.user_tags))
@@ -252,6 +253,7 @@ def load_river_blurblog(request):
                                 for story in starred_stories])
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_hash__in=story_hashes)\
+                                     .hint([('story_hash', 1)])\
                                      .only('story_hash', 'shared_date', 'comments')
         shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                        comments=story.comments))
