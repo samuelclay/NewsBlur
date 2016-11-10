@@ -289,7 +289,7 @@ class SearchStory:
         
         try:
             result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery(), e:
+        except pyes.InvalidQuery, e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -316,7 +316,7 @@ class SearchStory:
         
         try:
             result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery(), e:
+        except pyes.InvalidQuery, e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
