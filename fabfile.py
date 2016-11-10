@@ -263,7 +263,7 @@ def setup_db(engine=None, skip_common=False):
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
-        setup_mongo_mms()
+        # setup_mongo_mms()
         setup_mongo_backups()
     elif engine == "redis":
         setup_redis()
