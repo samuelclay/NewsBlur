@@ -3,7 +3,7 @@ from celery.task import Task
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
 from apps.reader.models import UserSubscription
-from apps.social.models import MSocialServices
+from apps.social.models import MSocialServices, MActivity, MInteraction
 
 class EmailNewUser(Task):
     
@@ -60,6 +60,8 @@ class CleanupUser(Task):
         UserSubscription.trim_user_read_stories(user_id)
         UserSubscription.verify_feeds_scheduled(user_id)
         Profile.count_all_feed_subscribers_for_user(user_id)
+        MInteraction.trim(user_id)
+        MActivity.trim(user_id)
         # UserSubscription.refresh_stale_feeds(user_id)
         
         try:
