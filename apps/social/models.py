@@ -2847,6 +2847,24 @@ class MInteraction(mongo.Document):
         }
     
     @classmethod
+    def trim(cls, user_id, limit=100):
+        user = User.objects.get(pk=user_id)
+        interactions = cls.objects.filter(user_id=user_id).skip(limit)
+        interaction_count = interactions.count(True)
+
+        if interaction_count == 0:
+            interaction_count = cls.objects.filter(user_id=user_id).count()
+            logging.user(user, "~FBNot trimming interactions, only ~SB%s~SN interactions found" % interaction_count)
+            return
+        
+        logging.user(user, "~FBTrimming ~SB%s~SN interactions..." % interaction_count)
+
+        for interaction in interactions:
+            interaction.delete()
+
+        logging.user(user, "~FBDone trimming ~SB%s~SN interactions" % interaction_count)
+    
+    @classmethod
     def publish_update_to_subscribers(self, user_id):
         user = User.objects.get(pk=user_id)
         try:
@@ -3086,6 +3104,24 @@ class MActivity(mongo.Document):
             'content_id': self.content_id,
             'story_hash': story_hash,
         }
+    
+    @classmethod
+    def trim(cls, user_id, limit=100):
+        user = User.objects.get(pk=user_id)
+        activities = cls.objects.filter(user_id=user_id).skip(limit)
+        activity_count = activities.count(True)
+
+        if activity_count == 0:
+            activity_count = cls.objects.filter(user_id=user_id).count()
+            logging.user(user, "~FBNot trimming activities, only ~SB%s~SN activities found" % activity_count)
+            return
+        
+        logging.user(user, "~FBTrimming ~SB%s~SN activities..." % activity_count)
+
+        for activity in activities:
+            activity.delete()
+
+        logging.user(user, "~FBDone trimming ~SB%s~SN activities" % activity_count)
         
     @classmethod
     def user(cls, user_id, page=1, limit=4, public=False, categories=None):
