@@ -40,7 +40,7 @@ def newsletter_receive(request):
     
     response = HttpResponse('OK')
     
-    if settings.DEBUG:
+    if settings.DEBUG or 'samuel' in params['To']:
         logging.debug(" ---> Email newsletter: %s" % pprint(params))
         
     email_newsletter = EmailNewsletter()
