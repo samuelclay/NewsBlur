@@ -379,8 +379,12 @@ class FetchFeed:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
+            elif 'User not found' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
             else:
-                raise
+                raise e
                 
         
         data = {}
