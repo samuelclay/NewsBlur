@@ -784,15 +784,23 @@ def copy_certificates():
 
 @parallel
 def maintenance_on():
-    put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
-    with virtualenv():
-        run('mv templates/maintenance_off.html templates/maintenance_on.html')
+    role = role_for_host()
+    if role in ['work', 'search']:
+        sudo('supervisorctl stop all')
+    else:
+        put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
+        with virtualenv():
+            run('mv templates/maintenance_off.html templates/maintenance_on.html')
 
 @parallel
 def maintenance_off():
-    with virtualenv():
-        run('mv templates/maintenance_on.html templates/maintenance_off.html')
-        run('git checkout templates/maintenance_off.html')
+    role = role_for_host()
+    if role in ['work', 'search']:
+        sudo('supervisorctl start all')
+    else:
+        with virtualenv():
+            run('mv templates/maintenance_on.html templates/maintenance_off.html')
+            run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
     version = "1.5.14"
