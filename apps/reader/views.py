@@ -2262,6 +2262,8 @@ def _mark_story_as_starred(request):
     removed_user_tags = []
     if not starred_story:
         params.update(story_values)
+        if params.has_key('story_latest_content_z'):
+            params.pop('story_latest_content_z')
         starred_story = MStarredStory.objects.create(**params)
         created = True
         MActivity.new_starred_story(user_id=request.user.pk, 
