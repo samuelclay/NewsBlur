@@ -477,6 +477,7 @@ def setup_virtualenv():
                 with settings(warn_only=True):
                     run('mkvirtualenv --no-site-packages newsblur')
                 run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
+                run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
     
 @_contextmanager
 def virtualenv():
