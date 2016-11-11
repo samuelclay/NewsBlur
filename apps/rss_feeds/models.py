@@ -2558,6 +2558,10 @@ class MStarredStory(mongo.Document):
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     user_tags                = mongo.ListField(mongo.StringField(max_length=128))
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
+    share_user_ids           = mongo.ListField(mongo.IntField()) # Only used for isomorphism
+    # comment_count            = mongo.IntField()
+    comment_user_ids         = mongo.ListField(mongo.IntField()) # Only used for isomorphism
+    # share_count              = mongo.IntField()
 
     meta = {
         'collection': 'starred_stories',

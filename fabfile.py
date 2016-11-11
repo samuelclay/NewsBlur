@@ -986,7 +986,7 @@ def copy_postgres_to_standby(master='db01'):
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     
 def setup_mongo():
-    MONGODB_VERSION = "2.6.12"
+    MONGODB_VERSION = "3.0.14"
     pull()
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
