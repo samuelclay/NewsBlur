@@ -4,8 +4,8 @@
 from vendor.munin.mongodb import MuninMongoDBPlugin
 
 class MongoDBConnectionsPlugin(MuninMongoDBPlugin):
-    args = "-l 0 --base 1024"
-    vlabel = "bytes"
+    args = "-l 0 --base 1000"
+    vlabel = "count"
     title = "MongoDB current connections"
     info = "Current connections"
     fields = (

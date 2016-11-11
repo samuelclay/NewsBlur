@@ -1,0 +1,33 @@
+#!/srv/newsblur/venv/newsblur/bin/python
+# -*- coding: utf-8 -*-
+
+from vendor.munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBOpsPlugin(MuninMongoDBPlugin):
+    args = "-l 0 --base 1000"
+    vlabel = "ops / ${graph_period}"
+    title = "MongoDB Ops"
+    info = "Ops"
+
+    @property
+    def fields(self):
+        status = self.connection.admin.command('serverStatus')
+        return [
+            (q, dict(
+                label = "%s" % q,
+                info = "%s" % q,
+                type = "COUNTER",
+                min = "0",
+                max = "500000"
+            )) for q in status['opcounters'].keys()
+        ]
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        return dict(
+            (q, status["opcounters"][q])
+            for q in status['opcounters'].keys()
+        )
+
+if __name__ == "__main__":
+    MongoDBOpsPlugin().run()
