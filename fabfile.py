@@ -989,8 +989,9 @@ def setup_mongo():
     MONGODB_VERSION = "3.0.14"
     pull()
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
-    sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
+    # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list')
     sudo('apt-get update')
     sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
@@ -1003,7 +1004,7 @@ def setup_mongo():
     sudo('/etc/init.d/mongod restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
 
-    sudo('pip install pymongo==2.6') # For munin
+    sudo('pip install pymongo==3.0.3') # For munin
     
     # Reclaim 5% disk space used for root logs. Set to 1%.
     with settings(warn_only=True):

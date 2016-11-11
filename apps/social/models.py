@@ -1914,6 +1914,8 @@ class MSharedStory(mongo.Document):
                         'story_hash': story['story_hash'],
                         'user_id__in': sharer_user_ids,
                     }
+                    if params.has_key('story_db_id'):
+                        params.pop('story_db_id')
                     shared_stories = cls.objects.filter(**params)\
                                                 .hint([('story_hash', 1)])
                 for shared_story in shared_stories:
