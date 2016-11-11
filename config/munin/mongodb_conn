@@ -23,7 +23,7 @@ class MongoDBConnectionsPlugin(MuninMongoDBPlugin):
             value = status['connections']['current']
         except KeyError:
             value = "U"
-        return dict(heap_usage=value)
+        return dict(connections=value)
 
 if __name__ == "__main__":
     MongoDBConnectionsPlugin().run()

@@ -1133,6 +1133,9 @@ def copy_munin_data(from_server):
     
 
 def setup_db_munin():
+    sudo('rm /etc/munin/plugins/mongo*')
+    sudo('rm /etc/munin/plugins/pg_*')
+    sudo('rm /etc/munin/plugins/redis_*')
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/redis_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
