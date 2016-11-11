@@ -1400,6 +1400,7 @@ class MCommentReply(mongo.EmbeddedDocument):
         'ordering': ['publish_date'],
         'id_field': 'reply_id',
         'allow_inheritance': False,
+        'strict': False,
     }
 
 
