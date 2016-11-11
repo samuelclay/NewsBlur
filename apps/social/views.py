@@ -396,7 +396,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
         params = dict(user_id=social_user.pk)
         if feed_id:
             params['story_feed_id'] = feed_id
-
+        if params.has_key('story_db_id'):
+            params.pop('story_db_id')
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
         stories = Feed.format_stories(mstories, include_permalinks=True)
         
