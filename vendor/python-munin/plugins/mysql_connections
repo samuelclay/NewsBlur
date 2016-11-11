@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from vendor.munin.mysql import MuninMySQLPlugin
+
+class MuninMySQLConnectionsPlugin(MuninMySQLPlugin):
+    dbname_in_args = True
+    title = "Connections"
+    args = "-l 0 --base 1000"
+    vlabel = "connections"
+    info = "Connections"
+    fields = (
+        ('connections', dict(
+            label = "Connections",
+            info = "Connections",
+            type = "DERIVE",
+        )),
+        ('aborted_connects', dict(
+            label = "Aborted connects",
+            info = "A high aborted connects can show someone trying to guess a password",
+            type = "DERIVE",
+        )),
+        ('max_used_connections', dict(
+            label = "Max used connections",
+            info = "Max used connections",
+            type = "GAUGE",
+        )),
+        ('max_connections', dict(
+            label = "Max connections",
+            info = "Max connections",
+            type = "GAUGE",
+        )),
+    )
+
+    def execute(self):
+        c = self.cursor()
+        c.execute("SHOW GLOBAL STATUS")
+        status = c.fetchall()
+        c.execute("SHOW GLOBAL VARIABLES")
+        global_vars = c.fetchall()
+
+        field_names = set(x[0] for x in self.fields)
+
+        values = dict()
+
+        for name, value in status + global_vars:
+            name = name.lower()
+            if name in field_names:
+                values[name] = value
+
+        return values
+
+if __name__ == "__main__":
+    MuninMySQLConnectionsPlugin().run()

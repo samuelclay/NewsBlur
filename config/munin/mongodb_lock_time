@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from munin.mongodb import MuninMongoDBPlugin
+from vendor.munin.mongodb import MuninMongoDBPlugin
 
 class MongoDBLockTime(MuninMongoDBPlugin):
     args = "-l 0 --base 1000"
@@ -9,9 +9,18 @@ class MongoDBLockTime(MuninMongoDBPlugin):
     title = "MongoDB global lock time"
     info = "How long the global lock has been held"
     fields = (
-        ('locktime', dict(
-            label = "Global lock time",
-            info = "How long the global lock has been held",
+        ('activeClients', dict(
+            label = "Active clients",
+            type = "COUNTER",
+            min = "0",
+        )),
+        ('writers', dict(
+            label = "Writers",
+            type = "COUNTER",
+            min = "0",
+        )),
+        ('readers', dict(
+            label = "Readers",
             type = "COUNTER",
             min = "0",
         )),
@@ -20,10 +29,14 @@ class MongoDBLockTime(MuninMongoDBPlugin):
     def execute(self):
         status = self.connection.admin.command('serverStatus')
         try:
-            value = int(status["globalLock"]["lockTime"])
+            active_clients = int(status["globalLock"]["activeClients"]["total"])
+            readers = int(status["globalLock"]["activeClients"]["readers"])
+            writers = int(status["globalLock"]["activeClients"]["writers"])
         except KeyError:
-            value = "U"
-        return dict(locktime=value)
+            active_clients = "U"
+            readers = "U"
+            writers = "U"
+        return dict(activeClients=active_clients, readers=readers, writers=writers)
 
 if __name__ == "__main__":
     MongoDBLockTime().run()

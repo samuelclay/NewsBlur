@@ -1135,10 +1135,6 @@ def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/redis_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
-    with cd(env.VENDOR_PATH), settings(warn_only=True):
-        run('git clone git://github.com/samuel/python-munin.git')
-    with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
-        run('sudo python setup.py install')
     sudo('/etc/init.d/munin-node stop')
     time.sleep(2)
     sudo('/etc/init.d/munin-node start')
