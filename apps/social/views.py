@@ -436,10 +436,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
         for story in stories:
             if user.pk in story['share_user_ids']:
                 story['shared_by_user'] = True
-                shared_story = MSharedStory.objects.get(user_id=user.pk, 
+                shared_story = MSharedStory.objects.hint([('story_hash', 1)])\
+                                                   .get(user_id=user.pk, 
                                                         story_feed_id=story['story_feed_id'],
-                                                        story_hash=story['story_hash'])\
-                                                   .hint([('story_hash', 1)])
+                                                        story_hash=story['story_hash'])
                 story['user_comments'] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
