@@ -641,7 +641,7 @@ def load_single_feed(request, feed_id):
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
-                                       .hint([('user_id', 1), ('story_feed_id', 1)])\
+                                       .hint([('user_id', 1), ('story_hash', 1)])\
                                        .only('story_hash', 'starred_date', 'user_tags')
         shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
         shared_stories = []
@@ -1164,6 +1164,7 @@ def load_read_stories(request):
                            for story in shared_stories])
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_hash__in=story_hashes)\
+                                   .hint([('user_id', 1), ('story_hash', 1)])\
                                    .only('story_hash', 'starred_date')
     starred_stories = dict([(story.story_hash, story.starred_date) 
                             for story in starred_stories])

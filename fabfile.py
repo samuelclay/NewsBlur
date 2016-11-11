@@ -1001,7 +1001,6 @@ def setup_mongo():
     sudo('mv mongodb.defaults /etc/default/mongod')
     sudo('mkdir -p /var/log/mongod')
     sudo('chown mongodb /var/log/mongod')
-    sudo('/etc/init.d/mongod restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
 
     sudo('pip install pymongo==3.0.3') # For munin

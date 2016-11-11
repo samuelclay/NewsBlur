@@ -1403,7 +1403,7 @@ class MCommentReply(mongo.EmbeddedDocument):
     }
 
 
-class MSharedStory(mongo.Document):
+class MSharedStory(mongo.DynamicDocument):
     user_id                  = mongo.IntField()
     shared_date              = mongo.DateTimeField()
     comments                 = mongo.StringField()
