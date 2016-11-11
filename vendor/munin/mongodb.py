@@ -29,7 +29,7 @@ class MuninMongoDBPlugin(MuninPlugin):
     def connection(self):
         if not hasattr(self, '_connection'):
             import pymongo
-            self._connection = pymongo.MongoReplicaSetClient(self.server[0], self.server[1], replicaSet='nbset')
+            self._connection = pymongo.MongoClient(self.server[0], self.server[1])
         return self._connection
 
     @property

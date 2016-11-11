@@ -1003,12 +1003,10 @@ def setup_mongo():
     sudo('mkdir -p /var/log/mongod')
     sudo('chown mongodb /var/log/mongod')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
-
-    sudo('pip install pymongo==3.0.3') # For munin
     
     # Reclaim 5% disk space used for root logs. Set to 1%.
     with settings(warn_only=True):
-        sudo('tune2fs -m 1 /dev/vda')
+        sudo('tune2fs -m 1 /dev/vda1')
 
 def setup_mongo_configsvr():
     sudo('mkdir -p /var/lib/mongodb_configsvr')
