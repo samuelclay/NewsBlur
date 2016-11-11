@@ -28,7 +28,7 @@ isodate==0.5.1
 kombu==3.0.35
 lxml==3.3.5
 mock==2.0.0
-mongoengine==0.8.2
+mongoengine==0.10.6
 mysql-python==1.2.5
 ndg-httpsclient==0.3.2
 nltk==2.0.5
@@ -40,7 +40,7 @@ psycopg2==2.5.2
 pyasn1==0.1.7
 pyes==0.99.5
 pyflakes==0.6.1
-pymongo==2.6
+pymongo==3.3.1
 pyOpenSSL==0.14
 python-dateutil==2.1
 python-digitalocean==1.6

@@ -144,7 +144,6 @@ class MSocialProfile(mongo.Document):
         'collection': 'social_profile',
         'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
     }
     
     def __unicode__(self):
@@ -1441,7 +1440,6 @@ class MSharedStory(mongo.Document):
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
                     'shared_date', 'story_guid', 'story_feed_id', 'story_hash'],
-        'index_drop_dups': True,
         'ordering': ['-shared_date'],
         'allow_inheritance': False,
     }
@@ -1487,7 +1485,7 @@ class MSharedStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
 
-        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
+        self.story_guid_hash = self.guid_hash
         self.story_title = strip_tags(self.story_title)
         self.story_hash = self.feed_guid_hash
 
@@ -2819,7 +2817,6 @@ class MInteraction(mongo.Document):
         'collection': 'interactions',
         'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
         'ordering': ['-date'],
     }
     
@@ -3079,7 +3076,6 @@ class MActivity(mongo.Document):
         'collection': 'activities',
         'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
         'ordering': ['-date'],
     }
     
@@ -3340,7 +3336,6 @@ class MFollowRequest(mongo.Document):
         'indexes': ['follower_user_id', 'followee_user_id'],
         'ordering': ['-date'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
     }
     
     @classmethod

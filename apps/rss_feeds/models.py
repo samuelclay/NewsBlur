@@ -2172,7 +2172,6 @@ class MStory(mongo.Document):
                     {'fields': ['story_hash'], 
                      'unique': True,
                      'types': False, }],
-        'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
         'cascade': False,
@@ -2562,8 +2561,8 @@ class MStarredStory(mongo.Document):
 
     meta = {
         'collection': 'starred_stories',
-        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
-        'index_drop_dups': True,
+        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 
+                    ('user_id', 'story_hash'), 'story_feed_id'],
         'ordering': ['-starred_date'],
         'allow_inheritance': False,
     }

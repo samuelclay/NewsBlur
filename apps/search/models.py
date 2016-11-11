@@ -24,7 +24,6 @@ class MUserSearch(mongo.Document):
     meta = {
         'collection': 'user_search',
         'indexes': ['user_id'],
-        'index_drop_dups': True,
         'allow_inheritance': False,
     }
     
