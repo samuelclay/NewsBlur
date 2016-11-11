@@ -1442,6 +1442,7 @@ class MSharedStory(mongo.Document):
                     'shared_date', 'story_guid', 'story_feed_id', 'story_hash'],
         'ordering': ['-shared_date'],
         'allow_inheritance': False,
+        'strict': False,
     }
 
     def __unicode__(self):

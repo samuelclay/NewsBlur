@@ -2175,6 +2175,7 @@ class MStory(mongo.Document):
         'ordering': ['-story_date'],
         'allow_inheritance': False,
         'cascade': False,
+        'strict': False,
     }
     
     RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
@@ -2569,6 +2570,7 @@ class MStarredStory(mongo.Document):
                     ('user_id', 'story_hash'), 'story_feed_id'],
         'ordering': ['-starred_date'],
         'allow_inheritance': False,
+        'strict': False,
     }
     
     def save(self, *args, **kwargs):
