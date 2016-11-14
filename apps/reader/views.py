@@ -1294,9 +1294,10 @@ def load_river_stories__redis(request):
         if read_filter == 'starred':
             starred_stories = mstories
         else:
+            story_hashes = [s['story_hash'] for s in stories]
             starred_stories = MStarredStory.objects(
                 user_id=user.pk,
-                story_feed_id__in=found_feed_ids
+                story_hash__in=story_hashes
             ).only('story_hash', 'starred_date')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags)) 
