@@ -8809,6 +8809,23 @@ form.opml_import_form input {
   font-size: 11px;
 }
 
+/* ======================= */
+/* = Notifications Modal = */
+/* ======================= */
+
+.NB-modal-notifications .NB-preference-label {
+    float: left;
+    margin: 10px 0;
+    width: 102px;
+    clear: both;
+}
+.NB-modal-notifications .NB-preference-options {
+    margin: 6px 0;
+    float: left;
+    overflow: hidden;
+}
+
+
 /* ===================== */
 /* = Feedchooser Modal = */
 /* ===================== */
