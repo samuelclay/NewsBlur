@@ -425,7 +425,7 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            if (stopSync()) return;
+            if (HaltNow) return;
             if (dbHelper.getActions(false).getCount() > 0) return;
 
             // a metadata sync invalidates pagination and feed status
@@ -512,9 +512,9 @@ public class NBSyncService extends Service {
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();
 
-            cleanupService.start(startId);
-            unreadsService.start(startId);
             UnreadsService.doMetadata();
+            unreadsService.start(startId);
+            cleanupService.start(startId);
 
         } finally {
             FFSyncRunning = false;
