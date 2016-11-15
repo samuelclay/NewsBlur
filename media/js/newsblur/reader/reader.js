@@ -3009,6 +3009,10 @@
             NEWSBLUR.goodies = new NEWSBLUR.ReaderGoodies();
         },
                         
+        open_notifications_modal: function(feed_id) {
+            NEWSBLUR.notifications = new NEWSBLUR.ReaderNotifications(feed_id);
+        },
+                        
         open_newsletters_modal: function() {
             NEWSBLUR.newsletters = new NEWSBLUR.ReaderNewsletters();
         },
@@ -3168,6 +3172,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-notifications' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-newsletters' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email Newsletters')
@@ -3225,6 +3233,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-notifications' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -3752,13 +3764,16 @@
                 var close_menu_handler = function(e) {
                     _.defer(function() {
                         $(document).bind('click.menu', function(e) {
+                            // console.log(['click outside menu']);
                             self.hide_manage_menu(type, $item, false);
                         });
                     });
                 };
                 if (options.rightclick) {
+                    // console.log(['mouseup.menu', close_menu_handler]);
                     $(document).one('mouseup.menu', close_menu_handler);
                 } else {
+                    // console.log(['close menu']);
                     close_menu_handler();
                 }
             });
@@ -5645,6 +5660,13 @@
                     self.open_feed_exception_modal(feed_id);
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-notifications' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var feed_id = $t.parents('.NB-menu-manage').data('feed_id');                    
+                    self.open_notifications_modal(feed_id);
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-settings' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
@@ -5893,6 +5915,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function() {
                         self.open_goodies_modal();
+                    });
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-notifications' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_notifications_modal();
                     });
                 }
             });  

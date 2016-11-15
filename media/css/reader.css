@@ -6986,6 +6986,10 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
     background-size: 18px;
 }
+.NB-menu-manage .NB-menu-manage-feed-notifications .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png') no-repeat 0 0;
+    background-size: 18px;
+}
 .NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_award.png') no-repeat  0 1px;    
     background-size: 18px;
@@ -7269,6 +7273,10 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-newsletters .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat  0 0;
+    background-size: 18px;
+}
+.NB-menu-manage .NB-menu-manage-notifications .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png') no-repeat  0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-import .NB-menu-manage-image {

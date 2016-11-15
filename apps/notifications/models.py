@@ -45,10 +45,25 @@ class MUserFeedNotification(mongo.Document):
         if self.is_android: notification_types.append('android')
 
         return "%s/%s: %s -> %s" % (
-            User.objects.get(pk=self.user_id).username
-            Feed.get_feed_by_id(self.feed_id)
+            User.objects.get(pk=self.user_id).username,
+            Feed.get_feed_by_id(self.feed_id),
             ','.join(notification_types),
-            self.last_notification_date
+            self.last_notification_date,
         )
     
-    
+    @classmethod
+    def feeds_for_user(cls, user_id):
+        notifications = cls.objects.filter(user_id=user_id)
+        notifications_by_feed = {}
+
+        for feed in notifications:
+            notifications_by_feed[feed.feed_id] = {
+                'notifications': [],
+                'notification_freq': feed.frequency
+            }
+            if feed.is_email: notifications_by_feed[feed.feed_id]['notifications'].append('email')
+            if feed.is_web: notifications_by_feed[feed.feed_id]['notifications'].append('web')
+            if feed.is_ios: notifications_by_feed[feed.feed_id]['notifications'].append('ios')
+            if feed.is_android: notifications_by_feed[feed.feed_id]['notifications'].append('android')
+            
+        return notifications_by_feed
