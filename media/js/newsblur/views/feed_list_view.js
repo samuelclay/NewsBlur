@@ -232,6 +232,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
         } else if (next == 'password') {
             NEWSBLUR.reader.open_account_modal({'change_password': true});
+        } else if (next == 'notifications') {
+            _.delay(function() {
+                NEWSBLUR.reader.open_notifications_modal(NEWSBLUR.assets.active_feed && NEWSBLUR.assets.active_feed.id);
+            }, 200);
         }
 
         var url = $.getQueryString('url') || $.getQueryString('add');

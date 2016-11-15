@@ -55,8 +55,6 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
     populate_settings: function(data) {
         var $submit = $('.NB-modal-submit-save', this.$modal);
         var $loading = $('.NB-modal-loading', this.$modal);
-        var $page_history = $(".NB-exception-page-history", this.$modal);
-        var $feed_history = $(".NB-exception-feed-history", this.$modal);
         
         $loading.removeClass('NB-active');
         this.resize();
@@ -71,29 +69,20 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             ])),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, 'Notifications'),
-            $.make('h2', { className: 'NB-modal-subtitle' }, [
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon' }),
-                $.make('div', { className: 'NB-modal-feed-heading' }, [
-                    $.make('span', { className: 'NB-modal-feed-title' }),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' })
-                ])
-            ]),
             (this.feed && $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
-                $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-status NB-right' }),
-                    $.make('div', { className: 'NB-exception-option-meta' }),
-                    'Site Notifications'
-                ]),
-                $.make('div', { className: 'NB-fieldset-fields' }, [
-                    this.make_feed_notification(this.feed)
+                $.make('fieldset', [
+                    $.make('legend', 'Site Notifications'),
+                    $.make('div', { className: 'NB-modal-section NB-modal-section-site'}, [
+                        this.make_feed_notification(this.feed)
+                    ])
                 ])
             ])),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
-                $.make('h5', [
-                    'All notifications'
-                ]),
-                $.make('div', { className: 'NB-fieldset-fields' }, [
-                    this.make_feed_notifications()
+                $.make('fieldset', [
+                    $.make('legend', 'All Notifications'),
+                    $.make('div', { className: 'NB-modal-section'}, [
+                        this.make_feed_notifications()
+                    ])
                 ])
             ])
         ]);

@@ -12,14 +12,25 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
         
     render: function() {
         var feed = this.model;
-        var $feed = $(_.template('<div class="NB-feed-notification <% if (selected) { %>selected<% } %>>\
+        var $feed = $(_.template('<div class="NB-feed-notification <% if (selected) { %>selected<% } %>">\
+            <ul class="segmented-control NB-feed-notifications">\
+                <li class="NB-feed-notifications-option NB-feed-notifications-email">Email</li>\
+                <li class="NB-feed-notifications-option NB-feed-notifications-web">Web</li>\
+                <li class="NB-feed-notifications-option NB-feed-notifications-ios">iOS</li>\
+                <li class="NB-feed-notifications-option NB-feed-notifications-android">Android</li>\
+            </ul>\
+            <ul class="segmented-control NB-feed-notification-filter">\
+                <li class="NB-feed-notification-filter-unread NB-active">\
+                    <div class="NB-unread-icon"></div>\
+                    Unread stories\
+                </li>\
+                <li class="NB-feed-notification-filter-focus">\
+                    <div class="NB-focus-icon"></div>\
+                    Focus\
+                </li>\
+            </ul>\
+            <img class="NB-feed-icon" src="<%= $.favicon(feed) %>">\
             <div class="NB-feed-title"><%= feed.get("feed_title") %></div>\
-            <div class="NB-feed-notifications">\
-                <div class="NB-feed-notifications-option NB-feed-notifications-email">Email</div>\
-                <div class="NB-feed-notifications-option NB-feed-notifications-web">Web</div>\
-                <div class="NB-feed-notifications-option NB-feed-notifications-ios">iOS</div>\
-                <div class="NB-feed-notifications-option NB-feed-notifications-android">Android</div>\
-            </div>\
         </div>\
         ', {
           feed                : feed,

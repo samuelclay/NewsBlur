@@ -8821,6 +8821,10 @@ form.opml_import_form input {
 /* = Notifications Modal = */
 /* ======================= */
 
+.NB-modal.NB-modal-notifications .NB-fieldset {
+    border-bottom: none;
+    width: 100%;
+}
 .NB-modal-notifications .NB-preference-label {
     float: left;
     margin: 10px 0;
@@ -8831,6 +8835,50 @@ form.opml_import_form input {
     margin: 6px 0;
     float: left;
     overflow: hidden;
+}
+.NB-feed-notification {
+    width: 100%;
+}
+.NB-feed-notification .NB-feed-notification-filter {
+    float: right;
+    margin: 0 12px;
+}
+.NB-feed-notification .NB-feed-title {
+    font-size: 12px;
+}
+.NB-feed-notification .NB-feed-icon {
+    width: 16px;
+    height: 16px;
+    float: left;
+    margin: 0 7px 0 0;
+}
+.NB-feed-notification .NB-feed-notification-filter .NB-unread-icon,
+.NB-feed-notification .NB-feed-notification-filter .NB-focus-icon {
+    width: 8px;
+    height: 12px;
+    display: block;
+    float: left;
+    margin: 0 5px 0 2px;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 0 center;
+    background-size: 8px;
+}
+.NB-feed-notification .NB-feed-notification-filter .NB-focus-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 0 center;
+    background-size: 8px;    
+}
+.NB-feed-notification .segmented-control {
+    margin-top: -2px;
+    margin-bottom: 2px;
+}
+.NB-feed-notification .segmented-control li {
+    padding: 2px 6px;
+    font-size: 10px;
+}
+.NB-feed-notification .NB-feed-notifications {
+    float: right;
+}
+.NB-modal-notifications .NB-modal-section-site {
+    margin: 12px 0 0;
 }
 
 
