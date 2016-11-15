@@ -538,7 +538,7 @@ public class PrefsUtils {
      */
     public static boolean isBackgroundNetworkAllowed(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMO);
+        String mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMONONME);
 
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
@@ -550,6 +550,13 @@ public class PrefsUtils {
         int type = activeInfo.getType();
         if (mode.equals(PrefConstants.NETWORK_SELECT_NOMO)) {
             if (! ((type == ConnectivityManager.TYPE_WIFI) || (type == ConnectivityManager.TYPE_ETHERNET))) {
+                return false;
+            }
+        } else if (mode.equals(PrefConstants.NETWORK_SELECT_NOMONONME)) {
+            if (! ((type == ConnectivityManager.TYPE_WIFI) || (type == ConnectivityManager.TYPE_ETHERNET))) {
+                return false;
+            }
+            if (connMgr.isActiveNetworkMetered()) {
                 return false;
             }
         }
