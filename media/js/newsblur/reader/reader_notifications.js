@@ -75,7 +75,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-icon' }),
-                'Notificatons',
+                'Notifications',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             (this.feed && $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [

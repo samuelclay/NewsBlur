@@ -53,6 +53,12 @@ class MUserFeedNotification(mongo.Document):
         )
     
     @classmethod
+    def users_for_feed(cls, feed_id):
+        notifications = cls.objects.filter(feed_id=feed_id)
+    
+        return notifications
+    
+    @classmethod
     def feeds_for_user(cls, user_id):
         notifications = cls.objects.filter(user_id=user_id)
         notifications_by_feed = {}
@@ -69,4 +75,33 @@ class MUserFeedNotification(mongo.Document):
             
         return notifications_by_feed
     
+    @classmethod
+    def send_notifications(cls, story):
+        notifications = cls.objects.filter(feed_id=story.story_feed_id)
+        for notification in notifications:
+            if notification.is_focus and not notification.story_visible_in_focus(story):
+                continue
+            notification.send_web(story)
+            notification.send_ios(story)
+            notification.send_android(story)
+            notification.send_email(story)
     
+    def send_web(self, story):
+        if not self.is_web: return
+        user = User.objects.get(pk=self.user_id)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(user.username, 'notification:%s,%s' % (story.story_hash, story.story_title))
+    
+    def send_ios(self, story):
+        if not self.is_ios: return
+        
+        
+    def send_android(self, story):
+        if not self.is_android: return
+        
+        
+    def send_email(self, story):
+        if not self.is_email: return
+        
+    def story_visible_in_focus(self, story):
+        pass

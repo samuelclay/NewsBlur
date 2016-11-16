@@ -10,7 +10,6 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
     },
     
     initialize: function(m) {
-        console.log(['feed notificaiton', this.model, m]);
     },
         
     render: function() {

@@ -1,3 +1,5 @@
+import redis
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
@@ -29,6 +31,7 @@ def set_notifications_for_feed(request):
         }
         notification = MUserFeedNotification.objects.create(**params)
     
+    web_was_off = not notification.is_web
     notification.is_focus = bool(notification_filter == "focus")
     notification.is_email = bool('email' in notification_types)
     notification.is_ios = bool('ios' in notification_types)
@@ -41,7 +44,11 @@ def set_notifications_for_feed(request):
         not notification.is_android and
         not notification.is_web):
         notification.delete()
-        
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    if web_was_off and notification.is_web:
+        r.publish(user.username, 'notification:setup:%s' % feed_id)
+    
     notifications_by_feed = MUserFeedNotification.feeds_for_user(user.pk)
 
     return {"notifications_by_feed": notifications_by_feed}

@@ -4704,6 +4704,14 @@
                         }
                     } else if (message == "interaction:new") {
                         this.update_interactions_count();
+                    } else if (_.string.startsWith(message, "notification:setup:")) {
+                        message = message.replace('notification:setup:', '');
+                        this.push_notification_setup(parseInt(message, 10));
+                    } else if (_.string.startsWith(message, "notification:")) {
+                        message = message.replace('notification:', '');
+                        var story_hash = message.slice(0, message.indexOf(','));
+                        var story_title = message.slice(message.indexOf(',')+1);
+                        this.push_notification(story_hash, story_title);
                     } else if (_.string.startsWith(message, "search_index_complete:")) {
                         message = message.replace('search_index_complete:', '');
                         if (NEWSBLUR.app.active_search) {
@@ -4885,6 +4893,44 @@
             this.model.interactions_count(function(data) {
                 NEWSBLUR.app.sidebar_header.update_interactions_count(data.interactions_count);
             }, $.noop);
+        },
+        
+        push_notification_setup: function(feed_id) {
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            if (!feed) {
+                console.log(['Notification setup failed, no feed!', feed_id]);
+            }
+            Push.create("NewsBlur", {
+                body: feed.get('feed_title') + " notifications are setup",
+                icon: $.favicon(feed),
+                timeout: 3000,
+                onClick: function () {
+                    window.focus();
+                    this.close();
+                }
+            });
+        },
+        
+        push_notification: function(story_hash, story_title) {
+            var feed_id = story_hash.slice(0, story_hash.indexOf(':'));
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            if (!feed) {
+                console.log(['Error: Couldn\'t find find for notification', feed_id, story_hash, story_title]);
+                return;
+            }
+            
+            Push.create(feed.get('feed_title'), {
+                body: story_title,
+                icon: $.favicon(feed),
+                timeout: 4000,
+                onClick: function () {
+                    window.focus();
+                    this.close();
+                    window.NEWSBLUR.reader.open_feed(feed_id, {
+                        'story_hash': story_hash
+                    });
+                }
+            });
         },
         
         // ===================

@@ -651,6 +651,7 @@ class ProcessFeed:
                                                   verbose=self.options['verbose'],
                                                   updates_off=self.options['updates_off'])
 
+        # PubSubHubbub
         if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
@@ -683,7 +684,8 @@ class ProcessFeed:
                               self.feed.title[:30]))
                 self.feed.is_push = False
                 self.feed = self.feed.save()
-
+        
+        # All Done
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
                       '~FG~SB' if ret_values['new'] else '', ret_values['new'],
