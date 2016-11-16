@@ -700,6 +700,7 @@
         select_story_in_feed: function() {
             var story_id = this.flags['select_story_in_feed'];
             var story = NEWSBLUR.assets.stories.get(story_id);
+            if (!story) story = NEWSBLUR.assets.stories.get_by_story_hash(story_id);
             // NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
             
             if (story) {
@@ -4926,8 +4927,9 @@
                 onClick: function () {
                     window.focus();
                     this.close();
+                    console.log(['push open', feed_id, story_hash, window.NEWSBLUR]);
                     window.NEWSBLUR.reader.open_feed(feed_id, {
-                        'story_hash': story_hash
+                        'story_id': story_hash
                     });
                 }
             });
