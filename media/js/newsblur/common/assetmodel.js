@@ -1482,6 +1482,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
+    set_notifications_for_feed: function(feed, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/notifications/feed/', {
+                'feed_id': feed.id,
+                'notification_types': feed.get('notification_types'),
+                'notification_filter': feed.get('notification_filter')
+            }, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }        
+    },
+    
     send_story_email: function(data, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
           this.make_request('/reader/send_story_email', data, callback, error_callback, {'timeout': 6000});

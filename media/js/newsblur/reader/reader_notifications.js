@@ -34,9 +34,13 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
         var frequency = this.feed.get('notification_frequency');
         var notifications = this.feed.get('notifications');
 
-        if (this.feed) {
-            NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
-        }
+        NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
+        
+        var $site = $(".NB-modal-section-site", this.$modal);
+        $site.html(this.make_feed_notification(this.feed));
+
+        var $all = $(".NB-modal-section-all", this.$modal);
+        $all.html(this.make_feed_notifications());
         
         this.resize();
     },
@@ -68,7 +72,12 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
                 this.make_feed_chooser()
             ])),
             $.make('div', { className: 'NB-modal-loading' }),
-            $.make('h2', { className: 'NB-modal-title' }, 'Notifications'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-modal-loading' }),
+                $.make('div', { className: 'NB-icon' }),
+                'Notificatons',
+                $.make('div', { className: 'NB-icon-dropdown' })
+            ]),
             (this.feed && $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Site Notifications'),
@@ -80,7 +89,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('fieldset', [
                     $.make('legend', 'All Notifications'),
-                    $.make('div', { className: 'NB-modal-section'}, [
+                    $.make('div', { className: 'NB-modal-section NB-modal-section-all'}, [
                         this.make_feed_notifications()
                     ])
                 ])
@@ -104,13 +113,15 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
     },
     
     make_feed_notifications: function() {
-        var notifications = this.model.get_feeds().filter(function(feed) {
-            return feed.get('notifications');
+        var site_feed_id = this.model.id;
+        var notifications = this.model.get_feeds().select(function(feed) {
+            return feed.get('notification_types') && feed.id != site_feed_id;
         });
         var $feeds = [];
         
+        notifications.sort(function(a, b) { return a.get('feed_title') < b.get('feed_title'); });
         for (var feed in notifications) {
-            $feeds.push(this.make_feed_notification(feed));
+            $feeds.push(this.make_feed_notification(notifications[feed]));
         }
         
         return $feeds;

@@ -22,6 +22,7 @@ class MUserFeedNotification(mongo.Document):
     user_id                  = mongo.IntField()
     feed_id                  = mongo.IntField()
     frequency                = mongoengine_fields.IntEnumField(NotificationFrequency)
+    is_focus                 = mongo.BooleanField()
     last_notification_date   = mongo.DateTimeField(default=datetime.datetime.now)
     is_email                 = mongo.BooleanField()
     is_web                   = mongo.BooleanField()
@@ -58,12 +59,14 @@ class MUserFeedNotification(mongo.Document):
 
         for feed in notifications:
             notifications_by_feed[feed.feed_id] = {
-                'notifications': [],
-                'notification_freq': feed.frequency
+                'notification_types': [],
+                'notification_filter': "focus" if feed.is_focus else "unread",
             }
-            if feed.is_email: notifications_by_feed[feed.feed_id]['notifications'].append('email')
-            if feed.is_web: notifications_by_feed[feed.feed_id]['notifications'].append('web')
-            if feed.is_ios: notifications_by_feed[feed.feed_id]['notifications'].append('ios')
-            if feed.is_android: notifications_by_feed[feed.feed_id]['notifications'].append('android')
+            if feed.is_email: notifications_by_feed[feed.feed_id]['notification_types'].append('email')
+            if feed.is_web: notifications_by_feed[feed.feed_id]['notification_types'].append('web')
+            if feed.is_ios: notifications_by_feed[feed.feed_id]['notification_types'].append('ios')
+            if feed.is_android: notifications_by_feed[feed.feed_id]['notification_types'].append('android')
             
         return notifications_by_feed
+    
+    
