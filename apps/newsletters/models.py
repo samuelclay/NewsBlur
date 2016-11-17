@@ -77,6 +77,7 @@ class EmailNewsletter:
                                             kwargs={'story_hash': story_hash})),
             "story_guid": params['signature'],
         }
+        print story_params
         try:
             story = MStory.objects.get(story_hash=story_hash)
         except MStory.DoesNotExist:
@@ -168,8 +169,11 @@ class EmailNewsletter:
             return linkify(linebreaks(params['body-plain']))
     
     def _clean_content(self, content):
+        original = content
         scrubber = Scrubber()
         content = scrubber.scrub(content)
+        if len(content) < len(original)*0.01:
+            content = original
         content = content.replace('!important', '')
         return content
         
