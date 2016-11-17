@@ -13,6 +13,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import compute_story_score
 from utils import log as logging
 from utils import mongoengine_fields
+from HTMLParser import HTMLParser
 
 
 class NotificationFrequency(enum.Enum):
@@ -176,6 +177,7 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_email: return
         feed = usersub.feed
         
+        story['story_content'] = HTMLParser().unescape(story['story_content'])
         params  = {
             "story": story,
             "feed": feed,
