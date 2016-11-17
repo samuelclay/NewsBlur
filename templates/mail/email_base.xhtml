@@ -343,34 +343,10 @@
                                 </tr>
                             </table>
                         </div>
-                        <table cellpadding="0" cellspacing="0" border="0" class="message_footer_table" align="center" style="border-collapse: collapse; color: #545454; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 13px; line-height: 20px; margin: 0 auto; max-width: 100%; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%">
-                            <tr>
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                    <tr>
-                                        <td class="footer-td-wrapper">
-                                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; color: #545454; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 13px; line-height: 20px; margin: 0 auto; max-width: 100%; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%" class="message_footer_table">
-                                                <tr>
-                                                    <td valign="middle" width="320" style="color: #272727" align="left">
-                                                        <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:60px;border: none;"></a>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td class="footer-td-wrapper">
-                                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; color: #545454; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 13px; line-height: 20px; margin: 0 auto; max-width: 100%; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%" class="message_footer_table">
-                                                <tr>
-                                                    <td valign="middle" align="right" class="date_cell" style="color: #999999; font-size: 11px; text-align: right">                        
-                                                        <a href="http://{% current_domain %}{% url "profile-email-optout" %}" style="text-decoration:none;">Opt-out of emails from NewsBlur</a>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </tr>
-                        </table>
+                        <div style="float: right;margin: 24px 24px;">
+                            <a href="http://{% current_domain %}{% url "profile-email-optout" %}" style="text-decoration:none;color: #84919B">Opt-out of emails from NewsBlur</a>
+                        </div>
+                        <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:60px;border: none;"></a>
                     </td>
                 </tr>
                 <tr>
