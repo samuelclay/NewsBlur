@@ -5,6 +5,10 @@ import redis
 import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
+from apps.rss_feeds.models import MStory, Feed
+from apps.reader.models import UserSubscription
+from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+from apps.analyzer.models import compute_story_score
 from utils import log as logging
 from utils import mongoengine_fields
 
@@ -76,21 +80,68 @@ class MUserFeedNotification(mongo.Document):
         return notifications_by_feed
     
     @classmethod
-    def send_notifications(cls, story):
-        notifications = cls.objects.filter(feed_id=story.story_feed_id)
-        for notification in notifications:
-            if notification.is_focus and not notification.story_visible_in_focus(story):
+    def push_feed_notifications(cls, feed_id, new_stories, force=False):
+        feed = Feed.get_by_id(feed_id)
+        notifications = MUserFeedNotification.users_for_feed(feed.pk)
+        logging.debug("   ---> [%-30s] ~FCPushing out ~SB%s notifications~SN for ~FB~SB%s stories" % (
+                      feed, len(notifications), new_stories))
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        
+        latest_story_hashes = r.zrange("zF:%s" % feed.pk, -1 * new_stories, -1)
+        mstories = MStory.objects.filter(story_hash__in=latest_story_hashes).order_by('-story_date')
+        stories = Feed.format_stories(mstories)
+        
+        for feed_notification in notifications:
+            last_notification_date = feed_notification.last_notification_date
+            classifiers = feed_notification.classifiers()
+            if not classifiers:
                 continue
-            notification.send_web(story)
-            notification.send_ios(story)
-            notification.send_android(story)
-            notification.send_email(story)
+            for story in stories:
+                if story['story_date'] < last_notification_date and not force:
+                    continue
+                if story['story_date'] > feed_notification.last_notification_date:
+                    feed_notification.last_notification_date = story['story_date']
+                    feed_notification.save()
+                feed_notification.push_notifications(story, classifiers)
+    
+    def classifiers(self):
+        try:
+            usersub = UserSubscription.objects.get(user=self.user_id, feed=self.feed_id)
+        except UserSubscription.DoesNotExist:
+            return None
+            
+        classifiers = {}
+        if usersub.is_trained:
+            user = User.objects.get(pk=self.user_id)
+            classifiers['feeds']   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id,
+                                                                 social_user_id=0))
+            classifiers['authors'] = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifiers['titles']  = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifiers['tags']    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
+            
+        return classifiers
+        
+    def push_notifications(self, story, classifiers):
+        story_score = self.story_score(story, classifiers)
+        if self.is_focus and story_score <= 0:
+            return
+        elif story_score < 0:
+            return
+        
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~FCSending push notification: %s/%s (score: %s)" % (story['story_title'][:40], story['story_hash'], story_score))
+        
+        self.send_web(story)
+        self.send_ios(story)
+        self.send_android(story)
+        self.send_email(story)
     
     def send_web(self, story):
         if not self.is_web: return
+        
         user = User.objects.get(pk=self.user_id)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        r.publish(user.username, 'notification:%s,%s' % (story.story_hash, story.story_title))
+        r.publish(user.username, 'notification:%s,%s' % (story['story_hash'], story['story_title']))
     
     def send_ios(self, story):
         if not self.is_ios: return
@@ -103,5 +154,11 @@ class MUserFeedNotification(mongo.Document):
     def send_email(self, story):
         if not self.is_email: return
         
-    def story_visible_in_focus(self, story):
-        pass
+    def story_score(self, story, classifiers):
+        score = compute_story_score(story, classifier_titles=classifiers['titles'], 
+                                    classifier_authors=classifiers['authors'], 
+                                    classifier_tags=classifiers['tags'],
+                                    classifier_feeds=classifiers['feeds'])
+        
+        return score
+                

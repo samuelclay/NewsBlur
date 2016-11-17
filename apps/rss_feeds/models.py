@@ -33,7 +33,6 @@ from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds, ScheduleCountTagsForUser
 from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
-from apps.notifications.models import MUserFeedNotification
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
 from utils import feedfinder2 as feedfinder, feedparser
@@ -1177,7 +1176,6 @@ class Feed(models.Model):
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
                 if self.search_indexed:
                     s.index_story_for_search()
-                s.send_notifications()
             elif existing_story and story_has_changed and not updates_off and ret_values['updated'] < 3:
                 # update story
                 original_content = None
@@ -2279,9 +2277,6 @@ class MStory(mongo.Document):
         except NotFoundException:
             pass
 
-    def send_notifications(self):
-        MUserFeedNotification.send_notifications(self)
-        
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
         extra_stories_count = 0
