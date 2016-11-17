@@ -1,13 +1,11 @@
 {% load social_tags utils_tags %}
-{{ feed.feed_title|safe }}
+{{ story.story_content|striptags }}
 
 ---------------------------------------------------------------------------
 
-{{ story.story_title|safe }}
+{{ story.story_title|safe }} — {{ feed.feed_title|safe }}
 
 {{ story.story_permalink|safe }}
-
-{{ story.story_content|striptags }}
 
 ---------------------------------------------------------------------------
 
