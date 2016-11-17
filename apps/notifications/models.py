@@ -174,10 +174,12 @@ class MUserFeedNotification(mongo.Document):
         
     def send_email(self, story, usersub):
         if not self.is_email: return
+        feed = usersub.feed
         
         params  = {
             "story": story,
-            "feed": usersub.feed,
+            "feed": feed,
+            "feed_title": usersub.user_title or feed.feed_title
         }
         from_address = 'share@newsblur.com'
         to_address = '%s <%s>' % (usersub.user.username, usersub.user.email)

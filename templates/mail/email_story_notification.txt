@@ -3,7 +3,7 @@
 
 ---------------------------------------------------------------------------
 
-{{ story.story_title|safe }} — {{ feed.feed_title|safe }}
+{{ story.story_title|safe }} — {{ feed_title|safe }}
 
 {{ story.story_permalink|safe }}
 
@@ -11,5 +11,5 @@
 
 Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.
 
-You received this because you have email notifications for {{ feed.feed_title }}. 
-http://{% current_domain %}/site/{{ feed.pk }}/{{ feed.feed_title|slugify }}?next=notifications
+You received this because you have email notifications for {{ feed_title }}. 
+http://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications
