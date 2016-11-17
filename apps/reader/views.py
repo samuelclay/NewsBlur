@@ -36,6 +36,7 @@ from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
+from apps.notifications.models import MUserFeedNotification
 from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics
 # from apps.search.models import SearchStarredStory
@@ -249,6 +250,7 @@ def load_feeds(request):
         folders = UserSubscriptionFolders.objects.get(user=user)
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    notifications = MUserFeedNotification.feeds_for_user(user.pk)
     
     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     scheduled_feeds = []
@@ -259,6 +261,8 @@ def load_feeds(request):
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         
         if not sub.active: continue
+        if pk in notifications:
+            feeds[pk].update(notifications[pk])
         if not sub.feed.active and not sub.feed.has_feed_exception:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.active_subscribers <= 0:

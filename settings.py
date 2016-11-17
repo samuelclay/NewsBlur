@@ -292,6 +292,7 @@ INSTALLED_APPS = (
     'apps.profile',
     'apps.recommendations',
     'apps.statistics',
+    'apps.notifications',
     'apps.static',
     'apps.mobile',
     'apps.push',

@@ -20,6 +20,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
+from apps.notifications.tasks import QueueNotifications, MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.social.models import MSocialServices
 from apps.statistics.models import MAnalyticsFetcher
@@ -651,6 +652,7 @@ class ProcessFeed:
                                                   verbose=self.options['verbose'],
                                                   updates_off=self.options['updates_off'])
 
+        # PubSubHubbub
         if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
@@ -683,7 +685,12 @@ class ProcessFeed:
                               self.feed.title[:30]))
                 self.feed.is_push = False
                 self.feed = self.feed.save()
-
+        
+        # Push notifications
+        if ret_values['new'] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
+            QueueNotifications.delay(self.feed.pk, ret_values['new'])
+            
+        # All Done
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
                       '~FG~SB' if ret_values['new'] else '', ret_values['new'],

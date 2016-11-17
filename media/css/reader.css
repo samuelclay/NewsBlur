@@ -6986,6 +6986,10 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
     background-size: 18px;
 }
+.NB-menu-manage .NB-menu-manage-feed-notifications .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png') no-repeat 0 0;
+    background-size: 18px;
+}
 .NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_award.png') no-repeat  0 1px;    
     background-size: 18px;
@@ -7269,6 +7273,10 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-newsletters .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat  0 0;
+    background-size: 18px;
+}
+.NB-menu-manage .NB-menu-manage-notifications .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png') no-repeat  0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-import .NB-menu-manage-image {
@@ -8807,6 +8815,111 @@ form.opml_import_form input {
   margin: 6px 0 8px 0;
   color: #707070;
   font-size: 11px;
+}
+
+/* ======================= */
+/* = Notifications Modal = */
+/* ======================= */
+
+.NB-modal-notifications .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png');
+    background-size: 28px;
+}
+.NB-modal.NB-modal-notifications .NB-fieldset {
+    border-bottom: none;
+    width: 100%;
+}
+.NB-modal-notifications .NB-preference-label {
+    float: left;
+    margin: 10px 0;
+    width: 102px;
+    clear: both;
+}
+.NB-modal-notifications .NB-preference-options {
+    margin: 6px 0;
+    float: left;
+    overflow: hidden;
+}
+.NB-modal-notifications .NB-modal-section-site {
+    margin: 12px 0 0;
+}
+
+.NB-feed-notification {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+    border-bottom: 1px solid #F0F0F0;
+}
+.NB-feed-notification:last-child {
+    border-bottom: none;
+}
+
+.NB-feed-notification .NB-feed-title {
+    font-size: 12px;
+    padding: 0 260px 0 24px;
+}
+.NB-feed-notification .NB-feed-icon {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+.NB-feed-notification .NB-feed-frequency-icon {
+    float: left;
+    clear: left;
+    width: 16px;
+    height: 16px;
+    margin: 4px 7px 0 0;
+}
+.NB-feed-notification .NB-feed-frequency {
+    float: left;
+    color: #A0A0A0;
+    font-size: 10px;
+    margin: 2px 0 0 0;
+}
+
+.NB-feed-notification .NB-feed-notification-controls {
+    position: relative;
+    top: 0;
+    right: 0;
+}
+.NB-feed-notification .NB-feed-notification-filter {
+    float: right;
+    margin: 0 12px;
+}
+.NB-feed-notification .NB-feed-notification-filter .NB-unread-icon,
+.NB-feed-notification .NB-feed-notification-filter .NB-focus-icon {
+    width: 8px;
+    height: 12px;
+    display: block;
+    float: left;
+    margin: 0 5px 0 2px;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 0 center;
+    background-size: 8px;
+}
+.NB-feed-notification .NB-feed-notification-filter .NB-focus-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 0 center;
+    background-size: 8px;    
+}
+.NB-feed-notification .segmented-control {
+    margin: 0 0 4px 0;
+}
+.NB-feed-notification .segmented-control li {
+    padding: 2px 6px;
+    font-size: 10px;
+    min-width: 36px;
+}
+.NB-feed-notification .segmented-control li:not(.NB-active) {
+    color: #A0A0A0;
+}
+.NB-feed-notification .NB-feed-notification-types {
+    float: right;
+    clear: right;
+}
+.NB-feed-notification .NB-feed-notification-filter-focus {
+    width: 82px;
 }
 
 /* ===================== */

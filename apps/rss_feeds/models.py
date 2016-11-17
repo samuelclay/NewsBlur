@@ -2276,7 +2276,7 @@ class MStory(mongo.Document):
             SearchStory.remove(self.story_hash)
         except NotFoundException:
             pass
-        
+
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
         extra_stories_count = 0
