@@ -391,16 +391,16 @@ public class NBSyncService extends Service {
      * unread hashes. Doing this resets pagination on the server!
      */
     private void syncMetadata(int startId) {
+        if (stopSync()) return;
+        if (backoffBackgroundCalls()) return;
+        if (dbHelper.getActions(false).getCount() > 0) return;
+
         if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
             PrefsUtils.updateLastSyncTime(this);
             DoFeedsFolders = false;
         } else {
             return;
         }
-
-        if (stopSync()) return;
-        if (backoffBackgroundCalls()) return;
-        if (dbHelper.getActions(false).getCount() > 0) return;
 
         FFSyncRunning = true;
         NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
@@ -426,7 +426,6 @@ public class NBSyncService extends Service {
             }
 
             if (HaltNow) return;
-            if (dbHelper.getActions(false).getCount() > 0) return;
 
             // a metadata sync invalidates pagination and feed status
             ExhaustedFeeds.clear();
@@ -556,13 +555,13 @@ public class NBSyncService extends Service {
                 }
             } else {
                 if (stopSync()) return;
+                // if any reading activities are pending, it makes no sense to recount yet
+                if (dbHelper.getActions(false).getCount() > 0) return;
+
                 Set<String> apiIds = new HashSet<String>();
                 for (FeedSet fs : RecountCandidates) {
                     apiIds.addAll(fs.getFlatFeedIds());
                 }
-
-                // if any reading activities are pending, it makes no sense to recount yet
-                if (dbHelper.getActions(false).getCount() > 0) return;
 
                 UnreadCountResponse apiResponse = apiManager.getFeedUnreadCounts(apiIds);
                 if ((apiResponse == null) || (apiResponse.isError())) {
@@ -653,8 +652,6 @@ public class NBSyncService extends Service {
                 if (stopSync()) return;
                 // this is a good heuristic for double-checking if we have left the story list
                 if (FlushRecounts) return;
-                // don't let the page loop block actions
-                if (dbHelper.getActions(false).getCount() > 0) return;
 
                 // bail if the active view has changed
                 if (!fs.equals(PendingFeed)) {
@@ -686,6 +683,9 @@ public class NBSyncService extends Service {
                     finished = true;
                     return;
                 }
+
+                // don't let the page loop block actions
+                if (dbHelper.getActions(false).getCount() > 0) return;
             }
             finished = true;
 
