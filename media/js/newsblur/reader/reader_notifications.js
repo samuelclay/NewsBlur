@@ -19,6 +19,7 @@ NEWSBLUR.ReaderNotifications.prototype.constructor = NEWSBLUR.ReaderNotification
 _.extend(NEWSBLUR.ReaderNotifications.prototype, {
     
     runner: function() {
+        console.log(['Reader notifications', this.feed, this.feed_id]);
         this.make_modal();
         this.handle_cancel();
         this.open_modal();
@@ -113,7 +114,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
     },
     
     make_feed_notifications: function() {
-        var site_feed_id = this.model.id;
+        var site_feed_id = this.feed.id;
         var notifications = this.model.get_feeds().select(function(feed) {
             return feed.get('notification_types') && feed.id != site_feed_id;
         });
