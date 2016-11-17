@@ -997,6 +997,10 @@
             if (!this.active_story && open_feed_action == 'newest' &&
                 !this.flags['feed_list_showing_starred']) {
                 this.show_next_unread_story();
+            } else if (!this.active_story && 
+                       NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full' &&
+                       NEWSBLUR.assets.preference('feed_view_single_story')) {
+                this.show_next_unread_story();                
             }
         },
         
@@ -1656,6 +1660,8 @@
                     NEWSBLUR.app.story_list.show_only_selected_story();
                     this.active_story.story_title_view.toggle_selected();
                     this.active_story.story_view.toggle_selected();
+                } else {
+                    this.find_story_with_action_preference_on_open_feed();
                 }
             }
             
