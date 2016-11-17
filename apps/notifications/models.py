@@ -5,6 +5,8 @@ import redis
 import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
 from apps.rss_feeds.models import MStory, Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -95,10 +97,15 @@ class MUserFeedNotification(mongo.Document):
         mstories = MStory.objects.filter(story_hash__in=latest_story_hashes).order_by('-story_date')
         stories = Feed.format_stories(mstories)
         
-        for feed_notification in notifications:
+        for user_feed_notification in notifications:
             sent_count = 0
-            last_notification_date = feed_notification.last_notification_date
-            classifiers = feed_notification.classifiers()
+            last_notification_date = user_feed_notification.last_notification_date
+            try:
+                usersub = UserSubscription.objects.get(user=user_feed_notification.user_id,
+                                                       feed=user_feed_notification.feed_id)
+            except UserSubscription.DoesNotExist:
+                continue
+            classifiers = user_feed_notification.classifiers(usersub)
 
             if classifiers == None:
                 logging.debug("Has no usersubs")
@@ -112,19 +119,14 @@ class MUserFeedNotification(mongo.Document):
                     logging.debug("Story date older than last notification date: %s < %s" % (story['story_date'], last_notification_date))
                     continue
                 
-                if story['story_date'] > feed_notification.last_notification_date:
-                    feed_notification.last_notification_date = story['story_date']
-                    feed_notification.save()
+                if story['story_date'] > user_feed_notification.last_notification_date:
+                    user_feed_notification.last_notification_date = story['story_date']
+                    user_feed_notification.save()
                 
-                sent = feed_notification.push_notifications(story, classifiers)
+                sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
                 if sent: sent_count += 1
     
-    def classifiers(self):
-        try:
-            usersub = UserSubscription.objects.get(user=self.user_id, feed=self.feed_id)
-        except UserSubscription.DoesNotExist:
-            return None
-            
+    def classifiers(self, usersub):
         classifiers = {}
         if usersub.is_trained:
             user = User.objects.get(pk=self.user_id)
@@ -136,7 +138,7 @@ class MUserFeedNotification(mongo.Document):
             
         return classifiers
         
-    def push_notifications(self, story, classifiers):
+    def push_story_notification(self, story, classifiers, usersub):
         story_score = self.story_score(story, classifiers)
         if self.is_focus and story_score <= 0:
             logging.debug("Is focus, but story is hidden")
@@ -151,7 +153,7 @@ class MUserFeedNotification(mongo.Document):
         self.send_web(story)
         self.send_ios(story)
         self.send_android(story)
-        self.send_email(story)
+        self.send_email(story, usersub)
         
         return True
     
@@ -170,8 +172,30 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_android: return
         
         
-    def send_email(self, story):
+    def send_email(self, story, usersub):
         if not self.is_email: return
+        
+        params  = {
+            "story": story,
+            "feed": usersub.feed,
+        }
+        from_address = 'share@newsblur.com'
+        to_address = '%s <%s>' % (usersub.user.username, usersub.user.email)
+        text    = render_to_string('mail/email_story_notification.txt', params)
+        html    = render_to_string('mail/email_story_notification.xhtml', params)
+        subject = '%s: %s' % (usersub.user_title or usersub.feed.feed_title, story['story_title'])
+        subject = subject.replace('\n', ' ')
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % from_address,
+                                         to=[to_address])
+        msg.attach_alternative(html, "text/html")
+        try:
+            msg.send()
+        except boto.ses.connection.ResponseError, e:
+            code = -1
+            message = "Email error: %s" % str(e)
+        logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
+                                   (story['story_title'][:50], usersub.feed.feed_title[:50]))
         
     def story_score(self, story, classifiers):
         score = compute_story_score(story, classifier_titles=classifiers.get('titles', []), 

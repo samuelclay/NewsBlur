@@ -1,0 +1,17 @@
+{% load social_tags utils_tags %}
+{{ feed.feed_title|safe }}
+
+---------------------------------------------------------------------------
+
+{{ story.story_title|safe }}
+
+{{ story.story_permalink|safe }}
+
+{{ story.story_content|striptags }}
+
+---------------------------------------------------------------------------
+
+Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.
+
+You received this because you have email notifications for {{ feed.feed_title }}. 
+http://{% current_domain %}/site/{{ feed.pk }}/{{ feed.feed_title|slugify }}?next=notifications
