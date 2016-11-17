@@ -1528,7 +1528,7 @@ def kill_celery():
                 run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
-    local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
+    local('jammit -c assets.yml --base-url https://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
 
     tries_left = 5

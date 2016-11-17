@@ -114,7 +114,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
     },
     
     make_feed_notifications: function() {
-        var site_feed_id = this.feed.id;
+        var site_feed_id = this.feed && this.feed.id;
         var notifications = this.model.get_feeds().select(function(feed) {
             return feed.get('notification_types') && feed.id != site_feed_id;
         });
