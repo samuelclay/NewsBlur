@@ -57,6 +57,10 @@ class MUserFeedNotification(mongo.Document):
         )
     
     @classmethod
+    def feed_has_users(cls, feed_id):
+        return cls.users_for_feed(feed_id).count()
+    
+    @classmethod
     def users_for_feed(cls, feed_id):
         notifications = cls.objects.filter(feed_id=feed_id)
     
@@ -83,7 +87,7 @@ class MUserFeedNotification(mongo.Document):
     def push_feed_notifications(cls, feed_id, new_stories, force=False):
         feed = Feed.get_by_id(feed_id)
         notifications = MUserFeedNotification.users_for_feed(feed.pk)
-        logging.debug("   ---> [%-30s] ~FCPushing out ~SB%s notifications~SN for ~FB~SB%s stories" % (
+        logging.debug("   ---> [%-30s] ~FCPushing out notifications to ~SB%s users~SN for ~FB~SB%s stories" % (
                       feed, len(notifications), new_stories))
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
@@ -92,17 +96,28 @@ class MUserFeedNotification(mongo.Document):
         stories = Feed.format_stories(mstories)
         
         for feed_notification in notifications:
+            sent_count = 0
             last_notification_date = feed_notification.last_notification_date
             classifiers = feed_notification.classifiers()
-            if not classifiers:
+
+            if classifiers == None:
+                logging.debug("Has no usersubs")
                 continue
+
             for story in stories:
+                if sent_count >= 3:
+                    logging.debug("Sent too many, ignoring...")
+                    continue                    
                 if story['story_date'] < last_notification_date and not force:
+                    logging.debug("Story date older than last notification date: %s < %s" % (story['story_date'], last_notification_date))
                     continue
+                
                 if story['story_date'] > feed_notification.last_notification_date:
                     feed_notification.last_notification_date = story['story_date']
                     feed_notification.save()
-                feed_notification.push_notifications(story, classifiers)
+                
+                sent = feed_notification.push_notifications(story, classifiers)
+                if sent: sent_count += 1
     
     def classifiers(self):
         try:
@@ -124,9 +139,11 @@ class MUserFeedNotification(mongo.Document):
     def push_notifications(self, story, classifiers):
         story_score = self.story_score(story, classifiers)
         if self.is_focus and story_score <= 0:
-            return
+            logging.debug("Is focus, but story is hidden")
+            return False
         elif story_score < 0:
-            return
+            logging.debug("Is unread, but story is hidden")
+            return False
         
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~FCSending push notification: %s/%s (score: %s)" % (story['story_title'][:40], story['story_hash'], story_score))
@@ -135,6 +152,8 @@ class MUserFeedNotification(mongo.Document):
         self.send_ios(story)
         self.send_android(story)
         self.send_email(story)
+        
+        return True
     
     def send_web(self, story):
         if not self.is_web: return
@@ -155,10 +174,10 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_email: return
         
     def story_score(self, story, classifiers):
-        score = compute_story_score(story, classifier_titles=classifiers['titles'], 
-                                    classifier_authors=classifiers['authors'], 
-                                    classifier_tags=classifiers['tags'],
-                                    classifier_feeds=classifiers['feeds'])
+        score = compute_story_score(story, classifier_titles=classifiers.get('titles', []), 
+                                    classifier_authors=classifiers.get('authors', []), 
+                                    classifier_tags=classifiers.get('tags', []),
+                                    classifier_feeds=classifiers.get('feeds', []))
         
         return score
                 

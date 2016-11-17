@@ -48,12 +48,14 @@
                         Goodies &amp; Apps
                     </div>
                 </li>
+				{% if user.is_staff %}
                 <li class="NB-menu-item NB-menu-manage-notifications">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">
                         Notifications
                     </div>
                 </li>
+                {% endif %}
                 <li class="NB-menu-item NB-menu-manage-newsletters">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">

@@ -20,7 +20,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
-from apps.notifications.tasks import QueueNotifications
+from apps.notifications.tasks import QueueNotifications, MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.social.models import MSocialServices
 from apps.statistics.models import MAnalyticsFetcher
@@ -687,7 +687,7 @@ class ProcessFeed:
                 self.feed = self.feed.save()
         
         # Push notifications
-        if ret_values['new'] > 0:
+        if ret_values['new'] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
             QueueNotifications.delay(self.feed.pk, ret_values['new'])
             
         # All Done
