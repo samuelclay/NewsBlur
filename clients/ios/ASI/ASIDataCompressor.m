@@ -98,7 +98,7 @@
 			if (err) {
 				*err = [[self class] deflateErrorWithCode:status];
 			}
-			return NO;
+			return nil;
 		}
 	}
 

@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from vendor.munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBMemoryPlugin(MuninMongoDBPlugin):
+    args = "-l 0 --base 1024"
+    vlabel = "bytes"
+    title = "MongoDB memory usage"
+    info = "Memory usage"
+    fields = (
+        ('virtual', dict(
+            label = "virtual",
+            info = "Bytes of virtual memory",
+            type = "GAUGE",
+            min = "0",
+        )),
+        ('resident', dict(
+            label = "resident",
+            info = "Bytes of resident memory",
+            type = "GAUGE",
+            min = "0",
+        )),
+        ('mapped', dict(
+            label = "mapped",
+            info = "Bytes of mapped memory",
+            type = "GAUGE",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        values = {}
+        for k in ("virtual", "resident", "mapped"):
+            try:
+                value = int(status["mem"][k]) * 1024 * 1024
+            except KeyError:
+                value = "U"
+            values[k] = value
+        return values
+
+if __name__ == "__main__":
+    MongoDBMemoryPlugin().run()

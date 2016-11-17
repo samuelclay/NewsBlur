@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 # -*- coding: utf-8 -*-
 
 """
@@ -22,7 +22,7 @@ Find out more at
  (where "8.2" can be the version of PostgreSQL you have installed)
 """
 
-from munin.postgres import MuninPostgresPlugin
+from vendor.munin.postgres import MuninPostgresPlugin
 
 class MuninPostgresCommitsPlugin(MuninPostgresPlugin):
     dbname_in_args = True

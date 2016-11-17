@@ -128,7 +128,21 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         if ($.browser.safari && /(\(X11|Linux)/.test(navigator.userAgent)) {
             background = false;
         }
-
+        
+        if (background && $.browser.webkit) {
+            var event = new CustomEvent("openInNewTab", {
+                bubbles: true,
+                detail: {background: background}
+            });
+            var success = !this.story_title_view.$st.find('a')[0].dispatchEvent(event);
+            if (success) {
+                // console.log(['Used safari extension to open link in background', success]);
+                return;
+            } else {
+                // console.log(['Safari extension failed to open link in background', success, this.story_title_view.$st.find('a')[0]]);
+            }
+        }
+        
         if (background && !$.browser.mozilla) {
             var anchor, event;
 
@@ -136,7 +150,13 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             anchor.href = this.get('story_permalink');
             event = document.createEvent("MouseEvents");
             event.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, true, false, false, true, 0, null);
-            return anchor.dispatchEvent(event);
+            var success = anchor.dispatchEvent(event);
+            if (success) {
+                // console.log(['Opened link in background', anchor.href]);
+                return success;
+            } else {
+                // console.log(['Failed to open link in background', anchor.href]);
+            }
         } else {
             window.open(this.get('story_permalink'), '_blank');
             window.focus();

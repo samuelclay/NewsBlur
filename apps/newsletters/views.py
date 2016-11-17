@@ -40,8 +40,8 @@ def newsletter_receive(request):
     
     response = HttpResponse('OK')
     
-    if settings.DEBUG:
-        logging.debug(" ---> Email newsletter: %s" % pprint(params))
+    if settings.DEBUG or 'samuel' in params.get('To', ''):
+        logging.debug(" ---> Email newsletter: %s" % params)
         
     email_newsletter = EmailNewsletter()
     story = email_newsletter.receive_newsletter(params)

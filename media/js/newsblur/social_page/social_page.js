@@ -87,10 +87,12 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     find_story: function() {
         var search_story_guid = NEWSBLUR.router.story_guid;
         if (search_story_guid && this.auto_advance_pages < this.MAX_AUTO_ADVANCED_PAGES) {
-            var found_guid = _.detect(_.keys(this.stories), function(guid) {
-                return guid.indexOf(search_story_guid) == 0;
+            var found_story = _.detect(this.stories, function(story) {
+                var hash = story.model.get('story_feed_id') + ":" + story.story_guid;
+                return hash.indexOf(search_story_guid) >= 0;
             });
-            if (found_guid) {
+            if (found_story) {
+                var found_guid = found_story.story_guid;
                 var story_view = this.stories[found_guid];
                 _.delay(_.bind(this.scroll_to_story, this, story_view, 1), 0);
                 _.delay(_.bind(this.scroll_to_story, this, story_view, 3), 800);

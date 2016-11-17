@@ -1,0 +1,153 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Inspired by http://openquery.com/files/check_replication.pl.txt
+
+import os
+import re
+
+import MySQLdb
+
+from vendor.munin import MuninPlugin
+
+
+class MuninMySQLPlugin(MuninPlugin):
+    category = "MySQL"
+
+    def __init__(self):
+        super(MuninMySQLPlugin, self).__init__()
+
+        self._db_master = None
+        self._db_slave = None
+
+    # Open a connection
+    def get_connection(self, source):
+        vars = self.getvars(source)
+
+        db = None
+        if source == 'master':
+            if not self._db_master:
+                self._db_master = MySQLdb.connect(**vars)
+            db = self._db_master
+        else:
+            if not self._db_slave:
+                self._db_slave = MySQLdb.connect(**vars)
+            db = self._db_slave
+
+        return db
+
+    # Get variables plugins
+    def getvars(self, source):
+        self.con_master = dict(
+            user="root",
+            host="localhost",
+        )
+
+        # Search environement vars
+        if source == 'master':
+            varname = ('m_user', 'm_passwd', 'm_host', 'm_port')
+            replacestr = 'm_'
+        else:
+            varname = ('s_user', 's_passwd', 's_host', 's_port')
+            replacestr = 's_'
+
+        conninfo = {}
+        for k in varname:
+            v = os.environ.get(k)
+            if v:
+                conninfo[k.replace(replacestr, '', 1)] = v
+
+        return conninfo
+
+    # get max bin log size
+    def getmaxbinlogsize(self):
+        db = self.get_connection('master')
+        c = db.cursor(MySQLdb.cursors.DictCursor)
+        c.execute("show variables like 'max_binlog_size'")
+        raw = c.fetchone()
+        return int(raw['Value'])
+
+    # Get replication values
+    def getvalues(self, source):
+        # get values
+        db = self.get_connection(source)
+        c = db.cursor(MySQLdb.cursors.DictCursor)
+        c.execute("show %(source)s status" % locals())
+
+        raw = c.fetchone()
+        return raw
+
+    def autoconf(self):
+        return bool(self.get_connection('master'))\
+            and bool(self.get_connection('slave'))
+
+
+class MuninMySQLReplicationPlugin(MuninMySQLPlugin):
+    """
+
+    from master => GRANT replication client on *.* TO munin@ip IDENTIFIED BY "password";
+    from slave => GRANT replication client on *.* TO munin@localhost IDENTIFIED BY "password";
+
+    ex: /etc/munin/plugin-conf.d/mysql_replication
+
+    [mysql_replication]
+        env.m_host x.x.x.x
+        env.m_user munin
+        env.m_passwd mysqlpass
+
+        env.s_host localhost
+        env.s_user munin
+        env.s_passwd mysqlpass
+
+    """
+
+    args = "-l 0 --base 1000"
+    vlabel = "delta"
+    info = "Show delta position from master and slave mySQL database"
+    fields = (
+        ('delta', dict(
+            label="Delta from master",
+            info="Delta not replicated from master",
+            type="GAUGE",
+            draw="AREA",
+        )),
+    )
+
+    @property
+    def title(self):
+        return "MySQL delta replication"
+
+    def execute(self):
+        m = self.getvalues('master')
+        s = self.getvalues('slave')
+
+        mfilepos = -1
+        sfilepos = -1
+        maxlogsize = self.getmaxbinlogsize()
+
+        # Search number binary file
+        r = re.search(r'\d+$', m['File'])
+        if r:
+            mfilepos = int(r.group(0))
+            r = re.search(r'\d+$', s['Relay_Master_Log_File'])
+            if r:
+                sfilepos = int(r.group(0))
+
+        mposition = int(m['Position'])
+        fposition = int(s['Exec_Master_Log_Pos'])
+
+        # Calc delta
+        deltafile = (mfilepos - sfilepos) * maxlogsize
+        deltaposition = mposition - fposition
+        delta = deltafile + deltaposition
+
+        # Close connection
+        self.get_connection('master').close()
+        self.get_connection('slave').close()
+
+        return dict(
+            delta=delta,
+        )
+
+if __name__ == "__main__":
+    MuninMySQLReplicationPlugin().run()

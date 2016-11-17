@@ -263,7 +263,7 @@ def setup_db(engine=None, skip_common=False):
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
-        setup_mongo_mms()
+        # setup_mongo_mms()
         setup_mongo_backups()
     elif engine == "redis":
         setup_redis()
@@ -279,6 +279,7 @@ def setup_db(engine=None, skip_common=False):
     setup_db_munin()
     setup_db_monitor()
     setup_usage_monitor()
+    benchmark()
     done()
 
     # if env.user == 'ubuntu':
@@ -312,7 +313,7 @@ def setup_task_image():
 
 def done():
     print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n              %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
+    print "\n\n    %s / %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string, env.host_string)
     print "\n\n-----------------------------------------------------\n\n\n\n"
 
 def setup_installs():
@@ -476,6 +477,7 @@ def setup_virtualenv():
                 with settings(warn_only=True):
                     run('mkvirtualenv --no-site-packages newsblur')
                 run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
+                run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
     
 @_contextmanager
 def virtualenv():
@@ -546,9 +548,10 @@ def config_pgbouncer():
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
-def kill_pgbouncer(bounce=False):
+def kill_pgbouncer(bounce=True):
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     run('sleep 2')
+    sudo('rm /var/log/postgresql/pgbouncer.pid')
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer')
         run('sleep 2')
@@ -782,15 +785,23 @@ def copy_certificates():
 
 @parallel
 def maintenance_on():
-    put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
-    with virtualenv():
-        run('mv templates/maintenance_off.html templates/maintenance_on.html')
+    role = role_for_host()
+    if role in ['work', 'search']:
+        sudo('supervisorctl stop all')
+    else:
+        put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
+        with virtualenv():
+            run('mv templates/maintenance_off.html templates/maintenance_on.html')
 
 @parallel
 def maintenance_off():
-    with virtualenv():
-        run('mv templates/maintenance_on.html templates/maintenance_off.html')
-        run('git checkout templates/maintenance_off.html')
+    role = role_for_host()
+    if role in ['work', 'search']:
+        sudo('supervisorctl start all')
+    else:
+        with virtualenv():
+            run('mv templates/maintenance_on.html templates/maintenance_off.html')
+            run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
     version = "1.5.14"
@@ -976,21 +987,26 @@ def copy_postgres_to_standby(master='db01'):
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     
 def setup_mongo():
+    MONGODB_VERSION = "3.2.10"
+    pull()
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
-    # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
-    sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
+    # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
+    # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
     sudo('apt-get update')
-    sudo('apt-get -y install mongodb-10gen')
+    sudo('apt-get install -y --force-yes mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
+         (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
-        '/etc/mongodb.conf', use_sudo=True)
+        '/etc/mongod.conf', use_sudo=True)
     run('echo "ulimit -n 100000" > mongodb.defaults')
-    sudo('mv mongodb.defaults /etc/default/mongodb')
-    sudo('/etc/init.d/mongodb restart')
-    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
-
+    sudo('mv mongodb.defaults /etc/default/mongod')
+    sudo('mkdir -p /var/log/mongod')
+    sudo('chown mongodb /var/log/mongod')
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
+    
     # Reclaim 5% disk space used for root logs. Set to 1%.
     with settings(warn_only=True):
-        sudo('tune2fs -m 1 /dev/vda')
+        sudo('tune2fs -m 1 /dev/vda1')
 
 def setup_mongo_configsvr():
     sudo('mkdir -p /var/lib/mongodb_configsvr')
@@ -1115,13 +1131,12 @@ def copy_munin_data(from_server):
     
 
 def setup_db_munin():
+    sudo('rm -f /etc/munin/plugins/mongo*')
+    sudo('rm -f /etc/munin/plugins/pg_*')
+    sudo('rm -f /etc/munin/plugins/redis_*')
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/redis_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
-    with cd(env.VENDOR_PATH), settings(warn_only=True):
-        run('git clone git://github.com/samuel/python-munin.git')
-    with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
-        run('sudo python setup.py install')
     sudo('/etc/init.d/munin-node stop')
     time.sleep(2)
     sudo('/etc/init.d/munin-node start')
@@ -1273,9 +1288,10 @@ def setup_do(name, size=2, image=None):
                                     region='nyc1',
                                     ssh_keys=ssh_key_ids)
     instance.create()
-    print "Booting droplet: %s/%s (size: %s)" % (instance.id, image, instance_size)
-
+    time.sleep(2)
     instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
+    print "Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size)
+
     i = 0
     while True:
         if instance.status == 'active':
@@ -1549,21 +1565,21 @@ def cleanup_assets():
 
 def setup_redis_backups(name=None):
     # crontab for redis backups
-    crontab = ("0 4 * * * python /srv/newsblur/utils/backups/backup_redis%s.py" % 
+    crontab = ("0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py" % 
                 (("_%s"%name) if name else ""))
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
 
 def setup_mongo_backups():
     # crontab for mongo backups
-    crontab = "0 4 * * * python /srv/newsblur/utils/backups/backup_mongo.py"
+    crontab = "0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py"
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
     
 def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
-0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
+0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py
 0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
 0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
 
@@ -1571,13 +1587,13 @@ def setup_postgres_backups():
     run('crontab -l')
     
 def backup_redis(name=None):
-    run('python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
     
 def backup_mongo():
-    run('python /srv/newsblur/utils/backups/backup_mongo.py')
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py')
 
 def backup_postgresql():
-    run('python /srv/newsblur/utils/backups/backup_psql.py')
+    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py')
 
 # ===============
 # = Calibration =
@@ -1677,9 +1693,12 @@ def upgrade_to_virtualenv(role=None):
         celery_stop()
     elif role == "app":
         gunicorn_stop()
+    elif role == "node":
+        run('sudo supervisorctl stop node_unread')
+        run('sudo supervisorctl stop node_favicons')
     elif role == "work":
         sudo('/etc/init.d/supervisor stop')
-    kill_pgbouncer()
+    kill_pgbouncer(bounce=False)
     setup_installs()
     pip()
     if role == "task":
@@ -1688,13 +1707,15 @@ def upgrade_to_virtualenv(role=None):
     elif role == "app":
         setup_gunicorn(supervisor=True, restart=False)
         sudo('reboot')
+    elif role == "node":
+        deploy_node()
     elif role == "search":
         setup_db_search()
     elif role == "work":
         enable_celerybeat()
         sudo('reboot')
 
-def stress_test():
+def benchmark():
     sudo('apt-get install -y sysbench')
     run('sysbench --test=cpu --cpu-max-prime=20000 run')
     run('sysbench --test=fileio --file-total-size=150G prepare')

@@ -187,7 +187,7 @@
         paragraphStyle.lineBreakMode = bio.lineBreakMode;
         CGSize expectedLabelSize = [bio.text
                                     boundingRectWithSize:maximumLabelSize
-                                    options:nil
+                                    options:0
                                     attributes:@{NSFontAttributeName: bio.font,
                                                  NSParagraphStyleAttributeName: paragraphStyle}
                                     context:nil].size;

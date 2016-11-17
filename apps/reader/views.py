@@ -59,7 +59,7 @@ from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.view_functions import required_params
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
-from vendor import tweepy
+import tweepy
 
 BANNED_URLS = [
     "brentozar.com",
@@ -558,6 +558,7 @@ def load_single_feed(request, feed_id):
     query                   = request.REQUEST.get('query', '').strip()
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
     include_hidden          = is_true(request.REQUEST.get('include_hidden', False))
+    include_feeds           = is_true(request.REQUEST.get('include_feeds', False))
     message                 = None
     user_search             = None
 
@@ -640,12 +641,14 @@ def load_single_feed(request, feed_id):
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
+                                       .hint([('user_id', 1), ('story_hash', 1)])\
                                        .only('story_hash', 'starred_date', 'user_tags')
         shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
         shared_stories = []
         if shared_story_hashes:
             shared_stories = MSharedStory.objects(user_id=user.pk, 
                                                   story_hash__in=shared_story_hashes)\
+                                         .hint([('story_hash', 1)])\
                                          .only('story_hash', 'shared_date', 'comments')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags))
@@ -698,6 +701,10 @@ def load_single_feed(request, feed_id):
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
     feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
     
+    if include_feeds:
+        feeds = Feed.objects.filter(pk__in=set([story['story_feed_id'] for story in stories]))
+        feeds = [feed.canonical(include_favicon=False) for feed in feeds]
+    
     if usersub:
         usersub.feed_opens += 1
         usersub.needs_unread_recalc = True
@@ -728,7 +735,7 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
     
-    data = dict(stories=stories, 
+    data = dict(stories=stories,
                 user_profiles=user_profiles,
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 
@@ -739,6 +746,7 @@ def load_single_feed(request, feed_id):
                 elapsed_time=round(float(timediff), 2),
                 message=message)
     
+    if include_feeds: data['feeds'] = feeds
     if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
@@ -867,6 +875,7 @@ def load_starred_stories(request):
     if shared_story_hashes:
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_hash__in=shared_story_hashes)\
+                                     .hint([('story_hash', 1)])\
                                      .only('story_hash', 'shared_date', 'comments')
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
@@ -1148,12 +1157,14 @@ def load_read_stories(request):
 
     shared_stories = MSharedStory.objects(user_id=user.pk, 
                                           story_hash__in=story_hashes)\
+                                 .hint([('story_hash', 1)])\
                                  .only('story_hash', 'shared_date', 'comments')
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
                            for story in shared_stories])
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_hash__in=story_hashes)\
+                                   .hint([('user_id', 1), ('story_hash', 1)])\
                                    .only('story_hash', 'starred_date')
     starred_stories = dict([(story.story_hash, story.starred_date) 
                             for story in starred_stories])
@@ -1206,6 +1217,7 @@ def load_river_stories__redis(request):
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     query             = request.REQUEST.get('query', '').strip()
     include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
+    include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1282,9 +1294,10 @@ def load_river_stories__redis(request):
         if read_filter == 'starred':
             starred_stories = mstories
         else:
+            story_hashes = [s['story_hash'] for s in stories]
             starred_stories = MStarredStory.objects(
                 user_id=user.pk,
-                story_feed_id__in=found_feed_ids
+                story_hash__in=story_hashes
             ).only('story_hash', 'starred_date')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags)) 
@@ -1342,9 +1355,12 @@ def load_river_stories__redis(request):
             'title':  apply_classifier_titles(classifier_titles, story),
         }
         story['score'] = UserSubscription.score_story(story['intelligence'])
-        
     
-    if not user.profile.is_premium:
+    if include_feeds:
+        feeds = Feed.objects.filter(pk__in=set([story['story_feed_id'] for story in stories]))
+        feeds = [feed.canonical(include_favicon=False) for feed in feeds]
+    
+    if not user.profile.is_premium and not include_feeds:
         message = "The full River of News is a premium feature."
         code = 0
         # if page > 1:
@@ -1380,7 +1396,8 @@ def load_river_stories__redis(request):
                 elapsed_time=timediff, 
                 user_search=user_search, 
                 user_profiles=user_profiles)
-                
+    
+    if include_feeds: data['feeds'] = feeds
     if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
     
     return data
@@ -2125,14 +2142,17 @@ def feeds_trainer(request):
 def save_feed_chooser(request):
     is_premium = request.user.profile.is_premium
     approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id]
+    approve_all = False
     if not is_premium:
         approved_feeds = approved_feeds[:64]
+    elif is_premium and not approved_feeds:
+        approve_all = True
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds:
+            if sub.feed_id in approved_feeds or approve_all:
                 activated += 1
                 if not sub.active:
                     sub.active = True
@@ -2244,6 +2264,8 @@ def _mark_story_as_starred(request):
     removed_user_tags = []
     if not starred_story:
         params.update(story_values)
+        if params.has_key('story_latest_content_z'):
+            params.pop('story_latest_content_z')
         starred_story = MStarredStory.objects.create(**params)
         created = True
         MActivity.new_starred_story(user_id=request.user.pk, 

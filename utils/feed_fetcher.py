@@ -34,7 +34,7 @@ from django.utils.html import linebreaks
 from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
-from vendor import tweepy
+import tweepy
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -379,8 +379,12 @@ class FetchFeed:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
+            elif 'User not found' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
             else:
-                raise
+                raise e
                 
         
         data = {}
@@ -394,7 +398,7 @@ class FetchFeed:
         rss = feedgenerator.Atom1Feed(**data)
 
         for tweet in tweets:
-            categories = []
+            categories = set()
             entities = ""
 
             for media in tweet.entities.get('media', []):
@@ -402,7 +406,7 @@ class FetchFeed:
                 if media['type'] == 'photo':
                     entities += "<img src=\"%s\"> " % media['media_url_https']
                     if 'photo' not in categories:
-                        categories.append('photo')
+                        categories.add('photo')
 
             content = """<div class="NB-twitter-rss">
                              <div class="NB-twitter-rss-tweet">%s</div><hr />
@@ -426,24 +430,26 @@ class FetchFeed:
             )
             
             if tweet.text.startswith('RT @'):
-                categories.append('retweet')
-            elif tweet.in_reply_to_status_id:
-                categories.append('reply')
+                categories.add('retweet')
+            elif tweet.in_reply_to_status_id or tweet.text.startswith('@'):
+                categories.add('reply')
             else:
-                categories.append('tweet')
+                categories.add('tweet')
+            if tweet.text.startswith('RT @'):
+                categories.add('retweet')
             if tweet.favorite_count:
-                categories.append('liked')
+                categories.add('liked')
             if tweet.retweet_count:
-                categories.append('retweeted')            
+                categories.add('retweeted')            
             if 'http' in tweet.text:
-                categories.append('link')
+                categories.add('link')
             
             story_data = {
                 'title': tweet.text,
                 'link': "https://twitter.com/%s/status/%s" % (username, tweet.id),
                 'description': content,
                 'author_name': username,
-                'categories': categories,
+                'categories': list(categories),
                 'unique_id': "tweet:%s" % tweet.id,
                 'pubdate': tweet.created_at,
             }
@@ -756,7 +762,7 @@ class Dispatcher:
                     random_weight = random.randint(1, max(weight, 1))
                     quick = float(self.options.get('quick', 0))
                     rand = random.random()
-                    if random_weight < 100 and rand < quick:
+                    if random_weight < 1000 and rand < quick:
                         skip = True
                 elif False and feed.feed_address.startswith("http://news.google.com/news"):
                     skip = True

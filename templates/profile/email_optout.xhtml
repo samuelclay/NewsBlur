@@ -34,11 +34,11 @@
     <div style="text-align: center;position: relative;">
 
         <div class="NB-thanks">
-            <div style="color: #175700;font-size: 24px"><b><em>Unsubscribed!</em></b></div>
+            <div style="color: #175700;font-size: 28px">Unsubscribed</div>
             {% if user.profile.is_active %}
                 <div>You will no longer receive any emails from NewsBlur.</div>
             {% else %}
-                <div style="max-width: 600px;margin: 24px auto;">You will no longer receive any emails from NewsBlur, except for a single email coming soon letting you know your free account is ready to use.</div>
+                <div style="max-width: 600px;margin: 24px auto;">You will no longer receive any emails from NewsBlur.</div>
             {% endif %}
             <div><a href="{% url "index" %}">Continue to NewsBlur &raquo;</a></div>
         </div>

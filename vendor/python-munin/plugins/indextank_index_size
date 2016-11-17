@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import os
+from vendor.munin import MuninPlugin
+from indextank import ApiClient
+
+class IndexTankIndexSizePlugin(MuninPlugin):
+    title = "Indextank Index Size"
+    args = "--base 1000 -l 0"
+    vlabel = "documents"
+    category = "indextank"
+
+    @property
+    def fields(self):
+        indexes = self.get_indexes()
+        fi = []
+        for idx in indexes:
+            if idx.status() != "LIVE":
+                continue
+            index_name = idx._IndexClient__index_url.rsplit('/', 1)[-1]
+            fi.append(("%s_index_size" % index_name.lower(), dict(
+                label = "Documents in index " + index_name,
+                info = 'The number of documents stored in the index %s.' % index_name,
+                type = "GAUGE",
+                min = "0")))
+        return fi
+
+    def get_indexes(self):
+        url = os.environ.get('INDEXTANK_API_URL')
+        if not url:
+            raise Exception("INDEXTANK_API_URL undefined")
+        cli = ApiClient(url)
+        return cli.list_indexes()
+
+    def execute(self):
+        indexes = self.get_indexes()
+        values = {}
+        for idx in indexes:
+            if idx.status() != "LIVE":
+                continue
+            index_name = idx._IndexClient__index_url.rsplit('/', 1)[-1]
+            values["%s_index_size" % index_name.lower()] = idx.get_size()
+        return values
+
+if __name__ == "__main__":
+    IndexTankIndexSizePlugin().run()

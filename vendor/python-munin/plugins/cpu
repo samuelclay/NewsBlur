@@ -1,0 +1,153 @@
+#!/usr/bin/env python
+
+import os
+import re
+from vendor.munin import MuninPlugin
+
+class CPUPlugin(MuninPlugin):
+    title = "CPU usage"
+    args = "--base 1000 -r --lower-limit 0 --upper-limit 100" #" --upper-limit $graphlimit"
+    vlabel = "%"
+    category = "system"
+    period = "second" # TODO: I think this is the default anyway
+    info = "This graph shows how CPU time is spent."
+
+    @property
+    def order(self):
+        return ("system user nice idle " + self.extinfo).strip()
+
+    @property
+    def extinfo(self):
+        if hasattr(self, '_extinfo'):
+           return self._extinfo
+
+        fp = open("/proc/stat", "rb")
+        stat = fp.read()
+        fp.close()
+        if bool(re.match(r"^cpu +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+", stat)):
+            self._extinfo = "iowait irq softirq"
+        else:
+            self._extinfo = ""
+
+        return self._extinfo
+
+    @property
+    def fields(self):
+        warning = os.environ.get('load_warn', 10)
+        critical = os.environ.get('load_crit', 120)
+        fields = [
+            ("system", dict(
+                label = "system"
+                draw = "AREA",
+                max = max,
+                min = min,
+                type = "DERIVE",
+                warning = syswarning,
+                critical = syscritical,
+                info = "CPU time spent by the kernel in system activities",
+            )),
+            ("user", dict(
+                label = "user"
+                draw = "STACK",
+                max = max,
+                min = "0",
+                type = "DERIVE",
+                warning = usrwarning,
+                info = "CPU time spent by normal programs and daemons",
+            ))
+        ]
+        return [("load", dict(
+                label = "load",
+                info = 'The load average of the machine describes how many processes are in the run-queue (scheduled to run "immediately").',
+                type = "GAUGE",
+                min = "0",
+                warning = str(warning),
+                critical = str(critical)))]
+
+    def execute(self):
+        if os.path.exists("/proc/loadavg"):
+            loadavg = open("/proc/loadavg", "r").read().strip().split(' ')
+        else:
+            from subprocess import Popen, PIPE
+            output = Popen(["uptime"], stdout=PIPE).communicate()[0]
+            loadavg = output.rsplit(':', 1)[1].strip().split(' ')[:3]
+            print loadavg
+        print "load.value %s" % loadavg[1]
+
+if __name__ == "__main__":
+    CPUPlugin().run()
+
+if (`egrep '^cpu +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+' /proc/stat 2>/dev/null >/dev/null`)
+then
+	extinfo="iowait irq softirq"
+fi
+
+if [ "$1" = "config" ]; then
+
+	NCPU=$(egrep '^cpu[0-9]+ ' /proc/stat | wc -l)
+	PERCENT=$(($NCPU * 100))
+	MAX=$(($NCPU * 100))
+	if [ "$scaleto100" = "yes" ]; then
+		graphlimit=100
+	else
+		graphlimit=$PERCENT
+	fi
+	SYSWARNING=`expr $PERCENT '*' 30 / 100`
+	SYSCRITICAL=`expr $PERCENT '*' 50 / 100`
+	USRWARNING=`expr $PERCENT '*' 80 / 100`
+	echo 'nice.label nice'
+	echo 'nice.draw STACK'
+	echo 'nice.min 0'
+	echo "nice.max $MAX"
+	echo 'nice.type DERIVE'
+	echo 'nice.info CPU time spent by nice(1)d programs'
+	echo 'idle.label idle'
+	echo 'idle.draw STACK'
+	echo 'idle.min 0'
+	echo "idle.max $MAX"
+	echo 'idle.type DERIVE'
+	echo 'idle.info Idle CPU time'
+	if [ "$scaleto100" = "yes" ]; then
+		echo "system.cdef system,$NCPU,/"
+		echo "user.cdef user,$NCPU,/"
+		echo "nice.cdef nice,$NCPU,/"
+		echo "idle.cdef idle,$NCPU,/"
+	fi
+	if [ ! -z "$extinfo" ]
+	then
+		echo 'iowait.label iowait'
+		echo 'iowait.draw STACK'
+		echo 'iowait.min 0'
+		echo "iowait.max $MAX"
+		echo 'iowait.type DERIVE'
+		echo 'iowait.info CPU time spent waiting for I/O operations to finish'
+		echo 'irq.label irq'
+		echo 'irq.draw STACK'
+		echo 'irq.min 0'
+		echo "irq.max $MAX"
+		echo 'irq.type DERIVE'
+		echo 'irq.info CPU time spent handling interrupts'
+		echo 'softirq.label softirq'
+		echo 'softirq.draw STACK'
+		echo 'softirq.min 0'
+		echo "softirq.max $MAX"
+		echo 'softirq.type DERIVE'
+		echo 'softirq.info CPU time spent handling "batched" interrupts'
+		if [ "$scaleto100" = "yes" ]; then
+			echo "iowait.cdef iowait,$NCPU,/"
+			echo "irq.cdef irq,$NCPU,/"
+			echo "softirq.cdef softirq,$NCPU,/"
+		fi
+	fi
+	exit 0
+fi
+
+HZ=`getconf CLK_TCK`
+
+if [ ! -z "$extinfo" ]
+then
+	awk -v HZ=$HZ 'BEGIN { factor=100/HZ } /^cpu / { for (i=2; i<=8; i++) { $i = int($i * factor) }; print "user.value " $2 "\nnice.value " $3 "\nsystem.value " $4 "\nidle.value " $5 "\niowait.value " $6 "\nirq.value " $7 "\nsoftirq.value " $8 }' < /proc/stat
+
+else
+	awk -v HZ=$HZ 'BEGIN { factor=100/HZ } /^cpu / { for (i=2; i<=5; i++) { $i = int($i * factor) }; print "user.value " $2 "\nnice.value " $3 "\nsystem.value " $4 "\nidle.value " $5 }' < /proc/stat
+fi

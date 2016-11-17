@@ -167,7 +167,7 @@
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
-                                     style:UIBarButtonSystemItemAction
+                                     style:UIBarButtonItemStylePlain
                                      target:self
                                      action:@selector(subscribeToBlurblog)
                                      ];
@@ -343,8 +343,15 @@
 }
 
 - (void)transitionFromFeedDetail {
-//    [self performSelector:@selector(resetPages) withObject:self afterDelay:0.5];
-    [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+        [appDelegate.navigationController
+         popToViewController:[appDelegate.navigationController.viewControllers
+                              objectAtIndex:0]
+         animated:YES];
+        [appDelegate hideStoryDetailView];
+    } else {
+        [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -361,7 +368,9 @@
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
-        [self refreshPages];
+        
+        // This causes the story to reload on rotation (or when going to the background), but doesn't seem necessary?
+//        [self refreshPages];
     }];
 }
 
@@ -1012,12 +1021,12 @@
     if (storyViewController.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
-                              forState:nil];
+                              forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
         [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
-                              forState:nil];
+                              forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
     }
 }

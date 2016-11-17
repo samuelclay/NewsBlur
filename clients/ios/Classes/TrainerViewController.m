@@ -40,7 +40,7 @@
     
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
                              initWithTitle:@"Done Training"
-                             style:UIBarButtonSystemItemDone
+                             style:UIBarButtonItemStyleDone
                              target:self
                              action:@selector(doCloseDialog:)];
     self.navigationItem.rightBarButtonItem = done;

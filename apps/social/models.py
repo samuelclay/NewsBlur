@@ -144,7 +144,6 @@ class MSocialProfile(mongo.Document):
         'collection': 'social_profile',
         'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
     }
     
     def __unicode__(self):
@@ -1401,10 +1400,11 @@ class MCommentReply(mongo.EmbeddedDocument):
         'ordering': ['publish_date'],
         'id_field': 'reply_id',
         'allow_inheritance': False,
+        'strict': False,
     }
 
 
-class MSharedStory(mongo.Document):
+class MSharedStory(mongo.DynamicDocument):
     user_id                  = mongo.IntField()
     shared_date              = mongo.DateTimeField()
     comments                 = mongo.StringField()
@@ -1441,9 +1441,9 @@ class MSharedStory(mongo.Document):
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
                     'shared_date', 'story_guid', 'story_feed_id', 'story_hash'],
-        'index_drop_dups': True,
         'ordering': ['-shared_date'],
         'allow_inheritance': False,
+        'strict': False,
     }
 
     def __unicode__(self):
@@ -1487,7 +1487,7 @@ class MSharedStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
 
-        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
+        self.story_guid_hash = self.guid_hash
         self.story_title = strip_tags(self.story_title)
         self.story_hash = self.feed_guid_hash
 
@@ -1916,7 +1916,10 @@ class MSharedStory(mongo.Document):
                         'story_hash': story['story_hash'],
                         'user_id__in': sharer_user_ids,
                     }
-                    shared_stories = cls.objects.filter(**params)
+                    if params.has_key('story_db_id'):
+                        params.pop('story_db_id')
+                    shared_stories = cls.objects.filter(**params)\
+                                                .hint([('story_hash', 1)])
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
                     story['reply_count'] += len(comments['replies'])
@@ -1964,7 +1967,8 @@ class MSharedStory(mongo.Document):
                         'story_hash': story['story_hash'],
                         'user_id__in': story['shared_by_friends'],
                     }
-                    shared_stories = cls.objects.filter(**params)
+                    shared_stories = cls.objects.filter(**params)\
+                                                .hint([('story_hash', 1)])
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
                     story['reply_count'] += len(comments['replies'])
@@ -2051,7 +2055,7 @@ class MSharedStory(mongo.Document):
         return "%sstory/%s/%s" % (
             profile.blurblog_url,
             slugify(self.story_title)[:20],
-            self.guid_hash[:6]
+            self.story_hash
         )
     
     def generate_post_to_service_message(self, truncate=None, include_url=True):
@@ -2817,7 +2821,6 @@ class MInteraction(mongo.Document):
         'collection': 'interactions',
         'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
         'ordering': ['-date'],
     }
     
@@ -2843,6 +2846,24 @@ class MInteraction(mongo.Document):
             'content_id': self.content_id,
             'story_hash': story_hash,
         }
+    
+    @classmethod
+    def trim(cls, user_id, limit=100):
+        user = User.objects.get(pk=user_id)
+        interactions = cls.objects.filter(user_id=user_id).skip(limit)
+        interaction_count = interactions.count(True)
+
+        if interaction_count == 0:
+            interaction_count = cls.objects.filter(user_id=user_id).count()
+            logging.user(user, "~FBNot trimming interactions, only ~SB%s~SN interactions found" % interaction_count)
+            return
+        
+        logging.user(user, "~FBTrimming ~SB%s~SN interactions..." % interaction_count)
+
+        for interaction in interactions:
+            interaction.delete()
+
+        logging.user(user, "~FBDone trimming ~SB%s~SN interactions" % interaction_count)
     
     @classmethod
     def publish_update_to_subscribers(self, user_id):
@@ -3059,7 +3080,6 @@ class MActivity(mongo.Document):
         'collection': 'activities',
         'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
         'ordering': ['-date'],
     }
     
@@ -3084,6 +3104,24 @@ class MActivity(mongo.Document):
             'content_id': self.content_id,
             'story_hash': story_hash,
         }
+    
+    @classmethod
+    def trim(cls, user_id, limit=100):
+        user = User.objects.get(pk=user_id)
+        activities = cls.objects.filter(user_id=user_id).skip(limit)
+        activity_count = activities.count(True)
+
+        if activity_count == 0:
+            activity_count = cls.objects.filter(user_id=user_id).count()
+            logging.user(user, "~FBNot trimming activities, only ~SB%s~SN activities found" % activity_count)
+            return
+        
+        logging.user(user, "~FBTrimming ~SB%s~SN activities..." % activity_count)
+
+        for activity in activities:
+            activity.delete()
+
+        logging.user(user, "~FBDone trimming ~SB%s~SN activities" % activity_count)
         
     @classmethod
     def user(cls, user_id, page=1, limit=4, public=False, categories=None):
@@ -3302,7 +3340,6 @@ class MFollowRequest(mongo.Document):
         'indexes': ['follower_user_id', 'followee_user_id'],
         'ordering': ['-date'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
     }
     
     @classmethod

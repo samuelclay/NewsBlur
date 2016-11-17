@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 
-from munin.gearman import MuninGearmanPlugin
+from vendor.munin.gearman import MuninGearmanPlugin
 
 class MuninGearmanConnectionsPlugin(MuninGearmanPlugin):
     title = "Gearman Connections"
