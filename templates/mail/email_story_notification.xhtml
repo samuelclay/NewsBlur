@@ -3,39 +3,13 @@
 
 {% block header %}{% endblock %}
 
-{% block body %}
-    <style type="text/css">
-    @media only screen and (max-device-width: 500px) {
-        body {
-            -webkit-text-size-adjust: 100%;
-        }
-        table[class="NB-email"] {
-            max-width: 400px !important;
-            width: 100% !important;
-        }
-        img {
-            max-width: 100%;
-        }
-    }
+{% block body %}    
 
-    /* regular CSS styles go here */
-    table[class="NB-email"] {
-        max-width: 640px !important;
-        width: 100% !important;
-    }
-    img {
-        max-width: 600px;
-    }
-    body {
-        -webkit-text-size-adjust: 100%;
-    }
-    </style>
-    
-    <p style="font-size: 14px; margin-top: 0;margin-bottom: 10px;padding-top:0px;line-height: 28px;font-weight: bold">
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
         <img src="{{ feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle; "> <a href="{{ feed.feed_link }}" style="color: #303050;text-decoration: none;">{{ feed_title }}</a>
-    </p>
+    </h2>
     
-    <div style="margin: 24px 0 12px; border-top: 3px solid #404040; padding: 4px 0;"></div>
+    <hr>
 
     <h2><a href="http://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?story={{ story.story_hash }}" style="color: #404070;text-decoration: none;">{{ story.story_title }}</a></h2>
 
@@ -43,13 +17,14 @@
     
     <a href="{{ story.story_permalink|safe }}">{{ story.story_permalink|safe }}</a>
 
-    <div style="margin: 24px 0 12px; border-top: 3px solid #404040; padding: 4px 0;"></div>
+    <hr>
     
 {% endblock %}
 
+
 {% block footer %}
 <tr>
-    <td>
+    <td class="comment_body_td content-td" style="-webkit-background-clip: padding-box; -webkit-border-radius: 0 0 3px 3px; background: white; background-clip: padding-box; border-radius: 0 0 3px 3px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); color: #525252; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 15px; line-height: 22px; overflow: hidden; padding: 0 0 24px;" bgcolor="white">
         <p style="font-size:12px;text-align: center;"> 
             You received this because you have <a href="http://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications" style="text-decoration:none;">email notifications for {{ feed_title }}</a>.
         </p>

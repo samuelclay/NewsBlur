@@ -701,7 +701,7 @@
             var story_id = this.flags['select_story_in_feed'];
             var story = NEWSBLUR.assets.stories.get(story_id);
             if (!story) story = NEWSBLUR.assets.stories.get_by_story_hash(story_id);
-            // NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
+            NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
             
             if (story) {
                 this.counts['select_story_in_feed'] = 0;
