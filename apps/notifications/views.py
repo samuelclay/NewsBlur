@@ -52,3 +52,18 @@ def set_notifications_for_feed(request):
     notifications_by_feed = MUserFeedNotification.feeds_for_user(user.pk)
 
     return {"notifications_by_feed": notifications_by_feed}
+
+@ajax_login_required
+@json.json_view
+def set_apns_token(request):
+    user = get_user(request)
+    tokens = MUserNotificationTokens.get_tokens_for_user(user)
+    apns_token = request.POST['apns_token']
+    
+    logging.user(user, "~FCUpdating APNS push token")
+    if apns_token not in tokens.ios_tokens:
+        tokens.ios_tokens.append(apns_token)
+        tokens.save()
+        return {'message': 'Token saved.'}
+    
+    return {'message': 'Token already saved.'}

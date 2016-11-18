@@ -14,6 +14,7 @@ from apps.analyzer.models import compute_story_score
 from utils import log as logging
 from utils import mongoengine_fields
 from HTMLParser import HTMLParser
+from apns import APNs, Frame, Payload
 
 
 class NotificationFrequency(enum.Enum):
@@ -23,6 +24,27 @@ class NotificationFrequency(enum.Enum):
     hour_12 = 4
     hour_24 = 5
 
+class MUserNotificationTokens(mongo.Document):
+    '''A user's push notification tokens'''
+    user_id                  = mongo.IntField()
+    ios_tokens               = mongo.ListField(mongo.StringField(max_length=1024))
+    
+    meta = {
+        'collection': 'notification_tokens',
+        'indexes': [{'fields': ['user_id'], 
+                     'unique': True,
+                     'types': False, }],
+        'allow_inheritance': False,
+    }
+    
+    @classmethod
+    def get_tokens_for_user(cls, user_id):
+        try:
+            tokens = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            tokens = cls.objects.create(user_id=user_id)
+
+        return tokens
 
 class MUserFeedNotification(mongo.Document):
     '''A user's notifications of a single feed.'''
@@ -153,23 +175,34 @@ class MUserFeedNotification(mongo.Document):
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~FCSending push notification: %s/%s (score: %s)" % (story['story_title'][:40], story['story_hash'], story_score))
         
-        self.send_web(story)
-        self.send_ios(story)
+        self.send_web(story, user)
+        self.send_ios(story, user, usersub)
         self.send_android(story)
         self.send_email(story, usersub)
         
         return True
     
-    def send_web(self, story):
+    def send_web(self, story, user):
         if not self.is_web: return
         
-        user = User.objects.get(pk=self.user_id)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(user.username, 'notification:%s,%s' % (story['story_hash'], story['story_title']))
     
-    def send_ios(self, story):
+    def send_ios(self, story, user, usersub):
         if not self.is_ios: return
+
+        apns = APNs(use_sandbox=True, 
+                    cert_file='/srv/newsblur/config/certificates/aps_development.pem',
+                    key_file='/srv/newsblur/config/certificates/aps_development.pem')
         
+        tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
+
+        for token in tokens.ios_tokens:
+            logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
+                                       (story['story_title'][:50], usersub.feed.feed_title[:50]))
+            payload = Payload(alert=story['story_title'],
+                              custom={'story_hash': story['story_hash']})
+            apns.gateway_server.send_notification(token, payload)
         
     def send_android(self, story):
         if not self.is_android: return
