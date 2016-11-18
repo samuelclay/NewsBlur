@@ -3,10 +3,12 @@ import enum
 import pymongo
 import redis
 import mongoengine as mongo
+import boto
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 from apps.rss_feeds.models import MStory, Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -197,12 +199,14 @@ class MUserFeedNotification(mongo.Document):
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         feed_title = usersub.user_title or usersub.feed.feed_title
+        title = "%s: %s" % (feed_title, story['story_title'])
+        body = HTMLParser().unescape(strip_tags(story['story_content']))[:200]
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                        (story['story_title'][:50], usersub.feed.feed_title[:50]))
-            payload = Payload(alert={'title': "%s: %s" % (feed_title, story['story_title']),
-                                     'body': story['story_content'][:200]},
+            payload = Payload(alert={'title': title,
+                                     'body': body},
                               custom={'story_hash': story['story_hash']})
             apns.gateway_server.send_notification(token, payload)
         
