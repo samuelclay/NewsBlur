@@ -196,11 +196,13 @@ class MUserFeedNotification(mongo.Document):
                     key_file='/srv/newsblur/config/certificates/aps_development.pem')
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
-
+        feed_title = usersub.user_title or usersub.feed.feed_title
+        
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                        (story['story_title'][:50], usersub.feed.feed_title[:50]))
-            payload = Payload(alert=story['story_title'],
+            payload = Payload(alert={'title': "%s: %s" % (feed_title, story['story_title']),
+                                     'body': story['story_content'][:200]},
                               custom={'story_hash': story['story_hash']})
             apns.gateway_server.send_notification(token, payload)
         
