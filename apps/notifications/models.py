@@ -35,6 +35,8 @@ class MUserFeedNotification(mongo.Document):
     is_web                   = mongo.BooleanField()
     is_ios                   = mongo.BooleanField()
     is_android               = mongo.BooleanField()
+    ios_tokens               = mongo.ListField(mongo.StringField(max_length=1024))
+    
     
     meta = {
         'collection': 'notifications',

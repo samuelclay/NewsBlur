@@ -349,6 +349,7 @@ def load_feeds_flat(request):
         folders = []
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    notifications = MUserFeedNotification.feeds_for_user(user.pk)
     if not user_subs and folders:
         folders.auto_activate()
         user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
@@ -356,15 +357,19 @@ def load_feeds_flat(request):
         inactive_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=False)
     
     for sub in user_subs:
+        pk = sub.feed_id
         if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
-        feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
+        feeds[pk] = sub.canonical(include_favicon=include_favicons)
         if not sub.feed.active and not sub.feed.has_feed_exception:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.active_subscribers <= 0:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
+        if pk in notifications:
+            feeds[pk].update(notifications[pk])
+        
     
     if include_inactive:
         for sub in inactive_subs:
