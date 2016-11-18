@@ -223,7 +223,7 @@ class MUserFeedNotification(mongo.Document):
             "story": story,
             "feed": feed,
             "feed_title": usersub.user_title or feed.feed_title,
-            "favicon_border": feed.favicon_border(),
+            "favicon_border": feed.favicon_color,
         }
         from_address = 'share@newsblur.com'
         to_address = '%s <%s>' % (usersub.user.username, usersub.user.email)
