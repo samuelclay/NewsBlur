@@ -364,13 +364,15 @@
     }
     
     NSLog(@" -> APNS token: %@", token);
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/notifications/set_apns_token/",
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/notifications/apns_token/",
                                        self.url]];
-    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
-    __weak ASIHTTPRequest *request = _request;
+    ASIFormDataRequest *_request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *request = _request;
     [request setValidatesSecureCertificate:NO];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setPostValue:token
+                   forKey:@"apns_token"];
     [request setFailedBlock:^(void) {
         NSLog(@"Failed to set APNS token");
     }];

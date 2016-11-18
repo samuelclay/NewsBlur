@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
-from apps.notifications.models import MUserFeedNotification
+from apps.notifications.models import MUserFeedNotification, MUserNotificationTokens
 
 
 @ajax_login_required
