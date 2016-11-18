@@ -57,7 +57,7 @@ def set_notifications_for_feed(request):
 @json.json_view
 def set_apns_token(request):
     user = get_user(request)
-    tokens = MUserNotificationTokens.get_tokens_for_user(user)
+    tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
     apns_token = request.POST['apns_token']
     
     logging.user(user, "~FCUpdating APNS push token")
