@@ -181,7 +181,8 @@ class MUserFeedNotification(mongo.Document):
         params  = {
             "story": story,
             "feed": feed,
-            "feed_title": usersub.user_title or feed.feed_title
+            "feed_title": usersub.user_title or feed.feed_title,
+            "favicon_border": feed.favicon_border(),
         }
         from_address = 'share@newsblur.com'
         to_address = '%s <%s>' % (usersub.user.username, usersub.user.email)
