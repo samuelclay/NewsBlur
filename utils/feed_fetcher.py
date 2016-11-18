@@ -370,6 +370,11 @@ class FetchFeed:
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
                 return
+            elif 'suspended' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
             else:
                 raise
         
@@ -380,10 +385,12 @@ class FetchFeed:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
+                return
             elif 'User not found' in e.args[0]:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
+                return
             else:
                 raise e
                 
