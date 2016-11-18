@@ -172,14 +172,28 @@
         margin-top: 0;
         padding-top: 0;
     }
-    </style>
-
-
-    <style type="text/css" data-premailer="ignore">
+    
+    .footer-logo {
+        float: left;
+    }
+    .optout {
+        float: right;
+        margin: 24px 24px;
+    }
 
     @media screen and (max-width: 635px) {
         .main-wrap {
             width: 100% !important;
+        }
+        .footer-logo {
+            text-align: center;
+            width: 100%;
+            float: none;
+        }
+        .optout {
+            text-align: center;
+            width: 100%;
+            float: none;
         }
     }
 
@@ -232,10 +246,6 @@
         }
     }
 
-    </style>
-
-
-    <style type="text/css" data-premailer="ignore">
     .content-td blockquote + * {
         margin-top: 20px !important;
     }
@@ -343,10 +353,13 @@
                                 </tr>
                             </table>
                         </div>
-                        <div style="float: right;margin: 24px 24px;">
+                        <div style="overflow: hidden;">
+                        <div class="footer-logo">
+                            <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:60px;border: none;"></a>
+                        </div>
+                        <div class="optout">
                             <a href="http://{% current_domain %}{% url "profile-email-optout" %}" style="text-decoration:none;color: #84919B">Opt-out of emails from NewsBlur</a>
                         </div>
-                        <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:60px;border: none;"></a>
                     </td>
                 </tr>
                 <tr>
