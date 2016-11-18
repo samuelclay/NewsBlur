@@ -714,32 +714,6 @@ static UIFont *userLabelFont;
         appDelegate.categoryFeeds = [[results objectForKey:@"categories"] objectForKey:@"feeds"];
     }
     
-    // test for latest version of app
-    NSString *serveriPhoneBuild = [results objectForKey:@"latest_ios_build"];
-    NSString *currentiPhoneBuild = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
-    NSString *serveriPhoneVersion = [results objectForKey:@"latest_ios_version"];
-    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    BOOL unseenBuild = [serveriPhoneBuild integerValue] > [userPreferences integerForKey:@"last_seen_latest_ios_build"];
-
-    if ([currentiPhoneBuild integerValue] < [serveriPhoneBuild integerValue] && unseenBuild) {
-        NSLog(@"Build: %ld - %@ (seen: %ld)", (long)[serveriPhoneBuild integerValue], currentiPhoneBuild, (long)[userPreferences integerForKey:@"last_seen_latest_ios_build"]);
-        [userPreferences setInteger:[serveriPhoneBuild integerValue] forKey:@"last_seen_latest_ios_build"];
-        [userPreferences setObject:serveriPhoneVersion forKey:@"last_seen_latest_ios_version"];
-        [userPreferences synchronize];
-        
-        NSString *title = [NSString stringWithFormat:@
-                           "You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", 
-                           serveriPhoneVersion, 
-                           currentiPhoneVersion];
-        UIAlertView *upgradeConfirm = [[UIAlertView alloc] initWithTitle:title 
-                                                                 message:nil 
-                                                                delegate:self 
-                                                       cancelButtonTitle:@"Cancel" 
-                                                       otherButtonTitles:@"Upgrade!", nil];
-        [upgradeConfirm show];
-        [upgradeConfirm setTag:2];
-    }
-    
     if (!self.isOffline) {
         // start up the first time user experience
         if ([[results objectForKey:@"social_feeds"] count] == 0 &&
@@ -767,33 +741,13 @@ static UIFont *userLabelFont;
     [self showExplainerOnEmptyFeedlist];
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
+    [self checkForFeedNotifications];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 2) {
-        if (buttonIndex == 0) {
-            return;
-        } else {
-            NSURL *url;
-            NSString *currentVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-            NSString *serverVersion = [userPreferences stringForKey:@"last_seen_latest_ios_version"];
-
-            if ([currentVersion containsString:@"b"] && [serverVersion containsString:@"b"]) {
-                url = [NSURL URLWithString:@"https://www.newsblur.com/ios/download"];
-            } else {
-                //  this doesn't work in simulator!!! because simulator has no app store
-                url = [NSURL URLWithString:@"itms://itunes.apple.com/us/app/mensa-essen/id463981119?ls=1&mt=8"];
-            }
-            [[UIApplication sharedApplication] openURL:url];
-        }
-    }
 }
 
 - (void)loadOfflineFeeds:(BOOL)failed {
@@ -2078,6 +2032,20 @@ heightForHeaderInSection:(NSInteger)section {
                                               spacer,
                                               userAvatarButton,
                                               userInfoBarButton, nil];
+}
+
+- (void)checkForFeedNotifications {
+    for (NSDictionary *feed in appDelegate.dictFeeds.allValues) {
+        NSArray *types = [feed objectForKey:@"notification_types"];
+        if (types) {
+            for (NSString *notificationType in types) {
+                if ([notificationType isEqualToString:@"ios"]) {
+                    [appDelegate registerForRemoteNotifications];
+                    return;
+                }
+            }
+        }
+    }
 }
 
 - (void)refreshHeaderCounts {

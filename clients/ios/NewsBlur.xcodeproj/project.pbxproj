@@ -1074,6 +1074,7 @@
 		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
 		FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataDecompressor.h; sourceTree = "<group>"; };
 		FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataDecompressor.m; sourceTree = "<group>"; };
+		FF81FB1C1DDE9BF9003FA6B8 /* NewsBlur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = NewsBlur.entitlements; path = NewsBlur/NewsBlur.entitlements; sourceTree = "<group>"; };
 		FF8364B91755759A008F5C58 /* traverse_text.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_text.png; sourceTree = "<group>"; };
 		FF8364BA1755759A008F5C58 /* traverse_text@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_text@2x.png"; sourceTree = "<group>"; };
 		FF8364BD1756949E008F5C58 /* traverse_text_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_text_on.png; sourceTree = "<group>"; };
@@ -1401,6 +1402,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FF81FB1C1DDE9BF9003FA6B8 /* NewsBlur.entitlements */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				4307BE511565EDF8007A932A /* Resources */,
 				43D0451C1565BC090085F811 /* Resources-iPad */,
@@ -2437,6 +2439,11 @@
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = HR7P97SD72;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -3050,6 +3057,7 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = NewsBlur/NewsBlur.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -3067,7 +3075,7 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -3095,6 +3103,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = NewsBlur/NewsBlur.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -3111,7 +3120,7 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",

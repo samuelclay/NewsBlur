@@ -65,8 +65,9 @@
 #import "UISearchBar+Field.h"
 #import "UIViewController+HidePopover.h"
 #import <float.h>
+#import <UserNotifications/UserNotifications.h>
 
-@interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
+@interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate, UNUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) NSString *cachedURL;
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
@@ -330,6 +331,62 @@
     }
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
+}
+
+- (void)registerForRemoteNotifications {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self;
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
+        if(!error){
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        }
+    }];
+}
+
+//Called when a notification is delivered to a foreground app.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
+    NSLog(@"User Info : %@",notification.request.content.userInfo);
+    completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+}
+
+//Called to let your app know which action was selected by the user for a given notification.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
+    NSLog(@"User Info : %@",response.notification.request.content.userInfo);
+    completionHandler();
+}
+
+-(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    const char *data = [deviceToken bytes];
+    NSMutableString *token = [NSMutableString string];
+    
+    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+        [token appendFormat:@"%02.2hhX", data[i]];
+    }
+    
+    NSLog(@" -> APNS token: %@", token);
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/notifications/set_apns_token/",
+                                       self.url]];
+    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
+    __weak ASIHTTPRequest *request = _request;
+    [request setValidatesSecureCertificate:NO];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setFailedBlock:^(void) {
+        NSLog(@"Failed to set APNS token");
+    }];
+    [request setCompletionBlock:^(void) {
+        NSString *responseString = [request responseString];
+        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error;
+        NSDictionary *results = [NSJSONSerialization
+                                 JSONObjectWithData:responseData
+                                 options:kNilOptions
+                                 error:&error];
+        NSLog(@" -> APNS: %@/%@", results, error);
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+
 }
 
 - (BOOL)application:(UIApplication *)application
