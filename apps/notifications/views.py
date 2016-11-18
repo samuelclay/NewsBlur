@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from apps.notifications.models import MUserFeedNotification, MUserNotificationTokens
+from utils import log as logging
 
 
 @ajax_login_required
@@ -58,7 +59,7 @@ def set_notifications_for_feed(request):
 def set_apns_token(request):
     user = get_user(request)
     tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
-    apns_token = request.POST['apns_token']
+    apns_token = request.REQUEST['apns_token']
     
     logging.user(user, "~FCUpdating APNS push token")
     if apns_token not in tokens.ios_tokens:
