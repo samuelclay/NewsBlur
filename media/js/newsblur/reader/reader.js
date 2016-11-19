@@ -697,7 +697,8 @@
             }
         },
         
-        select_story_in_feed: function() {
+        select_story_in_feed: function(options) {
+            options = _.extend({}, options);
             var story_id = this.flags['select_story_in_feed'];
             var story = NEWSBLUR.assets.stories.get(story_id);
             if (!story) story = NEWSBLUR.assets.stories.get_by_story_hash(story_id);
@@ -707,9 +708,7 @@
                 this.counts['select_story_in_feed'] = 0;
                 this.flags['select_story_in_feed'] = null;
                 _.delay(_.bind(function() {
-                    // Even though a story_id is specified, this just means go to the comments.
-                    // Refactor when stories can be scrolled to separately from comments.
-                    story.set('selected', true, {scroll_to_comments: true});
+                    story.set('selected', true, {scroll_to_comments: options.scroll_to_comments});
                 }, this), 100);
             } else if (this.counts['select_story_in_feed'] < this.constants.FILL_OUT_PAGES && 
                        !this.model.flags['no_more_stories']) {
