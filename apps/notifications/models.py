@@ -208,7 +208,9 @@ class MUserFeedNotification(mongo.Document):
                                        (story['story_title'][:50], usersub.feed.feed_title[:50]))
             payload = Payload(alert={'title': title,
                                      'body': body},
-                              custom={'story_hash': story['story_hash']})
+                              custom={'story_hash': story['story_hash'],
+                                      'story_feed_id': story['story_feed_id'],
+                                     })
             apns.gateway_server.send_notification(token, payload)
         
     def send_android(self, story):

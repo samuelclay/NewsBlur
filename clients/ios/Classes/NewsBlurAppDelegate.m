@@ -351,8 +351,21 @@
 
 //Called to let your app know which action was selected by the user for a given notification.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
-    NSLog(@"User Info : %@",response.notification.request.content.userInfo);
-    completionHandler();
+    NSLog(@"User Info : %@", response.notification.request.content.userInfo);
+    NSString *storyHash = [response.notification.request.content.userInfo objectForKey:@"story_hash"];
+    NSString *storyFeedId = [response.notification.request.content.userInfo objectForKey:@"story_feed_id"];
+    
+    if (!self.activeUsername) {
+        return;
+    } else {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self loadTryFeedDetailView:storyFeedId
+                          withStory:storyHash
+                                  isSocial:NO
+                                  withUser:nil
+                          showFindingStory:YES];
+        self.tryFeedCategory = @"feedsub";
+    }
 }
 
 -(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
