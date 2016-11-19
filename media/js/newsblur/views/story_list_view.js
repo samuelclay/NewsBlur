@@ -186,7 +186,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     scroll_to_selected_story: function(story, options) {
         options = options || {};
         if (!story) story = NEWSBLUR.reader.active_story;
-        if (!story || !story.story_view) return;
+        if (!story || !story.story_view || !story.story_view.$el.length) return;
         var $story = story.story_view.$el;
 
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
