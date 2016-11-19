@@ -186,7 +186,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     scroll_to_selected_story: function(story, options) {
         options = options || {};
         if (!story) story = NEWSBLUR.reader.active_story;
-        if (!story || !story.story_view || !story.story_view.$el.length) return;
+        if (!story || !story.story_view) return;
         var $story = story.story_view.$el;
 
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
@@ -198,6 +198,11 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
         
         if (options.only_if_hidden && NEWSBLUR.reader.$s.$feed_scroll.isScrollVisible($story, true)) {
+            return;
+        }
+        
+        if (!options.scroll_to_top && !$story.closest(NEWSBLUR.reader.$s.$feed_scroll).length) {
+            console.log(['Story not visible, not scrolling', $story]);
             return;
         }
         
