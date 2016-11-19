@@ -13,6 +13,7 @@ from apps.rss_feeds.models import MStory, Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
+from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
 from HTMLParser import HTMLParser
@@ -200,7 +201,7 @@ class MUserFeedNotification(mongo.Document):
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         feed_title = usersub.user_title or usersub.feed.feed_title
         title = "%s: %s" % (feed_title, story['story_title'])
-        body = HTMLParser().unescape(strip_tags(story['story_content'])).strip()[:2048]
+        body = truncate_chars(HTMLParser().unescape(strip_tags(story['story_content'])).strip(), 1600)
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
