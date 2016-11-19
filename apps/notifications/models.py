@@ -200,7 +200,7 @@ class MUserFeedNotification(mongo.Document):
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         feed_title = usersub.user_title or usersub.feed.feed_title
         title = "%s: %s" % (feed_title, story['story_title'])
-        body = HTMLParser().unescape(strip_tags(story['story_content'])).strip()[:500]
+        body = HTMLParser().unescape(strip_tags(story['story_content'])).strip()[:2048]
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 

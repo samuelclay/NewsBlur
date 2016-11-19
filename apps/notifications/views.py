@@ -68,3 +68,18 @@ def set_apns_token(request):
         return {'message': 'Token saved.'}
     
     return {'message': 'Token already saved.'}
+
+@ajax_login_required
+@json.json_view
+def set_android_token(request):
+    user = get_user(request)
+    tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
+    token = request.REQUEST['token']
+    
+    logging.user(user, "~FCUpdating Android push token")
+    if token not in tokens.android_tokens:
+        tokens.android_tokens.append(token)
+        tokens.save()
+        return {'message': 'Token saved.'}
+    
+    return {'message': 'Token already saved.'}

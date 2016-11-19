@@ -991,6 +991,14 @@ def copy_postgres_to_standby(master='db01'):
 def setup_mongo():
     MONGODB_VERSION = "3.2.10"
     pull()
+    sudo('echo "#!/bin/sh -e\n\nif test -f /sys/kernel/mm/transparent_hugepage/enabled; then\n\
+       echo never > /sys/kernel/mm/transparent_hugepage/enabled\n\
+    fi\n\
+    if test -f /sys/kernel/mm/transparent_hugepage/defrag; then\n\
+       echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
+    fi\n\n\
+    exit 0" | sudo tee /etc/rc.local')
+    return
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
