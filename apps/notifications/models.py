@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
-from django.utils.html import strip_tags
+# from django.utils.html import strip_tags
 from apps.rss_feeds.models import MStory, Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -178,14 +178,16 @@ class MUserFeedNotification(mongo.Document):
             return text
         
         feed_title = usersub.user_title or usersub.feed.feed_title
-        title = "%s: %s" % (feed_title, story['story_title'])
+        # title = "%s: %s" % (feed_title, story['story_title'])
+        title = feed_title
+        subtitle = story['story_title']
         # body = HTMLParser().unescape(strip_tags(story['story_content']))
         soup = BeautifulSoup(story['story_content'].strip())
         print story['story_content'], soup
         body = soup.getText(separator="\n")
         body = truncate_chars(body.strip(), 1600)
         
-        return title, body
+        return title, subtitle, body
         
     def push_story_notification(self, story, classifiers, usersub):
         story_score = self.story_score(story, classifiers)
@@ -220,12 +222,13 @@ class MUserFeedNotification(mongo.Document):
                     key_file='/srv/newsblur/config/certificates/aps_development.pem')
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
-        title, body = self.title_and_body(story, usersub)
+        title, subtitle, body = self.title_and_body(story, usersub)
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                        (story['story_title'][:50], usersub.feed.feed_title[:50]))
             payload = Payload(alert={'title': title,
+                                     'subtitle': subtitle,
                                      'body': body},
                               custom={'story_hash': story['story_hash'],
                                       'story_feed_id': story['story_feed_id'],
