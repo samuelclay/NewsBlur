@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/srv/newsblur/venv/newsblur/bin/python
 from utils.munin.base import MuninGraph
 
 class NBMuninGraph(MuninGraph):
