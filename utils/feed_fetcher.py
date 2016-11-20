@@ -331,7 +331,7 @@ class FetchFeed:
             social_services = MSocialServices.get_user(self.options.get('requesting_user_id'))
             try:
                 twitter_api = social_services.twitter_api()
-            except tweepy.TweepError, e:
+            except tweepy.error.TweepError, e:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 return
@@ -345,7 +345,7 @@ class FetchFeed:
                 social_services = MSocialServices.get_user(sub.user_id)
                 try:
                     twitter_api = social_services.twitter_api()
-                except tweepy.TweepError, e:
+                except tweepy.error.TweepError, e:
                     logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
                                   (self.feed.title[:30], address, e))
                     continue
@@ -362,7 +362,7 @@ class FetchFeed:
                           (self.feed.title[:30], address, e))
             social_services.disconnect_twitter()
             return
-        except tweepy.TweepError, e:
+        except tweepy.error.TweepError, e:
             if ((len(e.args) >= 2 and e.args[2] == 63) or
                 ('temporarily locked' in e.args[0])):
                 # Suspended
@@ -380,7 +380,7 @@ class FetchFeed:
         
         try:
             tweets = twitter_user.timeline()
-        except tweepy.TweepError, e:
+        except tweepy.error.TweepError, e:
             if 'Not authorized' in e.args[0]:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
