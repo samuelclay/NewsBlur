@@ -1,6 +1,5 @@
 import datetime
 import enum
-import pymongo
 import redis
 import mongoengine as mongo
 import boto
@@ -17,8 +16,9 @@ from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
 from HTMLParser import HTMLParser
-from apns import APNs, Frame, Payload
-
+from apns import APNs, Payload
+from BeautifulSoup import BeautifulSoup
+import types
 
 class NotificationFrequency(enum.Enum):
     immediately = 1
@@ -151,13 +151,14 @@ class MUserFeedNotification(mongo.Document):
                     user_feed_notification.last_notification_date = story['story_date']
                     user_feed_notification.save()
                 
+                story['story_content'] = HTMLParser().unescape(story['story_content'])
+                
                 sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
                 if sent: sent_count += 1
     
     def classifiers(self, usersub):
         classifiers = {}
         if usersub.is_trained:
-            user = User.objects.get(pk=self.user_id)
             classifiers['feeds']   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id,
                                                                  social_user_id=0))
             classifiers['authors'] = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
@@ -165,6 +166,26 @@ class MUserFeedNotification(mongo.Document):
             classifiers['tags']    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
             
         return classifiers
+    
+    def title_and_body(self, story, usersub):
+        def replace_with_newlines(element):
+            text = ''
+            for elem in element.recursiveChildGenerator():
+                if isinstance(elem, types.StringTypes):
+                    text += elem.strip()
+                elif elem.name == 'br':
+                    text += '\n'
+            return text
+        
+        feed_title = usersub.user_title or usersub.feed.feed_title
+        title = "%s: %s" % (feed_title, story['story_title'])
+        # body = HTMLParser().unescape(strip_tags(story['story_content']))
+        soup = BeautifulSoup(story['story_content'].strip())
+        print story['story_content'], soup
+        body = soup.getText(separator="\n")
+        body = truncate_chars(body.strip(), 1600)
+        
+        return title, body
         
     def push_story_notification(self, story, classifiers, usersub):
         story_score = self.story_score(story, classifiers)
@@ -199,9 +220,7 @@ class MUserFeedNotification(mongo.Document):
                     key_file='/srv/newsblur/config/certificates/aps_development.pem')
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
-        feed_title = usersub.user_title or usersub.feed.feed_title
-        title = "%s: %s" % (feed_title, story['story_title'])
-        body = truncate_chars(HTMLParser().unescape(strip_tags(story['story_content'])).strip(), 1600)
+        title, body = self.title_and_body(story, usersub)
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
@@ -221,7 +240,6 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_email: return
         feed = usersub.feed
         
-        story['story_content'] = HTMLParser().unescape(story['story_content'])
         params  = {
             "story": story,
             "feed": feed,
@@ -241,8 +259,7 @@ class MUserFeedNotification(mongo.Document):
         try:
             msg.send()
         except boto.ses.connection.ResponseError, e:
-            code = -1
-            message = "Email error: %s" % str(e)
+            logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], usersub.feed.feed_title[:50]))
         

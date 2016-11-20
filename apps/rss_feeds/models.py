@@ -11,7 +11,6 @@ import redis
 import pymongo
 import HTMLParser
 from collections import defaultdict
-from pprint import pprint
 from operator import itemgetter
 from bson.objectid import ObjectId
 from BeautifulSoup import BeautifulSoup
@@ -35,7 +34,7 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
-from utils import feedfinder2 as feedfinder, feedparser
+from utils import feedfinder2 as feedfinder
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -567,7 +566,7 @@ class Feed(models.Model):
                 if found_feed_urls:
                     feed_address = found_feed_urls[0]
             except KeyError:
-                is_feed = False
+                pass
             if not len(found_feed_urls) and self.feed_link:
                 found_feed_urls = feedfinder.find_feeds(self.feed_link)
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
