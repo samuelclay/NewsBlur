@@ -103,18 +103,13 @@ class SignupForm(forms.Form):
         return self.cleaned_data['password']
             
     def clean_email(self):
-        return self.cleaned_data['email']
-    
-    def clean(self):
-        username = self.cleaned_data.get('username', '')
-        password = self.cleaned_data.get('password', '')
         email = self.cleaned_data.get('email', None)
         if email:
             email_exists = User.objects.filter(email__iexact=email).count()
             if email_exists:
                 raise forms.ValidationError(_(u'Someone is already using that email address.'))
             if any([banned in email for banned in ['mailwire24', 'mailbox9', 'scintillamail', 'bluemailboxes', 'devmailing']]):
-                logging.info(" ***> [%s] Spammer signup banned: %s/%s" % (username, password, email))
+                logging.info(" ***> [%s] Spammer signup banned: %s/%s" % (self.cleaned_data.get('username', None), self.cleaned_data.get('password', None), email))
                 raise forms.ValidationError('Seriously, fuck off spammer.')
             try:
                 domain = email.rsplit('@', 1)[-1]
@@ -122,6 +117,12 @@ class SignupForm(forms.Form):
                     raise forms.ValidationError('Sorry, that email is invalid.')
             except NXDOMAIN:
                 raise forms.ValidationError('Sorry, that email is invalid.')
+        return self.cleaned_data['email']
+    
+    def clean(self):
+        username = self.cleaned_data.get('username', '')
+        password = self.cleaned_data.get('password', '')
+        email = self.cleaned_data.get('email', None)
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
             user_auth = authenticate(username=username, password=password)
@@ -132,12 +133,7 @@ class SignupForm(forms.Form):
     def save(self, profile_callback=None):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
-
-        email = self.cleaned_data.get('email', None)
-        if email:
-            email_exists = User.objects.filter(email__iexact=email).count()
-            if email_exists:
-                raise forms.ValidationError(_(u'Someone is already using that email address.'))
+        email = self.cleaned_data['email']
 
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
