@@ -2621,7 +2621,7 @@ class MStarredStory(mongo.DynamicDocument):
             },
         }])
         month_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-        user_ids = stats['result']
+        user_ids = list(stats)
         user_ids = sorted(user_ids, key=lambda x:x['stories'], reverse=True)
         print " ---> Found %s users with more than %s starred stories" % (len(user_ids), stories)
 

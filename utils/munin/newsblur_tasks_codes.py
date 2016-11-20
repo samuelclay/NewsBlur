@@ -40,7 +40,7 @@ class NBMuninGraph(MuninGraph):
             },
         }])
         
-        return stats['result']
+        return list(stats)
         
 
 if __name__ == '__main__':
