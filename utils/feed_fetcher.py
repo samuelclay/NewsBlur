@@ -364,16 +364,25 @@ class FetchFeed:
             return
         except tweepy.error.TweepError, e:
             if ((len(e.args) >= 2 and e.args[2] == 63) or
-                ('temporarily locked' in e.args[0])):
+                ('temporarily locked' in e.args[0].lower())):
                 # Suspended
                 logging.debug(u'   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
                 return
-            elif 'suspended' in e.args[0]:
+            elif 'suspended' in e.args[0].lower():
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
+                return
+            elif 'not found' in e.args[0].lower():
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            elif 'over capacity' in e.args[0].lower():
+                logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
+                              (self.feed.title[:30], address, e))
                 return
             else:
                 raise
