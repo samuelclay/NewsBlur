@@ -584,7 +584,7 @@ def mark_story_as_shared(request):
             "story_permalink": story.story_permalink,
             "story_title": story.story_title,
             "story_feed_id": story.story_feed_id,
-            "story_content_z": story.story_content_z,
+            "story_content_z": story.story_latest_content_z or story.story_content_z,
             "story_author_name": story.story_author_name,
             "story_tags": story.story_tags,
             "story_date": story.story_date,
