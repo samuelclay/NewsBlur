@@ -355,6 +355,6 @@ def share_story(request, token=None):
     }), mimetype='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'
-    response['Content-Security-Policy'] = 'self'
+    response['Content-Security-Policy'] = "connect-src 'self';"
     
     return response
