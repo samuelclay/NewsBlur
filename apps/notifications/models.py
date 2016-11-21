@@ -172,7 +172,7 @@ class MUserFeedNotification(mongo.Document):
             text = ''
             for elem in element.recursiveChildGenerator():
                 if isinstance(elem, types.StringTypes):
-                    text += elem.strip()
+                    text += elem
                 elif elem.name == 'br':
                     text += '\n'
                 elif elem.name == 'p':
