@@ -232,6 +232,7 @@ class MUserFeedNotification(mongo.Document):
             payload = Payload(alert={'title': title,
                                      'subtitle': subtitle,
                                      'body': body},
+                              category="STORY_CATEGORY",
                               custom={'story_hash': story['story_hash'],
                                       'story_feed_id': story['story_feed_id'],
                                      })
