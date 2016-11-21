@@ -551,6 +551,7 @@
             this.$s.$body.removeClass('NB-show-reader');
 
             if (!skip_router) {
+                NEWSBLUR.log(["Navigating to splash"]);
                 NEWSBLUR.router.navigate('');
             }
         },
@@ -1506,10 +1507,10 @@
                 this.flags['select_story_in_feed'] = story;
             }
 
-            if (window.history.replaceState && !$.getQueryString('test')) {
-                // In case this needs to be found again: window.location.href = BACKBONE
-                window.history.replaceState({}, null, '/');
-            }
+            // if (window.history.replaceState && !$.getQueryString('test')) {
+            //     // In case this needs to be found again: window.location.href = BACKBONE
+            //     window.history.replaceState({}, null, '/');
+            // }
         },
         
         set_correct_story_view_for_feed: function(feed_id, view) {
@@ -1820,6 +1821,7 @@
             if (!options.silent) {
                 var url = "/read";
                 if (window.location.pathname != url) {
+                    NEWSBLUR.log(["Navigating to url", url]);
                     NEWSBLUR.router.navigate(url);
                 }
             }
