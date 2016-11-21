@@ -175,6 +175,8 @@ class MUserFeedNotification(mongo.Document):
                     text += elem.strip()
                 elif elem.name == 'br':
                     text += '\n'
+                elif elem.name == 'p':
+                    text += '\n\n'
             return text
         
         feed_title = usersub.user_title or usersub.feed.feed_title
@@ -183,8 +185,8 @@ class MUserFeedNotification(mongo.Document):
         subtitle = story['story_title']
         # body = HTMLParser().unescape(strip_tags(story['story_content']))
         soup = BeautifulSoup(story['story_content'].strip())
-        print story['story_content'], soup
-        body = soup.getText(separator="\n")
+        # print story['story_content']
+        body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 1600)
         
         return title, subtitle, body
