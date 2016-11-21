@@ -341,6 +341,24 @@
             [[UIApplication sharedApplication] registerForRemoteNotifications];
         }
     }];
+    
+    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
+                                                                            title:@"View story"
+                                                                          options:UNNotificationActionOptionForeground];
+    UNNotificationAction *readAction = [UNNotificationAction actionWithIdentifier:@"MARK_READ_IDENTIFIER"
+                                                                            title:@"Mark read"
+                                                                          options:UNNotificationActionOptionNone];
+    UNNotificationAction *starAction = [UNNotificationAction actionWithIdentifier:@"STAR_IDENTIFIER"
+                                                                            title:@"Save story"
+                                                                          options:UNNotificationActionOptionNone];
+    UNNotificationAction *dismissAction = [UNNotificationAction actionWithIdentifier:@"DISMISS_IDENTIFIER"
+                                                                            title:@"Dismiss"
+                                                                          options:UNNotificationActionOptionDestructive];
+    UNNotificationCategory *storyCategory = [UNNotificationCategory categoryWithIdentifier:@"STORY_CATEGORY"
+                                                                                   actions:@[viewAction, readAction, starAction, dismissAction]
+                                                                         intentIdentifiers:@[]
+                                                                                   options:UNNotificationCategoryOptionNone];
+    [center setNotificationCategories:[NSSet setWithObject:storyCategory]];
 }
 
 //Called when a notification is delivered to a foreground app.
@@ -351,21 +369,29 @@
 
 //Called to let your app know which action was selected by the user for a given notification.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
-    NSLog(@"User Info : %@", response.notification.request.content.userInfo);
+    NSLog(@"User Info : %@ / %@", response.notification.request.content.userInfo, response.actionIdentifier);
     NSString *storyHash = [response.notification.request.content.userInfo objectForKey:@"story_hash"];
-    NSString *storyFeedId = [response.notification.request.content.userInfo objectForKey:@"story_feed_id"];
+    NSNumber *storyFeedId = [response.notification.request.content.userInfo objectForKey:@"story_feed_id"];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", storyFeedId];
     
     if (!self.activeUsername) {
         return;
-    } else {
+    } else if ([response.actionIdentifier isEqualToString:@"MARK_READ_IDENTIFIER"]) {
+        [self markStoryAsRead:storyHash inFeed:feedIdStr withCallback:^{
+            completionHandler();
+        }];
+    } else if ([response.actionIdentifier isEqualToString:@"STAR_IDENTIFIER"]) {
+        [self markStoryAsStarred:storyHash inFeed:feedIdStr withCallback:^{
+            completionHandler();
+        }];
+    } else if ([response.actionIdentifier isEqualToString:@"VIEW_STORY_IDENTIFIER"]) {
         [self.navigationController popToRootViewControllerAnimated:NO];
-        [self loadTryFeedDetailView:storyFeedId
-                          withStory:storyHash
-                                  isSocial:NO
-                                  withUser:nil
-                          showFindingStory:YES];
-        self.tryFeedCategory = @"feedsub";
+        [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+        completionHandler();
+    } else if ([response.actionIdentifier isEqualToString:@"DISMISS_IDENTIFIER"]) {
+        completionHandler();
     }
+    
 }
 
 -(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -1013,6 +1039,34 @@
     
 }
 
+- (void)loadFeed:(NSString *)feedId
+       withStory:(NSString *)contentId
+        animated:(BOOL)animated {
+    NSDictionary *feed = [self getFeed:feedId];
+    
+    self.isTryFeedView = YES;
+    self.inFindingStoryMode = YES;
+    self.tryFeedStoryId = contentId;
+    storiesCollection.isSocialView = NO;
+    storiesCollection.activeFeed = feed;
+    storiesCollection.activeFolder = nil;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self loadFeedDetailView];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self hidePopoverAnimated:NO completion:^{
+            if (self.navigationController.presentedViewController) {
+                [self.navigationController dismissViewControllerAnimated:NO completion:^{
+                    [self loadFeedDetailView];
+                }];
+            } else {
+                [self loadFeedDetailView];
+            }
+        }];
+    }
+}
+
 - (void)loadTryFeedDetailView:(NSString *)feedId
                     withStory:(NSString *)contentId
                      isSocial:(BOOL)social
@@ -1035,7 +1089,7 @@
 
         }
         storiesCollection.isSocialView = NO;
-        [self setInFindingStoryMode:NO];
+//        [self setInFindingStoryMode:NO];
     }
             
     self.tryFeedStoryId = contentId;
@@ -1998,6 +2052,47 @@
              feedIdString];
         }];
     }
+}
+
+- (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)())callback {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
+                           self.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:storyHash
+                   forKey:@"story_hash"];
+    [request setCompletionBlock:^{
+        NSLog(@"Marked as read: %@", storyHash);
+        callback();
+    }];
+    [request setFailedBlock:^{
+        NSLog(@"Failed marked as read, queueing: %@", storyHash);
+        NSMutableDictionary *stories = [NSMutableDictionary dictionary];
+        [stories setObject:@[storyHash] forKey:feed];
+        [self queueReadStories:stories];
+        callback();
+    }];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)markStoryAsStarred:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)())callback {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
+                           self.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:storyHash
+                   forKey:@"story_hash"];
+    [request setCompletionBlock:^{
+        NSLog(@"Marked as starred: %@", storyHash);
+        callback();
+    }];
+    [request setFailedBlock:^{
+        NSLog(@"Failed marked as starred: %@", storyHash);
+        callback();
+    }];
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff {

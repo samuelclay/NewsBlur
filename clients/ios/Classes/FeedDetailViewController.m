@@ -1107,6 +1107,11 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
+        BOOL offlineEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+        if (!offlineEnabled) {
+            NSLog(@"Not saved stories in db, offline not supported.");
+            return;
+        }
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             for (NSDictionary *story in confirmedNewStories) {
                 [db executeUpdate:@"INSERT into stories"

@@ -233,6 +233,7 @@ class MUserFeedNotification(mongo.Document):
                                      'subtitle': subtitle,
                                      'body': body},
                               category="STORY_CATEGORY",
+                              mutable_content=True,
                               custom={'story_hash': story['story_hash'],
                                       'story_feed_id': story['story_feed_id'],
                                      })
