@@ -48,6 +48,7 @@ def load_social_stories(request, user_id, username=None):
     order          = request.REQUEST.get('order', 'newest')
     read_filter    = request.REQUEST.get('read_filter', 'all')
     query          = request.REQUEST.get('query', '').strip()
+    include_story_content = is_true(request.REQUEST.get('include_story_content', True))
     stories        = []
     message        = None
     
@@ -126,6 +127,8 @@ def load_social_stories(request, user_id, username=None):
     
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
+        if not include_story_content:
+            del story['story_content']
         story['social_user_id'] = social_user_id
         # story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
