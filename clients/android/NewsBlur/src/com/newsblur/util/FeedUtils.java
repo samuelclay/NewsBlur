@@ -173,9 +173,14 @@ public class FeedUtils {
                         if (!fs.isMuted()) {
                             ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
                         }
-                    } else if (fs.getMultipleFeeds() != null) {
-                        // TODO new FeedSet is it always a folder?
-                        ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                    } else if (fs.isFolder()) {
+                        Set<String> feedIds = fs.getMultipleFeeds();
+                        Set<String> allActiveFeedIds = dbHelper.getAllActiveFeeds();
+                        Set<String> activeFeedIds = new HashSet<String>();
+                        activeFeedIds.addAll(feedIds);
+                        activeFeedIds.retainAll(allActiveFeedIds);
+                        FeedSet filteredFs = FeedSet.folder(fs.getFolderName(), activeFeedIds);
+                        ra = ReadingAction.markFeedRead(filteredFs, olderThan, newerThan);
                     } else {
                         ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
                     }
