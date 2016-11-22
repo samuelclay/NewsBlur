@@ -188,16 +188,19 @@
     <string name="menu_network_select">Download Using</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
     <string name="menu_network_select_opt_any">Any Network</string>
-    <string name="menu_network_select_opt_nomo">Wifi and Ethernet Only</string>
+    <string name="menu_network_select_opt_nomo">Any Wifi or Ethernet</string>
+    <string name="menu_network_select_opt_nomononme">Unmetered Wifi or Ethernet Only</string>
     <string-array name="default_network_select_entries">
         <item>@string/menu_network_select_opt_any</item>
         <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
     </string-array>
     <string-array name="default_network_select_values">
         <item>ANY</item>
         <item>NOMO</item>
+        <item>NOMONONME</item>
     </string-array>
-    <string name="default_network_select_value">NOMO</string>
+    <string name="default_network_select_value">NOMONONME</string>
 
     <string name="settings_cat_story_list">Story List</string>
 
@@ -239,7 +242,7 @@
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>
     <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
-    <string name="settings_show_content_preview">Show Content Preview</string>
+    <string name="settings_show_content_preview">Show Content Preview Text</string>
     <string name="settings_show_thumbnails">Show Image Preview Thumbnails</string>
 
     <string name="story">Story</string>

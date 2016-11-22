@@ -37,7 +37,7 @@ public class ImageLoader {
 	private ImageLoader(FileCache fileCache, int emptyRID, int minImgHeight, boolean hideMissing, long memoryCacheSize) {
         this.memoryCache = new MemoryCache(memoryCacheSize);
 		this.fileCache = fileCache;
-		executorService = Executors.newFixedThreadPool(3);
+		executorService = Executors.newFixedThreadPool(AppConstants.IMAGE_LOADER_THREAD_COUNT);
         this.emptyRID = emptyRID;
         this.minImgHeight = minImgHeight;
         this.hideMissing = hideMissing;
@@ -142,7 +142,9 @@ public class ImageLoader {
                 }
             } else {
                 bitmap = UIUtils.clipAndRound(bitmap, photoToLoad.roundRadius, photoToLoad.cropSquare);
-				photoToLoad.imageView.setImageBitmap(bitmap);
+                if (bitmap != null ) {
+                    photoToLoad.imageView.setImageBitmap(bitmap);
+                }
 			}
 		}
 	}
