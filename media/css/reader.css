@@ -2877,6 +2877,18 @@ body {
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     margin: 0 8px 6px 0;
 }
+.NB-theme-size-xs .NB-feed-story .NB-feed-story-author-wrapper {
+    font-size: 10px;
+}
+.NB-theme-size-s .NB-feed-story .NB-feed-story-author-wrapper {
+    font-size: 11px;
+}
+.NB-theme-size-l .NB-feed-story .NB-feed-story-author-wrapper {
+    font-size: 13px;
+}
+.NB-theme-size-xl .NB-feed-story .NB-feed-story-author-wrapper {
+    font-size: 14px;
+}
 .NB-feed-story .NB-feed-story-author-wrapper .NB-middot {
     color: #A0A0A0;
     padding-right: 4px;
@@ -2923,8 +2935,6 @@ body {
 
 .NB-feed-story .NB-feed-story-tags {
     margin: 7px 0 6px;
-    line-height: 12px;
-    height: 16px;
     overflow: hidden;
 }
 .NB-feed-story .NB-feed-story-tags .NB-middot {
@@ -2939,17 +2949,34 @@ body {
     float: left;
     cursor: pointer;
     font-weight: normal;
-    font-size: 9px;
+    font-size: 10px;
     border-radius: 4px;
     
     padding: 1px 5px;
-    margin: 0 4px 4px 0;
+    margin: 2px 4px 4px 0;
+    line-height: 14px;
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);*/
     border: 1px solid transparent;
     border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 } 
+.NB-theme-size-xs .NB-feed-story .NB-feed-story-tag {
+    font-size: 9px;
+    margin-top: 0px;
+}
+.NB-theme-size-s .NB-feed-story .NB-feed-story-tag {
+    margin-top: 1px;
+}
+.NB-theme-size-l .NB-feed-story .NB-feed-story-tag {
+    margin-top: 3px;
+    font-size: 11px;
+}
+.NB-theme-size-xl .NB-feed-story .NB-feed-story-tag {
+    margin-top: 4px;
+    font-size: 12px;
+}
+
 .NB-feed-story .NB-feed-story-tag:first-child {
     margin-left: 0;
 }
@@ -3020,11 +3047,23 @@ body {
 }
 .NB-feed-story .NB-feed-story-header .NB-feed-story-date {
     float: left;
-    font-size: 11px;
+    font-size: 12px;
     color: #757B6B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     font-weight: normal;
     margin: 0 8px 4px 0;
+}
+.NB-theme-size-xs .NB-feed-story .NB-feed-story-date {
+    font-size: 10px;
+}
+.NB-theme-size-s .NB-feed-story .NB-feed-story-date {
+    font-size: 11px;
+}
+.NB-theme-size-l .NB-feed-story .NB-feed-story-date {
+    font-size: 13px;
+}
+.NB-theme-size-xl .NB-feed-story .NB-feed-story-date {
+    font-size: 14px;
 }
 .NB-feed-story.read .NB-feed-story-header .NB-feed-story-date {
     color: #959B8B;

@@ -197,6 +197,7 @@ NEWSBLUR.log = function(msg) {
               me.forceHide = null;
             };
             me._autohider = function(e) {
+              console.log(['autohide', $(e.target).parents(), me[0], _.include($(e.target).parents(), me[0])]);
               if (me._autoignore) return;
               if (options.clickable && (me[0] == e.target || _.include($(e.target).parents(), me[0]))) return;
               if (options.onHide && !options.onHide(e, _.bind(me.forceHide, me))) return;

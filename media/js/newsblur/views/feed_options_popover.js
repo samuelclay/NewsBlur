@@ -41,6 +41,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
     
     close: function() {
+        console.log(['Closing feed popover']);
         NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").removeClass('NB-active');
         NEWSBLUR.ReaderPopover.prototype.close.apply(this, arguments);
     },
