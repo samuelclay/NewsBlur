@@ -44,12 +44,27 @@ public class UIUtils {
             int newSize = Math.min(width, height);
             int x = (width-newSize) / 2;
             int y = (height-newSize) / 2;
-            result = Bitmap.createBitmap(result, x, y, newSize, newSize);
+            try {
+                result = Bitmap.createBitmap(result, x, y, newSize, newSize);
+            } catch (Throwable t) {
+                // even on reasonably modern systems, it is common for the bitmap processor to reject
+                // requests if it thinks memory is even remotely constrained.
+                android.util.Log.e(UIUtils.class.getName(), "couldn't process icon or thumbnail", t);
+                return null;
+            }
         }
         if ((radius > 0f) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
             int width = result.getWidth();
             int height = result.getHeight();
-            Bitmap canvasMap = Bitmap.createBitmap(width, height, ARGB_8888);
+            Bitmap canvasMap = null;
+            try {
+                canvasMap = Bitmap.createBitmap(width, height, ARGB_8888);
+            } catch (Throwable t) {
+                // even on reasonably modern systems, it is common for the bitmap processor to reject
+                // requests if it thinks memory is even remotely constrained.
+                android.util.Log.e(UIUtils.class.getName(), "couldn't process icon or thumbnail", t);
+                return null;
+            }
             Canvas canvas = new Canvas(canvasMap);
             BitmapShader shader = new BitmapShader(result, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             Paint paint = new Paint();

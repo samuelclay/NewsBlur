@@ -142,7 +142,9 @@ public class ImageLoader {
                 }
             } else {
                 bitmap = UIUtils.clipAndRound(bitmap, photoToLoad.roundRadius, photoToLoad.cropSquare);
-				photoToLoad.imageView.setImageBitmap(bitmap);
+                if (bitmap != null ) {
+                    photoToLoad.imageView.setImageBitmap(bitmap);
+                }
 			}
 		}
 	}
