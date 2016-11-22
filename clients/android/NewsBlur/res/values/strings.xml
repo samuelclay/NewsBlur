@@ -130,6 +130,10 @@
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_fullscreen">Full screen</string>
     <string name="menu_search_stories">Search…</string>
+    <string name="menu_mute_feed">Mute feed</string>
+    <string name="menu_unmute_feed">Unmute feed</string>
+    <string name="menu_mute_folder">Mute folder</string>
+    <string name="menu_unmute_folder">Unmute folder</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
 
@@ -150,6 +154,7 @@
     <string name="empty_list_view_loading">Loading…</string>
     <string name="empty_list_view_no_stories">No stories to read</string>
     <string name="empty_list_view_no_stories_unread">No unread stories</string>
+    <string name="empty_list_view_muted_feed">Feed is muted</string>
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>

@@ -48,6 +48,7 @@ public class APIConstants {
 	public static final String URL_UNREAD_HASHES = NEWSBLUR_URL + "/reader/unread_story_hashes";
     public static final String URL_READ_STORIES = NEWSBLUR_URL + "/reader/read_stories";
     public static final String URL_MOVE_FEED_TO_FOLDERS = NEWSBLUR_URL + "/reader/move_feed_to_folders";
+    public static final String URL_SAVE_FEED_CHOOSER = NEWSBLUR_URL + "/reader/save_feed_chooser";
 	
 	public static final String PARAMETER_FEEDS = "f";
 	public static final String PARAMETER_H = "h";
@@ -86,6 +87,7 @@ public class APIConstants {
     public static final String PARAMETER_IN_FOLDERS = "in_folders";
     public static final String PARAMETER_QUERY = "query";
     public static final String PARAMETER_TAG = "tag";
+    public static final String PARAMETER_APPROVED_FEEDS = "approved_feeds";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

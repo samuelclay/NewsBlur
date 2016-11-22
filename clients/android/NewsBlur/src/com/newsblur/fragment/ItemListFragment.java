@@ -194,20 +194,26 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
         ImageView imageView = (ImageView) emptyView.findViewById(R.id.empty_view_image);
 
-        boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
-        if (isLoading || (!cursorSeenYet)) {
-            textView.setText(R.string.empty_list_view_loading);
-            textView.setTypeface(null, Typeface.ITALIC);
-            imageView.setVisibility(View.INVISIBLE);
-        } else {
-            ReadFilter readFilter = PrefsUtils.getReadFilter(activity, getFeedSet());
-            if (readFilter == ReadFilter.UNREAD) {
-                textView.setText(R.string.empty_list_view_no_stories_unread);
-            } else {
-                textView.setText(R.string.empty_list_view_no_stories);
-            }
+        if (getFeedSet().isMuted()) {
+            textView.setText(R.string.empty_list_view_muted_feed);
             textView.setTypeface(null, Typeface.NORMAL);
             imageView.setVisibility(View.VISIBLE);
+        } else {
+            boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
+            if (isLoading || (!cursorSeenYet)) {
+                textView.setText(R.string.empty_list_view_loading);
+                textView.setTypeface(null, Typeface.ITALIC);
+                imageView.setVisibility(View.INVISIBLE);
+            } else {
+                ReadFilter readFilter = PrefsUtils.getReadFilter(activity, getFeedSet());
+                if (readFilter == ReadFilter.UNREAD) {
+                    textView.setText(R.string.empty_list_view_no_stories_unread);
+                } else {
+                    textView.setText(R.string.empty_list_view_no_stories);
+                }
+                textView.setTypeface(null, Typeface.NORMAL);
+                imageView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -242,7 +248,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     }
 
 	public void hasUpdated() {
-        if (isAdded()) {
+        if (isAdded() && !getFeedSet().isMuted()) {
 		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
         }
 	}
@@ -253,11 +259,19 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         if (fs == null) {
             Log.e(this.getClass().getName(), "can't create fragment, no feedset ready");
             // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
-            try { getActivity().finish(); } catch (Exception e) {;}
+            try {
+                getActivity().finish();
+            } catch (Exception e) {
+                ;
+            }
             return null;
+        } else if (fs.isMuted()) {
+            updateLoadingMessage();
+            return null;
+        } else {
+            return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
         }
-		return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
-	}
+    }
 
     @Override
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {

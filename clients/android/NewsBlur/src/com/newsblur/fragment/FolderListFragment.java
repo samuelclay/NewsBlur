@@ -1,6 +1,8 @@
 package com.newsblur.fragment;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.LoaderManager;
 import android.content.Loader;
@@ -229,6 +231,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+        int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 
 		switch(type) {
@@ -238,6 +241,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
             inflater.inflate(R.menu.context_folder, menu);
+
+            if (adapter.isFolderRoot(groupPosition)) {
+                menu.removeItem(R.id.menu_mute_folder);
+                menu.removeItem(R.id.menu_unmute_folder);
+            }
+
 			break;
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
@@ -248,6 +257,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_choose_folders);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
+
+                Feed feed = adapter.getFeed(groupPosition, childPosition);
+                if (feed.active) {
+                    menu.removeItem(R.id.menu_unmute_feed);
+                } else {
+                    menu.removeItem(R.id.menu_mute_feed);
+                }
             }
 			break;
 		}
@@ -280,6 +296,18 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		} else if (item.getItemId() == R.id.menu_choose_folders) {
             DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
             chooseFoldersFragment.show(getFragmentManager(), "dialog");
+        } else if (item.getItemId() == R.id.menu_mute_feed) {
+            List<String> feedIds = new ArrayList<String>();
+            feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
+            FeedUtils.muteFeeds(getActivity(), feedIds);
+        } else if (item.getItemId() == R.id.menu_unmute_feed) {
+            List<String> feedIds = new ArrayList<String>();
+            feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
+            FeedUtils.unmuteFeeds(getActivity(), feedIds);
+        } else if (item.getItemId() == R.id.menu_mute_folder) {
+            FeedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+        } else if (item.getItemId() == R.id.menu_unmute_folder) {
+            FeedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         }
 
 		return super.onContextItemSelected(item);

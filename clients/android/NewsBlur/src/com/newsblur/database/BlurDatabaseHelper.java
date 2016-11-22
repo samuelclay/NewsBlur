@@ -96,8 +96,15 @@ public class BlurDatabaseHelper {
     }
 
     public Set<String> getAllFeeds() {
+        return getAllFeeds(false);
+    }
+
+    private Set<String> getAllFeeds(boolean activeOnly) {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
+        if (activeOnly) {
+            q1 = q1 + " WHERE " + DatabaseConstants.FEED_ACTIVE + " = 1";
+        }
         Cursor c = dbRO.rawQuery(q1, null);
         LinkedHashSet<String> feedIds = new LinkedHashSet<String>(c.getCount());
         while (c.moveToNext()) {
@@ -105,6 +112,10 @@ public class BlurDatabaseHelper {
         }
         c.close();
         return feedIds;
+    }
+
+    public Set<String> getAllActiveFeeds() {
+        return getAllFeeds(true);
     }
 
     private List<String> getAllSocialFeeds() {
@@ -503,6 +514,22 @@ public class BlurDatabaseHelper {
                 values.put(DatabaseConstants.STORY_READ, true);
                 for (String hash : hashes) {
                     dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
+    public void setFeedsActive(List<String> feedIds, boolean active) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.FEED_ACTIVE, active);
+                for (String feedId : feedIds) {
+                    dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
                 }
                 dbRW.setTransactionSuccessful();
             } finally {

@@ -334,4 +334,10 @@
         <item name="android:textColor">@color/button_text_dark</item>
     </style>
 
+    <style name="muteicon">
+        <item name="android:src">@drawable/mute_white</item>
+    </style>
+    <style name="muteicon.dark">
+        <item name="android:src">@drawable/mute_black</item>
+    </style>
 </resources>

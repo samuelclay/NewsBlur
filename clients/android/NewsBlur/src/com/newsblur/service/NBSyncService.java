@@ -122,6 +122,7 @@ public class NBSyncService extends Service {
     private volatile static boolean FlushRecounts = false;
 
     Set<String> orphanFeedIds;
+    Set<String> disabledFeedIds;
 
     private ExecutorService primaryExecutor;
     CleanupService cleanupService;
@@ -409,6 +410,7 @@ public class NBSyncService extends Service {
         Set<String> debugFeedIdsFromFolders = new HashSet<String>();
         Set<String> debugFeedIdsFromFeeds = new HashSet<String>();
         orphanFeedIds = new HashSet<String>();
+        disabledFeedIds = new HashSet<String>();
 
         try {
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -460,15 +462,17 @@ public class NBSyncService extends Service {
                     continue feedaddloop;
                 }
                 if (! feed.active) {
-                    // the feed is disabled/hidden, pretend it doesn't exist
-                    continue feedaddloop;
+                    //continue feedaddloop;
+
+                    // the feed is disabled/hidden, we don't want to fetch unreads
+                    disabledFeedIds.add(feed.feedId);
                 }
                 feedValues.add(feed.getValues());
             }
             // also add the implied zero-id feed
             feedValues.add(Feed.getZeroFeed().getValues());
 
-            // prune out missiong feed IDs from folders
+            // prune out missing feed IDs from folders
             for (String id : debugFeedIdsFromFolders) {
                 if (! debugFeedIdsFromFeeds.contains(id)) {
                     Log.w(this.getClass().getName(), "Found and ignoring orphan feed (in folders but not feeds): " + id );

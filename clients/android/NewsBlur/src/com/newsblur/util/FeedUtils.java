@@ -2,6 +2,7 @@ package com.newsblur.util;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
@@ -160,15 +161,36 @@ public class FeedUtils {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                ReadingAction ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                // Only active feed IDs should be passed to the API call.
+                ReadingAction ra = null;
                 if (fs.isAllNormal() && (olderThan != null || newerThan != null)) {
                     // the mark-all-read API doesn't support range bounding, so we need to pass each and every
                     // feed ID to the API instead.
-                    FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllFeeds());
+                    FeedSet newFeedSet = FeedSet.folder("all", dbHelper.getAllActiveFeeds());
                     ra = ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan);
+                } else {
+                    if (fs.getSingleFeed() != null) {
+                        if (!fs.isMuted()) {
+                            ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                        }
+                    } else if (fs.isFolder()) {
+                        Set<String> feedIds = fs.getMultipleFeeds();
+                        Set<String> allActiveFeedIds = dbHelper.getAllActiveFeeds();
+                        Set<String> activeFeedIds = new HashSet<String>();
+                        activeFeedIds.addAll(feedIds);
+                        activeFeedIds.retainAll(allActiveFeedIds);
+                        FeedSet filteredFs = FeedSet.folder(fs.getFolderName(), activeFeedIds);
+                        ra = ReadingAction.markFeedRead(filteredFs, olderThan, newerThan);
+                    } else {
+                        ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                    }
                 }
-                dbHelper.enqueueAction(ra);
-                ra.doLocal(dbHelper);
+
+                if (ra != null) {
+                    dbHelper.enqueueAction(ra);
+                    ra.doLocal(dbHelper);
+                }
+
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA | NbActivity.UPDATE_STORY);
                 triggerSync(context);
                 return null;
@@ -265,6 +287,38 @@ public class FeedUtils {
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
                 NBSyncService.forceFeedsFolders();
+                triggerSync(context);
+            }
+        }.execute();
+    }
+
+    public static void muteFeeds(final Context context, final List<String> feedIds) {
+        updateFeedActiveState(context, feedIds, false);
+    }
+
+    public static void unmuteFeeds(final Context context, final List<String> feedIds) {
+        updateFeedActiveState(context, feedIds, true);
+    }
+
+    private static void updateFeedActiveState(final Context context, final List<String> feedIds, final boolean active) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                Set<String> activeFeeds = dbHelper.getAllActiveFeeds();
+                for (String feedId : feedIds) {
+                    if (active) {
+                        activeFeeds.add(feedId);
+                    } else {
+                        activeFeeds.remove(feedId);
+                    }
+                }
+                return apiManager.saveFeedChooser(activeFeeds);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                dbHelper.setFeedsActive(feedIds, active);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 triggerSync(context);
             }
         }.execute();

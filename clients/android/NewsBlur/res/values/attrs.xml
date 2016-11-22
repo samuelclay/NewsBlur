@@ -39,6 +39,7 @@
     <attr name="selectorOverlayBackgroundSend" format="string" />
     <attr name="selectorOverlayBackgroundStory" format="string" />
     <attr name="selectorOverlayBackgroundText" format="string" />
+    <attr name="muteicon" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />
