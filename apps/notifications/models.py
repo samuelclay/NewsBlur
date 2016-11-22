@@ -158,7 +158,7 @@ class MUserFeedNotification(mongo.Document):
                 if sent: 
                     sent_count += 1
                     total_sent_count += 1
-        return total_sent_count
+        return total_sent_count, len(notifications)
         
     def classifiers(self, usersub):
         classifiers = {}
