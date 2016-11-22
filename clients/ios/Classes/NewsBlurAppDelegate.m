@@ -342,9 +342,9 @@
         }
     }];
     
-    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
-                                                                            title:@"View story"
-                                                                          options:UNNotificationActionOptionForeground];
+//    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
+//                                                                            title:@"View story"
+//                                                                          options:UNNotificationActionOptionForeground];
     UNNotificationAction *readAction = [UNNotificationAction actionWithIdentifier:@"MARK_READ_IDENTIFIER"
                                                                             title:@"Mark read"
                                                                           options:UNNotificationActionOptionNone];
@@ -355,7 +355,7 @@
                                                                             title:@"Dismiss"
                                                                           options:UNNotificationActionOptionDestructive];
     UNNotificationCategory *storyCategory = [UNNotificationCategory categoryWithIdentifier:@"STORY_CATEGORY"
-                                                                                   actions:@[viewAction, readAction, starAction, dismissAction]
+                                                                                   actions:@[readAction, starAction, dismissAction]
                                                                          intentIdentifiers:@[]
                                                                                    options:UNNotificationCategoryOptionNone];
     [center setNotificationCategories:[NSSet setWithObject:storyCategory]];

@@ -28,13 +28,14 @@
     if (imageUrl) {
         [self loadAttachmentForUrlString:imageUrl completionHandler:^(UNNotificationAttachment *attachment) {
             if (attachment) {
+                NSLog(@"Adding attachment: %@", attachment.URL);
                 self.bestAttemptContent.attachments = @[attachment];
             }
             self.contentHandler(self.bestAttemptContent);
         }];
+    } else {
+        self.contentHandler(self.bestAttemptContent);
     }
-    
-    self.contentHandler(self.bestAttemptContent);
 }
 
 - (void)serviceExtensionTimeWillExpire {
@@ -48,6 +49,7 @@
     
     __block UNNotificationAttachment *attachment = nil;
     NSURL *attachmentURL = [NSURL URLWithString:urlString];
+    NSString *extension = [self findExtensionOfFileInUrl:attachmentURL];
     
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     [[session downloadTaskWithURL:attachmentURL
@@ -56,7 +58,7 @@
                         NSLog(@"%@", error.localizedDescription);
                     } else {
                         NSFileManager *fileManager = [NSFileManager defaultManager];
-                        NSURL *localURL = [NSURL fileURLWithPath:temporaryFileLocation.path];
+                        NSURL *localURL = [NSURL fileURLWithPath:[temporaryFileLocation.path stringByAppendingString:[NSString stringWithFormat:@".%@",extension]]];
                         [fileManager moveItemAtURL:temporaryFileLocation toURL:localURL error:&error];
                         
                         NSError *attachmentError = nil;
@@ -69,5 +71,11 @@
                 }] resume];
 }
 
+- (NSString *)findExtensionOfFileInUrl:(NSURL *)url {
+    NSString *urlString = [url absoluteString];
+    NSArray *componentsArray = [urlString componentsSeparatedByString:@"."];
+    NSString *fileExtension = [componentsArray lastObject];
+    return  fileExtension;
+}
 
 @end
