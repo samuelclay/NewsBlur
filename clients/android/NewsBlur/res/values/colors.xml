@@ -12,6 +12,7 @@
     <color name="gray65">#A6A6A6</color>
     <color name="gray75">#BFBFBF</color>
     <color name="gray80">#CCCCCC</color>
+    <color name="gray85">#D9D9D9</color>
     <color name="gray90">#E6E6E6</color>
     <color name="gray96">#F4F4F4</color>
     <color name="white">#FFF</color>
@@ -23,7 +24,7 @@
     <color name="dark_bar_background">@color/gray13</color>
 
     <color name="text">@color/gray20</color>
-    <color name="dark_text">@color/gray80</color>
+    <color name="dark_text">@color/gray85</color>
     <color name="button_text">@color/gray46</color>
     <color name="button_text_dark">@color/gray75</color>
 
