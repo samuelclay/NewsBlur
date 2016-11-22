@@ -25,17 +25,19 @@
     // self.bestAttemptContent.title = [NSString stringWithFormat:@"%@ [modified]", self.bestAttemptContent.title];
     NSString *imageUrl = [request.content.userInfo objectForKey:@"image_url"];
     NSLog(@"Attaching image: %@", imageUrl);
-    if (imageUrl) {
-        [self loadAttachmentForUrlString:imageUrl completionHandler:^(UNNotificationAttachment *attachment) {
-            if (attachment) {
-                NSLog(@"Adding attachment: %@", attachment.URL);
-                self.bestAttemptContent.attachments = @[attachment];
-            }
-            self.contentHandler(self.bestAttemptContent);
-        }];
-    } else {
-        self.contentHandler(self.bestAttemptContent);
+    if ([imageUrl isKindOfClass:[NSNull class]]) {
+        NSString *feedId = [request.content.userInfo objectForKey:@"story_feed_id"];
+        imageUrl = [NSString stringWithFormat:@"https://www.newsblur.com/rss_feeds/icon/%@.png", feedId];
+        NSLog(@"Attaching favicon image: %@", imageUrl);
     }
+
+    [self loadAttachmentForUrlString:imageUrl completionHandler:^(UNNotificationAttachment *attachment) {
+        if (attachment) {
+            NSLog(@"Adding attachment: %@", attachment.URL);
+            self.bestAttemptContent.attachments = @[attachment];
+        }
+        self.contentHandler(self.bestAttemptContent);
+    }];
 }
 
 - (void)serviceExtensionTimeWillExpire {

@@ -357,7 +357,7 @@
     UNNotificationCategory *storyCategory = [UNNotificationCategory categoryWithIdentifier:@"STORY_CATEGORY"
                                                                                    actions:@[readAction, starAction, dismissAction]
                                                                          intentIdentifiers:@[]
-                                                                                   options:UNNotificatio];
+                                                                                   options:UNNotificationCategoryOptionNone];
     [center setNotificationCategories:[NSSet setWithObject:storyCategory]];
 }
 
