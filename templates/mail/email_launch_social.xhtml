@@ -3,7 +3,9 @@
 {% load utils_tags %}
 
 {% block body %}
-    <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Hey {{ user.username }}, we're launching a new NewsBlur...</p>
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        Hey {{ user.username }}, we're launching a new NewsBlur...
+    </h2>
     <p style="line-height: 20px;">{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then.{% else %}You've recently been on NewsBlur, but a lot has changed since even then.{% endif %} NewsBlur is now a social news reader. We just launched shared stories and if you miss the old Google Reader features, you'll love the new NewsBlur.</p>
     <p style="line-height: 20px;">We've worked hard to make a great app, so congratulations on discovering a handcrafted experience.</p>
     <p style="line-height: 20px;">Here are some easy ways to have a great time on NewsBlur:</p>

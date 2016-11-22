@@ -11,7 +11,6 @@ import redis
 import pymongo
 import HTMLParser
 from collections import defaultdict
-from pprint import pprint
 from operator import itemgetter
 from bson.objectid import ObjectId
 from BeautifulSoup import BeautifulSoup
@@ -35,7 +34,7 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
-from utils import feedfinder2 as feedfinder, feedparser
+from utils import feedfinder2 as feedfinder
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -567,7 +566,7 @@ class Feed(models.Model):
                 if found_feed_urls:
                     feed_address = found_feed_urls[0]
             except KeyError:
-                is_feed = False
+                pass
             if not len(found_feed_urls) and self.feed_link:
                 found_feed_urls = feedfinder.find_feeds(self.feed_link)
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
@@ -2172,10 +2171,10 @@ class MStory(mongo.Document):
                     {'fields': ['story_hash'], 
                      'unique': True,
                      'types': False, }],
-        'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
         'cascade': False,
+        'strict': False,
     }
     
     RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
@@ -2276,7 +2275,7 @@ class MStory(mongo.Document):
             SearchStory.remove(self.story_hash)
         except NotFoundException:
             pass
-        
+
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
         extra_stories_count = 0
@@ -2538,7 +2537,7 @@ class MStory(mongo.Document):
         return original_page
 
 
-class MStarredStory(mongo.Document):
+class MStarredStory(mongo.DynamicDocument):
     """Like MStory, but not inherited due to large overhead of _cls and _type in
        mongoengine's inheritance model on every single row."""
     user_id                  = mongo.IntField(unique_with=('story_guid',))
@@ -2562,10 +2561,11 @@ class MStarredStory(mongo.Document):
 
     meta = {
         'collection': 'starred_stories',
-        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
-        'index_drop_dups': True,
+        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 
+                    ('user_id', 'story_hash'), 'story_feed_id'],
         'ordering': ['-starred_date'],
         'allow_inheritance': False,
+        'strict': False,
     }
     
     def save(self, *args, **kwargs):
@@ -2620,7 +2620,7 @@ class MStarredStory(mongo.Document):
             },
         }])
         month_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-        user_ids = stats['result']
+        user_ids = list(stats)
         user_ids = sorted(user_ids, key=lambda x:x['stories'], reverse=True)
         print " ---> Found %s users with more than %s starred stories" % (len(user_ids), stories)
 

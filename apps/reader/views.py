@@ -36,6 +36,7 @@ from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
+from apps.notifications.models import MUserFeedNotification
 from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics
 # from apps.search.models import SearchStarredStory
@@ -249,6 +250,7 @@ def load_feeds(request):
         folders = UserSubscriptionFolders.objects.get(user=user)
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    notifications = MUserFeedNotification.feeds_for_user(user.pk)
     
     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     scheduled_feeds = []
@@ -259,6 +261,8 @@ def load_feeds(request):
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         
         if not sub.active: continue
+        if pk in notifications:
+            feeds[pk].update(notifications[pk])
         if not sub.feed.active and not sub.feed.has_feed_exception:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.active_subscribers <= 0:
@@ -345,6 +349,7 @@ def load_feeds_flat(request):
         folders = []
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    notifications = MUserFeedNotification.feeds_for_user(user.pk)
     if not user_subs and folders:
         folders.auto_activate()
         user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
@@ -352,15 +357,19 @@ def load_feeds_flat(request):
         inactive_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=False)
     
     for sub in user_subs:
+        pk = sub.feed_id
         if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
-        feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
+        feeds[pk] = sub.canonical(include_favicon=include_favicons)
         if not sub.feed.active and not sub.feed.has_feed_exception:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.active_subscribers <= 0:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
+        if pk in notifications:
+            feeds[pk].update(notifications[pk])
+        
     
     if include_inactive:
         for sub in inactive_subs:
@@ -641,12 +650,14 @@ def load_single_feed(request, feed_id):
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
+                                       .hint([('user_id', 1), ('story_hash', 1)])\
                                        .only('story_hash', 'starred_date', 'user_tags')
         shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
         shared_stories = []
         if shared_story_hashes:
             shared_stories = MSharedStory.objects(user_id=user.pk, 
                                                   story_hash__in=shared_story_hashes)\
+                                         .hint([('story_hash', 1)])\
                                          .only('story_hash', 'shared_date', 'comments')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags))
@@ -873,6 +884,7 @@ def load_starred_stories(request):
     if shared_story_hashes:
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_hash__in=shared_story_hashes)\
+                                     .hint([('story_hash', 1)])\
                                      .only('story_hash', 'shared_date', 'comments')
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
@@ -1154,12 +1166,14 @@ def load_read_stories(request):
 
     shared_stories = MSharedStory.objects(user_id=user.pk, 
                                           story_hash__in=story_hashes)\
+                                 .hint([('story_hash', 1)])\
                                  .only('story_hash', 'shared_date', 'comments')
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
                            for story in shared_stories])
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_hash__in=story_hashes)\
+                                   .hint([('user_id', 1), ('story_hash', 1)])\
                                    .only('story_hash', 'starred_date')
     starred_stories = dict([(story.story_hash, story.starred_date) 
                             for story in starred_stories])
@@ -1289,9 +1303,10 @@ def load_river_stories__redis(request):
         if read_filter == 'starred':
             starred_stories = mstories
         else:
+            story_hashes = [s['story_hash'] for s in stories]
             starred_stories = MStarredStory.objects(
                 user_id=user.pk,
-                story_feed_id__in=found_feed_ids
+                story_hash__in=story_hashes
             ).only('story_hash', 'starred_date')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags)) 
@@ -2258,6 +2273,8 @@ def _mark_story_as_starred(request):
     removed_user_tags = []
     if not starred_story:
         params.update(story_values)
+        if params.has_key('story_latest_content_z'):
+            params.pop('story_latest_content_z')
         starred_story = MStarredStory.objects.create(**params)
         created = True
         MActivity.new_starred_story(user_id=request.user.pk, 

@@ -184,7 +184,7 @@ def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
     for item in folders:
         if isinstance(item, dict):
             child_folder_names.append(item.keys()[0])
-    if isinstance(obj, dict) and in_folder == parent:
+    if isinstance(obj, dict) and in_folder.lower() == parent.lower():
         if obj_identifier not in child_folder_names:
             folders.append(obj)
         return folders
@@ -192,7 +192,7 @@ def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
     for k, v in enumerate(folders):
         if isinstance(v, dict):
             for f_k, f_v in v.items():
-                if f_k == in_folder and obj_identifier not in f_v and not added:
+                if f_k.lower() == in_folder.lower() and obj_identifier not in f_v and not added:
                     f_v.append(obj)
                     added = True
                 folders[k][f_k] = add_object_to_folder(obj, in_folder, f_v, f_k, added)

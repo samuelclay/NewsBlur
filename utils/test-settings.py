@@ -1,15 +1,12 @@
+import sys
 from settings import *
-DATABASES = {
-    'default': {
-        'NAME': 'memory',
-        'TEST_NAME': ':memory:',
-        'ENGINE': 'django.db.backends.sqlite3',
-        'USER': 'newsblur',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-    }
-}
 
+# if 'test' in sys.argv:
+#     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
+#     DATABASES['default']['OPTIONS'] = {}
+#     # DATABASES['default']['NAME'] = 'nb.db'
+#     # DATABASES['default']['TEST_NAME'] = 'nb2.db'
+    
 # DATABASES = {
 #     'default':{
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -23,7 +20,7 @@ MONGO_DB = {
 }
 
 MONGO_DATABASE_NAME = 'test_newsblur'
-TEST_DATABASE_NAME = ":memory:"
+# TEST_DATABASE_NAME = ":memory:"
 SOUTH_TESTS_MIGRATE = False
 DAYS_OF_UNREAD = 9999
 TEST_DEBUG = True

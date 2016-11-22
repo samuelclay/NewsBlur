@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 
-from munin.redis import MuninRedisPlugin
+from vendor.munin.redis import MuninRedisPlugin
 
 class MuninRedisUsedMemoryPlugin(MuninRedisPlugin):
     title = "Redis used memory"

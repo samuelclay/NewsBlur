@@ -264,6 +264,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showFirstTimeUser;
 - (void)showLogin;
 - (void)setupReachability;
+- (void)registerForRemoteNotifications;
 
 // social
 - (NSDictionary *)getUser:(NSInteger)userId;
@@ -290,6 +291,7 @@ SFSafariViewControllerDelegate>  {
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
+- (void)loadFeed:(NSString *)feedId withStory:(NSString *)contentId animated:(BOOL)animated;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;

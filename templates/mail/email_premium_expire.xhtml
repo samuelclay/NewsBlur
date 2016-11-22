@@ -3,7 +3,9 @@
 {% load utils_tags %}
 
 {% block body %}
-    <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Hey {{ user.username }}, your premium account has just expired.</p>
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;" align="center">
+        Hey {{ user.username }}, your premium account has just expired.
+    </h2>
     <p style="line-height: 20px;">You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur.</p>
     <p style="line-height: 20px;">Renew now: <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser">http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser</a></p>
     <p style="line-height: 20px;">Spend a few days trying out <a href="http://{% current_domain %}{{ user.profile.autologin_url }}">NewsBlur</a> again. We hope you love it.</p>

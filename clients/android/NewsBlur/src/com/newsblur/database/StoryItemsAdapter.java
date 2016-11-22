@@ -117,8 +117,8 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         // leftbar colour
 		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
-        String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
-        String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
+        String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
+        String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
         if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
             borderOne.setBackgroundColor(Color.parseColor(feedColor));
             borderTwo.setBackgroundColor(Color.parseColor(feedFade));

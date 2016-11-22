@@ -125,7 +125,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         // on a WebKit-based browser (WebKitGTK or QTWebKit). These can't handle
         // background tabs. Work around it by disabling backgrounding if we
         // think we're on Safari and we're also on X11 or Linux
-        if ($.browser.safari && /(\(X11|Linux)/.test(navigator.userAgent)) {
+        if ($.browser.safari && (/(\(X11|Linux)/.test(navigator.userAgent))) {
             background = false;
         }
         
@@ -514,6 +514,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         if (!visible_stories.length || visible_stories.length < unread_count) return;
         
         return _.last(visible_stories);
+    },
+    
+    get_by_story_hash: function(story_hash) {
+        return this.detect(function(s) { return s.get('story_hash') == story_hash; });
     },
     
     // ==========

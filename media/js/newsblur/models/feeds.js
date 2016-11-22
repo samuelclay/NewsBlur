@@ -271,6 +271,8 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         this.bind('change', this.detect_active_feed);
     },
     
+    comparator: 'feed_title',
+    
     // ===========
     // = Actions =
     // ===========

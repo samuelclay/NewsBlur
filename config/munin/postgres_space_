@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 # -*- coding: utf-8 -*-
 
 """
@@ -7,7 +7,7 @@ Based on a plugin by BjØrn Ruberg and Moses Moore.
 Plugin to monitor PostgreSQL disk usage.
 """
 
-from munin.postgres import MuninPostgresPlugin
+from vendor.munin.postgres import MuninPostgresPlugin
 
 class MuninPostgresSpacePlugin(MuninPostgresPlugin):
     dbname_in_args = True

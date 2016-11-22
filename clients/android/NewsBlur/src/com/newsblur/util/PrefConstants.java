@@ -61,6 +61,7 @@ public class PrefConstants {
 
     public static final String NETWORK_SELECT_ANY = "ANY";
     public static final String NETWORK_SELECT_NOMO = "NOMO";
+    public static final String NETWORK_SELECT_NOMONONME = "NOMONONME";
 
     public static final String THEME = "theme";
 

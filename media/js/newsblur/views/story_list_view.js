@@ -201,6 +201,11 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             return;
         }
         
+        if (!options.scroll_to_top && !$story.closest(NEWSBLUR.reader.$s.$feed_scroll).length) {
+            console.log(['Story not visible, not scrolling', $story]);
+            return;
+        }
+        
         clearTimeout(NEWSBLUR.reader.locks.scrolling);
         NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
         var scroll_to = options.scroll_to_top ? 0 : $story;

@@ -48,6 +48,7 @@ def load_social_stories(request, user_id, username=None):
     order          = request.REQUEST.get('order', 'newest')
     read_filter    = request.REQUEST.get('read_filter', 'all')
     query          = request.REQUEST.get('query', '').strip()
+    include_story_content = is_true(request.REQUEST.get('include_story_content', True))
     stories        = []
     message        = None
     
@@ -115,6 +116,7 @@ def load_social_stories(request, user_id, username=None):
                                    .only('story_hash', 'starred_date', 'user_tags')
     shared_stories = MSharedStory.objects(user_id=user.pk, 
                                           story_hash__in=story_hashes)\
+                                 .hint([('story_hash', 1)])\
                                  .only('story_hash', 'shared_date', 'comments')
     starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                     user_tags=story.user_tags))
@@ -125,6 +127,8 @@ def load_social_stories(request, user_id, username=None):
     
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
+        if not include_story_content:
+            del story['story_content']
         story['social_user_id'] = social_user_id
         # story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
@@ -252,6 +256,7 @@ def load_river_blurblog(request):
                                 for story in starred_stories])
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_hash__in=story_hashes)\
+                                     .hint([('story_hash', 1)])\
                                      .only('story_hash', 'shared_date', 'comments')
         shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                        comments=story.comments))
@@ -394,7 +399,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
         params = dict(user_id=social_user.pk)
         if feed_id:
             params['story_feed_id'] = feed_id
-
+        if params.has_key('story_db_id'):
+            params.pop('story_db_id')
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
         stories = Feed.format_stories(mstories, include_permalinks=True)
         
@@ -433,7 +439,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
         for story in stories:
             if user.pk in story['share_user_ids']:
                 story['shared_by_user'] = True
-                shared_story = MSharedStory.objects.get(user_id=user.pk, 
+                shared_story = MSharedStory.objects.hint([('story_hash', 1)])\
+                                                   .get(user_id=user.pk, 
                                                         story_feed_id=story['story_feed_id'],
                                                         story_hash=story['story_hash'])
                 story['user_comments'] = shared_story.comments
@@ -449,7 +456,9 @@ def load_social_page(request, user_id, username=None, **kwargs):
         social_services = MSocialServices.get_user(social_user.pk)
 
         active_story_db = MSharedStory.objects.filter(user_id=social_user.pk,
-                                                      story_guid_hash=story_id).limit(1)
+                                                      story_hash=story_id)\
+                                               .hint([('story_hash', 1)])\
+                                               .limit(1)
         if active_story_db:
             active_story_db = active_story_db[0]
             if user_social_profile.bb_permalink_direct:
@@ -565,7 +574,9 @@ def mark_story_as_shared(request):
         })
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
-                                               story_hash=story['story_hash']).limit(1).first()
+                                               story_hash=story['story_hash'])\
+                                        .hint([('story_hash', 1)])\
+                                        .limit(1).first()
     if not shared_story:
         story_db = {
             "story_guid": story.story_guid,
@@ -573,7 +584,7 @@ def mark_story_as_shared(request):
             "story_permalink": story.story_permalink,
             "story_title": story.story_title,
             "story_feed_id": story.story_feed_id,
-            "story_content_z": story.story_content_z,
+            "story_content_z": getattr(story, 'story_latest_content_z', None) or story.story_content_z,
             "story_author_name": story.story_author_name,
             "story_tags": story.story_tags,
             "story_date": story.story_date,

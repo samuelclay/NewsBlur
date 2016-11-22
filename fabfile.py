@@ -263,7 +263,7 @@ def setup_db(engine=None, skip_common=False):
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
-        setup_mongo_mms()
+        # setup_mongo_mms()
         setup_mongo_backups()
     elif engine == "redis":
         setup_redis()
@@ -477,6 +477,7 @@ def setup_virtualenv():
                 with settings(warn_only=True):
                     run('mkvirtualenv --no-site-packages newsblur')
                 run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
+                run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
     
 @_contextmanager
 def virtualenv():
@@ -779,20 +780,30 @@ def copy_certificates():
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
+    put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
+    put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
     run('cat %s/newsblur.com.pem > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
 
 @parallel
 def maintenance_on():
-    put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
-    with virtualenv():
-        run('mv templates/maintenance_off.html templates/maintenance_on.html')
+    role = role_for_host()
+    if role in ['work', 'search']:
+        sudo('supervisorctl stop all')
+    else:
+        put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
+        with virtualenv():
+            run('mv templates/maintenance_off.html templates/maintenance_on.html')
 
 @parallel
 def maintenance_off():
-    with virtualenv():
-        run('mv templates/maintenance_on.html templates/maintenance_off.html')
-        run('git checkout templates/maintenance_off.html')
+    role = role_for_host()
+    if role in ['work', 'search']:
+        sudo('supervisorctl start all')
+    else:
+        with virtualenv():
+            run('mv templates/maintenance_on.html templates/maintenance_off.html')
+            run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
     version = "1.5.14"
@@ -978,27 +989,34 @@ def copy_postgres_to_standby(master='db01'):
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     
 def setup_mongo():
-    MONGODB_VERSION = "2.6.12"
+    MONGODB_VERSION = "3.2.10"
     pull()
+    sudo('echo "#!/bin/sh -e\n\nif test -f /sys/kernel/mm/transparent_hugepage/enabled; then\n\
+       echo never > /sys/kernel/mm/transparent_hugepage/enabled\n\
+    fi\n\
+    if test -f /sys/kernel/mm/transparent_hugepage/defrag; then\n\
+       echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
+    fi\n\n\
+    exit 0" | sudo tee /etc/rc.local')
+    return
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
-    sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
+    # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
     sudo('apt-get update')
-    sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
+    sudo('apt-get install -y --force-yes mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongod.conf', use_sudo=True)
     run('echo "ulimit -n 100000" > mongodb.defaults')
-    # sudo('cp mongodb.defaults /etc/default/mongodb')
     sudo('mv mongodb.defaults /etc/default/mongod')
     sudo('mkdir -p /var/log/mongod')
     sudo('chown mongodb /var/log/mongod')
-    sudo('/etc/init.d/mongod restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
-
+    
     # Reclaim 5% disk space used for root logs. Set to 1%.
     with settings(warn_only=True):
-        sudo('tune2fs -m 1 /dev/vda')
+        sudo('tune2fs -m 1 /dev/vda1')
 
 def setup_mongo_configsvr():
     sudo('mkdir -p /var/lib/mongodb_configsvr')
@@ -1123,13 +1141,12 @@ def copy_munin_data(from_server):
     
 
 def setup_db_munin():
+    sudo('rm -f /etc/munin/plugins/mongo*')
+    sudo('rm -f /etc/munin/plugins/pg_*')
+    sudo('rm -f /etc/munin/plugins/redis_*')
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/redis_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
-    with cd(env.VENDOR_PATH), settings(warn_only=True):
-        run('git clone git://github.com/samuel/python-munin.git')
-    with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
-        run('sudo python setup.py install')
     sudo('/etc/init.d/munin-node stop')
     time.sleep(2)
     sudo('/etc/init.d/munin-node start')
@@ -1521,7 +1538,7 @@ def kill_celery():
                 run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
-    local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
+    local('jammit -c assets.yml --base-url https://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
 
     tries_left = 5

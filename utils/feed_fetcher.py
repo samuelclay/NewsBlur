@@ -20,6 +20,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
+from apps.notifications.tasks import QueueNotifications, MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.social.models import MSocialServices
 from apps.statistics.models import MAnalyticsFetcher
@@ -330,7 +331,7 @@ class FetchFeed:
             social_services = MSocialServices.get_user(self.options.get('requesting_user_id'))
             try:
                 twitter_api = social_services.twitter_api()
-            except tweepy.TweepError, e:
+            except tweepy.error.TweepError, e:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 return
@@ -344,7 +345,7 @@ class FetchFeed:
                 social_services = MSocialServices.get_user(sub.user_id)
                 try:
                     twitter_api = social_services.twitter_api()
-                except tweepy.TweepError, e:
+                except tweepy.error.TweepError, e:
                     logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
                                   (self.feed.title[:30], address, e))
                     continue
@@ -361,26 +362,47 @@ class FetchFeed:
                           (self.feed.title[:30], address, e))
             social_services.disconnect_twitter()
             return
-        except tweepy.TweepError, e:
+        except tweepy.error.TweepError, e:
+            message = str(e).lower()
             if ((len(e.args) >= 2 and e.args[2] == 63) or
-                ('temporarily locked' in e.args[0])):
+                ('temporarily locked' in message)):
                 # Suspended
                 logging.debug(u'   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
+                return
+            elif 'suspended' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            elif 'not found' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            elif 'over capacity' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
+                              (self.feed.title[:30], address, e))
                 return
             else:
                 raise
         
         try:
             tweets = twitter_user.timeline()
-        except tweepy.TweepError, e:
+        except tweepy.error.TweepError, e:
             if 'Not authorized' in e.args[0]:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.title[:30], address, e))
                 social_services.disconnect_twitter()
+                return
+            elif 'User not found' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
             else:
-                raise
+                raise e
                 
         
         data = {}
@@ -647,6 +669,7 @@ class ProcessFeed:
                                                   verbose=self.options['verbose'],
                                                   updates_off=self.options['updates_off'])
 
+        # PubSubHubbub
         if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
@@ -679,7 +702,12 @@ class ProcessFeed:
                               self.feed.title[:30]))
                 self.feed.is_push = False
                 self.feed = self.feed.save()
-
+        
+        # Push notifications
+        if ret_values['new'] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
+            QueueNotifications.delay(self.feed.pk, ret_values['new'])
+            
+        # All Done
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
                       '~FG~SB' if ret_values['new'] else '', ret_values['new'],
@@ -758,7 +786,7 @@ class Dispatcher:
                     random_weight = random.randint(1, max(weight, 1))
                     quick = float(self.options.get('quick', 0))
                     rand = random.random()
-                    if random_weight < 100 and rand < quick:
+                    if random_weight < 1000 and rand < quick:
                         skip = True
                 elif False and feed.feed_address.startswith("http://news.google.com/news"):
                     skip = True

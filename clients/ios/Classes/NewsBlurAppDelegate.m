@@ -65,8 +65,9 @@
 #import "UISearchBar+Field.h"
 #import "UIViewController+HidePopover.h"
 #import <float.h>
+#import <UserNotifications/UserNotifications.h>
 
-@interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate>
+@interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate, UNUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) NSString *cachedURL;
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
@@ -330,6 +331,103 @@
     }
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
+}
+
+- (void)registerForRemoteNotifications {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self;
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
+        if(!error){
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        }
+    }];
+    
+//    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
+//                                                                            title:@"View story"
+//                                                                          options:UNNotificationActionOptionForeground];
+    UNNotificationAction *readAction = [UNNotificationAction actionWithIdentifier:@"MARK_READ_IDENTIFIER"
+                                                                            title:@"Mark read"
+                                                                          options:UNNotificationActionOptionNone];
+    UNNotificationAction *starAction = [UNNotificationAction actionWithIdentifier:@"STAR_IDENTIFIER"
+                                                                            title:@"Save story"
+                                                                          options:UNNotificationActionOptionNone];
+    UNNotificationAction *dismissAction = [UNNotificationAction actionWithIdentifier:@"DISMISS_IDENTIFIER"
+                                                                            title:@"Dismiss"
+                                                                          options:UNNotificationActionOptionDestructive];
+    UNNotificationCategory *storyCategory = [UNNotificationCategory categoryWithIdentifier:@"STORY_CATEGORY"
+                                                                                   actions:@[readAction, starAction, dismissAction]
+                                                                         intentIdentifiers:@[]
+                                                                                   options:UNNotificationCategoryOptionNone];
+    [center setNotificationCategories:[NSSet setWithObject:storyCategory]];
+}
+
+//Called when a notification is delivered to a foreground app.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
+    NSLog(@"User Info : %@",notification.request.content.userInfo);
+    completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+}
+
+//Called to let your app know which action was selected by the user for a given notification.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
+    NSLog(@"User Info : %@ / %@", response.notification.request.content.userInfo, response.actionIdentifier);
+    NSString *storyHash = [response.notification.request.content.userInfo objectForKey:@"story_hash"];
+    NSNumber *storyFeedId = [response.notification.request.content.userInfo objectForKey:@"story_feed_id"];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", storyFeedId];
+    
+    if (!self.activeUsername) {
+        return;
+    } else if ([response.actionIdentifier isEqualToString:@"MARK_READ_IDENTIFIER"]) {
+        [self markStoryAsRead:storyHash inFeed:feedIdStr withCallback:^{
+            completionHandler();
+        }];
+    } else if ([response.actionIdentifier isEqualToString:@"STAR_IDENTIFIER"]) {
+        [self markStoryAsStarred:storyHash withCallback:^{
+            completionHandler();
+        }];
+    } else if ([response.actionIdentifier isEqualToString:@"VIEW_STORY_IDENTIFIER"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+        completionHandler();
+    } else if ([response.actionIdentifier isEqualToString:@"DISMISS_IDENTIFIER"]) {
+        completionHandler();
+    }
+    
+}
+
+-(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    const char *data = [deviceToken bytes];
+    NSMutableString *token = [NSMutableString string];
+    
+    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+        [token appendFormat:@"%02.2hhX", data[i]];
+    }
+    
+    NSLog(@" -> APNS token: %@", token);
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/notifications/apns_token/",
+                                       self.url]];
+    ASIFormDataRequest *_request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *request = _request;
+    [request setValidatesSecureCertificate:NO];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setPostValue:token
+                   forKey:@"apns_token"];
+    [request setFailedBlock:^(void) {
+        NSLog(@"Failed to set APNS token");
+    }];
+    [request setCompletionBlock:^(void) {
+        NSString *responseString = [request responseString];
+        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error;
+        NSDictionary *results = [NSJSONSerialization
+                                 JSONObjectWithData:responseData
+                                 options:kNilOptions
+                                 error:&error];
+        NSLog(@" -> APNS: %@/%@", results, error);
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -941,6 +1039,34 @@
     
 }
 
+- (void)loadFeed:(NSString *)feedId
+       withStory:(NSString *)contentId
+        animated:(BOOL)animated {
+    NSDictionary *feed = [self getFeed:feedId];
+    
+    self.isTryFeedView = YES;
+    self.inFindingStoryMode = YES;
+    self.tryFeedStoryId = contentId;
+    storiesCollection.isSocialView = NO;
+    storiesCollection.activeFeed = feed;
+    storiesCollection.activeFolder = nil;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self loadFeedDetailView];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self hidePopoverAnimated:NO completion:^{
+            if (self.navigationController.presentedViewController) {
+                [self.navigationController dismissViewControllerAnimated:NO completion:^{
+                    [self loadFeedDetailView];
+                }];
+            } else {
+                [self loadFeedDetailView];
+            }
+        }];
+    }
+}
+
 - (void)loadTryFeedDetailView:(NSString *)feedId
                     withStory:(NSString *)contentId
                      isSocial:(BOOL)social
@@ -963,7 +1089,7 @@
 
         }
         storiesCollection.isSocialView = NO;
-        [self setInFindingStoryMode:NO];
+//        [self setInFindingStoryMode:NO];
     }
             
     self.tryFeedStoryId = contentId;
@@ -1926,6 +2052,47 @@
              feedIdString];
         }];
     }
+}
+
+- (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)())callback {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
+                           self.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:storyHash
+                   forKey:@"story_hash"];
+    [request setCompletionBlock:^{
+        NSLog(@"Marked as read: %@", storyHash);
+        callback();
+    }];
+    [request setFailedBlock:^{
+        NSLog(@"Failed marked as read, queueing: %@", storyHash);
+        NSMutableDictionary *stories = [NSMutableDictionary dictionary];
+        [stories setObject:@[storyHash] forKey:feed];
+        [self queueReadStories:stories];
+        callback();
+    }];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)markStoryAsStarred:(NSString *)storyHash withCallback:(void(^)())callback {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hash_as_starred",
+                           self.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:storyHash
+                   forKey:@"story_hash"];
+    [request setCompletionBlock:^{
+        NSLog(@"Marked as starred: %@", storyHash);
+        callback();
+    }];
+    [request setFailedBlock:^{
+        NSLog(@"Failed marked as starred: %@", storyHash);
+        callback();
+    }];
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff {

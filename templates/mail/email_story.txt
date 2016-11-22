@@ -9,7 +9,7 @@
 
 {{ story.story_permalink|safe }}
 
-{{ story.text|safe }}
+{{ story.story_content|safe }}
 
 ---------------------------------------------------------------------------
 

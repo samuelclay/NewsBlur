@@ -292,6 +292,7 @@ INSTALLED_APPS = (
     'apps.profile',
     'apps.recommendations',
     'apps.statistics',
+    'apps.notifications',
     'apps.static',
     'apps.mobile',
     'apps.push',
@@ -628,6 +629,7 @@ MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 #     MONGOPRIMARYDB = MONGODB
 # MONGODB = connect(MONGO_DB.pop('name'), host=MONGO_URI, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+# MONGODB = connect(host="mongodb://localhost:27017/newsblur", connect=False)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',

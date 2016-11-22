@@ -17,41 +17,22 @@
 
     <View
         android:id="@+id/row_item_favicon_borderbar_1"
-        android:layout_width="6dp"
+        android:layout_width="5dp"
         android:layout_height="match_parent" />
 
     <View
         android:id="@+id/row_item_favicon_borderbar_2"
-        android:layout_width="6dp"
+        android:layout_width="5dp"
         android:layout_height="match_parent"
         android:layout_toRightOf="@id/row_item_favicon_borderbar_1" />
 
-    <ImageView
-        android:id="@+id/row_item_inteldot"
-        android:layout_width="9dp"
-        android:layout_height="9dp"
-        android:layout_toRightOf="@id/row_item_favicon_borderbar_2"
-        android:layout_marginLeft="7dp"
-        android:layout_marginRight="7dp"
-        android:layout_centerVertical="true" />
-
-    <ImageView
-        android:id="@+id/row_item_feedicon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_marginTop="4dp"
-        android:layout_toRightOf="@id/row_item_inteldot" />
-
-    <TextView
-        android:id="@+id/row_item_feedtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="4dp"
-        android:layout_toRightOf="@id/row_item_feedicon"
-        android:ellipsize="end"
-        android:singleLine="true"
-        style="?storyFeedTitleText" />
+    <!--
+        The next item to the right is actually the intel dot, but it has vertical bounds set relative to
+        the story title height, so it cannot be declared until after the title row and associated bits.
+        To prevent a cyclic layout dependency, we hard-code the left margin of everything to the right
+        of the dot by assuming the width of it. In fact, much of the remaining layout is done from the
+        right to the left.
+    -->
 
     <ImageView
         android:id="@+id/row_item_thumbnail"
@@ -61,6 +42,26 @@
         android:layout_marginBottom="1dp"
         android:layout_alignParentRight="true"
         android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/row_item_feedicon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="33dp"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:id="@+id/row_item_feedtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/row_item_feedicon"
+        android:layout_toLeftOf="@id/row_item_thumbnail"
+        android:ellipsize="end"
+        android:singleLine="true"
+        style="?storyFeedTitleText" />
 
     <ImageView
         android:id="@+id/row_item_saved_icon"
@@ -77,11 +78,11 @@
 
     <TextView
         android:id="@+id/row_item_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/row_item_inteldot"
         android:layout_toLeftOf="@id/row_item_saved_icon"
         android:layout_below="@id/row_item_feedicon"
+        android:layout_marginLeft="33dp"
         android:paddingTop="6dp"
         android:paddingBottom="4dp"
         android:paddingRight="4dp"
@@ -92,9 +93,9 @@
         android:id="@+id/row_item_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/row_item_inteldot"
         android:layout_toLeftOf="@id/row_item_thumbnail"
         android:layout_below="@id/row_item_title"
+        android:layout_marginLeft="33dp"
         android:paddingBottom="4dp"
         android:paddingRight="4dp"
         android:maxLines="2"
@@ -108,7 +109,7 @@
         android:layout_toLeftOf="@id/row_item_thumbnail"
         android:layout_alignWithParentIfMissing="true"
         android:layout_below="@id/row_item_content"
-        android:paddingBottom="4dp"
+        android:paddingBottom="2dp"
         android:paddingRight="8dp"
         style="?storyDateText" />
 
@@ -117,13 +118,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/row_item_content"
-        android:layout_toRightOf="@id/row_item_inteldot"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="33dp"
         android:layout_toLeftOf="@id/row_item_date"
-        android:layout_alignLeft="@id/row_item_content"
-        android:paddingBottom="4dp"
+        android:paddingBottom="2dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/story_author_text" />
+
+    <RelativeLayout
+        android:id="@+id/row_item_inteldot_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/row_item_title"
+        android:layout_alignBottom="@id/row_item_title"
+        android:layout_toRightOf="@id/row_item_favicon_borderbar_2" >
+        
+        <ImageView
+            android:id="@+id/row_item_inteldot"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginLeft="6dp"
+            android:layout_centerVertical="true" />
+
+    </RelativeLayout>
 
     <View 
         android:layout_height="0.5dp"

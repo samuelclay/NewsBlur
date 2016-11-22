@@ -667,7 +667,7 @@ def api_share_new_story(request):
             "story_title": story_title and story_title[:title_max] or "[Untitled]",
             "story_feed_id": original_feed and original_feed.pk or 0,
             "story_content": story_content,
-            "story_author": story_author,
+            "story_author_name": story_author,
             "story_date": datetime.datetime.now(),
             "user_id": user.pk,
             "comments": comments,

@@ -1,89 +1,382 @@
 {% load utils_tags %}
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css" data-premailer="ignore">
+    /* styles in here will not be inlined. Use for media queries etc */
+    /* force Outlook to provide a "view in browser" menu link. */
+    #outlook a {padding:0;}
+    /* prevent Webkit and Windows Mobile platforms from changing default font sizes.*/
+    body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
+    /* fix a padding issue on Outlook 07, 10 */
+    table td {border-collapse: collapse;}
+    table {
+        table-layout: fixed;
+    }
+
+    @media only screen and (max-width: 480px)
+    {
+        table.message_footer_table td {
+            font-size: 11px !important;
+        }
+    }
+    @media only screen and (max-device-width: 480px)
+    {
+        table.message_footer_table td {
+            font-size: 11px !important;
+        }
+    }
+
+    .align-center {
+        text-align: center !important;
+    }
+
+    .date_cell a {
+        color: #999999;
+    }
+
+    .comment_header_td {
+        width: 100%;
+        background: #5ba4e5;
+        border: none;
+        font-family: 'Helvetica Neue',Arial,sans-serif
+    }
+
+    .content-td {
+        color: #525252;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        font-family: Helvetica, Arial, sans-serif;
+    }
+
+    .content-td h1 {
+        font-size: 26px;
+        line-height: 33px;
+        color: #282F33;
+        margin-bottom: 7px;
+        margin-top: 30px;
+        font-weight: normal;
+    }
+
+    .content-td h1 a {
+        color: #282F33;
+    }
+
+    .content-td h2 {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left;
+        color: #282F33;
+        margin: 30px 0;
+    }
+
+    .content-td h2 a {
+        color: #282F33;
+    }
+
+    .content-td h1 + h2 {
+        margin-top: 0 !important;
+    }
+
+    .content-td h2 + h1 {
+        margin-top: 0 !important;
+    }
+
+    .content-td h3 ,
+    .content-td h4 ,
+    .content-td h5 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .content-td p {
+        margin: 0 0 17px 0;
+        line-height: 1.5;
+    }
+
+    .content-td p img,
+    .content-td h1 img,
+    .content-td h2 img,
+    .content-td li img {
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-td a {
+        color: #1251ba;
+    }
+
+    .content-td p.intro {
+        font-size: 20px;
+        line-height: 30px;
+    }
+
+    .content-td blockquote {
+        margin: 40px 0;
+        font-style: italic;
+        color: #8C8C8C;
+        font-size: 18px;
+        text-align: center;
+        padding: 0 30px;
+        font-family: Georgia, sans-serif;
+        quotes: none;
+    }
+
+    .content-td blockquote a {
+        color: #8C8C8C;
+    }
+
+    .content-td ul {
+        list-style: disc;
+        margin: 0 0 20px 40px;
+        padding: 0;
+    }
+
+    .content-td ol {
+        list-style: decimal;
+        margin: 0 0 20px 40px;
+        padding: 0;
+    }
+
+    .content-td img {
+        margin: 17px 0 0;
+        max-width: 100%;
+    }
+
+    .content-td hr {
+        border: none;
+        border-top: 3px solid #2d5273;
+        border-bottom: 0;
+        margin: 32px 0 0 0;
+    }
+
+    .main_wrapper {
+        padding: 0 20px;
+    }
+
+    .margin-arrow {
+        display: none;
+        mso-hide: all;
+        visibility:hidden;
+        width:0;
+        height:0;
+        max-width: 0;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    .content-td > :first-child {
+        margin-top: 0;
+        padding-top: 0;
+    }
+    
+    .footer-logo {
+        float: left;
+    }
+    .optout {
+        float: right;
+        margin: 20px 0 0;
+    }
+
+    @media screen and (max-width: 635px) {
+        .main-wrap {
+            width: 100% !important;
+        }
+        .footer-logo {
+
+        }
+        .optout {
+            text-align: center;
+            width: 100%;
+            float: left;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .content-td {
+            padding: 30px 15px !important;
+        }
+        .content-td.content-td-footer {
+            padding: 0 12px 15px !important;
+        }
+        .content-td h1 {
+            margin-bottom: 5px;
+        }
+        .message_footer_table .space {
+            width: 20px !important;
+        }
+
+        .message_footer_table .arrow-wrap {
+            padding-left: 20px !important;
+        }
+
+        .main_wrapper {
+            padding: 0;
+        }
+
+        .image-arrow {
+            display: none !important;
+        }
+
+        .margin-arrow {
+            display: table !important;
+            visibility:visible !important;
+            width: 100% !important;
+            height: auto !important;
+            max-width: none !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            overflow: visible !important;
+        }
+
+        .comment_body {
+            border-bottom: 1px solid #DDD !important;
+        }
+
+        .footer-td-wrapper {
+            display: block !important;
+            width: 100% !important;
+            text-align: left !important;
+        }
+        .footer-td-wrapper .date_cell {
+            text-align: left !important;
+            padding: 15px 0 0 20px !important;
+        }
+    }
+
+    .content-td blockquote + * {
+        margin-top: 20px !important;
+    }
+
+    .content-td > :first-child {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    </style>
+
+
+
 </head>
-<body bgcolor="#F5F6F4" text="#000000" link="#003399" vlink="#003399" alink="#DC181E" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
-    <table cellpadding="0" cellspacing="0" border="0" bgcolor="#F5F6F4" width="100%" height="100%" style="padding-bottom:24px;width: 100%;">
-        <tr>
-            <td align="center">
-                <center>
-                <table cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" align="center" width="644" style="padding: 20px; margin-top: 24px;border: 1px solid #BABABA;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;color:#333;">
-                    <tr>
-                        <td align="center">
-                            {% block header %}
-                            <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur_blur.png" title="NewsBlur" style="width:306px;height:59px;border: none;"></a>
-                            {% endblock header %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding-top: 12px;">
- 
-                            {% block body %}{% endblock %}
-                            
-                        </td>
-                    </tr>
-                    {% block footer %}
-                    <tr>
-                        <td style="border-top: 3px solid #404040; padding-top: 4px;" align="left">
-                            <table>
+<body>
+
+
+<table cellpadding="0" cellspacing="0" border="0" class="bgtc personal" align="center" style="background: #f9f9f9; border-collapse: collapse; line-height: 100% !important; margin: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; padding: 0; width: 100% !important" bgcolor="#f9f9f9">
+    <tr>
+        <td>
+            <!--[if (gte mso 10)]>
+                <tr>
+                <td>
+                <table style="width: 600px">
+                <![endif]-->
+            <table style="border-collapse: collapse; margin: auto; max-width: 635px; min-width: 320px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%" class="main-wrap">
+                <tr>
+                    <td valign="top">
+                        <table cellpadding="0" cellspacing="0" border="0" class="reply_header_table" style="border-collapse: collapse; color: #c0c0c0; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 13px; line-height: 26px; margin: 0 auto 26px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%">
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" class="main_wrapper" style="padding: 0 20px">
+
+                        <table cellpadding="0" cellspacing="0" border="0" class="comment_wrapper_table admin_comment" align="center" style="-webkit-background-clip: padding-box; -webkit-border-radius: 3px; background-clip: padding-box; border-collapse: collapse; border-radius: 3px; color: #545454; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 13px; line-height: 20px; margin: 0 auto; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%">
+                            <tr>
+                                <td valign="top" class="comment_wrapper_td">
+                                    <table cellpadding="0" cellspacing="0" border="0" class="comment_header" style="border: none; border-collapse: separate; font-size: 1px; height: 2px; line-height: 3px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%">
+                                        <tr>
+                                            <td valign="top" class="comment_header_td" style="background: {% block header_color %}#5ba4e5{% endblock %}; border: none; font-family: 'Helvetica Neue',Arial,sans-serif; width: 100%"></td>
+                                        </tr>
+                                    </table>
+                                    <table cellpadding="0" cellspacing="0" border="0" class="comment_body" style="-webkit-background-clip: padding-box; -webkit-border-radius: 0 0 3px 3px; background-clip: padding-box; border-collapse: collapse; border-color: #dddddd; border-radius: 0 0 3px 3px; border-style: solid solid none; border-width: 0 1px 1px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%">
+                                        <tr>
+                                            <td class="comment_body_td content-td" style="-webkit-background-clip: padding-box; -webkit-border-radius: 0 0 3px 3px; background: white; background-clip: padding-box; border-radius: 0 0 3px 3px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); color: #525252; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 15px; line-height: 22px; overflow: hidden; padding: 40px 40px 30px" bgcolor="white">
+                                                {% block header %}
+                                                <a href="http://{% current_domain %}" class="align-center" style="text-align: center;"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur_blur.png" title="NewsBlur" style="width:306px;height:59px;border: none;margin: 0 auto;display: block" class="align-center"></a>
+                                                {% endblock header %}
+
+                                                {% block body %}{% endblock %}
+                
+                                            </td>
+                                        </tr>
+                                        {% block footer %}
+                                        <tr>
+                                            <td class="comment_body_td content-td" style="-webkit-background-clip: padding-box; -webkit-border-radius: 0 0 3px 3px; background: white; background-clip: padding-box; border-radius: 0 0 3px 3px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); color: #525252; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 15px; line-height: 22px; overflow: hidden; padding: 40px 40px 30px; border-top: 2px solid #2d5273; " bgcolor="white">
+                                                <p style="line-height:20px;">NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.</p>
+                                                <p style="line-height:20px;">Stay up to date and in touch with a few different ways:</p>
+                                                <p style="line-height: 20px;">
+                                                    <ul style="list-style: none;">
+                                                        <li style="line-height:22px;"><a href="http://twitter.com/newsblur/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Follow @newsblur on Twitter</a></li>
+                                                        <li style="line-height:22px;"><a href="http://twitter.com/samuelclay/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Follow @samuelclay on Twitter</a></li>
+                                                    </ul>
+                                                </p>
+                                                <p style="line-height: 20px;">{% block resources_header %}To get the most out of NewsBlur, here are a few resources:{% endblock resources_header %}</p>
+                                                <p style="line-height: 20px;">
+                                                    <ul style="list-style: none;">
+                                                        <li style="line-height:22px;"><a href="http://www.newsblur.com/faq" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/circular/g_modal_tutorial.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Check the FAQ</a></li>
+                                                        <li style="line-height:22px;"><a href="http://blog.newsblur.com" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/favicon_32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Read the NewsBlur Blog</a></li>
+                                                        <li style="line-height:22px;"><a href="http://getsatisfaction.com/newsblur/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/getsatisfaction.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Get support on NewsBlur's Get Satisfaction</a></li>
+                                                    </ul>
+                                                </p>
+                                                <p style="line-height: 20px;">There are plenty of ways to use NewsBlur beyond the web:</p>
+                                                <p style="line-height: 20px;">
+                                                    <ul style="list-style: none;">
+                                                        <li style="line-height:22px;"><a href="http://{% current_domain %}/ios/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free iOS App</a></li>
+                                                        <li style="line-height:22px;"><a href="http://{% current_domain %}/android/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/android_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free Android App</a></li>
+                                                        <li style="line-height:22px;"><a href="http://{% current_domain %}?next=goodies" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download browser extensions for Safari, Firefox, and Chrome</a></li>
+                                                    </ul>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        {% endblock footer %}
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="margin-arrow" style="display: none; height: 0; max-height: 0; max-width: 0; mso-hide: all; opacity: 0; overflow: hidden; visibility: hidden; width: 0">
+                            <table cellpadding="0" cellspacing="0" border="0" class="message_footer_table margin-arrow" align="center" style="border-collapse: collapse; color: #545454; display: none; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 13px; height: 0; line-height: 20px; margin: 0 auto; max-height: 0; max-width: 100%; mso-hide: all; mso-table-lspace: 0pt; mso-table-rspace: 0pt; opacity: 0; overflow: hidden; visibility: hidden; width: 100%">
                                 <tr>
-                                    <td>
-                                        <p style="line-height:20px;">NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.</p>
-                                        <p style="line-height:20px;">Stay up to date and in touch with a few different ways:</p>
-                                        <p style="line-height: 20px;">
-                                            <ul style="list-style: none;">
-                                                <li style="line-height:22px;"><a href="http://twitter.com/newsblur/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Follow @newsblur on Twitter</a></li>
-                                                <li style="line-height:22px;"><a href="http://github.com/samuelclay/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/welcome/github_favicon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Follow @samuelclay on GitHub</a></li>
-                                            </ul>
-                                        </p>
-                                        <p style="line-height: 20px;">{% block resources_header %}To get the most out of NewsBlur, here are a few resources:{% endblock resources_header %}</p>
-                                        <p style="line-height: 20px;">
-                                            <ul style="list-style: none;">
-                                                <li style="line-height:22px;"><a href="http://blog.newsblur.com" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/favicon_32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Read the NewsBlur Blog</a></li>
-                                                <li style="line-height:22px;"><a href="http://getsatisfaction.com/newsblur/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/getsatisfaction.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Get support on NewsBlur's Get Satisfaction</a></li>
-                                            </ul>
-                                        </p>
-                                        <p style="line-height: 20px;">There are plenty of ways to use NewsBlur beyond the web:</p>
-                                        <p style="line-height: 20px;">
-                                            <ul style="list-style: none;">
-                                                <li style="line-height:22px;"><a href="http://{% current_domain %}/ios/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free iPad/iPhone App</a></li>
-                                                <li style="line-height:22px;"><a href="http://{% current_domain %}/android/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/android_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free Android App</a></li>
-                                                <li style="line-height:22px;"><a href="http://{% current_domain %}?next=goodies" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download browser extensions for Safari, Firefox, and Chrome</a></li>
-                                            </ul>
-                                        </p>
+                                    <td valign="top" width="80" class="arrow-wrap" style="color: #272727; height: 18px; padding-left: 40px; text-align: left" align="left">
+                                        <img alt="Triangle" class="image_fix" height="18" src="http://{% current_domain %}/media/img/email/email_triangle.png" style="-ms-interpolation-mode: bicubic; display: inline-block; margin-top: -1px; max-width: 100%; outline: none; text-decoration: none" width="40">
                                     </td>
                                 </tr>
                             </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border-top: 3px solid #404040; padding-top: 4px;font-size: 14px" align="center">
-                            <table>
+                        </div>
+                        <div class="image-arrow">
+                            <table cellpadding="0" cellspacing="0" border="0" class="message_footer_table image-arrow" align="center" style="border-collapse: collapse; margin: 0 auto; max-width: 100%; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%">
                                 <tr>
-                                    <td>
-                                        <p style="font-size:12px;"> 
-                                            Don't want to be notified about anything NewsBlur related? <a href="http://{% current_domain %}{% url "profile-email-optout" %}" style="text-decoration:none;">Opt-out of emails from NewsBlur</a>.
-                                        </p>
+                                    <td valign="top" width="100%">
+                                        <img alt="" src="http://{% current_domain %}/media/img/email/email_arrow.png" style="max-width: 100%; width: 100%">
                                     </td>
                                 </tr>
                             </table>
-                        </td>
-                    </tr>
-                    {% endblock footer %}
-                    <tr>
-                        <td align="center" style="padding-top: 12px;">
-                            <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:60px;border: none;"></a>
-                        </td>
-                    </tr>
+                        </div>
+                        <div style="overflow: hidden;">
+                        <div class="footer-logo">
+                            <a href="http://{% current_domain %}"><img alt="NewsBlur" src="http://{% current_domain %}/media/img/logo_newsblur.png" title="NewsBlur" style="width:176px;height:34px;border: none;"></a>
+                        </div>
+                        {% block optout %}
+                        <div class="optout">
+                            <a href="http://{% current_domain %}{% url "profile-email-optout" %}" style="text-decoration:none;color: #84919B">Unsubscribe from NewsBlur emails</a>
+                        </div>
+                        {% endblock %}
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" height="20"></td>
+                </tr>
+            </table>
+            <!--[if (gte mso 10)]>
+                </td>
+                </tr>
                 </table>
-                </center>
-            </td>
-        </tr>
-    </table>
+                <![endif]-->
+        </td>
+    </tr>
+</table>
+
 </body>
 </html>
-

@@ -75,7 +75,7 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
         NEWSBLUR.app.taskbar_info.hide_stories_error();
         
         this.$iframe.empty();
-        this.$iframe.removeAttr('src').attr({src: 'about:blank'});
+        this.$iframe.removeAttr('src');//.attr({src: 'about:blank'});
     },
     
     show_explainer_single_story_mode: function() {

@@ -79,7 +79,7 @@ class MuninNode( object ):
         sock.send( cmd + "\r\n" )
 
     def _readline( self, f ):
-        """ Read data from Munin """
+        """ Read data from vendor.munin """
         return f.readline().split("\n")[0]
 
     def list( self, sock, f ):
@@ -135,7 +135,7 @@ class MuninNode( object ):
         return ( sock, f )
 
     def disconnect( self, sock, f ):
-        """ Disconnect from Munin """
+        """ Disconnect from vendor.munin """
         try:
             try:
                 self._send( 'quit', sock )

@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from vendor.munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBFlushAvg(MuninMongoDBPlugin):
+    args = "-l 0 --base 1000"
+    vlabel = "seconds"
+    title = "MongoDB background flush interval"
+    info = "The average time between background flushes"
+    fields = (
+        ('total_ms', dict(
+            label = "Flush interval",
+            info = "The time interval for background flushes",
+            type = "DERIVE",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        try:
+            value = float(status["backgroundFlushing"]["total_ms"])/1000
+        except KeyError:
+            value = "U"
+        return dict(total_ms=value)
+
+if __name__ == "__main__":
+    MongoDBFlushAvg().run()
