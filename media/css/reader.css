@@ -12001,11 +12001,19 @@ form.opml_import_form input {
 .NB-filter-popover .segmented-control {
     margin: 4px 0 0;
     line-height: 18px;
+    float: none;
 }
 .NB-filter-popover .segmented-control li {
-    padding: 2px 12px 0;
+    padding: 2px 12px 2px;
     font-size: 11px;
-    width: 85px;
+    width: 112px;
+}
+.NB-filter-popover .segmented-control.NB-feed-notification-types li {
+    width: 44px;
+}
+.NB-filter-popover .segmented-control .NB-unread-icon,
+.NB-filter-popover .segmented-control .NB-focus-icon {
+    height: 17px;
 }
 
 .NB-feedbar-options-stat {
@@ -12032,8 +12040,12 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-stat-updated .NB-icon {
-    background: transparent url('/media/embed/icons/circular/menu_icn_fetch.png');
+    background: transparent url('/media/embed/icons/circular/menu_icn_fetch.png') 0 -1px;
     background-size: 16px;
+}
+.NB-stat-average .NB-icon {
+    background: transparent url('/media/embed/icons/circular/nav_story_list.png') no-repeat 0 1px;
+    background-size: 16px 13px;
 }
 .NB-stat-decay .NB-icon {
     background: transparent url('/media/embed/icons/circular/menu_icn_lastupdated.png');
@@ -12052,6 +12064,10 @@ form.opml_import_form input {
 }
 .NB-filter-popover-filter-icon {
     background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
+}
+.NB-filter-popover-notifications-icon {
+    background: transparent url("/media/embed/icons/circular/menu_icn_notifications_128.png") no-repeat center center;
+    background-size: 32px;
 }
 
 /* =========== */
@@ -12089,6 +12105,7 @@ form.opml_import_form input {
     float: right;
     width: 18px;
     height: 18px;
+    margin-top: 8px;
     cursor: pointer;
     background-size: 18px;
 }

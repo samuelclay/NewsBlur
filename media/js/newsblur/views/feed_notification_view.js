@@ -33,14 +33,17 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
                     <li class="NB-feed-notification-option NB-feed-notification-android <% if (is_android) { %>NB-active<% } %>">Android</li>\
                 </ul>\
             </div>\
-            <img class="NB-feed-icon" src="<%= $.favicon(feed) %>">\
-            <div class="NB-feed-title"><%= feed.get("feed_title") %></div>\
-            <div class="NB-feed-frequency-icon"></div>\
-            <div class="NB-feed-frequency"><%= frequency %></div>\
+            <% if (!popover) { %>\
+                <img class="NB-feed-icon" src="<%= $.favicon(feed) %>">\
+                <div class="NB-feed-title"><%= feed.get("feed_title") %></div>\
+                <div class="NB-feed-frequency-icon"></div>\
+                <div class="NB-feed-frequency"><%= frequency %></div>\
+            <% } %>\
         </div>\
         ', {
           feed                : feed,
           selected            : this.options.selected,
+          popover             : this.options.popover,
           frequency           : feed && this.frequency(feed.get('average_stories_per_month')),
           frequency_count     : this.frequency_count(),
           is_email            : _.contains(feed.get('notification_types'), 'email'),
