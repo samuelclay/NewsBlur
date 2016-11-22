@@ -1,9 +1,11 @@
 import redis
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from apps.notifications.models import MUserFeedNotification, MUserNotificationTokens
+from apps.rss_feeds.models import Feed
+from utils.view_functions import required_params
 from utils import log as logging
 
 
@@ -83,3 +85,16 @@ def set_android_token(request):
         return {'message': 'Token saved.'}
     
     return {'message': 'Token already saved.'}
+
+@required_params(feed_id=int)
+@staff_member_required
+@json.json_view
+def force_push(request):
+    user = get_user(request)
+    feed_id = request.REQUEST['feed_id']
+    count = request.REQUEST.get('count', 1)
+    
+    logging.user(user, "~BM~FWForce pushing %s stories: ~SB%s" % (count, Feed.get_by_id(feed_id)))
+    sent_count = MUserFeedNotification.push_feed_notifications(feed_id, new_stories=count, force=True)
+    
+    return {"message": "Pushed %s notifications" % sent_count}

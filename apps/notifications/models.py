@@ -155,7 +155,8 @@ class MUserFeedNotification(mongo.Document):
                 
                 sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
                 if sent: sent_count += 1
-    
+        return sent_count
+        
     def classifiers(self, usersub):
         classifiers = {}
         if usersub.is_trained:
