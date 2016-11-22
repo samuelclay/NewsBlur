@@ -124,6 +124,7 @@ class MUserFeedNotification(mongo.Document):
         latest_story_hashes = r.zrange("zF:%s" % feed.pk, -1 * new_stories, -1)
         mstories = MStory.objects.filter(story_hash__in=latest_story_hashes).order_by('-story_date')
         stories = Feed.format_stories(mstories)
+        total_sent_count = 0
         
         for user_feed_notification in notifications:
             sent_count = 0
@@ -154,8 +155,10 @@ class MUserFeedNotification(mongo.Document):
                 story['story_content'] = HTMLParser().unescape(story['story_content'])
                 
                 sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
-                if sent: sent_count += 1
-        return sent_count
+                if sent: 
+                    sent_count += 1
+                    total_sent_count += 1
+        return total_sent_count
         
     def classifiers(self, usersub):
         classifiers = {}
