@@ -57,4 +57,3 @@ six==1.10.0
 South==0.7.6
 stripe==1.12.2
 tweepy==3.5.0
-apns==2.0.1

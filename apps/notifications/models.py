@@ -16,7 +16,7 @@ from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
 from HTMLParser import HTMLParser
-from apns import APNs, Payload
+from vendor.apns import APNs, Payload
 from BeautifulSoup import BeautifulSoup
 import types
 
@@ -228,7 +228,7 @@ class MUserFeedNotification(mongo.Document):
         image_url = None
         if len(story['image_urls']):
             image_url = story['image_urls'][0]
-            print image_url
+            # print image_url
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
