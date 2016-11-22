@@ -109,7 +109,7 @@
         android:layout_toLeftOf="@id/row_item_thumbnail"
         android:layout_alignWithParentIfMissing="true"
         android:layout_below="@id/row_item_content"
-        android:paddingBottom="4dp"
+        android:paddingBottom="2dp"
         android:paddingRight="8dp"
         style="?storyDateText" />
 
@@ -118,9 +118,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/row_item_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="33dp"
         android:layout_toLeftOf="@id/row_item_date"
-        android:layout_alignLeft="@id/row_item_content"
-        android:paddingBottom="4dp"
+        android:paddingBottom="2dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/story_author_text" />
