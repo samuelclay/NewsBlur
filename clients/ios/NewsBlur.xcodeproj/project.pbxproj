@@ -409,6 +409,8 @@
 		FF877CD31C6541F2007940C3 /* menu_icn_organize@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF877CD21C6541F2007940C3 /* menu_icn_organize@2x.png */; };
 		FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */; };
 		FF88F10E1811BAEC007FEE78 /* unread_green.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10C1811BAEC007FEE78 /* unread_green.png */; };
+		FF8A949B1DE3BB77000A4C31 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8A949A1DE3BB77000A4C31 /* NotificationService.m */; };
+		FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FF8AFE571CAC73C9005D9B40 /* unread_blue@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8AFE561CAC73C9005D9B40 /* unread_blue@3x.png */; };
 		FF8D1EA71BAA304E00725D8A /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EA61BAA304E00725D8A /* Reachability.m */; };
 		FF8D1ECC1BAA311000725D8A /* SBJson4Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EBF1BAA311000725D8A /* SBJson4Parser.m */; };
@@ -546,6 +548,30 @@
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
 		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FF8A949D1DE3BB77000A4C31 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF8A94961DE3BB77000A4C31;
+			remoteInfo = "Story Notification Service Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FF8A94A31DE3BB77000A4C31 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
@@ -1098,6 +1124,10 @@
 		FF877CD21C6541F2007940C3 /* menu_icn_organize@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_organize@2x.png"; sourceTree = "<group>"; };
 		FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_green@2x.png"; sourceTree = "<group>"; };
 		FF88F10C1811BAEC007FEE78 /* unread_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_green.png; sourceTree = "<group>"; };
+		FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Story Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF8A94991DE3BB77000A4C31 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		FF8A949A1DE3BB77000A4C31 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		FF8A949C1DE3BB77000A4C31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF8AFE561CAC73C9005D9B40 /* unread_blue@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_blue@3x.png"; sourceTree = "<group>"; };
 		FF8D1EA51BAA304E00725D8A /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		FF8D1EA61BAA304E00725D8A /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
@@ -1310,6 +1340,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF8A94941DE3BB77000A4C31 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1395,6 +1432,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* NewsBlur.app */,
+				FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1408,6 +1446,7 @@
 				43D0451C1565BC090085F811 /* Resources-iPad */,
 				43B8F017156603170008733D /* Resources-iPhone */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				FF8A94981DE3BB77000A4C31 /* Story Notification Service Extension */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */,
@@ -2276,6 +2315,16 @@
 			name = Offline;
 			sourceTree = "<group>";
 		};
+		FF8A94981DE3BB77000A4C31 /* Story Notification Service Extension */ = {
+			isa = PBXGroup;
+			children = (
+				FF8A94991DE3BB77000A4C31 /* NotificationService.h */,
+				FF8A949A1DE3BB77000A4C31 /* NotificationService.m */,
+				FF8A949C1DE3BB77000A4C31 /* Info.plist */,
+			);
+			path = "Story Notification Service Extension";
+			sourceTree = "<group>";
+		};
 		FF8D1EA41BAA304E00725D8A /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
@@ -2417,15 +2466,34 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				FF8A94A31DE3BB77000A4C31 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FF8A949E1DE3BB77000A4C31 /* PBXTargetDependency */,
 			);
 			name = NewsBlur;
 			productName = NewsBlur;
 			productReference = 1D6058910D05DD3D006BFB54 /* NewsBlur.app */;
 			productType = "com.apple.product-type.application";
+		};
+		FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF8A94A21DE3BB77000A4C31 /* Build configuration list for PBXNativeTarget "Story Notification Service Extension" */;
+			buildPhases = (
+				FF8A94931DE3BB77000A4C31 /* Sources */,
+				FF8A94941DE3BB77000A4C31 /* Frameworks */,
+				FF8A94951DE3BB77000A4C31 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Story Notification Service Extension";
+			productName = "Story Notification Service Extension";
+			productReference = FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -2444,6 +2512,11 @@
 								enabled = 1;
 							};
 						};
+					};
+					FF8A94961DE3BB77000A4C31 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = HR7P97SD72;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -2486,6 +2559,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* NewsBlur */,
+				FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -2867,6 +2941,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF8A94951DE3BB77000A4C31 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -3023,7 +3104,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF8A94931DE3BB77000A4C31 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF8A949B1DE3BB77000A4C31 /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FF8A949E1DE3BB77000A4C31 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */;
+			targetProxy = FF8A949D1DE3BB77000A4C31 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		FF2EB7951AA65504002549A7 /* IASKLocalizable.strings */ = {
@@ -3217,6 +3314,73 @@
 			};
 			name = Release;
 		};
+		FF8A94A01DE3BB77000A4C31 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = HR7P97SD72;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "Story Notification Service Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FF8A94A11DE3BB77000A4C31 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = HR7P97SD72;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "Story Notification Service Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3237,6 +3401,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		FF8A94A21DE3BB77000A4C31 /* Build configuration list for PBXNativeTarget "Story Notification Service Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF8A94A01DE3BB77000A4C31 /* Debug */,
+				FF8A94A11DE3BB77000A4C31 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

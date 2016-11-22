@@ -381,7 +381,7 @@
             completionHandler();
         }];
     } else if ([response.actionIdentifier isEqualToString:@"STAR_IDENTIFIER"]) {
-        [self markStoryAsStarred:storyHash inFeed:feedIdStr withCallback:^{
+        [self markStoryAsStarred:storyHash withCallback:^{
             completionHandler();
         }];
     } else if ([response.actionIdentifier isEqualToString:@"VIEW_STORY_IDENTIFIER"]) {
@@ -2076,8 +2076,8 @@
     [request startAsynchronous];
 }
 
-- (void)markStoryAsStarred:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)())callback {
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
+- (void)markStoryAsStarred:(NSString *)storyHash withCallback:(void(^)())callback {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hash_as_starred",
                            self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];

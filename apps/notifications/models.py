@@ -225,6 +225,10 @@ class MUserFeedNotification(mongo.Document):
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         title, subtitle, body = self.title_and_body(story, usersub)
+        image_url = None
+        if len(story['image_urls']):
+            image_url = story['image_urls'][0]
+            print image_url
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
@@ -236,6 +240,7 @@ class MUserFeedNotification(mongo.Document):
                               mutable_content=True,
                               custom={'story_hash': story['story_hash'],
                                       'story_feed_id': story['story_feed_id'],
+                                      'image_url': image_url,
                                      })
             apns.gateway_server.send_notification(token, payload)
         
