@@ -92,7 +92,7 @@ def set_android_token(request):
 def force_push(request):
     user = get_user(request)
     feed_id = request.REQUEST['feed_id']
-    count = request.REQUEST.get('count', 1)
+    count = int(request.REQUEST.get('count', 1))
     
     logging.user(user, "~BM~FWForce pushing %s stories: ~SB%s" % (count, Feed.get_by_id(feed_id)))
     sent_count, user_count = MUserFeedNotification.push_feed_notifications(feed_id, new_stories=count, force=True)
