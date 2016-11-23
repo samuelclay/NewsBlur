@@ -164,6 +164,7 @@
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
+@synthesize notificationFeedIds;
 
 @synthesize database;
 @synthesize categories;
@@ -863,6 +864,7 @@
     self.dictSavedStoryFeedCounts = nil;
     self.dictFolders = nil;
     self.dictFoldersArray = nil;
+    self.notificationFeedIds = nil;
     self.userActivitiesArray = nil;
     self.userInteractionsArray = nil;
     self.dictUnreadCounts = nil;

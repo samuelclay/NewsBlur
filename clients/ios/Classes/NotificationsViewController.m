@@ -7,6 +7,7 @@
 //
 
 #import "NotificationsViewController.h"
+#import "NotificationFeedCell.h"
 
 @interface NotificationsViewController ()
 
@@ -14,9 +15,30 @@
 
 @implementation NotificationsViewController
 
+@synthesize notificationsTable;
+@synthesize appDelegate;
+@synthesize feedId;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    self.navigationItem.title = @"Notifications";
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done"
+                                                                     style: UIBarButtonItemStylePlain
+                                                                    target: self
+                                                                    action: @selector(doCancelButton)];
+    [self.navigationItem setRightBarButtonItem:cancelButton];
+    
+    // Do any additional setup after loading the view from its nib.
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    notificationsTable = [[UITableView alloc] init];
+    notificationsTable.delegate = self;
+    notificationsTable.dataSource = self;
+    notificationsTable.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);;
+    notificationsTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    notificationsTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.view addSubview:notificationsTable];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -24,14 +46,144 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)doCancelButton {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
-*/
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [notificationsTable reloadData];
+    
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"notifications table: %@ / %@", NSStringFromCGRect(notificationsTable.frame), NSStringFromCGRect(self.view.frame));
+}
+#pragma mark - Table view delegate
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 36;
+}
+
+- (UIView *)tableView:(UITableView *)tableView
+viewForHeaderInSection:(NSInteger)section {
+    int headerLabelHeight, folderImageViewY;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        headerLabelHeight = 36;
+        folderImageViewY = 3;
+    } else {
+        headerLabelHeight = 36;
+        folderImageViewY = 0;
+    }
+    
+    // create the parent view that will hold header Label
+    UIControl* customView = [[UIControl alloc]
+                             initWithFrame:CGRectMake(0.0, 0.0,
+                                                      tableView.bounds.size.width, headerLabelHeight + 1)];
+    UIView *borderTop = [[UIView alloc]
+                         initWithFrame:CGRectMake(0.0, 0,
+                                                  tableView.bounds.size.width, 1.0)];
+    borderTop.backgroundColor = UIColorFromRGB(0xe0e0e0);
+    borderTop.opaque = NO;
+    [customView addSubview:borderTop];
+    
+    
+    UIView *borderBottom = [[UIView alloc]
+                            initWithFrame:CGRectMake(0.0, headerLabelHeight,
+                                                     tableView.bounds.size.width, 1.0)];
+    borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
+    borderBottom.opaque = NO;
+    [customView addSubview:borderBottom];
+    
+    UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    customView.opaque = NO;
+    headerLabel.backgroundColor = [UIColor clearColor];
+    headerLabel.opaque = NO;
+    headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    headerLabel.highlightedTextColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    headerLabel.font = [UIFont boldSystemFontOfSize:11];
+    headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
+    headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
+    headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+    if (self.feedId && section == 0) {
+        headerLabel.text = @"SITE NOTIFICATIONS";
+    } else {
+        headerLabel.text = @"ALL NOTIFICATIONS";
+    }
+    
+    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+                                  colorWithAlphaComponent:0.8];
+    [customView addSubview:headerLabel];
+    
+    UIImage *folderImage;
+    int folderImageViewX = 10;
+    
+    if (self.feedId && section == 0) {
+        folderImage = [UIImage imageNamed:@"menu_icn_notifications.png"];
+    } else {
+        folderImage = [UIImage imageNamed:@"menu_icn_notifications.png"];
+    }
+    folderImageViewX = 9;
+    UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
+    folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 36);
+    [customView addSubview:folderImageView];
+    [customView setAutoresizingMask:UIViewAutoresizingNone];
+    return customView;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    if (self.feedId) {
+        return 2;
+    }
+    
+    return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 140;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (self.feedId && section == 0) {
+        return 1;
+    }
+    return MAX(appDelegate.notificationFeedIds.count, 1);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGRect vb = self.view.bounds;
+    
+    static NSString *CellIdentifier = @"NotificationFeedCellIdentifier";
+    NotificationFeedCell *cell = (NotificationFeedCell *)[tableView
+                             dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    if (cell == nil) {
+        cell = [[NotificationFeedCell alloc]
+                initWithStyle:UITableViewCellStyleDefault
+                reuseIdentifier:nil];
+    }
+    
+    if (appDelegate.notificationFeedIds.count == 0) {
+        UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
+        [cell.contentView addSubview:msg];
+        msg.text = @"No results.";
+        msg.textColor = UIColorFromRGB(0x7a7a7a);
+        if (vb.size.width > 320) {
+            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+        } else {
+            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+        }
+        msg.textAlignment = NSTextAlignmentCenter;
+    }
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    return cell;
+}
 
 @end

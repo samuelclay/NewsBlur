@@ -347,6 +347,8 @@
 		FF546DF9160298E500948020 /* fleuron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF8160298E500948020 /* fleuron@2x.png */; };
 		FF5ACC211DE5ED7500FBD044 /* menu_icn_notifications.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5ACC201DE5ED7500FBD044 /* menu_icn_notifications.png */; };
 		FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5ACC231DE5F0C000FBD044 /* NotificationsViewController.m */; };
+		FF5ACC271DE5FA3E00FBD044 /* NotificationFeedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5ACC261DE5FA3E00FBD044 /* NotificationFeedCell.m */; };
+		FF5ACC2B1DE6088B00FBD044 /* menu_icn_notifications@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5ACC291DE6088B00FBD044 /* menu_icn_notifications@2x.png */; };
 		FF5D4017179A00B900349659 /* traverse_send.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4015179A00B900349659 /* traverse_send.png */; };
 		FF5D4018179A00B900349659 /* traverse_send@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4016179A00B900349659 /* traverse_send@2x.png */; };
 		FF5D401B179A03E700349659 /* traverse_previous_off.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4019179A03E700349659 /* traverse_previous_off.png */; };
@@ -1048,6 +1050,9 @@
 		FF5ACC201DE5ED7500FBD044 /* menu_icn_notifications.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_notifications.png; sourceTree = "<group>"; };
 		FF5ACC221DE5F0C000FBD044 /* NotificationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsViewController.h; sourceTree = "<group>"; };
 		FF5ACC231DE5F0C000FBD044 /* NotificationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationsViewController.m; sourceTree = "<group>"; };
+		FF5ACC251DE5FA3E00FBD044 /* NotificationFeedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationFeedCell.h; sourceTree = "<group>"; };
+		FF5ACC261DE5FA3E00FBD044 /* NotificationFeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationFeedCell.m; sourceTree = "<group>"; };
+		FF5ACC291DE6088B00FBD044 /* menu_icn_notifications@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_notifications@2x.png"; sourceTree = "<group>"; };
 		FF5D4015179A00B900349659 /* traverse_send.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_send.png; sourceTree = "<group>"; };
 		FF5D4016179A00B900349659 /* traverse_send@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_send@2x.png"; sourceTree = "<group>"; };
 		FF5D4019179A03E700349659 /* traverse_previous_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_previous_off.png; sourceTree = "<group>"; };
@@ -1632,6 +1637,8 @@
 				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
 				FF5ACC221DE5F0C000FBD044 /* NotificationsViewController.h */,
 				FF5ACC231DE5F0C000FBD044 /* NotificationsViewController.m */,
+				FF5ACC251DE5FA3E00FBD044 /* NotificationFeedCell.h */,
+				FF5ACC261DE5FA3E00FBD044 /* NotificationFeedCell.m */,
 			);
 			name = "Feed-Detail";
 			sourceTree = "<group>";
@@ -1924,6 +1931,7 @@
 				43A4C3F315B00A26008787B5 /* arrow.png */,
 				43A4C3F415B00A26008787B5 /* arrow@2x.png */,
 				FF5ACC201DE5ED7500FBD044 /* menu_icn_notifications.png */,
+				FF5ACC291DE6088B00FBD044 /* menu_icn_notifications@2x.png */,
 				43A4C3F715B00A26008787B5 /* Background.png */,
 				43A4C3F815B00A26008787B5 /* Background@2X.png */,
 				43A4C41115B00A26008787B5 /* fleuron.png */,
@@ -2893,6 +2901,7 @@
 				1740C69E1C1110BA005EA453 /* theme_color_light-sel.png in Resources */,
 				FFDD848216E887D3000AA0A2 /* g_icn_unread.png in Resources */,
 				FFDD848316E887D3000AA0A2 /* g_icn_unread@2x.png in Resources */,
+				FF5ACC2B1DE6088B00FBD044 /* menu_icn_notifications@2x.png in Resources */,
 				FFDD848616E8EB1E000AA0A2 /* share.png in Resources */,
 				FFDD848716E8EB1E000AA0A2 /* share@2x.png in Resources */,
 				17C5BA6B1CA39EA400F5961C /* unread_green_icn.png in Resources */,
@@ -3084,6 +3093,7 @@
 				FF8D1ECE1BAA311000725D8A /* SBJson4StreamParserState.m in Sources */,
 				FF4151C016DED9660013E84B /* UIBarButtonItem+Image.m in Sources */,
 				FF8D1ED11BAA311000725D8A /* SBJson4StreamWriterState.m in Sources */,
+				FF5ACC271DE5FA3E00FBD044 /* NotificationFeedCell.m in Sources */,
 				FFA045B619CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m in Sources */,
 				FF1F13D318A9C2BE00FDA816 /* TMCache.m in Sources */,
 				FF22FE5E16E53ADC0046165A /* Underscore+Functional.m in Sources */,

@@ -24,6 +24,7 @@
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"
+#import "NotificationsViewController.h"
 #import "StoriesCollection.h"
 #import "UserTagsViewController.h"
 

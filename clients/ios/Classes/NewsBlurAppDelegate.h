@@ -137,6 +137,7 @@ SFSafariViewControllerDelegate>  {
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
+    NSArray * notificationFeedIds;
     
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
@@ -247,6 +248,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
+@property (nonatomic) NSArray *notificationFeedIds;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;

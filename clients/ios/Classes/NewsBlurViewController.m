@@ -2035,17 +2035,23 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)checkForFeedNotifications {
+    NSMutableArray *notificationFeedIds = [NSMutableArray array];
+    
     for (NSDictionary *feed in appDelegate.dictFeeds.allValues) {
         NSArray *types = [feed objectForKey:@"notification_types"];
         if (types) {
             for (NSString *notificationType in types) {
                 if ([notificationType isEqualToString:@"ios"]) {
                     [appDelegate registerForRemoteNotifications];
-                    return;
                 }
+            }
+            if ([types count]) {
+                [notificationFeedIds addObject:[feed objectForKey:@"id"]];
             }
         }
     }
+    
+    appDelegate.notificationFeedIds = notificationFeedIds;
 }
 
 - (void)refreshHeaderCounts {
