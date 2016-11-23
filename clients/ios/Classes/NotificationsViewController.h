@@ -17,6 +17,6 @@
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *notificationsTable;
-@property (nonatomic) NSInteger feedId;
+@property (nonatomic) NSString *feedId;
 
 @end

@@ -98,7 +98,7 @@
 - (void)muteSite;
 - (void)openMoveView;
 - (void)openTrainSite;
-- (void)openNotifications;
+- (void)openNotificationsWithFeed:(NSString *)feedId;
 - (void)openRenameSite;
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;

@@ -2159,8 +2159,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [appDelegate openTrainSite];
 }
 
-- (void)openNotifications {
-    [appDelegate openNotifications];
+- (void)openNotificationsWithFeed:(NSString *)feedId {
+    [appDelegate openNotificationsWithFeed:feedId];
 }
 
 - (void)openRenameSite {

@@ -350,7 +350,8 @@
 }
 
 
-- (void)showNotificationsPopover:(id)sender {
+- (void)showNotificationsPopoverWithFeed:(NSString *)feedId sender:(id)sender {
+    self.appDelegate.notificationsViewController.feedId = feedId;
     if ([sender class] == [UIBarButtonItem class]) {
         [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) barButtonItem:sender];
     } else if ([sender class] == [FeedTableCell class]) {

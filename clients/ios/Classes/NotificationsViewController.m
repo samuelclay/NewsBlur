@@ -75,10 +75,10 @@ viewForHeaderInSection:(NSInteger)section {
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         headerLabelHeight = 36;
-        folderImageViewY = 3;
+        folderImageViewY = 8;
     } else {
         headerLabelHeight = 36;
-        folderImageViewY = 0;
+        folderImageViewY = 8;
     }
     
     // create the parent view that will hold header Label
@@ -130,7 +130,7 @@ viewForHeaderInSection:(NSInteger)section {
     }
     folderImageViewX = 9;
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 36);
+    folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
@@ -159,13 +159,13 @@ viewForHeaderInSection:(NSInteger)section {
     CGRect vb = self.view.bounds;
     
     static NSString *CellIdentifier = @"NotificationFeedCellIdentifier";
-    NotificationFeedCell *cell = (NotificationFeedCell *)[tableView
+    NotificationFeedCell *cell = [tableView
                              dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
         cell = [[NotificationFeedCell alloc]
-                initWithStyle:UITableViewCellStyleDefault
-                reuseIdentifier:nil];
+                initWithStyle:UITableViewCellStyleValue1
+                reuseIdentifier:CellIdentifier];
     }
     
     if (appDelegate.notificationFeedIds.count == 0) {
@@ -179,6 +179,20 @@ viewForHeaderInSection:(NSInteger)section {
             msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
         }
         msg.textAlignment = NSTextAlignmentCenter;
+    } else {
+        NSDictionary *feed;
+        NSString *feedIdStr;
+        if (self.feedId && indexPath.section == 0) {
+            feedIdStr = feedId;
+            feed = [appDelegate.dictFeeds objectForKey:feedId];
+        } else {
+            feedIdStr = [NSString stringWithFormat:@"%@",
+                         appDelegate.notificationFeedIds[indexPath.row]];
+            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        }
+        cell.textLabel.text = [feed objectForKey:@"feed_title"];
+        cell.imageView.image = [self.appDelegate getFavicon:feedIdStr isSocial:NO isSaved:NO];
+        cell.detailTextLabel.text = [NSString localizedStringWithFormat:NSLocalizedString(@"%@ stories/month", @"average stories per month"), feed[@"average_stories_per_month"]];
     }
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;

@@ -16,5 +16,6 @@
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) NSInteger feedId;
 
 @end

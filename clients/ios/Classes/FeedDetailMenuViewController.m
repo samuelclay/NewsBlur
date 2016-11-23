@@ -227,7 +227,8 @@
     } else if (indexPath.row == 4) {
         [appDelegate.feedDetailViewController openTrainSite];
     } else if (indexPath.row == 5) {
-        [appDelegate.feedDetailViewController openNotifications];
+        [appDelegate.feedDetailViewController
+         openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
     } else if (indexPath.row == 6) {
         [appDelegate.feedDetailViewController instafetchFeed];
     }

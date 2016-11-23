@@ -981,27 +981,28 @@
     }
 }
 
-- (void)openNotifications {
+- (void)openNotificationsWithFeed:(NSString *)feedId {
     [self hidePopover];
     // Needs a delay because the menu will close the popover.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self openNotificationsWithFeedLoaded:self.feedDetailViewController.settingsBarButton];
+        [self openNotificationsWithFeed:feedId sender:self.feedDetailViewController.settingsBarButton];
     });
 }
 
-- (void)openNotificationsWithFeedLoaded:(id)sender {
+- (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender {
     UINavigationController *navController = self.navigationController;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         //        [navController presentViewController:trainerViewController animated:YES completion:nil];
-        [self.masterContainerViewController showNotificationsPopover:sender];
+        [self.masterContainerViewController showNotificationsPopoverWithFeed:feedId sender:sender];
     } else {
         if (self.notificationsNavigationController == nil) {
             self.notificationsNavigationController = [[UINavigationController alloc]
                                                       initWithRootViewController:self.notificationsViewController];
         }
         self.notificationsNavigationController.navigationBar.translucent = NO;
+        self.notificationsViewController.feedId = feedId;
         [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }

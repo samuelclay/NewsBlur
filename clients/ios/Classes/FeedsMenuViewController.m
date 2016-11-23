@@ -41,6 +41,7 @@
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
                                             [@"Organize Sites" uppercaseString],
+                                            [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString],
                                             [@"Login as..." uppercaseString],
@@ -50,6 +51,7 @@
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
                                             [@"Organize Sites" uppercaseString],
+                                            [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [@"Logout" uppercaseString], nil];
     }
@@ -136,16 +138,20 @@
         case 2:
             image = [UIImage imageNamed:@"menu_icn_organize.png"];
             break;
-            
+        
         case 3:
+            image = [UIImage imageNamed:@"menu_icn_notifications.png"];
+            break;
+        
+        case 4:
             image = [UIImage imageNamed:@"menu_icn_followers.png"];
             break;
             
-        case 4:
+        case 5:
             image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
             break;
             
-        case 5:
+        case 6:
             image = [UIImage imageNamed:@"barbutton_sendto.png"];
             break;
             
@@ -178,14 +184,18 @@
             break;
             
         case 3:
+            [appDelegate openNotificationsWithFeed:nil];
+            break;
+        
+        case 4:
             [appDelegate showFindFriends];
             break;
             
-        case 4:
+        case 5:
             [appDelegate confirmLogout];
             break;
             
-        case 5:
+        case 6:
             [self showLoginAsDialog];
             break;
             
