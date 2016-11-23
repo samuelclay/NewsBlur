@@ -134,8 +134,40 @@
     [self.notificationTypeControl setSelectedSegmentIndexes:types];
 }
 
-- (void)multiSelect:(MultiSelectSegmentedControl *)multiSelecSegmendedControl didChangeValue:(BOOL)value atIndex:(NSUInteger)index {
+- (void)multiSelect:(MultiSelectSegmentedControl *)multiSelectSegmendedControl didChangeValue:(BOOL)value atIndex:(NSUInteger)index {
+    [self saveNotifications];
+}
+
+- (void)saveNotifications {
+    NSMutableArray *notificationTypes = [NSMutableArray array];
+    NSString *notificationFilter = self.filterControl.selectedSegmentIndex == 0 ? @"unread": @"focus";
     
+    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:0])
+        [notificationTypes addObject:@"email"];
+    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:1])
+        [notificationTypes addObject:@"web"];
+    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:2])
+        [notificationTypes addObject:@"ios"];
+    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:3])
+        [notificationTypes addObject:@"android"];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/notifications/feed/",
+                           appDelegate.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:self.feedId forKey:@"feed_id"];
+    for (NSString *notificationType in notificationTypes) {
+        [request addPostValue:notificationType forKey:@"notification_types"];
+    }
+    [request setPostValue:notificationFilter forKey:@"notification_filter"];
+    [request setCompletionBlock:^{
+        NSLog(@"Saved notifications %@: %@ / %@", self.feedId, notificationTypes, notificationFilter);
+    }];
+    [request setFailedBlock:^{
+        NSLog(@"Failed to save notifications: %@ / %@", notificationTypes, notificationFilter);
+    }];
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
 @end
