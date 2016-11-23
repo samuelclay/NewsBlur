@@ -19,6 +19,8 @@
 {
     if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
         // Initialization code
+        self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+
         self.tintColor = UIColorFromRGB(0x707070);
         self.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
         self.detailTextLabel.font = [UIFont fontWithName:@"Helvetica" size:13.0];
@@ -113,6 +115,13 @@
         CGRect textLabelFrame = self.textLabel.frame;
         textLabelFrame.size.width -= detailTextLabelExtraWidth;
         self.textLabel.frame = textLabelFrame;
+    }
+    
+    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:self.feedId];
+    if ([[feed objectForKey:@"notification_filter"] isEqualToString:@"focus"]) {
+        self.filterControl.selectedSegmentIndex = 1;
+    } else {
+        self.filterControl.selectedSegmentIndex = 0;
     }
 }
 
