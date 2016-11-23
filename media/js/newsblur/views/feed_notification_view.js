@@ -112,28 +112,35 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
             notification_types.push(type);
         }
         this.model.set('notification_types', notification_types);
-        
         this.save();
+        
+        _.each(['web', 'ios', 'android', 'email'], _.bind(function(type) {
+            var func = _.contains(notification_types, type) ? "addClass" : "removeClass";
+            this.$(".NB-feed-notification-"+type)[func]('NB-active');
+        }, this));
+        
     },
     
     toggle_focus: function() {
         this.model.set('notification_filter', 'focus');
-        
         this.save();
+        
+        this.$(".NB-feed-notification-filter-focus").addClass("NB-active");
+        this.$(".NB-feed-notification-filter-unread").removeClass("NB-active");
     },
     
     toggle_unread: function() {
-        this.model.set('notification_filter', 'unread');
-        
+        this.model.set('notification_filter', 'unread');        
         this.save();
+
+        this.$(".NB-feed-notification-filter-focus").removeClass("NB-active");
+        this.$(".NB-feed-notification-filter-unread").addClass("NB-active");
     },
     
     save: function() {
         NEWSBLUR.assets.set_notifications_for_feed(this.model, function() {
             
         });
-        
-        this.render();
     }
     
 });

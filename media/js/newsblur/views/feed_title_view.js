@@ -41,7 +41,14 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     changed: function(model, options) {
         options = options || {};
         var changes = _.keys(this.model.changedAttributes());
+        var ignore_attributes = ['notification_types', 'notification_filter'];
         
+        var only_ignored = !_.any(changes, function(key) { 
+            return !_.contains(ignore_attributes, key);
+        });
+        if (only_ignored) {
+            return;
+        }
         var counts_changed = _.any(changes, function(key) { 
             return _.contains(['ps', 'nt', 'ng'], key);
         });
