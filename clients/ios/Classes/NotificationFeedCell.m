@@ -12,6 +12,8 @@
 @implementation NotificationFeedCell
 
 @synthesize appDelegate;
+@synthesize filterControl;
+@synthesize notificationTypeControl;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -28,6 +30,40 @@
         UIView *selectedBackground = [[UIView alloc] init];
         [selectedBackground setBackgroundColor:UIColorFromRGB(0xECEEEA)];
         [self setSelectedBackgroundView:selectedBackground];
+        
+        self.filterControl = [[UISegmentedControl alloc] initWithItems:@[@"Unread Stories",
+                                                                         @"Focus Stories"]];
+        self.filterControl.tintColor = UIColorFromRGB(0x8F918B);
+        [self.filterControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus Stories";
+        [self.filterControl.subviews objectAtIndex:0].accessibilityLabel = @"Unread Stories";
+        [self.filterControl setTitle:@"Unread Stories" forSegmentAtIndex:0];
+        [self.filterControl setTitle:@"Focus Stories" forSegmentAtIndex:1];
+        [self.filterControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:0];
+        [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
+        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:0];
+        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:1];
+        self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
+        [self.contentView addSubview:self.filterControl];
+        
+        self.notificationTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"Email",
+                                                                         @"Web",
+                                                                         @"iOS",
+                                                                         @"Android"]];
+        self.notificationTypeControl.tintColor = UIColorFromRGB(0x8F918B);
+        [self.notificationTypeControl.subviews objectAtIndex:0].accessibilityLabel = @"Email";
+        [self.notificationTypeControl.subviews objectAtIndex:1].accessibilityLabel = @"Web";
+        [self.notificationTypeControl.subviews objectAtIndex:2].accessibilityLabel = @"iOS";
+        [self.notificationTypeControl.subviews objectAtIndex:3].accessibilityLabel = @"Android";
+        [self.notificationTypeControl setTitle:@"Email" forSegmentAtIndex:0];
+        [self.notificationTypeControl setTitle:@"Web" forSegmentAtIndex:1];
+        [self.notificationTypeControl setTitle:@"iOS" forSegmentAtIndex:2];
+        [self.notificationTypeControl setTitle:@"Android" forSegmentAtIndex:3];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:0];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:1];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:2];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:3];
+        self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
+        [self.contentView addSubview:self.notificationTypeControl];
     }
     
     return self;
@@ -49,6 +85,14 @@
     self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     self.textLabel.shadowOffset = CGSizeMake(0, 1);
     
+    CGRect textFrame = self.textLabel.frame;
+    textFrame.origin.y = 10;
+    self.textLabel.frame = textFrame;
+
+    CGRect detailFrame = self.detailTextLabel.frame;
+    detailFrame.origin.y = 10;
+    self.detailTextLabel.frame = detailFrame;
+
     self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
     self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
     

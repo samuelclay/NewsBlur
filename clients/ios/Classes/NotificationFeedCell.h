@@ -17,5 +17,7 @@
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSInteger feedId;
+@property (nonatomic) UISegmentedControl * filterControl;
+@property (nonatomic) UISegmentedControl * notificationTypeControl;
 
 @end
