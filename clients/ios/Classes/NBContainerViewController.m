@@ -348,6 +348,22 @@
     }
 }
 
+
+- (void)showNotificationsPopover:(id)sender {
+    if ([sender class] == [UIBarButtonItem class]) {
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) barButtonItem:sender];
+    } else if ([sender class] == [FeedTableCell class]) {
+        FeedTableCell *cell = (FeedTableCell *)sender;
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
+    } else if ([sender class] == [FeedDetailTableCell class]) {
+        FeedDetailTableCell *cell = (FeedDetailTableCell *)sender;
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
+    } else {
+        CGRect frame = [sender CGRectValue];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPageControl.view sourceRect:frame];
+    }
+}
+
 - (void)syncNextPreviousButtons {
     [self.storyPageControl setNextPreviousButtons];
 }

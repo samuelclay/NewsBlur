@@ -51,5 +51,6 @@
 - (void)dragStoryToolbar:(int)yCoordinate;
 - (void)showUserProfilePopover:(id)sender;
 - (void)showTrainingPopover:(id)sender;
+- (void)showNotificationsPopover:(id)sender;
 
 @end

@@ -39,6 +39,7 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class TrainerViewController;
+@class NotificationsViewController;
 @class UserTagsViewController;
 @class OriginalStoryViewController;
 @class UserProfileViewController;
@@ -60,6 +61,7 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
     UINavigationController *trainNavigationController;
+    UINavigationController *notificationsNavigationController;
     NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -82,6 +84,7 @@ SFSafariViewControllerDelegate>  {
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
+    NotificationsViewController *notificationsViewController;
     UserTagsViewController *userTagsViewController;
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
@@ -154,6 +157,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *trainNavigationController;
+@property (nonatomic) UINavigationController *notificationsNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
@@ -171,6 +175,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
+@property (nonatomic) IBOutlet NotificationsViewController *notificationsViewController;
 @property (nonatomic) IBOutlet UserTagsViewController *userTagsViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
@@ -286,6 +291,7 @@ SFSafariViewControllerDelegate>  {
 
 - (void)showMoveSite;
 - (void)openTrainSite;
+- (void)openNotifications;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)openUserTagsStory:(id)sender;

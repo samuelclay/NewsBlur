@@ -7026,7 +7026,7 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feed-notifications .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications.png') no-repeat 0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
@@ -7315,7 +7315,7 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-notifications .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png') no-repeat  0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications.png') no-repeat  0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-import .NB-menu-manage-image {
@@ -8861,7 +8861,7 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-modal-notifications .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/menu_icn_notifications_128.png');
+    background: transparent url('/media/embed/icons/circular/menu_icn_notifications.png');
     background-size: 28px;
 }
 .NB-modal.NB-modal-notifications .NB-fieldset {
@@ -12105,7 +12105,7 @@ form.opml_import_form input {
     background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
 }
 .NB-filter-popover-notifications-icon {
-    background: transparent url("/media/embed/icons/circular/menu_icn_notifications_128.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
     background-size: 32px;
 }
 

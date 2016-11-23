@@ -11,5 +11,6 @@
 @interface FeedChooserViewCell : UITableViewCell
 
 @property (nonatomic) BOOL isMuteOperation;
+@property (nonatomic) BOOL isFaded;
 
 @end

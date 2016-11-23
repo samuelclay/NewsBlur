@@ -2159,6 +2159,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [appDelegate openTrainSite];
 }
 
+- (void)openNotifications {
+    [appDelegate openNotifications];
+}
+
 - (void)openRenameSite {
     NSString *title = [NSString stringWithFormat:@"Rename \"%@\"", appDelegate.storiesCollection.isRiverView ?
                        [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder] : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];

@@ -22,6 +22,7 @@
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
 #import "TrainerViewController.h"
+#import "NotificationsViewController.h"
 #import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
@@ -86,6 +87,7 @@
 @synthesize modalNavigationController;
 @synthesize shareNavigationController;
 @synthesize trainNavigationController;
+@synthesize notificationsNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize dashboardViewController;
@@ -102,6 +104,7 @@
 @synthesize addSiteViewController;
 @synthesize moveSiteViewController;
 @synthesize trainerViewController;
+@synthesize notificationsViewController;
 @synthesize userTagsViewController;
 @synthesize originalStoryViewController;
 @synthesize originalStoryViewNavController;
@@ -973,6 +976,31 @@
         }
         self.trainNavigationController.navigationBar.translucent = NO;
         [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+    }
+}
+
+- (void)openNotifications {
+    [self hidePopover];
+    // Needs a delay because the menu will close the popover.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self openNotificationsWithFeedLoaded:self.feedDetailViewController.settingsBarButton];
+    });
+}
+
+- (void)openNotificationsWithFeedLoaded:(id)sender {
+    UINavigationController *navController = self.navigationController;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        //        [navController presentViewController:trainerViewController animated:YES completion:nil];
+        [self.masterContainerViewController showNotificationsPopover:sender];
+    } else {
+        if (self.notificationsNavigationController == nil) {
+            self.notificationsNavigationController = [[UINavigationController alloc]
+                                                      initWithRootViewController:self.notificationsViewController];
+        }
+        self.notificationsNavigationController.navigationBar.translucent = NO;
+        [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }
 

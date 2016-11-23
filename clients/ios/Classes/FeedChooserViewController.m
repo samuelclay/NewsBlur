@@ -64,7 +64,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     self.tableView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    self.tableView.separatorColor = UIColorFromRGB(0x909090);
+    self.tableView.separatorColor = UIColorFromRGB(0xF0F0F0);
     self.tableView.sectionIndexColor = UIColorFromRGB(0x303030);
     self.tableView.sectionIndexBackgroundColor = UIColorFromRGB(0xDCDFD6);
     
@@ -650,6 +650,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     cell.isMuteOperation = self.operation == FeedChooserOperationMuteSites;
     cell.textLabel.text = item.title;
     cell.detailTextLabel.text = [item detailForSort:self.sort];
+    cell.isFaded = [[cell.detailTextLabel.text substringToIndex:2] isEqualToString:@"0 "];
     cell.imageView.image = item.icon;
     
     if (self.operation == FeedChooserOperationMuteSites) {
