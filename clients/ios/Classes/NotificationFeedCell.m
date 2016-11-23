@@ -47,10 +47,11 @@
         self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.filterControl];
         
-        self.notificationTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"Email",
+        self.notificationTypeControl = [[MultiSelectSegmentedControl alloc] initWithItems:@[@"Email",
                                                                          @"Web",
                                                                          @"iOS",
                                                                          @"Android"]];
+        self.notificationTypeControl.delegate = self;
         self.notificationTypeControl.tintColor = UIColorFromRGB(0x8F918B);
         [self.notificationTypeControl.subviews objectAtIndex:0].accessibilityLabel = @"Email";
         [self.notificationTypeControl.subviews objectAtIndex:1].accessibilityLabel = @"Web";
@@ -123,6 +124,18 @@
     } else {
         self.filterControl.selectedSegmentIndex = 0;
     }
+    
+    NSMutableIndexSet *types = [NSMutableIndexSet indexSet];
+    NSArray *notificationTypes = [feed objectForKey:@"notification_types"];
+    if ([notificationTypes containsObject:@"email"]) [types addIndex:0];
+    if ([notificationTypes containsObject:@"web"]) [types addIndex:1];
+    if ([notificationTypes containsObject:@"ios"]) [types addIndex:2];
+    if ([notificationTypes containsObject:@"android"]) [types addIndex:3];
+    [self.notificationTypeControl setSelectedSegmentIndexes:types];
+}
+
+- (void)multiSelect:(MultiSelectSegmentedControl *)multiSelecSegmendedControl didChangeValue:(BOOL)value atIndex:(NSUInteger)index {
+    
 }
 
 @end

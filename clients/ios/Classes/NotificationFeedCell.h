@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MultiSelectSegmentedControl.h"
 
 @class NewsBlurAppDelegate;
 
-@interface NotificationFeedCell : UITableViewCell {
+@interface NotificationFeedCell : UITableViewCell <MultiSelectSegmentedControlDelegate> {
     NewsBlurAppDelegate *appDelegate;
 
 }
@@ -18,6 +19,6 @@
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSString *feedId;
 @property (nonatomic) UISegmentedControl * filterControl;
-@property (nonatomic) UISegmentedControl * notificationTypeControl;
+@property (nonatomic) MultiSelectSegmentedControl * notificationTypeControl;
 
 @end
