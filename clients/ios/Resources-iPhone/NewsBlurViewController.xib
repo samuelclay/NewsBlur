@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="16A319" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -24,11 +27,11 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="85">
-                    <frame key="frameInset" maxY="44"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="Table View">
-                            <frame key="frameInset"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                             <connections>
@@ -37,25 +40,25 @@
                             </connections>
                         </tableView>
                         <view hidden="YES" opaque="NO" contentMode="scaleToFill" id="122">
-                            <frame key="frameInset" minX="28.80%" minY="51.87%" width="42.40%" height="195"/>
+                            <rect key="frame" x="108" y="222" width="159" height="195"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="You have no unread stories in Focus mode." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="123">
-                                    <frame key="frameInset" minX="0.0%" minY="70.21%" width="241" height="54"/>
+                                    <rect key="frame" x="0.0" y="99" width="241" height="54"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                     <color key="textColor" red="0.75644385814666748" green="0.75644385814666748" blue="0.75644385814666748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Switch to All or Unread." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="124">
-                                    <frame key="frameInset" minX="0.0%" minY="100.00%" width="241" height="42"/>
+                                    <rect key="frame" x="0.0" y="153" width="241" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                     <color key="textColor" red="0.75644385814666748" green="0.75644385814666748" blue="0.75644385814666748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" image="big_world.png" id="125">
-                                    <frame key="frameInset" minX="50.53%" minY="27" width="64" height="64"/>
+                                    <rect key="frame" x="48" y="27" width="64" height="64"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 </imageView>
                             </subviews>
@@ -65,7 +68,7 @@
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" id="11">
-                    <frame key="frameInset" height="44"/>
+                    <rect key="frame" x="0.0" y="623" width="375" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <items>
                         <barButtonItem enabled="NO" width="34" style="plain" id="106">
@@ -76,7 +79,7 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="104"/>
                         <barButtonItem id="56">
                             <segmentedControl key="customView" contentMode="center" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="55">
-                                <rect key="frame" x="91" y="7.5" width="192" height="29"/>
+                                <rect key="frame" x="91" y="8" width="192" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="" image="all.png"/>

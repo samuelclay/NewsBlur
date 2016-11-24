@@ -2051,7 +2051,12 @@ heightForHeaderInSection:(NSInteger)section {
         }
     }
     
-    appDelegate.notificationFeedIds = notificationFeedIds;
+    appDelegate.notificationFeedIds = [notificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NSString *feed1Title = [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj1]] objectForKey:@"feed_title"] lowercaseString];
+        NSString *feed2Title = [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj2]] objectForKey:@"feed_title"] lowercaseString];
+        
+        return [feed1Title compare:feed2Title];
+    }];
 }
 
 - (void)refreshHeaderCounts {
