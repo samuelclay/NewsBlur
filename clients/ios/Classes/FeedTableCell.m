@@ -91,8 +91,13 @@ static UIFont *textFont = nil;
         return;
     }
     
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL isNotifications = [[preferences stringForKey:@"feed_swipe_left"]
+                            isEqualToString:@"notifications"];
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
-    [self setFirstStateIconName:self.isSocial ? @"menu_icn_fetch_subscribers.png" : @"train.png"
+    [self setFirstStateIconName:(self.isSocial ? @"menu_icn_fetch_subscribers.png" :
+                                 isNotifications ? @"menu_icn_notifications.png" :
+                                 @"train.png")
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil

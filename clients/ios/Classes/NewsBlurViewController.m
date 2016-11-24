@@ -920,6 +920,7 @@ static UIFont *userLabelFont;
     }
     
     [self resizeFontSize];
+    [self resetupGestures];
 }
 
 - (void)resizeFontSize {
@@ -1319,6 +1320,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSString *feedId = [NSString stringWithFormat:@"%@",
@@ -1326,12 +1328,15 @@ heightForHeaderInSection:(NSInteger)section {
                          objectAtIndex:indexPath.row]];
 
     if (state == MCSwipeTableViewCellState1) {
+        
         if (indexPath.section == 1) {
             // Profile
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feedId];
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [feed objectForKey:@"user_id"]];
             appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
             [appDelegate showUserProfileModal:cell];
+        } else if ([[preferences stringForKey:@"feed_swipe_left"] isEqualToString:@"notifications"]) {
+            [appDelegate openNotificationsWithFeed:feedId sender:cell];
         } else {
             // Train
             appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
@@ -1340,7 +1345,6 @@ heightForHeaderInSection:(NSInteger)section {
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read
         [self markFeedRead:feedId cutoffDays:0];
-        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
             [self.stillVisibleFeeds setObject:indexPath forKey:feedId];
         }
@@ -1675,6 +1679,11 @@ heightForHeaderInSection:(NSInteger)section {
     } else {
         [self.feedTitlesTable reloadData];
     }
+}
+
+- (void)resetupGestures {
+    while ([self.feedTitlesTable dequeueReusableCellWithIdentifier:@"FeedCellIdentifier"]) {}
+    [self.feedTitlesTable reloadData];
 }
 
 - (void)calculateFeedLocations {

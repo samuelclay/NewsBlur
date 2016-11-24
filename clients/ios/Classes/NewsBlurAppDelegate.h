@@ -294,6 +294,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showMoveSite;
 - (void)openTrainSite;
 - (void)openNotificationsWithFeed:(NSString *)feedId;
+- (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)openUserTagsStory:(id)sender;
