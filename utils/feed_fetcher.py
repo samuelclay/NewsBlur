@@ -124,8 +124,8 @@ class FetchFeed:
             try:
                 headers = {
                     'User-Agent': USER_AGENT,
-                    'Accept-encoding': 'gzip, deflate',
-                    'A-IM': 'feed',
+                    'Accept': 'application/atom+xml, application/rss+xml, application/xml;q=0.8, text/xml;q=0.6, */*;q=0.2',
+                    'Accept-Encoding': 'gzip, deflate',
                 }
                 if etag:
                     headers['If-None-Match'] = etag
@@ -138,6 +138,8 @@ class FetchFeed:
                     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     modified_header = '%s, %02d %s %04d %02d:%02d:%02d GMT' % (short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5])
                     headers['If-Modified-Since'] = modified_header
+                if etag or modified:
+                    headers['A-IM'] = 'feed'
                 raw_feed = requests.get(address, headers=headers)
                 if raw_feed.content:
                     response_headers = raw_feed.headers
