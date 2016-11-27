@@ -522,7 +522,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setFeedsActive(List<String> feedIds, boolean active) {
+    public void setFeedsActive(Set<String> feedIds, boolean active) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
