@@ -1084,7 +1084,8 @@ static UIFont *userLabelFont;
     }
     
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
+    BOOL newCell = cell == nil;
+    if (newCell) {
         cell = [[FeedTableCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
@@ -1101,6 +1102,10 @@ static UIFont *userLabelFont;
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSaved       = isSaved;
+    
+    if (newCell) {
+        [cell setupGestures];
+    }
     
     if (isSavedStoriesFeed) {
         cell.positiveCount = 0;

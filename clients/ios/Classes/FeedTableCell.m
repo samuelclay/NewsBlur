@@ -50,8 +50,6 @@ static UIFont *textFont = nil;
         self.selectedBackgroundView = selectedBackground;
 
         [self.contentView addSubview:cellContent];
-
-        [self setupGestures];
     }
 
     return self;
