@@ -1,8 +1,8 @@
 package com.newsblur.fragment;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.LoaderManager;
 import android.content.Loader;
@@ -297,11 +297,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
             chooseFoldersFragment.show(getFragmentManager(), "dialog");
         } else if (item.getItemId() == R.id.menu_mute_feed) {
-            List<String> feedIds = new ArrayList<String>();
+            Set<String> feedIds = new HashSet<String>();
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
             FeedUtils.muteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_unmute_feed) {
-            List<String> feedIds = new ArrayList<String>();
+            Set<String> feedIds = new HashSet<String>();
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
             FeedUtils.unmuteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_mute_folder) {

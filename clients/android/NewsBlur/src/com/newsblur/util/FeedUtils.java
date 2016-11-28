@@ -2,7 +2,6 @@ package com.newsblur.util;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
@@ -292,19 +291,18 @@ public class FeedUtils {
         }.execute();
     }
 
-    public static void muteFeeds(final Context context, final List<String> feedIds) {
+    public static void muteFeeds(final Context context, final Set<String> feedIds) {
         updateFeedActiveState(context, feedIds, false);
     }
 
-    public static void unmuteFeeds(final Context context, final List<String> feedIds) {
+    public static void unmuteFeeds(final Context context, final Set<String> feedIds) {
         updateFeedActiveState(context, feedIds, true);
     }
 
-    private static void updateFeedActiveState(final Context context, final List<String> feedIds, final boolean active) {
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
+    private static void updateFeedActiveState(final Context context, final Set<String> feedIds, final boolean active) {
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
+            protected Void doInBackground(Void... arg) {
                 Set<String> activeFeeds = dbHelper.getAllActiveFeeds();
                 for (String feedId : feedIds) {
                     if (active) {
@@ -313,15 +311,23 @@ public class FeedUtils {
                         activeFeeds.remove(feedId);
                     }
                 }
-                return apiManager.saveFeedChooser(activeFeeds);
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                dbHelper.setFeedsActive(feedIds, active);
+
+                ReadingAction ra = null;
+                if (active) {
+                    ra = ReadingAction.unmuteFeeds(activeFeeds, feedIds);
+                } else {
+                    ra = ReadingAction.muteFeeds(activeFeeds, feedIds);
+                }
+
+                dbHelper.enqueueAction(ra);
+                ra.doLocal(dbHelper);
+
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 triggerSync(context);
+
+                return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static FeedSet feedSetFromFolderName(String folderName) {

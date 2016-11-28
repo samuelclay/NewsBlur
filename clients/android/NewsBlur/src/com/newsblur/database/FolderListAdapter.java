@@ -630,10 +630,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         return activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).get(childPosition);
     }
 
-    public List<String> getAllFeedsForFolder(int groupPosition) {
+    public Set<String> getAllFeedsForFolder(int groupPosition) {
         String flatFolderName = activeFolderNames.get(convertGroupPositionToActiveFolderIndex(groupPosition));
         Folder folder = flatFolders.get(flatFolderName);
-        return folder.feedIds;
+        Set<String> feedIds = new HashSet<String>();
+        feedIds.addAll(folder.feedIds);
+        return feedIds;
     }
 
     /** Get the cached SocialFeed object for the feed at the given list location. */

@@ -127,18 +127,11 @@ public class DatabaseConstants {
     public static final String ACTION_TABLE = "story_actions";
 	public static final String ACTION_ID = BaseColumns._ID;
     public static final String ACTION_TIME = "time";
-    public static final String ACTION_MARK_READ = "mark_read";
-    public static final String ACTION_MARK_UNREAD = "mark_unread";
-    public static final String ACTION_SAVE = "save";
-    public static final String ACTION_UNSAVE = "unsave";
-    public static final String ACTION_SHARE = "share";
-    public static final String ACTION_UNSHARE = "unshare";
-    public static final String ACTION_LIKE_COMMENT = "like_comment";
-    public static final String ACTION_UNLIKE_COMMENT = "unlike_comment";
-    public static final String ACTION_REPLY = "reply";
+    public static final String ACTION_TYPE = "action_type";
     public static final String ACTION_COMMENT_TEXT = "comment_text";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
+    public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
     public static final String ACTION_INCLUDE_OLDER = "include_older";
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
     public static final String ACTION_STORY_ID = "story_id";
@@ -270,15 +263,7 @@ public class DatabaseConstants {
     static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
-        ACTION_MARK_READ + INTEGER + " DEFAULT 0, " +
-        ACTION_MARK_UNREAD + INTEGER + " DEFAULT 0, " +
-        ACTION_SAVE + INTEGER + " DEFAULT 0, " +
-        ACTION_UNSAVE + INTEGER + " DEFAULT 0, " +
-        ACTION_SHARE + INTEGER + " DEFAULT 0, " +
-        ACTION_UNSHARE + INTEGER + " DEFAULT 0, " +
-        ACTION_LIKE_COMMENT + INTEGER + " DEFAULT 0, " +
-        ACTION_UNLIKE_COMMENT + INTEGER + " DEFAULT 0, " +
-        ACTION_REPLY + INTEGER + " DEFAULT 0, " +
+        ACTION_TYPE + TEXT + ", " +
         ACTION_COMMENT_TEXT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
         ACTION_FEED_ID + TEXT + ", " +
@@ -286,7 +271,8 @@ public class DatabaseConstants {
         ACTION_INCLUDE_NEWER + INTEGER + ", " +
         ACTION_STORY_ID + TEXT + ", " +
         ACTION_SOURCE_USER_ID + TEXT + ", " +
-        ACTION_COMMENT_ID + TEXT +
+        ACTION_COMMENT_ID + TEXT + ", " +
+        ACTION_MODIFIED_FEED_IDS + TEXT +
         ")";
 
 	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
