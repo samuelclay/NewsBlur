@@ -462,8 +462,6 @@ public class NBSyncService extends Service {
                     continue feedaddloop;
                 }
                 if (! feed.active) {
-                    //continue feedaddloop;
-
                     // the feed is disabled/hidden, we don't want to fetch unreads
                     disabledFeedIds.add(feed.feedId);
                 }
