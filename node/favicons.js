@@ -43,20 +43,22 @@
       var etag, feed_id;
       feed_id = parseInt(req.params[0], 10);
       etag = req.header('If-None-Match');
-      console.log(" ---> Feed: " + feed_id + " / " + etag);
+      console.log((" ---> Feed: " + feed_id + " ") + (etag ? " / " + etag : ""));
       return _this.collection.findOne({
         _id: feed_id
       }, function(err, docs) {
         var body;
-        console.log("Req " + req.params[0] + ": " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0) + " (err: " + err + ", docs? " + (!!(docs && docs.data)) + ")");
         if (!err && etag && docs && (docs != null ? docs.color : void 0) === etag) {
-          return res.send(304);
+          console.log((" ---> Cached: " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0) + " ") + (err ? "(err: " + err + ")" : ""));
+          return res.sendStatus(304);
         } else if (!err && docs && docs.data) {
+          console.log((" ---> Req: " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0) + " ") + (err ? "(err: " + err + ")" : ""));
           res.header('etag', docs.color);
           body = new Buffer(docs.data, 'base64');
           res.set("Content-Type", "image/png");
           return res.status(200).send(body);
         } else {
+          console.log((" ---> Redirect: " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0) + " ") + (err ? "(err: " + err + ")" : ""));
           if (DEV) {
             return res.redirect('/media/img/icons/circular/world.png');
           } else {
