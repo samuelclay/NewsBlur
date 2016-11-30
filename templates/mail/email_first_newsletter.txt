@@ -1,0 +1,9 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Your email newsletters are now being sent to NewsBlur
+
+You have just received your first email newsletter in NewsBlur. You can find your newsletters under the Newsletters folder.
+
+Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they should be the name of the organization. Easy to change!
+
+You can also move and delete newsletters just as if they were independent feeds. Training even works on newsletters, so you can hide the newsletters you don't want to read while highlighting the ones you do.{% endblock body %}

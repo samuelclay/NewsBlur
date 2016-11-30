@@ -91,6 +91,7 @@ window.Inflector = {
             else if (s == 'has') s = 'have';
             else if (s == 'following') s = s;
             else if (s == 'day') s = 'days';
+            else if (s == 'story') s = 'stories';
             else if (s.match(/y$/i)) s = s.replace(/y$/i, 'ies');
             else s = s + 's';
         }
@@ -167,7 +168,7 @@ window.Inflector = {
 
     // From Prototype.js. Strip out HTML tags.
     stripTags : function(s) {
-        return $('<p>' + s + '</p>').text();
+        return _.string.escapeHTML($('<p>' + s + '</p>').text());
     },
 
     escapeRegExp : function(s) {

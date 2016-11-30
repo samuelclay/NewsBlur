@@ -53,7 +53,7 @@
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.nextButton.enabled = YES;
     self.navigationItem.rightBarButtonItem = next;
@@ -113,7 +113,7 @@
     
     if (self.selectedCategories_.count) {
         NSString *urlString = [NSString stringWithFormat:@"%@/categories/subscribe",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         
@@ -162,7 +162,7 @@
     [self.googleReaderButton addSubview:self.activityIndicator];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/import/import_from_google_reader/",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:@"true" forKey:@"auto_active"];
@@ -257,7 +257,7 @@
 
 - (void)addSite:(NSString *)siteUrl {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -443,7 +443,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 -(NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UIView *header = [self.categoriesTable viewWithTag:indexPath.section];
     UIButton *button = (UIButton *)[header viewWithTag:indexPath.section + 1000];
-    [button sendActionsForControlEvents:UIControlStateSelected];
+    [button sendActionsForControlEvents:UIControlEventTouchDragInside];
     return indexPath;
 }
 

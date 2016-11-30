@@ -16,8 +16,7 @@ import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ThemeUtils;
 
 public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetails> {
 
@@ -37,15 +36,9 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
         Resources resources = context.getResources();
         ago = resources.getString(R.string.profile_ago);
 
-        if (PrefsUtils.isLightThemeSelected(context)) {
-            linkColor = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
-            contentColor = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
-            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.midgray));
-        } else {
-            linkColor = new ForegroundColorSpan(resources.getColor(R.color.dark_linkblue));
-            contentColor = new ForegroundColorSpan(resources.getColor(R.color.white));
-            quoteColor = new ForegroundColorSpan(resources.getColor(R.color.lightgray));
-        }
+        linkColor = new ForegroundColorSpan(ThemeUtils.getProfileActivitiesLinkColor(context));
+        contentColor = new ForegroundColorSpan(ThemeUtils.getProfileActivitiesContentColor(context));
+        quoteColor = new ForegroundColorSpan(ThemeUtils.getProfileActivitiesQuoteColor(context));
 
         userIsYou = user.userId == null;
     }
@@ -66,13 +59,13 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 
         activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
         if (activity.category == Category.FEED_SUBSCRIPTION) {
-            FeedUtils.imageLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
+            FeedUtils.iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView, 5, false);
         } else if (activity.category == Category.SHARED_STORY) {
-            FeedUtils.imageLoader.displayImage(currentUserDetails.photoUrl, imageView, 10f);
+            FeedUtils.iconLoader.displayImage(currentUserDetails.photoUrl, imageView, 10f, false);
         } else if (activity.category == Category.STAR) {
             imageView.setImageResource(R.drawable.clock);
         } else if (activity.user != null) {
-            FeedUtils.imageLoader.displayImage(activity.user.photoUrl, imageView);
+            FeedUtils.iconLoader.displayImage(activity.user.photoUrl, imageView, 5, false);
         } else {
             imageView.setImageResource(R.drawable.logo);
         }

@@ -482,6 +482,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Story content preview'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-showimagepreview' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showimagepreview-1', type: 'radio', name: 'show_image_preview', value: 1 }),
+                                $.make('label', { 'for': 'NB-preference-showimagepreview-1' }, [
+                                    'Show an image thumbnail in the story title'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showimagepreview-0', type: 'radio', name: 'show_image_preview', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showimagepreview-0' }, [
+                                    'Don\'t show a thumbnail'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Image preview'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-doubleclickfeed' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -690,30 +709,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Open links'
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-hidestorychanges-1', type: 'radio', name: 'hide_story_changes', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-hidestorychanges-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_modified.png' }),
-                                    'Show ',
-                                    $.make('del', 'changes'),
-                                    ' ',
-                                    $.make('ins', 'revisions'),
-                                    ' in stories'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-hidestorychanges-2', type: 'radio', name: 'hide_story_changes', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-hidestorychanges-2' }, [
-                                    'Hide changes and only show the final story'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Story changes'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-fullwidthdstory' }, [
@@ -1022,6 +1017,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_image_preview]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.show_image_preview) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=doubleclick_feed]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.doubleclick_feed) {
                 $(this).attr('checked', true);
@@ -1048,12 +1049,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=read_story_delay]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.read_story_delay) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
-        $('input[name=hide_story_changes]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
                 $(this).attr('checked', true);
                 return false;
             }

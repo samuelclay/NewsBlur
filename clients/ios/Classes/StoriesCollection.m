@@ -109,10 +109,18 @@
     self.visibleUnreadCount = 0;
     self.activeFeedStoryLocations = [NSMutableArray array];
     self.activeFeedStoryLocationIds = [NSMutableArray array];
+    
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        if (score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue]) {
+        BOOL want = NO;
+        if (self.appDelegate.isSavedStoriesIntelligenceMode) {
+            want = [story[@"starred"] boolValue];
+        } else {
+            want = score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue];
+        }
+        
+        if (want) {
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];
             [self.activeFeedStoryLocationIds addObject:[story objectForKey:@"story_hash"]];
@@ -225,6 +233,10 @@
 }
 
 - (NSString *)activeReadFilter {
+    if (self.appDelegate.isSavedStoriesIntelligenceMode) {
+        return @"starred";
+    }
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *readFilterFeedPrefDefault = [userPreferences stringForKey:@"default_feed_read_filter"];
     NSString *readFilterFolderPrefDefault = [userPreferences stringForKey:@"default_folder_read_filter"];
@@ -330,7 +342,7 @@
 
 - (void)syncStoryAsRead:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -359,7 +371,7 @@
 
 - (void)syncStoryAsUnread:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -673,7 +685,7 @@
     }
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved && ![newStory objectForKey:@"starred_date"]) {
-        [newStory setObject:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
+        [newStory setObject:[Utilities formatLongDateFromTimestamp:0] forKey:@"starred_date"];
         appDelegate.savedStoriesCount += 1;
         firstSaved = YES;
     } else if (!saved) {
@@ -710,7 +722,7 @@
 
 - (void)syncStoryAsSaved:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -765,7 +777,7 @@
 
 - (void)syncStoryAsUnsaved:(NSDictionary *)story {    
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     

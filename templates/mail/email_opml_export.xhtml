@@ -4,14 +4,17 @@
 
 {% block body %}
     
-    <p style="line-height: 20px;">
-        {% if reason %}{{ reason }}{% else %}Here's a backup of your sites on NewsBlur.{% endif %} It contains <b>{{ feed_count }}</b> 
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        {% if reason %}{{ reason }}{% else %}Here's a backup of your sites on NewsBlur.{% endif %} It contains <b style="#484F53">{{ feed_count }}</b> 
         site{{ feed_count|pluralize }}.
-    </p>
+    </h2>
     
     <p style="line-height: 20px;">
-        You can re-upload the attached file to NewsBlur and get all of your sites back. <br />
-        Just go to Manage > Import > Upload OPML.
+        You can re-upload the attached file to NewsBlur and get all of your sites back.
+    </p>
+
+    <p style="line-height: 20px;">
+        Just go to <a href="http://{% current_domain %}/?next=opml">Manage > Import > Upload OPML</a>.
     </p>
     
 {% endblock %}

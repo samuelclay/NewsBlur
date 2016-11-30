@@ -44,6 +44,8 @@ UIActionSheetDelegate> {
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIView *noStoryMessage;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
@@ -65,6 +67,8 @@ UIActionSheetDelegate> {
 - (void)flashCheckmarkHud:(NSString *)messageType;
 - (void)scrolltoComment;
 - (void)tryScrollingDown:(BOOL)down;
+- (void)scrollPageDown:(id)sender;
+- (void)scrollPageUp:(id)sender;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)checkTryFeedStory;
@@ -96,7 +100,5 @@ UIActionSheetDelegate> {
 - (void)showStoryView;
 - (void)fetchTextView;
 - (void)finishFetchTextView:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
-
 
 @end

@@ -11,11 +11,11 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.Set;
 
 public class UnreadsService extends SubService {
 
@@ -33,9 +33,6 @@ public class UnreadsService extends SubService {
 
     @Override
     protected void exec() {
-        // only use the unread status API if the user is premium
-        if (parent.isPremium != Boolean.TRUE) return;
-
         if (doMetadata) {
             gotWork();
             syncUnreadList();
@@ -48,44 +45,70 @@ public class UnreadsService extends SubService {
     }
 
     private void syncUnreadList() {
-        // a self-sorting map with keys based upon the timestamp of the story returned by
-        // the unreads API, concatenated with the hash to disambiguate duplicate timestamps.
-        // values are the actual story hash, which will be extracted once we have processed
-        // all hashes.
-        NavigableMap<String,String> sortingMap = new TreeMap<String,String>();
+        // get unread hashes and dates from the API
         UnreadStoryHashesResponse unreadHashes = parent.apiManager.getUnreadStoryHashes();
         
-        // note all the stories we thought were unread before. if any fail to appear in
-        // the API request for unreads, we will mark them as read
-        List<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashes();
+        if (parent.stopSync()) return;
+
+        // get all the stories we thought were unread before. we should not enqueue a fetch of
+        // stories we already have.  also, if any existing unreads fail to appear in
+        // the set of unreads from the API, we will mark them as read. note that this collection
+        // will be searched many times for new unreads, so it should be a Set, not a List.
+        Set<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashesAsSet();
+
+        // a place to store and then sort unread hashes we aim to fetch. note the member format
+        // is made to match the format of the API response (a list of [hash, date] tuples). it
+        // is crucial that we re-use objects as much as possible to avoid memory churn
+        List<String[]> sortationList = new ArrayList<String[]>();
 
         // process the api response, both bookkeeping no-longer-unread stories and populating
-        // the sortation map we will use to create the fetch list for step two
-        for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
+        // the sortation list we will use to create the fetch list for step two
+        feedloop: for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
+            // the API gives us a list of unreads, split up by feed ID. the unreads are tuples of
+            // story hash and date
             String feedId = entry.getKey();
             // ignore unreads from orphaned feeds
-            if( ! parent.orphanFeedIds.contains(feedId)) {
+            if (parent.orphanFeedIds.contains(feedId)) continue feedloop;
+            // ignore unreads from disabled feeds
+            if (parent.disabledFeedIds.contains(feedId)) continue feedloop;
+            for (String[] newUnread : entry.getValue()) {
                 // only fetch the reported unreads if we don't already have them
-                List<String> existingHashes = parent.dbHelper.getStoryHashesForFeed(feedId);
-                for (String[] newHash : entry.getValue()) {
-                    if (!existingHashes.contains(newHash[0])) {
-                        sortingMap.put(newHash[1]+newHash[0], newHash[0]);
-                    }
-                    oldUnreadHashes.remove(newHash[0]);
+                if (!oldUnreadHashes.contains(newUnread[0])) {
+                    sortationList.add(newUnread);
+                } else {
+                    oldUnreadHashes.remove(newUnread[0]);
                 }
             }
         }
 
+        // now sort the unreads we need to fetch so they are fetched roughly in the order
+        // the user is likely to read them.  if the user reads newest first, those come first.
+        final boolean sortNewest = (PrefsUtils.getDefaultStoryOrder(parent) == StoryOrder.NEWEST);
+        // custom comparator that understands to sort tuples by the value of the second element
+        Comparator<String[]> hashSorter = new Comparator<String[]>() {
+            public int compare(String[] lhs, String[] rhs) {
+                // element [1] of the unread tuple is the date in epoch seconds
+                if (sortNewest) {
+                    return rhs[1].compareTo(lhs[1]);
+                } else {
+                    return lhs[1].compareTo(rhs[1]);
+                }
+            }
+            public boolean equals(Object object) {
+                return false;
+            }
+        };
+        Collections.sort(sortationList, hashSorter);
+
         // now that we have the sorted set of hashes, turn them into a list over which we 
         // can iterate to fetch them
-        if (PrefsUtils.getDefaultStoryOrder(parent) == StoryOrder.NEWEST) {
-            // if the user reads newest-first by default, reverse the download order
-            sortingMap = sortingMap.descendingMap();
-        }
         StoryHashQueue.clear();
-        for (Map.Entry<String,String> entry : sortingMap.entrySet()) {
-            StoryHashQueue.add(entry.getValue());
+        for (String[] tuple : sortationList) {
+            // element [0] of the tuple is the story hash, the rest can safely be thown out
+            StoryHashQueue.add(tuple[0]);
         }
+
+        if (parent.stopSync()) return;
 
         // any stories that we previously thought to be unread but were not found in the
         // list, mark them read now
@@ -93,6 +116,7 @@ public class UnreadsService extends SubService {
     }
 
     private void getNewUnreadStories() {
+        int totalCount = StoryHashQueue.size();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) return;
             if(!PrefsUtils.isOfflineEnabled(parent)) return;
@@ -119,6 +143,9 @@ public class UnreadsService extends SubService {
                     for (String url : story.imageUrls) {
                         parent.imagePrefetchService.addUrl(url);
                     }
+                }
+                if (story.thumbnailUrl != null) {
+                    parent.imagePrefetchService.addThumbnailUrl(story.thumbnailUrl);
                 }
                 DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(parent, story.feedId);
                 if (mode == DefaultFeedView.TEXT) {

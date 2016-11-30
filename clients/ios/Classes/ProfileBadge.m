@@ -187,7 +187,7 @@
         paragraphStyle.lineBreakMode = bio.lineBreakMode;
         CGSize expectedLabelSize = [bio.text
                                     boundingRectWithSize:maximumLabelSize
-                                    options:nil
+                                    options:0
                                     attributes:@{NSFontAttributeName: bio.font,
                                                  NSParagraphStyleAttributeName: paragraphStyle}
                                     context:nil].size;
@@ -319,10 +319,10 @@
     
     if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
         urlString = [NSString stringWithFormat:@"%@/social/follow",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     } else {
         urlString = [NSString stringWithFormat:@"%@/social/unfollow",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     }
     
     NSURL *url = [NSURL URLWithString:urlString];

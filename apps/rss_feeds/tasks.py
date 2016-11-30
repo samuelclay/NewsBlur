@@ -4,6 +4,7 @@ import shutil
 import time
 import redis
 from celery.task import Task
+from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
 from utils import s3_utils as s3
 from django.conf import settings
@@ -29,6 +30,10 @@ class TaskFeeds(Task):
         now_timestamp = int(now.strftime("%s"))
         queued_feeds = r.zrangebyscore('scheduled_updates', 0, now_timestamp)
         r.zremrangebyscore('scheduled_updates', 0, now_timestamp)
+        if not queued_feeds:
+            logging.debug(" ---> ~SN~FB~BMNo feeds to queue! Exiting...")
+            return
+            
         r.sadd('queued_feeds', *queued_feeds)
         logging.debug(" ---> ~SN~FBQueuing ~SB%s~SN stale feeds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
                         len(queued_feeds),
@@ -124,6 +129,8 @@ class UpdateFeeds(Task):
     name = 'update-feeds'
     max_retries = 0
     ignore_result = True
+    time_limit = 10*60
+    soft_time_limit = 9*60
 
     def run(self, feed_pks, **kwargs):
         from apps.rss_feeds.models import Feed
@@ -156,14 +163,21 @@ class UpdateFeeds(Task):
             if not feed or feed.pk != int(feed_pk):
                 logging.info(" ---> ~FRRemoving feed_id %s from tasked_feeds queue, points to %s..." % (feed_pk, feed and feed.pk))
                 r.zrem('tasked_feeds', feed_pk)
-            if feed:
+            if not feed:
+                continue
+            try:
                 feed.update(**options)
-                if profiler_activated: profiler.process_celery_finished()
+            except SoftTimeLimitExceeded, e:
+                feed.save_feed_history(505, 'Timeout', e)
+                logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
+            if profiler_activated: profiler.process_celery_finished()
 
 class NewFeeds(Task):
     name = 'new-feeds'
     max_retries = 0
     ignore_result = True
+    time_limit = 10*60
+    soft_time_limit = 9*60
 
     def run(self, feed_pks, **kwargs):
         from apps.rss_feeds.models import Feed

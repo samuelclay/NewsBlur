@@ -31,6 +31,14 @@
 #import "UIView+ViewController.h"
 #import "JNWThrottledBlock.h"
 
+#define iPadPro ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
+
+@interface StoryDetailViewController ()
+
+@property (nonatomic, strong) NSString *fullStoryHTML;
+
+@end
+
 @implementation StoryDetailViewController
 
 @synthesize appDelegate;
@@ -45,7 +53,6 @@
 @synthesize storyHUD;
 @synthesize inTextView;
 @synthesize isRecentlyUnread;
-
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -240,7 +247,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
+    
     if (!self.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
@@ -317,10 +324,19 @@
 - (void)initStory {
     appDelegate.inStoryDetail = YES;
     self.noStoryMessage.hidden = YES;
-    self.webView.hidden = NO;
     self.inTextView = NO;
 
     [appDelegate hideShareView:NO];
+}
+
+- (void)loadHTMLString:(NSString *)html {
+    static NSURL *baseURL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        baseURL = [NSBundle mainBundle].bundleURL;
+    });
+
+    [self.webView loadHTMLString:html baseURL:baseURL];
 }
 
 - (void)hideNoStoryMessage {
@@ -379,9 +395,17 @@
 //    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-wide";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        } else {
+            contentWidthClass = @"NB-ipad-wide";
+        }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-narrow";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        } else {
+            contentWidthClass = @"NB-ipad-narrow";
+        }
     } else if (UIInterfaceOrientationIsLandscape(orientation) && self.isPhoneOrCompact) {
         contentWidthClass = @"NB-iphone-wide";
     } else {
@@ -433,7 +457,8 @@
     sharingHtmlString = [self getSideoptions];
 
     NSString *storyHeader = [self getHeader];
-    NSString *htmlString = [NSString stringWithFormat:@
+    
+    NSString *htmlTop = [NSString stringWithFormat:@
                             "<!DOCTYPE html>\n"
                             "<html>"
                             "<head>%@</head>" // header string
@@ -442,18 +467,7 @@
                             "    <div class=\"%@\" id=\"NB-font-size\">"
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
-                            "        %@" // shareBar
-                            "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
-                            "        <div id=\"NB-sideoptions-container\">%@</div>"
-                            "        <div id=\"NB-comments-wrapper\">"
-                            "            %@" // friends comments
-                            "        </div>"
-                            "        %@"
-                            "    </div>" // line-spacing
-                            "    </div>" // font-size
-                            "    </div>" // font-style
-                            "</body>"
-                            "</html>",
+                            "        %@", // shareBar
                             headerString,
                             contentWidthClass,
                             riverClass,
@@ -462,25 +476,46 @@
                             fontSizeClass,
                             lineSpacingClass,
                             storyHeader,
-                            shareBarString,
-                            storyContent,
-                            sharingHtmlString,
-                            commentString,
-                            footerString
+                            shareBarString
                             ];
     
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
-    NSString *path = [[NSBundle mainBundle] bundlePath];
-    NSURL *baseURL = [NSURL fileURLWithPath:path];
+    NSString *htmlBottom = [NSString stringWithFormat:@
+                            "    </div>" // line-spacing
+                            "    </div>" // font-size
+                            "    </div>" // font-style
+                            "</body>"
+                            "</html>"
+                            ];
+    
+    NSString *htmlContent = [NSString stringWithFormat:@
+                             "%@" // header
+                             "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                             "        <div id=\"NB-sideoptions-container\">%@</div>"
+                             "        <div id=\"NB-comments-wrapper\">"
+                             "            %@" // friends comments
+                             "        </div>"
+                             "        %@"
+                             "%@", // footer
+                             htmlTop,
+                             storyContent,
+                             sharingHtmlString,
+                             commentString,
+                             footerString,
+                             htmlBottom
+                             ];
+    
+    NSString *htmlTopAndBottom = [htmlTop stringByAppendingString:htmlBottom];
+    
+//    NSLog(@"\n\n\n\nStory html (%@):\n\n\n%@\n\n\n", self.activeStory[@"story_title"], htmlContent);
+    self.hasStory = NO;
+    self.fullStoryHTML = htmlContent;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.hasStory = YES;
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self.webView setMediaPlaybackRequiresUserAction:NO];
-        [self.webView loadHTMLString:htmlString baseURL:baseURL];
+        [self loadHTMLString:htmlTopAndBottom];
         [appDelegate.storyPageControl setTextButton:self];
     });
-
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
 }
@@ -545,19 +580,23 @@
 - (void)clearWebView {
     self.hasStory = NO;
     
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.webView.hidden = YES;
+    self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    [self.activityIndicator startAnimating];
+    
     NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
     
     if (themeStyle.length) {
         themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView%@.css\">", themeStyle];
     }
     
-    NSURL *baseURL = [NSBundle mainBundle].bundleURL;
     NSString *html = [NSString stringWithFormat:@"<html>"
                       "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\">%@</head>" // header string
                       "<body></body>"
                       "</html>", themeStyle];
-    
-    [self.webView loadHTMLString:html baseURL:baseURL];
+
+    [self loadHTMLString:html];
 }
 
 - (NSString *)getHeader {
@@ -567,8 +606,10 @@
     if ([[self.activeStory objectForKey:@"story_authors"] class] != [NSNull class] &&
         [[self.activeStory objectForKey:@"story_authors"] length]) {
         NSString *author = [NSString stringWithFormat:@"%@",
-                            [self.activeStory objectForKey:@"story_authors"]];
-        if (author && [author class] != [NSNull class]) {
+                            [[[[self.activeStory objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""]
+                            stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"]
+                            stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"]];
+        if (author && author.length) {
             int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
@@ -803,7 +844,6 @@
                                              [[story objectForKey:@"comment_count_public"] intValue],
                                              [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
             
-            comments = [comments stringByAppendingString:@"</div>"];
             comments = [comments stringByAppendingString:publicCommentHeader];
             comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
             
@@ -812,6 +852,7 @@
                 NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
             }
+            comments = [comments stringByAppendingString:@"</div>"];
             comments = [comments stringByAppendingString:@"</div>"];
         }
     }
@@ -1158,6 +1199,8 @@
     }
     return repliesString;
 }
+
+#pragma mark - Scrolling
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqual:@"contentOffset"]) {
@@ -1562,30 +1605,40 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
-    [self changeLineSpacing:[userPreferences stringForKey:@"story_line_spacing"]];
+    if (!self.hasStory) // other Web page loads aren't visible
+        return;
 
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    // DOM should already be set up here
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
     [self changeLineSpacing:[userPreferences stringForKey:@"story_line_spacing"]];
     [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.webkitTouchCallout='none';"];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [self.activityIndicator stopAnimating];
+
+    if (!self.fullStoryHTML)
+        return; // if we're loading anything other than a full story, the view will be hidden
+    
+    [self loadHTMLString:self.fullStoryHTML];
+    self.fullStoryHTML = nil;
+    self.hasStory = YES;
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 
     if ([appDelegate.storiesCollection.activeFeedStories count] &&
-        self.activeStoryId && self.hasStory) {
+        self.activeStoryId) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
             [self checkTryFeedStory];
         });
     }
 
-    if ([[self.webView stringByEvaluatingJavaScriptFromString:@"document.readyState"] isEqualToString:@"complete"]) {
-        [self scrollToLastPosition:YES];
-    }
+    [self scrollToLastPosition:YES];
+
+    self.webView.hidden = NO;
+    [self.webView setNeedsDisplay];
 }
 
 - (void)checkTryFeedStory {
@@ -1657,10 +1710,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"%@/social/like_comment",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     } else {
         urlString = [NSString stringWithFormat:@"%@/social/remove_like_comment",
-                               NEWSBLUR_URL];
+                               self.appDelegate.url];
     }
     
     NSURL *url = [NSURL URLWithString:urlString];
@@ -1979,7 +2032,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)subscribeToBlurblog {
     [appDelegate.storyPageControl showShareHUD:@"Following"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
-                     NEWSBLUR_URL];
+                     self.appDelegate.url];
     
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -2123,6 +2176,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
+    // Don't do this in the background, to avoid scrolling to the top unnecessarily
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        return;
+    }
+    
 //    [webView setNeedsLayout];
 //    [webView layoutIfNeeded];
     
@@ -2133,9 +2191,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *contentWidthClass;
 
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-wide";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        } else {
+            contentWidthClass = @"NB-ipad-wide";
+        }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        contentWidthClass = @"NB-ipad-narrow";
+        if (iPadPro) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        } else {
+            contentWidthClass = @"NB-ipad-narrow";
+        }
     } else if (UIInterfaceOrientationIsLandscape(orientation) && self.isPhoneOrCompact) {
         contentWidthClass = @"NB-iphone-wide";
     } else {
@@ -2226,13 +2292,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     ASIFormDataRequest *request = [self formRequestWithURL:urlString];
     [request addPostValue:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
     [request addPostValue:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
     [request setUserInfo:@{@"storyId": [self.activeStory objectForKey:@"id"]}];
     [request setDidFinishSelector:@selector(finishFetchTextView:)];
-    [request setDidFailSelector:@selector(failedFetchText::)];
+    [request setDidFailSelector:@selector(failedFetchText:)];
     [request setDelegate:self];
     [request startAsynchronous];
 }

@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+from vendor.munin import MuninPlugin
+
+import mechanize
+import simplejson
+import sys
+import os
+
+# configuration
+baseurl = 'http://localhost:55672'
+usr = 'guest'
+pwd = 'guest'
+
+class RabbitMQThroughputPlugin(MuninPlugin):
+    title = "RabbitMQ Throughput"
+    args = "--base 1000 -l-50"
+    vlabel = "throughput"
+    scaled = False
+    category = "rabbitmq"
+
+    # what do we want?
+    message_fields = ['publish_details', 'ack_details', 'deliver_details', 'deliver_get_details', 'redeliver_details']
+    queue_fields = ['messages_details', 'messages_ready_details', 'messages_unacknowledged_details']
+
+    @property
+    def fields(self):
+        msg_warning = os.environ.get('msg_throughput_warn', 250)
+        msg_critical = os.environ.get('msg_throughput_crit', 300)
+
+        return [ (field.replace('details','rate'), dict(
+                label = field.replace('details','rate'),
+                info = '%s throughput (per sec)' % (field,),
+                type = "GAUGE",
+                min = "0",
+                warning = str(msg_warning),
+                critical = str(msg_critical))) for field in (self.message_fields + self.queue_fields)]
+
+    def execute(self):
+        global baseurl, usr, pwd
+
+        # make request
+        b = mechanize.Browser()
+        b.set_handle_robots(False)
+        b.add_password(baseurl, usr, pwd)
+        overview_url = baseurl + '/api/overview'
+        b.open(overview_url)
+        resp = b.response().read()
+
+        # get actual fields
+        ret = simplejson.loads(resp)
+        for f in self.message_fields:
+            print "%s.value %s" % (f.replace('details','rate'), ret['message_stats'][f]['rate'])
+        for f in self.queue_fields:
+            print "%s.value %s" % (f.replace('details','rate'), ret['queue_totals'][f]['rate'])
+
+if __name__ == "__main__":
+    RabbitMQThroughputPlugin().run()

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    style="?selectorFeedBackground" >
+
+    <ImageView
+        android:id="@+id/row_tag_icon"
+        android:src="@drawable/tag"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:contentDescription="@string/description_row_folder_icon" />
+
+    <TextView
+        android:id="@+id/row_saved_tag_sum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/saved_count_rect"
+        android:gravity="center"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:paddingTop="1dp"
+        android:paddingBottom="2dp"
+        android:shadowColor="@color/saved_drop_shadow"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/row_tag_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textStyle="bold"
+        android:layout_toLeftOf="@id/row_saved_tag_sum"
+        android:layout_toRightOf="@id/row_tag_icon"
+        android:paddingBottom="7dp"
+    	android:paddingTop="7dp" 
+        android:textSize="14sp" />
+
+</RelativeLayout>

@@ -36,10 +36,12 @@ const int COUNT_HEIGHT = 15;
     rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
-    if (listType == NBFeedListSaved) {
+    if (listType == NBFeedListSaved || (listType == NBFeedListFolder && self.blueCount)) {
         blueCount = ps;
         psCount = ps;
+        ntCount = 0;
     } else {
+        blueCount = 0;
         psCount = ps;
         ntCount = nt;
     }
@@ -116,11 +118,11 @@ const int COUNT_HEIGHT = 15;
         }
         
         
-        [UIColorFromFixedRGB(0x93968D) set];
+        [UIColorFromLightDarkRGB(0x93968D, 0x53564D) set];
         CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);
         [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
         
-        [UIColorFromLightDarkRGB(0xB3B6AD, 0xaaaaaa) set];
+        [UIColorFromLightDarkRGB(0xB3B6AD, 0xA3A69D) set];
         [UIView drawRoundRectangleInRect:rr withRadius:4];        
         
         NSString *ntStr = [NSString stringWithFormat:@"%d", nt];
@@ -131,12 +133,12 @@ const int COUNT_HEIGHT = 15;
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName:UIColorFromFixedRGB(0x93968D)}];
+                          NSForegroundColorAttributeName:UIColorFromLightSepiaMediumDarkRGB(0x93968D, 0x93968D, 0x93968D, 0x93968D)}];
         
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)}];
+                          NSForegroundColorAttributeName:UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xF8F8E9, 0x606060, 0x000000)}];
     }
 }
 

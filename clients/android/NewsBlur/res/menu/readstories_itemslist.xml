@@ -3,4 +3,8 @@
     <item android:id="@+id/menu_default_view"
           android:title="@string/menu_default_view"
           android:showAsAction="never" />
+    <item
+        android:id="@+id/menu_textsize"
+        android:showAsAction="never"
+        android:title="@string/menu_textsize"/>
 </menu>

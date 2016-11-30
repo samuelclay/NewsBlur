@@ -28,6 +28,6 @@
         android:layout_toRightOf="@id/tag_negative"
         android:gravity="center_horizontal"
         android:padding="10dp"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
 </RelativeLayout>

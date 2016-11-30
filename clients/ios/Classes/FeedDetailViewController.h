@@ -92,10 +92,13 @@
 - (IBAction)doOpenMarkReadMenu:(id)sender;
 - (IBAction)doOpenSettingsMenu:(id)sender;
 - (void)confirmDeleteSite;
+- (void)confirmMuteSite;
 - (void)deleteSite;
 - (void)deleteFolder;
+- (void)muteSite;
 - (void)openMoveView;
 - (void)openTrainSite;
+- (void)openNotificationsWithFeed:(NSString *)feedId;
 - (void)openRenameSite;
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;

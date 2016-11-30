@@ -108,10 +108,6 @@ public class NewsblurWebview extends WebView {
         public View webviewWrapperLayout;
         public WebChromeClient.CustomViewCallback customViewCallback;
         @Override
-        public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
-            onShowCustomView(view, callback);
-        }
-        @Override
         public void onShowCustomView(View view, WebChromeClient.CustomViewCallback callback) {
             if (customViewLayout == null) {
                 Log.w(getClass().getName(), "can't show HTML5 custom view, no container set");

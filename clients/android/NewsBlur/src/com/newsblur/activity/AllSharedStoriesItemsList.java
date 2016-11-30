@@ -8,11 +8,9 @@ import android.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.fragment.AllSharedStoriesItemListFragment;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
 public class AllSharedStoriesItemsList extends ItemsList {
@@ -38,11 +36,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.allsocialstories_itemslist, menu);
         return true;
-    }
-
-    @Override
-    protected FeedSet createFeedSet() {
-        return FeedSet.allSocialFeeds();
     }
 
     @Override

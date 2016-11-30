@@ -8,11 +8,9 @@ import android.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.fragment.SavedStoriesItemListFragment;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
 public class SavedStoriesItemsList extends ItemsList {
@@ -21,7 +19,11 @@ public class SavedStoriesItemsList extends ItemsList {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-        UIUtils.setCustomActionBar(this, R.drawable.clock, getResources().getString(R.string.saved_stories_title));
+        String title = getResources().getString(R.string.saved_stories_title);
+        if (fs.getSingleSavedTag() != null) {
+            title = title + " - " + fs.getSingleSavedTag();
+        }
+        UIUtils.setCustomActionBar(this, R.drawable.clock, title);
 
 		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
@@ -32,11 +34,6 @@ public class SavedStoriesItemsList extends ItemsList {
 			listTransaction.commit();
 		}
 	}
-
-    @Override
-    protected FeedSet createFeedSet() {
-        return FeedSet.allSaved();
-    }
 
 	@Override
 	public void markItemListAsRead() {

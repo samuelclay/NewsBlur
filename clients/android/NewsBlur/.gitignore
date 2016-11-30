@@ -1,12 +1,8 @@
 build.xml
 custom_rules.xml
 local.properties
-*.java.swo
-*.java.swp
-*.xml.swo
-*.xml.swp
-*.css.swo
-*.css.swp
+.*.swo
+.*.swp
 *.iml
 out/
 bin/
@@ -16,3 +12,8 @@ libs/ActionBarSherlock/
 .settings/
 .classpath
 .project
+.gradle/
+app/
+gradle/
+*.gradle
+!build.gradle

@@ -163,15 +163,18 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-short" });
-        $endline.css({'background': '#E1EBFF'});
+        $endline.css({'background': '#FFF'});
         $story_titles.append($endline);
         
-        $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+        $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
+                .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        this.feed_stories_loading = setInterval(function() {
-            $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
-                    .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        }, 1700);
+        _.delay(_.bind(function() {
+            this.feed_stories_loading = setInterval(function() {
+                $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                        .animate({'backgroundColor': '#E1EBFF'}, 1050);
+            }, 1700);
+        }, this), (550+1550+1050) - 1700);
         
         if (options.scroll_to_loadbar) {
             this.pre_load_page_scroll_position = $('#story_titles').scrollTop();

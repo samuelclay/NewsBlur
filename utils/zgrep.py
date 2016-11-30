@@ -17,34 +17,23 @@ IGNORE_HOSTS = [
     'push',
 ]
 
-def main(role="app", role2="work", command=None, path=None):
+def main(role="app", role2="work", command=None):
     delay = 1
 
     while True:
         try:
-            streams = create_streams_for_roles(role, role2, command=command, path=path)
+            streams = create_streams_for_roles(role, role2, command=command)
             print " --- Loading %s App Log Tails ---" % len(streams)
             read_streams(streams)
-        except UnicodeDecodeError: # unexpected end of data
-            print " --- Lost connections - Retrying... ---"
-            time.sleep(1)
-            continue
-        except ConnectionError:
-            print " --- Retrying in %s seconds... ---" % delay
-            time.sleep(delay)
-            delay += 1
-            continue
-        except KeyboardInterrupt:
+        except (UnicodeDecodeError, ConnectionError, KeyboardInterrupt):
             print " --- End of Logging ---"
             break
 
-def create_streams_for_roles(role, role2, command=None, path=None):
+def create_streams_for_roles(role, role2, command=None):
     streams = list()
-    hosts = fabfile.do(split=True)
+    hosts = fabfile.assign_digitalocean_roledefs(split=True)
     found = set()
 
-    if not path:
-        path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"
     for hostname in (hosts[role] + hosts[role2]):
@@ -63,12 +52,12 @@ def create_streams_for_roles(role, role2, command=None, path=None):
             s = subprocess.Popen(["ssh", 
                                   "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
                                                                         "keys/ec2.pem")),
-                                  address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
+                                  address, command], stdout=subprocess.PIPE)
         else:
             s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
                                   "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
                                                                         "keys/newsblur.key")),
-                                  address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
+                                  address, command], stdout=subprocess.PIPE)
         s.name = hostname
         streams.append(s)
         found.add(hostname)
@@ -96,10 +85,15 @@ if __name__ == "__main__":
     parser.add_option("-f", "--find", dest="find")
     parser.add_option("-p", "--path", dest="path")
     parser.add_option("-r", "--role", dest="role")
+    parser.add_option("-e", "--exclude", dest="exclude")
     (options, args) = parser.parse_args()
 
-    path = options.path
+    path = options.path or "/srv/newsblur/logs/newsblur.log"
     find = options.find
     role = options.role or 'app'
-    command = "zgrep \"%s\"" % find
-    main(role=role, command=command, path=path)
+    exclude = options.exclude or None
+    command = "zgrep \"%s\" %s" % (find, path)
+    if exclude:
+        command += " | zgrep -v \"%s\"" % exclude
+    print command
+    main(role=role, command=command)

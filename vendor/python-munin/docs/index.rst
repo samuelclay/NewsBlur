@@ -1,0 +1,56 @@
+============
+python-munin
+============
+
+This library provides helper classes for writing plugins for the server
+monitoring tool Munin. It also comes with some prebuilt plugins for
+various services including PostgreSQL, Memcached, and Nginx.
+
+See http://munin.projects.linpro.no/ for more about Munin.
+
+Source
+======
+
+You can find the latest version of python-munin at
+http://github.com/samuel/python-munin
+
+Example
+=======
+
+Example plugin (loadavg)::
+
+    #!/usr/bin/env python
+
+    import os
+    from vendor.munin import MuninPlugin
+
+    class LoadAVGPlugin(MuninPlugin):
+        title = "Load average"
+        args = "--base 1000 -l 0"
+        vlabel = "load"
+        scale = False
+        category = "system"
+
+        @property
+        def fields(self):
+            warning = os.environ.get('load_warn', 10)
+            critical = os.environ.get('load_crit', 120)
+            return [("load", dict(
+                    label = "load",
+                    info = 'The load average of the machine describes how many processes are in the run-queue (scheduled to run "immediately").',
+                    type = "GAUGE",
+                    min = "0",
+                    warning = str(warning),
+                    critical = str(critical)))]
+
+        def execute(self):
+            if os.path.exists("/proc/loadavg"):
+                loadavg = open("/proc/loadavg", "r").read().strip().split(' ')
+            else:
+                from subprocess import Popen, PIPE
+                output = Popen(["uptime"], stdout=PIPE).communicate()[0]
+                loadavg = output.rsplit(':', 1)[1].strip().split(' ')[:3]
+            return dict(load=loadavg[1])
+
+    if __name__ == "__main__":
+        LoadAVGPlugin().run()

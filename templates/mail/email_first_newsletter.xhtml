@@ -1,0 +1,12 @@
+{% extends "mail/email_base.xhtml" %}
+{% load utils_tags %}
+
+{% block body %}
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        Your email newsletters are now being sent to NewsBlur.
+    </h2>
+    <img src="http://{% current_domain %}/media/img/reader/newsletters_folder.png" style="width:239px;height:407px;border:1px solid #E0E0E0;margin: 0 24px 24px 0;float: left;" alt="">
+    <p style="line-height: 20px;">You have just received your first email newsletter in NewsBlur. You can find your newsletters under the <b>Newsletters</b> folder.</p>
+    <p style="line-height: 20px;">Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they should be the name of the organization. Easy to change!</p>
+    <p style="line-height: 20px;">You can also move and delete newsletters just as if they were independent feeds. Training even works on newsletters, so you can hide the newsletters you don't want to read while highlighting the ones you do.</p>
+{% endblock %}

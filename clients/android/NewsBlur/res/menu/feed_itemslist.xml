@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/menu_mark_all_as_read"
           android:title="@string/menu_mark_all_as_read"
-          android:showAsAction="ifRoom" android:icon="@drawable/markread"/>
+          android:showAsAction="ifRoom" android:icon="@drawable/ic_menu_markread_gray55"/>
     <item android:id="@+id/menu_delete_feed"
           android:title="@string/menu_delete_feed"
           android:showAsAction="never" />
@@ -15,4 +15,11 @@
     <item android:id="@+id/menu_default_view"
           android:title="@string/menu_default_view"
           android:showAsAction="never" />
+    <item
+        android:id="@+id/menu_textsize"
+        android:showAsAction="never"
+        android:title="@string/menu_textsize"/>
+    <item android:id="@+id/menu_search_stories"
+          android:title="@string/menu_search_stories"
+          android:showAsAction="ifRoom" android:icon="@drawable/ic_menu_search_gray55" />
 </menu>

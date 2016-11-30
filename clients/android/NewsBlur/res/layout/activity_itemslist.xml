@@ -2,13 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:animateLayoutChanges="true"
+    style="?itemBackground" >
+    
+    <EditText
+        android:id="@+id/itemlist_search_query"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" 
+        android:textSize="16sp"
+        android:hint="@string/story_search_hint"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:inputType="textNoSuggestions"
+        android:imeOptions="actionSearch"
+        android:visibility="gone"
+        android:animateLayoutChanges="true"
+    />
 
     <LinearLayout
         android:id="@+id/activity_itemlist_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true" />
+        android:orientation="horizontal"
+        android:layout_below="@id/itemlist_search_query"
+    />
 
     <TextView
         android:id="@+id/itemlist_sync_status"
@@ -20,6 +37,7 @@
         android:gravity="center"
         android:textColor="@color/status_overlay_text"
         android:background="@color/status_overlay_background"
-        android:text="SYNC STATUS" />
+        android:text="SYNC STATUS" 
+    />
 
 </RelativeLayout>

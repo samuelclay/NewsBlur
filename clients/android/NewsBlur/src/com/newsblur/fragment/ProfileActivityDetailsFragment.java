@@ -51,19 +51,19 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
         activityList = (ListView) v.findViewById(R.id.profile_details_activitylist);
 
         loadingProgressView = (ProgressThrobber) v.findViewById(R.id.empty_view_loading_throb);
-        loadingProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                      getResources().getColor(R.color.refresh_2),
-                                      getResources().getColor(R.color.refresh_3),
-                                      getResources().getColor(R.color.refresh_4));
+        loadingProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+                                      UIUtils.getColor(getActivity(), R.color.refresh_2),
+                                      UIUtils.getColor(getActivity(), R.color.refresh_3),
+                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
         activityList.setFooterDividersEnabled(false);
         activityList.setEmptyView(v.findViewById(R.id.empty_view));
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
-        footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                     getResources().getColor(R.color.refresh_2),
-                                     getResources().getColor(R.color.refresh_3),
-                                     getResources().getColor(R.color.refresh_4));
+        footerProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_2),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_3),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_4));
         activityList.addFooterView(footerView, null, false);
 
         if (adapter != null) {
@@ -144,7 +144,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                 context.startActivity(intent);
             }
         } else if (activity.category == Category.STAR) {
-            UIUtils.startReadingActivity(FeedSet.allSaved(), activity.storyHash, context, false);
+            UIUtils.startReadingActivity(FeedSet.allSaved(), activity.storyHash, context);
         } else if (isSocialFeedCategory(activity)) {
             // Strip the social: prefix from feedId
             String socialFeedId = activity.feedId.substring(7);
@@ -152,7 +152,7 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_do_not_follow, Toast.LENGTH_SHORT).show();
             } else {
-                UIUtils.startReadingActivity(FeedSet.singleSocialFeed(feed.userId, feed.username), activity.storyHash, context, true);
+                UIUtils.startReadingActivity(FeedSet.singleSocialFeed(feed.userId, feed.username), activity.storyHash, context);
             }
         }
     }

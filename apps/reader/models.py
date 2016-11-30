@@ -339,7 +339,7 @@ class UserSubscription(models.Model):
         logging.user(user, "~FRAdding URL: ~SB%s (in %s) %s" % (feed_address, folder, 
                                                                 "~FCAUTO-ADD" if not auto_active else ""))
     
-        feed = Feed.get_feed_from_url(feed_address)
+        feed = Feed.get_feed_from_url(feed_address, user=user)
 
         if not feed:    
             code = -1
@@ -383,6 +383,7 @@ class UserSubscription(models.Model):
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
                 
             feed.setup_feed_for_premium_subscribers()
+            feed.count_subscribers()
         
         return code, message, us
     
@@ -602,9 +603,14 @@ class UserSubscription(models.Model):
                 cutoff_date = datetime.datetime.utcnow()
                 recount = False
         
-        self.last_read_date = cutoff_date
-        self.mark_read_date = cutoff_date
-        self.oldest_unread_story_date = cutoff_date
+        if cutoff_date > self.mark_read_date or cutoff_date > self.oldest_unread_story_date:
+            self.last_read_date = cutoff_date
+            self.mark_read_date = cutoff_date
+            self.oldest_unread_story_date = cutoff_date
+        else:
+            logging.user(self.user, "Not marking %s as read: %s > %s/%s" % 
+                         (self, cutoff_date, self.mark_read_date, self.oldest_unread_story_date))
+        
         if not recount:
             self.unread_count_negative = 0
             self.unread_count_positive = 0
@@ -1288,13 +1294,17 @@ class UserSubscriptionFolders(models.Model):
         
         return _arrange_folder(user_sub_folders)
     
-    def flatten_folders(self, feeds=None):
+    def flatten_folders(self, feeds=None, inactive_feeds=None):
         folders = json.decode(self.folders)
         flat_folders = {" ": []}
+        if feeds and not inactive_feeds:
+            inactive_feeds = []
         
         def _flatten_folders(items, parent_folder="", depth=0):
             for item in items:
-                if isinstance(item, int) and ((not feeds) or (feeds and item in feeds)):
+                if (isinstance(item, int) and 
+                    (not feeds or 
+                     (item in feeds or item in inactive_feeds))):
                     if not parent_folder:
                         parent_folder = ' '
                     if parent_folder in flat_folders:
@@ -1317,17 +1327,18 @@ class UserSubscriptionFolders(models.Model):
         return flat_folders
 
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
+        feed_id = int(feed_id)
         def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
             new_folders = []
             for k, folder in enumerate(old_folders):
                 if isinstance(folder, int):
                     if (folder == feed_id and in_folder is not None and (
-                        (folder_name != in_folder) or
-                        (folder_name == in_folder and deleted))):
+                        (in_folder not in folder_name) or
+                        (in_folder in folder_name and deleted))):
                         multiples_found = True
-                        logging.user(self.user, "~FB~SBDeleting feed, and a multiple has been found in '%s'" % (folder_name))
+                        logging.user(self.user, "~FB~SBDeleting feed, and a multiple has been found in '%s' / '%s' %s" % (folder_name, in_folder, '(deleted)' if deleted else ''))
                     if (folder == feed_id and 
-                        (folder_name == in_folder or in_folder is None) and 
+                        (in_folder is None or in_folder in folder_name) and 
                         not deleted):
                         logging.user(self.user, "~FBDelete feed: %s'th item: %s folders/feeds" % (
                             k, len(old_folders)
@@ -1371,7 +1382,7 @@ class UserSubscriptionFolders(models.Model):
                         feeds_to_delete.remove(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in folder.items():
-                        if f_k == folder_to_delete and (folder_name == in_folder or in_folder is None):
+                        if f_k == folder_to_delete and (in_folder in folder_name or in_folder is None):
                             logging.user(self.user, "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder))
                             deleted_folder = folder
                         else:
@@ -1407,7 +1418,7 @@ class UserSubscriptionFolders(models.Model):
                 elif isinstance(folder, dict):
                     for f_k, f_v in folder.items():
                         nf = _find_folder_in_folders(f_v, f_k)
-                        if f_k == folder_to_rename and folder_name == in_folder:
+                        if f_k == folder_to_rename and in_folder in folder_name:
                             logging.user(self.user, "~FBRenaming folder '~SB%s~SN' in '%s' to: ~SB%s" % (
                                          f_k, folder_name, new_folder_name))
                             f_k = new_folder_name
@@ -1462,6 +1473,7 @@ class UserSubscriptionFolders(models.Model):
         logging.user(self.user, "~FBMoving ~SB%s~SN feeds to folder: ~SB%s" % (
                      len(feeds_by_folder), to_folder))
         for feed_id, in_folder in feeds_by_folder:
+            feed_id = int(feed_id)
             self.move_feed_to_folder(feed_id, in_folder, to_folder)
         
         return self

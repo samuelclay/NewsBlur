@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 
-from munin.ddwrt import DDWrtPlugin
+from vendor.munin.ddwrt import DDWrtPlugin
 
 class DDWrtWirelessRate(DDWrtPlugin):
     title = "Wireless rate"

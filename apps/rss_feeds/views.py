@@ -16,14 +16,14 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
 from utils.user_functions import ajax_login_required
-from utils import json_functions as json, feedfinder
+from utils import json_functions as json, feedfinder2 as feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
 from utils.view_functions import required_params
+from utils.view_functions import is_true
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.ratelimit import ratelimit
-
 
 IGNORE_AUTOCOMPLETE = [
     "facebook.com/feeds/notifications.php",
@@ -33,14 +33,19 @@ IGNORE_AUTOCOMPLETE = [
     "latitude",
 ]
 
+@ajax_login_required
 @json.json_view
 def search_feed(request):
     address = request.REQUEST.get('address')
     offset = int(request.REQUEST.get('offset', 0))
     if not address:
         return dict(code=-1, message="Please provide a URL/address.")
-        
-    feed = Feed.get_feed_from_url(address, create=False, aggressive=True, offset=offset)
+    
+    logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
+    logging.user(request.user, "~FBIP: %s" % ip)
+    aggressive = request.user.is_authenticated()
+    feed = Feed.get_feed_from_url(address, create=False, aggressive=aggressive, offset=offset)
     if feed:
         return feed.canonical()
     else:
@@ -150,7 +155,7 @@ def feed_autocomplete(request):
     else:
         return feeds
     
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=30)
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
@@ -193,7 +198,21 @@ def load_feed_statistics(request, feed_id):
     # Stories per month - average and month-by-month breakout
     average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.data.story_count_history
     stats['average_stories_per_month'] = average_stories_per_month
-    stats['story_count_history'] = story_count_history and json.decode(story_count_history)
+    story_count_history = story_count_history and json.decode(story_count_history)
+    if story_count_history and isinstance(story_count_history, dict):
+        stats['story_count_history'] = story_count_history['months']
+        stats['story_days_history'] = story_count_history['days']
+        stats['story_hours_history'] = story_count_history['hours']
+    else:
+        stats['story_count_history'] = story_count_history
+    
+    # Rotate hours to match user's timezone offset
+    localoffset = timezone.utcoffset(datetime.datetime.utcnow())
+    hours_offset = int(localoffset.total_seconds() / 3600)
+    rotated_hours = {}
+    for hour, value in stats['story_hours_history'].items():
+        rotated_hours[str(int(hour)+hours_offset)] = value
+    stats['story_hours_history'] = rotated_hours
     
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers
@@ -231,7 +250,8 @@ def load_feed_settings(request, feed_id):
     stats['duplicate_addresses'] = feed.duplicate_addresses.all()
     
     return stats
-    
+
+@ratelimit(minutes=10, requests=10)
 @json.json_view
 def exception_retry(request):
     user = get_user(request)
@@ -296,9 +316,9 @@ def exception_change_feed_address(request):
     timezone = request.user.profile.timezone
     code = -1
 
-    if not feed.known_good and (feed.has_page_exception or feed.has_feed_exception):
+    if False and (feed.has_page_exception or feed.has_feed_exception):
         # Fix broken feed
-        logging.user(request, "~FRFixing feed exception by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
+        logging.user(request, "~FRFixing feed exception by address: %s - ~SB%s~SN to ~SB%s" % (feed, feed.feed_address, feed_address))
         feed.has_feed_exception = False
         feed.active = True
         feed.fetched_once = False
@@ -317,7 +337,10 @@ def exception_change_feed_address(request):
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
-        feed, _ = Feed.objects.get_or_create(feed_address=feed_address, feed_link=feed.feed_link)
+        try:
+            feed = Feed.objects.get(hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link))
+        except Feed.DoesNotExist:
+            feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
         code = 1
         if feed.pk != original_feed.pk:
             try:
@@ -377,17 +400,17 @@ def exception_change_feed_link(request):
     timezone = request.user.profile.timezone
     code = -1
     
-    if not feed.known_good and (feed.has_page_exception or feed.has_feed_exception):
+    if False and (feed.has_page_exception or feed.has_feed_exception):
         # Fix broken feed
         logging.user(request, "~FRFixing feed exception by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
-        feed_address = feedfinder.feed(feed_link)
-        if feed_address:
+        found_feed_urls = feedfinder.find_feeds(feed_link)
+        if len(found_feed_urls):
             code = 1
             feed.has_page_exception = False
             feed.active = True
             feed.fetched_once = False
             feed.feed_link = feed_link
-            feed.feed_address = feed_address
+            feed.feed_address = found_feed_urls[0]
             duplicate_feed = feed.schedule_feed_fetch_immediately()
             if duplicate_feed:
                 new_feed = Feed.objects.get(pk=duplicate_feed.pk)
@@ -399,7 +422,10 @@ def exception_change_feed_link(request):
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
-        feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
+        try:
+            feed = Feed.objects.get(hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link))
+        except Feed.DoesNotExist:
+            feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
         code = 1
         if feed.pk != original_feed.pk:
             try:
@@ -505,3 +531,18 @@ def original_story(request):
     original_page = story.fetch_original_page(force=force, request=request, debug=debug)
 
     return HttpResponse(original_page or "")
+
+@required_params('story_hash')
+@json.json_view
+def story_changes(request):
+    story_hash = request.REQUEST.get('story_hash', None)
+    show_changes = is_true(request.REQUEST.get('show_changes', True))
+    story, _ = MStory.find_story(story_hash=story_hash)
+    if not story:
+        logging.user(request, "~FYFetching ~FGoriginal~FY story page: ~FRstory not found")
+        return {'code': -1, 'message': 'Story not found.', 'original_page': None, 'failed': True}
+    
+    return {
+        'story': Feed.format_story(story, show_changes=show_changes)
+    }
+    

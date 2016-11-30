@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="?itemBackground"
+    style="?readingBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingBottom="12dp"
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/reply_shareddate"
         android:layout_toRightOf="@id/reply_user_image"
-        android:textColor="@color/newsblur_blue"
+        style="?linkText"
         android:layout_marginTop="5dp"
         android:textSize="12sp" />
 
@@ -58,6 +58,6 @@
         android:autoLink="web"
         android:layout_toRightOf="@id/reply_user_image"
         style="?defaultText"
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
 </RelativeLayout>

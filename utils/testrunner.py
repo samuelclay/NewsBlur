@@ -12,13 +12,14 @@ class TestRunner(DjangoTestSuiteRunner):
         return super(TestRunner, self).setup_databases(**kwargs)
 
     def teardown_databases(self, db_name, **kwargs):
-        from pymongo import Connection
-        conn = Connection()
+        import pymongo
+        conn = pymongo.MongoClient()
         db_name = 'newsblur_test'
         conn.drop_database(db_name)
         print 'Dropping test-database: ' + db_name
+        return super(TestRunner, self).teardown_databases(db_name, **kwargs)
 
 
-class TestCase(TransactionTestCase):
-    def _fixture_setup(self):
-        pass
+# class TestCase(TransactionTestCase):
+#     def _fixture_setup(self):
+#         pass

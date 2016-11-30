@@ -578,6 +578,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.flags['no_more_stories'] = true;
                 this.stories.trigger('no_more_stories');
             }
+            var attrs = {};
+            var feed_attrs = ["num_subscribers", "is_push", "min_to_decay", "favicon_color", "favicon_border", "favicon_fade", "favicon_textg_color", "updated_seconds_ago"];
+            for (var attr in feed_attrs) {
+                var feed_attr = feed_attrs[attr];
+                if (data[feed_attr] || !_.isUndefined(data[feed_attr])) {
+                    attrs[feed_attr] = data[feed_attr];
+                }
+            }
+            if (this.active_feed) this.active_feed.set(attrs);
+
             $.isFunction(callback) && callback(data, first_load);
         }
     },
@@ -715,6 +725,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
+            'request_type': 'GET'
+        });
+    },
+    
+    fetch_story_changes: function(story_hash, show_changes, callback, error_callback) {
+        this.make_request('/rss_feeds/story_changes', {
+            story_hash: story_hash,
+            show_changes: show_changes
+        }, callback, error_callback, {
             'request_type': 'GET'
         });
     },
@@ -1461,6 +1480,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         } else {
             if ($.isFunction(callback)) callback();
         }
+    },
+    
+    set_notifications_for_feed: function(feed, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/notifications/feed/', {
+                'feed_id': feed.id,
+                'notification_types': feed.get('notification_types'),
+                'notification_filter': feed.get('notification_filter')
+            }, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }        
     },
     
     send_story_email: function(data, callback, error_callback) {

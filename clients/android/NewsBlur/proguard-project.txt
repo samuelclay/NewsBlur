@@ -1,0 +1,27 @@
+-dontobfuscate
+
+-keepattributes Exceptions,InnerClasses,Signature
+-keepattributes *Annotation*
+
+-dontwarn okio.**
+-dontnote okio.**
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+-dontnote okhttp3.**
+
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+
+# we use proguard only as an APK shrinker and many of our dependencies throw
+# all manner of gross warnings. kept silent by default, the following lines
+# can be commented out to help diagnose shrinkage errors.
+-dontwarn **
+-dontnote **

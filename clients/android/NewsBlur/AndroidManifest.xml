@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="113"
-    android:versionName="4.6.1" >
+    android:versionCode="131"
+    android:versionName="5.0.0b2" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="16"
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,6 +24,7 @@
         <activity
             android:name=".activity.InitActivity"
             android:label="@string/newsblur"
+            android:theme="@style/initStyle"
             android:noHistory="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -139,12 +140,6 @@
         </receiver>
 
         <receiver android:name=".service.ServiceScheduleReceiver" />
-
-        <receiver android:name=".service.NetStateReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

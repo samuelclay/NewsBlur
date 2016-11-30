@@ -12,7 +12,7 @@ class ImportTest(TestCase):
     
     def setUp(self):
         self.client = Client()
-
+            
     def test_opml_import(self):
         self.client.login(username='conesus', password='test')
         user = User.objects.get(username='conesus')
@@ -20,22 +20,24 @@ class ImportTest(TestCase):
         # Verify user has no feeds
         subs = UserSubscription.objects.filter(user=user)
         self.assertEquals(subs.count(), 0)
-
         
         f = open(os.path.join(os.path.dirname(__file__), 'fixtures/opml.xml'))
         response = self.client.post(reverse('opml-upload'), {'file': f})
         self.assertEquals(response.status_code, 200)
         
-        
         # Verify user now has feeds
         subs = UserSubscription.objects.filter(user=user)
         self.assertEquals(subs.count(), 54)
         
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        print json.decode(usf.folders)
+        self.assertEquals(json.decode(usf.folders), [{u'Tech': [4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]}, 1, 2, 3, 6, {u'New York': [1, 2, 3, 4, 5, 6, 7, 8, 9]}, {u'tech': []}, {u'Blogs': [29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, {u'The Bloglets': [45, 46, 47, 48, 49]}]}, {u'Cooking': [50, 51, 52, 53]}, 54])
+                
     def test_opml_import__empty(self):
         self.client.login(username='conesus', password='test')
         user = User.objects.get(username='conesus')
         
-        # Verify user has no feeds
+        # Verify user has default feeds
         subs = UserSubscription.objects.filter(user=user)
         self.assertEquals(subs.count(), 0)
 
@@ -60,4 +62,6 @@ class ImportTest(TestCase):
         self.assertEquals(subs.count(), 66)
         
         usf = UserSubscriptionFolders.objects.get(user=user)
-        self.assertEquals(json.decode(usf.folders), [{'Blogs \xe2\x80\x94 The Bloglets': [6, 16, 22, 35, 51, 56]}, {'Blogs': [1, 3, 25, 29, 30, 39, 40, 41, 50, 55, 57, 58, 59, 60, 66]}, {'Cooking': [11, 15, 42, 43, 46]}, {'New York': [7, 8, 17, 18, 19, 36, 45, 47, 52, 61]}, {'Tech': [2, 4, 9, 10, 12, 13, 14, 20, 23, 24, 26, 27, 28, 31, 32, 33, 34, 48, 49, 62, 64]}, {'Blogs \xe2\x80\x94 Tumblrs': [5, 21, 37, 38, 53, 54, 63, 65]}, 44])
+        # print json.decode(usf.folders)
+        self.assertEquals(json.decode(usf.folders), [{u'Tech': [4, 5, 2, 9, 10, 12, 13, 14, 20, 23, 24, 26, 27, 28, 31, 32, 33, 34, 48, 49, 62, 64]}, 1, 2, 3, 6, {u'Blogs': [1, 3, 25, 29, 30, 39, 40, 41, 50, 55, 57, 58, 59, 60, 66]}, {u'Blogs \u2014 Tumblrs': [5, 21, 37, 38, 53, 54, 63, 65]}, {u'Blogs \u2014 The Bloglets': [6, 16, 22, 35, 51, 56]}, {u'New York': [7, 8, 17, 18, 19, 36, 45, 47, 52, 61]}, {u'Cooking': [11, 15, 42, 43, 46]}, 44])
+        

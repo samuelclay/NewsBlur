@@ -14,17 +14,25 @@ body {
 /* = Header = */
 /* ========== */
 
+.NB-header {
+    color: black;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffd0), to(#ffffc0));
+    border-bottom: 1px solid #B4BC8D;
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
+
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 .NB-story-title {
     color: #111111;
 }
 
 .NB-story-title-positive {
     color: #58A353;
-    text-shadow: 0 1px 0 #E9F6E9;
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
 }
 .NB-story-title-negative {
     color: #B85044;
-    text-shadow: 0 1px 0 #F6E9E9;
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
 }
 
 .NB-story-permalink {
@@ -40,7 +48,7 @@ body {
 
 .NB-story-author {
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
 }
 .NB-story-author-positive {
     color: #58A353;
@@ -54,7 +62,7 @@ body {
 .NB-story-tag {
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(245, 245, 192, .9);
     border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag-positive {
@@ -76,12 +84,13 @@ body {
 
 .NB-user-tag {
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(245, 245, 192, .9);
     border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 }
 
 .NB-user-tag.NB-add-user-tag {
     background: rgba(0, 0, 0, .25) url("add_tag.png") no-repeat 6px 3px;
+    background-size: 8px;
     color: #E5EBDB;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
@@ -98,22 +107,14 @@ a:active {
 }
 
 .NB-story blockquote {
-    color: rgba(10, 12, 38, .8);
-}
-
-.NB-header {
-    color: black;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffc0), to(#ffffd0));
-    border-bottom: 1px solid #C2C5BE;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    border-left-color: #E1E3B6;
+    background-color: #F2F2D4;
 }
 
 /* Comments */
 
 .NB-story-comments-group:last-child {
-    border-bottom: 1px solid #EAECE8;
+    border-bottom: 1px solid rgba(194, 197, 190, .5);
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -132,7 +133,7 @@ a:active {
 }
 
 .NB-story-comment:last-child {
-            border-bottom: 1px solid #A6A6A6;
+    border-bottom: 1px solid #A6A6A6;
 }
 
 /* Edit, Like, and Reply buttons */
@@ -189,14 +190,14 @@ a:active {
 /* Story Comments */
 
 #story_pane .NB-story-comment {
-    border-bottom: 1px solid #EAECE8;
+    border-bottom: 1px solid rgba(194, 197, 190, .25);
     background:#ffffd0;
-    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
+    box-shadow: none;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {
     color: #1D4BA6;
-    text-shadow: 0 -1px 0 #F0F0F0;
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
     color: #9D9D9D;
@@ -207,7 +208,7 @@ a:active {
 }
 
 #story_pane .NB-story-comment-reply {
-    border-top: 1px solid #EAECE8;
+    border-top: 1px solid rgba(194, 197, 190, .25);
 }
 
 #story_pane .NB-story-comment-reply-content {
@@ -223,18 +224,16 @@ a:active {
 #story_pane .NB-story-comments-friends-header {
     background-color: #fffff0;
     color: white;
-    text-shadow: 0 1px 0 #505050;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffd0), to(#ffffe0));
+    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f6f6b0), to(#f0f29e));
     color: #404040;
-    text-shadow: 0 1px 0 white;
-    border-color: rgba(0, 0, 0, .1) transparent rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    border-color: #e7e998 transparent #d8dd81;
 }
 #story_pane .NB-story-comments-shares-teaser {
     background-color: #fffff0;
     color: #898989;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
-    border-bottom: 1px solid #E3E3DF;
+    text-shadow: 0 1px 0 #FFF;
+    border-bottom: 1px solid #DCDDB6;
     -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
 }
 

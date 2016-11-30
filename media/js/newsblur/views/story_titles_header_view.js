@@ -10,7 +10,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         "click .NB-feedbar-options"                 : "open_options_popover",
         "click .NB-feedbar-mark-feed-read"          : "mark_folder_as_read",
         "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
-        "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days"
+        "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days",
+        "click .NB-story-title-indicator"           : "show_hidden_story_titles"
     },
     
     initialize: function() {
@@ -122,6 +123,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 only_title: true
             }).render();    
             $view = this.view.$el;    
+            this.search_view = this.view.search_view;
         } else {
             this.view = new NEWSBLUR.Views.FeedTitleView({
                 model: NEWSBLUR.assets.get_feed(this.options.feed_id), 
@@ -132,6 +134,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         }
         
         this.$el.html($view);
+        
+        if (NEWSBLUR.reader.flags.searching) {
+            this.focus_search();
+        }
         
         return this;
     },
@@ -155,6 +161,16 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             delete this.view;
         }
         // Backbone.View.prototype.remove.call(this);
+    },
+    
+    search_has_focus: function() {
+        return this.search_view && this.search_view.has_focus();
+    },
+    
+    focus_search: function() {
+        if (!this.search_view) return;
+        
+        this.search_view.focus_search();
     },
     
     // ===========

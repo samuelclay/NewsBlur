@@ -118,8 +118,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     clear_explainer: function() {
-        var $container = this.$el.closest(".NB-feed-stories-container");
-        $(".NB-story-list-empty", $container).remove();
+        this.$(".NB-story-list-empty").remove();
         this.$el.removeClass("NB-empty");
     },
     
@@ -144,8 +143,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             'Select a story to read'
         ]);
 
-        var $container = this.$el.closest(".NB-feed-stories-container");
-        $container.append($empty);
+        this.$el.append($empty);
     },
     
     show_explainer_no_stories: function() {
@@ -176,8 +174,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             ]))
         ]);
 
-        var $container = this.$el.closest(".NB-feed-stories-container");
-        $container.append($empty);
+        this.$el.append($empty);
         
         this.$el.addClass("NB-empty");
     },
@@ -201,6 +198,11 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
         
         if (options.only_if_hidden && NEWSBLUR.reader.$s.$feed_scroll.isScrollVisible($story, true)) {
+            return;
+        }
+        
+        if (!options.scroll_to_top && !$story.closest(NEWSBLUR.reader.$s.$feed_scroll).length) {
+            console.log(['Story not visible, not scrolling', $story]);
             return;
         }
         
@@ -364,15 +366,18 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var $feed_scroll = NEWSBLUR.reader.$s.$feed_scroll;
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-short" });
-        $endline.css({'background': '#E1EBFF'});
+        $endline.css({'background': '#FFF'});
         $feed_scroll.append($endline);
         
-        $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+        $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
+                .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        this.feed_stories_loading = setInterval(function() {
-            $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
-                    .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        }, 1700);
+        _.delay(_.bind(function() {
+            this.feed_stories_loading = setInterval(function() {
+                $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                        .animate({'backgroundColor': '#E1EBFF'}, 1050);
+            }, 1700);
+        }, this), (550+1550+1050) - 1700);
     },
     
     check_premium_river: function() {
@@ -429,7 +434,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, message)
         ]);
         this.$('.NB-feed-story-premium-only').remove();
-        this.$(".NB-end-line").append($notice);
+		if (_.contains(['full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
+			$(".NB-story-list-empty").append($notice);
+		} else {
+			this.$(".NB-end-line").append($notice);
+		}
+		
         // console.log(["append_search_premium_only_notification", this.$(".NB-end-line")]);
     },
     

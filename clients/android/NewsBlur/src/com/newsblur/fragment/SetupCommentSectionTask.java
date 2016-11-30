@@ -37,6 +37,9 @@ import com.newsblur.view.FlowLayout;
 
 public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
+    private ArrayList<View> topCommentViews;
+    private ArrayList<View> topShareViews;
+
 	private ArrayList<View> publicCommentViews;
 	private ArrayList<View> friendCommentViews;
 	private ArrayList<View> friendShareViews;
@@ -60,14 +63,24 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 		user = PrefsUtils.getUserDetails(context);
 	}
 
+    /**
+     * Do all the DB access and image view creation in the async portion of the task, saving the views in local members.
+     */
 	@Override
 	protected Void doInBackground(Void... arg0) {
         if (context == null) return null;
         comments = FeedUtils.dbHelper.getComments(story.id);
 
+        topCommentViews = new ArrayList<View>();
+        topShareViews = new ArrayList<View>();
 		publicCommentViews = new ArrayList<View>();
 		friendCommentViews = new ArrayList<View>();
 		friendShareViews = new ArrayList<View>();
+
+        // users by whom we saw non-pseudo comments
+        Set<String> commentingUserIds = new HashSet<String>();
+        // users by whom we saw shares
+        Set<String> sharingUserIds = new HashSet<String>();
 
 		for (final Comment comment : comments) {
 			// skip public comments if they are disabled
@@ -81,7 +94,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 Log.w(this.getClass().getName(), "cannot display comment from missing user ID: " + comment.userId);
                 continue;
             }
-			
+
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
 			commentText.setText(Html.fromHtml(comment.commentText));
@@ -106,7 +119,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					ImageView favouriteImage = new ImageView(context);
 					UserProfile user = FeedUtils.dbHelper.getUserProfile(id);
                     if (user != null) {
-                        FeedUtils.imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
+                        FeedUtils.iconLoader.displayImage(user.photoUrl, favouriteImage, 10f, false);
                         favouriteContainer.addView(favouriteImage);
                     }
 				}
@@ -150,7 +163,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
                 final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);
 				if (replyUser != null) {
-					FeedUtils.imageLoader.displayImage(replyUser.photoUrl, replyImage);
+					FeedUtils.iconLoader.displayImage(replyUser.photoUrl, replyImage, 5, false);
 					replyImage.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View view) {
@@ -197,11 +210,11 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
                 UserProfile sourceUser = FeedUtils.dbHelper.getUserProfile(comment.sourceUserId);
 				if (sourceUser != null) {
-					FeedUtils.imageLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f);
-					FeedUtils.imageLoader.displayImage(userPhoto, usershareImage, 10f);
+					FeedUtils.iconLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f, false);
+					FeedUtils.iconLoader.displayImage(userPhoto, usershareImage, 10f, false);
 				}
 			} else {
-				FeedUtils.imageLoader.displayImage(userPhoto, commentImage, 10f);
+				FeedUtils.iconLoader.displayImage(userPhoto, commentImage, 10f, false);
 			}
 
 			commentImage.setOnClickListener(new OnClickListener() {
@@ -215,28 +228,53 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 			if (comment.isPseudo) {
                 friendShareViews.add(commentView);
+                sharingUserIds.add(comment.userId);
             } else if (comment.byFriend) {
 				friendCommentViews.add(commentView);
 			} else {
 				publicCommentViews.add(commentView);
 			}
+
+            // for actual comments, also populate the upper icon bar
+            if (!comment.isPseudo) {
+                ImageView image = ViewUtils.createSharebarImage(context, commentUser.photoUrl, commentUser.userId);
+                topCommentViews.add(image);
+                commentingUserIds.add(comment.userId);
+            }
 		}
+
+        // the story object supplements the pseudo-comment share list
+        for (String userId : story.sharedUserIds) {
+            // for the purpose of this top-line share list, exclude non-pseudo comments
+            if (!commentingUserIds.contains(userId)) {
+                sharingUserIds.add(userId);
+            }
+        }
+
+        // now that we have all shares from the comments table and story object, populate the shares row
+        for (String userId : sharingUserIds) {
+            UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
+            if (user == null) {
+                Log.w(this.getClass().getName(), "cannot display share from missing user ID: " + userId);
+                continue;
+            }
+            ImageView image = ViewUtils.createSharebarImage(context, user.photoUrl, user.userId);
+            topShareViews.add(image);
+        }
 
 		return null;
 	}
 
+    /**
+     * Push all the pre-created views into the actual UI.
+     */
 	protected void onPostExecute(Void result) {
         if (context == null) return;
         View view = viewHolder.get();
 		if (view == null) return; // fragment was dismissed before we rendered
 
-        if (story.sharedUserIds.length > 0 || publicCommentViews.size() > 0 || friendCommentViews.size() > 0) {
-            view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
-        } else {
-            view.findViewById(R.id.reading_share_bar).setVisibility(View.GONE);
-            view.findViewById(R.id.share_bar_underline).setVisibility(View.GONE);
-        }
+        TextView headerCommentTotal = (TextView) view.findViewById(R.id.comment_by);
+        TextView headerShareTotal = (TextView) view.findViewById(R.id.shared_by);
 
         FlowLayout sharedGrid = (FlowLayout) view.findViewById(R.id.reading_social_shareimages);
         FlowLayout commentGrid = (FlowLayout) view.findViewById(R.id.reading_social_commentimages);
@@ -245,66 +283,81 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
         TextView friendShareTotal = ((TextView) view.findViewById(R.id.reading_friend_emptyshare_total));
         TextView publicCommentTotal = ((TextView) view.findViewById(R.id.reading_public_comment_total));
         
-        int actualCommentCount = comments.size() - friendShareViews.size(); // comment-less shares are modeled as comments, exclude them
-        ViewUtils.setupCommentCount(context, view, actualCommentCount);
-        ViewUtils.setupShareCount(context, view, story.sharedUserIds.length);
+        int publicCommentCount = publicCommentViews.size();
+        int friendCommentCount = friendCommentViews.size();
+        int friendShareCount = friendShareViews.size();
 
-        Set<String> commentingUserIds = new HashSet<String>();
-        for (Comment comment : comments) {
-            if (!comment.isPseudo) {
-                commentingUserIds.add(comment.userId);
-            }
+        int allCommentCount = topCommentViews.size();
+        int allShareCount = topShareViews.size();
+
+        if (allCommentCount > 0 || allShareCount > 0) {
+            view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.reading_share_bar).setVisibility(View.GONE);
+            view.findViewById(R.id.share_bar_underline).setVisibility(View.GONE);
         }
 
         sharedGrid.removeAllViews();
-        for (String userId : story.sharedUserIds) {
-            // only show an icon in either the share grid or the comment grid, not both
-            if (!commentingUserIds.contains(userId)) {
-                UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
-                if (user != null) {
-                    ImageView image = ViewUtils.createSharebarImage(context, user.photoUrl, user.userId);
-                    sharedGrid.addView(image);
-                }
-            }
+        for (View image : topShareViews) {
+            sharedGrid.addView(image);
         }
 
         commentGrid.removeAllViews();
-        for (String userId : commentingUserIds) {
-            UserProfile user = FeedUtils.dbHelper.getUserProfile(userId);
-            if (user != null) {
-                ImageView image = ViewUtils.createSharebarImage(context, user.photoUrl, user.userId);
-                commentGrid.addView(image);
-            }
+        for (View image : topCommentViews) {
+            commentGrid.addView(image);
         }
-        
-        if (publicCommentViews.size() > 0) {
+
+        if (allCommentCount > 0) {
+            String countText = context.getString(R.string.friends_comments_count);
+            if (allCommentCount == 1) {
+                countText = countText.substring(0, countText.length() - 1);
+            }
+            headerCommentTotal.setText(String.format(countText, allCommentCount));
+            headerCommentTotal.setVisibility(View.VISIBLE);
+        } else {
+            headerCommentTotal.setVisibility(View.GONE);
+        }
+
+        if (allShareCount > 0) {
+            String countText = context.getString(R.string.friends_shares_count);
+            if (allShareCount == 1) {
+                countText = countText.substring(0, countText.length() - 1);
+            }
+            headerShareTotal.setText(String.format(countText, allShareCount));
+            headerShareTotal.setVisibility(View.VISIBLE);
+        } else {
+            headerShareTotal.setVisibility(View.GONE);
+        }
+
+        if (publicCommentCount > 0) {
             String commentCount = context.getString(R.string.public_comment_count);
-            if (publicCommentViews.size() == 1) {
+            if (publicCommentCount == 1) {
                 commentCount = commentCount.substring(0, commentCount.length() - 1);
             }
-            publicCommentTotal.setText(String.format(commentCount, publicCommentViews.size()));
+            publicCommentTotal.setText(String.format(commentCount, publicCommentCount));
             view.findViewById(R.id.reading_public_comment_header).setVisibility(View.VISIBLE);
         } else {
             view.findViewById(R.id.reading_public_comment_header).setVisibility(View.GONE);
         }
         
-        if (friendCommentViews.size() > 0) {
+        if (friendCommentCount > 0) {
             String commentCount = context.getString(R.string.friends_comments_count);
-            if (friendCommentViews.size() == 1) {
+            if (friendCommentCount == 1) {
                 commentCount = commentCount.substring(0, commentCount.length() - 1);
             }
-            friendCommentTotal.setText(String.format(commentCount, friendCommentViews.size()));
+            friendCommentTotal.setText(String.format(commentCount, friendCommentCount));
             view.findViewById(R.id.reading_friend_comment_header).setVisibility(View.VISIBLE);
         } else {
             view.findViewById(R.id.reading_friend_comment_header).setVisibility(View.GONE);
         }
 
-        if (friendShareViews.size() > 0) {
+        if (friendShareCount > 0) {
             String commentCount = context.getString(R.string.friends_shares_count);
-            if (friendShareViews.size() == 1) {
+            if (friendShareCount == 1) {
                 commentCount = commentCount.substring(0, commentCount.length() - 1);
             }
-            friendShareTotal.setText(String.format(commentCount, friendShareViews.size()));
+            friendShareTotal.setText(String.format(commentCount, friendShareCount));
             view.findViewById(R.id.reading_friend_emptyshare_header).setVisibility(View.VISIBLE);
         } else {
             view.findViewById(R.id.reading_friend_emptyshare_header).setVisibility(View.GONE);

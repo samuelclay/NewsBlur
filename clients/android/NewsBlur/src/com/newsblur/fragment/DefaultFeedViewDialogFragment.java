@@ -7,11 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RadioButton;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -25,8 +24,8 @@ public class DefaultFeedViewDialogFragment extends DialogFragment {
 
     private static String CURRENT_VIEW = "currentView";
     private DefaultFeedView currentValue;
-    @FindView(R.id.radio_story) RadioButton storyButton;
-    @FindView(R.id.radio_text) RadioButton textButton;
+    @Bind(R.id.radio_story) RadioButton storyButton;
+    @Bind(R.id.radio_text) RadioButton textButton;
 
     public static DefaultFeedViewDialogFragment newInstance(DefaultFeedView currentValue) {
         DefaultFeedViewDialogFragment dialog = new DefaultFeedViewDialogFragment();
@@ -51,7 +50,6 @@ public class DefaultFeedViewDialogFragment extends DialogFragment {
         storyButton.setChecked(currentValue == DefaultFeedView.STORY);
         textButton.setChecked(currentValue == DefaultFeedView.TEXT);
 
-        getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 

@@ -2,7 +2,7 @@
 
 {% load utils_tags %}
 
-{% block body %}{% if reason %}{{ reason }}{% else %}Here's a backup of your sites on NewsBlur.{% endif %} It contains <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}. 
+{% block body %}{% if reason %}{{ reason }}{% else %}Here's a backup of your sites on NewsBlur.{% endif %} It contains {{ feed_count }} site{{ feed_count|pluralize }}. 
 
 You can re-upload the attached file to NewsBlur and get all of your sites back. 
 Just go to Manage > Import > Upload OPML.{% endblock body %}

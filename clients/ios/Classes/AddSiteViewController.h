@@ -13,28 +13,7 @@
 @class NewsBlurAppDelegate;
 
 @interface AddSiteViewController : UIViewController 
-<UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource, ASIHTTPRequestDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-    
-    UITextField *inFolderInput;
-    UITextField *addFolderInput;
-    UITextField *siteAddressInput;
-    NSMutableData *jsonString;
-    NSMutableArray *autocompleteResults;
-    
-    UIBarButtonItem *addButton;
-    UIBarButtonItem *cancelButton;
-    UIPickerView *folderPicker;
-    UITableView *siteTable;
-    UIScrollView *siteScrollView;
-    UIButton *addFolderButton;
-    
-    UINavigationBar *navBar;
-    UIActivityIndicatorView *activityIndicator;
-    UIActivityIndicatorView *siteActivityIndicator;
-    UILabel *addingLabel;
-    UILabel *errorLabel;
-}
+<UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ASIHTTPRequestDelegate>
 
 - (void)reload;
 - (IBAction)addSite;
@@ -42,8 +21,6 @@
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
 - (NSString *)extractParentFolder;
-- (void)showFolderPicker;
-- (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
 - (void)reloadSearchResults;
 - (IBAction)toggleAddFolder:(id)sender;
@@ -56,7 +33,6 @@
 
 @property (nonatomic) IBOutlet UIBarButtonItem *addButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *cancelButton;
-@property (nonatomic) IBOutlet UIPickerView *folderPicker;
 @property (nonatomic) IBOutlet UITableView *siteTable;
 @property (nonatomic) IBOutlet UIScrollView *siteScrollView;
 @property (nonatomic) IBOutlet UIButton *addFolderButton;

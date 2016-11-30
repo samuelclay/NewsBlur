@@ -12,36 +12,11 @@
     	android:paddingBottom="20dp">
 
         <LinearLayout
-            android:id="@+id/login_button_container"
+            android:id="@+id/login_fileds_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/login_change_to_register"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="left"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="@string/need_to_register"
-                android:textSize="15sp" />
-
-            <Button
-                android:id="@+id/login_button"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right|center_vertical"
-                android:contentDescription="@string/description_login_button"
-                android:text="@string/login_button_login" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/login_button_container"
-            android:gravity="center_vertical"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="30dp"
             android:orientation="vertical" >
 
             <EditText
@@ -50,19 +25,54 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/login_username_hint"
                 android:inputType="textEmailAddress"
-                android:textSize="22dp" />
+                android:textSize="22sp" />
 
             <EditText
                 android:id="@+id/login_password"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:hint="@string/login_password_hint"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
                 android:nextFocusDown="@+id/login_button"
-                android:textSize="22dp" />
+                android:textSize="22sp" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_fileds_container"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:contentDescription="@string/description_login_button"
+            android:text="@string/login_button_login" />
+
+        <TextView
+            android:id="@+id/login_change_to_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_button"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="25dp"
+            android:text="@string/need_to_register"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/login_forgot_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_change_to_register"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/forgot_password"
+            android:textSize="16sp" />
+
     </RelativeLayout>
     
     <RelativeLayout
@@ -113,7 +123,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/login_username_hint"
                     android:inputType="textEmailAddress"
-                    android:textSize="22dp" >
+                    android:textSize="22sp" >
 
                 </EditText>
 
@@ -125,7 +135,7 @@
                     android:hint="@string/login_password_hint"
                     android:inputType="textPassword"
                     android:nextFocusDown="@+id/registration_email"
-                    android:textSize="22dp" />
+                    android:textSize="22sp" />
 
                 <EditText
                     android:id="@+id/registration_email"
@@ -136,7 +146,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"
                     android:nextFocusDown="@+id/registration_button"
-                    android:textSize="22dp" />
+                    android:textSize="22sp" />
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

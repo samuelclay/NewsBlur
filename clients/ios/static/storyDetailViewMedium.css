@@ -15,24 +15,34 @@ body {
 /* = Header = */
 /* ========== */
 
+.NB-header {
+    color: #bbbbbb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#606060));
+    border-bottom: 1px solid #535353;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
+
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 .NB-story-title {
     color: #313330;
 }
 
 .NB-story-title-positive {
-    color: #58A353;
-    text-shadow: 0 1px 0 #E9F6E9;
+    color: #6DB764;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 .NB-story-title-negative {
-    color: #B85044;
-    text-shadow: 0 1px 0 #F6E9E9;
+    color: #D07C80;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 
 .NB-story-permalink {
     color: lightgray;
 }
 .NB-story-date {
-    color: #eeeeee;
+    color: #c6c6c6;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 }
 
 .NB-middot {
@@ -40,33 +50,35 @@ body {
 }
 
 .NB-story-author {
-    color: #eeeeee;
-    text-shadow: 0 1px 0 rgba(155, 155, 155, .5);
+    color: #c6c6c6;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 }
 .NB-story-author-positive {
     color: #58A353;
-    text-shadow: 0 1px 0 #E9F6E9;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 .NB-story-author-negative {
     color: #B85044;
-    text-shadow: 0 1px 0 #F6E9E9;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .2);
 }
 
 .NB-story-tag {
-    background-color: rgba(0, 0, 0, .1);
+    background-color: rgba(40, 40, 40, .2);
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 #505050;
+    border-color: rgba(186, 186, 186, .2) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag-positive {
     background-color: #88B383;
     color: white;
     text-shadow: 0 1px 0 #588353;
+    border-color: rgba(255, 255, 255, .2) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag-negative {
     background-color: #C89094;
     color: white;
     text-shadow: 0 1px 0 #986064;
+    border-color: rgba(255, 255, 255, .2) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag .NB-highlight,
 .NB-user-tag .NB-highlight,
@@ -77,44 +89,38 @@ body {
 
 .NB-user-tag {
     color: #959B8B;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 #505050;
+    border-color: rgba(186, 186, 186, .2) transparent rgba(0, 0, 0, .1);
 }
 
 .NB-user-tag.NB-add-user-tag {
     background: rgba(0, 0, 0, .25) url("add_tag.png") no-repeat 6px 3px;
-    color: #E5EBDB;
+    background-size: 8px;
+    color: #ADB2A6;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
 
 .NB-story-starred-date {
-    color: #818776;
+    color: #b5bbac;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
 
 a {
-    color: lightblue;
+    color: #A2C8F8;
 }
 a:active {
-    color: #82301A;
+    color: #F99D8A;
 }
 
 .NB-story blockquote {
-    color: rgba(10, 12, 38, .8);
-}
-
-.NB-header {
-    color: #bbbbbb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#777777));
-    border-bottom: 1px solid #bbbbbb;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    border-left-color: #676264;
+    background-color: #6c696a;
 }
 
 /* Comments */
 
 .NB-story-comments-group:last-child {
-    border-bottom: 1px solid #EAECE8;
+    border-bottom: 1px solid #707070;
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -190,17 +196,16 @@ a:active {
 /* Story Comments */
 
 #story_pane .NB-story-comment {
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid #909090;
     background:#888888;
-    box-shadow: inset 1px 1px 1px rgba(155, 155, 155, 1);shar
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {
-    color: #eeeeee;
-    text-shadow: 0 -1px 0 #dddddd;
+    color: lightblue;
+    text-shadow: 0 1px 0 #808080;
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
-    color: #eeeeee;
+    color: #c0c0c0;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-content {
@@ -218,25 +223,26 @@ a:active {
 #story_pane .NB-story-comment-reply-form .NB-error {
     color: #6A1000;
 }
-
+#story_pane .NB-story-comment .NB-story-comment-location {
+    color: #A0A0A0;
+}
 #story_pane .NB-story-comments-public-teaser,
 #story_pane .NB-story-comments-public-header,
 #story_pane .NB-story-comments-friends-header {
     background-color: #999999;
     color: white;
-    text-shadow: 0 1px 0 #505050;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#999999), to(#aaaaaa));
+    text-shadow: 0 1px 0 #808080;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#a0a0a0), to(#909090));
     color: #eeeeee;
-    text-shadow: 0 1px 0 white;
-    border-color: rgba(0, 0, 0, .1) transparent rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    border-color: #808080 transparent #767676;
 }
+
 #story_pane .NB-story-comments-shares-teaser {
     background-color: #999999;
     color: #eeeeee;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
-    border-bottom: 1px solid #dddddd;
-    -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 #808080;
+    border-bottom: 1px solid #626262;
+    -webkit-box-shadow: inset 0px 2px 1px #818181;
 }
 
 

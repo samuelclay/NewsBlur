@@ -2,21 +2,35 @@ package com.newsblur.activity;
 
 import android.os.Bundle;
 import android.app.FragmentManager;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnKeyListener;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+
+import butterknife.ButterKnife;
+import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
+import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
@@ -25,19 +39,22 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, MarkAllReadDialogListener, OnSeekBarChangeListener {
+
+    public static final String EXTRA_FEED_SET = "feed_set";
 
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
-    public static final String BUNDLE_FEED_IDS = "feedIds";
+    private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
-    private TextView overlayStatusText;
+    @Bind(R.id.itemlist_sync_status) TextView overlayStatusText;
+    @Bind(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
 
-    private FeedSet fs;
+    protected FeedSet fs;
 	
 	@Override
     protected void onCreate(Bundle bundle) {
@@ -45,24 +62,57 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 
+		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
+
 		intelState = PrefsUtils.getStateFilter(this);
-        this.fs = createFeedSet();
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 		setContentView(R.layout.activity_itemslist);
+        ButterKnife.bind(this);
 		fragmentManager = getFragmentManager();
-
-        this.overlayStatusText = (TextView) findViewById(R.id.itemlist_sync_status);
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
-                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this, false);
+                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
+
+        if (bundle != null) {
+            String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+            if (activeSearchQuery != null) {
+                searchQueryInput.setText(activeSearchQuery);
+                searchQueryInput.setVisibility(View.VISIBLE);
+                fs.setSearchQuery(activeSearchQuery);
+            }
+        }
+        searchQueryInput.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    searchQueryInput.setVisibility(View.GONE);
+                    searchQueryInput.setText("");
+                    checkSearchQuery();
+                    return true;
+                }
+                if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    checkSearchQuery();
+                    return true;
+                }   
+                return false;
+            }
+        });
 	}
 
-    protected abstract FeedSet createFeedSet();
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (searchQueryInput != null) {
+            String q = searchQueryInput.getText().toString().trim();
+            if (q.length() > 0) {
+                outState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
+            }
+        }
+    }
 
     public FeedSet getFeedSet() {
         return this.fs;
@@ -85,6 +135,17 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
 	public void markItemListAsRead() {
+        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
+        if (confirmation.feedSetRequiresConfirmation(fs)) {
+            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
+            dialog.show(fragmentManager, "dialog");
+        } else {
+            onMarkAllRead(fs);
+        }
+    }
+
+    @Override
+    public void onMarkAllRead(FeedSet feedSet) {
         if (itemListFragment != null) {
             // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
             // dataset changes rapidly as happens when marking-all-read and when the fragment is
@@ -118,6 +179,17 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
             readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
             return true;
+		} else if (item.getItemId() == R.id.menu_textsize) {
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
+			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
+			return true;
+        } else if (item.getItemId() == R.id.menu_search_stories) {
+            if (searchQueryInput.getVisibility() != View.VISIBLE) {
+                searchQueryInput.setVisibility(View.VISIBLE);
+                searchQueryInput.requestFocus();
+            } else {
+                searchQueryInput.setVisibility(View.GONE);
+            }
         }
 	
 		return false;
@@ -157,6 +229,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
             if (syncStatus != null)  {
+                if (AppConstants.VERBOSE_LOG) {
+                    syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
+                }
                 overlayStatusText.setText(syncStatus);
                 overlayStatusText.setVisibility(View.VISIBLE);
             } else {
@@ -165,23 +240,59 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         }
     }
 
+    private void checkSearchQuery() {
+        String oldQuery = fs.getSearchQuery();
+        String q = searchQueryInput.getText().toString().trim();
+        if (q.length() < 1) {
+            q = null;
+        }
+        fs.setSearchQuery(q);
+        if (!TextUtils.equals(q, oldQuery)) {
+            NBSyncService.resetReadingSession();
+            NBSyncService.resetFetchState(fs);
+            itemListFragment.resetEmptyState();
+            itemListFragment.hasUpdated();
+            itemListFragment.scrollToTop();
+        }
+    }
+
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
+        NBSyncService.resetFetchState(fs);
+        triggerSync();
     }
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        FeedUtils.clearReadingSession(); 
         itemListFragment.resetEmptyState();
         itemListFragment.hasUpdated();
         itemListFragment.scrollToTop();
+        NBSyncService.resetFetchState(fs);
+        triggerSync();
     }
+
+    // NB: this callback is for the text size slider
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        float size = AppConstants.LIST_FONT_SIZE[progress];
+	    PrefsUtils.setListTextSize(this, size);
+        if (itemListFragment != null) itemListFragment.setTextSize(size);
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
 

@@ -113,9 +113,15 @@
 #pragma mark Keyboard support
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle {
     UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
-    if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)])
+    if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)] && [self respondsToSelector:@selector(addKeyCommand:)]) {
         keyCommand.discoverabilityTitle = discoverabilityTitle;
-    [self addKeyCommand:keyCommand];
+        [self addKeyCommand:keyCommand];
+    }
+}
+
+- (void)addCancelKeyCommandWithAction:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle {
+    [self addKeyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:action discoverabilityTitle:discoverabilityTitle];
+    [self addKeyCommandWithInput:@"." modifierFlags:UIKeyModifierCommand action:action discoverabilityTitle:discoverabilityTitle];
 }
 
 #pragma mark -

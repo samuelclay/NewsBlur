@@ -29,7 +29,7 @@
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Start reading" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Start reading" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
@@ -111,7 +111,7 @@
 
 - (void)addPopular {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow/",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -124,7 +124,7 @@
 
 - (void)addSite:(NSString *)siteUrl {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url/",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     

@@ -700,7 +700,11 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
             uploadTask = [self.session uploadTaskWithRequest:request fromFile:fileURL];
         }
     }
-
+    
+    if (!uploadTask) {
+        uploadTask = [self.session uploadTaskWithRequest:request fromFile:fileURL];
+    }
+    
     [self addDelegateForUploadTask:uploadTask progress:progress completionHandler:completionHandler];
 
     return uploadTask;

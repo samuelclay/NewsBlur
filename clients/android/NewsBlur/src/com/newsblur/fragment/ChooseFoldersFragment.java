@@ -1,6 +1,7 @@
 package com.newsblur.fragment;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,22 +11,18 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.ArraySet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
-import butterknife.OnClick;
+import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
@@ -36,7 +33,7 @@ public class ChooseFoldersFragment extends DialogFragment {
 
 	private Feed feed;
 
-    @FindView(R.id.choose_folders_list) ListView listView;
+    @Bind(R.id.choose_folders_list) ListView listView;
 
     public static ChooseFoldersFragment newInstance(Feed feed) {
 		ChooseFoldersFragment fragment = new ChooseFoldersFragment();
@@ -53,8 +50,8 @@ public class ChooseFoldersFragment extends DialogFragment {
         final List<Folder> folders = FeedUtils.dbHelper.getFolders();
         Collections.sort(folders, Folder.FolderComparator);
 
-        final Set<String> newFolders = new ArraySet<String>();
-        final Set<String> oldFolders = new ArraySet<String>();
+        final Set<String> newFolders = new HashSet<String>();
+        final Set<String> oldFolders = new HashSet<String>();
         for (Folder folder : folders) {
             if (folder.feedIds.contains(feed.feedId)) {
                 newFolders.add(folder.name);
@@ -113,7 +110,6 @@ public class ChooseFoldersFragment extends DialogFragment {
         listView.setAdapter(adapter);
 
         Dialog dialog = builder.create();
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
         dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
         return dialog;
 	}

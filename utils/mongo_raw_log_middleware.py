@@ -53,9 +53,9 @@ class MongoDumpMiddleware(object):
 
     def _instrument(self, original_method):
         def instrumented_method(*args, **kwargs):
-            # query = args[1].get_message(False, False)
-            # message = _mongodb_decode_wire_protocol(query[1])
-            message = _mongodb_decode_wire_protocol(args[1][1])
+            query = args[1].get_message(False, False)
+            message = _mongodb_decode_wire_protocol(query[1])
+            # message = _mongodb_decode_wire_protocol(args[1][1])
             if not message or message['msg_id'] in self._used_msg_ids:
                 return original_method(*args, **kwargs)
             self._used_msg_ids.append(message['msg_id'])

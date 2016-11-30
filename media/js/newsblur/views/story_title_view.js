@@ -25,28 +25,38 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render: function() {
         var template_name = !this.model.get('selected') && this.options.is_grid ? 
                             'grid_template' : 'template';
-        // console.log(['render story title', template_name, this.$el[0]]);
+        // console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview()]);
         this.$el.html(this[template_name]({
             story    : this.model,
             feed     : (NEWSBLUR.reader.flags.river_view || NEWSBLUR.reader.flags.social_view) &&
                         NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
             options  : this.options,
-            show_content_preview : this.show_content_preview()
+            show_content_preview : this.show_content_preview(),
+            show_image_preview : this.show_image_preview()
         }));
         this.$st = this.$(".NB-story-title");
         this.toggle_classes();
         this.toggle_read_status();
         this.color_feedbar();
+        this.load_youtube_embeds();
+        var story_layout = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         if (this.options.is_grid) this.watch_grid_image();
+        if (_.contains(['list'], story_layout) && this.show_image_preview()) this.watch_grid_image();
+        if (_.contains(['split'], story_layout) && this.show_image_preview() && NEWSBLUR.assets.preference('feed_view_single_story')) this.watch_grid_image();
         
         return this;
     },
                             
     template: _.template('\
-        <div class="NB-story-title">\
+        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <div class="NB-storytitles-sentiment"></div>\
+            <% if (show_image_preview) { %>\
+                <div class="NB-storytitles-story-image-container">\
+                    <div class="NB-storytitles-story-image"></div>\
+                </div>\
+            <% } %>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
@@ -57,7 +67,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <div class="NB-storytitles-star"></div>\
                 <div class="NB-storytitles-share"></div>\
                 <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
-                <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
+                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
                 <% if (show_content_preview) { %>\
                     <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
                 <% } %>\
@@ -76,7 +86,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
     
     grid_template: _.template('\
-        <div class="NB-story-title NB-story-grid">\
+        <div class="NB-story-title NB-story-grid <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %>">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <% if (story.image_url()) { %>\
@@ -103,7 +113,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 </a>\
             </div>\
             <div class="NB-storytitles-grid-bottom">\
-                <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
+                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
                 <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
             </div>\
             <% if (story.get("comment_count_friends")) { %>\
@@ -184,20 +194,32 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     show_content_preview: function() {
+        var preference = NEWSBLUR.assets.preference('show_content_preview');
+        if (!preference) return preference;
+
         if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
-            var pruned_description = this.model.content_preview('story_content', 500);
-        } else {
-            var preference = NEWSBLUR.assets.preference('show_content_preview');
-            if (!preference) return preference;
-            var pruned_description = this.model.content_preview();
+            return this.model.content_preview('story_content', 500) || " ";
         }
-        
+        var pruned_description = this.model.content_preview();
         var pruned_title = this.model.content_preview('story_title');
         
         if (pruned_title.substr(0, 30) == pruned_description.substr(0, 30)) return false;
         if (pruned_description.length < 30) return false;
-        
+
         return pruned_description;
+    },
+    
+    show_image_preview: function() {
+        if (!NEWSBLUR.assets.preference('show_image_preview')) {
+            return false;
+        }
+
+        var story_layout = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
+        var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
+        if (_.contains(['list', 'grid'], story_layout)) return true;
+        if (story_layout == 'split' && _.contains(['north', 'south'], pane_anchor)) return true;
+
+        return this.model.image_url();
     },
     
     // ============
@@ -213,22 +235,42 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         $inner.css('background-color', '#' + feed.get('favicon_fade'));
         $outer.css('background-color', '#' + feed.get('favicon_color'));
     },
-
-    watch_grid_image: function() {
-        var self = this;
+    
+    found_largest_image: function(image_url) {
         if (this.load_youtube_embeds()) {
             return;
         }
-        
-        $('<img>').load(function() {
-            // console.log(['Loaded', this, this.width, self.model.image_url(), self.$(".NB-storytitles-story-image")]);
-            if (this.width > 100) {
+
+        this.$(".NB-storytitles-story-image").css({
+            'background-image': "none, url(\'" + image_url + "\')",
+            'display': 'block'
+        });
+    },
+    
+    watch_grid_image: function(index) {
+        if (!index) index = 0;
+        var self = this;
+        if (!index && this.load_youtube_embeds()) {
+            return;
+        }
+        if (!this.model.image_url(index)) {
+            // console.log(["no more image urls", index, this.model.get('story_title').substr(0, 30)]);
+            return;
+        }
+        // console.log(["watch_grid_image", index, this.model.image_url(index), this.model.get('story_title').substr(0, 30)]);
+        // this.model == NEWSBLUR.assets.stories.at(5) && console.log(["Watching images", index, this.model.image_url(index), this.model.get('story_title').substr(0, 30)]);
+        var $img = $("<img>");
+        $img.imagesLoaded(function() {
+            // console.log(["Loaded", index, $img[0].width, $img.attr('src'), self.model.get('story_title').substr(0, 30)]);
+            if ($img[0].width > 60 && $img[0].height > 60) {
                 self.$(".NB-storytitles-story-image").css({
-                    'display': 'block',
-                    'background-image': "none, url(" + self.model.image_url() + ")"
+                    'background-image': "none, url(\'" + $img.attr('src') + "\')",
+                    'display': 'block'
                 });
+            } else {
+                self.watch_grid_image(index+1);
             }
-        }).attr('src', this.model.image_url()).each(function() {
+        }).attr('src', this.model.image_url(index)).each(function() {
             // fail-safe for cached images which sometimes don't trigger "load" events
             if (this.complete) $(this).load();
         });

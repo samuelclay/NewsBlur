@@ -12,10 +12,8 @@ import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
 public class FeedItemsList extends ItemsList {
@@ -44,11 +42,6 @@ public class FeedItemsList extends ItemsList {
 		}
 	}
 
-    @Override
-    protected FeedSet createFeedSet() {
-        return FeedSet.singleFeed(feed.feedId);
-    }
-	
 	public void deleteFeed() {
 		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(feed, folderName);
 		deleteFeedFragment.show(fragmentManager, "dialog");

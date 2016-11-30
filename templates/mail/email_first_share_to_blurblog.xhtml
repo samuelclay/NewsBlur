@@ -1,7 +1,9 @@
 {% extends "mail/email_base.xhtml" %}
 
 {% block body %}
-    <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Your shared story is now on your Blurblog</p>
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        Your shared story is now on your Blurblog.
+    </h2>
     <p style="line-height: 20px;">You can view your Blurblog here: {{ blurblog_url }}</p>
     <p style="line-height: 20px;">Your Blurblog also has an RSS feed: {{ blurblog_rss }}</p>
     <p style="line-height: 20px;">{% if shared_stories > 1 %}You've already shared {{ shared_stories }} stories, but you may not have known that your shared stories are on your Blurblog.{% else %}You just shared your first story on NewsBlur. All of your shared stories are available on your Blurblog.{% endif %}</p>

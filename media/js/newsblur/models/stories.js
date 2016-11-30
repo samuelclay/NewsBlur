@@ -41,10 +41,16 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return _.string.prune(_.string.trim(content), length || 150, "...");
     },
     
-    image_url: function() {
-        if (this.get('image_urls').length) {
-            return this.get('image_urls')[0];
+    image_url: function(index) {
+        if (!index) index = 0;
+        if (this.get('image_urls').length >= index+1) {
+            return this.get('image_urls')[index];
         }
+    },
+    
+    story_authors: function() {
+        return this.get('story_authors').replace(/</g, '&lt;')
+                                        .replace(/>/g, '&gt;');
     },
     
     formatted_short_date: function() {
@@ -107,15 +113,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             return date.format("l, F jS Y ") + time;
         }
     },
-    
-    has_modifications: function() {
-        if (this.get('story_content').indexOf('<ins') != -1 ||
-            this.get('story_content').indexOf('<del') != -1) {
-            return true;
-        }
-        return false;
-    },
-    
+
     mark_read: function(options) {
         return NEWSBLUR.assets.stories.mark_read(this, options);
     },
@@ -127,10 +125,24 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         // on a WebKit-based browser (WebKitGTK or QTWebKit). These can't handle
         // background tabs. Work around it by disabling backgrounding if we
         // think we're on Safari and we're also on X11 or Linux
-        if ($.browser.safari && /(\(X11|Linux)/.test(navigator.userAgent)) {
+        if ($.browser.safari && (/(\(X11|Linux)/.test(navigator.userAgent))) {
             background = false;
         }
-
+        
+        if (background && $.browser.webkit) {
+            var event = new CustomEvent("openInNewTab", {
+                bubbles: true,
+                detail: {background: background}
+            });
+            var success = !this.story_title_view.$st.find('a')[0].dispatchEvent(event);
+            if (success) {
+                // console.log(['Used safari extension to open link in background', success]);
+                return;
+            } else {
+                // console.log(['Safari extension failed to open link in background', success, this.story_title_view.$st.find('a')[0]]);
+            }
+        }
+        
         if (background && !$.browser.mozilla) {
             var anchor, event;
 
@@ -138,7 +150,13 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             anchor.href = this.get('story_permalink');
             event = document.createEvent("MouseEvents");
             event.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, true, false, false, true, 0, null);
-            return anchor.dispatchEvent(event);
+            var success = anchor.dispatchEvent(event);
+            if (success) {
+                // console.log(['Opened link in background', anchor.href]);
+                return success;
+            } else {
+                // console.log(['Failed to open link in background', anchor.href]);
+            }
         } else {
             window.open(this.get('story_permalink'), '_blank');
             window.focus();
@@ -488,7 +506,6 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             visible_stories[current_index].set('selected', false);
             return visible_stories[current_index];
         }
-
     },
     
     get_last_unread_story: function(unread_count, options) {
@@ -497,6 +514,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         if (!visible_stories.length || visible_stories.length < unread_count) return;
         
         return _.last(visible_stories);
+    },
+    
+    get_by_story_hash: function(story_hash) {
+        return this.detect(function(s) { return s.get('story_hash') == story_hash; });
     },
     
     // ==========

@@ -39,7 +39,7 @@
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip this step" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip this step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
@@ -115,7 +115,7 @@
 
 - (void)connectToSocial {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     [request setValidatesSecureCertificate:NO];
@@ -199,7 +199,7 @@
     
     NSURL *preferenceURL = [NSURL URLWithString:
                           [NSString stringWithFormat:@"%@/profile/set_preference",
-                           NEWSBLUR_URL]];
+                           self.appDelegate.url]];
     
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:preferenceURL];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]

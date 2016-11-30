@@ -1,22 +1,28 @@
-body, span {
+body, span, table, td, p, div, li {
 	background-color: #1A1A1A !important;
 	color: #FFF !important;
 }
 
 a, a span {
 	color: #319DC5 !important;
+	background-color: #1A1A1A !important;
 }
 
 a:visited, a:visited span {
 	color: #319DC5 !important;
+	background-color: #1A1A1A !important;
 }
 
-code {
+pre, blockquote, code {
     background-color: #4C4C4C;
 }
 
-pre, blockquote {
-    background-color: #4C4C4C;
+blockquote *, pre *, code * {
+    background-color: #4C4C4C !important;
+}
+
+blockquote a, blockquote a span {
+    background-color: #4C4C4C !important;
 }
 
 .NB-story > table {

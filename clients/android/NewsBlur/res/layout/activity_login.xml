@@ -22,7 +22,7 @@
     <View
         android:layout_height="2dp" 
         android:layout_width="match_parent"
-        android:background="@color/lightgray" />
+        android:background="@color/gray80" />
     
     <FrameLayout
         android:id="@+id/login_container"

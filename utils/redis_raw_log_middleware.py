@@ -9,7 +9,6 @@ class RedisDumpMiddleware(object):
         return (settings.DEBUG_QUERIES or 
                 (hasattr(request, 'activated_segments') and
                  'db_profiler' in request.activated_segments))
-    
     def process_view(self, request, callback, callback_args, callback_kwargs):
         if not self.activated(request): return
         if not getattr(Connection, '_logging', False):
@@ -17,7 +16,6 @@ class RedisDumpMiddleware(object):
             setattr(Connection, '_logging', True)
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
-
     def process_celery(self, profiler):
         if not self.activated(profiler): return
         if not getattr(Connection, '_logging', False):
@@ -25,7 +23,6 @@ class RedisDumpMiddleware(object):
             setattr(Connection, '_logging', True)
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
-
     def process_response(self, request, response):
         # if settings.DEBUG and hasattr(self, 'orig_pack_command'):
         #     # remove instrumentation from redis
@@ -33,7 +30,6 @@ class RedisDumpMiddleware(object):
         #     Connection.pack_command = \
         #             self.orig_pack_command
         return response
-
     def _instrument(self, original_method):
         def instrumented_method(*args, **kwargs):
             message = self.process_message(*args, **kwargs)
@@ -49,7 +45,6 @@ class RedisDumpMiddleware(object):
             })
             return result
         return instrumented_method
-    
     def process_message(self, *args, **kwargs):
         query = []
         for a, arg in enumerate(args):
@@ -59,3 +54,4 @@ class RedisDumpMiddleware(object):
                 arg = "[%s bytes]" % len(str(arg))
             query.append(str(arg).replace('\n', ''))
         return { 'query': ' '.join(query) }
+

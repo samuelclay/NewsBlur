@@ -9,13 +9,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:shadowColor="@color/darkgray"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
         android:text="@string/loading"
-        android:textColor="@color/white"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"/>
 
 </LinearLayout>

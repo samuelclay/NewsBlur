@@ -8,6 +8,7 @@
 
 #import "ActivityCell.h"
 #import "UIImageView+AFNetworking.h"
+#import "NewsBlurAppDelegate.h"
 
 @implementation ActivityCell
 
@@ -24,6 +25,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         activityLabel = nil;
         faviconView = nil;
+        self.backgroundColor = UIColorFromRGB(0xffffff);
         self.separatorInset = UIEdgeInsetsMake(0, 90, 0, 0);
         
         // create favicon and label in view
@@ -108,8 +110,16 @@
             feedId = [activity objectForKey:@"story_feed_id"];
         }
         if (feedId && [feedId class] != [NSNull class]) {
+            NSString *url = [NewsBlurAppDelegate sharedAppDelegate].url;
+            
+            if ([url isEqualToString:DEFAULT_NEWSBLUR_URL]) {
+                url = DEFAULT_ICONS_HOST;
+            } else {
+                url = [url stringByAppendingPathComponent:@"rss_feeds/icon"];
+            }
+            
             NSString *faviconUrl = [NSString stringWithFormat:@"%@/%i",
-                                    ICONS_HOST,
+                                    url,
                                     [feedId intValue]];
             [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl]
                              placeholderImage:nil];

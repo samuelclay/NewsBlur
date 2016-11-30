@@ -4,11 +4,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.content.Loader;
 
-import com.newsblur.R;
-import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedItemsAdapter;
+import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Feed;
-import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment {
 
@@ -31,10 +28,7 @@ public class FeedItemListFragment extends ItemListFragment {
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if ((adapter == null) && (cursor != null)) {
-            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.SUM_STORY_TOTAL };
-            int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar };
-            adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo);
-            adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
+            adapter = new StoryItemsAdapter(getActivity(), cursor, getFeedSet().isFilterSaved(), getFeedSet().isFilterSaved(), true);
             itemList.setAdapter(adapter);
        }
        super.onLoadFinished(loader, cursor);

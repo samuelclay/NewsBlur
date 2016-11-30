@@ -1,7 +1,6 @@
 package com.newsblur.network;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,8 +17,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -52,11 +50,11 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class APIManager {
 
@@ -84,7 +82,11 @@ public class APIManager {
                                 Build.VERSION.RELEASE + " " +
                                 appVersion + ")";
 
-		this.httpClient = new OkHttpClient();
+        this.httpClient = new OkHttpClient.Builder()
+                          .connectTimeout(AppConstants.API_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                          .readTimeout(AppConstants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                          .followSslRedirects(true)
+                          .build();
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -111,8 +113,9 @@ public class APIManager {
         // just get the cookie from the 302 and stop, we directly use a one-off OkHttpClient.
         Request.Builder requestBuilder = new Request.Builder().url(urlString);
         addCookieHeader(requestBuilder);
-        OkHttpClient noredirHttpClient = new OkHttpClient();
-        noredirHttpClient.setFollowRedirects(false);
+        OkHttpClient noredirHttpClient = new OkHttpClient.Builder()
+                                         .followRedirects(false)
+                                         .build();
         try {
             Response response = noredirHttpClient.newCall(requestBuilder.build()).execute();
             if (!response.isRedirect()) return false;
@@ -220,12 +223,6 @@ public class APIManager {
         RegisterResponse registerResponse = response.getRegisterResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
-
-			CookieSyncManager.createInstance(context.getApplicationContext());
-			CookieManager cookieManager = CookieManager.getInstance();
-
-			cookieManager.setCookie(APIConstants.COOKIE_DOMAIN, response.getCookie());
-			CookieSyncManager.getInstance().sync();
 		}
         return registerResponse;
 	}
@@ -295,10 +292,12 @@ public class APIManager {
             uri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(fs.getSingleFeed()).build();
             values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed());
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            if (fs.isFilterSaved()) values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED);
         } else if (fs.getMultipleFeeds() != null) {
             uri = Uri.parse(APIConstants.URL_RIVER_STORIES);
             for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDS, feedId);
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            if (fs.isFilterSaved()) values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED);
         } else if (fs.getSingleSocialFeed() != null) {
             String feedId = fs.getSingleSocialFeed().getKey();
             String username = fs.getSingleSocialFeed().getValue();
@@ -319,6 +318,9 @@ public class APIManager {
             uri = Uri.parse(APIConstants.URL_READ_STORIES);
         } else if (fs.isAllSaved()) {
             uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
+        } else if (fs.getSingleSavedTag() != null) {
+            uri = Uri.parse(APIConstants.URL_STARRED_STORIES);
+            values.put(APIConstants.PARAMETER_TAG, fs.getSingleSavedTag());
         } else if (fs.isGlobalShared()) {
             uri = Uri.parse(APIConstants.URL_SHARED_RIVER_STORIES);
             values.put(APIConstants.PARAMETER_GLOBAL_FEED, Boolean.TRUE.toString());
@@ -328,11 +330,14 @@ public class APIManager {
 
 		// request params common to most story sets
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-        if (!(fs.isAllRead() || fs.isAllSaved())) {
+        if (!(fs.isAllRead() || fs.isAllSaved() || fs.isFilterSaved())) {
 		    values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
         }
         if (!fs.isAllRead()) {
 		    values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+        }
+        if (fs.getSearchQuery() != null) {
+            values.put(APIConstants.PARAMETER_QUERY, fs.getSearchQuery());
         }
 
 		APIResponse response = get(uri.toString(), values);
@@ -566,6 +571,15 @@ public class APIManager {
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
+    public NewsBlurResponse saveFeedChooser(Set<String> feeds) {
+        ValueMultimap values = new ValueMultimap();
+        for (String feed : feeds) {
+            values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed);
+        }
+        APIResponse response = post(APIConstants.URL_SAVE_FEED_CHOOSER, values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     /* HTTP METHODS */
    
 	private APIResponse get(final String urlString) {
@@ -612,7 +626,7 @@ public class APIManager {
             StringBuilder builder = new StringBuilder();
             builder.append((String) entry.getKey());
             builder.append("=");
-            builder.append(URLEncoder.encode((String) entry.getValue()));
+            builder.append(NetworkUtils.encodeURL((String) entry.getValue()));
             parameters.add(builder.toString());
         }
         return TextUtils.join("&", parameters);
@@ -658,7 +672,7 @@ public class APIManager {
 	}
 
 	private APIResponse post(final String urlString, final ContentValues values) {
-		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
+		FormBody.Builder formEncodingBuilder = new FormBody.Builder();
 		for (Entry<String, Object> entry : values.valueSet()) {
 			formEncodingBuilder.add(entry.getKey(), (String)entry.getValue());
 		}

@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from vendor.munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBLockRatio(MuninMongoDBPlugin):
+    args = "-l 0 --base 1000"
+    vlabel = "ratio"
+    title = "MongoDB global lock time ratio"
+    info = "How long the global lock has been held compared to the global execution time"
+    fields = (
+        ('lockratio', dict(
+            label = "Global lock time ratio",
+            info = "How long the global lock has been held compared to the global execution time",
+            type = "GAUGE",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        try:
+            value = float(status["globalLock"]["lockTime"])/float(status["globalLock"]["totalTime"])
+        except KeyError:
+            value = "U"
+        return dict(lockratio=value)
+
+if __name__ == "__main__":
+    MongoDBLockRatio().run()

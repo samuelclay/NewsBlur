@@ -31,7 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -43,14 +43,14 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ImageCache;
+import com.newsblur.util.FileCache;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
-import com.newsblur.view.NonfocusScrollview;
+import com.newsblur.view.ReadingScrollView;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -65,20 +65,19 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private LayoutInflater inflater;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	@FindView(R.id.reading_webview) NewsblurWebview web;
-    @FindView(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
-    @FindView(R.id.reading_scrollview) View fragmentScrollview;
+	@Bind(R.id.reading_webview) NewsblurWebview web;
+    @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
+    @Bind(R.id.reading_scrollview) View fragmentScrollview;
 	private BroadcastReceiver receiver;
-    @FindView(R.id.reading_item_authors) TextView itemAuthors;
-	@FindView(R.id.reading_feed_title) TextView itemFeed;
+    @Bind(R.id.reading_item_authors) TextView itemAuthors;
+	@Bind(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
-	@FindView(R.id.reading_item_tags) FlowLayout tagContainer;
+	@Bind(R.id.reading_item_tags) FlowLayout tagContainer;
 	private View view;
 	private UserDetails user;
-    private Reading activity;
     private DefaultFeedView selectedFeedView;
-    @FindView(R.id.save_story_button) Button saveButton;
-    @FindView(R.id.share_story_button) Button shareButton;
+    @Bind(R.id.save_story_button) Button saveButton;
+    @Bind(R.id.share_story_button) Button shareButton;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;
@@ -118,14 +117,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 		return readingFragment;
 	}
-
-    @Override
-    public void onAttach(Activity activity) {
-        if (activity instanceof Reading) {
-            this.activity = (Reading) activity;
-        }
-        super.onAttach(activity);
-    }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -188,15 +179,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
 
-        // the share/save buttons us compound drawables for layout speed, but they
-        // cannot correctly compute padding.  hard resize the icons to use padding.
-        int iconSizePx = UIUtils.dp2px(this.activity, 30);
-        Drawable shareButtonIcon = shareButton.getCompoundDrawables()[0];
-        shareButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
-        shareButton.setCompoundDrawables(shareButtonIcon, null, null, null);
-        Drawable saveButtonIcon = saveButton.getCompoundDrawables()[0];
-        saveButtonIcon.setBounds(0, 0, iconSizePx, iconSizePx);
-        saveButton.setCompoundDrawables(saveButtonIcon, null, null, null);
+        Reading activity = (Reading) getActivity();
 
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
@@ -209,8 +192,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	    updateSaveButton();
         setupItemCommentsAndShares();
 
-        NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
-        scrollView.registerScrollChangeListener(this.activity);
+        ReadingScrollView scrollView = (ReadingScrollView) view.findViewById(R.id.reading_scrollview);
+        scrollView.registerScrollChangeListener(activity);
 
         setupImmersiveViewGestureDetector();
 
@@ -258,7 +241,11 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
                         i.setData(Uri.parse(finalURL));
-                        startActivity(i);
+                        try {
+                            startActivity(i);
+                        } catch (Exception e) {
+                            android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
+                        }
                     }
                 });
                 builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {
@@ -275,9 +262,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
     @OnClick(R.id.save_story_button) void clickSave() {
         if (story.starred) {
-            FeedUtils.setStorySaved(story, false, activity);
+            FeedUtils.setStorySaved(story, false, getActivity());
         } else {
-            FeedUtils.setStorySaved(story,true, activity);
+            FeedUtils.setStorySaved(story,true, getActivity());
         }
     }
 
@@ -323,24 +310,23 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             Color.parseColor(feedColor),
             Color.parseColor(feedFade),
         };
-        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                colors);
-        feedHeader.setBackgroundDrawable(gradient);
+        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, colors);
+        UIUtils.setViewBackground(feedHeader, gradient);
         feedHeaderBorder.setBackgroundColor(Color.parseColor(feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
-            itemFeed.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
-            itemFeed.setShadowLayer(1, 0, 1, getActivity().getResources().getColor(R.color.half_white));
+            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
+            itemFeed.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_white));
         } else {
-            itemFeed.setTextColor(getActivity().getResources().getColor(R.color.white));
-            itemFeed.setShadowLayer(1, 0, 1, getActivity().getResources().getColor(R.color.half_black));
+            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.white));
+            itemFeed.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_black));
         }
 
 		if (!displayFeedDetails) {
 			itemFeed.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
 		} else {
-			FeedUtils.imageLoader.displayImage(feedIconUrl, feedIcon, false);
+			FeedUtils.iconLoader.displayImage(feedIconUrl, feedIcon, 0, false);
 			itemFeed.setText(feedTitle);
 		}
 
@@ -393,9 +379,37 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
 	private void setupTags() {
-        ViewUtils.setupTags(getActivity());
-		for (String tag : story.tags) {
-			View v = ViewUtils.createTagView(inflater, getFragmentManager(), tag, classifier, this, story.feedId);
+        int tag_green_text = UIUtils.getColor(getActivity(), R.color.tag_green_text);
+        int tag_red_text = UIUtils.getColor(getActivity(), R.color.tag_red_text);
+        Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
+        Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
+		for (final String tag : story.tags) {
+            View v = inflater.inflate(R.layout.tag_view, null);
+
+            TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+            tagText.setText(tag);
+
+            if (classifier != null && classifier.tags.containsKey(tag)) {
+                switch (classifier.tags.get(tag)) {
+                case Classifier.LIKE:
+                    UIUtils.setViewBackground(tagText, tag_green_background);
+                    tagText.setTextColor(tag_green_text);
+                    break;
+                case Classifier.DISLIKE:
+                    UIUtils.setViewBackground(tagText, tag_red_background);
+                    tagText.setTextColor(tag_red_text);
+                    break;
+                }
+            }
+
+            v.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, tag, Classifier.TAG);
+                    classifierFragment.show(getFragmentManager(), "dialog");
+                }
+            });
+
 			tagContainer.addView(v);
 		}
 	}
@@ -583,12 +597,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     }
 
     private String swapInOfflineImages(String html) {
-        ImageCache cache = new ImageCache(getActivity());
-
         Matcher imageTagMatcher = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
         while (imageTagMatcher.find()) {
             String url = imageTagMatcher.group(2);
-            String localPath = cache.getCachedLocation(url);
+            String localPath = FeedUtils.storyImageCache.getCachedLocation(url);
             if (localPath == null) continue;
             html = html.replace(imageTagMatcher.group(1)+"\""+url+"\"", "src=\""+localPath+"\"");
             imageUrlRemaps.put(localPath, url);
@@ -645,32 +657,32 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		case Classifier.AUTHOR:
 			switch (classifierAction) {
 			case Classifier.LIKE:
-				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.positive));
+				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
 				break;
 			case Classifier.DISLIKE:
-				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.negative));
+				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
 				break;
 			case Classifier.CLEAR_DISLIKE:
-				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.half_darkgray));
+				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.half_darkgray));
 				break;
 			case Classifier.CLEAR_LIKE:
-				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.half_darkgray));
+				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.half_darkgray));
 				break;	
 			}
 			break;
 		case Classifier.FEED:
 			switch (classifierAction) {
 			case Classifier.LIKE:
-				itemFeed.setTextColor(getActivity().getResources().getColor(R.color.positive));
+				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
 				break;
 			case Classifier.DISLIKE:
-				itemFeed.setTextColor(getActivity().getResources().getColor(R.color.negative));
+				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
 				break;
 			case Classifier.CLEAR_DISLIKE:
-				itemFeed.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
 				break;
 			case Classifier.CLEAR_LIKE:
-				itemFeed.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
 				break;
 			}
 			break;

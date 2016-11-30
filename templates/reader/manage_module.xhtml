@@ -1,0 +1,121 @@
+{% load utils_tags %}
+
+<div class="NB-module NB-module-manage">
+    <h5 class="NB-module-header">
+	 	Manage
+    </h5>
+
+    <div class="NB-module-item">
+        <div class="NB-module-stats-counts">
+			<ul class="NB-menu-manage NB-menu-manage-notop">
+				<li class="NB-menu-item NB-menu-manage-preferences">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Preferences
+					</div>
+				</li>
+				<li class="NB-menu-item NB-menu-manage-friends">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Followers
+					</div>
+				</li>
+				<li class="NB-menu-item NB-menu-manage-profile-editor">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Blurblog Profile
+					</div>
+				</li>
+				<li class="NB-menu-item NB-menu-manage-account">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-logout NB-modal-submit-grey NB-modal-submit-button">
+						Logout
+					</div>
+					<div class="NB-menu-manage-title">
+						Account
+					</div>
+				</li>
+				<li class="NB-menu-separator"></li>
+				<li class="NB-menu-item NB-menu-manage-import">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Import sites
+					</div>
+				</li>
+                <li class="NB-menu-item NB-menu-manage-goodies">
+                    <div class="NB-menu-manage-image"></div>
+                    <div class="NB-menu-manage-title">
+                        Goodies &amp; Apps
+                    </div>
+                </li>
+				{% if user.is_staff %}
+                <li class="NB-menu-item NB-menu-manage-notifications">
+                    <div class="NB-menu-manage-image"></div>
+                    <div class="NB-menu-manage-title">
+                        Notifications
+                    </div>
+                </li>
+                {% endif %}
+                <li class="NB-menu-item NB-menu-manage-newsletters">
+                    <div class="NB-menu-manage-image"></div>
+                    <div class="NB-menu-manage-title">
+                        Email Newsletters
+                    </div>
+                </li>
+				<li class="NB-menu-item NB-menu-manage-tutorial">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Tips &amp; Tricks
+					</div>
+				</li>
+				<li class="NB-menu-item NB-menu-manage-keyboard">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Keyboard
+					</div>
+				</li>
+				<li class="NB-menu-separator"></li>
+				{% if not user.profile.is_premium %}
+				<li class="NB-menu-item NB-menu-manage-premium">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Premium upgrade
+					</div>
+				</li>
+				{% endif %}
+				<li class="NB-menu-item NB-menu-manage-organizer">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Organize Sites
+					</div>
+				</li>
+				<li class="NB-menu-item NB-menu-manage-feedchooser">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						{% if not user.profile.is_premium %}
+							Choose Your 64
+						{% else %}
+							Mute Sites
+						{% endif %}
+					</div>
+				</li>
+				<li class="NB-menu-item NB-menu-manage-trainer">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Trainer
+					</div>
+				</li>
+				<li class="NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read">
+					<div class="NB-menu-manage-image"></div>
+					<div class="NB-menu-manage-title">
+						Mark all as read
+					</div>
+				</li>
+				<li class="NB-menu-manage-site-info" style="border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; display: none;">
+					<div class="NB-menu-manage-image"></div><span class="NB-menu-manage-title">Manage NewsBlur</span>
+				</li>
+			</ul>
+
+        </div>
+    </div>
+</div>

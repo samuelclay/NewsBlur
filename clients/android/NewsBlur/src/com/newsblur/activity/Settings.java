@@ -1,38 +1,30 @@
 package com.newsblur.activity;
 
-import com.newsblur.R;
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.MenuItem;
+
+import com.newsblur.fragment.SettingsFragment;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
-import android.content.SharedPreferences;
-import android.os.Build;
-import android.os.Bundle;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceManager;
-import android.view.MenuItem;
-
-public class Settings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class Settings extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         PrefsUtils.applyThemePreference(this);
 
         super.onCreate(savedInstanceState);
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        PreferenceManager preferenceManager = super.getPreferenceManager();
-        preferenceManager.setSharedPreferencesName(PrefConstants.PREFERENCES);
+
+        SettingsFragment fragment = new SettingsFragment();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
+
         SharedPreferences prefs = getSharedPreferences(PrefConstants.PREFERENCES, 0);
         prefs.registerOnSharedPreferenceChangeListener(this);
-        addPreferencesFromResource(R.layout.activity_settings);
-
-        // Remove the reading category of references on pre-4.4 devices as it only contains
-        // the single tap for immersive preference
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            PreferenceCategory readingCategory = (PreferenceCategory)findPreference("reading");
-            getPreferenceScreen().removePreference(readingCategory);
-        }
     }
 
     @Override

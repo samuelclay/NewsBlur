@@ -37,6 +37,7 @@
 #import "StoriesCollection.h"
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
+#import "MenuViewController.h"
 
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
@@ -108,6 +109,9 @@
     self.storyTitlesTable.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    if ([ThemeManager themeManager].isDarkTheme) {
+        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+    }
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
     [separatorBarButton setEnabled:NO];
     separatorBarButton.isAccessibilityElement = NO;
@@ -272,6 +276,8 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [self.storyTitlesTable reloadData];
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -668,23 +674,23 @@
     
     if (storiesCollection.isSocialView) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             [storiesCollection.activeFeed objectForKey:@"user_id"],
                             storiesCollection.feedPage];
     } else if (storiesCollection.isSavedView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/starred_stories/?page=%d&v=2&tag=%@",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage,
                             [storiesCollection.activeSavedStoryTag urlEncode]];
     } else if (storiesCollection.isReadView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/read_stories/?page=%d&v=2",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?include_hidden=true&page=%d",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             [storiesCollection.activeFeed objectForKey:@"id"],
                             storiesCollection.feedPage];
     }
@@ -774,7 +780,7 @@
             [offlineStories addObject:[NSJSONSerialization
                                        JSONObjectWithData:[[story objectForKey:@"story_json"]
                                                            dataUsingEncoding:NSUTF8StringEncoding]
-                                       options:nil error:nil]];
+                                       options:0 error:nil]];
         }
         [cursor close];
         
@@ -815,14 +821,12 @@
 }
 
 - (void)showOfflineNotifier {
-//    [self.notifier hide];
     self.notifier.style = NBOfflineStyle;
     self.notifier.title = @"Offline";
     [self.notifier show];
 }
 
 - (void)showLoadingNotifier {
-    [self.notifier hide];
     self.notifier.style = NBLoadingStyle;
     self.notifier.title = @"Fetching recent stories...";
     [self.notifier show];
@@ -874,24 +878,24 @@
         if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"%@/social/river_stories/?global_feed=true&page=%d",
-                                NEWSBLUR_URL,
+                                self.appDelegate.url,
                                 storiesCollection.feedPage];
             
         } else {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"%@/social/river_stories/?page=%d", 
-                                NEWSBLUR_URL,
+                                self.appDelegate.url,
                                 storiesCollection.feedPage];
         }
     } else if (storiesCollection.isSavedView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/starred_stories/?page=%d&v=2",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage];
     } else if (storiesCollection.isReadView) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/read_stories/?page=%d&v=2",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             storiesCollection.feedPage];
     } else {
         NSString *feeds = @"";
@@ -902,7 +906,7 @@
         }
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
-                            NEWSBLUR_URL,
+                            self.appDelegate.url,
                             feeds,
                             storiesCollection.feedPage];
     }
@@ -956,7 +960,7 @@
     if (request.isCancelled) {
         NSLog(@"Cancelled");
         return;
-    } else if ([request responseStatusCode] >= 500) {
+    } else if ([request responseStatusCode] >= 500 || [request responseStatusCode] == 404) {
         self.isOnline = NO;
         self.isShowingFetching = NO;
 //        storiesCollection.feedPage = 1;
@@ -1103,6 +1107,11 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
+        BOOL offlineEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+        if (!offlineEnabled) {
+            NSLog(@"Not saved stories in db, offline not supported.");
+            return;
+        }
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             for (NSDictionary *story in confirmedNewStories) {
                 [db executeUpdate:@"INSERT into stories"
@@ -1338,7 +1347,7 @@
     }
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor = [[story objectForKey:@"story_authors"] uppercaseString];
+        cell.storyAuthor = [[[story objectForKey:@"story_authors"] uppercaseString] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     } else {
         cell.storyAuthor = @"";
     }
@@ -1635,6 +1644,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 if ([storiesCollection isStoryUnread:story]) {
                     [storiesCollection markStoryRead:story];
+                    [storiesCollection syncStoryAsRead:story];
                 }
             }
             
@@ -1725,9 +1735,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
     
-    if (p.x < 30.0) {
+    if ([longPressStoryTitle isEqualToString:@"ask"]) {
         appDelegate.activeStory = story;
-        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath];
+        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath cell:cell];
     } else if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
         appDelegate.activeStory = story;
         [appDelegate showSendTo:self sender:cell];
@@ -1751,18 +1761,36 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self doOpenMarkReadMenu:nil];
 }
 
-- (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath {
+- (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath cell:(FeedDetailTableCell *)cell {
     CGRect rect = [self.storyTitlesTable rectForRowAtIndexPath:indexPath];
-    rect.size.width = 30.0;
     
-    [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.storyTitlesTable sourceRect:rect completionHandler:^(BOOL marked) {
+    NSMutableArray *items = [NSMutableArray array];
+    BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
+    
+    [items addObject:[self itemWithTitle:isSaved ? @"Unsave This Story" : @"Save This Story" iconName:@"clock.png" handler:^{
+        [storiesCollection toggleStorySaved:story];
+    }]];
+    
+    [items addObject:[self itemWithTitle:@"Send This Story To..." iconName:@"menu_icn_mail.png" handler:^{
+        [appDelegate showSendTo:self sender:cell];
+    }]];
+    
+    [items addObject:[self itemWithTitle:@"Train This Story" iconName:@"menu_icn_train.png" handler:^{
+        [appDelegate openTrainStory:cell];
+    }]];
+    
+    [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.storyTitlesTable sourceRect:rect extraItems:items completionHandler:^(BOOL marked) {
         [self.storyTitlesTable reloadData];
     }];
 }
 
+- (NSDictionary *)itemWithTitle:(NSString *)title iconName:(NSString *)iconName handler:(void (^)(void))handler {
+    return @{@"title" : title, @"icon" : iconName, @"handler" : handler};
+}
+
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSMutableArray *feedIds = [NSMutableArray array];
@@ -1866,32 +1894,39 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.appDelegate.feedDetailMenuViewController view];
     NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuViewController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
+    [self.appDelegate.feedDetailMenuNavigationController popToRootViewControllerAnimated:NO];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
 }
 
 - (void)confirmDeleteSite {
-    UIAlertView *deleteConfirm = [[UIAlertView alloc] 
-                                  initWithTitle:@"Positive?" 
-                                  message:nil 
-                                  delegate:self 
-                                  cancelButtonTitle:@"Cancel" 
-                                  otherButtonTitles:@"Delete", 
-                                  nil];
-    [deleteConfirm show];
-    [deleteConfirm setTag:0];
+    MenuViewController *viewController = [MenuViewController new];
+    viewController.title = @"Positive?";
+    NSString *title = storiesCollection.isRiverView ? @"Delete Folder" : @"Delete Site";
+    
+    [viewController addTitle:title iconName:@"menu_icn_delete.png" selectionShouldDismiss:YES handler:^{
+        if (storiesCollection.isRiverView) {
+            [self deleteFolder];
+        } else {
+            [self deleteSite];
+        }
+    }];
+    
+    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
+}
+
+- (void)confirmMuteSite {
+    MenuViewController *viewController = [MenuViewController new];
+    viewController.title = @"Positive?";
+    
+    [viewController addTitle:@"Mute Site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:YES handler:^{
+        [self muteSite];
+    }];
+    
+    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 0) {
-        // Delete
-        if (buttonIndex != alertView.cancelButtonIndex) {
-            if (storiesCollection.isRiverView) {
-                [self deleteFolder];
-            } else {
-                [self deleteSite];
-            }
-        }
-    } else if (alertView.tag == 1) {
+    if (alertView.tag == 1) {
         // Rename
         if (buttonIndex != alertView.cancelButtonIndex) {
             NSString *newTitle = [[alertView textFieldAtIndex:0] text];
@@ -1905,9 +1940,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Renaming...";
     
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/rename_feed", NEWSBLUR_URL];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/rename_feed", self.appDelegate.url];
     if (storiesCollection.isRiverView) {
-        urlString = [NSString stringWithFormat:@"%@/reader/rename_folder", NEWSBLUR_URL];
+        urlString = [NSString stringWithFormat:@"%@/reader/rename_folder", self.appDelegate.url];
     }
     NSURL *url = [NSURL URLWithString:urlString];
     
@@ -1950,7 +1985,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     HUD.labelText = @"Deleting...";
     
     NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_feed", 
-                                  NEWSBLUR_URL];
+                                  self.appDelegate.url];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
@@ -1977,7 +2012,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     HUD.labelText = @"Deleting...";
     
     NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_folder", 
-                                  NEWSBLUR_URL];
+                                  self.appDelegate.url];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
@@ -2000,12 +2035,132 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [request startAsynchronous];
 }
 
-- (void)openMoveView {
-    [appDelegate showMoveSite];
+- (void)muteSite {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Muting...";
+    
+    NSMutableArray *activeIdentifiers = [self.appDelegate.dictFeeds.allKeys mutableCopy];
+    NSString *thisIdentifier = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
+    [activeIdentifiers removeObject:thisIdentifier];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    for (id identifier in activeIdentifiers) {
+        [request addPostValue:identifier forKey:@"approved_feeds"];
+    }
+    [request setCompletionBlock:^(void) {
+        [self.appDelegate reloadFeedsView:YES];
+        [self.appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    request.didFailSelector = @selector(requestFailed:);
+    request.timeOutSeconds = 30;
+    [request startAsynchronous];
 }
+
+- (void)performMoveToFolder:(id)toFolder {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    ASIFormDataRequest *request = nil;
+    
+    if (self.appDelegate.storiesCollection.isRiverView) {
+        HUD.labelText = @"Moving folder...";
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_folder_to_folder", self.appDelegate.url];
+        NSURL *url = [NSURL URLWithString:urlString];
+        request = [ASIFormDataRequest requestWithURL:url];
+        NSString *activeFolder = self.appDelegate.storiesCollection.activeFolder;
+        NSString *parentFolderName = [self.appDelegate extractParentFolderName:activeFolder];
+        NSString *fromFolder = [self.appDelegate extractFolderName:parentFolderName];
+        NSString *toFolderIdentifier = [self.appDelegate extractFolderName:toFolder];
+        NSString *folderName = [self.appDelegate extractFolderName:activeFolder];
+        [request setPostValue:fromFolder forKey:@"in_folder"];
+        [request setPostValue:toFolderIdentifier forKey:@"to_folder"];
+        [request setPostValue:folderName forKey:@"folder_name"];
+    } else {
+        HUD.labelText = @"Moving site...";
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder", self.appDelegate.url];
+        NSURL *url = [NSURL URLWithString:urlString];
+        request = [ASIFormDataRequest requestWithURL:url];
+        NSString *fromFolder = [self.appDelegate extractFolderName:self.appDelegate.storiesCollection.activeFolder];
+        NSString *toFolderIdentifier = [self.appDelegate extractFolderName:toFolder];
+        NSString *feedIdentifier = [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"];
+        [request setPostValue:fromFolder forKey:@"in_folder"];
+        [request setPostValue:toFolderIdentifier forKey:@"to_folder"];
+        [request setPostValue:feedIdentifier forKey:@"feed_id"];
+    }
+    
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(moveToFolderFinished:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setUserInfo:@{@"toFolder" : toFolder}];
+    [request startAsynchronous];
+}
+
+- (void)moveToFolderFinished:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] >= 500) {
+        return [self requestFailed:request];
+    }
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    
+    NSString *responseString = [request responseString];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization
+                             JSONObjectWithData:responseData
+                             options:kNilOptions
+                             error:&error];
+    int code = [[results valueForKey:@"code"] intValue];
+    if (code != -1) {
+        self.appDelegate.storiesCollection.activeFolder = request.userInfo[@"toFolder"];
+        [self.appDelegate reloadFeedsView:NO];
+    }
+}
+
+- (void)openMoveView {
+    MenuViewController *viewController = [MenuViewController new];
+    viewController.title = @"Move To";
+    
+    __weak __typeof(&*self)weakSelf = self;
+    
+    for (NSString *folder in self.appDelegate.dictFoldersArray) {
+        NSString *title = folder;
+        NSString *iconName = @"menu_icn_move.png";
+        
+        if (![title hasPrefix:@"river_"] && ![title hasSuffix:@"_stories"]) {
+            if ([title isEqualToString:@"everything"]) {
+                title = @"Top Level";
+                iconName = @"menu_icn_all.png";
+            } else {
+                NSArray *components = [title componentsSeparatedByString:@" - "];
+                title = components.lastObject;
+                for (NSUInteger idx = 0; idx < components.count; idx++) {
+                    title = [@"\t" stringByAppendingString:title];
+                }
+            }
+            
+            [viewController addTitle:title iconName:iconName selectionShouldDismiss:YES handler:^{
+                [weakSelf performMoveToFolder:folder];
+            }];
+        }
+    }
+    
+    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
+}
+
+//- (void)openMoveView {
+//    [appDelegate showMoveSite];
+//}
 
 - (void)openTrainSite {
     [appDelegate openTrainSite];
+}
+
+- (void)openNotificationsWithFeed:(NSString *)feedId {
+    [appDelegate openNotificationsWithFeed:feedId];
 }
 
 - (void)openRenameSite {
@@ -2127,7 +2282,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)instafetchFeed {
     NSString *urlString = [NSString
                            stringWithFormat:@"%@/reader/refresh_feed/%@", 
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            [storiesCollection.activeFeed objectForKey:@"id"]];
     [self cancelRequests];
     ASIHTTPRequest *request = [self requestWithURL:urlString];
@@ -2179,7 +2334,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *feedIdsQuery = [NSString stringWithFormat:@"?feed_ids=%@", 
                                [[keys valueForKey:@"description"] componentsJoinedByString:@"&feed_ids="]];        
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons%@",
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            feedIdsQuery];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
@@ -2223,6 +2378,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];

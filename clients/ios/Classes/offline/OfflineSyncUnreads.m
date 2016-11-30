@@ -32,7 +32,7 @@
 
     NSURL *url = [NSURL URLWithString:[NSString
                                        stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
-                                       NEWSBLUR_URL]];
+                                       self.appDelegate.url]];
     request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];
     [request setResponseSerializer:[AFJSONResponseSerializer serializer]];
     [request setCompletionBlockWithSuccess:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {

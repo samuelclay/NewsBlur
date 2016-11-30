@@ -18,8 +18,7 @@
             android:layout_marginTop="50dp"
             android:gravity="center_horizontal"
             android:text="@string/empty_list_view_loading"
-            style="?defaultText"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/empty_view_image"
@@ -45,7 +44,6 @@
         android:id="@+id/itemlistfragment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="?divider"
-        android:dividerHeight="2dp" />
+        android:divider="@null" />
     
 </RelativeLayout>

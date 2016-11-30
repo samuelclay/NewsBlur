@@ -2,7 +2,7 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/lightgray"
+    android:background="@color/gray80"
     android:stretchColumns="*" >
 
     <TableRow
@@ -18,7 +18,7 @@
             style="?profileCount"
             android:gravity="center_horizontal"
             android:paddingTop="12dp"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:textStyle="bold" />
         
         <TextView
@@ -30,7 +30,7 @@
             style="?profileCount"
             android:gravity="center_horizontal"
             android:paddingTop="12dp"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
@@ -42,7 +42,7 @@
             style="?profileCount"
             android:gravity="center_horizontal"
             android:paddingTop="12dp"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -61,7 +61,7 @@
             android:paddingBottom="15dp"
             android:paddingTop="3dp"
             android:text="@string/profile_shared"
-            android:textSize="11dp" />
+            android:textSize="11sp" />
 
         <TextView
             android:layout_width="0dp"
@@ -73,7 +73,7 @@
             android:paddingBottom="15dp"
             android:paddingTop="3dp"
             android:text="@string/profile_following"
-            android:textSize="11dp" />
+            android:textSize="11sp" />
 
         <TextView
             android:layout_width="0dp"
@@ -85,7 +85,7 @@
             android:paddingBottom="15dp"
             android:paddingTop="3dp"
             android:text="@string/profile_followers"
-            android:textSize="11dp" />
+            android:textSize="11sp" />
 
     </TableRow>
 

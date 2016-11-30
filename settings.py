@@ -128,7 +128,8 @@ OAUTH2_PROVIDER = {
         'ifttt': 'Pair your NewsBlur account with other IFTTT channels.',
     },
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 60*60*24*365*10 # 10 years
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60*60*24*365*10, # 10 years
+    'AUTHORIZATION_CODE_EXPIRE_SECONDS': 60*60, # 1 hour
 }
 
 # ===========
@@ -291,6 +292,7 @@ INSTALLED_APPS = (
     'apps.profile',
     'apps.recommendations',
     'apps.statistics',
+    'apps.notifications',
     'apps.static',
     'apps.mobile',
     'apps.push',
@@ -524,7 +526,6 @@ REDIS_SESSIONS = {
 }
 
 CELERY_REDIS_DB_NUM = 4
-CELERY_REDIS_DB = CELERY_REDIS_DB_NUM
 SESSION_REDIS_DB = 5
 
 # =================
@@ -565,16 +566,11 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 # = Configurations =
 # ==================
-try:
-    from gunicorn_conf import *
-except ImportError, e:
-    pass
 
 from local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
-        'gunicorn',
         'raven.contrib.django',
         'django_ses',
 
@@ -582,7 +578,6 @@ if not DEBUG:
     # RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
     
-
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
@@ -634,6 +629,7 @@ MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 #     MONGOPRIMARYDB = MONGODB
 # MONGODB = connect(MONGO_DB.pop('name'), host=MONGO_URI, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+# MONGODB = connect(host="mongodb://localhost:27017/newsblur", connect=False)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',

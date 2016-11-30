@@ -44,9 +44,12 @@ static UIFont *textFont = nil;
         cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
         
-        [self.contentView addSubview:cellContent];
+        // Clear out half pixel border on top and bottom that the draw code can't touch
+        UIView *selectedBackground = [[UIView alloc] init];
+        [selectedBackground setBackgroundColor:[UIColor clearColor]];
+        self.selectedBackgroundView = selectedBackground;
 
-        [self setupGestures];
+        [self.contentView addSubview:cellContent];
     }
 
     return self;
@@ -86,8 +89,13 @@ static UIFont *textFont = nil;
         return;
     }
     
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL isNotifications = [[preferences stringForKey:@"feed_swipe_left"]
+                            isEqualToString:@"notifications"];
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
-    [self setFirstStateIconName:self.isSocial ? @"menu_icn_fetch_subscribers.png" : @"train.png"
+    [self setFirstStateIconName:(self.isSocial ? @"menu_icn_fetch_subscribers.png" :
+                                 isNotifications ? @"menu_icn_notifications.png" :
+                                 @"train.png")
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil
@@ -141,19 +149,19 @@ static UIFont *textFont = nil;
     UIColor *backgroundColor;
     
     backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromRGB(0xFFFFD2) :
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x405060, 0x000022) :
                       cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
                       cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
                       UIColorFromRGB(0xF7F8F5);
 
     [backgroundColor set];
-    CGContextFillRect(context, r);
+    CGContextFillRect(context, self.frame);
     
     if (cell.highlighted || cell.selected) {
 //        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
         
         // top border
-        UIColor *highlightBorderColor = UIColorFromRGB(0xE3D0AE);
+        UIColor *highlightBorderColor = UIColorFromLightDarkRGB(0xE3D0AE, 0x1F1F72);
         CGFloat lineWidth = 0.5f;
         CGContextSetStrokeColor(context, CGColorGetComponents([highlightBorderColor CGColor]));
         CGContextSetLineWidth(context, lineWidth);
@@ -170,18 +178,21 @@ static UIFont *textFont = nil;
         CGContextStrokePath(context);
     }
     
-    [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
+    if (cell.savedStoriesCount > 0) {
+        [cell.unreadCount drawInRect:r ps:cell.savedStoriesCount nt:0 listType:NBFeedListSaved];
+    } else {
+        [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
                         listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)];
-
+    }
     
     UIColor *textColor = cell.highlighted || cell.selected ?
                          UIColorFromRGB(NEWSBLUR_BLACK_COLOR):
-                         UIColorFromRGB(0x3a3a3a);
+                         UIColorFromRGB(0x3A3A3A);
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor:boldFontDescriptor size:0.0];
+        font = [UIFont fontWithDescriptor:boldFontDescriptor size:fontDescriptor.pointSize];
     } else {
         font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
     }
@@ -222,7 +233,9 @@ static UIFont *textFont = nil;
 }
 
 - (void)redrawUnreadCounts {
-    if (cell.isSaved) {
+    if (cell.savedStoriesCount) {
+        cell.unreadCount.blueCount = cell.savedStoriesCount;
+    } else if (cell.isSaved) {
         cell.unreadCount.blueCount = cell.positiveCount;
     } else {
         cell.unreadCount.psCount = cell.positiveCount;

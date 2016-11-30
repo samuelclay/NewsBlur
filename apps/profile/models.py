@@ -162,7 +162,7 @@ class Profile(models.Model):
     
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
-
+        
         EmailNewPremium.delay(user_id=self.user.pk)
         
         self.is_premium = True
@@ -357,9 +357,10 @@ class Profile(models.Model):
         stripe_cancel = self.cancel_premium_stripe()
         return paypal_cancel or stripe_cancel
     
-    def cancel_premium_paypal(self):
+    def cancel_premium_paypal(self, second_most_recent_only=False):
         transactions = PayPalIPN.objects.filter(custom=self.user.username,
-                                                txn_type='subscr_signup')
+                                                txn_type='subscr_signup').order_by('-subscr_date')
+        
         if not transactions:
             return
         
@@ -371,14 +372,24 @@ class Profile(models.Model):
             'API_CA_CERTS': False,
         }
         paypal = PayPalInterface(**paypal_opts)
-        transaction = transactions[0]
+        if second_most_recent_only:
+            # Check if user has an active subscription. If so, cancel it because a new one came in.
+            if len(transactions) > 1:
+                transaction = transactions[1]
+            else:
+                return False
+        else:
+            transaction = transactions[0]
         profileid = transaction.subscr_id
         try:
             paypal.manage_recurring_payments_profile_status(profileid=profileid, action='Cancel')
         except PayPalAPIResponseError:
-            logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription")
+            logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % profileid)
         else:
-            logging.user(self.user, "~FRCanceling Paypal subscription")
+            if second_most_recent_only:
+                logging.user(self.user, "~FRCanceling ~BR~FWsecond-oldest~SB~FR Paypal subscription: %s" % profileid)
+            else:
+                logging.user(self.user, "~FRCanceling Paypal subscription: %s" % profileid)
         
         return True
         
@@ -773,6 +784,36 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
     
+    def send_launch_turntouch_email(self, force=False):
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending launch TT email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
+            return
+        
+        params = dict(receiver_user_id=self.user.pk, email_type='launch_turntouch')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_launch_turntouch.txt', data)
+        html    = render_to_string('mail/email_launch_turntouch.xhtml', data)
+        subject = "Introducing Turn Touch for NewsBlur"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending launch TT email for user: %s months, %s" % (months_ago, self.user.email))
+    
     def grace_period_email_sent(self, force=False):
         emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
                                                 email_type='premium_expire_grace')
@@ -883,6 +924,8 @@ def paypal_signup(sender, **kwargs):
     except:
         pass
     user.profile.activate_premium()
+    user.profile.cancel_premium_stripe()
+    user.profile.cancel_premium_paypal(second_most_recent_only=True)
 subscription_signup.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
@@ -931,6 +974,7 @@ def stripe_signup(sender, full_json, **kwargs):
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
         profile.activate_premium()
+        profile.cancel_premium_paypal()
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
@@ -977,7 +1021,39 @@ def blank_authenticate(username, password=""):
     encoded_username = authenticate(username=username, password=username)
     if encoded_blank == hash or encoded_username == user:
         return user
-            
+
+# Unfinished
+class MEmailUnsubscribe(mongo.Document):
+    user_id = mongo.IntField()
+    email_type = mongo.StringField()
+    date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    EMAIL_TYPE_FOLLOWS = 'follows'
+    EMAIL_TYPE_REPLIES = 'replies'
+    EMAIL_TYOE_PRODUCT = 'product'
+    
+    meta = {
+        'collection': 'email_unsubscribes',
+        'allow_inheritance': False,
+        'indexes': ['user_id', 
+                    {'fields': ['user_id', 'email_type'], 
+                     'unique': True,
+                     'types': False}],
+    }
+    
+    def __unicode__(self):
+        return "%s unsubscribed from %s on %s" % (self.user_id, self.email_type, self.date)
+    
+    @classmethod
+    def user(cls, user_id):
+        unsubs = cls.objects(user_id=user_id)
+        return unsubs
+    
+    @classmethod
+    def unsubscribe(cls, user_id, email_type):
+        cls.objects.create()
+
+
 class MSentEmail(mongo.Document):
     sending_user_id = mongo.IntField()
     receiver_user_id = mongo.IntField()
@@ -1019,7 +1095,7 @@ class PaymentHistory(models.Model):
         }
     
     @classmethod
-    def report(cls, months=25):
+    def report(cls, months=26):
         def _counter(start_date, end_date):
             payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
             payments = payments.aggregate(avg=Avg('payment_amount'), 
@@ -1028,7 +1104,7 @@ class PaymentHistory(models.Model):
             print "%s-%02d-%02d - %s-%02d-%02d:\t$%.2f\t$%-6s\t%-4s" % (
                 start_date.year, start_date.month, start_date.day,
                 end_date.year, end_date.month, end_date.day,
-                round(payments['avg'], 2), payments['sum'], payments['count'])
+                round(payments['avg'] if payments['avg'] else 0, 2), payments['sum'] if payments['sum'] else 0, payments['count'])
             return payments['sum']
 
         print "\nMonthly Totals:"
@@ -1041,14 +1117,44 @@ class PaymentHistory(models.Model):
             total = _counter(start_date, end_date)
             month_totals[start_date.strftime("%Y-%m")] = total
 
+        print "\nCurrent Month Totals:"
+        month_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_time = start_date + datetime.timedelta(days=31)
+            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+            if end_date > now: end_date = now
+            month_totals[start_date.strftime("%Y-%m")] = _counter(start_date, end_date)
+
+        print "\nMTD Totals:"
+        month_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_date = now - dateutil.relativedelta.relativedelta(years=y)
+            if end_date > now: end_date = now
+            month_totals[start_date.strftime("%Y-%m")] = _counter(start_date, end_date)
+
         print "\nYearly Totals:"
         year_totals = {}
         years = datetime.datetime.now().year - 2009
         for y in reversed(range(years)):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
-            end_time = start_date + datetime.timedelta(days=365)
-            end_date = datetime.datetime(end_time.year, end_time.month, 30) - datetime.timedelta(seconds=1)
+            end_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y-1) - datetime.timedelta(seconds=1)
+            if end_date > now: end_date = now
+            year_totals[now.year - y] = _counter(start_date, end_date)
+
+        print "\nYTD Totals:"
+        year_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_date = now - dateutil.relativedelta.relativedelta(years=y)
             if end_date > now: end_date = now
             year_totals[now.year - y] = _counter(start_date, end_date)
 

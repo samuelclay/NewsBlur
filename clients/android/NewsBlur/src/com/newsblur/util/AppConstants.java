@@ -2,6 +2,8 @@ package com.newsblur.util;
 
 public class AppConstants {
 
+    private AppConstants() {} // util class - no instances
+
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
@@ -11,8 +13,11 @@ public class AppConstants {
 	
 	public static final String FOLDER_PRE = "folder_collapsed";
 
-    // reading view font sizes, in em
+    // reading view font sizes. in em
 	public static final float[] READING_FONT_SIZE = {0.75f, 0.9f, 1.0f, 1.2f, 1.5f, 2.0f};
+
+    // story list view font sizes. as a fraction of the default font sizes used
+	public static final float[] LIST_FONT_SIZE = {0.7f, 0.85f, 1.0f, 1.2f, 1.4f, 1.8f};
 	
     // the name to give the "root" folder in the local DB since the API does not assign it one.
     // this name should be unique and such that it will sort to the beginning of a list, ideally.
@@ -30,7 +35,7 @@ public class AppConstants {
     public static final long VACUUM_TIME_MILLIS = 12L * 60L * 60L * 1000L;
 
     // how often to clean up the DB
-    public static final long CLEANUP_TIME_MILLIS = 1L * 60L * 60L * 1000L;
+    public static final long CLEANUP_TIME_MILLIS = 3L * 60L * 60L * 1000L;
 
     // how often to trigger the BG service. slightly longer than how often we will find new stories,
     // to account for the fact that it is approximate, and missing a cycle is bad.
@@ -45,6 +50,14 @@ public class AppConstants {
     // for how long to back off from background syncs after a hard API failure
     public static final long API_BACKGROUND_BACKOFF_MILLIS = 5L * 60L * 1000L;
 
+    // timeouts for API calls, set to something more sane than the default of infinity
+    public static final long API_CONN_TIMEOUT_SECONDS = 60L;
+    public static final long API_READ_TIMEOUT_SECONDS = 120L;
+
+    // timeouts for image prefetching, which are a bit tighter, since they are only for caching
+    public static final long IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS = 10L;
+    public static final long IMAGE_PREFETCH_READ_TIMEOUT_SECONDS = 30L;
+
     // when generating a request for multiple feeds, limit the total number requested to prevent
     // unworkably long URLs
     public static final int MAX_FEED_LIST_SIZE = 250;
@@ -52,11 +65,8 @@ public class AppConstants {
     // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
     public static final int READING_STORY_PRELOAD = 10;
 
-    // max old stories to keep in the DB per feed before fetching new unreads
-    public static final int MAX_READ_STORIES_STORED = 500;
-
     // how many unread stories to fetch via hash at a time
-    public static final int UNREAD_FETCH_BATCH_SIZE = 100;
+    public static final int UNREAD_FETCH_BATCH_SIZE = 50;
 
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 6;
@@ -78,5 +88,12 @@ public class AppConstants {
 
     // cap duty cycle backoffs to prevent unnecessarily large backoffs
     public final static long DUTY_CYCLE_BACKOFF_CAP_MILLIS = 5L * 1000L;
+
+    // link to the web-based forgot password flow
+    public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
+
+    // how many helper threads to use for loading icons and thumbnails. things look smoother
+    // if this is set to 3+, but as of late 2016, too many devices get resource constrained past 2
+    public final static int IMAGE_LOADER_THREAD_COUNT = 2;
 
 }

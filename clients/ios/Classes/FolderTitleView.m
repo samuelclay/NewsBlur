@@ -86,14 +86,14 @@
 
     // Background
     [NewsBlurAppDelegate fillGradient:rect
-                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc0, 0x666666, 0x333333)
-                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffd0, 0x777777, 0x444444)];
+                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc6, 0x6A6A6A, 0x444444)
+                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
 //    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
 //    [backgroundColor set];
 //    CGContextFillRect(context, rect);
     
     // Borders
-    UIColor *topColor = UIColorFromRGB(0xFDFDFD);
+    UIColor *topColor = UIColorFromLightSepiaMediumDarkRGB(0xFDFDFD, 0xFDFDF6, 0x878B8A, 0x474B4A);
     CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
     CGContextBeginPath(context);
@@ -102,7 +102,7 @@
     CGContextStrokePath(context);
     
     // bottom border
-    UIColor *bottomColor = UIColorFromRGB(0xB7BBAA);
+    UIColor *bottomColor = UIColorFromLightSepiaMediumDarkRGB(0xB7BBAA, 0xe0e0a6, 0x404040, 0x0D0D0D);
     CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, 0, rect.size.height-0.25f);
@@ -110,7 +110,7 @@
     CGContextStrokePath(context);
     
     // Folder title
-    UIColor *textColor = UIColorFromRGB(0x4D4D4D);
+    UIColor *textColor = UIColorFromRGB(0x4C4D4A);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
@@ -183,7 +183,14 @@
             disclosureButton.tag = section;
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
-            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
+            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
+            if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleSepia]) {
+                disclosureBorder = [UIImage imageNamed:@"disclosure_border_sepia"];
+            } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleMedium]) {
+                disclosureBorder = [UIImage imageNamed:@"disclosure_border_medium"];
+            } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleDark]) {
+                disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
+            }
             [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 3, 29, 29)];
         } else {
             // Everything/Saved folder doesn't get a button

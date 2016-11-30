@@ -48,7 +48,7 @@
     
     self.navigationItem.title = @"Find Friends";
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
-                                                                     style: UIBarButtonSystemItemCancel 
+                                                                     style: UIBarButtonItemStylePlain 
                                                                     target: self 
                                                                     action: @selector(doCancelButton)];
     [self.navigationItem setRightBarButtonItem:cancelButton];
@@ -117,7 +117,7 @@
 
 - (void)loadFriendsList:(NSString *)query {    
     NSString *urlString = [NSString stringWithFormat:@"%@/social/find_friends?query=%@&limit=10",
-                           NEWSBLUR_URL,
+                           self.appDelegate.url,
                            query];
     NSURL *url = [NSURL URLWithString:urlString];
     
@@ -131,7 +131,7 @@
 
 - (void)loadSuggestedFriendsList {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
-                           NEWSBLUR_URL];
+                           self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];

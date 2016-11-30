@@ -144,6 +144,9 @@
     spacer3BarButton.width = -6;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    if ([ThemeManager themeManager].isDarkTheme) {
+        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+    }
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
                                                     target:nil
                                                     action:nil];
@@ -164,7 +167,7 @@
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
-                                     style:UIBarButtonSystemItemAction
+                                     style:UIBarButtonItemStylePlain
                                      target:self
                                      action:@selector(subscribeToBlurblog)
                                      ];
@@ -214,7 +217,7 @@
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
     [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
-    [self addKeyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
+    [self addCancelKeyCommandWithAction:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
     [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierShift action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
 }
 
@@ -340,8 +343,15 @@
 }
 
 - (void)transitionFromFeedDetail {
-//    [self performSelector:@selector(resetPages) withObject:self afterDelay:0.5];
-    [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+        [appDelegate.navigationController
+         popToViewController:[appDelegate.navigationController.viewControllers
+                              objectAtIndex:0]
+         animated:YES];
+        [appDelegate hideStoryDetailView];
+    } else {
+        [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -356,6 +366,11 @@
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
+        [self.view setNeedsLayout];
+        [self.view layoutIfNeeded];
+        
+        // This causes the story to reload on rotation (or when going to the background), but doesn't seem necessary?
+//        [self refreshPages];
     }];
 }
 
@@ -389,10 +404,12 @@
 //        scrollViewFrame.size.height = self.view.bounds.size.height;
 //        self.bottomSize.hidden = YES;
         [self.bottomSizeHeightConstraint setConstant:0];
+        [bottomSize setHidden:YES];
     } else {
 //        scrollViewFrame.size.height = self.view.bounds.size.height - 12;
 //        self.bottomSize.hidden = NO;
         [self.bottomSizeHeightConstraint setConstant:12];
+        [bottomSize setHidden:NO];
     }
     
     [self.view layoutIfNeeded];
@@ -582,7 +599,7 @@
 		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
@@ -590,7 +607,7 @@
 		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
 		pageFrame.origin.y = CGRectGetHeight(self.view.bounds);
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
@@ -634,9 +651,11 @@
                     NSLog(@"Stale story, already drawn. Was: %@, Now: %@", originalStoryId, blockPageController.activeStoryId);
                     return;
                 }
-                [blockPageController initStory];
-                [blockPageController drawStory];
-                [blockPageController showTextOrStoryView];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [blockPageController initStory];
+                    [blockPageController drawStory];
+                    [blockPageController showTextOrStoryView];
+                });
             });
         } else {
 //            [pageController clearStory];
@@ -1002,12 +1021,12 @@
     if (storyViewController.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
-                              forState:nil];
+                              forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
         [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
-                              forState:nil];
+                              forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
     }
 }
@@ -1142,17 +1161,10 @@
 
 
 - (IBAction)toggleFontSize:(id)sender {
-    [self.appDelegate.fontSettingsNavigationController popToRootViewControllerAnimated:NO];
-    self.appDelegate.fontSettingsNavigationController.modalPresentationStyle = UIModalPresentationPopover;
-    UIPopoverPresentationController *popPC = self.appDelegate.fontSettingsNavigationController.popoverPresentationController;
-    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    popPC.delegate = self;
-    popPC.barButtonItem = self.fontSettingsButton;
-//    popPC.sourceView = self.view;
-//    popPC.sourceRect = [sender frame];
-    
-    [self presentViewController:self.appDelegate.fontSettingsNavigationController animated:YES completion:nil];
+    UINavigationController *fontSettingsNavigationController = self.appDelegate.fontSettingsNavigationController;
+
+    [fontSettingsNavigationController popToRootViewControllerAnimated:NO];
+    [self.appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {
@@ -1267,12 +1279,6 @@
 //        
         [self changePage:previousLocation];
     }
-}
-
-#pragma mark - UIPopoverPresentationControllerDelegate
-
-- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
-    return UIModalPresentationNone;
 }
 
 @end

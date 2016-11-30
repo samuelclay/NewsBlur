@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 
 """
 Load average plugin for Munin.
@@ -10,7 +10,7 @@ First tries reading from /proc/loadavg if it exists. Otherwise, execute
 """
 
 import os
-from munin import MuninPlugin
+from vendor.munin import MuninPlugin
 
 class LoadAVGPlugin(MuninPlugin):
     title = "Load average"

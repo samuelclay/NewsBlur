@@ -7,11 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RadioButton;
 
 import butterknife.ButterKnife;
-import butterknife.FindView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
@@ -22,8 +21,8 @@ public class ReadFilterDialogFragment extends DialogFragment {
 	
 	private static String CURRENT_FILTER = "currentFilter";
 	private ReadFilter currentValue;
-    @FindView(R.id.radio_all) RadioButton allButton;
-    @FindView(R.id.radio_unread) RadioButton unreadButton;
+    @Bind(R.id.radio_all) RadioButton allButton;
+    @Bind(R.id.radio_unread) RadioButton unreadButton;
 
 	public static ReadFilterDialogFragment newInstance(ReadFilter currentValue) {
 		ReadFilterDialogFragment dialog = new ReadFilterDialogFragment();
@@ -48,7 +47,6 @@ public class ReadFilterDialogFragment extends DialogFragment {
 		allButton.setChecked(currentValue == ReadFilter.ALL);
 		unreadButton.setChecked(currentValue == ReadFilter.UNREAD);
 		
-		getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 		

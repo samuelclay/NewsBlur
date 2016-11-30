@@ -18,7 +18,8 @@
         interactionLabel = nil;
         avatarView = nil;
         self.separatorInset = UIEdgeInsetsMake(0, 52, 0, 0);
-        
+        self.backgroundColor = UIColorFromRGB(0xffffff);
+
         // create favicon and label in view
         UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];
         self.avatarView = favicon;

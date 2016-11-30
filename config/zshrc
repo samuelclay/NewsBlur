@@ -1,20 +1,15 @@
-# Path to your oh-my-zsh configuration.
-plugins=(git osx ruby gem github pip rails)
 export ZSH=$HOME/.oh-my-zsh
-
-# Set to the name theme to load.
-# Look in ~/.oh-my-zsh/themes/
+export CLICOLOR='1'
 export ZSH_THEME="risto"
+export DISABLE_AUTO_UPDATE=true
 
-export DISABLE_AUTO_UPDATE="true"
+export WORKON_HOME=/srv/newsblur/venv
+export PROJECT_HOME=/srv/newsblur
+source /usr/local/bin/virtualenvwrapper.sh
 
-# Set to this to use case-sensitive completion
-export CASE_SENSITIVE="true"
-export LC_COLLATE='C'
+plugins=(git github pip zsh-syntax-highlighting virtualenvwrapper)
 source $ZSH/oh-my-zsh.sh
 
-
-export DISABLE_AUTO_UPDATE="true"
 export PYTHONSTARTUP=$HOME/.pystartup
 export LSCOLORS='gxgxcxdxBxegedabagacad'
 

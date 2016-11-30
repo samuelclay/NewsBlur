@@ -39,7 +39,6 @@
     
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
-    self.modalPresentationStyle = UIModalPresentationPopover;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -52,7 +51,7 @@
     self.fonts = [NSMutableArray array];
     
     // Leave commented out for future use:
-    [self debugOutputFontNames];
+//    [self debugOutputFontNames];
     
     // Available fonts, in alphabetic order.  Remember to add bundled font filenames to the Info.plist.
     [self addBuiltInFontWithName:@"Avenir-Medium" styleClass:@"NB-avenir" displayName:nil];
@@ -108,14 +107,22 @@
     
     [self.menuTableView reloadData];
     
-    self.preferredContentSize = CGSizeMake(240.0, 296.0);
+    // -[NewsBlurAppDelegate navigationController:willShowViewController:animated:] hides this too late, so this gets mis-measured otherwise
+    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (void)debugOutputFontNames {
+    NSLog(@"Debugging font names");
     for (NSString *family in [[UIFont familyNames] sortedArrayUsingSelector:@selector(compare:)]) {
         NSLog(@"%@", family);
         
@@ -239,7 +246,8 @@
     cell.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     cell.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     cell.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    
+    cell.imageView.tintColor = UIColorFromRGB(0x303030);
+
     if (indexPath.row == 0) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
@@ -280,7 +288,7 @@
         } else {
             cell.textLabel.text = @"Font...";
         }
-        cell.imageView.image = [UIImage imageNamed:@"choose_font.png"];
+        cell.imageView.image = [[UIImage imageNamed:@"choose_font.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
     
     return cell;

@@ -3,7 +3,9 @@
 {% load utils_tags %}
 
 {% block body %}
-    <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Your free account is ready, {{ user.username }}.</p>
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        Your free account is ready, {{ user.username }}.
+    </h2>
     <p style="line-height: 20px;">Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading.</p>
     <p style="line-height: 20px;">http://{% current_domain dev=True %}{{ user.profile.autologin_url }}</p>
     <p style="line-height: 20px;">I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.</p>

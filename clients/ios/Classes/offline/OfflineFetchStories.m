@@ -70,7 +70,7 @@
 
     [lock lock];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?include_hidden=true&page=0&h=%@",
-                                       NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
+                                       self.appDelegate.url, [hashes componentsJoinedByString:@"&h="]]];
     if (request) request = nil;
 
     request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];

@@ -16,27 +16,25 @@
         android:src="@drawable/ak_icon_allstories" />
 
     <TextView
-        android:id="@+id/row_everythingtext"
+        android:id="@+id/row_foldername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_everything_icon"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
+        android:paddingBottom="9dp"
+        android:paddingTop="9dp"
         android:text="@string/all_stories_row_title"
-        style="?selectorRowFeedName"
-        android:textSize="14dp"
         android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_alignParentTop="true"
-        style="?folderBorderTop" />
+        style="?rowBorderTop" />
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_alignParentBottom="true"
-        style="?folderBorderBottom" />
+        style="?rowBorderBottom" />
 
 </RelativeLayout>

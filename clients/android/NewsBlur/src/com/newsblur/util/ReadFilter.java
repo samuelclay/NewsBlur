@@ -5,8 +5,7 @@ package com.newsblur.util;
  */
 public enum ReadFilter {
     ALL("all"),
-    UNREAD("unread"), // in the app, this often means "unread and read since switching activities"
-    PURE_UNREAD("unread");
+    UNREAD("unread");
     
     private String parameterValue;
 

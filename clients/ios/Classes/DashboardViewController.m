@@ -93,6 +93,11 @@
 	return YES;
 }
 
+// allow keyboard comands
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
 - (IBAction)doLogout:(id)sender {
     [appDelegate confirmLogout];
 }
@@ -108,6 +113,7 @@
 - (void)updateTheme {
     self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
     self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
     
     self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);
@@ -116,6 +122,10 @@
     self.storiesModule.storyTitlesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.interactionsModule.interactionsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.activitiesModule.activitiesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    
+    self.storiesModule.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    self.interactionsModule.interactionsTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    self.activitiesModule.activitiesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     
     [self.storiesModule.storyTitlesTable reloadData];
     [self.interactionsModule.interactionsTable reloadData];
@@ -163,6 +173,7 @@
     [appDelegate.cachedStoryImages removeAllObjects:^(TMCache *cache) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
+            appDelegate.inFeedDetail = NO;
         });
     }];
 }

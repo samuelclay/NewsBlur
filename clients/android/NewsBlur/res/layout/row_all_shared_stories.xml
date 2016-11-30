@@ -17,21 +17,21 @@
 
     <ImageView
         android:id="@+id/row_folder_indicator"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="34dp"
+        android:layout_height="30dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="8dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="10dp"
-        android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/indicator_collapsed" />
 
     <LinearLayout
         android:id="@+id/row_foldersums"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@id/row_folder_indicator"
         android:layout_centerVertical="true"
-        android:layout_marginRight="38dp" >
+        android:layout_marginRight="2dp" >
 
         <TextView
             android:id="@+id/row_foldersumneu"
@@ -42,12 +42,10 @@
             android:gravity="center"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
-            android:paddingTop="1dp"
-            android:paddingBottom="2dp"
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:textColor="@color/white"
+            style="?feedRowNeutCountText"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -71,28 +69,26 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/row_everythingtext"
+        android:id="@+id/row_foldername"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/row_foldersums"
         android:layout_toRightOf="@id/row_everything_icon"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
+        android:paddingBottom="9dp"
+        android:paddingTop="9dp"
         android:text="@string/all_shared_stories"
-        style="?selectorRowFeedName"
-        android:textSize="14dp"
         android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_alignParentTop="true"
-        style="?folderBorderTop" />
+        style="?rowBorderTop" />
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_alignParentBottom="true"
-        style="?folderBorderBottom" />
+        style="?rowBorderBottom" />
 
 </RelativeLayout>

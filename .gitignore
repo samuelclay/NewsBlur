@@ -35,6 +35,7 @@ config/secrets
 templates/maintenance_on.html
 vendor/mms-agent/settings.py
 apps/social/spam.py
+venv
 
 # ----------------------
 # Android
@@ -52,15 +53,19 @@ apps/social/spam.py
 # generated files
 clients/android/NewsBlur/bin/
 clients/android/NewsBlur/gen/
+clients/android/NewsBlur/app/
 clients/android/NewsBlurTest/bin/
 clients/android/NewsBlurTest/gen/
 
 # Local configuration file (sdk path, etc)
 clients/android/NewsBlur/local.properties
 clients/android/NewsBlurTest/local.properties
-originals
+/originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
 clients/android/NewsBlur/.idea
-.tm_properties
+clients/android/NewsBlur/.gradle
+clients/android/NewsBlur/build.gradle
+clients/android/NewsBlur/gradle*
+clients/android/NewsBlur/settings.gradle

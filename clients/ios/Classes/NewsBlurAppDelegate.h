@@ -39,10 +39,13 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class TrainerViewController;
+@class NotificationsViewController;
 @class UserTagsViewController;
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
+@class FeedChooserViewController;
+@class MenuViewController;
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
 @class StoriesCollection;
@@ -58,6 +61,7 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
     UINavigationController *trainNavigationController;
+    UINavigationController *notificationsNavigationController;
     NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -80,6 +84,7 @@ SFSafariViewControllerDelegate>  {
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
+    NotificationsViewController *notificationsViewController;
     UserTagsViewController *userTagsViewController;
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
@@ -132,6 +137,7 @@ SFSafariViewControllerDelegate>  {
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
+    NSArray * notificationFeedIds;
     
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
@@ -152,6 +158,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *trainNavigationController;
+@property (nonatomic) UINavigationController *notificationsNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
@@ -160,13 +167,16 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic) IBOutlet FeedDetailMenuViewController *feedDetailMenuViewController;
+@property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
+@property (nonatomic, strong) UINavigationController *addSiteNavigationController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
+@property (nonatomic) IBOutlet NotificationsViewController *notificationsViewController;
 @property (nonatomic) IBOutlet UserTagsViewController *userTagsViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
@@ -175,6 +185,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 @property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
+@property (nonatomic, strong) FeedChooserViewController *feedChooserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
@@ -183,6 +194,9 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
 @property (nonatomic, readwrite) TMCache *cachedFavicons;
 @property (nonatomic, readwrite) TMCache *cachedStoryImages;
+
+@property (nonatomic, readonly) NSString *url;
+@property (nonatomic, readonly) NSString *host;
 
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
@@ -225,6 +239,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
 @property (nonatomic) NSDictionary *dictSavedStoryTags;
+@property (nonatomic, strong) NSDictionary *dictSavedStoryFeedCounts;
 @property (nonatomic) NSDictionary *dictSocialProfile;
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
@@ -233,6 +248,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
+@property (nonatomic) NSArray *notificationFeedIds;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
@@ -255,6 +271,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showFirstTimeUser;
 - (void)showLogin;
 - (void)setupReachability;
+- (void)registerForRemoteNotifications;
 
 // social
 - (NSDictionary *)getUser:(NSInteger)userId;
@@ -270,15 +287,20 @@ SFSafariViewControllerDelegate>  {
          feedTitle:(NSString *)title
             images:(NSArray *)images;
 - (void)showFindFriends;
+- (void)showMuteSites;
+- (void)showOrganizeSites;
 - (void)showPreferences;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
+- (void)openNotificationsWithFeed:(NSString *)feedId;
+- (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
+- (void)loadFeed:(NSString *)feedId withStory:(NSString *)contentId animated:(BOOL)animated;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
@@ -300,6 +322,8 @@ SFSafariViewControllerDelegate>  {
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
+- (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr;
+- (BOOL)isSavedStoriesIntelligenceMode;
 - (NSArray *)allFeedIds;
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
 - (BOOL)isPortrait;
@@ -344,10 +368,12 @@ SFSafariViewControllerDelegate>  {
 
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler;
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
-- (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
+- (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect extraItems:(NSArray *)extraItems completionHandler:(void (^)(BOOL marked))completionHandler;
 
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect;
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections;
+- (void)hidePopoverAnimated:(BOOL)animated completion:(void (^)(void))completion;
 - (BOOL)hidePopoverAnimated:(BOOL)animated;
 - (void)hidePopover;
 

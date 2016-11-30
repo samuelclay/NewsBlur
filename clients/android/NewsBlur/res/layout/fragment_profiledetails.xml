@@ -29,20 +29,20 @@
 
             <Button
                 android:id="@+id/profile_follow_button"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
+                android:layout_width="100dp"
                 android:contentDescription="@string/description_follow_button"
                 android:text="@string/profile_button_follow"
-                android:textSize="11dp"
+                style="?actionButtons"
                 android:visibility="gone" />
             
             <Button
                 android:id="@+id/profile_unfollow_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
+                android:layout_width="100dp"
                 android:contentDescription="@string/description_follow_button"
                 android:text="@string/profile_button_unfollow"
-                android:textSize="11dp"
+                style="?actionButtons"
                 android:visibility="gone" />            
         </LinearLayout>
 
@@ -55,8 +55,7 @@
                 android:id="@+id/profile_username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/newsblur_blue"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -66,8 +65,8 @@
                 android:layout_below="@id/profile_username"
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/darkgray"
-                android:textSize="12dp"
+                android:textColor="@color/text"
+                android:textSize="12sp"
                 android:textStyle="italic" />
 
             <ImageView
@@ -88,8 +87,8 @@
                 android:layout_below="@id/profile_bio"
                 android:layout_marginBottom="5dp"
                 android:layout_toRightOf="@id/profile_location_icon"
-                android:textColor="@color/darkgray"
-                android:textSize="12dp" />
+                android:textColor="@color/text"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/profile_website"
@@ -99,22 +98,21 @@
                 android:autoLink="web"
                 android:clickable="true"
                 android:textColor="@color/newsblur_blue"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
         </RelativeLayout>
     </LinearLayout>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="1px"
-        android:background="@color/lightgray" />
+        android:background="@color/gray80" />
 
     <include
-        android:layout_width="fill_parent"
         layout="@layout/profile_user_statistics" />
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="1px"
-        android:background="@color/lightgray" />
+        android:background="@color/gray80" />
 
 </LinearLayout>

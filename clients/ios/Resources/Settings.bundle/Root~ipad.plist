@@ -225,6 +225,8 @@
 		<dict>
 			<key>Title</key>
 			<string>Theme</string>
+			<key>FooterText</key>
+			<string>Switch between both light themes and both dark themes by swiping up or down repeatedly with two fingers, like a light switch.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -517,6 +519,7 @@
 			<string>Long press story title</string>
 			<key>Titles</key>
 			<array>
+				<string>Ask</string>
 				<string>Send to third-party</string>
 				<string>Mark as unread</string>
 				<string>Save story</string>
@@ -524,9 +527,10 @@
 				<string>Do nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>open_send_to</string>
+			<string>ask</string>
 			<key>Values</key>
 			<array>
+				<string>ask</string>
 				<string>open_send_to</string>
 				<string>mark_unread</string>
 				<string>save_story</string>
@@ -557,6 +561,28 @@
 			</array>
 			<key>Key</key>
 			<string>story_detail_swipe_left_edge</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Quickly access the intelligence trainer or site notifications from the feed list.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe from left on feed</string>
+			<key>Titles</key>
+			<array>
+				<string>Train intelligence</string>
+				<string>Notifications</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>notifications</string>
+			<key>Values</key>
+			<array>
+				<string>trainer</string>
+				<string>notifications</string>
+			</array>
+			<key>Key</key>
+			<string>feed_swipe_left</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -615,6 +641,30 @@
 			<string>show_feeds_after_being_read</string>
 			<key>DefaultValue</key>
 			<false/>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Custom Domain</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>Title</key>
+			<string>URL</string>
+			<key>Key</key>
+			<string>custom_domain</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

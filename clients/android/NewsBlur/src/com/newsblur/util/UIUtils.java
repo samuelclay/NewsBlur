@@ -9,10 +9,15 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.Shader;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,34 +32,48 @@ import com.newsblur.R;
 import com.newsblur.activity.*;
 
 public class UIUtils {
+
+    private UIUtils() {} // util class - no instances
 	
-	/*
-	 * Based on the RoundedCorners code from Square / Eric Burke's "Android UI" talk 
-	 * and the GitHub Android code.
-	 * https://github.com/github/android
-	 */
-	
-	public static Bitmap roundCorners(Bitmap source, final float radius) {
-        int width = source.getWidth();
-        int height = source.getHeight();
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(WHITE);
-
-        Bitmap clipped = Bitmap.createBitmap(width, height, ARGB_8888);
-        Canvas canvas = new Canvas(clipped);
-        canvas.drawRoundRect(new RectF(0, 0, width, height), radius, radius, paint);
-        paint.setXfermode(new PorterDuffXfermode(DST_IN));
-        
-        Bitmap rounded = Bitmap.createBitmap(width, height, ARGB_8888);
-        canvas = new Canvas(rounded);
-        canvas.drawBitmap(source, 0, 0, null);
-        canvas.drawBitmap(clipped, 0, 0, paint);
-
-        clipped.recycle();
-
-        return rounded;
+    @SuppressWarnings("deprecation")
+	public static Bitmap clipAndRound(Bitmap source, float radius, boolean clipSquare) {
+        Bitmap result = source;
+        if (clipSquare) {
+            int width = result.getWidth();
+            int height = result.getHeight();
+            int newSize = Math.min(width, height);
+            int x = (width-newSize) / 2;
+            int y = (height-newSize) / 2;
+            try {
+                result = Bitmap.createBitmap(result, x, y, newSize, newSize);
+            } catch (Throwable t) {
+                // even on reasonably modern systems, it is common for the bitmap processor to reject
+                // requests if it thinks memory is even remotely constrained.
+                android.util.Log.e(UIUtils.class.getName(), "couldn't process icon or thumbnail", t);
+                return null;
+            }
+        }
+        if ((radius > 0f) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
+            int width = result.getWidth();
+            int height = result.getHeight();
+            Bitmap canvasMap = null;
+            try {
+                canvasMap = Bitmap.createBitmap(width, height, ARGB_8888);
+            } catch (Throwable t) {
+                // even on reasonably modern systems, it is common for the bitmap processor to reject
+                // requests if it thinks memory is even remotely constrained.
+                android.util.Log.e(UIUtils.class.getName(), "couldn't process icon or thumbnail", t);
+                return null;
+            }
+            Canvas canvas = new Canvas(canvasMap);
+            BitmapShader shader = new BitmapShader(result, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setShader(shader);
+            canvas.drawRoundRect(0, 0, width, height, radius, radius, paint);
+            result = canvasMap;
+        }
+        return result;
     }
 	
 	/*
@@ -65,6 +84,11 @@ public class UIUtils {
 	public static int dp2px(Context context, int dp) {
 		float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (dp * scale + 0.5f);
+	}
+
+	public static float dp2px(Context context, float dp) {
+		float scale = context.getResources().getDisplayMetrics().density;
+		return dp * scale;
 	}
 
     public static float px2dp(Context context, int px) {
@@ -90,7 +114,7 @@ public class UIUtils {
      */
     public static void setCustomActionBar(Activity activity, String imageUrl, String title) { 
         ImageView iconView = setupCustomActionbar(activity, title);
-        FeedUtils.imageLoader.displayImage(imageUrl, iconView, false);
+        FeedUtils.iconLoader.displayImage(imageUrl, iconView, 0, false);
     }
 
     public static void setCustomActionBar(Activity activity, int imageId, String title) { 
@@ -121,7 +145,7 @@ public class UIUtils {
                 activity.finish();
             }
         });
-        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
+        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         return iconView;
     }
 
@@ -164,9 +188,11 @@ public class UIUtils {
         });
     }
 
-    public static void startReadingActivity(FeedSet fs, String startingHash, Context context, boolean ignoreFilters) {
+    public static void startReadingActivity(FeedSet fs, String startingHash, Context context) {
         Class activityClass;
 		if (fs.isAllSaved()) {
+            activityClass = SavedStoriesReading.class;
+        } else if (fs.getSingleSavedTag() != null) {
             activityClass = SavedStoriesReading.class;
         } else if (fs.isGlobalShared()) {
             activityClass = GlobalSharedStoriesReading.class;
@@ -189,9 +215,51 @@ public class UIUtils {
         Intent i = new Intent(context, activityClass);
         i.putExtra(Reading.EXTRA_FEEDSET, fs);
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
-        if (ignoreFilters) {
-            i.putExtra(SocialFeedReading.EXTRA_IGNORE_FILTERS, true);
-        }
         context.startActivity(i);
     }
+
+    public static String getMemoryUsageDebug(Context context) {
+        String memInfo = " (";
+        android.app.ActivityManager activityManager = (android.app.ActivityManager) context.getSystemService(android.app.Activity.ACTIVITY_SERVICE);
+        int[] pids = new int[]{android.os.Process.myPid()};
+        android.os.Debug.MemoryInfo[] mi = activityManager.getProcessMemoryInfo(pids);
+        memInfo = memInfo + (mi[0].getTotalPss() / 1024) + "MB used)";
+        return memInfo;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static int getColor(Context activity, int rid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return activity.getResources().getColor(rid, activity.getTheme());
+        } else {
+            return activity.getResources().getColor(rid);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Drawable getDrawable(Context activity, int rid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return activity.getResources().getDrawable(rid, activity.getTheme());
+        } else {
+            return activity.getResources().getDrawable(rid);
+        }
+    }
+
+    /**
+     * Sets the background resource of a view, working around a platform bug that causes the declared
+     * padding to get reset.
+     */
+    public static void setViewBackground(View v, Drawable background) {
+        // due to a framework bug, the below modification of background resource also resets the declared
+        // padding on the view.  save a copy of said padding so it can be re-applied after the change.
+        int oldPadL = v.getPaddingLeft();
+        int oldPadT = v.getPaddingTop();
+        int oldPadR = v.getPaddingRight();
+        int oldPadB = v.getPaddingBottom();
+
+        v.setBackground(background);
+
+        v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
+    }
+
 }
