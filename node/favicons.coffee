@@ -1,4 +1,5 @@
-express = require 'express'
+app = require('express')()
+server = require('http').Server(app)
 mongo = require 'mongodb'
 
 DEV = process.env.NODE_ENV == 'development'
@@ -26,24 +27,23 @@ else
 db = new mongo.Db('newsblur', server,
     readPreference: mongo.ReadPreference.SECONDARY_PREFERRED
     safe: false)
-
-app = express.createServer()
-app.use express.bodyParser()
     
 db.open (err, client) =>
     client.collection "feed_icons", (err, @collection) =>
     
-app.get /^\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
-    feed_id = parseInt(req.params, 10)
+app.get /\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
+    feed_id = parseInt(req.params[0], 10)
     etag = req.header('If-None-Match')
+    console.log " ---> Feed: #{feed_id} / #{etag}"
     @collection.findOne _id: feed_id, (err, docs) ->
-        console.log "Req: #{feed_id}, etag: #{etag}/#{docs?.color} (err: #{err}, docs? #{!!(docs and docs.data)})"
+        console.log "Req #{req.params[0]}: #{feed_id}, etag: #{etag}/#{docs?.color} (err: #{err}, docs? #{!!(docs and docs.data)})"
         if not err and etag and docs and docs?.color == etag
             res.send 304
         else if not err and docs and docs.data
                 res.header 'etag', docs.color
-                res.send new Buffer(docs.data, 'base64'), 
-                    "Content-Type": "image/png"
+                body = new Buffer(docs.data, 'base64')
+                res.set("Content-Type", "image/png")
+                res.status(200).send body
         else
             if DEV
                 res.redirect '/media/img/icons/circular/world.png' 

@@ -1463,6 +1463,7 @@ def kill():
 def deploy_node():
     with virtualenv():
         run('sudo supervisorctl restart node_unread')
+        run('sudo supervisorctl restart node_unread_ssl')
         run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
