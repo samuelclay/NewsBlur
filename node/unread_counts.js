@@ -22,14 +22,18 @@
     };
     app = require('https').createServer(options);
     app.listen(options.port);
-    io = require('socket.io').listen(app);
+    io = require('socket.io')(app, {
+      path: "/v2/socket.io"
+    }).listen(app);
   } else {
     options = {
       port: 8888
     };
     app = require('http').createServer();
     app.listen(options.port);
-    io = require('socket.io').listen(app);
+    io = require('socket.io')(app, {
+      path: "/v2/socket.io"
+    }).listen(app);
   }
 
   io.on('connection', function(socket) {

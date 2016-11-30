@@ -221,7 +221,7 @@ def setup_all():
     setup_db(skip_common=True)
     setup_task(skip_common=True)
 
-def setup_app(skip_common=False):
+def setup_app(skip_common=False, node=False):
     if not skip_common:
         setup_common()
     setup_app_firewall()
@@ -229,8 +229,8 @@ def setup_app(skip_common=False):
     copy_app_settings()
     config_nginx()
     setup_gunicorn(supervisor=True)
-    # setup_node_app()
-    # config_node()
+    if node:
+        setup_node()
     deploy_web()
     config_monit_app()
     setup_usage_monitor()

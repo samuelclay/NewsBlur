@@ -21,7 +21,7 @@ else
     url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
 
 mongo.MongoClient.connect url, (err, db) =>
-    console.log " ---> Connected to #{db.serverConfig.s.host}:#{db.serverConfig.s.port} / #{err}"
+    console.log " ---> Connected to #{db.serverConfig?.s.host}:#{db.serverConfig?.s.port} / #{err}"
     @collection = db.collection "feed_icons"
     
 app.get /\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
