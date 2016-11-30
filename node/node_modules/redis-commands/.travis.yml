@@ -1,0 +1,9 @@
+language: node_js
+sudo: false
+node_js:
+  - "0.10"
+  - "0.12"
+  - "4"
+  - "5"
+after_success:
+  - CODECLIMATE_REPO_TOKEN=b57723fafcf0516f275d6b380cd506fd082ea88d86507eb82c8abd489b9b9a09 node ./node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info
