@@ -3,6 +3,8 @@ package com.newsblur.util;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.io.Serializable;
+
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
@@ -11,7 +13,10 @@ import com.newsblur.network.APIManager;
 
 import java.util.Set;
 
-public class ReadingAction {
+@SuppressWarnings("serial")
+public class ReadingAction implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     private enum ActionType {
         MARK_READ,
@@ -338,6 +343,7 @@ public class ReadingAction {
                     dbHelper.updateLocalFeedCounts(feedSet);
                 }
                 impact |= NbActivity.UPDATE_METADATA;
+                impact |= NbActivity.UPDATE_STORY;
                 break;
                 
             case MARK_UNREAD:

@@ -36,11 +36,6 @@ public class SavedStoriesItemsList extends ItemsList {
 	}
 
 	@Override
-	public void markItemListAsRead() {
-        ; // This activity has no mark-as-read action
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.savedstories_itemslist, menu);
