@@ -441,7 +441,7 @@ NEWSBLUR.log = function(msg) {
 
             while (e = r.exec(q))
                 params[d(e[1])] = d(e[2]);
-            console.log(['get query string', name, params, params[name]]);
+            // console.log(['get query string', name, params, params[name]]);
             return params[name];
         },
         

@@ -129,6 +129,7 @@
             NEWSBLUR.app.feed_selector = new NEWSBLUR.Views.FeedSelector();
             NEWSBLUR.app.follow_requests_module = new NEWSBLUR.Views.FollowRequestsModule();
             NEWSBLUR.app.dashboard_search = new NEWSBLUR.Views.DashboardSearch();
+            NEWSBLUR.app.dashboard_river = new NEWSBLUR.Views.DashboardRiver();
             NEWSBLUR.app.taskbar_info = new NEWSBLUR.Views.ReaderTaskbarInfo().render();
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             
@@ -1929,7 +1930,6 @@
         },
         
         post_open_river_stories: function(data, first_load) {
-            // NEWSBLUR.log(['post_open_river_stories', data, this.active_feed]);
             if (!data) {
               return NEWSBLUR.app.taskbar_info.show_stories_error(data);
             }
