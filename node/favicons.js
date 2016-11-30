@@ -33,7 +33,7 @@
 
   mongo.MongoClient.connect(url, (function(_this) {
     return function(err, db) {
-      console.log(" ---> Connected to " + db + " / " + err);
+      console.log(" ---> Connected to " + db.serverConfig.s.host + ":" + db.serverConfig.s.port + " / " + err);
       return _this.collection = db.collection("feed_icons");
     };
   })(this));
