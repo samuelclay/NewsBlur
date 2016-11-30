@@ -21,19 +21,19 @@
       cert: certificate
     };
     app = require('https').createServer(options);
-    app.listen(options.port);
     io = require('socket.io')(app, {
       path: "/v2/socket.io"
-    }).listen(app);
+    });
+    app.listen(options.port);
   } else {
     options = {
       port: 8888
     };
     app = require('http').createServer();
-    app.listen(options.port);
     io = require('socket.io')(app, {
       path: "/v2/socket.io"
-    }).listen(app);
+    });
+    app.listen(options.port);
   }
 
   io.on('connection', function(socket) {
