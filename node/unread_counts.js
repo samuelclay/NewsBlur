@@ -47,12 +47,12 @@
         return console.log(" ---> Error (socket): " + err);
       });
       if ((_ref = socket.subscribe) != null) {
-        _ref.end();
+        _ref.quit();
       }
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
       socket.subscribe.on("error", function(err) {
         console.log(" ---> Error: " + err);
-        return socket.subscribe.end();
+        return socket.subscribe.quit();
       });
       socket.subscribe.on("connect", (function(_this) {
         return function() {
@@ -74,7 +74,7 @@
     return socket.on('disconnect', function() {
       var _ref, _ref1;
       if ((_ref = socket.subscribe) != null) {
-        _ref.end();
+        _ref.quit();
       }
       return log.info(this.username, ("Disconnect (" + ((_ref1 = this.feeds) != null ? _ref1.length : void 0) + " feeds, " + ip + "),") + (" there are now " + io.engine.clientsCount + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
     });
