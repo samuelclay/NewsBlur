@@ -1459,7 +1459,9 @@ def kill():
         else:
             run('./utils/kill_gunicorn.sh')
 
+@parallel
 def deploy_node():
+    pull()
     with virtualenv():
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
