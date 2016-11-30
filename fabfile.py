@@ -748,8 +748,7 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node_app():
-    sudo('add-apt-repository -y ppa:chris-lea/node.js')
-    sudo('apt-get update')
+    sudo('curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -')
     sudo('apt-get install -y nodejs')
     run('curl -L https://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')

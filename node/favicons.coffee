@@ -16,20 +16,13 @@ else
     console.log " ---> Running as production server"
     
 if DEV
-    server = new mongo.Server(MONGODB_SERVER, MONGODB_PORT, 
-        auto_reconnect: true
-        poolSize: 12)
+    url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 else
-    server = new mongo.ReplSetServers(
-        [new mongo.Server( MONGODB_SERVER, MONGODB_PORT, { auto_reconnect: true } )]
-        {rs_name: 'nbset'})
+    url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
 
-db = new mongo.Db('newsblur', server,
-    readPreference: mongo.ReadPreference.SECONDARY_PREFERRED
-    safe: false)
-    
-db.open (err, client) =>
-    client.collection "feed_icons", (err, @collection) =>
+mongo.MongoClient.connect url, (err, db) =>
+    console.log " ---> Connected to #{db} / #{err}"
+    @collection = db.collection "feed_icons"
     
 app.get /\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
     feed_id = parseInt(req.params[0], 10)
