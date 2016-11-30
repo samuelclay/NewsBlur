@@ -5,7 +5,6 @@ log    = require './log.js'
 REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db_redis_pubsub'
 SECURE = !!process.env.NODE_SSL
 # client = redis.createClient 6379, REDIS_SERVER
-app = require('http').createServer handler
 
 # RedisStore  = require 'socket.io/lib/stores/redis'
 # rpub        = redis.createClient 6379, REDIS_SERVER
@@ -13,24 +12,27 @@ app = require('http').createServer handler
 # rclient     = redis.createClient 6379, REDIS_SERVER
 
 if SECURE
-    privateKey = fs.readFileSync('./config/certificates/newsblur.com.key').toString()
-    certificate = fs.readFileSync('./config/certificates/newsblur.com.crt').toString()
+    privateKey = fs.readFileSync('/srv/newsblur/config/certificates/newsblur.com.key').toString()
+    certificate = fs.readFileSync('/srv/newsblur/config/certificates/newsblur.com.crt').toString()
     # ca = fs.readFileSync('./config/certificates/intermediate.crt').toString()
     options = 
         port: 8889
         key: privateKey
         cert: certificate
-    io = require('socket.io') app
+    app = require('https').createServer options
+    app.listen options.port
+    io = require('socket.io').listen app
 else
-    io = require('socket.io') 8888 
+    options = 
+        port: 8888
+    app = require('http').createServer()
+    app.listen options.port
+    io = require('socket.io').listen app
 
 # io.set 'store', new RedisStore
 #     redisPub    : rpub
 #     redisSub    : rsub
 #     redisClient : rclient
-
-handler = (req, res) ->
-    log.info null, req, res
 
 io.on 'connection', (socket) ->
     ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address
