@@ -22,7 +22,7 @@ else
 
 mongo.MongoClient.connect url, (err, db) =>
     console.log " ---> Connected to #{db?.serverConfig.s.host}:#{db?.serverConfig.s.port} / #{err}"
-    @collection = db.collection "feed_icons"
+    @collection = db?.collection "feed_icons"
     
 app.get /\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
     feed_id = parseInt(req.params[0], 10)
