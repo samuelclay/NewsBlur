@@ -4920,6 +4920,7 @@
             
             _.delay(_.bind(function() {
                 this.model.feed_unread_count(feed_id, options.callback);
+                NEWSBLUR.app.dashboard_river.load_stories();
             }, this), Math.random() * delay);
         },
         
