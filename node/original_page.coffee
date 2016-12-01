@@ -1,4 +1,5 @@
-express = require 'express'
+app = require('express')()
+server = require('http').Server(app)
 path = require 'path'
 fs = require 'fs'
 mkdirp = require 'mkdirp'
@@ -6,13 +7,11 @@ mkdirp = require 'mkdirp'
 DEV = process.env.NODE_ENV == 'development'
 
 DB_PATH = if DEV then 'originals' else '/srv/originals'
-app = express.createServer()
-app.use express.bodyParser()
 
-app.listen 3060
+server.listen 3060
 
 app.get /^\/original_page\/(\d+)\/?/, (req, res) =>
-    feedId = parseInt(req.params, 10)
+    feedId = parseInt(req.params[0], 10)
     etag = req.header('If-None-Match')
     lastModified = req.header('If-Modified-Since')
     feedIdDir = splitFeedId feedId
