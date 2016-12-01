@@ -127,6 +127,7 @@ class PageImporter(object):
             fp = feedparser.parse(self.feed.feed_address)
             feed_link = fp.feed.get('link', "")
             self.feed.save()
+            logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed, e))
         except (urllib2.HTTPError), e:
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
         except (httplib.IncompleteRead), e:
@@ -287,6 +288,7 @@ class PageImporter(object):
         )
         response = requests.post(url, files={
             'original_page': compress_string(html),
+            # 'original_page': html,
         })
         if response.status_code == 200:
             return True

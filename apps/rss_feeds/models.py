@@ -2113,7 +2113,7 @@ class MFeedPage(mongo.Document):
     
     def save(self, *args, **kwargs):
         if self.page_data:
-            self.page_data = zlib.compress(self.page_data).decode('utf-8')
+            self.page_data = zlib.compress(self.page_data)
         return super(MFeedPage, self).save(*args, **kwargs)
     
     def page(self):
