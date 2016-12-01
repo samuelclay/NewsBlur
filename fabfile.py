@@ -221,7 +221,7 @@ def setup_all():
     setup_db(skip_common=True)
     setup_task(skip_common=True)
 
-def setup_app(skip_common=False):
+def setup_app(skip_common=False, node=False):
     if not skip_common:
         setup_common()
     setup_app_firewall()
@@ -229,8 +229,8 @@ def setup_app(skip_common=False):
     copy_app_settings()
     config_nginx()
     setup_gunicorn(supervisor=True)
-    # setup_node_app()
-    # config_node()
+    if node:
+        setup_node()
     deploy_web()
     config_monit_app()
     setup_usage_monitor()
@@ -748,8 +748,7 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node_app():
-    sudo('add-apt-repository -y ppa:chris-lea/node.js')
-    sudo('apt-get update')
+    sudo('curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -')
     sudo('apt-get install -y nodejs')
     run('curl -L https://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
@@ -1460,9 +1459,12 @@ def kill():
         else:
             run('./utils/kill_gunicorn.sh')
 
+@parallel
 def deploy_node():
+    pull()
     with virtualenv():
         run('sudo supervisorctl restart node_unread')
+        run('sudo supervisorctl restart node_unread_ssl')
         run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():

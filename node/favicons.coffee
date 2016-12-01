@@ -1,4 +1,5 @@
-express = require 'express'
+app = require('express')()
+server = require('http').Server(app)
 mongo = require 'mongodb'
 
 DEV = process.env.NODE_ENV == 'development'
@@ -15,36 +16,30 @@ else
     console.log " ---> Running as production server"
     
 if DEV
-    server = new mongo.Server(MONGODB_SERVER, MONGODB_PORT, 
-        auto_reconnect: true
-        poolSize: 12)
+    url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 else
-    server = new mongo.ReplSetServers(
-        [new mongo.Server( MONGODB_SERVER, MONGODB_PORT, { auto_reconnect: true } )]
-        {rs_name: 'nbset'})
+    url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
 
-db = new mongo.Db('newsblur', server,
-    readPreference: mongo.ReadPreference.SECONDARY_PREFERRED
-    safe: false)
-
-app = express.createServer()
-app.use express.bodyParser()
+mongo.MongoClient.connect url, (err, db) =>
+    console.log " ---> Connected to #{db?.serverConfig.s.host}:#{db?.serverConfig.s.port} / #{err}"
+    @collection = db?.collection "feed_icons"
     
-db.open (err, client) =>
-    client.collection "feed_icons", (err, @collection) =>
-    
-app.get /^\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
-    feed_id = parseInt(req.params, 10)
+app.get /\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
+    feed_id = parseInt(req.params[0], 10)
     etag = req.header('If-None-Match')
+    console.log " ---> Feed: #{feed_id} " + if etag then " / #{etag}" else ""
     @collection.findOne _id: feed_id, (err, docs) ->
-        console.log "Req: #{feed_id}, etag: #{etag}/#{docs?.color} (err: #{err}, docs? #{!!(docs and docs.data)})"
         if not err and etag and docs and docs?.color == etag
-            res.send 304
+            console.log " ---> Cached: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
+            res.sendStatus 304
         else if not err and docs and docs.data
-                res.header 'etag', docs.color
-                res.send new Buffer(docs.data, 'base64'), 
-                    "Content-Type": "image/png"
+            console.log " ---> Req: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
+            res.header 'etag', docs.color
+            body = new Buffer(docs.data, 'base64')
+            res.set("Content-Type", "image/png")
+            res.status(200).send body
         else
+            console.log " ---> Redirect: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
             if DEV
                 res.redirect '/media/img/icons/circular/world.png' 
             else

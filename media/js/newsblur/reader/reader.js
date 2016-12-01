@@ -2305,7 +2305,7 @@
             
             this.model.mark_feed_as_read(feeds, cutoff_timestamp, direction, 
                                          folder == this.active_folder, _.bind(function() {
-                if (!this.socket || !this.socket.socket || !this.socket.socket.connected) {
+                if (!this.socket || !this.socket || !this.socket.connected) {
                     this.force_feeds_refresh(null, false, feeds);
                 }
             }, this));
@@ -4677,9 +4677,9 @@
         setup_socket_realtime_unread_counts: function(force) {
             if (!force && NEWSBLUR.Globals.is_anonymous) return;
             // if (!force && !NEWSBLUR.Globals.is_premium) return;
-            if (this.socket && !this.socket.socket.connected) {
-                this.socket.socket.connect();
-            } else if (force || !this.socket || !this.socket.socket.connected) {
+            if (this.socket && !this.socket.connected) {
+                this.socket.connect();
+            } else if (force || !this.socket || !this.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
                 var https = _.string.startsWith(window.location.protocol, 'https');
                 var local = NEWSBLUR.Globals.debug || _.any([], function(hostname) {
@@ -4689,16 +4689,18 @@
                 if (local) {
                     port = https ? 8889 : 8888;
                 }
-                this.socket = this.socket || io.connect(server, {
+                this.socket = this.socket || io.connect(server + ":" + port, {
                     "reconnection delay": 2000,
                     "connect timeout": 2000,
-                    "port": port
+                    "path": "/v2/socket.io",
+                    "transports": ['websocket'],
+                    "upgrade": false
                 });
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function() {
                     var active_feeds = this.send_socket_active_feeds();
-                    // NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
+                    NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
                     
@@ -4819,7 +4821,7 @@
                 refresh_interval *= 1.5;
             }
             if (this.flags['feed_refreshing_in_realtime'] && !this.flags['has_unfetched_feeds'] &&
-                this.socket && this.socket.socket.connected) {
+                this.socket && this.socket.connected) {
                 refresh_interval *= 10;
             }
 
@@ -4843,16 +4845,16 @@
                 }
             }, refresh_interval);
             this.flags.refresh_interval = parseInt(refresh_interval / 1000, 10);
-            if (!this.socket || !this.socket.socket.connected) {
+            if (!this.socket || !this.socket.connected) {
                 $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                 this.apply_tipsy_titles();
             } 
             NEWSBLUR.log(["Setting refresh interval to every " + this.flags.refresh_interval + " seconds."]);
-            if (this.socket && !this.socket.socket.connected && !this.socket.socket.connecting) {
-                // force disconnected since it's probably in a bad reconnect state.
-                console.log(["Forcing socket disconnection...", this.socket.socket]);
-                this.socket.socket.disconnect();
-            }
+            // if (this.socket && !this.socket.connected) {
+            //     // force disconnected since it's probably in a bad reconnect state.
+            //     console.log(["Forcing socket disconnection...", this.socket]);
+            //     this.socket.disconnect();
+            // }
         },
         
         force_feed_refresh: function(feed_id, new_feed_id) {
