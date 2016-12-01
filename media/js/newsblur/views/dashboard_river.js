@@ -57,6 +57,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     fill_out: function() {
         var visible = NEWSBLUR.assets.dashboard_stories.visible().length;
+        if (visible >= 3 && !NEWSBLUR.Globals.is_premium) {
+            this.story_titles.check_premium_river();
+            return;
+        }
         if (visible >= 5 || this.page > 10) return;
         
         var feeds = this.feeds();
