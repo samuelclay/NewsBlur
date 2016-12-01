@@ -71,7 +71,8 @@
         {% if not user_profile.hide_getting_started %}
             {% render_getting_started %}
         {% endif %}
-      
+          
+        {% if user.is_staff %}
         <div class="NB-module NB-module-river">
             <h5 class="NB-module-header">
                 <div class="NB-module-river-settings NB-javascript"></div>
@@ -84,6 +85,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         
         {% render_features_module %}
 

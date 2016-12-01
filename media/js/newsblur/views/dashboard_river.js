@@ -18,8 +18,12 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             on_dashboard: true
         });
         this.page = 1;
+        this.cache = {
+            story_hashes: []
+        };
         
         NEWSBLUR.assets.feeds.bind('reset', _.bind(this.load_stories, this));
+        NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
     },
     
     feeds: function() {
@@ -53,6 +57,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     post_load_stories: function() {
         this.fill_out();
+        this.cache.story_hashes = NEWSBLUR.assets.dashboard_stories.pluck('story_hash');
     },
     
     fill_out: function() {
@@ -68,6 +73,18 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.story_titles.show_loading();
         NEWSBLUR.assets.fetch_dashboard_stories("river:", feeds, this.page, 
             _.bind(this.post_load_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error);        
+    },
+    
+    check_read_stories: function(story) {
+        console.log(['story read', story, story.get('story_hash'), story.get('read_status')]);
+        if (!_.contains(this.cache.story_hashes, story.get('story_hash'))) return;
+        var dashboard_story = NEWSBLUR.assets.dashboard_stories.get_by_story_hash(story.get('story_hash'));
+        if (!dashboard_story) {
+            console.log(['Error: missing story on dashboard', story, this.cache.story_hashes]);
+            return;
+        }
+        
+        dashboard_story.set('read_status', story.get('read_status'));
     }
     
 });
