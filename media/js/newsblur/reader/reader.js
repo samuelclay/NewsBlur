@@ -1869,6 +1869,11 @@
             var folder_title = folder && folder.get('folder_title') || "Everything";
             
             this.reset_feed(options);
+
+            if (options.story_id) {
+                this.flags['select_story_in_feed'] = options.story_id;
+            }
+
             this.hide_splash_page();
             if (!folder || folder.get('fake') || !folder.get('folder_title')) {
                 this.active_feed = 'river:';
