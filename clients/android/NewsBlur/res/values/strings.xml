@@ -239,6 +239,14 @@
         <item>Mark all read</item>
         <item>Cancel</item>
     </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Mark older stories read</item>
+        <item>Cancel</item>
+    </string-array>
+    <string-array name="mark_newer_read_options">
+        <item>Mark newer stories read</item>
+        <item>Cancel</item>
+    </string-array>
 
     <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
     <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
@@ -310,6 +318,8 @@
         <item>NONE</item>
     </string-array>
     <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
+
+    <string name="settings_confirm_mark_range_read">Confirm Mark Older/Newer Read</string>
 
     <string name="settings_ltr_gesture_action">Rightward Swipe on Story Title</string>
     <string name="gest_action_none">No Action</string>

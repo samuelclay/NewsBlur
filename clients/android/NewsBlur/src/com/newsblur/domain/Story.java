@@ -96,6 +96,10 @@ public class Story implements Serializable {
 
     // non-API, though it probably could/should be. populated on first story ingest if thumbnails are turned on
     public String thumbnailUrl;
+
+    // non-API
+    public boolean notify;
+    public boolean notified;
  
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
@@ -126,6 +130,8 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, lastReadTimestamp);
 		values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
         values.put(DatabaseConstants.STORY_THUMBNAIL_URL, thumbnailUrl);
+		values.put(DatabaseConstants.STORY_NOTIFY, notify);
+		values.put(DatabaseConstants.STORY_NOTIFIED, notified);
 		return values;
 	}
 
@@ -157,6 +163,8 @@ public class Story implements Serializable {
         story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
         story.lastReadTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_LAST_READ_DATE));
 		story.thumbnailUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_THUMBNAIL_URL));
+		story.notify = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_NOTIFY)) > 0;
+		story.notified = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_NOTIFIED)) > 0;
 		return story;
 	}
 

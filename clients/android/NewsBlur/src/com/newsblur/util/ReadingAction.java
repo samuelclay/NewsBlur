@@ -3,6 +3,8 @@ package com.newsblur.util;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.io.Serializable;
+
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
@@ -11,7 +13,10 @@ import com.newsblur.network.APIManager;
 
 import java.util.Set;
 
-public class ReadingAction {
+@SuppressWarnings("serial")
+public class ReadingAction implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     private enum ActionType {
         MARK_READ,
@@ -27,6 +32,7 @@ public class ReadingAction {
     };
 
     private final long time;
+    private final int tried;
     private ActionType type;
     private String storyHash;
     private FeedSet feedSet;
@@ -45,12 +51,17 @@ public class ReadingAction {
 
     private ReadingAction() {
         // note: private - must use helpers
-        this(System.currentTimeMillis());
+        this(System.currentTimeMillis(), 0);
     }
 
-    private ReadingAction(long time) {
+    private ReadingAction(long time, int tried) {
         // note: private - must use helpers
         this.time = time;
+        this.tried = tried;
+    }
+    
+    public int getTried() {
+        return tried;
     }
 
     public static ReadingAction markStoryRead(String hash) {
@@ -148,6 +159,7 @@ public class ReadingAction {
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, time);
+        values.put(DatabaseConstants.ACTION_TRIED, tried);
         values.put(DatabaseConstants.ACTION_TYPE, type.toString());
         switch (type) {
 
@@ -222,7 +234,8 @@ public class ReadingAction {
 
 	public static ReadingAction fromCursor(Cursor c) {
         long time = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TIME));
-		ReadingAction ra = new ReadingAction(time);
+        int tried = c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TRIED));
+		ReadingAction ra = new ReadingAction(time, tried);
         ra.type = ActionType.valueOf(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TYPE)));
         if (ra.type == ActionType.MARK_READ) {
             String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
@@ -338,6 +351,7 @@ public class ReadingAction {
                     dbHelper.updateLocalFeedCounts(feedSet);
                 }
                 impact |= NbActivity.UPDATE_METADATA;
+                impact |= NbActivity.UPDATE_STORY;
                 break;
                 
             case MARK_UNREAD:

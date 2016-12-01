@@ -348,11 +348,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_mark_older_stories_as_read:
-            FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
+            FeedUtils.markRead(activity, getFeedSet(), story.timestamp, null, R.array.mark_older_read_options, false);
             return true;
 
         case R.id.menu_mark_newer_stories_as_read:
-            FeedUtils.markFeedsRead(getFeedSet(), null, story.timestamp, activity);
+            FeedUtils.markRead(activity, getFeedSet(), null, story.timestamp, R.array.mark_newer_read_options, false);
             return true;
 
         case R.id.menu_send_story:
