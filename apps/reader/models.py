@@ -277,7 +277,7 @@ class UserSubscription(models.Model):
             feed_ids = []
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
-        
+
         # feeds_string = ""
         feeds_string = ','.join(str(f) for f in sorted(all_feed_ids))[:30]
         ranked_stories_keys         = '%szU:%s:feeds:%s'  % (cache_prefix, user_id, feeds_string)
@@ -285,7 +285,7 @@ class UserSubscription(models.Model):
         stories_cached = rt.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached and unreads_cached:
-            story_hashes = range_func(ranked_stories_keys, offset, limit)
+            story_hashes = range_func(ranked_stories_keys, offset, offset+limit)
             if read_filter == "unread":
                 unread_story_hashes = story_hashes
             else:

@@ -1212,7 +1212,7 @@ def load_read_stories(request):
 
 @json.json_view
 def load_river_stories__redis(request):
-    limit             = request.REQUEST.get('limit', 12)
+    limit             = int(request.REQUEST.get('limit', 12))
     start             = time.time()
     user              = get_user(request)
     message           = None
@@ -1231,9 +1231,8 @@ def load_river_stories__redis(request):
     usersubs          = []
     code              = 1
     user_search       = None
-    offset = (page-1) * limit
-    limit = page * limit
-    story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+    offset            = (page-1) * limit
+    story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
     
     if story_hashes:
         unread_feed_story_hashes = None
