@@ -26,18 +26,22 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
     
     render: function() {
+        // console.log(['render story_titles', this.options.override_layout, this.collection.length, this.$story_titles[0]]);
         this.clear();
         this.$story_titles.scrollTop(0);
         var collection = this.collection;
-        var stories = this.collection.map(_.bind(function(story) {
+        var story_layout = this.options.override_layout ||
+                           NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
+        var on_dashboard = this.options.on_dashboard;
+        var stories = this.collection.map(function(story) {
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
                 collection: collection,
-                is_grid: this.options.override_layout == 'grid' ||
-                         NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid',
-                override_layout: this.options.override_layout
+                is_grid: story_layout == 'grid',
+                override_layout: story_layout,
+                on_dashboard: on_dashboard
             }).render();
-        }, this));
+        });
         this.stories = stories;
         var $stories = _.map(stories, function(story) {
             return story.el;
@@ -51,6 +55,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
     
     add: function(options) {
+        // console.log(['add story_titles', options]);
         var collection = this.collection;
         if (options.added) {
             var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), _.bind(function(story) {

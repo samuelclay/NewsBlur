@@ -461,6 +461,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         e.stopPropagation();
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
         
+        if (this.options.on_dashboard) {
+            console.log(['clicked story', this.model]);
+            return;
+        }
+        
         if (_.contains(['list', 'grid'], this.options.override_layout || 
                                          NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) &&
             this.model.get('selected')) {
@@ -498,6 +503,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
+        if (this.options.on_dashboard) {
+            return this.select_story(e);
+        }
+        
         // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu('story', this.$st, {
             story_id: this.model.id,
@@ -522,6 +531,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     open_story_in_story_view: function(e) {
         e.preventDefault();
         e.stopPropagation();
+        if (this.options.on_dashboard) {
+            return this.select_story(e);
+        }
+
         NEWSBLUR.app.story_tab_view.prepare_story(this.model, true);
         NEWSBLUR.app.story_tab_view.open_story(this.model);
         return false;

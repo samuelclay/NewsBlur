@@ -689,6 +689,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });
+        
     },
     
     fetch_dashboard_stories: function(feed_id, feeds, callback, error_callback) {

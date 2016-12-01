@@ -765,8 +765,8 @@ def load_single_feed(request, feed_id):
     
     # if page <= 3:
     #     import random
-    #     time.sleep(random.randint(2, 7) / 10.0)
-    #     # time.sleep(random.randint(2, 14))
+    #     # time.sleep(random.randint(2, 7) / 10.0)
+    #     time.sleep(random.randint(10, 14))
     
     # if page == 2:
     #     assert False

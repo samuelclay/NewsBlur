@@ -9,9 +9,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     initialize: function() {
         this.$stories = this.$(".NB-module-item");
         this.story_titles = new NEWSBLUR.Views.StoryTitlesView({
+            el: this.$stories,
             collection: NEWSBLUR.assets.dashboard_stories,
             $story_titles: this.$stories,
-            override_layout: 'split'
+            override_layout: 'split',
+            on_dashboard: true
         });
         // this.$stories.html(this.story_titles.$el);
         
@@ -30,7 +32,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     post_load_stories: function() {
-        console.log(['$story_title', this.story_titles.el, this.$stories[0], NEWSBLUR.reader.$s.$story_titles[0]]);
+        
     }
     
 });

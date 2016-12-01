@@ -118,7 +118,10 @@
             });
             NEWSBLUR.app.sidebar = new NEWSBLUR.Views.Sidebar();
             NEWSBLUR.app.feed_list = new NEWSBLUR.Views.FeedList({el: this.$s.$feed_list[0]});
-            NEWSBLUR.app.story_titles = new NEWSBLUR.Views.StoryTitlesView({collection: NEWSBLUR.assets.stories});
+            NEWSBLUR.app.story_titles = new NEWSBLUR.Views.StoryTitlesView({
+                el: this.$s.$story_titles,
+                collection: NEWSBLUR.assets.stories
+            });
             NEWSBLUR.app.story_list = new NEWSBLUR.Views.StoryListView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.original_tab_view = new NEWSBLUR.Views.OriginalTabView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.story_tab_view = new NEWSBLUR.Views.StoryTabView({collection: NEWSBLUR.assets.stories});
