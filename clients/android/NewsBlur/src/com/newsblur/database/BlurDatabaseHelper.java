@@ -783,9 +783,26 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }
 
-    public Cursor getActions(boolean includeDone) {
+    public Cursor getActions() {
         String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE;
         return dbRO.rawQuery(q, null);
+    }
+
+    public void incrementActionTried(String actionId) {
+        synchronized (RW_MUTEX) {
+            String q = "UPDATE " + DatabaseConstants.ACTION_TABLE +
+                       " SET " + DatabaseConstants.ACTION_TRIED + " = " + DatabaseConstants.ACTION_TRIED + " + 1" +
+                       " WHERE " + DatabaseConstants.ACTION_ID + " = ?";
+            dbRW.execSQL(q, new String[]{actionId});
+        }
+    }
+
+    public int getUntriedActionCount() {
+        String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE + " WHERE " + DatabaseConstants.ACTION_TRIED + " < 1";
+        Cursor c = dbRO.rawQuery(q, null);
+        int result = c.getCount();
+        c.close();
+        return result;
     }
 
     public void clearAction(String actionId) {

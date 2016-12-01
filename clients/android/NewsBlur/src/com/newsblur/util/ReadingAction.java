@@ -32,6 +32,7 @@ public class ReadingAction implements Serializable {
     };
 
     private final long time;
+    private final int tried;
     private ActionType type;
     private String storyHash;
     private FeedSet feedSet;
@@ -50,12 +51,17 @@ public class ReadingAction implements Serializable {
 
     private ReadingAction() {
         // note: private - must use helpers
-        this(System.currentTimeMillis());
+        this(System.currentTimeMillis(), 0);
     }
 
-    private ReadingAction(long time) {
+    private ReadingAction(long time, int tried) {
         // note: private - must use helpers
         this.time = time;
+        this.tried = tried;
+    }
+    
+    public int getTried() {
+        return tried;
     }
 
     public static ReadingAction markStoryRead(String hash) {
@@ -153,6 +159,7 @@ public class ReadingAction implements Serializable {
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, time);
+        values.put(DatabaseConstants.ACTION_TRIED, tried);
         values.put(DatabaseConstants.ACTION_TYPE, type.toString());
         switch (type) {
 
@@ -227,7 +234,8 @@ public class ReadingAction implements Serializable {
 
 	public static ReadingAction fromCursor(Cursor c) {
         long time = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TIME));
-		ReadingAction ra = new ReadingAction(time);
+        int tried = c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TRIED));
+		ReadingAction ra = new ReadingAction(time, tried);
         ra.type = ActionType.valueOf(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TYPE)));
         if (ra.type == ActionType.MARK_READ) {
             String hash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));

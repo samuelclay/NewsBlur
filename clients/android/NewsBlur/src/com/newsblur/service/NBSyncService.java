@@ -312,7 +312,7 @@ public class NBSyncService extends Service {
 
         Cursor c = null;
         try {
-            c = dbHelper.getActions(false);
+            c = dbHelper.getActions();
             lastActionCount = c.getCount();
             if (lastActionCount < 1) return;
 
@@ -329,8 +329,11 @@ public class NBSyncService extends Service {
                     dbHelper.clearAction(id);
                     continue actionsloop;
                 }
+
+                // don't block story loading unless this is a brand new action
+                if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
                     
-                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "doing action: " + ra.toContentValues().toString());
+                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "attempting action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(apiManager);
 
                 if (response == null) {
@@ -339,6 +342,7 @@ public class NBSyncService extends Service {
                 } else if (response.isProtocolError) {
                     // the network failed or we got a non-200, so be sure we retry
                     Log.i(this.getClass().getName(), "Holding reading action with server-side or network error.");
+                    dbHelper.incrementActionTried(id);
                     noteHardAPIFailure();
                     continue actionsloop;
                 } else if (response.isError()) {
@@ -394,7 +398,7 @@ public class NBSyncService extends Service {
     private void syncMetadata(int startId) {
         if (stopSync()) return;
         if (backoffBackgroundCalls()) return;
-        if (dbHelper.getActions(false).getCount() > 0) return;
+        if (dbHelper.getUntriedActionCount() > 0) return;
 
         if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
             PrefsUtils.updateLastSyncTime(this);
@@ -558,7 +562,7 @@ public class NBSyncService extends Service {
             } else {
                 if (stopSync()) return;
                 // if any reading activities are pending, it makes no sense to recount yet
-                if (dbHelper.getActions(false).getCount() > 0) return;
+                if (dbHelper.getUntriedActionCount() > 0) return;
 
                 Set<String> apiIds = new HashSet<String>();
                 for (FeedSet fs : RecountCandidates) {
@@ -687,7 +691,7 @@ public class NBSyncService extends Service {
                 }
 
                 // don't let the page loop block actions
-                if (dbHelper.getActions(false).getCount() > 0) return;
+                if (dbHelper.getUntriedActionCount() > 0) return;
             }
             finished = true;
 

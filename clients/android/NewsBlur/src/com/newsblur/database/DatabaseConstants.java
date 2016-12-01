@@ -127,6 +127,7 @@ public class DatabaseConstants {
     public static final String ACTION_TABLE = "story_actions";
 	public static final String ACTION_ID = BaseColumns._ID;
     public static final String ACTION_TIME = "time";
+    public static final String ACTION_TRIED = "tried";
     public static final String ACTION_TYPE = "action_type";
     public static final String ACTION_COMMENT_TEXT = "comment_text";
     public static final String ACTION_STORY_HASH = "story_hash";
@@ -263,6 +264,7 @@ public class DatabaseConstants {
     static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
+        ACTION_TRIED + INTEGER + ", " +
         ACTION_TYPE + TEXT + ", " +
         ACTION_COMMENT_TEXT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
