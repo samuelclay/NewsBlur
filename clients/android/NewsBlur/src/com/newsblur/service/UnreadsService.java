@@ -1,12 +1,15 @@
 package com.newsblur.service;
 
+import android.database.Cursor;
 import android.util.Log;
 
+import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
 import com.newsblur.domain.Story;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.NotificationUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
 
@@ -39,9 +42,13 @@ public class UnreadsService extends SubService {
             doMetadata = false;
         }
 
-        if (StoryHashQueue.size() < 1) return;
+        if (StoryHashQueue.size() > 0) {
+            getNewUnreadStories();
+        }
 
-        getNewUnreadStories();
+        if (StoryHashQueue.size() < 1) {   
+            notifyStories();
+        }
     }
 
     private void syncUnreadList() {
@@ -133,6 +140,16 @@ public class UnreadsService extends SubService {
                 Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
                 break unreadsyncloop;
             }
+
+            for (Story story : response.stories) {
+                if (parent.notifyFeedIds.contains(story.feedId)) {
+                    // for now, only notify stories with 1+ intel
+                    if (story.intelligence.calcTotalIntel() > 0) {
+                        story.notify = true;
+                    }
+                }
+            }
+
             parent.insertStories(response);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);
@@ -167,6 +184,15 @@ public class UnreadsService extends SubService {
             return false;
         }
         return true;
+    }
+
+    private void notifyStories() {
+        Cursor c = parent.dbHelper.getNotifyStoriesCursor();
+        if (c.getCount() > 0 ) {
+            NotificationUtils.notifyStories(c, parent);
+            parent.dbHelper.markNotifications();
+        }
+        closeQuietly(c);
     }
 
     public static void clear() {

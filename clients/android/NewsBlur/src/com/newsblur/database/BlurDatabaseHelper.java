@@ -783,9 +783,26 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }
 
-    public Cursor getActions(boolean includeDone) {
+    public Cursor getActions() {
         String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE;
         return dbRO.rawQuery(q, null);
+    }
+
+    public void incrementActionTried(String actionId) {
+        synchronized (RW_MUTEX) {
+            String q = "UPDATE " + DatabaseConstants.ACTION_TABLE +
+                       " SET " + DatabaseConstants.ACTION_TRIED + " = " + DatabaseConstants.ACTION_TRIED + " + 1" +
+                       " WHERE " + DatabaseConstants.ACTION_ID + " = ?";
+            dbRW.execSQL(q, new String[]{actionId});
+        }
+    }
+
+    public int getUntriedActionCount() {
+        String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE + " WHERE " + DatabaseConstants.ACTION_TRIED + " < 1";
+        Cursor c = dbRO.rawQuery(q, null);
+        int result = c.getCount();
+        c.close();
+        return result;
     }
 
     public void clearAction(String actionId) {
@@ -960,6 +977,18 @@ public class BlurDatabaseHelper {
         return c;
     }
 
+    public Cursor getNotifyStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_STORY_QUERY_BASE, null, null);
+    }
+
+    public void markNotifications() {
+        synchronized (RW_MUTEX) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.STORY_NOTIFIED, 1);
+            dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_NOTIFY + " > 0", null);
+        }
+    }
+
     public Loader<Cursor> getActiveStoriesLoader(final FeedSet fs) {
         final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return new QueryCursorLoader(context) {
@@ -986,7 +1015,7 @@ public class BlurDatabaseHelper {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
-        StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE);
+        StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
         
         if (fs.isAllRead()) {
             q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);

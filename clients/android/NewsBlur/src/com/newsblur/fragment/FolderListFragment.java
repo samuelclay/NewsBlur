@@ -46,7 +46,6 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
@@ -314,13 +313,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     private void markFeedsAsRead(FeedSet fs) {
-        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(getActivity());
-        if (confirmation.feedSetRequiresConfirmation(fs)) {
-            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
-            dialog.show(getFragmentManager(), "dialog");
-        } else {
-            FeedUtils.markFeedsRead(fs, null, null, getActivity());
-        }
+        FeedUtils.markRead(getActivity(), fs, null, null, R.array.mark_all_read_options, false);
     }
 
 	public void changeState(StateFilter state) {

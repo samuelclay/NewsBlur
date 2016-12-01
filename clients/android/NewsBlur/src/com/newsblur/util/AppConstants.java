@@ -29,7 +29,7 @@ public class AppConstants {
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
 
     // how long to wait before auto-syncing the feed/folder list
-    public static final long AUTO_SYNC_TIME_MILLIS = 20L * 60L * 1000L;
+    public static final long AUTO_SYNC_TIME_MILLIS = 15L * 60L * 1000L;
 
     // how often to rebuild the DB
     public static final long VACUUM_TIME_MILLIS = 12L * 60L * 60L * 1000L;

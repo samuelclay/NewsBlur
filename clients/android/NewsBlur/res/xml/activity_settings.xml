@@ -53,6 +53,10 @@
             android:defaultValue="@string/confirm_mark_all_read_value" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="pref_confirm_mark_range_read"
+             android:title="@string/settings_confirm_mark_range_read" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="pref_auto_open_first_unread"
             android:title="@string/settings_auto_open_first_unread"
             android:summary="@string/settings_auto_open_first_unread_sum" />
