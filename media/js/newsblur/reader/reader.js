@@ -119,7 +119,7 @@
             NEWSBLUR.app.sidebar = new NEWSBLUR.Views.Sidebar();
             NEWSBLUR.app.feed_list = new NEWSBLUR.Views.FeedList({el: this.$s.$feed_list[0]});
             NEWSBLUR.app.story_titles = new NEWSBLUR.Views.StoryTitlesView({
-                el: this.$s.$story_titles,
+                el: this.$s.$story_titles.find('.NB-story-titles'),
                 collection: NEWSBLUR.assets.stories
             });
             NEWSBLUR.app.story_list = new NEWSBLUR.Views.StoryListView({collection: NEWSBLUR.assets.stories});
