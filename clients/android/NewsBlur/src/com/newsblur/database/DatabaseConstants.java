@@ -41,6 +41,7 @@ public class DatabaseConstants {
 	public static final String FEED_POSITIVE_COUNT = "ps";
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
+    public static final String FEED_NOTIFICATION_TYPES = "notification_types";
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
@@ -166,7 +167,8 @@ public class DatabaseConstants {
 		FEED_LINK + TEXT + ", " + 
 		FEED_SUBSCRIBERS + TEXT + ", " +
 		FEED_TITLE + TEXT + ", " + 
-		FEED_UPDATED_SECONDS +
+		FEED_UPDATED_SECONDS + INTEGER + ", " +
+        FEED_NOTIFICATION_TYPES + TEXT +
 		")";
 	
 	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 
@@ -282,15 +284,6 @@ public class DatabaseConstants {
 	    STARREDCOUNTS_TAG + TEXT + ", " +
 	    STARREDCOUNTS_FEEDID + TEXT +
         ")";
-
-	public static final String[] FEED_COLUMNS = {
-		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOR, FEED_TABLE + "." + FEED_FAVICON_BORDER, FEED_TABLE + "." + FEED_FAVICON_TEXT,
-		FEED_TABLE + "." + FEED_POSITIVE_COUNT, FEED_TABLE + "." + FEED_NEUTRAL_COUNT, FEED_TABLE + "." + FEED_NEGATIVE_COUNT,
-	};
-
-	public static final String[] SOCIAL_FEED_COLUMNS = {
-		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_TITLE, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT,
-	};
 
 	private static final String[] BASE_STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE,
