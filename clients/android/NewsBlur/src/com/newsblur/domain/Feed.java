@@ -135,4 +135,13 @@ public class Feed implements Comparable<Feed>, Serializable {
         return title.compareToIgnoreCase(f.title);
     }
 
+    public boolean isNotify() {
+        // the API vends more info on notifications than we need. distill it to a boolean
+        if (notificationTypes == null) return false;
+        for (String type : notificationTypes) {
+            if (type.equals("android")) return true;
+        }
+        return false;
+    }
+
 }

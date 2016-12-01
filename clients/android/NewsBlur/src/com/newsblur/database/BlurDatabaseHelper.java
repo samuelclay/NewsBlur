@@ -977,6 +977,18 @@ public class BlurDatabaseHelper {
         return c;
     }
 
+    public Cursor getNotifyStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_STORY_QUERY_BASE, null, null);
+    }
+
+    public void markNotifications() {
+        synchronized (RW_MUTEX) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.STORY_NOTIFIED, 1);
+            dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_NOTIFY + " > 0", null);
+        }
+    }
+
     public Loader<Cursor> getActiveStoriesLoader(final FeedSet fs) {
         final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return new QueryCursorLoader(context) {
@@ -1003,7 +1015,7 @@ public class BlurDatabaseHelper {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
-        StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE);
+        StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
         
         if (fs.isAllRead()) {
             q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
