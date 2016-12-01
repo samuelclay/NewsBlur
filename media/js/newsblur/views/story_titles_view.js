@@ -9,7 +9,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
     },
     
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this, 'scroll');
         this.collection.bind('reset', this.render, this);
         this.collection.bind('add', this.add, this);
@@ -29,13 +29,15 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.clear();
         this.$story_titles.scrollTop(0);
         var collection = this.collection;
-        var stories = this.collection.map(function(story) {
+        var stories = this.collection.map(_.bind(function(story) {
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
                 collection: collection,
-                is_grid: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid'
+                is_grid: this.options.override_layout == 'grid' ||
+                         NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid',
+                override_layout: this.options.override_layout
             }).render();
-        });
+        }, this));
         this.stories = stories;
         var $stories = _.map(stories, function(story) {
             return story.el;
@@ -51,14 +53,15 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     add: function(options) {
         var collection = this.collection;
         if (options.added) {
-            var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
+            var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), _.bind(function(story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection,
-                    is_grid: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid'
+                    is_grid: this.options.override_layout == 'grid' ||
+                             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid'
                 }).render();
-            }));
+            }, this)));
             this.stories = this.stories.concat(stories);
             var $stories = _.map(stories, function(story) {
                 return story.el;
@@ -77,7 +80,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     override_grid: function() {
         if (!NEWSBLUR.reader.active_feed) return;
-        if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') != 'grid') return;
+        if (this.options.override_layout == 'grid' ||
+            NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') != 'grid') return;
         var columns = NEWSBLUR.assets.preference('grid_columns');
         var $layout = this.$story_titles;
         $layout.removeClass('NB-grid-columns-1')
@@ -232,7 +236,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-fleuron' })
         ]);
         
-        if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
+        if (_.contains(['list', 'grid'], this.options.override_layout ||
+                                         NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
             var pane_height = this.$story_titles.height();
             var endbar_height = 20;
             var last_story_height = 80;
@@ -277,12 +282,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (story && 
             !story.get('selected') && 
             !options.force && 
+            this.options.override_layout != 'grid' &&
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') != 'grid') return;
             
         // console.log(["scroll_to_selected_story 1", story, options]);
         var story_title_visisble = this.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble || options.force || 
-            _.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
+            _.contains(['list', 'grid'], this.options.override_layout || 
+                                         NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
             var container_offset = this.$story_titles.position().top;
             var scroll = story_title_view.$el.find('.NB-story-title').position().top;
             if (options.scroll_to_comments) {
@@ -292,10 +299,12 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var height = this.$story_titles.outerHeight();
             var position = scroll+container-height/5;
             // console.log(["scroll_to_selected_story 2", container_offset, scroll, container, height, position]);
-            if (_.contains(['list', 'grid'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
+            if (_.contains(['list', 'grid'], this.options.override_layout || 
+                                             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
                 position = scroll+container;
             }
-            if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
+            if (this.options.override_layout == 'grid' ||
+                NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
                 position += 21;
             }
             
@@ -335,7 +344,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_titles = this.$story_titles;
         var score = NEWSBLUR.reader.get_unread_view_score();
         var unread_stories = [];
-        var grid = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid';
+        var grid = this.options.override_layout == 'grid' || NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid';
         var point = this.$story_titles.offset();
         var offset = grid ? {top: 100, left: 100} : {top: 30, left: 30};
         var $story_title = $(document.elementFromPoint(point.left + offset.left, 

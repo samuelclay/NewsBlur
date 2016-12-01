@@ -10,7 +10,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.$stories = this.$(".NB-module-item");
         this.story_titles = new NEWSBLUR.Views.StoryTitlesView({
             collection: NEWSBLUR.assets.dashboard_stories,
-            $story_titles: this.$stories
+            $story_titles: this.$stories,
+            override_layout: 'split'
         });
         // this.$stories.html(this.story_titles.$el);
         
