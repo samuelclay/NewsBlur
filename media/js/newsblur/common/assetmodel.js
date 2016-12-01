@@ -691,7 +691,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
+    fetch_dashboard_stories: function(feed_id, feeds, callback, error_callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -705,11 +705,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.make_request('/reader/river_stories', {
             feeds: feeds,
-            page: page,
+            limit: 4,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter')
         }, pre_callback, error_callback, {
-            'ajax_group': (page ? 'feed_page' : 'feed'),
+            'ajax_group': 'feed_page',
             'request_type': 'GET'
         });
     },

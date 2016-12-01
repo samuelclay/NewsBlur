@@ -56,7 +56,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <div class="NB-storytitles-sentiment"></div>\
             <% if (show_image_preview) { %>\
                 <div class="NB-storytitles-story-image-container">\
-                    <div class="NB-storytitles-story-image"></div>\
+                    <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
                 </div>\
             <% } %>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
@@ -216,10 +216,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (!NEWSBLUR.assets.preference('show_image_preview')) {
             return false;
         }
-
+        
         var story_layout = this.options.override_layout || 
                            NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
-        var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
+        var pane_anchor = this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor');
         if (_.contains(['list', 'grid'], story_layout)) return true;
         if (story_layout == 'split' && _.contains(['north', 'south'], pane_anchor)) return true;
 

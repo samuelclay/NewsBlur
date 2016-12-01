@@ -25,7 +25,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     load_stories: function() {
         var feeds = NEWSBLUR.assets.folders.feed_ids_in_folder();
         this.story_titles.show_loading();
-        NEWSBLUR.assets.fetch_dashboard_stories("river:", feeds, 1, 
+        NEWSBLUR.assets.fetch_dashboard_stories("river:", feeds, 
             _.bind(this.post_load_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error);
     },
     

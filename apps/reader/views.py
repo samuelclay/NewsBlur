@@ -1212,7 +1212,7 @@ def load_read_stories(request):
 
 @json.json_view
 def load_river_stories__redis(request):
-    limit             = 12
+    limit             = request.REQUEST.get('limit', 12)
     start             = time.time()
     user              = get_user(request)
     message           = None
