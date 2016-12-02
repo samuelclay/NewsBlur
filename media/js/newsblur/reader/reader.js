@@ -1934,8 +1934,7 @@
             }
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             // NEWSBLUR.app.taskbar_info.show_stories_progress_bar(feeds.length);
-            if (options.skip_to_page) {
-                this.counts['page'] = options.skip_to_page;
+            if (options.dashboard_transfer) {
                 NEWSBLUR.assets.stories.reset(NEWSBLUR.assets.dashboard_stories.models);
                 this.post_open_river_stories(true, false);
             } else {

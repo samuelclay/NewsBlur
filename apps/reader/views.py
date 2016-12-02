@@ -1393,9 +1393,9 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
     
-    # if page <= 1:
+    # if page >= 1:
     #     import random
-    #     time.sleep(random.randint(0, 6))
+    #     time.sleep(random.randint(3, 6))
     
     data = dict(code=code,
                 message=message,

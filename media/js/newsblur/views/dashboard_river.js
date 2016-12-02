@@ -50,6 +50,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         // var feeds = NEWSBLUR.assets.folders.feed_ids_in_folder();
         var feeds = this.feeds();
         if (!feeds.length) return;
+        if (!this.$stories.length) return;
         
         this.page = 1;
         this.story_titles.show_loading();
@@ -102,7 +103,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     open_story: function(story) {
         NEWSBLUR.reader.open_river_stories(null, null, {
-            skip_to_page: this.page,
+            dashboard_transfer: true,
             story_id: story.id
         });
     }
