@@ -3748,10 +3748,10 @@ body {
     margin-top: 1px;
     background-color: #edefea;
     clear: both;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    -webkit-transition: background-color .12s ease-out;
+    -moz-transition: background-color .12s ease-out;
+    -o-transition: background-color .12s ease-out;
+    -ms-transition: background-color .12s ease-out;
     -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
@@ -3779,10 +3779,10 @@ body {
     float: right;
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 8px center;
     background-size: 16px;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    -webkit-transition: background .12s ease-out;
+    -moz-transition: background .12s ease-out;
+    -o-transition: background .12s ease-out;
+    -ms-transition: background .12s ease-out;
 }
 .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
     background-image: url("/media/embed/icons/circular/train.png");
@@ -3801,10 +3801,10 @@ body {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    -webkit-transition: padding .12s ease-out;
+    -moz-transition: padding .12s ease-out;
+    -o-transition: padding .12s ease-out;
+    -ms-transition: padding .12s ease-out;
 }
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
     padding-left: 10px;
