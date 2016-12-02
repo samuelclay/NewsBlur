@@ -130,6 +130,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
     
     render_inline_story_detail: function(temporary_text) {
+        console.log(['render_inline_story_detail', temporary_text]);
         if (NEWSBLUR.reader.story_view == 'text' || temporary_text) {
             this.text_view = new NEWSBLUR.Views.TextTabView({
                 el: null,

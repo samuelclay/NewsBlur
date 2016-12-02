@@ -614,6 +614,7 @@
             var story = NEWSBLUR.assets.stories.get_next_story(direction, {
                 score: this.get_unread_view_score()
             });
+            console.log(['story show_next_story', story, direction]);
             if (story) {
                 story.set('selected', true);
             }

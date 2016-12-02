@@ -1,7 +1,6 @@
 NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     initialize: function() {
-        this.bind('change:selected', this.change_selected);
         this.bind('change:shared_comments', this.populate_comments);
         this.bind('change:comments', this.populate_comments);
         this.bind('change:comment_count', this.populate_comments);
@@ -176,13 +175,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             });
         }
     },
-    
-    change_selected: function(model, selected) {
-        if (model.collection) {
-            model.collection.detect_selected_story(model, selected);
-        }
-    },
-    
+        
     // =================
     // = Saved Stories =
     // =================
@@ -267,8 +260,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     active_story: null,
     
     initialize: function() {
-        // this.bind('change:selected', this.detect_selected_story, this);
+        this.bind('change:selected', this.detect_selected_story, this);
         this.bind('reset', this.clear_previous_stories_stack, this);
+        // this.bind('change:selected', this.change_selected);
     },
     
     // ===========
@@ -456,7 +450,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         if (direction == -1) return this.get_previous_story(options);
 
         var visible_stories = this.visible(options.score);
-
+        console.log(['get_next_story', this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
         if (!this.active_story) {
             return visible_stories[0];
         }
@@ -533,6 +527,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // ==========
     
     detect_selected_story: function(selected_story, selected) {
+        console.log(['detect_selected_story', selected, selected_story, this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
         if (selected) {
             this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
@@ -543,5 +538,5 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             }
         }
     }
-    
+        
 });
