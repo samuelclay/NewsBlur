@@ -296,6 +296,7 @@ def setup_task(queue=None, skip_common=False):
     config_monit_task()
     setup_usage_monitor()
     done()
+    sudo('reboot')
 
 def setup_task_image():
     setup_installs()
@@ -515,6 +516,8 @@ def setup_supervisor():
     sudo('/etc/init.d/supervisor stop')
     sudo('sleep 2')
     sudo('ulimit -n 100000 && /etc/init.d/supervisor start')
+    sudo("/usr/sbin/update-rc.d -f supervisor defaults")
+    
 
 @parallel
 def setup_hosts():
