@@ -463,7 +463,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         
         if (this.options.on_dashboard) {
             // console.log(['clicked story', this.model]);
-            NEWSBLUR.reader.open_river_stories(null, null, {story_id: this.model.id});
+            NEWSBLUR.app.dashboard_river.open_story(this.model);
             return;
         }
         

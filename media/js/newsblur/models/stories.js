@@ -520,6 +520,14 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         return this.detect(function(s) { return s.get('story_hash') == story_hash; });
     },
     
+    deselect: function() {
+        this.each(function(story){ 
+            if (story.get('selected')) {
+                story.set('selected', false); 
+            }
+        });
+    },
+    
     // ==========
     // = Events =
     // ==========

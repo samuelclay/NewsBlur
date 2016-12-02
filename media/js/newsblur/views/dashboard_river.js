@@ -24,6 +24,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         
         NEWSBLUR.assets.feeds.bind('reset', _.bind(this.load_stories, this));
         NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
+        // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
     },
     
     feeds: function() {
@@ -75,8 +76,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             _.bind(this.post_load_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error);        
     },
     
-    check_read_stories: function(story) {
-        console.log(['story read', story, story.get('story_hash'), story.get('read_status')]);
+    check_read_stories: function(story, attr) {
+        console.log(['story read', story, story.get('story_hash'), story.get('read_status'), attr]);
         if (!_.contains(this.cache.story_hashes, story.get('story_hash'))) return;
         var dashboard_story = NEWSBLUR.assets.dashboard_stories.get_by_story_hash(story.get('story_hash'));
         if (!dashboard_story) {
@@ -85,6 +86,14 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         }
         
         dashboard_story.set('read_status', story.get('read_status'));
+        // dashboard_story.set('selected', false);
+    },
+    
+    open_story: function(story) {
+        NEWSBLUR.reader.open_river_stories(null, null, {
+            skip_to_page: this.page,
+            story_id: story.id
+        });
     }
     
 });
