@@ -77,7 +77,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             });
             this.$el.append($stories);
             if (this.options.on_dashboard) {
-                var $extras = this.$el.find('.NB-story-title-container').slice(5);
+                var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
                 $extras.addClass('NB-hidden');
             }
         }
