@@ -296,6 +296,7 @@ def setup_task(queue=None, skip_common=False):
     config_monit_task()
     setup_usage_monitor()
     done()
+    sudo('reboot')
 
 def setup_task_image():
     setup_installs()
@@ -306,6 +307,7 @@ def setup_task_image():
     pip()
     deploy(reload=True)
     done()
+    sudo('reboot')
 
 # ==================
 # = Setup - Common =
@@ -514,6 +516,8 @@ def setup_supervisor():
     sudo('/etc/init.d/supervisor stop')
     sudo('sleep 2')
     sudo('ulimit -n 100000 && /etc/init.d/supervisor start')
+    sudo("/usr/sbin/update-rc.d -f supervisor defaults")
+    
 
 @parallel
 def setup_hosts():
@@ -542,14 +546,17 @@ def config_pgbouncer():
     put(os.path.join(env.SECRETS_PATH, 'configs/pgbouncer_auth.conf'), 'userlist.txt')
     sudo('mv userlist.txt /etc/pgbouncer/userlist.txt')
     sudo('echo "START=1" | sudo tee /etc/default/pgbouncer')
-    sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
+    # sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
+        sudo('/etc/init.d/pgbouncer stop')
         sudo('pkill -9 pgbouncer -e')
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
 def kill_pgbouncer(bounce=True):
-    sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
+    # sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
+    with settings(warn_only=True):
+        sudo('/etc/init.d/pgbouncer stop')
     run('sleep 2')
     sudo('rm /var/log/postgresql/pgbouncer.pid')
     with settings(warn_only=True):
@@ -1276,7 +1283,7 @@ def setup_do(name, size=2, image=None):
     # sizes = dict((s.slug, s.slug) for s in doapi.get_all_sizes())
     ssh_key_ids = [k.id for k in doapi.get_all_sshkeys()]
     if not image:
-        image = "ubuntu-14-04-x64"
+        image = "ubuntu-16-04-x64"
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
         if image == "task": 
