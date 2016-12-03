@@ -157,7 +157,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     fill_out: function(options) {
         this.snap_back_scroll_position();
-        
         if (NEWSBLUR.assets.flags['no_more_stories'] || 
             !NEWSBLUR.assets.stories.length ||
             NEWSBLUR.reader.flags.story_titles_closed) {
@@ -165,12 +164,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
         
         options = options || {};
+        console.log(['fill out story titles', this.options.on_dashboard ? "dashboard" : "stories", options, NEWSBLUR.assets.flags['no_more_stories'], NEWSBLUR.assets.stories.length, NEWSBLUR.reader.flags.story_titles_closed]);
         
         if (NEWSBLUR.reader.counts['page_fill_outs'] < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
             !NEWSBLUR.assets.flags['no_more_stories']) {
             var $last = this.$('.NB-story-title:visible:last');
             var container_height = this.$story_titles.height();
-            // NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, this.$story_titles.scrollTop()]);
+            NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, this.$story_titles.scrollTop()]);
             NEWSBLUR.reader.counts['page_fill_outs'] += 1;
             _.delay(_.bind(function() {
                 this.scroll();
@@ -339,18 +339,20 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     scroll: function() {
         var $story_titles = this.$story_titles;
         var scroll_y = $story_titles.scrollTop();
-
-        if (NEWSBLUR.reader.flags['opening_feed']) return;
-        if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
-            this.mark_read_stories_above_scroll(scroll_y);
+        
+        if (!this.options.on_dashboard) {
+            if (NEWSBLUR.reader.flags['opening_feed']) return;
+            if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
+                this.mark_read_stories_above_scroll(scroll_y);
+            }
+            if (NEWSBLUR.assets.flags['no_more_stories']) return;
         }
-        if (NEWSBLUR.assets.flags['no_more_stories']) return;
         
         var container_offset = $story_titles.position().top;
         var visible_height = $story_titles.height() * 2;
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
         
-        // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height, this.$el]);
+        console.log(["scroll titles", this.options.on_dashboard ? "dashboard" : "stories", visible_height, scroll_y, ">", total_height, this.$el, container_offset]);
         if (visible_height + scroll_y >= total_height) {
             NEWSBLUR.reader.load_page_of_feed_stories({scroll_to_loadbar: false});
         }

@@ -44,6 +44,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         this.ajax['interactions']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
+        this.ajax['dashboard']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
     },
     
@@ -715,9 +716,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
-            include_hidden: false
+            include_hidden: false,
+            dashboard: true
         }, pre_callback, error_callback, {
-            'ajax_group': 'feed_page',
+            'ajax_group': 'dashboard',
             'request_type': 'GET'
         });
     },
