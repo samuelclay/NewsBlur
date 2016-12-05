@@ -54,11 +54,13 @@
         _ref.quit();
       }
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
-      socket.subscribe.on("error", function(err) {
-        var _ref1;
-        log.info(this.username, "Error: " + err + " (" + this.feeds.length + " feeds)");
-        return (_ref1 = socket.subscribe) != null ? _ref1.quit() : void 0;
-      });
+      socket.subscribe.on("error", (function(_this) {
+        return function(err) {
+          var _ref1;
+          log.info(_this.username, "Error: " + err + " (" + _this.feeds.length + " feeds)");
+          return (_ref1 = socket.subscribe) != null ? _ref1.quit() : void 0;
+        };
+      })(this));
       socket.subscribe.on("connect", (function(_this) {
         return function() {
           log.info(_this.username, ("Connected (" + _this.feeds.length + " feeds, " + ip + "),") + (" (" + io.engine.clientsCount + " connected) ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));

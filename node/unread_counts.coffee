@@ -51,7 +51,7 @@ io.on 'connection', (socket) ->
             console.log " ---> Error (socket): #{err}"
         socket.subscribe?.quit()
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
-        socket.subscribe.on "error", (err) ->
+        socket.subscribe.on "error", (err) =>
             log.info @username, "Error: #{err} (#{@feeds.length} feeds)"
             socket.subscribe?.quit()
         socket.subscribe.on "connect", =>
