@@ -56,7 +56,7 @@
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
       socket.subscribe.on("error", function(err) {
         var _ref1;
-        console.log(" ---> Error: " + err);
+        log.info(this.username, "Error: " + err + " (" + this.feeds.length + " feeds)");
         return (_ref1 = socket.subscribe) != null ? _ref1.quit() : void 0;
       });
       socket.subscribe.on("connect", (function(_this) {
