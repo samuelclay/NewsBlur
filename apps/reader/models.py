@@ -384,6 +384,10 @@ class UserSubscription(models.Model):
                 
             feed.setup_feed_for_premium_subscribers()
             feed.count_subscribers()
+            
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(user.username, 'reload:feeds')
+            
         
         return code, message, us
     
