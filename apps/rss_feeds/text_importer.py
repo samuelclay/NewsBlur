@@ -56,7 +56,21 @@ class TextImporter:
         if not resp:
             return
 
-        text = resp.text
+        try:
+            text = resp.text
+        except (LookupError, TypeError):
+            text = resp.content
+
+        if resp.encoding and resp.encoding != 'utf-8':
+            try:
+                text = text.encode(resp.encoding)
+            except (LookupError, UnicodeEncodeError):
+                pass
+
+        if text:
+            text = text.replace("\xc2\xa0", " ") # Non-breaking space, is mangled when encoding is not utf-8
+            text = text.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
+
         original_text_doc = readability.Document(text, url=resp.url,
                                                  debug=self.debug,
                                                  positive_keywords=["postContent", "postField"])

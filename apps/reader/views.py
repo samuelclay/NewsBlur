@@ -2411,7 +2411,7 @@ def send_story_email(request):
                                          from_email='NewsBlur <%s>' % from_address,
                                          to=to_addresses, 
                                          cc=cc,
-                                         headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
+                                         headers={'Reply-To': from_email})
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
