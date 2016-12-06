@@ -4731,11 +4731,17 @@
                 this.socket.removeAllListeners('feed:update');
                 this.socket.on('feed:update', _.bind(function(feed_id, message) {
                     NEWSBLUR.log(['Real-time feed update', feed_id, message]);
-                    this.feed_unread_count(feed_id, {realtime: true});
+                    this.feed_unread_count(feed_id, {
+                        realtime: true,
+                        new_story: true
+                    });
+                    
                 }, this));
                 
                 this.socket.removeAllListeners(NEWSBLUR.Globals.username);
+                this.socket.removeAllListeners("user:update");
                 this.socket.on('user:update', _.bind(function(username, message) {
+                    NEWSBLUR.log(['Real-time user update', username, message]);
                     if (this.flags.social_view) return;
                     if (_.string.startsWith(message, 'feed:')) {
                         feed_id = parseInt(message.replace('feed:', ''), 10);
@@ -4745,12 +4751,22 @@
                         }
                         if (feed_id != this.active_feed && 
                             !_.contains(active_feed_ids, feed_id)) {
-                            NEWSBLUR.log(['Real-time user update', username, feed_id]);
+                            NEWSBLUR.log(['Real-time user update for feed', username, feed_id]);
                             this.feed_unread_count(feed_id);
                         }
+                    } else if (_.string.startsWith(message, 'story:read')) {
+                        NEWSBLUR.log(['Real-time user update for read story', username, message]);
+                        var story_hash = message.replace('story:read:', '');
+                        NEWSBLUR.assets.stories.mark_read_pubsub(story_hash);
+                        NEWSBLUR.assets.dashboard_stories.mark_read_pubsub(story_hash);
+                    } else if (_.string.startsWith(message, 'story:unread')) {
+                        NEWSBLUR.log(['Real-time user update for unread story', username, message]);
+                        var story_hash = message.replace('story:unread:', '');
+                        NEWSBLUR.assets.stories.mark_unread_pubsub(story_hash);
+                        NEWSBLUR.assets.dashboard_stories.mark_unread_pubsub(story_hash);
                     } else if (_.string.startsWith(message, 'social:')) {
                         if (message != this.active_feed) {
-                            NEWSBLUR.log(['Real-time user update', username, message]);
+                            NEWSBLUR.log(['Real-time user update for social', username, message]);
                             this.feed_unread_count(message);
                         }
                     } else if (message == "interaction:new") {
@@ -4931,7 +4947,9 @@
             
             _.delay(_.bind(function() {
                 this.model.feed_unread_count(feed_id, options.callback);
-                NEWSBLUR.app.dashboard_river.load_stories();
+                if (options.new_story) {
+                    NEWSBLUR.app.dashboard_river.load_stories();
+                }
             }, this), Math.random() * delay);
         },
         

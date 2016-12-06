@@ -310,6 +310,18 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         }
     },
     
+    mark_read_pubsub: function(story_hash) {
+        var story = this.get_by_story_hash(story_hash);
+        if (!story) return;
+        story.set('read_status', 1);
+    },
+    
+    mark_unread_pubsub: function(story_hash) {
+        var story = this.get_by_story_hash(story_hash);
+        if (!story) return;
+        story.set('read_status', 0);
+    },
+    
     mark_unread: function(story, options) {
         options = options || {};
         NEWSBLUR.assets.mark_story_as_unread(story.id, story.get('story_feed_id'), _.bind(function(read) {
