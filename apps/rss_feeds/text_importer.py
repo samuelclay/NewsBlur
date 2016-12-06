@@ -64,7 +64,7 @@ class TextImporter:
         if resp.encoding and resp.encoding != 'utf-8':
             try:
                 text = text.encode(resp.encoding)
-            except LookupError:
+            except (LookupError, UnicodeEncodeError):
                 pass
 
         if text:

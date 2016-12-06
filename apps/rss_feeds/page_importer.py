@@ -193,7 +193,7 @@ class PageImporter(object):
         if response.encoding and response.encoding != 'utf-8':
             try:
                 data = data.encode(response.encoding)
-            except LookupError:
+            except (LookupError, UnicodeEncodeError):
                 pass
 
         if data:

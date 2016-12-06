@@ -505,6 +505,17 @@ def pip():
         run('pip install --upgrade pip')
         run('pip install -r requirements.txt')
         sudo('swapoff /swapfile')
+
+def solo_pip(role):
+    if role == "app":
+        gunicorn_stop()
+        pip()
+        deploy_code(reload=True)
+    elif role == "task":
+        celery_stop()
+        copy_task_settings()
+        pip()
+        celery()
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
