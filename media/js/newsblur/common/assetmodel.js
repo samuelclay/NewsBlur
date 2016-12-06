@@ -697,6 +697,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         var pre_callback = function(data) {
+            if (data.user_profiles) {
+                self.add_user_profiles(data.user_profiles);
+            }
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
                 data.stories = data.stories.splice(0, 3);
             }
