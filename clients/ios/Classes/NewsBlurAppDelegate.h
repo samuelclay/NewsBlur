@@ -103,6 +103,7 @@ SFSafariViewControllerDelegate>  {
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
     NSString *tryFeedStoryId;
+    NSString *tryFeedFeedId;
     
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
@@ -206,6 +207,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic) NSString *tryFeedStoryId;
+@property (nonatomic) NSString *tryFeedFeedId;
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
