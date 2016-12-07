@@ -528,7 +528,8 @@ def setup_supervisor():
     sudo('sleep 2')
     sudo('ulimit -n 100000 && /etc/init.d/supervisor start')
     sudo("/usr/sbin/update-rc.d -f supervisor defaults")
-    
+    sudo('systemctl enable supervisor')
+    sudo('systemctl start supervisor')
 
 @parallel
 def setup_hosts():
@@ -1298,7 +1299,7 @@ def setup_do(name, size=2, image=None):
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
         if image == "task": 
-            image = images["task_07-2015"]
+            image = images["task-2016-12"]
         elif image == "app":
             image = images["app_02-2016"]
         else:
