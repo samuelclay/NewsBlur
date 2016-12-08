@@ -306,7 +306,9 @@
     [super viewDidAppear:animated];
     
     // set the subscribeButton flag
-    if (appDelegate.isTryFeedView && !self.isPhoneOrCompact) {
+    if (appDelegate.isTryFeedView && !self.isPhoneOrCompact &&
+        ![[appDelegate.storiesCollection.activeFeed objectForKey:@"username"] isKindOfClass:[NSNull class]] &&
+        [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;

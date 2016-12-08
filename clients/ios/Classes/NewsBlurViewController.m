@@ -461,6 +461,7 @@ static UIFont *userLabelFont;
     }
 
     [self showOfflineNotifier];
+    [self loadNotificationStory];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
@@ -746,7 +747,8 @@ static UIFont *userLabelFont;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
     }
-    
+    [self loadNotificationStory];
+
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
@@ -794,6 +796,14 @@ static UIFont *userLabelFont;
             [_self fetchFeedList:NO];
         });
     }];
+}
+
+- (void)loadNotificationStory {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (appDelegate.tryFeedFeedId && !appDelegate.isTryFeedView) {
+            [appDelegate loadFeed:appDelegate.tryFeedFeedId withStory:appDelegate.tryFeedStoryId animated:NO];
+        }
+    });
 }
 
 - (void)showUserProfile {

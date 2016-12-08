@@ -128,6 +128,7 @@
 @synthesize inFindingStoryMode;
 @synthesize hasLoadedFeedDetail;
 @synthesize tryFeedStoryId;
+@synthesize tryFeedFeedId;
 @synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
@@ -214,10 +215,10 @@
     [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
+    [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
+    [feedsViewController loadOfflineFeeds:NO];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
-        [feedsViewController loadOfflineFeeds:NO];
         [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -240,6 +241,13 @@
     if ([UIApplicationShortcutItem class] && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
         self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
         return NO;
+    }
+    
+    if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
+        NSDictionary *notification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+        [self processNotification:notification
+                           action:@"com.apple.UNNotificationDefaultActionIdentifier"
+            withCompletionHandler:nil];
     }
     
 	return YES;
@@ -372,28 +380,43 @@
 }
 
 //Called to let your app know which action was selected by the user for a given notification.
--(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
-    NSLog(@"User Info : %@ / %@", response.notification.request.content.userInfo, response.actionIdentifier);
-    NSString *storyHash = [response.notification.request.content.userInfo objectForKey:@"story_hash"];
-    NSNumber *storyFeedId = [response.notification.request.content.userInfo objectForKey:@"story_feed_id"];
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler {
+    [self processNotification:response.notification.request.content.userInfo
+                       action:response.actionIdentifier
+        withCompletionHandler:completionHandler];
+}
+
+- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void(^)())completionHandler {
+    NSLog(@"User Info : %@ / %@", content, action);
+    NSString *storyHash = [content objectForKey:@"story_hash"];
+    NSNumber *storyFeedId = [content objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", storyFeedId];
     
     if (!self.activeUsername) {
         return;
-    } else if ([response.actionIdentifier isEqualToString:@"MARK_READ_IDENTIFIER"]) {
+    } else if ([action isEqualToString:@"MARK_READ_IDENTIFIER"]) {
         [self markStoryAsRead:storyHash inFeed:feedIdStr withCallback:^{
-            completionHandler();
+            if (completionHandler) completionHandler();
         }];
-    } else if ([response.actionIdentifier isEqualToString:@"STAR_IDENTIFIER"]) {
+    } else if ([action isEqualToString:@"STAR_IDENTIFIER"]) {
         [self markStoryAsStarred:storyHash withCallback:^{
-            completionHandler();
+            if (completionHandler) completionHandler();
         }];
-    } else if ([response.actionIdentifier isEqualToString:@"VIEW_STORY_IDENTIFIER"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
+    } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
+               [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
+            [self.navigationController
+             popToViewController:[self.navigationController.viewControllers
+                                  objectAtIndex:0]
+             animated:YES];
+        } else {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+        }
         [self loadFeed:feedIdStr withStory:storyHash animated:NO];
-        completionHandler();
-    } else if ([response.actionIdentifier isEqualToString:@"DISMISS_IDENTIFIER"]) {
-        completionHandler();
+        if (completionHandler) completionHandler();
+    } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
+        if (completionHandler) completionHandler();
     }
     
 }
@@ -1074,10 +1097,23 @@
        withStory:(NSString *)contentId
         animated:(BOOL)animated {
     NSDictionary *feed = [self getFeed:feedId];
+    NSLog(@"loadFeed: %@", feed);
+    
+    if (!feed || [feed isKindOfClass:[NSNull class]]) {
+        if (self.tryFeedFeedId) {
+            self.tryFeedStoryId = nil;
+            self.tryFeedFeedId = nil;
+        } else {
+            self.tryFeedFeedId = feedId;
+            self.tryFeedStoryId = contentId;
+        }
+        return;
+    }
     
     self.isTryFeedView = YES;
     self.inFindingStoryMode = YES;
     self.tryFeedStoryId = contentId;
+    self.tryFeedFeedId = nil;
     storiesCollection.isSocialView = NO;
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
