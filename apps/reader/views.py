@@ -428,7 +428,7 @@ def load_feeds_flat(request):
     }
     return data
 
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=30)
 @never_cache
 @json.json_view
 def refresh_feeds(request):

@@ -2098,6 +2098,9 @@ a img {
 .NB-module-river .NB-end-line {
     display: none;
 }
+.NB-module-river .NB-end-line.NB-visible {
+    display: block;
+}
 /* ============================= */
 /* = Story Detail in List View = */
 /* ============================= */

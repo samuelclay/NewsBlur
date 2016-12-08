@@ -75,9 +75,16 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var unread_view = NEWSBLUR.assets.preference('unread_view');
         if (unread_view >= 1) {
             console.log(['counts', counts['ps'], visible, this.page]);
-            if (counts['ps'] <= visible) return;
+            if (counts['ps'] <= visible) {
+                this.show_end_line();
+                return;
+            }
             if (this.page > 50) return;
         } else {
+            if (counts['nt'] <= visible) {
+                this.show_end_line();
+                return;
+            }
             if (this.page > 10) return;
         }
         
@@ -106,6 +113,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             dashboard_transfer: true,
             story_id: story.id
         });
+    },
+    
+    show_end_line: function() {
+        this.story_titles.show_no_more_stories();
+        this.$(".NB-end-line").addClass("NB-visible");
     }
     
 });
