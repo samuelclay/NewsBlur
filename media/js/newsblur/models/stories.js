@@ -6,9 +6,15 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.bind('change:comment_count', this.populate_comments);
         this.bind('change:starred', this.change_starred);
         this.bind('change:user_tags', this.change_user_tags);
+        this.bind('change:selected', this.select_story);
         this.populate_comments();
         this.story_permalink = this.get('story_permalink');
         this.story_title = this.get('story_title');
+    },
+    
+    select_story: function(story, selected) {
+        console.log(['select_story', this, this.collection, story, selected]);
+        this.collection.detect_selected_story(this, selected);
     },
     
     populate_comments: function(story, collection) {
@@ -260,7 +266,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     active_story: null,
     
     initialize: function() {
-        this.bind('change:selected', this.detect_selected_story, this);
+        // this.bind('change:selected', this.detect_selected_story, this); // Handled in the Story model so it fires first
         this.bind('reset', this.clear_previous_stories_stack, this);
         // this.bind('change:selected', this.change_selected);
     },
@@ -539,8 +545,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // ==========
     
     detect_selected_story: function(selected_story, selected) {
-        console.log(['detect_selected_story', selected, selected_story, this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
         if (selected) {
+            console.log(['detect_selected_story', selected, selected_story, this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
             this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;

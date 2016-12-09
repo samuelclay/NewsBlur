@@ -6503,11 +6503,27 @@ form.opml_import_form input {
 }
 
 .NB-module-premium .NB-module-item-intro {
-    border: 1px solid #F7E7BC;
-    background-color: #FFFCF3;
+    border-radius: 3px;
+    border: 1px solid #ebc17c;
+    padding: 0 8px 4px 0px;
+    background-color: #FFED68;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #fff5cc),
+        color-stop(0.84, #fff7d4)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #fff5cc 16%,
+        #fff7d4 84%
+    );
+     -moz-box-shadow:0 2px 0px #ebc17c;
+    box-shadow:0 2px 0px #ebc17c;
+    margin-bottom: 2px;
     padding: 12px;
     overflow: hidden;
-    border-radius: 4px;
 	font-size: 14px;
 	text-align: center;
 }
@@ -6518,7 +6534,7 @@ form.opml_import_form input {
 	font-size: 12px;
 	text-transform: uppercase;
 	margin: 12px 0 0;
-	color: #909090;
+	color: #ebc17c;
 }
 
 /* ================= */
@@ -9136,24 +9152,24 @@ form.opml_import_form input {
     display: block;
 }
 .NB-modal-feedchooser .NB-modal-submit.NB-modal-submit-paypal {
-    border-radius: 12px;
-    border: 1px solid #F6BD44;
+    border-radius: 3px;
+    border: 1px solid #ebc17c;
     padding: 0 8px 4px 0px;
     background-color: #FFED68;
     background-image: -webkit-gradient(
         linear,
         left bottom,
         left top,
-        color-stop(0.16, #FFED68),
-        color-stop(0.84, #FFF8B1)
+        color-stop(0.16, #fff5cc),
+        color-stop(0.84, #fff7d4)
     );
     background-image: -moz-linear-gradient(
         center bottom,
-        #FFED68 16%,
-        #FFF8B1 84%
+        #fff5cc 16%,
+        #fff7d4 84%
     );
-     -moz-box-shadow:0 2px 2px #CE972F;
-    box-shadow:0 2px 2px #CE972F;
+     -moz-box-shadow:0 2px 0px #ebc17c;
+    box-shadow:0 2px 0px #ebc17c;
 
 }
 
@@ -9182,8 +9198,8 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-stripe .NB-modal-submit-green {
-     -moz-box-shadow:2px 2px 0 #E2D121;
-    box-shadow:2px 2px 0 #E2D121;
+/*     -moz-box-shadow:0 2px 0 #1a5e0e;*/
+/*    box-shadow:0 2px 0 #1a5e0e;*/
 }
 .NB-modal-feedchooser .NB-creditcards img {
     width: 32px;
@@ -9197,7 +9213,8 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value {
-    padding: 4px 0 4px 36px;
+/*    padding: 4px 0 4px 36px;*/
+    padding: 4px 0 4px 0px;
     text-shadow: 1px 1px 0 #FFF8B1;
     clear: both;
     position: relative;
@@ -9218,6 +9235,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value .NB-feedchooser-dollar-image {
+    display: none !important;
     position: absolute;
     width: 40px;
     height: 40px;

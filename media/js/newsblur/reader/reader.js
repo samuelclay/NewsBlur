@@ -610,6 +610,20 @@
         // = Navigation =
         // ==============
         
+        active_story_view: function(feed_id) {
+            feed_id = feed_id || this.active_feed;
+            
+            if (_.string.startsWith(feed_id, 'river:')) {
+                if (this.active_story && this.active_story.get('story_feed_id')) {
+                    feed_id = this.active_story.get('story_feed_id');
+                    console.log(['Hijacking view setting', feed_id, ' --> ', 
+                                 this.active_story && this.active_story.get('story_feed_id'), NEWSBLUR.assets.view_setting(feed_id, 'view')]);
+                }
+            }
+            
+            return feed_id;
+        },
+        
         show_next_story: function(direction) {
             var story = NEWSBLUR.assets.stories.get_next_story(direction, {
                 score: this.get_unread_view_score()
@@ -1306,12 +1320,8 @@
                 this.hide_tryout_signup_button();
             }
             
-            this.active_folder = null;
-            this.active_feed = null;
-            this.active_story = null;
-            
-            this.model.stories.deselect();
             this.model.feeds.deselect();
+            this.model.stories.deselect();
             this.model.starred_feeds.deselect();
             if (_.string.contains(this.active_feed, 'social:')) {
                 this.model.social_feeds.deselect();
@@ -1319,6 +1329,11 @@
             if (_.string.contains(this.active_feed, 'river:')) {
                 this.model.folders.deselect();
             }
+
+            this.active_folder = null;
+            this.active_feed = null;
+            this.active_story = null;
+            
             NEWSBLUR.assets.stories.reset();
             NEWSBLUR.app.feed_selector.hide_feed_selector();
             NEWSBLUR.app.original_tab_view.unload_feed_iframe();
@@ -1521,11 +1536,13 @@
         
         set_correct_story_view_for_feed: function(feed_id, view) {
             feed_id = feed_id || this.active_feed;
+            feed_id = this.active_story_view(feed_id);
             var feed = NEWSBLUR.assets.get_feed(feed_id);
             var $original_tabs = $('.task_view_page, .task_view_story');
             var $page_tab = $('.task_view_page');
             view = view || NEWSBLUR.assets.view_setting(feed_id);
-
+            console.log(['set_correct_story_view_for_feed', feed_id, view]);
+            
             $original_tabs.removeClass('NB-disabled-page')
                           .removeClass('NB-disabled')
                           .removeClass('NB-hidden')
@@ -1534,7 +1551,7 @@
                 $(this).tipsy('disable');
             });
 
-            if (feed && 
+            if (feed && view == 'original' && 
                 (feed.get('disabled_page') ||
                  NEWSBLUR.utils.is_url_iframe_buster(feed.get('feed_link')))) {
                 view = 'feed';
@@ -1614,7 +1631,8 @@
             if (_.contains(['starred', 'read'], feed_id)) {
                 $page_tab.addClass('NB-disabled');
             }
-
+            
+            console.log(['setting reader.story_view', view, " was:", this.story_view]);
             this.story_view = view;
         },
         
@@ -2028,7 +2046,7 @@
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
             if (!explicit_view_setting || explicit_view_setting == 'page') {
-              explicit_view_setting = 'feed';
+                explicit_view_setting = 'feed';
             }
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             this.switch_taskbar_view(this.story_view);
@@ -2656,7 +2674,7 @@
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
             
-            console.log(['load_page_of_feed_stories', this.flags['opening_feed'], this.counts['page']]);
+            // console.log(['load_page_of_feed_stories', this.flags['opening_feed'], this.counts['page']]);
             if (this.flags['opening_feed']) return;
 
             this.flags['opening_feed'] = true;
@@ -2844,10 +2862,12 @@
         
         switch_taskbar_view: function(view, options) {
             options = options || {};
-            // NEWSBLUR.log(['switch_taskbar_view', view, options.skip_save_type]);
             var self = this;
             var $story_pane = this.$s.$story_pane;
-            var feed = this.model.get_feed(this.active_feed);
+            var feed_id = this.active_story_view();
+            var feed = this.model.get_feed(feed_id);
+            view = view || this.story_view;
+            NEWSBLUR.log(['switch_taskbar_view', view, options.skip_save_type, feed]);
             
             if (view == 'page' && feed && feed.get('has_exception') && 
                 feed.get('exception_type') == 'page') {
@@ -2874,7 +2894,7 @@
             var $to_text_arrow = $('.NB-taskbar .NB-task-view-to-text-arrow');
             
             if (!options.skip_save_type && this.story_view != view) {
-                this.model.view_setting(this.active_feed, {'view': view});
+                this.model.view_setting(feed_id, {'view': view});
             }
             
             NEWSBLUR.app.taskbar_info.hide_stories_error();
