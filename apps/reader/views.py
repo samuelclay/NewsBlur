@@ -1092,10 +1092,10 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     for story in stories:
         feed = Feed.get_by_id(story['story_feed_id'])
         story_content = """%s<br><br><img src="//%s/rss_feeds/icon/%s" width="16" height="16"> %s""" % (
-            smart_unicode(story['story_content'],
+            smart_unicode(story['story_content']),
             Site.objects.get_current().domain,
             story['story_feed_id'],
-            feed.feed_title if feed else "")
+            feed.feed_title if feed else ""
         )
         story_data = {
             'title': "%s%s" % (("%s: " % feed.feed_title) if feed else "", story['story_title']),
