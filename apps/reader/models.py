@@ -2,13 +2,12 @@ import datetime
 import time
 import re
 import redis
-from collections import defaultdict
 from operator import itemgetter
 from pprint import pprint
 from utils import log as logging
 from utils import json_functions as json
 from django.db import models, IntegrityError
-from django.db.models import Q, F
+from django.db.models import Q
 from django.db.models import Count
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -125,7 +124,6 @@ class UserSubscription(models.Model):
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
-        unread_timestamp = int(time.mktime(cutoff_date.timetuple()))-1000
         feed_counter = 0
 
         read_dates = dict()

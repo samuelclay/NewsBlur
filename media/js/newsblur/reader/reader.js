@@ -1686,6 +1686,12 @@
         // = Starred Stories =
         // ===================
         
+        update_starred_counts: function() {
+            NEWSBLUR.assets.update_starred_counts(_.bind(function(data) {
+                this.update_starred_count();
+            }, this));
+        },
+
         update_starred_count: function() {
             var starred_count = this.model.starred_count;
             var $starred_count = $('.NB-feeds-header-count', this.$s.$starred_header);
@@ -4729,6 +4735,9 @@
                             NEWSBLUR.log(['Real-time user update', username, feed_id]);
                             this.feed_unread_count(feed_id);
                         }
+                    } else if (_.string.startsWith(message, 'story:starred') ||
+                               _.string.startsWith(message, 'story:unstarred')) {
+                        this.update_starred_counts();
                     } else if (_.string.startsWith(message, 'social:')) {
                         if (message != this.active_feed) {
                             NEWSBLUR.log(['Real-time user update', username, message]);

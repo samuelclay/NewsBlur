@@ -1025,7 +1025,6 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
     else:
         story_hashes = []
-        unread_feed_story_hashes = []
 
     mstories = MStory.objects(story_hash__in=story_hashes).order_by('-story_date')
     stories = Feed.format_stories(mstories)
@@ -1049,11 +1048,12 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
-    classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
-                                           classifier_feeds=classifier_feeds,
-                                           classifier_authors=classifier_authors,
-                                           classifier_titles=classifier_titles,
-                                           classifier_tags=classifier_tags)
+    
+    sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
+                             classifier_feeds=classifier_feeds,
+                             classifier_authors=classifier_authors,
+                             classifier_titles=classifier_titles,
+                             classifier_tags=classifier_tags)
     for story in stories:
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
@@ -1838,7 +1838,7 @@ def add_url(request):
                 if not ss.twitter_uid:
                     raise tweepy.TweepError("No API token")
                 ss.twitter_api().me()
-            except tweepy.TweepError, e:
+            except tweepy.TweepError:
                 code = -1
                 message = "Your Twitter connection isn't setup. Go to Manage - Friends and reconnect Twitter."
     
@@ -2302,6 +2302,9 @@ def _mark_story_as_starred(request):
     if not starred_count and len(starred_counts):
         starred_count = MStarredStory.objects(user_id=request.user.pk).count()    
     
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'story:starred:%s' % story.story_hash)
+    
     if created:
         logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        
     else:
@@ -2356,11 +2359,23 @@ def _mark_story_as_unstarred(request):
         # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
         MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
+        
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(request.user.username, 'story:unstarred:%s' % starred_story.story_hash)
     else:
         code = -1
     
     return {'code': code, 'starred_counts': starred_counts}
 
+    
+@ajax_login_required
+@json.json_view
+def starred_counts(request):
+    starred_counts, starred_count = MStarredStoryCounts.user_counts(request.user.pk, include_total=True)
+    logging.user(request, "~FCRequesting starred counts: ~SB%s stories (%s tags)" % (starred_count, len([s for s in starred_counts if s['tag']])))
+
+    return {'starred_count': starred_count, 'starred_counts': starred_counts}
+    
 @ajax_login_required
 @json.json_view
 def send_story_email(request):
