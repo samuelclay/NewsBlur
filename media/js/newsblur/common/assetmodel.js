@@ -286,6 +286,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback);
     },
     
+    update_starred_counts: function(callback) {
+        var pre_callback = _.bind(function(data) {
+            this.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+            this.starred_count = data.starred_count;
+            
+            if (callback) callback(data);
+        }, this);
+        
+        this.make_request('/reader/starred_counts', {}, pre_callback, pre_callback, {request_type: 'GET'});
+    },
+    
     mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, mark_active, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
