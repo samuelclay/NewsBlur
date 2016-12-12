@@ -395,7 +395,7 @@ class UserSubscription(models.Model):
         
         # Get subscriptions for user
         user_subs = cls.objects.select_related('feed').filter(user=user, active=True)
-        feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
+        feed_ids = [f for f in feed_ids if f and not any(f.startswith(prefix) for prefix in ['river', 'saved'])]
         if feed_ids:
             user_subs = user_subs.filter(feed__in=feed_ids)
         
@@ -940,7 +940,7 @@ class UserSubscription(models.Model):
         for f, feed_id in enumerate(feed_ids):
             scheduled_updates = results[f*2]
             error_feeds = results[f*2+1]
-            queued_feeds = results[f]
+            queued_feeds = results_queued[f]
             if not scheduled_updates and not queued_feeds and not error_feeds:
                 safety_net.append(feed_id)
 
