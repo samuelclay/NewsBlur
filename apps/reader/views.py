@@ -428,7 +428,7 @@ def load_feeds_flat(request):
     }
     return data
 
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=30)
 @never_cache
 @json.json_view
 def refresh_feeds(request):
@@ -765,8 +765,8 @@ def load_single_feed(request, feed_id):
     
     # if page <= 3:
     #     import random
-    #     time.sleep(random.randint(2, 7) / 10.0)
-    #     # time.sleep(random.randint(2, 14))
+    #     # time.sleep(random.randint(2, 7) / 10.0)
+    #     time.sleep(random.randint(10, 14))
     
     # if page == 2:
     #     assert False
@@ -1212,7 +1212,7 @@ def load_read_stories(request):
 
 @json.json_view
 def load_river_stories__redis(request):
-    limit             = 12
+    limit             = int(request.REQUEST.get('limit', 12))
     start             = time.time()
     user              = get_user(request)
     message           = None
@@ -1231,9 +1231,8 @@ def load_river_stories__redis(request):
     usersubs          = []
     code              = 1
     user_search       = None
-    offset = (page-1) * limit
-    limit = page * limit
-    story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+    offset            = (page-1) * limit
+    story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
     
     if story_hashes:
         unread_feed_story_hashes = None
@@ -1394,9 +1393,9 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
     
-    # if page <= 1:
+    # if page >= 1:
     #     import random
-    #     time.sleep(random.randint(0, 6))
+    #     time.sleep(random.randint(3, 6))
     
     data = dict(code=code,
                 message=message,
@@ -1525,9 +1524,6 @@ def mark_story_as_read(request):
     else:
         data = dict(code=-1, errors=["User is not subscribed to this feed."])
 
-    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    r.publish(request.user.username, 'feed:%s' % feed_id)
-
     return data
 
 @ajax_login_required
@@ -1539,7 +1535,7 @@ def mark_story_hashes_as_read(request):
     except UnreadablePostError:
         return dict(code=-1, message="Missing `story_hash` list parameter.")
     
-    feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
+    feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes, username=request.user.username)
     
     if friend_ids:
         socialsubs = MSocialSubscription.objects.filter(
@@ -1685,7 +1681,7 @@ def mark_story_as_unread(request):
                                                                story_guid_hash=story.guid_hash)
     dirty_count = social_subs and social_subs.count()
     dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
-    RUserStory.mark_story_hash_unread(user_id=request.user.pk, story_hash=story.story_hash)
+    RUserStory.mark_story_hash_unread(request.user, story_hash=story.story_hash)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)
@@ -1720,7 +1716,7 @@ def mark_story_hash_as_unread(request):
         data = usersub.invert_read_stories_after_unread_story(story, request)
         r.publish(request.user.username, 'feed:%s' % feed_id)
 
-    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user.pk, story_hash)
+    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user, story_hash)
 
     if friend_ids:
         socialsubs = MSocialSubscription.objects.filter(

@@ -1,15 +1,20 @@
 NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     initialize: function() {
-        this.bind('change:selected', this.change_selected);
         this.bind('change:shared_comments', this.populate_comments);
         this.bind('change:comments', this.populate_comments);
         this.bind('change:comment_count', this.populate_comments);
         this.bind('change:starred', this.change_starred);
         this.bind('change:user_tags', this.change_user_tags);
+        this.bind('change:selected', this.select_story);
         this.populate_comments();
         this.story_permalink = this.get('story_permalink');
         this.story_title = this.get('story_title');
+    },
+    
+    select_story: function(story, selected) {
+        console.log(['select_story', this, this.collection, story, selected]);
+        this.collection.detect_selected_story(this, selected);
     },
     
     populate_comments: function(story, collection) {
@@ -176,13 +181,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             });
         }
     },
-    
-    change_selected: function(model, selected) {
-        if (model.collection) {
-            model.collection.detect_selected_story(model, selected);
-        }
-    },
-    
+        
     // =================
     // = Saved Stories =
     // =================
@@ -267,8 +266,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     active_story: null,
     
     initialize: function() {
-        // this.bind('change:selected', this.detect_selected_story, this);
+        // this.bind('change:selected', this.detect_selected_story, this); // Handled in the Story model so it fires first
         this.bind('reset', this.clear_previous_stories_stack, this);
+        // this.bind('change:selected', this.change_selected);
     },
     
     // ===========
@@ -314,6 +314,18 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         } else {
             _mark_read();
         }
+    },
+    
+    mark_read_pubsub: function(story_hash) {
+        var story = this.get_by_story_hash(story_hash);
+        if (!story) return;
+        story.set('read_status', 1);
+    },
+    
+    mark_unread_pubsub: function(story_hash) {
+        var story = this.get_by_story_hash(story_hash);
+        if (!story) return;
+        story.set('read_status', 0);
     },
     
     mark_unread: function(story, options) {
@@ -456,7 +468,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         if (direction == -1) return this.get_previous_story(options);
 
         var visible_stories = this.visible(options.score);
-
+        console.log(['get_next_story', this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
         if (!this.active_story) {
             return visible_stories[0];
         }
@@ -520,12 +532,21 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         return this.detect(function(s) { return s.get('story_hash') == story_hash; });
     },
     
+    deselect: function() {
+        this.each(function(story){ 
+            if (story.get('selected')) {
+                story.set('selected', false); 
+            }
+        });
+    },
+    
     // ==========
     // = Events =
     // ==========
     
     detect_selected_story: function(selected_story, selected) {
         if (selected) {
+            console.log(['detect_selected_story', selected, selected_story, this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
             this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;
@@ -535,5 +556,5 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             }
         }
     }
-    
+        
 });

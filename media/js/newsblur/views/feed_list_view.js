@@ -214,7 +214,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
     load_url_next_param: function(route_found) {
         var next = $.getQueryString('next') || $.getQueryString('test');
-        console.log(['load_url_next_param', next, route_found]);
+        // console.log(['load_url_next_param', next, route_found]);
         if (next == 'optout') {
             NEWSBLUR.reader.open_account_modal({'animate_email': true});
         } else if (next == 'goodies') {

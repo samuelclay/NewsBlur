@@ -14,6 +14,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
+        this.dashboard_stories = new NEWSBLUR.Collections.Stories();
         this.starred_feeds = new NEWSBLUR.Collections.StarredFeeds();
         this.queued_read_stories = {};
         this.classifiers = {};
@@ -43,6 +44,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         this.ajax['interactions']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
+        this.ajax['dashboard']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
     },
     
@@ -681,7 +683,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     data.stories = [];
                 }
             }
+            
             self.load_feed_precallback(data, feed_id, callback, first_load);
+            // console.log(['river stories fetch', self.dashboard_stories.length, self.stories.length]);
         };
         
         this.feed_id = feed_id;
@@ -695,6 +699,41 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             include_hidden: true
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
+            'request_type': 'GET'
+        });
+        
+    },
+    
+    fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            if (data.user_profiles) {
+                self.add_user_profiles(data.user_profiles);
+            }
+            if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
+                data.stories = data.stories.splice(0, 3);
+            }
+            if (page > 1) {
+                self.dashboard_stories.add(data.stories, {silent: true});
+                self.dashboard_stories.trigger('add', {added: data.stories.length});
+            } else {
+                self.dashboard_stories.reset(data.stories, {added: data.stories.length});
+            }
+
+            callback();
+        };
+        
+        this.make_request('/reader/river_stories', {
+            feeds: feeds,
+            limit: 4,
+            page: page,
+            order: this.view_setting(feed_id, 'order'),
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            include_hidden: false,
+            dashboard: true
+        }, pre_callback, error_callback, {
+            'ajax_group': 'dashboard',
             'request_type': 'GET'
         });
     },

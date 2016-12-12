@@ -307,6 +307,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     },
 
     update_counts: function(initial_load) {
+        if (this.options.premium_only) return;
+        
         var $count = $('.NB-feedchooser-info-counts');
         var approved = this.feedlist.folder_view.highlighted_count();
         var $submit = $('.NB-modal-submit-save', this.$modal);
