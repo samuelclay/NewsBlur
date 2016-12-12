@@ -395,7 +395,7 @@ class UserSubscription(models.Model):
         
         # Get subscriptions for user
         user_subs = cls.objects.select_related('feed').filter(user=user, active=True)
-        feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
+        feed_ids = [f for f in feed_ids if f and not any(f.startswith(prefix) for prefix in ['river', 'saved'])]
         if feed_ids:
             user_subs = user_subs.filter(feed__in=feed_ids)
         

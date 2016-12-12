@@ -15,7 +15,6 @@ import urlparse
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
-from io import BytesIO as StringIO
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
@@ -155,7 +154,7 @@ class FetchFeed:
                                                 agent=USER_AGENT,
                                                 etag=etag,
                                                 modified=modified)
-                except (TypeError, ValueError, KeyError, EOFError), e:
+                except (TypeError, ValueError, KeyError, EOFError, MemoryError), e:
                     logging.debug(u'   ***> [%-30s] ~FRFeed fetch error: %s' % 
                                   (self.feed.title[:30], e))
                     pass
