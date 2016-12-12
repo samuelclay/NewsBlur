@@ -164,7 +164,7 @@ class FetchFeed:
                 logging.debug(u'   ***> [%-30s] ~FRTurning off headers...' % 
                               (self.feed.title[:30]))
                 self.fpf = feedparser.parse(address, agent=USER_AGENT)
-            except (TypeError, ValueError, KeyError, EOFError), e:
+            except (TypeError, ValueError, KeyError, EOFError, MemoryError), e:
                 logging.debug(u'   ***> [%-30s] ~FRFetch failed: %s.' % 
                               (self.feed.title[:30], e))
                 return FEED_ERRHTTP, None
