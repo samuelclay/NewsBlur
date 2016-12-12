@@ -28,7 +28,7 @@ try:
     from django.conf import settings as django_settings
 except ImportError:
     print " ---> Django not installed yet."
-    django_settings = None
+    return
 
 
 # ============
@@ -169,7 +169,7 @@ def db():
 
 def task():
     assign_digitalocean_roledefs()
-    env.roles = ['task']
+    env.roles = ['task', 'search']
 
 def ec2task():
     ec2()
@@ -1291,7 +1291,7 @@ def setup_do(name, size=2, image=None):
     else:
         instance_size = "%sgb" % size
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
-    droplets = doapi.get_all_droplets()
+    # droplets = doapi.get_all_droplets()
     # sizes = dict((s.slug, s.slug) for s in doapi.get_all_sizes())
     ssh_key_ids = [k.id for k in doapi.get_all_sshkeys()]
     if not image:
