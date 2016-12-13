@@ -3170,7 +3170,10 @@ body {
 .NB-story-content-container {
     overflow: hidden;
     position: relative;
-    min-height: 144px;
+    min-height: 192px;
+}
+.NB-narrow-content .NB-story-content-container {
+    min-height: 108px;
 }
 .NB-story-content-wrapper {
     position: relative;
