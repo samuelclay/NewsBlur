@@ -1235,6 +1235,7 @@ def load_river_stories__redis(request):
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
     
     if limit == 5 and not request.user.is_staff:
+        logging.user(request, "~FRIgnoring ~FCdashboard river stories")
         return dict(code=-1, message="Had to turn off dashboard river for now.", stories=[])
         
     if story_hashes:
