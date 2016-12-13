@@ -1234,6 +1234,9 @@ def load_river_stories__redis(request):
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
     
+    if limit == 5 and not request.user.is_staff:
+        return dict(code=-1, message="Had to turn off dashboard river for now.", stories=[])
+        
     if story_hashes:
         unread_feed_story_hashes = None
         read_filter = 'unread'
