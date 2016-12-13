@@ -28,8 +28,7 @@ try:
     from django.conf import settings as django_settings
 except ImportError:
     print " ---> Django not installed yet."
-    return
-
+    django_settings = None
 
 # ============
 # = DEFAULTS =
