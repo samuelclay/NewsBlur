@@ -23,6 +23,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
+        "click .NB-feed-story-email"            : "open_email",
         "click .NB-feed-story-save"             : "toggle_starred",
         "click .NB-story-comments-label"        : "scroll_to_comments",
         "click .NB-story-content-expander"      : "expand_story"
@@ -241,6 +242,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
+                <div class="NB-sideoption NB-feed-story-email">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title">Email <span>this story</span></div>\
+                </div>\
                 <div class="NB-sideoption NB-feed-story-train">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title">Train <span>this story</span></div>\
@@ -769,6 +774,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             options['feed_loaded'] = true;
         }
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
+    },
+    
+    open_email: function() {
+        NEWSBLUR.reader.send_story_to_email(this.model);
     },
     
     toggle_starred: function() {

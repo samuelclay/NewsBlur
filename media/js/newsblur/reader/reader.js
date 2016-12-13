@@ -235,7 +235,7 @@
                     narrow = true;
                 }
                 $windows.toggleClass('NB-narrow-content', narrow);
-                var extranarrow = center_width < 580;
+                var extranarrow = center_width < 666;
                 $windows.toggleClass('NB-extra-narrow-content', extranarrow);
                 var wide = center_width > 860;
                 $windows.toggleClass('NB-wide-content', wide);
