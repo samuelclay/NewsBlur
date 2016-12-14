@@ -14,7 +14,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     select_story: function(story, selected) {
         console.log(['select_story', this, this.collection, story, selected]);
-        this.collection.detect_selected_story(this, selected);
+        if (this.collection) this.collection.detect_selected_story(this, selected);
     },
     
     populate_comments: function(story, collection) {
