@@ -54,3 +54,4 @@ simplejson==3.10.0
 six==1.10.0
 stripe==1.43.0
 tweepy==3.5.0
+South==1.0.2

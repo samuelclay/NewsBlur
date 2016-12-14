@@ -500,6 +500,7 @@ def pip():
             sudo('chmod 600 /swapfile')
             sudo('mkswap /swapfile')
             sudo('swapon /swapfile')
+        sudo('chown `whoami`.`whoami` -R %s' % os.path.join(env.NEWSBLUR_PATH, 'venv'))
         run('easy_install -U pip')
         run('pip install --upgrade pip')
         run('pip install -r requirements.txt')
@@ -896,7 +897,7 @@ def setup_db_monitor():
     with virtualenv():
         sudo('apt-get install -y python-mysqldb')
         sudo('apt-get install -y libpq-dev python-dev')
-        sudo('pip install -r flask/requirements.txt')
+        run('pip install -r flask/requirements.txt')
         put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
         sudo('supervisorctl reread')
         sudo('supervisorctl update')
@@ -1264,12 +1265,12 @@ def copy_db_settings():
 @parallel
 def copy_task_settings():
     server_hostname = run('hostname')
-    if 'task' in server_hostname:
-        host = server_hostname
-    elif env.host:
-        host = env.host.split('.', 2)[0]
-    else:
-        host = env.host_string.split('.', 2)[0]
+    # if any([(n in server_hostname) for n in ['task', 'db', 'search', 'node', 'push']]):
+    host = server_hostname
+    # elif env.host:
+    #     host = env.host.split('.', 2)[0]
+    # else:
+    #     host = env.host_string.split('.', 2)[0]
 
     with settings(warn_only=True):
         put(os.path.join(env.SECRETS_PATH, 'settings/task_settings.py'), 
