@@ -500,7 +500,7 @@ def pip():
             sudo('chmod 600 /swapfile')
             sudo('mkswap /swapfile')
             sudo('swapon /swapfile')
-        sudo('chown `whoami`.`whoami` -R %s' % os.path.join(env.NEWSBLUR_PATH, 'venv'))
+        sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
         run('easy_install -U pip')
         run('pip install --upgrade pip')
         run('pip install -r requirements.txt')
