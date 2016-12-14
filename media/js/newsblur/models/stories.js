@@ -258,7 +258,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
 NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     model: NEWSBLUR.Models.Story,
-   
+    
     read_stories: [],
     
     previous_stories_stack: [],
@@ -457,6 +457,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         return this.select(function(story) {
             return story.score() < score && !story.get('visible');
         });
+    },
+    
+    limit: function(count) {
+        this.models = this.models.slice(0, count);
     },
     
     // ===========

@@ -63,8 +63,13 @@
       })(this));
       socket.subscribe.on("connect", (function(_this) {
         return function() {
+          var feeds_story;
           log.info(_this.username, ("Connected (" + _this.feeds.length + " feeds, " + ip + "),") + (" (" + io.engine.clientsCount + " connected) ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
           socket.subscribe.subscribe(_this.feeds);
+          feeds_story = _this.feeds.map(function(f) {
+            return "" + f + ":story";
+          });
+          socket.subscribe.subscribe(feeds_story);
           return socket.subscribe.subscribe(_this.username);
         };
       })(this));
@@ -73,6 +78,8 @@
           log.info(_this.username, "Update on " + channel + ": " + message);
           if (channel === _this.username) {
             return socket.emit('user:update', channel, message);
+          } else if (channel.indexOf(':story') >= 0) {
+            return socket.emit('feed:story:new', channel, message);
           } else {
             return socket.emit('feed:update', channel, message);
           }

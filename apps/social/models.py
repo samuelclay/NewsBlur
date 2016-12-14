@@ -1863,7 +1863,7 @@ class MSharedStory(mongo.DynamicDocument):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             feed_id = "social:%s" % self.user_id
-            listeners_count = r.publish(feed_id, 'story:new')
+            listeners_count = r.publish(feed_id, 'story:new:%s' % self.story_hash)
             if listeners_count:
                 logging.debug("   ---> ~FMPublished to %s subscribers" % (listeners_count))
         except redis.ConnectionError:

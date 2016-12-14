@@ -1227,6 +1227,7 @@ def load_river_stories__redis(request):
     query             = request.REQUEST.get('query', '').strip()
     include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
     include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
+    initial_dashboard = is_true(request.GET.get('initial_dashboard', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1234,7 +1235,7 @@ def load_river_stories__redis(request):
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
     
-    if limit == 4 and not request.user.is_staff:
+    if limit == 4 and not initial_dashboard:
         logging.user(request, "~FRIgnoring ~FCdashboard river stories")
         return dict(code=-1, message="Had to turn off dashboard river for now.", stories=[])
         

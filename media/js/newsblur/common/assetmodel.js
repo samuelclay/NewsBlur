@@ -569,6 +569,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             
             if (data.stories && first_load) {
+                // console.log(['first load river', data.stories.length, ' stories']);
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
@@ -583,6 +584,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.starred_stories = data.starred_stories;
                 this.stories.reset(data.stories, {added: data.stories.length});
             } else if (data.stories) {
+                // console.log(['adding to river', data.stories.length, ' stories']);
                 this.stories.add(data.stories, {silent: true});
                 this.stories.trigger('add', {added: data.stories.length});
             }
@@ -707,6 +709,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
         var self = this;
         
+        this.dashboard_stories.comparator = function(a, b) {
+            var a_time = parseInt(a.get('story_timestamp'), 10);
+            var b_time = parseInt(b.get('story_timestamp'), 10);
+            return a_time < b_time ? 1 : (a_time == b_time) ? 0 : -1;
+        };
+        
         var pre_callback = function(data) {
             if (data.user_profiles) {
                 self.add_user_profiles(data.user_profiles);
@@ -731,8 +739,27 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
             include_hidden: false,
-            dashboard: true
+            dashboard: true,
+            initial_dashboard: true
         }, pre_callback, error_callback, {
+            'ajax_group': 'dashboard',
+            'request_type': 'GET'
+        });
+    },
+    
+    add_dashboard_story: function(story_hash) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            self.dashboard_stories.add(data.stories, {silent: true});
+            self.dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
+            self.dashboard_stories.trigger('reset', {added: 1});
+        };
+        
+        this.make_request('/reader/river_stories', {
+            h: story_hash,
+            dashboard: true
+        }, pre_callback, null, {
             'ajax_group': 'dashboard',
             'request_type': 'GET'
         });

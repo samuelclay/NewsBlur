@@ -60,6 +60,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     },
     
     render: function(data) {
+        if (!this.story) return;
+        
         if (data && (data.story_id != this.story.get('id') || 
                      data.feed_id != this.story.get('story_feed_id'))) {
             return;

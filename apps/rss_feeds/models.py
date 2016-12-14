@@ -1169,6 +1169,7 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values['new'] += 1
+                    s.publish_to_subscribers()
                 except (IntegrityError, OperationError), e:
                     ret_values['error'] += 1
                     if settings.DEBUG:
@@ -2231,6 +2232,13 @@ class MStory(mongo.Document):
         self.remove_from_search_index()
         
         super(MStory, self).delete(*args, **kwargs)
+    
+    def publish_to_subscribers(self):
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish("%s:story" % (self.story_feed_id), '%s,%s' % (self.story_hash, self.story_date.strftime('%s')))
+        except redis.ConnectionError:
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (Feed.get_by_id(self.story_feed_id).title[:30],))
     
     @classmethod
     def purge_feed_stories(cls, feed, cutoff, verbose=True):

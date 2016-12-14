@@ -47,6 +47,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     // ==========
     
     load_stories: function() {
+        // console.log(['dashboard river load_stories', this.page]);
         // var feeds = NEWSBLUR.assets.folders.feed_ids_in_folder();
         var feeds = this.feeds();
         if (!feeds.length) return;
@@ -54,7 +55,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         
         this.page = 1;
         this.story_titles.show_loading();
-        NEWSBLUR.assets.fetch_dashboard_stories("river:", feeds, this.page, 
+        NEWSBLUR.assets.fetch_dashboard_stories(this.active_feed, feeds, this.page, 
             _.bind(this.post_load_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error);
     },
     
@@ -74,7 +75,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var counts = NEWSBLUR.assets.folders.unread_counts();
         var unread_view = NEWSBLUR.assets.preference('unread_view');
         if (unread_view >= 1) {
-            console.log(['counts', counts['ps'], visible, this.page]);
+            // console.log(['counts', counts['ps'], visible, this.page]);
             if (counts['ps'] <= visible) {
                 this.show_end_line();
                 return;
@@ -91,7 +92,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var feeds = this.feeds();
         this.page += 1;
         this.story_titles.show_loading();
-        NEWSBLUR.assets.fetch_dashboard_stories("river:", feeds, this.page, 
+        NEWSBLUR.assets.fetch_dashboard_stories(this.active_feed, feeds, this.page, 
             _.bind(this.post_load_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error);        
     },
     
@@ -118,6 +119,31 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     show_end_line: function() {
         this.story_titles.show_no_more_stories();
         this.$(".NB-end-line").addClass("NB-visible");
+    },
+    
+    new_story: function(story_hash, timestamp) {
+        var oldest_story = NEWSBLUR.assets.dashboard_stories.last();
+
+        if (oldest_story) {
+            var last_timestamp = parseInt(oldest_story.get('story_timestamp'), 10);
+            timestamp = parseInt(timestamp, 10);
+            
+            if (NEWSBLUR.assets.view_setting(this.active_feed, 'order') == 'newest') {
+                if (timestamp < last_timestamp) {
+                    // console.log(['New story older than last/oldest dashboard story', timestamp, '<', last_timestamp]);
+                    return;
+                }
+            } else {
+                if (timestamp > last_timestamp) {
+                    // console.log(['New story older than last/newest dashboard story', timestamp, '<', last_timestamp]);
+                    return;
+                }
+            }
+        }
+        
+        console.log(['Fetching dashboard story', story_hash]);
+        NEWSBLUR.assets.add_dashboard_story(story_hash);
+        
     }
     
 });

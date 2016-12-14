@@ -59,12 +59,16 @@ io.on 'connection', (socket) ->
                      " (#{io.engine.clientsCount} connected) " +
                      " #{if SECURE then "(SSL)" else "(non-SSL)"}"
             socket.subscribe.subscribe @feeds
+            feeds_story = @feeds.map (f) -> "#{f}:story"
+            socket.subscribe.subscribe feeds_story
             socket.subscribe.subscribe @username
 
         socket.subscribe.on 'message', (channel, message) =>
             log.info @username, "Update on #{channel}: #{message}"
             if channel == @username
                 socket.emit 'user:update', channel, message
+            else if channel.indexOf(':story') >= 0
+                socket.emit 'feed:story:new', channel, message
             else
                 socket.emit 'feed:update', channel, message
 

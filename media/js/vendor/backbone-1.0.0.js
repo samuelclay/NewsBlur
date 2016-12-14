@@ -1464,7 +1464,6 @@
     // route callback be fired (not usually desirable), or `replace: true`, if
     // you wish to modify the current URL without adding an entry to the history.
     navigate: function(fragment, options) {
-        console.log(['backbone navigate', fragment, options]);
       if (!History.started) return false;
       if (!options || options === true) options = {trigger: options};
       fragment = this.getFragment(fragment || '');

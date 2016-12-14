@@ -954,7 +954,7 @@ class Dispatcher:
                 logging.debug("   ---> [%-30s] ~FRIntegrityError on feed: %s" % (feed.title[:30], feed.feed_address,))
             
             if ret_entries and ret_entries['new']:
-                self.publish_to_subscribers(feed)
+                self.publish_to_subscribers(feed, ret_entries['new'])
                 
             done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FM~SB%.4ss~FY~SN (~FB%s~FY) [%s]' % (
                 identity, feed.title[:30], delta,
@@ -973,10 +973,10 @@ class Dispatcher:
         
         # time_taken = datetime.datetime.utcnow() - self.time_start
     
-    def publish_to_subscribers(self, feed):
+    def publish_to_subscribers(self, feed, new_count):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-            listeners_count = r.publish(str(feed.pk), 'story:new')
+            listeners_count = r.publish(str(feed.pk), 'story:new_count:%s' % new_count)
             if listeners_count:
                 logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))
         except redis.ConnectionError:
