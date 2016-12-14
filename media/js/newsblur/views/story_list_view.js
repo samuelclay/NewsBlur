@@ -641,8 +641,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.prefetch_story_locations_in_feed_view();
     },
     
-    switch_story_view: function(story, selected) {
-        if (selected) {
+    switch_story_view: function(story, selected, options) {
+        // console.log(['switch_story_view list', story, selected, options]);
+        if (selected && !options.selected_by_scrolling) {
             var story_view = NEWSBLUR.assets.view_setting(story.get('story_feed_id'), 'view');
             if (story_view != NEWSBLUR.reader.story_view) {
                 console.log(['story list, switch story view', NEWSBLUR.reader.story_view]);
