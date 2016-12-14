@@ -709,10 +709,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
         var self = this;
         
+        var order = this.view_setting(feed_id, 'order');
         this.dashboard_stories.comparator = function(a, b) {
             var a_time = parseInt(a.get('story_timestamp'), 10);
             var b_time = parseInt(b.get('story_timestamp'), 10);
-            return a_time < b_time ? 1 : (a_time == b_time) ? 0 : -1;
+            if (order == "newest")
+                return a_time < b_time ? 1 : (a_time == b_time) ? 0 : -1;
+            else
+                return a_time > b_time ? 1 : (a_time == b_time) ? 0 : -1;
         };
         
         var pre_callback = function(data) {
