@@ -1227,7 +1227,7 @@ def load_river_stories__redis(request):
     query             = request.REQUEST.get('query', '').strip()
     include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
     include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
-    initial_dashboard = is_true(request.GET.get('initial_dashboard', False))
+    initial_dashboard = is_true(request.REQUEST.get('initial_dashboard', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1494,6 +1494,9 @@ def mark_all_as_read(request):
                     sub.needs_unread_recalc = True
                     sub.mark_read_date = read_date
                     sub.save()
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
     
     logging.user(request, "~FMMarking all as read: ~SB%s days" % (days,))
     return dict(code=code)
