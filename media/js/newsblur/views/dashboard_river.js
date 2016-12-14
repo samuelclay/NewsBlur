@@ -46,8 +46,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     // = Events =
     // ==========
     
-    load_stories: function() {
-        // console.log(['dashboard river load_stories', this.page]);
+    load_stories: function(options) {
+        options = options || {};
+        // console.log(['dashboard river load_stories', this.page, options]);
+        if (options.feed_selector) return;
         // var feeds = NEWSBLUR.assets.folders.feed_ids_in_folder();
         var feeds = this.feeds();
         if (!feeds.length) return;

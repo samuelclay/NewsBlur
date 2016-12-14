@@ -25,8 +25,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         
         $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
         this.$s.$feed_link_loader.css({'display': 'block'});
-        NEWSBLUR.assets.feeds.bind('reset', _.bind(function() {
-            this.make_feeds();
+        NEWSBLUR.assets.feeds.bind('reset', _.bind(function(options) {
+            this.make_feeds(options);
     
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
@@ -77,7 +77,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             this.$s.$feed_link_loader.css({'display': 'none'});
         }, this));
         
-        if (!this.options.feed_chooser) {
+        if (!this.options.feed_chooser && !options.feed_selector) {
             if (NEWSBLUR.Globals.is_authenticated && 
                 NEWSBLUR.assets.flags['has_chosen_feeds']) {
                 _.delay(function() {

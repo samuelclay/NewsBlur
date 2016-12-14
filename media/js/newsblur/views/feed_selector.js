@@ -33,7 +33,7 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         $input.val('');
         $input.focus();
         NEWSBLUR.app.feed_list.options.feed_chooser = true;
-        NEWSBLUR.assets.feeds.trigger('reset');
+        NEWSBLUR.assets.feeds.trigger('reset', {feed_selector: true});
         $feed_list.addClass('NB-selector-active');
         $social_feeds.addClass('NB-selector-active');
         $body.addClass('NB-selector-active');
@@ -58,7 +58,7 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         this.$el.hide();
         this.$next_feed = null;
         NEWSBLUR.app.feed_list.options.feed_chooser = false;
-        NEWSBLUR.assets.feeds.trigger('reset');
+        NEWSBLUR.assets.feeds.trigger('reset', {feed_selector: true});
         $feed_list.removeClass('NB-selector-active');
         $social_feeds.removeClass('NB-selector-active');
         $body.removeClass('NB-selector-active');
