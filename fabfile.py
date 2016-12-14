@@ -1016,7 +1016,6 @@ def setup_mongo():
        echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
     fi\n\n\
     exit 0" | sudo tee /etc/rc.local')
-    return
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
@@ -1025,11 +1024,12 @@ def setup_mongo():
     sudo('apt-get install -y --force-yes mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
-        '/etc/mongod.conf', use_sudo=True)
+        '/etc/mongodb.conf', use_sudo=True)
+    put('config/mongodb.service', '/etc/systemd/system/mongodb.service')
     run('echo "ulimit -n 100000" > mongodb.defaults')
     sudo('mv mongodb.defaults /etc/default/mongod')
-    sudo('mkdir -p /var/log/mongod')
-    sudo('chown mongodb /var/log/mongod')
+    sudo('mkdir -p /var/log/mongodb')
+    sudo('chown mongodb /var/log/mongodb')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
     
     # Reclaim 5% disk space used for root logs. Set to 1%.
