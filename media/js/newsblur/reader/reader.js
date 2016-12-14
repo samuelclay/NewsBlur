@@ -1963,11 +1963,9 @@
                 NEWSBLUR.assets.stories.reset(NEWSBLUR.assets.dashboard_stories.map(function(story) {
                     return story.toJSON();
                 }));
-                this.post_open_river_stories(true, false);
-            } else {
-                this.model.fetch_river_stories(this.active_feed, feeds, 1, 
-                    _.bind(this.post_open_river_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, true);
             }
+            this.model.fetch_river_stories(this.active_feed, feeds, 1, 
+                _.bind(this.post_open_river_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, true);
         },
         
         post_open_river_stories: function(data, first_load) {
