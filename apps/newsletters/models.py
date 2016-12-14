@@ -177,7 +177,7 @@ class EmailNewsletter:
     def _publish_to_subscribers(self, feed, story_hash):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-            listeners_count = r.publish(str(feed.pk), 'story:new:%s' % story_hash)
+            listeners_count = r.publish("%s:story" % feed.pk, 'story:new:%s' % story_hash)
             if listeners_count:
                 logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))
         except redis.ConnectionError:
