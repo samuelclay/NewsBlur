@@ -1025,12 +1025,13 @@ def setup_mongo():
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongodb.conf', use_sudo=True)
-    put('config/mongodb.service', '/etc/systemd/system/mongodb.service')
+    put('config/mongodb.service', '/etc/systemd/system/mongodb.service', use_sudo=True)
     run('echo "ulimit -n 100000" > mongodb.defaults')
     sudo('mv mongodb.defaults /etc/default/mongod')
     sudo('mkdir -p /var/log/mongodb')
     sudo('chown mongodb /var/log/mongodb')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongod', use_sudo=True)
+    sudo('systemctl enable mongodb')
     
     # Reclaim 5% disk space used for root logs. Set to 1%.
     with settings(warn_only=True):
