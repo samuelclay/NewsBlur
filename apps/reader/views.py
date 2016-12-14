@@ -1241,7 +1241,7 @@ def load_river_stories__redis(request):
         
     if story_hashes:
         unread_feed_story_hashes = None
-        read_filter = 'unread'
+        read_filter = 'all'
         mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
         stories = Feed.format_stories(mstories)
     elif query:
@@ -1298,7 +1298,7 @@ def load_river_stories__redis(request):
     if not usersubs:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=found_feed_ids,
                                                    read_filter=read_filter)
-
+    
     trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
     found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
 
