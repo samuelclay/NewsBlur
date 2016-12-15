@@ -55,7 +55,7 @@ class MStatistics(mongo.Document):
             elif key in ('feeds_fetched', 'premium_users', 'standard_users', 'latest_sites_loaded',
                          'max_sites_loaded', 'max_stories_shared'):
                 values[key] = int(value)
-            elif key in ('latest_avg_time_taken', 'max_avg_time_taken'):
+            elif key in ('latest_avg_time_taken', 'max_avg_time_taken', 'last_5_min_time_taken'):
                 values[key] = float(value)
         
         values['total_sites_loaded'] = sum(values['sites_loaded']) if 'sites_loaded' in values else 0
@@ -130,10 +130,10 @@ class MStatistics(mongo.Document):
             avgs = [float(a) for a in times[1::2] if a]
             
             if hour == 0:
-                last_5_min_time_taken = round(sum(avgs[:1]) / min(1, sum(counts[:1])), 2)
+                last_5_min_time_taken = round(sum(avgs[:1]) / max(1, sum(counts[:1])), 2)
                 
             if counts and avgs:
-                count = min(1, sum(counts))
+                count = max(1, sum(counts))
                 avg = round(sum(avgs) / count, 3)
             else:
                 count = 0
