@@ -143,8 +143,15 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             }
         }
         
-        console.log(['Fetching dashboard story', story_hash]);
-        NEWSBLUR.assets.add_dashboard_story(story_hash);
+        var feed_id = story_hash.split(':')[0];
+        var feed = NEWSBLUR.assets.get_feed(feed_id);
+        var subs = feed.get('num_subscribers');
+        var delay = subs * 2; // 1,000 subs = 2 seconds
+        console.log(['Fetching dashboard story', story_hash, delay + 'ms delay']);
+        
+        _.delay(function() {
+            NEWSBLUR.assets.add_dashboard_story(story_hash);
+        }, Math.random() * delay);
         
     }
     
