@@ -570,6 +570,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
         if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
         
+        if (!last_story.story_view) return;
+        
         var $last_story = last_story.story_view.$el;
         var container_offset = NEWSBLUR.reader.$s.$feed_scroll.position().top;
         var full_height = ($last_story.length && $last_story.offset().top) + $last_story.height() - container_offset;

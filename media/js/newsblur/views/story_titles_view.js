@@ -348,7 +348,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             if (NEWSBLUR.assets.flags['no_more_stories']) return;
         }
         
-        var container_offset = $story_titles.position().top;
+        var position = $story_titles.position();
+        if (!position) return;
+        
+        var container_offset = position.top;
         var visible_height = $story_titles.height() * 2;
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
         
