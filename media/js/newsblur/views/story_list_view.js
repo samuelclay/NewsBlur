@@ -561,7 +561,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
         if (!NEWSBLUR.assets.stories.size()) return;
-        if (!NEWSBLUR.assets.active_feed) return;
+        if (!NEWSBLUR.reader.active_feed) return;
         
         var last_story = _.last(NEWSBLUR.assets.stories.visible());
         if (!last_story || last_story.get('selected')) {
