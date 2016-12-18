@@ -655,6 +655,8 @@ def switch_forked_mongoengine():
 def setup_logrotate(clear=True):
     if clear:
         run('find /srv/newsblur/logs/*.log | xargs tee')
+        with settings(warn_only=True):
+            sudo('find /var/log/mongodb/*.log | xargs tee')
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
     put('config/logrotate.nginx.conf', '/etc/logrotate.d/nginx', use_sudo=True)
