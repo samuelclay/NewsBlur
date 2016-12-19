@@ -2002,10 +2002,9 @@
                     this.show_tryout_signup_button();
                 } else if (first_load) {
                     this.find_story_with_action_preference_on_open_feed();
-                    if (_.contains(['story', 'text'], this.story_view) &&
+                    if (NEWSBLUR.assets.preference('feed_view_single_story') &&
                         !this.active_story &&
-                        _.contains(['split', 'full', 'grid'],
-                                   NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) &&
+                        _.contains(['full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) &&
                         !this.counts['find_next_unread_on_page_of_feed_stories_load']) {
                         this.show_next_story(1);
                     }
