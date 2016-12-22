@@ -143,6 +143,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             }
             this.$(".NB-story-detail").html(this.text_view.$el);
             this.text_view.story_detail.render_starred_tags();
+            this.text_view.attach_handlers();
+            this.text_view.setElement(this.text_view.$el);
         } else {
             if (!this.story_detail) {
                 this.story_detail = new NEWSBLUR.Views.StoryDetailView({
@@ -154,14 +156,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             }
             // console.log(['render_inline_story_detail', this.$(".NB-story-detail")]);
             this.$(".NB-story-detail").html(this.story_detail.$el);
-            if (this.story_detail) {
-                this.story_detail.attach_handlers();
-                this.story_detail.setElement(this.story_detail.$el);
-            }
-            if (this.text_view) {
-                this.text_view.attach_handlers();
-                this.text_view.setElement(this.text_view.$el);
-            }
+            this.story_detail.attach_handlers();
+            this.story_detail.setElement(this.story_detail.$el);
         }
     },
     

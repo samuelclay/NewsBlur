@@ -679,6 +679,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         
         this.model.set('selected', true, {selected_by_scrolling: true});
+        
+        return false;
     },
     
     mouseenter_manage_icon: function() {
