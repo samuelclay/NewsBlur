@@ -514,12 +514,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         };
         
         this.feed_id = feed_id;
-
-        if (feed_id) {
+        var feed = this.feeds.get(feed_id);
+        
+        if (feed_id && feed) {
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: page,
-                    feed_address: this.feeds.get(feed_id).get('feed_address'),
+                    feed_address: feed.get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
                     read_filter: this.view_setting(feed_id, 'read_filter'),
                     query: NEWSBLUR.reader.flags.search,

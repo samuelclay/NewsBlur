@@ -556,12 +556,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
     },
 
-    check_feed_view_scrolled_to_bottom: function() {
+    check_feed_view_scrolled_to_bottom: function(model, selected) {
+        console.log(['check_feed_view_scrolled_to_bottom', model, selected]);
         if (!_.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) return;
         if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
         if (!NEWSBLUR.assets.stories.size()) return;
         if (!NEWSBLUR.reader.active_feed) return;
+        if (selected === false) return;
         
         var last_story = _.last(NEWSBLUR.assets.stories.visible());
         if (!last_story || last_story.get('selected')) {
