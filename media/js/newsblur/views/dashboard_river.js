@@ -124,8 +124,14 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     new_story: function(story_hash, timestamp) {
+        var current_timestamp = Math.floor(Date.now() / 1000);
+        if (timestamp > (current_timestamp + 60*60)) {
+            console.log(['New story newer than current time + 1 hour', 
+                         (timestamp - current_timestamp)/60 + " minutes newer"]);
+            return;
+        }
+        
         var oldest_story = NEWSBLUR.assets.dashboard_stories.last();
-
         if (oldest_story) {
             var last_timestamp = parseInt(oldest_story.get('story_timestamp'), 10);
             timestamp = parseInt(timestamp, 10);
