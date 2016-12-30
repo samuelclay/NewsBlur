@@ -11661,6 +11661,16 @@ form.opml_import_form input {
 }
 
 /* ============= */
+/* = Auth Lost = */
+/* ============= */
+
+.NB-modal-authlost .NB-authlost-group {
+    width: 35%;
+    margin: 48px auto;
+    text-align: center;
+}
+
+/* ============= */
 /* = Organizer = */
 /* ============= */
 

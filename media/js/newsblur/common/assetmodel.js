@@ -99,6 +99,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 } else if ($.isFunction(callback)) {
                     callback(o);
                 }
+
+                self.ensure_authenticated(o);
             },
             error: function(e, textStatus, errorThrown) {
                 if (errorThrown == 'abort') {
@@ -605,6 +607,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (this.active_feed) this.active_feed.set(attrs);
 
             $.isFunction(callback) && callback(data, first_load);
+        }
+    },
+    
+    ensure_authenticated: function(data) {
+        if (!NEWSBLUR.Globals.is_authenticated) return;
+        if (_.isUndefined(data.authenticated)) return;
+        if (NEWSBLUR.Globals.is_authenticated != data.authenticated) {
+            console.log(['Woah! Lost auth cookie, letting user know...']);
+            NEWSBLUR.reader.show_authentication_lost();
         }
     },
     

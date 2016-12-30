@@ -2784,6 +2784,10 @@
             });
         },
         
+        show_authentication_lost: function() {
+            NEWSBLUR.auth_lost = new NEWSBLUR.ReaderAuthLost();
+        },
+        
         check_hide_getting_started: function(force) {
             var feeds = this.model.preference('has_setup_feeds');
             var friends = this.model.preference('has_found_friends');

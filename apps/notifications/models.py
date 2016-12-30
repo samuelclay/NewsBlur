@@ -81,7 +81,7 @@ class MUserFeedNotification(mongo.Document):
 
         return "%s/%s: %s -> %s" % (
             User.objects.get(pk=self.user_id).username,
-            Feed.get_feed_by_id(self.feed_id),
+            Feed.get_by_id(self.feed_id),
             ','.join(notification_types),
             self.last_notification_date,
         )
