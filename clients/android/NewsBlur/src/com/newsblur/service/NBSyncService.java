@@ -82,6 +82,7 @@ public class NBSyncService extends Service {
     /** Informational flag only, as to whether we were offline last time we cycled. */
     public volatile static boolean OfflineNow = false;
 
+    public volatile static Boolean isAuth = null;
     public volatile static Boolean isPremium = null;
     public volatile static Boolean isStaff = null;
 
@@ -427,11 +428,14 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            // if the response says we aren't logged in, clear the DB and prompt for login. We test this
-            // here, since this the first sync call we make on launch if we believe we are cookied.
             if (! feedResponse.isAuthenticated) {
-                PrefsUtils.logout(this);
+                // we should not have got this far without being logged in, so the server either
+                // expired or ignored out cookie. keep track of this.
+                isAuth = false;
+                Log.w(this.getClass().getName(), "Server ignored or rejected auth cookie.");
                 return;
+            } else {
+                isAuth = true;
             }
 
             if (HaltNow) return;

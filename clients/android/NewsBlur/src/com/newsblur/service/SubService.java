@@ -33,6 +33,8 @@ public abstract class SubService {
     }
 
     public void start(final int startId) {
+        if (Boolean.TRUE != parent.isAuth) return;
+        if (parent.stopSync()) return;
         parent.incrementRunningChild();
         this.startId = startId;
         Runnable r = new Runnable() {
