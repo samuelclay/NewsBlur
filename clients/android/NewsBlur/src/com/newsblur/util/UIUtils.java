@@ -222,8 +222,10 @@ public class UIUtils {
         String memInfo = " (";
         android.app.ActivityManager activityManager = (android.app.ActivityManager) context.getSystemService(android.app.Activity.ACTIVITY_SERVICE);
         int[] pids = new int[]{android.os.Process.myPid()};
-        android.os.Debug.MemoryInfo[] mi = activityManager.getProcessMemoryInfo(pids);
-        memInfo = memInfo + (mi[0].getTotalPss() / 1024) + "MB used)";
+        android.os.Debug.MemoryInfo[] miProc = activityManager.getProcessMemoryInfo(pids);
+        android.app.ActivityManager.MemoryInfo miGen = new android.app.ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(miGen);
+        memInfo = memInfo + (miProc[0].getTotalPss() / 1024) + "MB used, " + (miGen.availMem / (1024*1024)) + "MB free)";
         return memInfo;
     }
 
