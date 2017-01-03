@@ -493,10 +493,16 @@ public class BlurDatabaseHelper {
         Cursor c = dbRO.query(DatabaseConstants.FOLDER_TABLE, null, selection, selArgs, null, null, null);
         if (c.getCount() < 1) {
             closeQuietly(c);
-            return null;
+            if (c != null) {
+				c.close();
+			}
+			return null;
         }
         Folder folder = Folder.fromCursor(c);
         closeQuietly(c);
+		if (c != null) {
+			c.close();
+		}
         return folder;
     }
 
