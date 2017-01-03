@@ -142,12 +142,15 @@ public class UnreadsService extends SubService {
             }
 
             for (Story story : response.stories) {
+                /* need to access feed.isNotify() somehow
+                
                 if (parent.notifyFeedIds.contains(story.feedId)) {
                     // for now, only notify stories with 1+ intel
                     if (story.intelligence.calcTotalIntel() > 0) {
                         story.notify = true;
                     }
                 }
+                */
             }
 
             parent.insertStories(response);

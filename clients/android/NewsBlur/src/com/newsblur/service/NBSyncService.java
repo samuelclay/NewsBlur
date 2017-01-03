@@ -125,8 +125,6 @@ public class NBSyncService extends Service {
     Set<String> orphanFeedIds;
     Set<String> disabledFeedIds;
 
-    Set<String> notifyFeedIds;
-
     private ExecutorService primaryExecutor;
     CleanupService cleanupService;
     OriginalTextService originalTextService;
@@ -418,7 +416,6 @@ public class NBSyncService extends Service {
         Set<String> debugFeedIdsFromFeeds = new HashSet<String>();
         orphanFeedIds = new HashSet<String>();
         disabledFeedIds = new HashSet<String>();
-        notifyFeedIds = new HashSet<String>();
 
         try {
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -477,9 +474,6 @@ public class NBSyncService extends Service {
                     disabledFeedIds.add(feed.feedId);
                 }
                 feedValues.add(feed.getValues());
-                if (feed.isNotify()) {
-                    notifyFeedIds.add(feed.feedId);
-                }
             }
             // also add the implied zero-id feed
             feedValues.add(Feed.getZeroFeed().getValues());
