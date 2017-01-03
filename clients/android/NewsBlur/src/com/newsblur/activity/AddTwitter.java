@@ -23,7 +23,7 @@ public class AddTwitter extends NbActivity {
 		
 		webview.setWebViewClient(new WebViewClient() {
 		    public boolean shouldOverrideUrlLoading(WebView view, String url){
-		    	if (TextUtils.equals(url, APIConstants.NEWSBLUR_URL + "/")) {
+		    	if (TextUtils.equals(url, APIConstants.buildUrl("/"))) {
 		    		AddTwitter.this.setResult(TWITTER_AUTHED);
 		    		AddTwitter.this.finish();
 		    		return true;
@@ -33,7 +33,7 @@ public class AddTwitter extends NbActivity {
 		   }
 		});
 		
-		webview.loadUrl(APIConstants.URL_CONNECT_TWITTER);
+		webview.loadUrl(APIConstants.buildUrl(APIConstants.PATH_CONNECT_TWITTER));
 	}
 	
 }

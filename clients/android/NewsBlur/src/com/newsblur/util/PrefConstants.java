@@ -7,6 +7,7 @@ public class PrefConstants {
 	public static final String PREFERENCES = "preferences";
 	public static final String PREF_COOKIE = "login_cookie";
 	public static final String PREF_UNIQUE_LOGIN = "login_unique";
+    public static final String PREF_CUSTOM_SERVER = "custom_server";
 	
 	public final static String USER_USERNAME = "username";
 	public final static String USER_WEBSITE = "website";

@@ -4,52 +4,72 @@ public class APIConstants {
 
     private APIConstants() {} // util class - no instances
 
-    public static final String NEWSBLUR_URL = "https://www.newsblur.com";
-    public static final String COOKIE_DOMAIN = ".newsblur.com";
-    public static final String URL_AUTOFOLLOW_PREF = NEWSBLUR_URL + "/profile/set_preference";
-    
+    private static final String DEFAULT_NEWSBLUR_URL_BASE = "https://www.newsblur.com";
+
+    private static String CurrentUrlBase = DEFAULT_NEWSBLUR_URL_BASE;
+
+    public static void setCustomServer(String newUrlBase) {
+        if (newUrlBase == null) return;
+        if (newUrlBase.length() <= 0) return;
+        android.util.Log.i(APIConstants.class.getName(), "setting custom server: " + newUrlBase);
+        CurrentUrlBase = newUrlBase;
+    }
+
+    public static void unsetCustomServer() {
+        CurrentUrlBase = DEFAULT_NEWSBLUR_URL_BASE;
+    }
+
+    public static boolean isCustomServer() {
+        return DEFAULT_NEWSBLUR_URL_BASE.equals(CurrentUrlBase);
+    }
+
     // TODO: make use of trailing slashes on URLs consistent or document why
     // they are not.
 
-	public static final String URL_LOGIN = NEWSBLUR_URL + "/api/login";
-    public static final String URL_LOGINAS = NEWSBLUR_URL + "/reader/login_as";
-	public static final String URL_FEEDS = NEWSBLUR_URL + "/reader/feeds/";
-	public static final String URL_USER_PROFILE = NEWSBLUR_URL + "/social/profile";
-	public static final String URL_MY_PROFILE = NEWSBLUR_URL + "/social/load_user_profile";
-	public static final String URL_FOLLOW = NEWSBLUR_URL + "/social/follow";
-	public static final String URL_UNFOLLOW = NEWSBLUR_URL + "/social/unfollow";
+	public static final String PATH_LOGIN = "/api/login";
+    public static final String PATH_LOGINAS = "/reader/login_as";
+	public static final String PATH_FEEDS = "/reader/feeds/";
+	public static final String PATH_USER_PROFILE = "/social/profile";
+	public static final String PATH_MY_PROFILE = "/social/load_user_profile";
+	public static final String PATH_FOLLOW = "/social/follow";
+	public static final String PATH_UNFOLLOW = "/social/unfollow";
+    public static final String PATH_AUTOFOLLOW_PREF = "/profile/set_preference";
+	public static final String PATH_USER_ACTIVITIES = "/social/activities";
+	public static final String PATH_USER_INTERACTIONS = "/social/interactions";
+	public static final String PATH_RIVER_STORIES = "/reader/river_stories";
+	public static final String PATH_SHARED_RIVER_STORIES = "/social/river_stories";
+	public static final String PATH_FEED_STORIES = "/reader/feed";
+	public static final String PATH_FEED_UNREAD_COUNT = "/reader/feed_unread_count";
+	public static final String PATH_SOCIALFEED_STORIES = "/social/stories";
+	public static final String PATH_SIGNUP = "/api/signup";
+	public static final String PATH_MARK_FEED_AS_READ = "/reader/mark_feed_as_read/";
+	public static final String PATH_MARK_ALL_AS_READ = "/reader/mark_all_as_read/";
+	public static final String PATH_MARK_STORIES_READ = "/reader/mark_story_hashes_as_read/";
+	public static final String PATH_SHARE_STORY = "/social/share_story";
+    public static final String PATH_MARK_STORY_AS_STARRED = "/reader/mark_story_hash_as_starred/";
+    public static final String PATH_MARK_STORY_AS_UNSTARRED = "/reader/mark_story_hash_as_unstarred/";
+    public static final String PATH_MARK_STORY_AS_UNREAD = "/reader/mark_story_as_unread/";
+    public static final String PATH_MARK_STORY_HASH_UNREAD = "/reader/mark_story_hash_as_unread/";
+    public static final String PATH_STARRED_STORIES = "/reader/starred_stories";
+	public static final String PATH_FEED_AUTOCOMPLETE = "/rss_feeds/feed_autocomplete";
+	public static final String PATH_LIKE_COMMENT = "/social/like_comment";
+	public static final String PATH_UNLIKE_COMMENT = "/social/remove_like_comment";
+	public static final String PATH_REPLY_TO = "/social/save_comment_reply";
+	public static final String PATH_ADD_FEED = "/reader/add_url";
+	public static final String PATH_DELETE_FEED = "/reader/delete_feed";
+	public static final String PATH_CLASSIFIER_SAVE = "/classifier/save";
+	public static final String PATH_STORY_TEXT = "/rss_feeds/original_text";
+	public static final String PATH_UNREAD_HASHES = "/reader/unread_story_hashes";
+    public static final String PATH_READ_STORIES = "/reader/read_stories";
+    public static final String PATH_MOVE_FEED_TO_FOLDERS = "/reader/move_feed_to_folders";
+    public static final String PATH_SAVE_FEED_CHOOSER = "/reader/save_feed_chooser";
+    public static final String PATH_CONNECT_FACEBOOK = "/oauth/facebook_connect/";
+    public static final String PATH_CONNECT_TWITTER = "/oauth/twitter_connect/";
 
-	public static final String URL_USER_ACTIVITIES = NEWSBLUR_URL + "/social/activities";
-	public static final String URL_USER_INTERACTIONS = NEWSBLUR_URL + "/social/interactions";
-	public static final String URL_RIVER_STORIES = NEWSBLUR_URL + "/reader/river_stories";
-	public static final String URL_SHARED_RIVER_STORIES = NEWSBLUR_URL + "/social/river_stories";
-	
-	public static final String URL_FEED_STORIES = NEWSBLUR_URL + "/reader/feed";
-	public static final String URL_FEED_UNREAD_COUNT = NEWSBLUR_URL + "/reader/feed_unread_count";
-	public static final String URL_SOCIALFEED_STORIES = NEWSBLUR_URL + "/social/stories";
-	public static final String URL_SIGNUP = NEWSBLUR_URL + "/api/signup";
-	public static final String URL_MARK_FEED_AS_READ = NEWSBLUR_URL + "/reader/mark_feed_as_read/";
-	public static final String URL_MARK_ALL_AS_READ = NEWSBLUR_URL + "/reader/mark_all_as_read/";
-	public static final String URL_MARK_STORIES_READ = NEWSBLUR_URL + "/reader/mark_story_hashes_as_read/";
-	public static final String URL_SHARE_STORY = NEWSBLUR_URL + "/social/share_story";
-    public static final String URL_MARK_STORY_AS_STARRED = NEWSBLUR_URL + "/reader/mark_story_hash_as_starred/";
-    public static final String URL_MARK_STORY_AS_UNSTARRED = NEWSBLUR_URL + "/reader/mark_story_hash_as_unstarred/";
-    public static final String URL_MARK_STORY_AS_UNREAD = NEWSBLUR_URL + "/reader/mark_story_as_unread/";
-    public static final String URL_MARK_STORY_HASH_UNREAD = NEWSBLUR_URL + "/reader/mark_story_hash_as_unread/";
-    public static final String URL_STARRED_STORIES = NEWSBLUR_URL + "/reader/starred_stories";
-	public static final String URL_FEED_AUTOCOMPLETE = NEWSBLUR_URL + "/rss_feeds/feed_autocomplete";
-	public static final String URL_LIKE_COMMENT = NEWSBLUR_URL + "/social/like_comment";
-	public static final String URL_UNLIKE_COMMENT = NEWSBLUR_URL + "/social/remove_like_comment";
-	public static final String URL_REPLY_TO = NEWSBLUR_URL + "/social/save_comment_reply";
-	public static final String URL_ADD_FEED = NEWSBLUR_URL + "/reader/add_url";
-	public static final String URL_DELETE_FEED = NEWSBLUR_URL + "/reader/delete_feed";
-	public static final String URL_CLASSIFIER_SAVE = NEWSBLUR_URL + "/classifier/save";
-	public static final String URL_STORY_TEXT = NEWSBLUR_URL + "/rss_feeds/original_text";
-	public static final String URL_UNREAD_HASHES = NEWSBLUR_URL + "/reader/unread_story_hashes";
-    public static final String URL_READ_STORIES = NEWSBLUR_URL + "/reader/read_stories";
-    public static final String URL_MOVE_FEED_TO_FOLDERS = NEWSBLUR_URL + "/reader/move_feed_to_folders";
-    public static final String URL_SAVE_FEED_CHOOSER = NEWSBLUR_URL + "/reader/save_feed_chooser";
-	
+    public static String buildUrl(String path) {
+        return CurrentUrlBase + path;
+    }
+
 	public static final String PARAMETER_FEEDS = "f";
 	public static final String PARAMETER_H = "h";
 	public static final String PARAMETER_PASSWORD = "password";
@@ -96,8 +116,5 @@ public class APIConstants {
     public static final String VALUE_TRUE = "true";
     public static final String VALUE_STARRED = "starred";
 	
-    public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
-    public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";
-
 	public static final String S3_URL_FEED_ICONS = "https://s3.amazonaws.com/icons.newsblur.com/";
 }
