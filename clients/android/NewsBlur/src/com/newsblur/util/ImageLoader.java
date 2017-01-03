@@ -58,7 +58,7 @@ public class ImageLoader {
         }
 
         if (url.startsWith("/")) {
-            url = APIConstants.NEWSBLUR_URL + url;
+            url = APIConstants.buildUrl(url);
         }
 
 		imageViewMappings.put(imageView, url);
@@ -75,7 +75,7 @@ public class ImageLoader {
 			imageView.setImageResource(emptyRID);
 		}
 	}
-	
+
 	private class PhotoToLoad {
 		public String url;
 		public ImageView imageView;
