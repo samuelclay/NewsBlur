@@ -1,101 +1,93 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version='1.0' encoding='utf-8'?>
+  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  style="?selectorFeedBackground">
+
+  <LinearLayout android:id="@+id/row_feedcounters"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_centerVertical="true"
+    android:layout_marginRight="9dp"
+    android:gravity="right"
+    android:orientation="horizontal">
+
+    <TextView android:id="@+id/row_feedneutral"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="3dp"
+      android:background="@drawable/neutral_count_rect"
+      android:gravity="center"
+      android:paddingLeft="3dp"
+      android:paddingRight="3dp"
+      android:shadowColor="@color/neutral_drop_shadow"
+      android:shadowDy="1"
+      android:shadowRadius="1"
+      style="?feedRowNeutCountText"
+      android:textSize="14sp"
+      android:textStyle="bold"/>
+
+    <TextView android:id="@+id/row_feedpositive"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="3dp"
+      android:background="@drawable/positive_count_rect"
+      android:gravity="center"
+      android:paddingLeft="3dp"
+      android:paddingRight="3dp"
+      android:shadowColor="@color/positive_drop_shadow"
+      android:shadowDy="1"
+      android:shadowRadius="1"
+      android:textColor="@color/white"
+      android:textSize="14sp"
+      android:textStyle="bold"/>
+
+    <TextView android:id="@+id/row_feedsaved"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="3dp"
+      android:background="@drawable/saved_count_rect"
+      android:gravity="center"
+      android:paddingLeft="3dp"
+      android:paddingRight="3dp"
+      android:shadowColor="@color/saved_drop_shadow"
+      android:shadowDy="1"
+      android:shadowRadius="1"
+      android:textColor="@color/white"
+      android:textSize="14sp"
+      android:textStyle="bold"/>
+
+    <ImageView android:id="@+id/row_feedmuteicon"
+      android:layout_width="19dp"
+      android:layout_height="19dp"
+      android:layout_marginRight="3dp"
+      android:paddingLeft="3dp"
+      android:paddingRight="3dp"
+      style="?muteicon"
+      android:background="@drawable/neutral_count_rect">
+      <!--Removed ObsoleteLayoutParam: layout_centerVertical-->
+    </ImageView>
+  </LinearLayout>
+
+  <ImageView android:id="@+id/row_feedfavicon"
+    android:layout_width="19dp"
+    android:layout_height="19dp"
+    android:layout_centerVertical="true"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"/>
+
+  <TextView android:id="@+id/row_feedname"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="?selectorFeedBackground" >
-
-    <LinearLayout
-        android:id="@+id/row_feedcounters"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="9dp"
-        android:gravity="right"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/row_feedneutral"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
-            android:background="@drawable/neutral_count_rect"
-            android:gravity="center"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:shadowColor="@color/neutral_drop_shadow"
-            android:shadowDy="1"
-            android:shadowRadius="1"
-            style="?feedRowNeutCountText"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/row_feedpositive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
-            android:background="@drawable/positive_count_rect"
-            android:gravity="center"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:shadowColor="@color/positive_drop_shadow"
-            android:shadowDy="1"
-            android:shadowRadius="1"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/row_feedsaved"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
-            android:background="@drawable/saved_count_rect"
-            android:gravity="center"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:shadowColor="@color/saved_drop_shadow"
-            android:shadowDy="1"
-            android:shadowRadius="1"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/row_feedmuteicon"
-            android:layout_width="19dp"
-            android:layout_height="19dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="3dp"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            style="?muteicon"
-            android:background="@drawable/neutral_count_rect"/>
-
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/row_feedfavicon"
-        android:layout_width="19dp"
-        android:layout_height="19dp"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp" />
-
-    <TextView
-        android:id="@+id/row_feedname"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:paddingBottom="7dp"
-    	android:paddingTop="7dp" 
-        android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/row_feedcounters"
-        android:layout_toRightOf="@id/row_feedfavicon"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
+    android:layout_centerVertical="true"
+    android:paddingBottom="7dp"
+    android:paddingTop="7dp"
+    android:layout_marginRight="5dp"
+    android:layout_toLeftOf="@id/row_feedcounters"
+    android:layout_toRightOf="@id/row_feedfavicon"
+    android:ellipsize="end"
+    android:singleLine="true"
+    android:textSize="14sp"
+    android:textStyle="bold"/>
 </RelativeLayout>
