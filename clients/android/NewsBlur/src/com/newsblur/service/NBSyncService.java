@@ -430,6 +430,8 @@ public class NBSyncService extends Service {
                 // expired or ignored out cookie. keep track of this.
                 isAuth = false;
                 Log.w(this.getClass().getName(), "Server ignored or rejected auth cookie.");
+                DoFeedsFolders = true;
+                noteHardAPIFailure();
                 return;
             } else {
                 isAuth = true;
