@@ -5633,8 +5633,7 @@
             }, function() {
                 $module.removeClass('NB-loading');
             });
-        },
-        
+        },        
         
         setup_feedback_table: function() {
             if (NEWSBLUR.Globals.debug) return;

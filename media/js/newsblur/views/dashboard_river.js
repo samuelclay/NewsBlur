@@ -25,6 +25,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         NEWSBLUR.assets.feeds.bind('reset', _.bind(this.load_stories, this));
         NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
         // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
+        
+        this.setup_dashboard_refresh();
     },
     
     feeds: function() {
@@ -40,6 +42,22 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         }
         
         return feeds;
+    },
+    
+    // ===========
+    // = Refresh =
+    // ===========
+    
+    setup_dashboard_refresh: function() {
+        // if (NEWSBLUR.Globals.debug) return;
+        
+        // Reload dashboard graphs every 10 minutes.
+        var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
+
+        clearInterval(this.refresh_interval);
+        this.refresh_interval = setInterval(_.bind(function() {
+            this.load_stories();
+        }, this), reload_interval * (Math.random() * (1.25 - 0.75) + 0.75));
     },
     
     // ==========
