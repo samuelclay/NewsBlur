@@ -1537,7 +1537,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO; 
         }
     } else if ([url.host hasSuffix:@"itunes.apple.com"]) {
-        [[UIApplication sharedApplication] openURL:url];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         return NO;
     }
     

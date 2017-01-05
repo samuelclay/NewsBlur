@@ -704,7 +704,7 @@
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            [storiesCollection.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
     [self cancelRequests];
     __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
@@ -921,7 +921,7 @@
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            [storiesCollection.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
 
     [self cancelRequests];

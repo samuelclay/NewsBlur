@@ -244,7 +244,7 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
     oauth.HTTPMethod = HTTPMethod;
     oauth.requestParameters = parameters;
     
-    NSString *encodedPath = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *encodedPath = [path stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
     NSString *URLString = [NSString stringWithFormat:@"%@://%@%@", scheme, host, encodedPath];
     if ([[HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
         // Handle GET

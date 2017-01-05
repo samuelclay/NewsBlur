@@ -1625,14 +1625,14 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"safari"]) {
-        [[UIApplication sharedApplication] openURL:url];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"chrome"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
-        NSString *openingURL = [url.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *openingURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         NSURL *callbackURL = [NSURL URLWithString:@"newsblur://"];
-        NSString *callback = [callbackURL.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSString *sourceName = [[[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *callback = [callbackURL.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+        NSString *sourceName = [[[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         
         NSURL *activityURL = [NSURL URLWithString:
                               [NSString stringWithFormat:@"googlechrome-x-callback://x-callback-url/open/?url=%@&x-success=%@&x-source=%@",
@@ -1640,7 +1640,7 @@
                                callback,
                                sourceName]];
         
-        [[UIApplication sharedApplication] openURL:activityURL];
+        [[UIApplication sharedApplication] openURL:activityURL options:@{} completionHandler:nil];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"opera_mini"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"opera-http://"]]) {
@@ -1654,7 +1654,7 @@
                         withString:                         @"opera-http"];
         }
                    
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL] options:@{} completionHandler:nil];
         return;
     } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url

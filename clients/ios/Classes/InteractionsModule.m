@@ -23,7 +23,6 @@
 @synthesize appDelegate;
 @synthesize interactionsTable;
 @synthesize interactionsArray;
-@synthesize popoverController;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize interactionsPage;

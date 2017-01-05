@@ -19,7 +19,6 @@
 
 @synthesize appDelegate;
 @synthesize activitiesTable;
-@synthesize popoverController;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize activitiesPage;

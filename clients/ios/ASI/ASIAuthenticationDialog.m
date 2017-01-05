@@ -142,7 +142,7 @@ static const NSUInteger kDomainSection = 1;
 		default: break;
 	}
 
-	CGRect f = [[UIScreen mainScreen] applicationFrame];
+	CGRect f = [[UIScreen mainScreen] bounds];
 
 	// Swap the frame height and width if necessary
  	if (UIInterfaceOrientationIsLandscape(o)) {
