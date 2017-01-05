@@ -94,13 +94,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             success: function(o) {
                 // NEWSBLUR.log(['make_request 1', o]);
                 
+                var lost_authentication = self.check_authentication_lost(o);
+                if (lost_authentication) {
+                    if (options.retry) {
+                        console.log(['Retrying due to lost auth cookie', o]);
+                        options.retry = false;
+                        self.make_request(url, data, callback, error_callback, options);
+                    } else {
+                        console.log(['Woah! Lost auth cookie, letting user know...']);
+                        NEWSBLUR.reader.show_authentication_lost();
+                    }
+                    return;
+                }
+                
                 if (o && o.code < 0 && error_callback) {
                     error_callback(o);
                 } else if ($.isFunction(callback)) {
                     callback(o);
                 }
 
-                self.ensure_authenticated(o);
             },
             error: function(e, textStatus, errorThrown) {
                 if (errorThrown == 'abort') {
@@ -610,13 +622,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
-    ensure_authenticated: function(data) {
-        if (!NEWSBLUR.Globals.is_authenticated) return;
-        if (_.isUndefined(data.authenticated)) return;
+    check_authentication_lost: function(data) {
+        if (!NEWSBLUR.Globals.is_authenticated) return false;
+        if (_.isUndefined(data.authenticated)) return false;
         if (NEWSBLUR.Globals.is_authenticated != data.authenticated) {
-            console.log(['Woah! Lost auth cookie, letting user know...']);
-            NEWSBLUR.reader.show_authentication_lost();
+            return true;
         }
+        return false;
     },
     
     load_canonical_feed: function(feed_id, callback) {

@@ -49,7 +49,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     // ===========
     
     setup_dashboard_refresh: function() {
-        // if (NEWSBLUR.Globals.debug) return;
+        if (NEWSBLUR.Globals.debug) return;
         
         // Reload dashboard graphs every 10 minutes.
         var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
