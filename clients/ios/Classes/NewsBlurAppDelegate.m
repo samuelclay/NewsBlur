@@ -1264,13 +1264,39 @@
 }
 
 - (void)confirmLogout {
-    UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" 
-                                                            message:nil 
-                                                           delegate:self 
-                                                  cancelButtonTitle:@"Cancel" 
-                                                  otherButtonTitles:@"Logout", nil];
-    [logoutConfirm show];
-    [logoutConfirm setTag:1];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Positive?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle: @"Logout" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+        NSLog(@"Logging out...");
+        NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
+                          self.url];
+        NSURL *url = [NSURL URLWithString:urlS];
+        
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setValidatesSecureCertificate:NO];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }];
+        [request setCompletionBlock:^(void) {
+            NSLog(@"Logout successful");
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [self showLogin];
+        }];
+        [request setTimeOutSeconds:30];
+        [request startAsynchronous];
+        
+        [ASIHTTPRequest setSessionCookies:nil];
+        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        HUD.labelText = @"Logging out...";
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                        style:UIAlertActionStyleCancel handler:nil]];
+    [self.feedsViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showConnectToService:(NSString *)serviceName {
@@ -1323,41 +1349,6 @@
 
 - (void)refreshFeedCount:(id)feedId {
     [feedsViewController fadeFeed:feedId];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 1) { // this is logout
-        if (buttonIndex == 0) {
-            return;
-        } else {
-            NSLog(@"Logging out...");
-            NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
-                              self.url];
-            NSURL *url = [NSURL URLWithString:urlS];
-            
-            __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-            [request setValidatesSecureCertificate:NO];
-            [request setDelegate:self];
-            [request setResponseEncoding:NSUTF8StringEncoding];
-            [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-            [request setFailedBlock:^(void) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-            }];
-            [request setCompletionBlock:^(void) {
-                NSLog(@"Logout successful");
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self showLogin];
-            }];
-            [request setTimeOutSeconds:30];
-            [request startAsynchronous];
-            
-            [ASIHTTPRequest setSessionCookies:nil];
-            
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            HUD.labelText = @"Logging out...";
-        }
-    }
 }
 
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
