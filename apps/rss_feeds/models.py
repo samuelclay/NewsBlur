@@ -1618,9 +1618,9 @@ class Feed(models.Model):
             worksheet.write(0, col, '# readers', bold)
             worksheet.write_comment(0, col, 'Total number of active subscribers who have read a story from the feed in the past 30 days.')
             worksheet.set_column(col, col, 8); col += 1
-            worksheet.write(0, col, "read %", bold)
+            worksheet.write(0, col, "read pct", bold)
             worksheet.write_column(0, col, "Of the active subscribers reading this feed in the past 30 days, this is the percentage of stories the average subscriber reads. Values over 100 pct signify that the feed has many shared stories, which throws off the number slightly but not significantly.")
-            worksheet.set_column(col, col, 6); col += 1
+            worksheet.set_column(col, col, 8); col += 1
             worksheet.write(0, col, '# stories 30d', bold)
             worksheet.write_comment(0, col, "It's important to ignore feeds that haven't published anything in the last 30 days, which is why this is part of the Reach Score.")
             worksheet.set_column(col, col, 10); col += 1
