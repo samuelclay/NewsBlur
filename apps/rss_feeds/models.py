@@ -1471,8 +1471,8 @@ class Feed(models.Model):
                 feed_title_to_id[feed.feed_title] = feed_id
             seen_feeds.add(feed.feed_title)
             if feed_id not in popularity:
-                feed.update_all_statistics()
-                classifiers = feed.save_classifier_counts()
+                # feed.update_all_statistics()
+                # classifiers = feed.save_classifier_counts()
                 well_read_score = feed.well_read_score()
                 popularity[feed_id] = {
                     'feed_title': feed.feed_title,
@@ -1488,7 +1488,7 @@ class Feed(models.Model):
                     'share_count': well_read_score['share_count'],
                     'ps': 0,
                     'ng': 0,
-                    'classifiers': classifiers,
+                    'classifiers': json.decode(feed.data.feed_classifier_counts),
                 }
                 if popularity[feed_id]['classifiers']:
                     for classifier in popularity[feed_id]['classifiers'].get('feed', []):
