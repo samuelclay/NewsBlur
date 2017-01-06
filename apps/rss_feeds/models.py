@@ -1610,26 +1610,36 @@ class Feed(models.Model):
             worksheet.write(0, col, 'Feed URL', bold)
             worksheet.set_column(col, col, 20); col += 1
             worksheet.write(0, col, 'Reach score', bold)
+            worksheet.write_comment(0, col, 'Feeds are sorted based on this score. It\'s simply the # of readers * # of stories in the past 30 days * the percentage of stories that are actually read.')
             worksheet.set_column(col, col, 9); col += 1
             worksheet.write(0, col, '# subs', bold)
+            worksheet.write_comment(0, col, 'Total number of subscribers on NewsBlur, not necessarily active')
             worksheet.set_column(col, col, 5); col += 1
             worksheet.write(0, col, '# readers', bold)
+            worksheet.write_comment(0, col, 'Total number of active subscribers who have read a story from the feed in the past 30 days.')
             worksheet.set_column(col, col, 8); col += 1
             worksheet.write(0, col, "read %", bold)
+            worksheet.write_column(0, col, "Of the active subscribers reading this feed in the past 30 days, this is the percentage of stories the average subscriber reads. Values over 100 pct signify that the feed has many shared stories, which throws off the number slightly but not significantly.")
             worksheet.set_column(col, col, 6); col += 1
             worksheet.write(0, col, '# stories 30d', bold)
+            worksheet.write_comment(0, col, "It's important to ignore feeds that haven't published anything in the last 30 days, which is why this is part of the Reach Score.")
             worksheet.set_column(col, col, 10); col += 1
             worksheet.write(0, col, '# shared', bold)
+            worksheet.write_comment(0, col, 'Number of stories from this feed that were shared on NewsBlur. This is a strong signal of interest although it is not included in the Reach Score.')
             worksheet.set_column(col, col, 7); col += 1
             worksheet.write(0, col, '# feed pos', bold)
+            worksheet.write_comment(0, col, 'Number of times this feed was trained with a thumbs up. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
             worksheet.set_column(col, col, 8); col += 1
             worksheet.write(0, col, '# feed neg', bold)
+            worksheet.write_comment(0, col, 'Number of times this feed was trained with a thumbs down. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
             worksheet.set_column(col, col, 8); col += 1
             worksheet.write(0, col, 'Author', bold)
             worksheet.set_column(col, col, 15); col += 1
             worksheet.write(0, col, '# author pos', bold)
+            worksheet.write_comment(0, col, 'Number of times this author was trained with a thumbs up. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
             worksheet.set_column(col, col, 10); col += 1
             worksheet.write(0, col, '# author neg', bold)
+            worksheet.write_comment(0, col, 'Number of times this author was trained with a thumbs down. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
             worksheet.set_column(col, col, 10); col += 1
             worksheet.write(0, col, 'Story title', bold)
             worksheet.set_column(col, col, 30); col += 1
@@ -1639,11 +1649,14 @@ class Feed(models.Model):
             worksheet.set_column(col, col, 10); col += 1
             worksheet.write(0, col, 'Tag', bold)
             worksheet.set_column(col, col, 15); col += 1
-            worksheet.write(0, col, 'Tag Count', bold)
+            worksheet.write(0, col, 'Tag count', bold)
+            worksheet.write_comment(0, col, 'Number of times this tag is used in other stories that also contain the search query.')
             worksheet.set_column(col, col, 8); col += 1
             worksheet.write(0, col, '# tag pos', bold)
+            worksheet.write_comment(0, col, 'Number of times this tag was trained with a thumbs up. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
             worksheet.set_column(col, col, 7); col += 1
             worksheet.write(0, col, '# tag neg', bold)
+            worksheet.write_comment(0, col, 'Number of times this tag was trained with a thumbs down. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
             worksheet.set_column(col, col, 7); col += 1
             popularity = cls.query_popularity(query, limit=limit)
             
