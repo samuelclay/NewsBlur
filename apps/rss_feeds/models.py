@@ -1003,7 +1003,7 @@ class Feed(models.Model):
             for r in res:
                 facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
                 facet_values[facet] = r.key
-                if facet_values['pos'] + facet_values['neg'] > 1:
+                if facet_values['pos'] + facet_values['neg'] >= 1:
                     scores.append(facet_values)
             scores = sorted(scores, key=lambda v: v['neg'] - v['pos'])
 
@@ -1024,6 +1024,8 @@ class Feed(models.Model):
         if scores:
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
+        
+        return scores
         
     def update(self, **kwargs):
         from utils import feed_fetcher
@@ -1469,6 +1471,8 @@ class Feed(models.Model):
                 feed_title_to_id[feed.feed_title] = feed_id
             seen_feeds.add(feed.feed_title)
             if feed_id not in popularity:
+                feed.update_all_statistics()
+                classifiers = feed.save_classifier_counts()
                 well_read_score = feed.well_read_score()
                 popularity[feed_id] = {
                     'feed_title': feed.feed_title,
@@ -1480,8 +1484,17 @@ class Feed(models.Model):
                     'read_pct': well_read_score['read_pct'],
                     'reader_count': well_read_score['reader_count'],
                     'story_count': well_read_score['story_count'],
-                    'reach_score': well_read_score['reach_score']
+                    'reach_score': well_read_score['reach_score'],
+                    'share_count': well_read_score['share_count'],
+                    'ps': 0,
+                    'ng': 0,
+                    'classifiers': classifiers,
                 }
+                if popularity[feed_id]['classifiers']:
+                    for classifier in popularity[feed_id]['classifiers'].get('feed', []):
+                        if int(classifier['feed_id']) == int(feed_id):
+                            popularity[feed_id]['ps'] = classifier['pos']
+                            popularity[feed_id]['ng'] = -1 * classifier['neg']
             popularity[feed_id]['story_ids'].append(story_hash)
         
         sorted_popularity = sorted(popularity.values(), key=lambda x: x['reach_score'],
@@ -1498,27 +1511,42 @@ class Feed(models.Model):
                     feed['authors'][story['story_authors']] = {
                         'name': story['story_authors'],
                         'count': 0,
+                        'ps': 0,
+                        'ng': 0,
                         'tags': {},
                         'stories': [],
                     }
-                authors = feed['authors'][story['story_authors']]
+                author = feed['authors'][story['story_authors']]
                 seen = False
-                for seen_story in authors['stories']:
+                for seen_story in author['stories']:
                     if seen_story['url'] == story['story_permalink']:
                         seen = True
                         break
                 else:
-                    authors['stories'].append({
+                    author['stories'].append({
                         'title': story['story_title'],
                         'url': story['story_permalink'],
                         'date': story['story_date'],
                     })
-                    authors['count'] += 1
+                    author['count'] += 1
                 if seen: continue # Don't recount tags
+                
+                if feed['classifiers']:
+                    for classifier in feed['classifiers'].get('author', []):
+                        if classifier['author'] == author['name']:
+                            author['ps'] = classifier['pos']
+                            author['ng'] = -1 * classifier['neg']
+                                
                 for tag in story['story_tags']:
-                    if tag not in authors['tags']:
-                        authors['tags'][tag] = 0
-                    authors['tags'][tag] += 1
+                    if tag not in author['tags']:
+                        author['tags'][tag] = {'name': tag, 'count': 0, 'ps': 0, 'ng': 0}
+                    author['tags'][tag]['count'] += 1
+                    if feed['classifiers']:
+                        for classifier in feed['classifiers'].get('tag', []):
+                            if classifier['tag'] == tag:
+                                author['tags'][tag]['ps'] = classifier['pos']
+                                author['tags'][tag]['ng'] = -1 * classifier['neg']
+            
             sorted_authors = sorted(feed['authors'].values(), key=lambda x: x['count'])
             feed['authors'] = sorted_authors
                 
@@ -1527,10 +1555,13 @@ class Feed(models.Model):
             
     def well_read_score(self):
         from apps.reader.models import UserSubscription
-        
+        from apps.social.models import MSharedStory
+                
         # Average percentage of stories read vs published across recently active subscribers
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
+        
+        shared_stories = MSharedStory.objects(story_feed_id=self.pk).count()
         
         subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values('user_id')
         subscribing_user_ids = [sub['user_id'] for sub in subscribing_users]
@@ -1553,7 +1584,8 @@ class Feed(models.Model):
         reach_score = average_pct * reader_count * story_count
         
         return {'read_pct': average_pct, 'reader_count': reader_count, 
-                'reach_score': reach_score, 'story_count': story_count}
+                'reach_score': reach_score, 'story_count': story_count,
+                'share_count': shared_stories}
     
     @classmethod
     def xls_query_popularity(cls, queries, limit):
@@ -1569,59 +1601,92 @@ class Feed(models.Model):
             worksheet = workbook.add_worksheet(query)
             row = 1
             col = 0
-            worksheet.write(0, col,   'Feed', bold)
-            worksheet.write(0, col+1, 'Feed URL', bold)
-            worksheet.write(0, col+2, '# Subs', bold)
-            worksheet.write(0, col+4, '# Readers', bold)
-            worksheet.write(0, col+3, 'Reach score', bold)
-            worksheet.write(0, col+5, 'Read %', bold)
-            worksheet.write(0, col+6, '# stories 30d', bold)
-            worksheet.write(0, col+7, 'Author', bold)
-            worksheet.write(0, col+8, 'Story Title', bold)
-            worksheet.write(0, col+9, 'Story URL', bold)
-            worksheet.write(0, col+10, 'Story Date', bold)
-            worksheet.write(0, col+11, 'Tag', bold)
-            worksheet.write(0, col+12, 'Tag Count', bold)
-            worksheet.set_column(col, col,   15)
-            worksheet.set_column(col+1, col+1, 20)
-            worksheet.set_column(col+2, col+2, 8)
-            worksheet.set_column(col+3, col+3, 8)
-            worksheet.set_column(col+4, col+4, 8)
-            worksheet.set_column(col+5, col+5, 8)
-            worksheet.set_column(col+6, col+6, 8)
-            worksheet.set_column(col+7, col+7, 15)
-            worksheet.set_column(col+8, col+8, 30)
-            worksheet.set_column(col+9, col+9, 20)
-            worksheet.set_column(col+10, col+10, 10)
-            worksheet.set_column(col+11, col+11, 15)
-            worksheet.set_column(col+12, col+12, 8)
+            worksheet.write(0, col,   'Publisher', bold)
+            worksheet.set_column(col, col, 15); col += 1
+            worksheet.write(0, col, 'Feed URL', bold)
+            worksheet.set_column(col, col, 20); col += 1
+            worksheet.write(0, col, 'Reach score', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# subs', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# readers', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, 'Read %', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# stories 30d', bold)
+            worksheet.set_column(col, col, 10); col += 1
+            worksheet.write(0, col, '# shared', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# feed pos', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# feed neg', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, 'Author', bold)
+            worksheet.set_column(col, col, 15); col += 1
+            worksheet.write(0, col, '# author pos', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# author neg', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, 'Story title', bold)
+            worksheet.set_column(col, col, 30); col += 1
+            worksheet.write(0, col, 'Story URL', bold)
+            worksheet.set_column(col, col, 20); col += 1
+            worksheet.write(0, col, 'Story date', bold)
+            worksheet.set_column(col, col, 10); col += 1
+            worksheet.write(0, col, 'Tag', bold)
+            worksheet.set_column(col, col, 15); col += 1
+            worksheet.write(0, col, 'Tag Count', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# tag pos', bold)
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# tag neg', bold)
+            worksheet.set_column(col, col, 8); col += 1
             popularity = cls.query_popularity(query, limit=limit)
             
-            worksheet.write(row, col, query)
             for feed in popularity:
-                worksheet.write(row, col+0, feed['feed_title'])
-                worksheet.write_url(row, col+1, feed['feed_url'])
-                worksheet.write(row, col+2, feed['num_subscribers'])
-                worksheet.write(row, col+4, feed['reader_count'])
-                worksheet.write(row, col+3, feed['reach_score'])
-                worksheet.write(row, col+5, feed['read_pct'])
-                worksheet.write(row, col+6, feed['story_count'])
-                worksheet.conditional_format(row, col+3, row, col+6, {'type': 'cell',
+                col = 0
+                worksheet.write(row, col, feed['feed_title']); col += 1
+                worksheet.write_url(row, col, feed['feed_url']); col += 1
+                worksheet.write(row, col, feed['reach_score']); col += 1
+                worksheet.write(row, col, feed['num_subscribers']); col += 1
+                worksheet.write(row, col, feed['reader_count']); col += 1
+                worksheet.write(row, col, feed['read_pct']); col += 1
+                worksheet.write(row, col, feed['story_count']); col += 1
+                worksheet.write(row, col, feed['share_count']); col += 1
+                worksheet.write(row, col, feed['ps']); col += 1
+                worksheet.write(row, col, feed['ng']); col += 1
+                worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
                                                                 'criteria': '==',
                                                                 'value': 0,
                                                                 'format': unread_format})
                 for author in feed['authors']:
-                    worksheet.write(row, col+7, author['name'])
+                    row += 1
+                    worksheet.write(row, col, author['name'])
+                    worksheet.write(row, col+1, author['ps'])
+                    worksheet.write(row, col+2, author['ng'])
+                    worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
+                                                                    'criteria': '==',
+                                                                    'value': 0,
+                                                                    'format': unread_format})
                     for story in author['stories']:
-                        worksheet.write(row, col+8, story['title'])
-                        worksheet.write_url(row, col+9, story['url'])
-                        worksheet.write_datetime(row, col+10, story['date'], date_format)
+                        worksheet.write(row, col+3, story['title'])
+                        worksheet.write_url(row, col+4, story['url'])
+                        worksheet.write_datetime(row, col+5, story['date'], date_format)
                         row += 1
-                    for tag, count in author['tags'].items():
-                        worksheet.write(row, col+11, tag)
-                        worksheet.write(row, col+12, count)
+                        worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
+                                                                        'criteria': '==',
+                                                                        'value': 0,
+                                                                        'format': unread_format})
+                    for tag in author['tags'].values():
+                        worksheet.write(row, col+6, tag['name'])
+                        worksheet.write(row, col+7, tag['count'])
+                        worksheet.write(row, col+8, tag['ps'])
+                        worksheet.write(row, col+9, tag['ng'])
                         row += 1
-            
+                        worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
+                                                                        'criteria': '==',
+                                                                        'value': 0,
+                                                                        'format': unread_format})            
         workbook.close()
         
     def find_stories(self, query, order="newest", offset=0, limit=25):
