@@ -141,15 +141,6 @@ public class UnreadsService extends SubService {
                 break unreadsyncloop;
             }
 
-            for (Story story : response.stories) {
-                if (parent.notifyFeedIds.contains(story.feedId)) {
-                    // for now, only notify stories with 1+ intel
-                    if (story.intelligence.calcTotalIntel() > 0) {
-                        story.notify = true;
-                    }
-                }
-            }
-
             parent.insertStories(response);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);

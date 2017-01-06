@@ -12,7 +12,7 @@
     	android:paddingBottom="20dp">
 
         <LinearLayout
-            android:id="@+id/login_fileds_container"
+            android:id="@+id/login_fields_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -43,7 +43,7 @@
             android:id="@+id/login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/login_fileds_container"
+            android:layout_below="@id/login_fields_container"
             android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
             android:paddingLeft="16dp"
@@ -70,8 +70,29 @@
             android:layout_below="@id/login_change_to_register"
             android:layout_alignParentRight="true"
             android:layout_marginTop="20dp"
-            android:text="@string/forgot_password"
+            android:text="@string/login_forgot_password"
             android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/login_custom_server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_forgot_password"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/login_custom_server"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/login_custom_server_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_custom_server"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="30dp"
+            android:hint="@string/login_custom_server_hint"
+            android:textSize="20sp"
+            android:visibility="invisible" />
 
     </RelativeLayout>
     

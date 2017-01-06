@@ -26,19 +26,29 @@ import android.util.Log;
 import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.network.APIConstants;
 import com.newsblur.service.NBSyncService;
 
 public class PrefsUtils {
 
     private PrefsUtils() {} // util class - no instances
 
-	public static void saveLogin(final Context context, final String userName, final String cookie) {
-        NBSyncService.resumeFromInterrupt();
-		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-		final Editor edit = preferences.edit();
+	public static void saveCustomServer(Context context, String customServer) {
+        if (customServer == null) return;
+        if (customServer.length() <= 0) return;
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		Editor edit = preferences.edit();
+        edit.putString(PrefConstants.PREF_CUSTOM_SERVER, customServer);
+		edit.commit();
+	}
+
+	public static void saveLogin(Context context, String userName, String cookie) {
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		Editor edit = preferences.edit();
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);
 		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis());
 		edit.commit();
+        NBSyncService.resumeFromInterrupt();
 	}
 
     public static boolean checkForUpgrade(Context context) {
@@ -84,6 +94,7 @@ public class PrefsUtils {
         s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
         s.append("%0Asqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("%0Ausername: ").append(getUserDetails(context).username);
+        s.append("%0Aserver: ").append(APIConstants.isCustomServer() ? "default" : "custom");
         s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
         s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());
         s.append("%0Apending actions: ").append(NBSyncService.getPendingInfo());
@@ -110,6 +121,9 @@ public class PrefsUtils {
 
         // wipe the local DB
         FeedUtils.dropAndRecreateTables();
+
+        // reset custom server
+        APIConstants.unsetCustomServer();
         
         // prompt for a new login
         Intent i = new Intent(context, Login.class);
@@ -127,6 +141,7 @@ public class PrefsUtils {
         Set<String> keys = new HashSet<String>(prefs.getAll().keySet());
         keys.remove(PrefConstants.PREF_COOKIE);
         keys.remove(PrefConstants.PREF_UNIQUE_LOGIN);
+        keys.remove(PrefConstants.PREF_CUSTOM_SERVER);
         SharedPreferences.Editor editor = prefs.edit();
         for (String key : keys) {
             editor.remove(key);
@@ -145,6 +160,11 @@ public class PrefsUtils {
 	public static String getUniqueLoginKey(final Context context) {
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		return preferences.getString(PrefConstants.PREF_UNIQUE_LOGIN, null);
+	}
+
+    public static String getCustomServer(Context context) {
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		return preferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null);
 	}
 
 	public static void saveUserDetails(final Context context, final UserDetails profile) {
