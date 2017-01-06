@@ -47,7 +47,7 @@ class MPopularityQuery(mongo.Document):
     def queue_email(self):
         EmailPopularityQuery.delay(pk=self.pk)
         
-    def send_email(self, limit=1000):
+    def send_email(self, limit=5000):
         filename = Feed.xls_query_popularity(self.query, limit=limit)
         xlsx = open(filename, "r")
         
