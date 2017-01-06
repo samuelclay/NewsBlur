@@ -1590,33 +1590,37 @@ class Feed(models.Model):
     @classmethod
     def xls_query_popularity(cls, queries, limit):
         import xlsxwriter
-        workbook = xlsxwriter.Workbook('NewsBlurPopularity.xlsx')
+        from xlsxwriter.utility import xl_rowcol_to_cell
+
+        if isinstance(queries, unicode):
+            queries = [q.strip() for q in queries.split(',')]
+        
+        title = 'NewsBlur-%s.xlsx' % slugify('-'.join(queries))
+        workbook = xlsxwriter.Workbook(title)
         bold = workbook.add_format({'bold': 1})
         date_format = workbook.add_format({'num_format': 'mmm d yyyy'})
         unread_format = workbook.add_format({'font_color': '#E0E0E0'})
-        if isinstance(queries, str):
-            queries = [q.strip() for q in queries.split(',')]
             
         for query in queries:
             worksheet = workbook.add_worksheet(query)
             row = 1
             col = 0
-            worksheet.write(0, col,   'Publisher', bold)
+            worksheet.write(0, col, 'Publisher', bold)
             worksheet.set_column(col, col, 15); col += 1
             worksheet.write(0, col, 'Feed URL', bold)
             worksheet.set_column(col, col, 20); col += 1
             worksheet.write(0, col, 'Reach score', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.set_column(col, col, 9); col += 1
             worksheet.write(0, col, '# subs', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.set_column(col, col, 5); col += 1
             worksheet.write(0, col, '# readers', bold)
             worksheet.set_column(col, col, 8); col += 1
-            worksheet.write(0, col, 'Read %', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, "read %", bold)
+            worksheet.set_column(col, col, 6); col += 1
             worksheet.write(0, col, '# stories 30d', bold)
             worksheet.set_column(col, col, 10); col += 1
             worksheet.write(0, col, '# shared', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.set_column(col, col, 7); col += 1
             worksheet.write(0, col, '# feed pos', bold)
             worksheet.set_column(col, col, 8); col += 1
             worksheet.write(0, col, '# feed neg', bold)
@@ -1624,9 +1628,9 @@ class Feed(models.Model):
             worksheet.write(0, col, 'Author', bold)
             worksheet.set_column(col, col, 15); col += 1
             worksheet.write(0, col, '# author pos', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.set_column(col, col, 10); col += 1
             worksheet.write(0, col, '# author neg', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.set_column(col, col, 10); col += 1
             worksheet.write(0, col, 'Story title', bold)
             worksheet.set_column(col, col, 30); col += 1
             worksheet.write(0, col, 'Story URL', bold)
@@ -1638,16 +1642,20 @@ class Feed(models.Model):
             worksheet.write(0, col, 'Tag Count', bold)
             worksheet.set_column(col, col, 8); col += 1
             worksheet.write(0, col, '# tag pos', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.set_column(col, col, 7); col += 1
             worksheet.write(0, col, '# tag neg', bold)
-            worksheet.set_column(col, col, 8); col += 1
+            worksheet.set_column(col, col, 7); col += 1
             popularity = cls.query_popularity(query, limit=limit)
             
             for feed in popularity:
                 col = 0
                 worksheet.write(row, col, feed['feed_title']); col += 1
                 worksheet.write_url(row, col, feed['feed_url']); col += 1
-                worksheet.write(row, col, feed['reach_score']); col += 1
+                worksheet.write(row, col, "=%s*%s*%s" % (
+                    xl_rowcol_to_cell(row, col+2),
+                    xl_rowcol_to_cell(row, col+3),
+                    xl_rowcol_to_cell(row, col+4),
+                )); col += 1
                 worksheet.write(row, col, feed['num_subscribers']); col += 1
                 worksheet.write(row, col, feed['reader_count']); col += 1
                 worksheet.write(row, col, feed['read_pct']); col += 1
@@ -1688,6 +1696,7 @@ class Feed(models.Model):
                                                                         'value': 0,
                                                                         'format': unread_format})            
         workbook.close()
+        return title
         
     def find_stories(self, query, order="newest", offset=0, limit=25):
         story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,

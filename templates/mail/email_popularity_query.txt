@@ -1,0 +1,9 @@
+{% extends "mail/email_base.txt" %}
+
+{% load utils_tags %}
+
+{% block body %}Here's your keyword popularity spreadsheet
+
+This service is provided for free to YC companies. In the attached spreadsheet, you should note that individual fields have comments where appropriate. Feel free to reply directly if you have any questions.
+
+- Sam Clay{% endblock body %}
