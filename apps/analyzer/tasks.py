@@ -8,7 +8,7 @@ class EmailPopularityQuery(Task):
         from apps.analyzer.models import MPopularityQuery
         
         query = MPopularityQuery.objects.get(pk=pk)
-        logging.user(self.user, "~BB~FCRunning popularity query: ~SB%s" % query)
+        logging.debug(" -> ~BB~FCRunning popularity query: ~SB%s" % query)
         
         query.send_email()
         query.is_emailed = True
