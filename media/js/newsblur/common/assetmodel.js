@@ -290,12 +290,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                        ? _.select(feed_id, function(f) { return f; })
                        : [feed_id];
         
-        this.make_request('/reader/mark_feed_as_read', {
-            feed_id: feed_ids,
-            cutoff_timestamp: cutoff_timestamp,
-            direction: direction
-        }, callback);
-        
         this.stories.each(function(story) {
             if (direction == "older" && 
                 cutoff_timestamp && 
@@ -329,6 +323,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 feed.set({'ps': 0, 'nt': 0, 'ng': 0});
             });
         }
+
+        this.make_request('/reader/mark_feed_as_read', {
+            feed_id: feed_ids,
+            cutoff_timestamp: cutoff_timestamp,
+            direction: direction
+        }, callback);
     },
     
     mark_story_as_shared: function(params, callback, error_callback) {

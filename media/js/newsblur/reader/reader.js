@@ -2349,15 +2349,21 @@
                 order == 'newest') {
                 cutoff_timestamp = this.model.stories.first().get('story_timestamp');
             }
+            
+            if ((order == 'newest' && direction == 'newer') || (order == 'oldest' && direction == 'older')) {
+                var stories = this.model.stories.select(function(story) {
+                    return direction == 'newer' ? story.get('story_timestamp') >= cutoff_timestamp :
+                                                  story.get('story_timestamp') >= cutoff_timestamp;
+                });
+                feeds = _.unique(_.map(stories, function(story) { return story.get('story_feed_id'); }));
+            }
 
             this.model.mark_feed_as_read(feeds, cutoff_timestamp, direction, 
                                          _.bind(function() {
                 if (feeds.length == 1) {
                     this.feed_unread_count(feeds[0]);
-                } else {
-                    if (!this.socket || !this.socket || !this.socket.connected) {
-                        this.force_feeds_refresh(null, false, feeds);
-                    }
+                } else if (!this.socket || !this.socket || !this.socket.connected) {
+                    this.force_feeds_refresh(null, false, feeds);
                 }
             }, this));
         },
