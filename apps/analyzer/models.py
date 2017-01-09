@@ -46,6 +46,21 @@ class MPopularityQuery(mongo.Document):
 
     def queue_email(self):
         EmailPopularityQuery.delay(pk=self.pk)
+    
+    @classmethod
+    def ensure_all_sent(cls, queue=True):
+        for query in cls.objects.all().order_by('creation_date'):
+            query.ensure_sent(queue=queue)
+            
+    def ensure_sent(self, queue=True):
+        if self.is_emailed:
+            logging.debug(" ---> Already sent %s" % self)
+            return
+        
+        if queue:
+            self.queue_email()
+        else:
+            self.send_email()
         
     def send_email(self, limit=5000):
         filename = Feed.xls_query_popularity(self.query, limit=limit)
