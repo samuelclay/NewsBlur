@@ -1663,7 +1663,7 @@ class Feed(models.Model):
             for feed in popularity:
                 col = 0
                 worksheet.write(row, col, feed['feed_title']); col += 1
-                worksheet.write_url(row, col, feed['feed_url']); col += 1
+                worksheet.write_url(row, col, feed.get('feed_url', '')); col += 1
                 worksheet.write(row, col, "=%s*%s*%s" % (
                     xl_rowcol_to_cell(row, col+2),
                     xl_rowcol_to_cell(row, col+3),
