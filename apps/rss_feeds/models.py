@@ -1664,6 +1664,10 @@ class Feed(models.Model):
                 col = 0
                 worksheet.write(row, col, feed['feed_title']); col += 1
                 worksheet.write_url(row, col, feed.get('feed_url', '')); col += 1
+                worksheet.conditional_format(row, col, row, col+8, {'type': 'cell',
+                                                                'criteria': '==',
+                                                                'value': 0,
+                                                                'format': unread_format})
                 worksheet.write(row, col, "=%s*%s*%s" % (
                     xl_rowcol_to_cell(row, col+2),
                     xl_rowcol_to_cell(row, col+3),
@@ -1676,38 +1680,30 @@ class Feed(models.Model):
                 worksheet.write(row, col, feed['share_count']); col += 1
                 worksheet.write(row, col, feed['ps']); col += 1
                 worksheet.write(row, col, feed['ng']); col += 1
-                worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
-                                                                'criteria': '==',
-                                                                'value': 0,
-                                                                'format': unread_format})
                 for author in feed['authors']:
                     row += 1
-                    worksheet.write(row, col, author['name'])
-                    worksheet.write(row, col+1, author['ps'])
-                    worksheet.write(row, col+2, author['ng'])
-                    worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
+                    worksheet.conditional_format(row, col, row, col+2, {'type': 'cell',
                                                                     'criteria': '==',
                                                                     'value': 0,
                                                                     'format': unread_format})
+                    worksheet.write(row, col, author['name'])
+                    worksheet.write(row, col+1, author['ps'])
+                    worksheet.write(row, col+2, author['ng'])
                     for story in author['stories']:
                         worksheet.write(row, col+3, story['title'])
                         worksheet.write_url(row, col+4, story['url'])
                         worksheet.write_datetime(row, col+5, story['date'], date_format)
                         row += 1
-                        worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
+                    for tag in author['tags'].values():
+                        worksheet.conditional_format(row, col+7, row, col+9, {'type': 'cell',
                                                                         'criteria': '==',
                                                                         'value': 0,
-                                                                        'format': unread_format})
-                    for tag in author['tags'].values():
+                                                                        'format': unread_format})            
                         worksheet.write(row, col+6, tag['name'])
                         worksheet.write(row, col+7, tag['count'])
                         worksheet.write(row, col+8, tag['ps'])
                         worksheet.write(row, col+9, tag['ng'])
                         row += 1
-                        worksheet.conditional_format(row, 0, row, 20, {'type': 'cell',
-                                                                        'criteria': '==',
-                                                                        'value': 0,
-                                                                        'format': unread_format})            
         workbook.close()
         return title
         
