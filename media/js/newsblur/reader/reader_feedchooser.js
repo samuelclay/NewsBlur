@@ -242,7 +242,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     
     make_feeds: function() {
         var feeds = this.model.feeds;
-        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder(true)).length;
+        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder({include_inactive: true})).length;
         
         this.feedlist = new NEWSBLUR.Views.FeedList({
             feed_chooser: true,

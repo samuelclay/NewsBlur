@@ -2330,7 +2330,7 @@
         
         mark_folder_as_read: function(folder, days_back, direction) {
             var folder = folder || this.active_folder;
-            var feeds = folder.feed_ids_in_folder();
+            var feeds = folder.feed_ids_in_folder({unreads_only: true});
             
             this.mark_feeds_as_read(feeds, days_back, direction);
             
@@ -2349,15 +2349,15 @@
                 order == 'newest') {
                 cutoff_timestamp = this.model.stories.first().get('story_timestamp');
             }
-            var mark_active = false;
-            if ((order == 'newest' && direction == 'newer') || (order == 'oldest' && direction == 'older')) {
-                mark_active = true;
-            }
 
             this.model.mark_feed_as_read(feeds, cutoff_timestamp, direction, 
-                                         mark_active, _.bind(function() {
-                if (!this.socket || !this.socket || !this.socket.connected) {
-                    this.force_feeds_refresh(null, false, feeds);
+                                         _.bind(function() {
+                if (feeds.length == 1) {
+                    this.feed_unread_count(feeds[0]);
+                } else {
+                    if (!this.socket || !this.socket || !this.socket.connected) {
+                        this.force_feeds_refresh(null, false, feeds);
+                    }
                 }
             }, this));
         },
@@ -6696,9 +6696,9 @@
                 if (order == 'oldest') direction = 'newer';
 
                 if (self.flags.river_view && !self.flags.social_view) {
-                    self.mark_folder_as_read(self.active_folder, timestamp, order);
+                    self.mark_folder_as_read(self.active_folder, timestamp, direction);
                 } else {
-                    self.mark_feed_as_read(self.active_feed, timestamp, order);
+                    self.mark_feed_as_read(self.active_feed, timestamp, direction);
                 }
             });
             $document.bind('keydown', 'm', function(e) {

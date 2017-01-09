@@ -284,7 +284,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_counts', {}, pre_callback, pre_callback, {request_type: 'GET'});
     },
     
-    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, mark_active, callback) {
+    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
                        ? _.select(feed_id, function(f) { return f; })
@@ -296,32 +296,32 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             direction: direction
         }, callback);
         
-        if (mark_active) {
-            this.stories.each(function(story) {
-                if ((!direction || direction == "older") && 
-                    cutoff_timestamp && 
-                    parseInt(story.get('story_timestamp'), 10) > cutoff_timestamp) {
-                    return;
-                } else if (direction == "newer" && 
-                    cutoff_timestamp && 
-                    parseInt(story.get('story_timestamp'), 10) < cutoff_timestamp) {
-                    return;
+        this.stories.each(function(story) {
+            if (direction == "older" && 
+                cutoff_timestamp && 
+                story.get('story_timestamp') > cutoff_timestamp) {
+                return;
+            } else if (direction == "newer" && 
+                cutoff_timestamp && 
+                story.get('story_timestamp') < cutoff_timestamp) {
+                return;
+            }
+            if (!story.get('read_status')) {
+                story.set('read_status', true);
+                var score = story.score();
+                var feed = self.get_feed(story.get('story_feed_id'));
+                if (!feed) return;
+                if (score > 0) {
+                    feed.set('ps', feed.get('ps') - 1);
+                } else if (score == 0) {
+                    feed.set('nt', feed.get('nt') - 1);
+                } else if (score < 0) {
+                    feed.set('ng', feed.get('ng') - 1);
                 }
-                if (!story.get('read_status')) {
-                    story.set('read_status', true);
-                    var score = story.score();
-                    var feed = self.get_feed(story.get('story_feed_id'));
-                    if (!feed) return;
-                    if (score > 0) {
-                        feed.set('ps', feed.get('ps') - 1);
-                    } else if (score == 0) {
-                        feed.set('nt', feed.get('nt') - 1);
-                    } else if (score < 0) {
-                        feed.set('ng', feed.get('ng') - 1);
-                    }
-                }
-            });
-        } else {
+            }
+        });
+
+        if (!cutoff_timestamp) {
             _.each(feed_ids, function(feed_id) {
                 var feed = self.get_feed(feed_id);
                 if (!feed) return;
