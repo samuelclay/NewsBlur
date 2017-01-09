@@ -1,4 +1,3 @@
-import datetime
 from celery.task import Task
 from utils import log as logging
 
@@ -11,6 +10,4 @@ class EmailPopularityQuery(Task):
         logging.debug(" -> ~BB~FCRunning popularity query: ~SB%s" % query)
         
         query.send_email()
-        query.is_emailed = True
-        query.save()
         

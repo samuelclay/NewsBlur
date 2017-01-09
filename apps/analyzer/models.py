@@ -79,6 +79,9 @@ class MPopularityQuery(mongo.Document):
         msg.attach(filename, xlsx.read(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         msg.send()
         
+        self.is_emailed = True
+        self.save()
+        
         logging.debug(" -> ~BB~FM~SBSent email for popularity query: %s" % self)
         
 
