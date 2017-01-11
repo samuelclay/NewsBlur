@@ -557,7 +557,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
 
     check_feed_view_scrolled_to_bottom: function(model, selected) {
-        console.log(['check_feed_view_scrolled_to_bottom', model, selected]);
+        // console.log(['check_feed_view_scrolled_to_bottom', model, selected]);
         if (!_.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) return;
         if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
