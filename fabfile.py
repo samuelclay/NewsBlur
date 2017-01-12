@@ -249,7 +249,7 @@ def setup_node():
     setup_node_app()
     config_node()
     
-def setup_db(engine=None, skip_common=False):
+def setup_db(engine=None, skip_common=False, skip_benchmark=True):
     if not skip_common:
         setup_common()
         setup_db_firewall()
@@ -278,7 +278,8 @@ def setup_db(engine=None, skip_common=False):
     setup_db_munin()
     setup_db_monitor()
     setup_usage_monitor()
-    benchmark()
+    if not skip_benchmark:
+        benchmark()
     done()
 
     # if env.user == 'ubuntu':
@@ -1076,7 +1077,7 @@ def setup_mongo_mms():
         sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
-    redis_version = '3.0.3'
+    redis_version = '3.2.6'
     with cd(env.VENDOR_PATH):
         run('wget http://download.redis.io/releases/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -1111,7 +1112,7 @@ def setup_redis(slave=False):
 def setup_munin():
     sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
-    put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
+    # put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True) # Only on main munin server
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
     put('config/spawn_fcgi_munin_html.conf', '/etc/init.d/spawn_fcgi_munin_html', use_sudo=True)
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
@@ -1232,6 +1233,7 @@ def setup_usage_monitor():
     
 @parallel
 def setup_redis_monitor():
+    run('sleep 5') # Wait for redis to startup so the log file is there
     sudo('ln -fs %s/utils/monitor_redis_bgsave.py /etc/cron.daily/monitor_redis_bgsave' % env.NEWSBLUR_PATH)
     sudo('/etc/cron.daily/monitor_redis_bgsave')
     
