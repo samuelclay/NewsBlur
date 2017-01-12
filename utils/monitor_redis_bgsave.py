@@ -12,6 +12,9 @@ import socket
 def main():
     t = os.popen('stat -c%Y /var/lib/redis/dump.rdb')
     timestamp = t.read().split('\n')[0]
+    if not timestamp:
+        print " ---> Error: No timestamp from /var/lib/redis/dump.rdb"
+        return
     modified = datetime.datetime.fromtimestamp(int(timestamp))
     ten_min_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
     hostname = socket.gethostname()

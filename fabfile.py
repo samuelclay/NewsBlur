@@ -699,7 +699,7 @@ def setup_sudoers(user=None):
     sudo('chmod 0440 /etc/sudoers.d/sclay')
 
 def setup_nginx():
-    NGINX_VERSION = '1.6.2'
+    NGINX_VERSION = '1.11.8'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
