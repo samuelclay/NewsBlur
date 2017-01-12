@@ -1421,6 +1421,7 @@ def complete_river(request):
     feed_ids          = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
     page              = int(request.POST.get('page', 1))
     read_filter       = request.POST.get('read_filter', 'unread')
+    stories_truncated = 0
     
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                read_filter=read_filter)
