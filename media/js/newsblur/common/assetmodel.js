@@ -717,6 +717,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
     },
     
+    complete_river: function(feed_id, feeds, page, callback) {
+        this.make_request('/reader/complete_river', {
+            feeds: feeds,
+            page: page,
+            read_filter: this.view_setting(feed_id, 'read_filter')
+        }, callback, callback, {
+            'ajax_group': 'feed_page'
+        });
+    },
+    
     fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
         var self = this;
         

@@ -1415,7 +1415,23 @@ def load_river_stories__redis(request):
     
     return data
     
-
+@json.json_view
+def complete_river(request):
+    user              = get_user(request)
+    feed_ids          = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
+    page              = int(request.POST.get('page', 1))
+    read_filter       = request.POST.get('read_filter', 'unread')
+    
+    usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+                                               read_filter=read_filter)
+    feed_ids = [sub.feed_id for sub in usersubs]
+    if feed_ids:
+        stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter)
+    
+    logging.user(user, "~FC~BBRiver complete on page ~SB%s~SN, truncating ~SB%s~SN stories from ~SB%s~SN feeds" % (page, stories_truncated, len(feed_ids)))
+    
+    return dict(code=1, message="Truncated %s stories from %s" % (stories_truncated, len(feed_ids)))
+    
 @json.json_view
 def unread_story_hashes__old(request):
     user              = get_user(request)

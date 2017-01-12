@@ -94,7 +94,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             this.story_titles.check_premium_river();
             return;
         }
-        if (visible >= 5) return;
+        if (visible >= 5) {
+            this.complete_fill();
+            return;
+        }
         
         var counts = NEWSBLUR.assets.folders.unread_counts();
         var unread_view = NEWSBLUR.assets.preference('unread_view');
@@ -104,13 +107,19 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
                 this.show_end_line();
                 return;
             }
-            if (this.page > 50) return;
+            if (this.page > 20) {
+                this.complete_fill();
+                return;
+            }
         } else {
             if (counts['nt'] <= visible) {
                 this.show_end_line();
                 return;
             }
-            if (this.page > 10) return;
+            if (this.page > 20) {
+                this.complete_fill();
+                return;
+            }
         }
         
         var feeds = this.feeds();
@@ -143,6 +152,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     show_end_line: function() {
         this.story_titles.show_no_more_stories();
         this.$(".NB-end-line").addClass("NB-visible");
+    },
+    
+    complete_fill: function() {
+        var feeds = this.feeds();
+        NEWSBLUR.assets.complete_river(this.active_feed, feeds, this.page);
     },
     
     new_story: function(story_hash, timestamp) {
