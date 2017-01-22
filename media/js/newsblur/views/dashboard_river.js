@@ -58,7 +58,13 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         
         clearTimeout(this.refresh_interval);
         this.refresh_interval = setTimeout(_.bind(function() {
-            this.load_stories();
+            if (NEWSBLUR.reader.active_feed == this.active_feed) {
+                // Currently reading the river, so don't reload because it'll break the cache.
+                console.log(['Currently reading river, so not reloading dashboard river', NEWSBLUR.reader.active_feed]);
+                this.setup_dashboard_refresh();
+            } else {
+                this.load_stories();
+            }
         }, this), reload_interval * (Math.random() * (1.25 - 0.75) + 0.75));
     },
     
