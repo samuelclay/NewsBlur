@@ -196,6 +196,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'readability': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'apps': {
             'handlers': ['log_file'],
             'level': 'INFO',

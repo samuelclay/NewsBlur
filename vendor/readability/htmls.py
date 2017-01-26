@@ -5,22 +5,24 @@ import re, sys
 
 from .cleaners import normalize_spaces, clean_attributes
 from .encoding import get_encoding
+from .compat import str_
 
 utf8_parser = lxml.html.HTMLParser(encoding='utf-8')
 
 def build_doc(page):
-    if isinstance(page, unicode):
-        enc = None
-        page_unicode = page
+    if isinstance(page, str_):
+        encoding = None
+        decoded_page = page
     else:
-        enc = get_encoding(page) or 'utf-8'
-        page_unicode = page.decode(enc, 'replace')
-    doc = lxml.html.document_fromstring(page_unicode.encode('utf-8', 'replace'), parser=utf8_parser)
-    return doc, enc
+        encoding = get_encoding(page) or 'utf-8'
+        decoded_page = page.decode(encoding, 'replace')
+    
+    # XXX: we have to do .decode and .encode even for utf-8 pages to remove bad characters
+    doc = lxml.html.document_fromstring(decoded_page.encode('utf-8', 'replace'), parser=utf8_parser)
+    return doc, encoding
 
 def js_re(src, pattern, flags, repl):
     return re.compile(pattern, flags).sub(src, repl.replace('$', '\\'))
-
 
 def normalize_entities(cur_title):
     entities = {
@@ -33,7 +35,7 @@ def normalize_entities(cur_title):
         u'\u00BB': '"',
         u'&quot;': '"',
     }
-    for c, r in entities.iteritems():
+    for c, r in entities.items():
         if c in cur_title:
             cur_title = cur_title.replace(c, r)
 
@@ -55,6 +57,10 @@ def add_match(collection, text, orig):
         if text.replace('"', '') in orig.replace('"', ''):
             collection.add(text)
 
+TITLE_CSS_HEURISTICS = ['#title', '#head', '#heading', '.pageTitle',
+                        '.news_title', '.title', '.head', '.heading',
+                        '.contentheading', '.small_header_red']
+
 def shorten_title(doc):
     title = doc.find('.//title')
     if title is None or title.text is None or len(title.text) == 0:
@@ -71,7 +77,7 @@ def shorten_title(doc):
             if e.text_content():
                 add_match(candidates, e.text_content(), orig)
 
-    for item in ['#title', '#head', '#heading', '.pageTitle', '.news_title', '.title', '.head', '.heading', '.contentheading', '.small_header_red']:
+    for item in TITLE_CSS_HEURISTICS:
         for e in doc.cssselect(item):
             if e.text:
                 add_match(candidates, e.text, orig)
@@ -104,8 +110,11 @@ def shorten_title(doc):
     return title
 
 def get_body(doc):
-    [ elem.drop_tree() for elem in doc.xpath('.//script | .//link | .//style') ]
-    raw_html = unicode(tostring(doc.body or doc))
+    for elem in doc.xpath('.//script | .//link | .//style'):
+        elem.drop_tree()
+    # tostring() always return utf-8 encoded string
+    # FIXME: isn't better to use tounicode?
+    raw_html = str_(tostring(doc.body or doc))
     cleaned = clean_attributes(raw_html)
     try:
         #BeautifulSoup(cleaned) #FIXME do we really need to try loading it?
