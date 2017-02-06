@@ -2,12 +2,22 @@
 
 {% load utils_tags %}
 
-{% block body %}Introducing Turn Touch
+{% block body %}NewsBlur just got a huge upgrade.
 
-Turn Touch is a solid wood remote... for NewsBlur.
+Turn Touch is a solid wood remote… and it’s about to change the way you use NewsBlur.
 
-Your favorite RSS news reader just dropped a gorgeous new piece of hardware on the world and it's built just for you. The you that would enjoy a new way of reading the news.
+Change how?
 
-This is for real and you bet it does more. It controls lights, smart devices, and basically whatever talks to wifi. Turn Touch is on Kickstarter and my recommendation is to purchase the complete set. Keep two and give one as a gift.
+Here’s how. Turn Touch connects to apps and devices in your home. Think Hue lights and Sonos speakers. Your Mac, your phone, etc.
+
+It also connects to NewsBlur.
+
+This is big. It means you can wake up in the morning, grab a cup of coffee, and cycle through news from across the room. Or, hook your Mac up to a display (maybe your living room TV) and skip through photo blogs, headlines, and the day’s best writing.
+
+It’s kind of like getting a new set of speakers. Where before, you’d be chained to your computer with headphones; now, you can listen to music from anywhere you’d like. With Turn Touch, you can leave your computer and read the news no matter what you’re doing— laundry, the dishes, or enjoying a lazy Sunday on your couch.
+
+Get one. Or all three.
+
+Turn Touch is on Kickstarter. Back the project to get your very own. Or—and this is my sincere recommendation—get the complete set, save some money, and give one away to a friend.
 
 https://turntouch.com/kickstarter{% endblock body %}
