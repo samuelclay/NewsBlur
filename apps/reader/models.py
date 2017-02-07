@@ -1589,6 +1589,16 @@ class UserSubscriptionFolders(models.Model):
         for i, f in enumerate(usf):
             print "%s/%s: %s" % (i, total, f)
             f.add_missing_feeds()
+    
+    @classmethod
+    def add_missing_feeds_for_user(cls, user_id):
+        user = User.objects.get(pk=user_id)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            return
+        
+        usf.add_missing_feeds()
         
     def add_missing_feeds(self):
         all_feeds = self.flat()
