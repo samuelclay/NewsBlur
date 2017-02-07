@@ -4,7 +4,7 @@
 
 {% block body %}NewsBlur just got a huge upgrade.
 
-Turn Touch is a solid wood remote… and it’s about to change the way you use NewsBlur.
+Turn Touch is a beautiful mahogany remote… and it’s about to change the way you use NewsBlur.
 
 Change how?
 
