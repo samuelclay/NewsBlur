@@ -467,8 +467,8 @@ def setup_psycopg():
 #             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 def setup_virtualenv():
-    sudo('pip install --upgrade virtualenv')
-    sudo('pip install --upgrade virtualenvwrapper')
+    run('pip install --upgrade virtualenv')
+    run('pip install --upgrade virtualenvwrapper')
     setup_local_files()
     sudo('rm -fr ~/.cache') # Clean `sudo pip`
     with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
@@ -881,7 +881,7 @@ def upgrade_django():
 def upgrade_pil():
     with virtualenv():
         pull()
-        sudo('pip install --upgrade pillow')
+        run('pip install --upgrade pillow')
         # celery_stop()
         sudo('apt-get remove -y python-imaging')
         sudo('supervisorctl reload')
