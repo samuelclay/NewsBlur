@@ -116,6 +116,8 @@ public class PrefsUtils {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
+        NotificationUtils.clear(context);
+
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
 

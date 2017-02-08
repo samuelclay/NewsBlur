@@ -4,12 +4,12 @@ import android.database.Cursor;
 import android.util.Log;
 
 import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
+import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.NotificationUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
 
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class UnreadsService extends SubService {
     private static volatile boolean doMetadata = false;
 
     /** Unread story hashes the API listed that we do not appear to have locally yet. */
-    private static List<String> StoryHashQueue;
+    static List<String> StoryHashQueue;
     static { StoryHashQueue = new ArrayList<String>(); }
 
     public UnreadsService(NBSyncService parent) {
@@ -44,11 +45,9 @@ public class UnreadsService extends SubService {
 
         if (StoryHashQueue.size() > 0) {
             getNewUnreadStories();
+            parent.pushNotifications();
         }
 
-        if (StoryHashQueue.size() < 1) {   
-            notifyStories();
-        }
     }
 
     private void syncUnreadList() {
@@ -175,15 +174,6 @@ public class UnreadsService extends SubService {
             return false;
         }
         return true;
-    }
-
-    private void notifyStories() {
-        Cursor c = parent.dbHelper.getNotifyStoriesCursor();
-        if (c.getCount() > 0 ) {
-            NotificationUtils.notifyStories(c, parent);
-            parent.dbHelper.markNotifications();
-        }
-        closeQuietly(c);
     }
 
     public static void clear() {
