@@ -31,6 +31,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FileCache;
 import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.NotificationUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
@@ -134,6 +135,7 @@ public class NBSyncService extends Service {
     PowerManager.WakeLock wl = null;
 	APIManager apiManager;
     BlurDatabaseHelper dbHelper;
+    FileCache iconCache;
     private int lastStartIdCompleted = -1;
 
     /** The time of the last hard API failure we encountered. Used to implement back-off so that the sync
@@ -162,6 +164,7 @@ public class NBSyncService extends Service {
         if (apiManager == null) {
             apiManager = new APIManager(this);
             dbHelper = new BlurDatabaseHelper(this);
+            iconCache = FileCache.asIconCache(this);
             cleanupService = new CleanupService(this);
             originalTextService = new OriginalTextService(this);
             unreadsService = new UnreadsService(this);
@@ -252,6 +255,8 @@ public class NBSyncService extends Service {
             finishActions();
 
             checkRecounts();
+
+            pushNotifications();
 
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
@@ -772,6 +777,19 @@ public class NBSyncService extends Service {
 
     void insertStories(StoriesResponse apiResponse) {
         dbHelper.insertStories(apiResponse, false);
+    }
+
+    void pushNotifications() {
+        // don't notify stories until the queue is flushed so they don't churn
+        if (unreadsService.StoryHashQueue.size() > 0) return;
+        // don't slow down active story loading
+        if (PendingFeed != null) return;
+
+        Cursor cFocus = dbHelper.getNotifyFocusStoriesCursor();
+        Cursor cUnread = dbHelper.getNotifyUnreadStoriesCursor();
+        NotificationUtils.notifyStories(cFocus, cUnread, this, iconCache);
+        closeQuietly(cFocus);
+        closeQuietly(cUnread);
     }
 
     void incrementRunningChild() {

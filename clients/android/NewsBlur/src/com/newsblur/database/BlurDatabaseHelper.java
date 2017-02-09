@@ -977,16 +977,12 @@ public class BlurDatabaseHelper {
         return c;
     }
 
-    public Cursor getNotifyStoriesCursor() {
-        return rawQuery(DatabaseConstants.NOTIFY_STORY_QUERY_BASE, null, null);
+    public Cursor getNotifyFocusStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_FOCUS_STORY_QUERY, null, null);
     }
 
-    public void markNotifications() {
-        synchronized (RW_MUTEX) {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseConstants.STORY_NOTIFIED, 1);
-            dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_NOTIFY + " > 0", null);
-        }
+    public Cursor getNotifyUnreadStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_UNREAD_STORY_QUERY, null, null);
     }
 
     public Loader<Cursor> getActiveStoriesLoader(final FeedSet fs) {
