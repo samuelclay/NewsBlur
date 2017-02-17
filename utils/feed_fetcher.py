@@ -78,14 +78,6 @@ class FetchFeed:
             modified = None
             etag = None
         
-        USER_AGENT = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
-                      '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                      'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                      'Safari/534.48.3)' % (
-                          self.feed.num_subscribers,
-                          's' if self.feed.num_subscribers != 1 else '',
-                          self.feed.permalink,
-                     ))
         if self.options.get('feed_xml'):
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
                           self.feed.title[:30], len(self.options.get('feed_xml'))))
@@ -121,11 +113,7 @@ class FetchFeed:
         
         if not self.fpf:
             try:
-                headers = {
-                    'User-Agent': USER_AGENT,
-                    'Accept': 'application/atom+xml, application/rss+xml, application/xml;q=0.8, text/xml;q=0.6, */*;q=0.2',
-                    'Accept-Encoding': 'gzip, deflate',
-                }
+                headers = self.feed.fetch_headers
                 if etag:
                     headers['If-None-Match'] = etag
                 if modified:
@@ -140,22 +128,23 @@ class FetchFeed:
                 if etag or modified:
                     headers['A-IM'] = 'feed'
                 raw_feed = requests.get(address, headers=headers)
-                if raw_feed.content:
+                if raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers['Content-Location'] = raw_feed.url
                     self.fpf = feedparser.parse(smart_unicode(raw_feed.content),
                                                 response_headers=response_headers)
                     if self.options.get('debug', False):
                         logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
-                else:
-                    logging.debug(" ---> [%-30s] ~FRFeed fetch was empty, trying feedparser: %s" % (self.feed.title[:30], raw_feed.headers))
+                elif raw_feed.status_code >= 400:
+                    logging.debug(" ---> [%-30s] ~FRFeed fetch was %s status code: %s" % (self.feed.title[:30], raw_feed.status_code, raw_feed.headers))
+                    return FEED_ERRHTTP, None
             except Exception, e:
                 logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], unicode(e)[:100]))
             
             if not self.fpf or self.options.get('force_fp', False):
                 try:
                     self.fpf = feedparser.parse(address,
-                                                agent=USER_AGENT,
+                                                agent=self.feed.user_agent,
                                                 etag=etag,
                                                 modified=modified)
                 except (TypeError, ValueError, KeyError, EOFError, MemoryError), e:
@@ -167,7 +156,7 @@ class FetchFeed:
             try:
                 logging.debug(u'   ***> [%-30s] ~FRTurning off headers...' % 
                               (self.feed.title[:30]))
-                self.fpf = feedparser.parse(address, agent=USER_AGENT)
+                self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
             except (TypeError, ValueError, KeyError, EOFError, MemoryError), e:
                 logging.debug(u'   ***> [%-30s] ~FRFetch failed: %s.' % 
                               (self.feed.title[:30], e))
@@ -568,7 +557,7 @@ class ProcessFeed:
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
-                    self.feed.save_feed_history(553, 'SAX Exception', self.fpf.bozo_exception)
+                    self.feed.save_feed_history(553, 'Not RSS feed', self.fpf.bozo_exception)
                 else:
                     self.feed = feed
                 self.feed = self.feed.save()

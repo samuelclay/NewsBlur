@@ -1026,6 +1026,29 @@ class Feed(models.Model):
             self.data.save()
         
         return scores
+    
+    @property
+    def user_agent(self):
+        ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
+              '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) '
+              'AppleWebKit/537.36 (KHTML, like Gecko) '
+              'Chrome/56.0.2924.87 Safari/537.36)' % (
+                   self.num_subscribers,
+                   's' if self.num_subscribers != 1 else '',
+                   self.permalink,
+              ))
+
+        return ua
+    
+    @property
+    def fetch_headers(self):
+        headers = {
+            'User-Agent': self.user_agent,
+            'Accept': 'application/atom+xml, application/rss+xml, application/xml;q=0.8, text/xml;q=0.6, */*;q=0.2',
+            'Accept-Encoding': 'gzip, deflate',
+        }
+        
+        return headers
         
     def update(self, **kwargs):
         from utils import feed_fetcher
