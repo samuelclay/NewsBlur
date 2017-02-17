@@ -1235,10 +1235,6 @@ def load_river_stories__redis(request):
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
     
-    if limit == 4 and not initial_dashboard:
-        logging.user(request, "~FRIgnoring ~FCdashboard river stories")
-        return dict(code=-1, message="Had to turn off dashboard river for now.", stories=[])
-        
     if story_hashes:
         unread_feed_story_hashes = None
         read_filter = 'all'
@@ -1398,6 +1394,15 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
     
+    # Clean stories to remove potentially old stories on dashboard
+    if initial_dashboard:
+        new_stories = []
+        month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        for story in stories:
+            if story['story_date'] >= month_ago:
+                new_stories.append(story)
+        stories = new_stories
+        
     # if page >= 1:
     #     import random
     #     time.sleep(random.randint(3, 6))
