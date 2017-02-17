@@ -1046,6 +1046,7 @@ class Feed(models.Model):
             'timeout': 10,
             'single_threaded': kwargs.get('single_threaded', True),
             'force': kwargs.get('force'),
+            'force_fp': kwargs.get('force_fp'),
             'compute_scores': kwargs.get('compute_scores', True),
             'mongodb_replication_lag': kwargs.get('mongodb_replication_lag', None),
             'fake': kwargs.get('fake'),

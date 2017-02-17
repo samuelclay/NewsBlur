@@ -145,10 +145,14 @@ class FetchFeed:
                     response_headers['Content-Location'] = raw_feed.url
                     self.fpf = feedparser.parse(smart_unicode(raw_feed.content),
                                                 response_headers=response_headers)
+                    if self.options.get('debug', False):
+                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
+                else:
+                    logging.debug(" ---> [%-30s] ~FRFeed fetch was empty, trying feedparser: %s" % (self.feed.title[:30], raw_feed.headers))
             except Exception, e:
                 logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], unicode(e)[:100]))
             
-            if not self.fpf:
+            if not self.fpf or self.options.get('force_fp', False):
                 try:
                     self.fpf = feedparser.parse(address,
                                                 agent=USER_AGENT,
