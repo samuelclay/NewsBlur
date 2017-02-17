@@ -113,7 +113,7 @@ class FetchFeed:
         
         if not self.fpf:
             try:
-                headers = self.feed.fetch_headers
+                headers = self.feed.fetch_headers()
                 if etag:
                     headers['If-None-Match'] = etag
                 if modified:
@@ -128,6 +128,9 @@ class FetchFeed:
                 if etag or modified:
                     headers['A-IM'] = 'feed'
                 raw_feed = requests.get(address, headers=headers)
+                if raw_feed.status_code >= 400:
+                    logging.debug(" ---> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s" % (self.feed.title[:30], raw_feed.status_code, raw_feed.headers))
+                    raw_feed = requests.get(address, headers=self.feed.fetch_headers(fake=True))
                 if raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers['Content-Location'] = raw_feed.url
@@ -135,9 +138,6 @@ class FetchFeed:
                                                 response_headers=response_headers)
                     if self.options.get('debug', False):
                         logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
-                elif raw_feed.status_code >= 400:
-                    logging.debug(" ---> [%-30s] ~FRFeed fetch was %s status code: %s" % (self.feed.title[:30], raw_feed.status_code, raw_feed.headers))
-                    return FEED_ERRHTTP, None
             except Exception, e:
                 logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], unicode(e)[:100]))
             
@@ -557,7 +557,7 @@ class ProcessFeed:
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
-                    self.feed.save_feed_history(553, 'Not RSS feed', self.fpf.bozo_exception)
+                    self.feed.save_feed_history(553, 'Not an RSS feed', self.fpf.bozo_exception)
                 else:
                     self.feed = feed
                 self.feed = self.feed.save()

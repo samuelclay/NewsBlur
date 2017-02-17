@@ -1041,9 +1041,14 @@ class Feed(models.Model):
         return ua
     
     @property
-    def fetch_headers(self):
+    def fake_user_agent(self):
+        ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:49.0) Gecko/20100101 Firefox/49.0"
+        
+        return ua
+    
+    def fetch_headers(self, fake=False):
         headers = {
-            'User-Agent': self.user_agent,
+            'User-Agent': self.user_agent if not fake else self.fake_user_agent,
             'Accept': 'application/atom+xml, application/rss+xml, application/xml;q=0.8, text/xml;q=0.6, */*;q=0.2',
             'Accept-Encoding': 'gzip, deflate',
         }
