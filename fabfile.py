@@ -467,10 +467,10 @@ def setup_psycopg():
 #             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 def setup_virtualenv():
-    run('pip install --upgrade virtualenv')
-    run('pip install --upgrade virtualenvwrapper')
-    setup_local_files()
     sudo('rm -fr ~/.cache') # Clean `sudo pip`
+    sudo('pip install --upgrade virtualenv')
+    sudo('pip install --upgrade virtualenvwrapper')
+    setup_local_files()
     with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
         with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
             with cd(env.NEWSBLUR_PATH):
@@ -1248,7 +1248,8 @@ def setup_usage_monitor():
 def setup_redis_monitor():
     run('sleep 5') # Wait for redis to startup so the log file is there
     sudo('ln -fs %s/utils/monitor_redis_bgsave.py /etc/cron.daily/monitor_redis_bgsave' % env.NEWSBLUR_PATH)
-    sudo('/etc/cron.daily/monitor_redis_bgsave')
+    with settings(warn_only=True):
+        sudo('/etc/cron.daily/monitor_redis_bgsave')
     
 # ================
 # = Setup - Task =
