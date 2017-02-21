@@ -229,9 +229,9 @@ def autologin(request, username, secret):
 def load_feeds(request):
     user             = get_user(request)
     feeds            = {}
-    include_favicons = request.REQUEST.get('include_favicons', False)
-    flat             = request.REQUEST.get('flat', False)
-    update_counts    = request.REQUEST.get('update_counts', False)
+    include_favicons = is_true(request.REQUEST.get('include_favicons', False))
+    flat             = is_true(request.REQUEST.get('flat', False))
+    update_counts    = is_true(request.REQUEST.get('update_counts', False))
     version          = int(request.REQUEST.get('v', 1))
     
     if include_favicons == 'false': include_favicons = False
