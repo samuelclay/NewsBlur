@@ -26,17 +26,29 @@ import android.util.Log;
 import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.network.APIConstants;
 import com.newsblur.service.NBSyncService;
 
 public class PrefsUtils {
 
-	public static void saveLogin(final Context context, final String userName, final String cookie) {
-        NBSyncService.resumeFromInterrupt();
-		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-		final Editor edit = preferences.edit();
+    private PrefsUtils() {} // util class - no instances
+
+	public static void saveCustomServer(Context context, String customServer) {
+        if (customServer == null) return;
+        if (customServer.length() <= 0) return;
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		Editor edit = preferences.edit();
+        edit.putString(PrefConstants.PREF_CUSTOM_SERVER, customServer);
+		edit.commit();
+	}
+
+	public static void saveLogin(Context context, String userName, String cookie) {
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		Editor edit = preferences.edit();
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);
 		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis());
 		edit.commit();
+        NBSyncService.resumeFromInterrupt();
 	}
 
     public static boolean checkForUpgrade(Context context) {
@@ -50,7 +62,7 @@ public class PrefsUtils {
 
         String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
-            Log.i(PrefsUtils.class.getName(), "detected new version of app");
+            Log.i(PrefsUtils.class.getName(), "detected new version of app:" + version);
             return true;
         }
         return false;
@@ -82,6 +94,7 @@ public class PrefsUtils {
         s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
         s.append("%0Asqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("%0Ausername: ").append(getUserDetails(context).username);
+        s.append("%0Aserver: ").append(APIConstants.isCustomServer() ? "default" : "custom");
         s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
         s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());
         s.append("%0Apending actions: ").append(NBSyncService.getPendingInfo());
@@ -95,6 +108,7 @@ public class PrefsUtils {
         }
         s.append("%0Aprefetch: ").append(isOfflineEnabled(context) ? "yes" : "no");
         s.append("%0Akeepread: ").append(isKeepOldStories(context) ? "yes" : "no");
+        s.append("%0Athumbs: ").append(isShowThumbnails(context) ? "yes" : "no");
         return s.toString();
     }
 
@@ -102,11 +116,16 @@ public class PrefsUtils {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
+        NotificationUtils.clear(context);
+
         // wipe the prefs store
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
 
         // wipe the local DB
         FeedUtils.dropAndRecreateTables();
+
+        // reset custom server
+        APIConstants.unsetCustomServer();
         
         // prompt for a new login
         Intent i = new Intent(context, Login.class);
@@ -124,6 +143,7 @@ public class PrefsUtils {
         Set<String> keys = new HashSet<String>(prefs.getAll().keySet());
         keys.remove(PrefConstants.PREF_COOKIE);
         keys.remove(PrefConstants.PREF_UNIQUE_LOGIN);
+        keys.remove(PrefConstants.PREF_CUSTOM_SERVER);
         SharedPreferences.Editor editor = prefs.edit();
         for (String key : keys) {
             editor.remove(key);
@@ -142,6 +162,11 @@ public class PrefsUtils {
 	public static String getUniqueLoginKey(final Context context) {
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		return preferences.getString(PrefConstants.PREF_UNIQUE_LOGIN, null);
+	}
+
+    public static String getCustomServer(Context context) {
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		return preferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null);
 	}
 
 	public static void saveUserDetails(final Context context, final UserDetails profile) {
@@ -349,6 +374,25 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    public static float getListTextSize(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        float storedValue = preferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f);
+        // some users have wacky, pre-migration values stored that won't render.  If the value is below our
+        // minimum size, soft reset to the defaul size.
+        if (storedValue < AppConstants.LIST_FONT_SIZE[0]) {
+            return 1.0f;
+        } else {
+            return storedValue;
+        }
+    }
+
+    public static void setListTextSize(Context context, float size) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, size);
+        editor.commit();
+    }
+
     public static DefaultFeedView getDefaultFeedViewForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return DefaultFeedView.valueOf(prefs.getString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, getDefaultFeedView().toString()));
@@ -490,6 +534,11 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
     }
 
+    public static boolean isShowThumbnails(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS,  true);
+    }
+
     public static boolean isAutoOpenFirstUnread(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false);
@@ -511,7 +560,7 @@ public class PrefsUtils {
      */
     public static boolean isBackgroundNetworkAllowed(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMO);
+        String mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMONONME);
 
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
@@ -523,6 +572,13 @@ public class PrefsUtils {
         int type = activeInfo.getType();
         if (mode.equals(PrefConstants.NETWORK_SELECT_NOMO)) {
             if (! ((type == ConnectivityManager.TYPE_WIFI) || (type == ConnectivityManager.TYPE_ETHERNET))) {
+                return false;
+            }
+        } else if (mode.equals(PrefConstants.NETWORK_SELECT_NOMONONME)) {
+            if (! ((type == ConnectivityManager.TYPE_WIFI) || (type == ConnectivityManager.TYPE_ETHERNET))) {
+                return false;
+            }
+            if (connMgr.isActiveNetworkMetered()) {
                 return false;
             }
         }
@@ -571,5 +627,20 @@ public class PrefsUtils {
     public static MarkAllReadConfirmation getMarkAllReadConfirmation(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return MarkAllReadConfirmation.valueOf(prefs.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString()));
+    }
+
+    public static boolean isConfirmMarkRangeRead(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false);
+    }
+
+    public static GestureAction getLeftToRightGestureAction(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return GestureAction.valueOf(prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString()));
+    }
+
+    public static GestureAction getRightToLeftGestureAction(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return GestureAction.valueOf(prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString()));
     }
 }

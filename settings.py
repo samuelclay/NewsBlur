@@ -33,7 +33,7 @@ import raven
 import django.http
 import re
 from mongoengine import connect
-from boto.s3.connection import S3Connection
+from boto.s3.connection import S3Connection, OrdinaryCallingFormat
 from utils import jammit
 
 # ===================
@@ -196,6 +196,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'readability': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'apps': {
             'handlers': ['log_file'],
             'level': 'INFO',
@@ -292,6 +297,7 @@ INSTALLED_APPS = (
     'apps.profile',
     'apps.recommendations',
     'apps.statistics',
+    'apps.notifications',
     'apps.static',
     'apps.mobile',
     'apps.push',
@@ -577,7 +583,6 @@ if not DEBUG:
     # RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
     
-
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
@@ -629,6 +634,7 @@ MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 #     MONGOPRIMARYDB = MONGODB
 # MONGODB = connect(MONGO_DB.pop('name'), host=MONGO_URI, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+# MONGODB = connect(host="mongodb://localhost:27017/newsblur", connect=False)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
@@ -648,6 +654,8 @@ BROKER_BACKEND = "redis"
 BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = BROKER_URL
 SESSION_REDIS_HOST = REDIS_SESSIONS['host']
+SESSION_REDIS_RETRY_ON_TIMEOUT = True
+SESSION_REDIS_SOCKET_TIMEOUT = 1
 
 CACHES = {
     'default': {
@@ -696,7 +704,7 @@ if DEBUG:
 
 S3_CONN = None
 if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
-    S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET)
+    S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET, calling_format=OrdinaryCallingFormat())
     if BACKED_BY_AWS.get('pages_on_s3'):
         S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
     if BACKED_BY_AWS.get('icons_on_s3'):

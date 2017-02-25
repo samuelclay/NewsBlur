@@ -71,7 +71,20 @@
         {% if not user_profile.hide_getting_started %}
             {% render_getting_started %}
         {% endif %}
-      
+          
+        <div class="NB-module NB-module-river">
+            <h5 class="NB-module-header">
+                <div class="NB-module-river-settings NB-javascript"></div>
+                All Site Stories
+            </h5>
+            
+            <div class="NB-view-river">
+                <div class="NB-module-item NB-story-pane-west">
+                    <div class="NB-story-titles"></div>
+                </div>
+            </div>
+        </div>
+        
         {% render_features_module %}
 
         {% if recommended_feeds %}
@@ -106,6 +119,17 @@
     </div>
 
     <div class="NB-account">
+        <div class="NB-module NB-module-turntouch">
+            <h5 class="NB-module-header">
+                Support NewsBlur
+            </h5>
+            <br />
+
+            <div class="NB-module-item NB-module-item-intro">
+                <iframe src="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/widget/card.html?v=2" width="188" height="370" frameborder="0" scrolling="no"></iframe>
+            </div>
+        </div>
+        
 		{% render_account_module %}
 		{% render_manage_module %}
 		{% render_statistics_graphs statistics %}

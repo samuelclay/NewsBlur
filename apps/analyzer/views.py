@@ -3,15 +3,19 @@ from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from django.conf import settings
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 from mongoengine.queryset import NotUniqueError
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
-from apps.analyzer.models import get_classifiers_for_user
+from apps.analyzer.models import get_classifiers_for_user, MPopularityQuery
+from apps.analyzer.forms import PopularityQueryForm
 from apps.social.models import MSocialSubscription
 from utils import json_functions as json
 from utils.user_functions import get_user
 from utils.user_functions import ajax_login_required
+from utils.view_functions import render_to
 
 def index(requst):
     pass
@@ -116,4 +120,31 @@ def get_classifiers_feed(request, feed_id):
     response = dict(code=code, payload=payload)
     
     return response
+
+def popularity_query(request):
+    if request.method == 'POST':
+        form = PopularityQueryForm(request.POST)
+        if form.is_valid():
+            logging.user(request.user, "~BC~FRPopularity query: ~SB%s~SN requests \"~SB~FM%s~SN~FR\"" % (request.POST['email'], request.POST['query']))
+            query = MPopularityQuery.objects.create(email=request.POST['email'],
+                                                    query=request.POST['query'])
+            query.queue_email()
+            
+            response = render_to_response('analyzer/popularity_query.xhtml', {
+                'success': True,
+                'popularity_query_form': form,
+            }, context_instance=RequestContext(request))
+            response.set_cookie('newsblur_popularity_query', request.POST['query'])
+            
+            return response
+        else:
+            logging.user(request.user, "~BC~FRFailed popularity query: ~SB%s~SN requests \"~SB~FM%s~SN~FR\"" % (request.POST['email'], request.POST['query']))
+    else:
+        logging.user(request.user, "~BC~FRPopularity query form loading")
+        form = PopularityQueryForm(initial={'query': request.COOKIES.get('newsblur_popularity_query', "")})
     
+    response = render_to_response('analyzer/popularity_query.xhtml', {
+        'popularity_query_form': form,
+    }, context_instance=RequestContext(request))
+
+    return response

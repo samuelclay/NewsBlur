@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="@string/login_logging_in"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
             <ProgressBar
                 android:id="@+id/login_logging_in_progress"
@@ -54,7 +54,7 @@
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="20dp"
                 android:text="@string/login_retrieving_feeds"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
             <ProgressBar
                 android:id="@+id/login_feed_progress"

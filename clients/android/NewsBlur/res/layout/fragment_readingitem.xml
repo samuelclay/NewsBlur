@@ -5,16 +5,20 @@
 
     <!-- The two views in this top FrameLayout are swapped when HTML5 webview custom content wants to be displayed -->
 
-    <com.newsblur.view.NonfocusScrollview
+    <com.newsblur.view.ReadingScrollView
         android:id="@+id/reading_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="?itemBackground" >
+        style="?readingBackground"
+     >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+        >
 
             <include layout="@layout/include_reading_item_metadata" />
 
@@ -37,18 +41,19 @@
                 android:id="@+id/reading_webview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="?itemBackground"
+                style="?readingBackground"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="12dp"
-                android:scrollbars="none" />
+                android:scrollbars="none"
+            />
 
            <include
                layout="@layout/include_reading_item_comment" />
             
         </LinearLayout>
 
-    </com.newsblur.view.NonfocusScrollview>
+    </com.newsblur.view.ReadingScrollView>
 
     <FrameLayout
         android:id="@+id/custom_view_container"

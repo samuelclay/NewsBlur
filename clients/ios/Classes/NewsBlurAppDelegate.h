@@ -39,6 +39,7 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class TrainerViewController;
+@class NotificationsViewController;
 @class UserTagsViewController;
 @class OriginalStoryViewController;
 @class UserProfileViewController;
@@ -60,6 +61,7 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
     UINavigationController *trainNavigationController;
+    UINavigationController *notificationsNavigationController;
     NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -82,6 +84,7 @@ SFSafariViewControllerDelegate>  {
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
+    NotificationsViewController *notificationsViewController;
     UserTagsViewController *userTagsViewController;
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
@@ -100,6 +103,7 @@ SFSafariViewControllerDelegate>  {
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
     NSString *tryFeedStoryId;
+    NSString *tryFeedFeedId;
     
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
@@ -134,6 +138,7 @@ SFSafariViewControllerDelegate>  {
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
+    NSArray * notificationFeedIds;
     
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
@@ -154,6 +159,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *trainNavigationController;
+@property (nonatomic) UINavigationController *notificationsNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
@@ -171,6 +177,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
+@property (nonatomic) IBOutlet NotificationsViewController *notificationsViewController;
 @property (nonatomic) IBOutlet UserTagsViewController *userTagsViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
@@ -200,6 +207,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic) NSString *tryFeedStoryId;
+@property (nonatomic) NSString *tryFeedFeedId;
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
@@ -242,6 +250,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
+@property (nonatomic) NSArray *notificationFeedIds;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
@@ -264,6 +273,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showFirstTimeUser;
 - (void)showLogin;
 - (void)setupReachability;
+- (void)registerForRemoteNotifications;
 
 // social
 - (NSDictionary *)getUser:(NSInteger)userId;
@@ -285,11 +295,14 @@ SFSafariViewControllerDelegate>  {
 
 - (void)showMoveSite;
 - (void)openTrainSite;
+- (void)openNotificationsWithFeed:(NSString *)feedId;
+- (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
+- (void)loadFeed:(NSString *)feedId withStory:(NSString *)contentId animated:(BOOL)animated;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;

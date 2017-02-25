@@ -17,6 +17,8 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -28,7 +30,7 @@ import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LoginAsDialogFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
+import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
@@ -39,7 +41,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, MarkAllReadDialogListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, OnSeekBarChangeListener {
 
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
@@ -90,7 +92,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         Bitmap userPicture = PrefsUtils.getUserImage(this);
         if (userPicture != null) {
-            userPicture = UIUtils.roundCorners(userPicture, 5);
+            userPicture = UIUtils.clipAndRound(userPicture, 5, false);
             userImage.setImageBitmap(userPicture);
         }
         userName.setText(PrefsUtils.getUserDetails(this).username);
@@ -245,6 +247,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
             }
             return true;
+		} else if (item.getItemId() == R.id.menu_textsize) {
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
+			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
+			return true;
         } else if (item.getItemId() == R.id.menu_loginas) {
             DialogFragment newFragment = new LoginAsDialogFragment();
             newFragment.show(getFragmentManager(), "dialog");
@@ -284,8 +290,21 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-    @Override
-    public void onMarkAllRead(FeedSet feedSet) {
-        FeedUtils.markFeedsRead(feedSet, null, null, this);
-    }
+    // NB: this callback is for the text size slider
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        float size = AppConstants.LIST_FONT_SIZE[progress];
+	    PrefsUtils.setListTextSize(this, size);
+        if (folderFeedList != null) folderFeedList.setTextSize(size);
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
 }

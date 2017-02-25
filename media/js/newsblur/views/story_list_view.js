@@ -20,6 +20,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.collection.bind('add', this.reset_story_positions, this);
         this.collection.bind('no_more_stories', this.check_premium_river, this);
         this.collection.bind('no_more_stories', this.check_premium_search, this);
+        this.collection.bind('change:selected', this.switch_story_view, this);
         this.collection.bind('change:selected', this.show_only_selected_story, this);
         this.collection.bind('change:selected', this.check_feed_view_scrolled_to_bottom, this);
         this.$el.bind('mousemove', _.bind(this.handle_mousemove_feed_view, this));
@@ -201,6 +202,11 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             return;
         }
         
+        if (!options.scroll_to_top && !$story.closest(NEWSBLUR.reader.$s.$feed_scroll).length) {
+            console.log(['Story not visible, not scrolling', $story]);
+            return;
+        }
+        
         clearTimeout(NEWSBLUR.reader.locks.scrolling);
         NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
         var scroll_to = options.scroll_to_top ? 0 : $story;
@@ -361,15 +367,18 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var $feed_scroll = NEWSBLUR.reader.$s.$feed_scroll;
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-short" });
-        $endline.css({'background': '#E1EBFF'});
+        $endline.css({'background': '#FFF'});
         $feed_scroll.append($endline);
         
-        $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+        $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
+                .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        this.feed_stories_loading = setInterval(function() {
-            $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
-                    .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        }, 1700);
+        _.delay(_.bind(function() {
+            this.feed_stories_loading = setInterval(function() {
+                $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                        .animate({'backgroundColor': '#E1EBFF'}, 1050);
+            }, 1700);
+        }, this), (550+1550+1050) - 1700);
     },
     
     check_premium_river: function() {
@@ -547,11 +556,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
     },
 
-    check_feed_view_scrolled_to_bottom: function() {
+    check_feed_view_scrolled_to_bottom: function(model, selected) {
+        // console.log(['check_feed_view_scrolled_to_bottom', model, selected]);
         if (!_.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) return;
         if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
         if (!NEWSBLUR.assets.stories.size()) return;
+        if (!NEWSBLUR.reader.active_feed) return;
+        if (selected === false) return;
         
         var last_story = _.last(NEWSBLUR.assets.stories.visible());
         if (!last_story || last_story.get('selected')) {
@@ -559,6 +571,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             return;
         }
         if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        
+        if (!last_story.story_view) return;
         
         var $last_story = last_story.story_view.$el;
         var container_offset = NEWSBLUR.reader.$s.$feed_scroll.position().top;
@@ -630,6 +644,19 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }, this));
         
         this.prefetch_story_locations_in_feed_view();
+    },
+    
+    switch_story_view: function(story, selected, options) {
+        // console.log(['switch_story_view list', story, selected, options]);
+        if (selected && !options.selected_by_scrolling) {
+            var story_view = NEWSBLUR.assets.view_setting(story.get('story_feed_id'), 'view');
+            if (story_view != NEWSBLUR.reader.story_view) {
+                console.log(['story list, switch story view', NEWSBLUR.reader.story_view]);
+                NEWSBLUR.reader.set_correct_story_view_for_feed();
+                NEWSBLUR.reader.switch_to_correct_view();
+                NEWSBLUR.reader.switch_taskbar_view();
+            }
+        }
     },
     
     // ==========

@@ -1,7 +1,10 @@
 package com.newsblur.service;
 
+import android.database.Cursor;
 import android.util.Log;
 
+import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
+import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
@@ -25,7 +28,7 @@ public class UnreadsService extends SubService {
     private static volatile boolean doMetadata = false;
 
     /** Unread story hashes the API listed that we do not appear to have locally yet. */
-    private static List<String> StoryHashQueue;
+    static List<String> StoryHashQueue;
     static { StoryHashQueue = new ArrayList<String>(); }
 
     public UnreadsService(NBSyncService parent) {
@@ -40,9 +43,11 @@ public class UnreadsService extends SubService {
             doMetadata = false;
         }
 
-        if (StoryHashQueue.size() < 1) return;
+        if (StoryHashQueue.size() > 0) {
+            getNewUnreadStories();
+            parent.pushNotifications();
+        }
 
-        getNewUnreadStories();
     }
 
     private void syncUnreadList() {
@@ -70,6 +75,8 @@ public class UnreadsService extends SubService {
             String feedId = entry.getKey();
             // ignore unreads from orphaned feeds
             if (parent.orphanFeedIds.contains(feedId)) continue feedloop;
+            // ignore unreads from disabled feeds
+            if (parent.disabledFeedIds.contains(feedId)) continue feedloop;
             for (String[] newUnread : entry.getValue()) {
                 // only fetch the reported unreads if we don't already have them
                 if (!oldUnreadHashes.contains(newUnread[0])) {
@@ -132,6 +139,7 @@ public class UnreadsService extends SubService {
                 Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
                 break unreadsyncloop;
             }
+
             parent.insertStories(response);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);
@@ -142,6 +150,9 @@ public class UnreadsService extends SubService {
                     for (String url : story.imageUrls) {
                         parent.imagePrefetchService.addUrl(url);
                     }
+                }
+                if (story.thumbnailUrl != null) {
+                    parent.imagePrefetchService.addThumbnailUrl(story.thumbnailUrl);
                 }
                 DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(parent, story.feedId);
                 if (mode == DefaultFeedView.TEXT) {

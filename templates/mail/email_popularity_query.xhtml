@@ -1,0 +1,19 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        Here's your keyword popularity spreadsheet
+    </h2>
+    
+    <p style="line-height: 20px;">
+        This service is provided for free to YC companies. In the attached spreadsheet, you should note that individual fields have comments where appropriate. Feel free to reply directly if you have any questions.
+    </p>
+
+    <p style="line-height: 20px;">
+        - <a href="https://twitter.com/samuelclay">Samuel Clay</a>
+    </p>
+    
+{% endblock %}

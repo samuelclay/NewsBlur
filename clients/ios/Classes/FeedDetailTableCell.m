@@ -209,7 +209,7 @@ static UIFont *indicatorFont = nil;
             } else if (cell.isRead) {
                 alpha = 0.34f;
             }
-            [storyImageView.image drawInRect:imageFrame blendMode:Nil alpha:alpha];
+            [storyImageView.image drawInRect:imageFrame blendMode:0 alpha:alpha];
             rect.size.width -= imageFrame.size.width;
         }
     }
@@ -229,7 +229,7 @@ static UIFont *indicatorFont = nil;
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x808080, 0xB0B0B0, 0x707070);
         } else {
             UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-            font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+            font = [UIFont fontWithDescriptor: boldFontDescriptor size:fontDescriptor.pointSize];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x606060, 0x606060, 0xD0D0D0, 0x909090);
             
         }
@@ -260,7 +260,7 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
     } else {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+        font = [UIFont fontWithDescriptor: boldFontDescriptor size:fontDescriptor.pointSize];
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xD0D0D0, 0xCCCCCC);
     }
     if (cell.highlighted || cell.selected) {
@@ -280,12 +280,12 @@ static UIFont *indicatorFont = nil;
     int storyTitleX = leftMargin;
     if (cell.isSaved) {
         UIImage *savedIcon = [UIImage imageNamed:@"clock"];
-        [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
+        [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:0 alpha:1];
         storyTitleX += 20;
     }
     if (cell.isShared) {
         UIImage *savedIcon = [UIImage imageNamed:@"menu_icn_share"];
-        [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
+        [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:0 alpha:1];
         storyTitleX += 20;
     }
     CGRect storyTitleFrame = CGRectMake(storyTitleX, storyTitleY,
@@ -463,7 +463,7 @@ static UIFont *indicatorFont = nil;
         unreadIcon = [UIImage imageNamed:@"g_icn_unread"];
     }
     
-    [unreadIcon drawInRect:CGRectMake(15, storyIndicatorY - 3, 8, 8) blendMode:nil alpha:(cell.isRead ? .15 : 1)];
+    [unreadIcon drawInRect:CGRectMake(15, storyIndicatorY - 3, 8, 8) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
 }
 
 @end

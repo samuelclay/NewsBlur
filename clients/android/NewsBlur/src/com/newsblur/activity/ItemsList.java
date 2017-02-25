@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -17,10 +19,9 @@ import butterknife.Bind;
 import com.newsblur.R;
 import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
+import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
@@ -36,7 +37,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, MarkAllReadDialogListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, OnSeekBarChangeListener {
 
     public static final String EXTRA_FEED_SET = "feed_set";
 
@@ -131,35 +132,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         NBSyncService.addRecountCandidates(fs);
     }
 
-	public void markItemListAsRead() {
-        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(this);
-        if (confirmation.feedSetRequiresConfirmation(fs)) {
-            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
-            dialog.show(fragmentManager, "dialog");
-        } else {
-            onMarkAllRead(fs);
-        }
-    }
-
-    @Override
-    public void onMarkAllRead(FeedSet feedSet) {
-        if (itemListFragment != null) {
-            // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
-            // dataset changes rapidly as happens when marking-all-read and when the fragment is
-            // stopping. do a manual hard-stop of the loaders in the fragment before we finish
-            itemListFragment.stopLoader();
-        }
-        FeedUtils.markFeedsRead(fs, null, null, this);
-        finish();
-    }
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_all_as_read) {
-			markItemListAsRead();
+            FeedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, true);
 			return true;
 		} else if (item.getItemId() == R.id.menu_story_order) {
             StoryOrder currentValue = getStoryOrder();
@@ -176,6 +155,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
             readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
             return true;
+		} else if (item.getItemId() == R.id.menu_textsize) {
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
+			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
+			return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
             if (searchQueryInput.getVisibility() != View.VISIBLE) {
                 searchQueryInput.setVisibility(View.VISIBLE);
@@ -269,10 +252,34 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         triggerSync();
     }
 
+    // NB: this callback is for the text size slider
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        float size = AppConstants.LIST_FONT_SIZE[progress];
+	    PrefsUtils.setListTextSize(this, size);
+        if (itemListFragment != null) itemListFragment.setTextSize(size);
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+    // unused OnSeekBarChangeListener method
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
+
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
 
     @Override
     public void finish() {
+        if (itemListFragment != null) {
+            // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
+            // dataset changes rapidly as happens when marking-all-read and when the fragment is
+            // stopping. do a manual hard-stop of the loaders in the fragment before we finish
+            itemListFragment.stopLoader();
+        }
         super.finish();
         /*
          * Animate out the list by sliding it to the right and the Main activity in from

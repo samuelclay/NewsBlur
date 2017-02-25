@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="?selectorFeedBackground"
-    android:orientation="vertical" >
+    style="?selectorFeedBackground" >
 
     <LinearLayout
         android:id="@+id/row_feedcounters"
@@ -27,7 +26,7 @@
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:textColor="@color/white"
+            style="?feedRowNeutCountText"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -51,8 +50,6 @@
             android:id="@+id/row_feedsaved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
             android:layout_marginRight="3dp"
             android:background="@drawable/saved_count_rect"
             android:gravity="center"
@@ -64,6 +61,17 @@
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/row_feedmuteicon"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="3dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            style="?muteicon"
+            android:background="@drawable/neutral_count_rect"/>
 
     </LinearLayout>
 
@@ -87,7 +95,6 @@
         android:layout_toRightOf="@id/row_feedfavicon"
         android:ellipsize="end"
         android:singleLine="true"
-        style="?selectorRowFeedName"
         android:textSize="14sp"
         android:textStyle="bold" />
 

@@ -16,7 +16,7 @@
 			<outline text="very small array" description="" title="very small array" type="rss" version="RSS" htmlUrl="http://www.verysmallarray.com" xmlUrl="http://www.verysmallarray.com/?feed=rss2"/>
 			<outline text="Frugal Traveler" description="" title="Frugal Traveler" type="rss" version="RSS" htmlUrl="http://frugaltraveler.blogs.nytimes.com/" xmlUrl="http://frugaltraveler.blogs.nytimes.com/feed/"/>
 			</outline>
-		<outline text="Tech" title="Tech">
+		<outline text="tech" title="tech">
 			<outline text="Joel on Software" description="" title="Joel on Software" type="rss" version="RSS" htmlUrl="http://www.joelonsoftware.com" xmlUrl="http://www.joelonsoftware.com/rss.xml"/>
 			<outline text="Daring Fireball" description="" title="Daring Fireball" type="rss" version="RSS" htmlUrl="http://daringfireball.net/" xmlUrl="http://daringfireball.net/index.xml"/>
 			<outline text="Techcrunch" description="" title="Techcrunch" type="rss" version="RSS" htmlUrl="http://techcrunch.com" xmlUrl="http://feeds.feedburner.com/Techcrunch"/>

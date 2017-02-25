@@ -60,7 +60,7 @@
         self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
     }
     
-    self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
+    self.detailTextLabel.textColor = self.isFaded ? UIColorFromRGB(0xD0D0D0) : UIColorFromRGB(0x505050);
     
     self.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);

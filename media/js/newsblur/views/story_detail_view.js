@@ -23,6 +23,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
+        "click .NB-feed-story-email"            : "open_email",
         "click .NB-feed-story-save"             : "toggle_starred",
         "click .NB-story-comments-label"        : "scroll_to_comments",
         "click .NB-story-content-expander"      : "expand_story"
@@ -92,6 +93,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.generate_gradients();
         this.render_comments();
         this.attach_handlers();
+        this.watch_images_load();
         
         return this;
     },
@@ -119,6 +121,25 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.attach_syntax_highlighter_handler();
         this.attach_fitvid_handler();
         this.render_starred_tags();
+    },
+    
+    watch_images_load: function() {
+        this.$el.imagesLoaded(_.bind(function() {
+            var largest = 0;
+            var $largest;
+            // console.log(["Images loaded", this.model.get('story_title').substr(0, 30), this.$("img")]);
+            this.$("img").each(function() {
+                // console.log(["Largest?", this.width, largest, this.src]);
+                if (this.width > 60 && this.width > largest) {
+                    largest = this.width;
+                    $largest = $(this);
+                }
+            });
+            if ($largest) {
+                // console.log(["Largest!", $largest, this.model.get('story_title').substr(0, 30), this.model]);
+                this.model.story_title_view.found_largest_image($largest.attr('src'));
+            }
+        }, this));
     },
     
     render_header: function(model, value, options) {
@@ -221,6 +242,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
+                <div class="NB-sideoption NB-feed-story-email">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title">Email <span>this story</span></div>\
+                </div>\
                 <div class="NB-sideoption NB-feed-story-train">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title">Train <span>this story</span></div>\
@@ -654,6 +679,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         
         this.model.set('selected', true, {selected_by_scrolling: true});
+        
+        return false;
     },
     
     mouseenter_manage_icon: function() {
@@ -749,6 +776,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             options['feed_loaded'] = true;
         }
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
+    },
+    
+    open_email: function() {
+        NEWSBLUR.reader.send_story_to_email(this.model);
     },
     
     toggle_starred: function() {

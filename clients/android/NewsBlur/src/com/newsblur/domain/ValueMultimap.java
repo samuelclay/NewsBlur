@@ -1,13 +1,14 @@
 package com.newsblur.domain;
 
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import android.text.TextUtils;
+
+import com.newsblur.util.NetworkUtils;
 
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
@@ -40,7 +41,7 @@ public class ValueMultimap implements Serializable {
 				final StringBuilder builder = new StringBuilder();
 				builder.append(key);
 				builder.append("=");
-                builder.append(URLEncoder.encode(value));
+                builder.append(NetworkUtils.encodeURL(value));
 				parameters.add(builder.toString());
 			}
 		}

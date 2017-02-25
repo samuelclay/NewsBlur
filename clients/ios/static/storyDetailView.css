@@ -407,19 +407,33 @@ body.NB-iphone {
 }
 
 
-.NB-story h1, 
+.NB-story h1,
 .NB-story h2,
 .NB-story h3,
 .NB-story h4,
 .NB-story h5,
 .NB-story h6,
 .NB-story table,
+.NB-story tr,
+.NB-story td,
 .NB-story span,
 .NB-story pre,
 .NB-story code {
     overflow: auto;
     clear: both;
+    min-width: 0 !important;
+    width: auto !important;
+    -webkit-border-horizontal-spacing: 0;
+}
 
+.NB-story table,
+.NB-story tbody,
+.NB-story tr,
+.NB-story td {
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block;
 }
 
 .NB-story h1, 

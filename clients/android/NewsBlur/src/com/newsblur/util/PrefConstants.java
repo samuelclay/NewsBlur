@@ -2,9 +2,12 @@ package com.newsblur.util;
 
 public class PrefConstants {
 
+    private PrefConstants() {} // util class - no instances
+
 	public static final String PREFERENCES = "preferences";
 	public static final String PREF_COOKIE = "login_cookie";
 	public static final String PREF_UNIQUE_LOGIN = "login_unique";
+    public static final String PREF_CUSTOM_SERVER = "custom_server";
 	
 	public final static String USER_USERNAME = "username";
 	public final static String USER_WEBSITE = "website";
@@ -24,6 +27,7 @@ public class PrefConstants {
 	public final static String USER_SHARED_STORIES_COUNT = "shared_stories_count";
 	
 	public static final String PREFERENCE_TEXT_SIZE = "default_reading_text_size";
+	public static final String PREFERENCE_LIST_TEXT_SIZE = "list_text_size";
 	
 	public static final String PREFERENCE_REGISTRATION_STATE = "registration_stage";
 	
@@ -49,6 +53,7 @@ public class PrefConstants {
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
+    public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
     public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
@@ -57,6 +62,7 @@ public class PrefConstants {
 
     public static final String NETWORK_SELECT_ANY = "ANY";
     public static final String NETWORK_SELECT_NOMO = "NOMO";
+    public static final String NETWORK_SELECT_NOMONONME = "NOMONONME";
 
     public static final String THEME = "theme";
 
@@ -68,4 +74,8 @@ public class PrefConstants {
 
     public static final String VOLUME_KEY_NAVIGATION = "volume_key_navigation";
     public static final String MARK_ALL_READ_CONFIRMATION = "pref_confirm_mark_all_read";
+    public static final String MARK_RANGE_READ_CONFIRMATION = "pref_confirm_mark_range_read";
+
+    public static final String LTR_GESTURE_ACTION = "ltr_gesture_action";
+    public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
 }

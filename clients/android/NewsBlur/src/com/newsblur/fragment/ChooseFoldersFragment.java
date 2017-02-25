@@ -16,8 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListAdapter;
@@ -25,7 +23,6 @@ import android.widget.ListView;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
-import butterknife.OnClick;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
@@ -113,7 +110,6 @@ public class ChooseFoldersFragment extends DialogFragment {
         listView.setAdapter(adapter);
 
         Dialog dialog = builder.create();
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
         dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
         return dialog;
 	}

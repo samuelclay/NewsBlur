@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 
-from munin.postgres import MuninPostgresPlugin
+from vendor.munin.postgres import MuninPostgresPlugin
 
 class MuninPostgresConnectionsPlugin(MuninPostgresPlugin):
     dbname_in_args = False

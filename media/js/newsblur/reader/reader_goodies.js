@@ -37,6 +37,18 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             ]),
             
             $.make('fieldset', [
+                $.make('legend', 'Dark theme')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+                $.make('a', {
+                    className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                    href: 'https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike'
+                }, 'Download the Dark Theme'),
+                $.make('div', { className: 'NB-goodies-title' }, 'Dark theme for the web'),
+                $.make('div', { className: 'NB-goodies-subtitle' }, 'Use the Stylish browser extension to install a user-contributed dark theme.')
+            ]),
+            
+            $.make('fieldset', [
                 $.make('legend', 'Mobile Apps for NewsBlur')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [

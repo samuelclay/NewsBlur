@@ -6,7 +6,9 @@ import android.net.NetworkInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -17,6 +19,8 @@ import okio.BufferedSink;
 import okio.Okio;
 
 public class NetworkUtils {
+
+    private NetworkUtils() {} // util class - no instances
 
     private static OkHttpClient ImageFetchHttpClient;
 
@@ -41,12 +45,26 @@ public class NetworkUtils {
             Response response = ImageFetchHttpClient.newCall(requestBuilder.build()).execute();
             if (response.isSuccessful()) {
                 BufferedSink sink = Okio.buffer(Okio.sink(file));
-                bytesRead = sink.writeAll(response.body().source());
-                sink.close();
+                try {
+                    bytesRead = sink.writeAll(response.body().source());
+                } finally {
+                    sink.close();
+                    response.close();
+                }
             }
         } catch (Throwable t) {
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
         }
         return bytesRead;
     }
+
+    public static String encodeURL(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException ueex) {
+            android.util.Log.wtf("device does not support UTF-8", ueex);
+            return null;
+        }
+    }
+
 }

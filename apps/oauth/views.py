@@ -2,6 +2,7 @@ import urllib
 import urlparse
 import datetime
 import lxml.html
+import tweepy
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -23,7 +24,6 @@ from utils.view_functions import render_to
 from utils import urlnorm
 from utils import json_functions as json
 from vendor import facebook
-from vendor import tweepy
 from vendor import appdotnet
 
 @login_required
@@ -41,12 +41,13 @@ def twitter_connect(request):
     elif oauth_token and oauth_verifier:
         try:
             auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-            auth.set_request_token(oauth_token, oauth_verifier)
-            access_token = auth.get_access_token(oauth_verifier)
+            auth.request_token = request.session['twitter_request_token']
+            # auth.set_request_token(oauth_token, oauth_verifier)
+            auth.get_access_token(oauth_verifier)
             api = tweepy.API(auth)
             twitter_user = api.me()
-        except (tweepy.TweepError, IOError):
-            logging.user(request, "~BB~FRFailed Twitter connect")
+        except (tweepy.TweepError, IOError), e:
+            logging.user(request, "~BB~FRFailed Twitter connect: %s" % e)
             return dict(error="Twitter has returned an error. Try connecting again.")
 
         # Be sure that two people aren't using the same Twitter account.
@@ -63,8 +64,8 @@ def twitter_connect(request):
 
         social_services = MSocialServices.get_user(request.user.pk)
         social_services.twitter_uid = unicode(twitter_user.id)
-        social_services.twitter_access_key = access_token.key
-        social_services.twitter_access_secret = access_token.secret
+        social_services.twitter_access_key = auth.access_token
+        social_services.twitter_access_secret = auth.access_token_secret
         social_services.syncing_twitter = True
         social_services.save()
 
@@ -76,7 +77,8 @@ def twitter_connect(request):
         # Start the OAuth process
         auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
         auth_url = auth.get_authorization_url()
-        logging.user(request, "~BB~FRStarting Twitter connect")
+        request.session['twitter_request_token'] = auth.request_token
+        logging.user(request, "~BB~FRStarting Twitter connect: %s" % auth.request_token)
         return {'next': auth_url}
 
 
@@ -665,7 +667,7 @@ def api_share_new_story(request):
             "story_title": story_title and story_title[:title_max] or "[Untitled]",
             "story_feed_id": original_feed and original_feed.pk or 0,
             "story_content": story_content,
-            "story_author": story_author,
+            "story_author_name": story_author,
             "story_date": datetime.datetime.now(),
             "user_id": user.pk,
             "comments": comments,

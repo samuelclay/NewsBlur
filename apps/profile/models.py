@@ -784,6 +784,36 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
     
+    def send_launch_turntouch_email(self, force=False):
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending launch TT email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
+            return
+        
+        params = dict(receiver_user_id=self.user.pk, email_type='launch_turntouch')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_launch_turntouch.txt', data)
+        html    = render_to_string('mail/email_launch_turntouch.xhtml', data)
+        subject = "Introducing Turn Touch for NewsBlur"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending launch TT email for user: %s months, %s" % (months_ago, self.user.email))
+    
     def grace_period_email_sent(self, force=False):
         emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
                                                 email_type='premium_expire_grace')
@@ -991,7 +1021,39 @@ def blank_authenticate(username, password=""):
     encoded_username = authenticate(username=username, password=username)
     if encoded_blank == hash or encoded_username == user:
         return user
-            
+
+# Unfinished
+class MEmailUnsubscribe(mongo.Document):
+    user_id = mongo.IntField()
+    email_type = mongo.StringField()
+    date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    EMAIL_TYPE_FOLLOWS = 'follows'
+    EMAIL_TYPE_REPLIES = 'replies'
+    EMAIL_TYOE_PRODUCT = 'product'
+    
+    meta = {
+        'collection': 'email_unsubscribes',
+        'allow_inheritance': False,
+        'indexes': ['user_id', 
+                    {'fields': ['user_id', 'email_type'], 
+                     'unique': True,
+                     'types': False}],
+    }
+    
+    def __unicode__(self):
+        return "%s unsubscribed from %s on %s" % (self.user_id, self.email_type, self.date)
+    
+    @classmethod
+    def user(cls, user_id):
+        unsubs = cls.objects(user_id=user_id)
+        return unsubs
+    
+    @classmethod
+    def unsubscribe(cls, user_id, email_type):
+        cls.objects.create()
+
+
 class MSentEmail(mongo.Document):
     sending_user_id = mongo.IntField()
     receiver_user_id = mongo.IntField()
@@ -1054,6 +1116,27 @@ class PaymentHistory(models.Model):
             end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
             total = _counter(start_date, end_date)
             month_totals[start_date.strftime("%Y-%m")] = total
+
+        print "\nCurrent Month Totals:"
+        month_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_time = start_date + datetime.timedelta(days=31)
+            end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
+            if end_date > now: end_date = now
+            month_totals[start_date.strftime("%Y-%m")] = _counter(start_date, end_date)
+
+        print "\nMTD Totals:"
+        month_totals = {}
+        years = datetime.datetime.now().year - 2009
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_date = now - dateutil.relativedelta.relativedelta(years=y)
+            if end_date > now: end_date = now
+            month_totals[start_date.strftime("%Y-%m")] = _counter(start_date, end_date)
 
         print "\nYearly Totals:"
         year_totals = {}

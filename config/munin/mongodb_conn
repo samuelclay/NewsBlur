@@ -1,0 +1,29 @@
+#!/srv/newsblur/venv/newsblur/bin/python
+# -*- coding: utf-8 -*-
+
+from vendor.munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBConnectionsPlugin(MuninMongoDBPlugin):
+    args = "-l 0 --base 1000"
+    vlabel = "count"
+    title = "MongoDB current connections"
+    info = "Current connections"
+    fields = (
+        ('connections', dict(
+            label = "# of Connections",
+            info = "connections",
+            type = "GAUGE",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        try:
+            value = status['connections']['current']
+        except KeyError:
+            value = "U"
+        return dict(connections=value)
+
+if __name__ == "__main__":
+    MongoDBConnectionsPlugin().run()

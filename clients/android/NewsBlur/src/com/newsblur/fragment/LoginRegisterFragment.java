@@ -3,6 +3,7 @@ package com.newsblur.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -21,6 +22,9 @@ import butterknife.OnClick;
 import com.newsblur.R;
 import com.newsblur.activity.LoginProgress;
 import com.newsblur.activity.RegisterProgress;
+import com.newsblur.network.APIConstants;
+import com.newsblur.util.AppConstants;
+import com.newsblur.util.PrefsUtils;
 
 public class LoginRegisterFragment extends Fragment {
 
@@ -30,6 +34,8 @@ public class LoginRegisterFragment extends Fragment {
     @Bind(R.id.registration_password) EditText register_password;
     @Bind(R.id.registration_email) EditText register_email;
 	@Bind(R.id.login_viewswitcher) ViewSwitcher viewSwitcher;
+    @Bind(R.id.login_custom_server) View customServer;
+    @Bind(R.id.login_custom_server_value) EditText customServerValue;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,6 +67,10 @@ public class LoginRegisterFragment extends Fragment {
 
 	@OnClick(R.id.login_button) void logIn() {
 		if (!TextUtils.isEmpty(username.getText().toString())) {
+            // set the custom server endpoint before any API access, even the cookie fetch.
+            APIConstants.setCustomServer(customServerValue.getText().toString());
+            PrefsUtils.saveCustomServer(getActivity(), customServerValue.getText().toString());
+
 			Intent i = new Intent(getActivity(), LoginProgress.class);
 			i.putExtra("username", username.getText().toString());
 			i.putExtra("password", password.getText().toString());
@@ -82,6 +92,21 @@ public class LoginRegisterFragment extends Fragment {
 
     @OnClick(R.id.login_change_to_register) void showRegister() {
         viewSwitcher.showNext();
+    }
+
+    @OnClick(R.id.login_forgot_password) void launchForgotPasswordPage() {
+        try {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(AppConstants.FORGOT_PASWORD_URL));
+            startActivity(i);
+        } catch (Exception e) {
+            android.util.Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
+        }
+    }
+
+    @OnClick(R.id.login_custom_server) void showCustomServer() {
+        customServer.setVisibility(View.GONE);
+        customServerValue.setVisibility(View.VISIBLE);
     }
 
 }

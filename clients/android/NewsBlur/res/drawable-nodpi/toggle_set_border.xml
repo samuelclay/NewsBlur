@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item>
+        <shape>
+            <!-- on API 14 and 15, the default solid is a black square, not nothing. -->
+            <solid android:color="@android:color/transparent" />
+            <padding
+                android:bottom="1.5dp" 
+                android:top="1.5dp" 
+                android:left="1.5dp" 
+                android:right="1.5dp" 
+            />
+            <stroke 
+                android:color="@color/gray55" 
+                android:width="1.5dp" 
+                android:height="1.5dp" 
+            />
+            <corners android:radius="2dp" />
+        </shape>
+    </item>
+
+</layer-list>

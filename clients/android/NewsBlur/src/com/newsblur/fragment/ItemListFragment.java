@@ -31,14 +31,15 @@ import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
-import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.GestureAction;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
@@ -62,11 +63,22 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     // loading indicator for when no stories are loaded yet (instead of list)
     @Bind(R.id.empty_view_loading_throb) ProgressThrobber emptyProgressView;
 
+    private View fleuronFooter;
+
+    // row index of the last story to get a LTR gesture or -1 if none
+    private int gestureLeftToRightFlag = -1;
+    // row index of the last story to get a RTL gesture or -1 if none
+    private int gestureRightToLeftFlag = -1;
+    // flag indicating a gesture just occurred so we can ignore spurious story taps right after
+    private boolean gestureDebounce = false;
+
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
+        // tell the sync service to discard the reading session at the start of the next sync, just in case
+        NBSyncService.resetReadingSession();
     }
 
 	@Override
@@ -78,32 +90,34 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         boolean isDisableAnimations = ViewUtils.isPowerSaveMode(activity);
 
         emptyProgressView.setEnabled(!isDisableAnimations);
-        emptyProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                    getResources().getColor(R.color.refresh_2),
-                                    getResources().getColor(R.color.refresh_3),
-                                    getResources().getColor(R.color.refresh_4));
+        emptyProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+                                    UIUtils.getColor(getActivity(), R.color.refresh_2),
+                                    UIUtils.getColor(getActivity(), R.color.refresh_3),
+                                    UIUtils.getColor(getActivity(), R.color.refresh_4));
         View headerView = inflater.inflate(R.layout.row_loading_throbber, null);
         headerProgressView = (ProgressThrobber) headerView.findViewById(R.id.itemlist_loading_throb);
         headerProgressView.setEnabled(!isDisableAnimations);
-        headerProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                     getResources().getColor(R.color.refresh_2),
-                                     getResources().getColor(R.color.refresh_3),
-                                     getResources().getColor(R.color.refresh_4));
+        headerProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_2),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_3),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_4));
         itemList.addHeaderView(headerView, null, false);
-        itemList.setHeaderDividersEnabled(false);
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         footerProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
         footerProgressView.setEnabled(!isDisableAnimations);
-        footerProgressView.setColors(getResources().getColor(R.color.refresh_1),
-                                     getResources().getColor(R.color.refresh_2),
-                                     getResources().getColor(R.color.refresh_3),
-                                     getResources().getColor(R.color.refresh_4));
+        footerProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_2),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_3),
+                                     UIUtils.getColor(getActivity(), R.color.refresh_4));
         itemList.addFooterView(footerView, null, false);
-        itemList.setFooterDividersEnabled(false);
+
+        fleuronFooter = inflater.inflate(R.layout.row_fleuron, null);
+        fleuronFooter.setVisibility(View.GONE);
+        itemList.addFooterView(fleuronFooter, null, false);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-        setupBezelSwipeDetector(itemList);
+        setupGestureDetector(itemList);
         itemList.setOnScrollListener(this);
 		itemList.setOnItemClickListener(this);
         itemList.setOnCreateContextMenuListener(this);
@@ -149,7 +163,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * loading indicator requires a cursor and is handled below.
      */
     public void setLoading(boolean isLoading) {
-        if (footerProgressView != null ) {
+        if (fleuronFooter != null) {
             if (isLoading) {
                 if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
                     headerProgressView.setVisibility(View.INVISIBLE);
@@ -159,10 +173,14 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                     footerProgressView.setVisibility(View.GONE);
                 }
                 emptyProgressView.setVisibility(View.VISIBLE);
+                fleuronFooter.setVisibility(View.GONE);
             } else {
                 headerProgressView.setVisibility(View.INVISIBLE);
                 footerProgressView.setVisibility(View.GONE);
                 emptyProgressView.setVisibility(View.GONE);
+                if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet())) {
+                    fleuronFooter.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
@@ -176,15 +194,26 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
         ImageView imageView = (ImageView) emptyView.findViewById(R.id.empty_view_image);
 
-        boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
-        if (isLoading || (!cursorSeenYet)) {
-            textView.setText(R.string.empty_list_view_loading);
-            textView.setTypeface(null, Typeface.ITALIC);
-            imageView.setVisibility(View.INVISIBLE);
-        } else {
-            textView.setText(R.string.empty_list_view_no_stories);
+        if (getFeedSet().isMuted()) {
+            textView.setText(R.string.empty_list_view_muted_feed);
             textView.setTypeface(null, Typeface.NORMAL);
             imageView.setVisibility(View.VISIBLE);
+        } else {
+            boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
+            if (isLoading || (!cursorSeenYet)) {
+                textView.setText(R.string.empty_list_view_loading);
+                textView.setTypeface(null, Typeface.ITALIC);
+                imageView.setVisibility(View.INVISIBLE);
+            } else {
+                ReadFilter readFilter = PrefsUtils.getReadFilter(activity, getFeedSet());
+                if (readFilter == ReadFilter.UNREAD) {
+                    textView.setText(R.string.empty_list_view_no_stories_unread);
+                } else {
+                    textView.setText(R.string.empty_list_view_no_stories);
+                }
+                textView.setTypeface(null, Typeface.NORMAL);
+                imageView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -219,7 +248,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     }
 
 	public void hasUpdated() {
-        if (isAdded()) {
+        if (isAdded() && !getFeedSet().isMuted()) {
 		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
         }
 	}
@@ -230,16 +259,29 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         if (fs == null) {
             Log.e(this.getClass().getName(), "can't create fragment, no feedset ready");
             // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
-            try { getActivity().finish(); } catch (Exception e) {;}
+            try {
+                getActivity().finish();
+            } catch (Exception e) {
+                ;
+            }
             return null;
+        } else if (fs.isMuted()) {
+            updateLoadingMessage();
+            return null;
+        } else {
+            return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
         }
-		return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
-	}
+    }
 
     @Override
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (stopLoading) return;
 		if (cursor != null) {
+            if (NBSyncService.ResetSession) {
+                // the DB hasn't caught up yet from the last story list; don't display stale stories.
+                triggerRefresh(1, 0);
+                return;
+            }
             cursorSeenYet = true;
             if (cursor.getCount() < 1) {
                 triggerRefresh(1, 0);
@@ -260,6 +302,10 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        // context menu like to get accidentally triggered by the ListView event handler right after
+        // we detect a gesure.  if so, let the gesture happen rather than popping up the menu
+        if ((gestureLeftToRightFlag > -1) || (gestureRightToLeftFlag > -1)) return;
+
         MenuInflater inflater = getActivity().getMenuInflater();
         if (PrefsUtils.getStoryOrder(activity, getFeedSet()) == StoryOrder.NEWEST) {
             inflater.inflate(R.menu.context_story_newest, menu);
@@ -302,11 +348,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_mark_older_stories_as_read:
-            FeedUtils.markFeedsRead(getFeedSet(), story.timestamp, null, activity);
+            FeedUtils.markRead(activity, getFeedSet(), story.timestamp, null, R.array.mark_older_read_options, false);
             return true;
 
         case R.id.menu_mark_newer_stories_as_read:
-            FeedUtils.markFeedsRead(getFeedSet(), null, story.timestamp, activity);
+            FeedUtils.markRead(activity, getFeedSet(), null, story.timestamp, R.array.mark_newer_read_options, false);
             return true;
 
         case R.id.menu_send_story:
@@ -333,37 +379,109 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
 	@Override
 	public synchronized void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // clicks like to get accidentally triggered by the ListView event handler right after we detect
+        // a gesture. if so, let the gesture happen rather than popping up the menu
+        if (gestureDebounce){
+            gestureDebounce = false;
+            return;
+        }
+        if ((gestureLeftToRightFlag > -1) || (gestureRightToLeftFlag > -1)) return;
+
         int truePosition = position - 1;
         Story story = adapter.getStory(truePosition);
         if (getActivity().isFinishing()) return;
         UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
     }
 
-    protected void setupBezelSwipeDetector(View v) {
-        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new BezelSwipeDetector());
+    public void setTextSize(Float size) {
+        if (adapter != null) {
+            adapter.setTextSize(size);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    protected void setupGestureDetector(View v) {
+        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ItemListGestureDetector());
         v.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
+                boolean result =  gestureDetector.onTouchEvent(event);
+                if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                    ItemListFragment.this.flushGesture();
+                }
+                return result;
             }
         });
     }
 
-    /**
-     * A gesture detector that captures bezel swipes and finishes the activity,
-     * to simulate a 'back' gesture.
-     *
-     * NB: pretty much all Views still try to process on-tap events despite
-     *     returning true, so be sure to check isFinishing() on all other
-     *     tap handlers.
-     */
-    class BezelSwipeDetector extends GestureDetector.SimpleOnGestureListener {
+    protected void gestureLeftToRight(float x, float y) {
+        int index = itemList.pointToPosition((int) x, (int) y);
+        gestureLeftToRightFlag = index;
+    }
+
+    protected void gestureRightToLeft(float x, float y) {
+        int index = itemList.pointToPosition((int) x, (int) y);
+        gestureRightToLeftFlag = index;
+    }
+
+    // the above gesture* methods will trigger more than once while being performed. it is not until
+    // the up-event that we look to see if any happened, and if so, take action and flush.
+    protected void flushGesture() {
+        int index = -1;
+        GestureAction action = GestureAction.GEST_ACTION_NONE;
+        if (gestureLeftToRightFlag > -1) {
+            index = gestureLeftToRightFlag;
+            action = PrefsUtils.getLeftToRightGestureAction(getActivity());
+            gestureLeftToRightFlag = -1;
+            gestureDebounce = true;
+        }
+        if (gestureRightToLeftFlag > -1) {
+            index = gestureRightToLeftFlag;
+            action = PrefsUtils.getRightToLeftGestureAction(getActivity());
+            gestureRightToLeftFlag = -1;
+            gestureDebounce = true;
+        }
+        if (index <= -1) return;
+        Story story = adapter.getStory(index-1);
+        switch (action) {
+            case GEST_ACTION_MARKREAD:
+                FeedUtils.markStoryAsRead(story, getActivity());;
+                break;
+            case GEST_ACTION_MARKUNREAD:
+                FeedUtils.markStoryUnread(story, getActivity());;
+                break;
+            case GEST_ACTION_SAVE:
+                FeedUtils.setStorySaved(story, true, getActivity());;
+                break;
+            case GEST_ACTION_UNSAVE:
+                FeedUtils.setStorySaved(story, false, getActivity());;
+                break;
+            case GEST_ACTION_NONE:
+            default:
+        }
+    }
+
+    class ItemListGestureDetector extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if((e1.getX() < 75f) &&                  // the gesture should start from the left bezel and
-               ((e2.getX()-e1.getX()) > 90f) &&      // move horizontally to the right and
-               (Math.abs(e1.getY()-e2.getY()) < 40f) // have minimal vertical travel, so we don't capture scrolling gestures
-               ) {
+            if ((e1.getX() < 75f) &&                  // the gesture should start from the left bezel and
+                ((e2.getX()-e1.getX()) > 90f) &&      // move horizontally to the right and
+                (Math.abs(e1.getY()-e2.getY()) < 40f) // have minimal vertical travel, so we don't capture scrolling gestures
+                ) {
                 ItemListFragment.this.getActivity().finish();
+                return true;
+            }
+            if ((e1.getX() > 75f) &&                  // the gesture should not start from the left bezel and
+                ((e2.getX()-e1.getX()) > 120f) &&     // move horizontally to the right and
+                (Math.abs(e1.getY()-e2.getY()) < 40f) // have minimal vertical travel, so we don't capture scrolling gestures
+                ) {
+                ItemListFragment.this.gestureLeftToRight(e1.getX(), e1.getY());
+                return true;
+            }
+            if ((e1.getX() > 75f) &&                  // the gesture should not start from the left bezel and
+                ((e1.getX()-e2.getX()) > 120f) &&     // move horizontally to the left and
+                (Math.abs(e1.getY()-e2.getY()) < 40f) // have minimal vertical travel, so we don't capture scrolling gestures
+                ) {
+                ItemListFragment.this.gestureRightToLeft(e1.getX(), e1.getY());
                 return true;
             }
             return false;

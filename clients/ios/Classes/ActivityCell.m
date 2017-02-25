@@ -25,6 +25,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         activityLabel = nil;
         faviconView = nil;
+        self.backgroundColor = UIColorFromRGB(0xffffff);
         self.separatorInset = UIEdgeInsetsMake(0, 90, 0, 0);
         
         // create favicon and label in view

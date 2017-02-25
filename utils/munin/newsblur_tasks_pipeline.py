@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/srv/newsblur/venv/newsblur/bin/python
 from utils.munin.base import MuninGraph
 
 class NBMuninGraph(MuninGraph):
@@ -43,7 +43,7 @@ class NBMuninGraph(MuninGraph):
             },
         }])
         
-        return stats['result'][0]
+        return list(stats)[0]
         
 
 if __name__ == '__main__':

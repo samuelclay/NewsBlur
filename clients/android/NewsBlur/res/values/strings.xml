@@ -6,6 +6,9 @@
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
     <string name="login_button_login">Log In</string>
+    <string name="login_forgot_password"><u>I forgot my password</u></string>
+    <string name="login_custom_server"><u>I have a custom server</u></string>
+    <string name="login_custom_server_hint">https://www.newsblur.com</string>
     <string name="login_message_error">There was problem logging in to NewsBlur.</string>
     <string name="login_logging_in">Logging in…</string>
     <string name="login_logged_in">Logged in!</string>
@@ -48,13 +51,13 @@
 	<string name="send_full">%1$s \n\n\"%2$s\" \n\n%3$s \n\n--\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-    <string name="share_this">Share</string>
-    <string name="already_shared">Shared</string>
-    <string name="share_this_story">Share this story</string>
+    <string name="share_this">SHARE</string>
+    <string name="already_shared">SHARED</string>
+    <string name="share_this_story">SHARE</string>
     <string name="update_shared">Update comment</string>
 
-	<string name="save_this">Save</string>
-	<string name="unsave_this">Remove from saved</string>
+	<string name="save_this">SAVE</string>
+	<string name="unsave_this">REMOVE FROM SAVED</string>
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
@@ -62,6 +65,11 @@
     <string name="overlay_count_toast_1">1 unread story</string>
     <string name="overlay_text">TEXT</string>
     <string name="overlay_story">STORY</string>
+
+    <string name="state_all">ALL</string>
+    <string name="state_unread">UNREAD</string>
+    <string name="state_focus">FOCUS</string>
+    <string name="state_saved">SAVED</string>
 
 	<string name="reply_to">Reply to \"%s\"</string>
 	
@@ -89,8 +97,8 @@
     <string name="profile_shared_story">shared</string>
     <string name="profile_comment">comment</string>
     <string name="profile_reply">reply</string>
-    <string name="profile_button_follow">Follow</string>
-    <string name="profile_button_unfollow">Following</string>
+    <string name="profile_button_follow">FOLLOW</string>
+    <string name="profile_button_unfollow">FOLLOWING</string>
     <string name="profile_subscribed_to">subscribed to</string>
     <string name="profile_saved">saved</string>
     <string name="profile_reshared">re-shared</string>
@@ -105,8 +113,8 @@
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_original">View original</string>
-    <string name="menu_send_story">Send to…</string>
-    <string name="menu_send_story_full">Send full story to…</string>
+    <string name="menu_send_story">Send link to…</string>
+    <string name="menu_send_story_full">Send story to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
     <string name="menu_unfollow">Unfollow user</string>
@@ -124,6 +132,10 @@
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_fullscreen">Full screen</string>
     <string name="menu_search_stories">Search…</string>
+    <string name="menu_mute_feed">Mute feed</string>
+    <string name="menu_unmute_feed">Unmute feed</string>
+    <string name="menu_mute_folder">Mute folder</string>
+    <string name="menu_unmute_folder">Unmute folder</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
 
@@ -143,6 +155,8 @@
 
     <string name="empty_list_view_loading">Loading…</string>
     <string name="empty_list_view_no_stories">No stories to read</string>
+    <string name="empty_list_view_no_stories_unread">No unread stories</string>
+    <string name="empty_list_view_muted_feed">Feed is muted</string>
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
@@ -181,16 +195,19 @@
     <string name="menu_network_select">Download Using</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
     <string name="menu_network_select_opt_any">Any Network</string>
-    <string name="menu_network_select_opt_nomo">Wifi and Ethernet Only</string>
+    <string name="menu_network_select_opt_nomo">Any Wifi or Ethernet</string>
+    <string name="menu_network_select_opt_nomononme">Unmetered Wifi or Ethernet Only</string>
     <string-array name="default_network_select_entries">
         <item>@string/menu_network_select_opt_any</item>
         <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
     </string-array>
     <string-array name="default_network_select_values">
         <item>ANY</item>
         <item>NOMO</item>
+        <item>NOMONONME</item>
     </string-array>
-    <string name="default_network_select_value">NOMO</string>
+    <string name="default_network_select_value">NOMONONME</string>
 
     <string name="settings_cat_story_list">Story List</string>
 
@@ -224,6 +241,14 @@
         <item>Mark all read</item>
         <item>Cancel</item>
     </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Mark older stories read</item>
+        <item>Cancel</item>
+    </string-array>
+    <string-array name="mark_newer_read_options">
+        <item>Mark newer stories read</item>
+        <item>Cancel</item>
+    </string-array>
 
     <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
     <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
@@ -232,7 +257,8 @@
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>
     <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
-    <string name="settings_show_content_preview">Show Content Preview</string>
+    <string name="settings_show_content_preview">Show Content Preview Text</string>
+    <string name="settings_show_thumbnails">Show Image Preview Thumbnails</string>
 
     <string name="story">Story</string>
     <string name="text">Text</string>
@@ -249,6 +275,8 @@
         <item>dark</item>
     </string-array>
     <string name="default_theme_value">light</string>
+
+    <string name="settings_gestures">Gestures</string>
 
     <string name="sync_status_housekeeping">Tidying up...</string>
     <string name="sync_status_actions">Catching up %d reading actions...</string>
@@ -292,4 +320,45 @@
         <item>NONE</item>
     </string-array>
     <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
+
+    <string name="settings_confirm_mark_range_read">Confirm Mark Older/Newer Read</string>
+
+    <string name="settings_ltr_gesture_action">Rightward Swipe on Story Title</string>
+    <string name="gest_action_none">No Action</string>
+    <string name="gest_action_markread">Mark Story Read</string>
+    <string name="gest_action_markunread">Mark Story Unread</string>
+    <string name="gest_action_save">Save Story</string>
+    <string name="gest_action_unsave">Unsave Story</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+    </string-array>
+    <string-array name="ltr_gesture_action_values">
+        <item>GEST_ACTION_NONE</item>
+        <item>GEST_ACTION_MARKREAD</item>
+        <item>GEST_ACTION_MARKUNREAD</item>
+        <item>GEST_ACTION_SAVE</item>
+        <item>GEST_ACTION_UNSAVE</item>
+    </string-array>
+    <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
+
+    <string name="settings_rtl_gesture_action">Leftward Swipe on Story Title</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+    </string-array>
+    <string-array name="rtl_gesture_action_values">
+        <item>GEST_ACTION_NONE</item>
+        <item>GEST_ACTION_MARKREAD</item>
+        <item>GEST_ACTION_MARKUNREAD</item>
+        <item>GEST_ACTION_SAVE</item>
+        <item>GEST_ACTION_UNSAVE</item>
+    </string-array>
+    <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 </resources>

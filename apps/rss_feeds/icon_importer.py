@@ -217,7 +217,8 @@ class IconImporter(object):
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
                     httplib.IncompleteRead,
-                    LocationParseError, OpenSSLError, PyAsn1Error), e:
+                    LocationParseError, OpenSSLError, PyAsn1Error,
+                    ValueError), e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
             image, image_file = self.get_image_from_url(url)

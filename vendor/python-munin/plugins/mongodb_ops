@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from vendor.munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBOpsPlugin(MuninMongoDBPlugin):
+    args = "-l 0 --base 1000"
+    vlabel = "ops/sec"
+    title = "MongoDB operations"
+    info = "Operations"
+    ops = ("query", "update", "insert", "delete", "command", "getmore")
+
+    @property
+    def fields(self):
+        return [
+            (op, dict(
+                label = "%s operations" % op,
+                info = "%s operations" % op,
+                type = "DERIVE",
+                min = "0",
+            )) for op in self.ops
+        ]
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        return dict(
+            (op, status["opcounters"].get(op, 0))
+            for op in self.ops
+        )
+
+if __name__ == "__main__":
+    MongoDBOpsPlugin().run()

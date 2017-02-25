@@ -23,7 +23,7 @@ public class AddFacebook extends NbActivity {
 		
 		webview.setWebViewClient(new WebViewClient() {
 		    public boolean shouldOverrideUrlLoading(WebView view, String url){
-		    	if (TextUtils.equals(url, APIConstants.NEWSBLUR_URL + "/")) {
+		    	if (TextUtils.equals(url, APIConstants.buildUrl("/"))) {
 		    		AddFacebook.this.setResult(FACEBOOK_AUTHED);
 		    		AddFacebook.this.finish();
 		    		return true;
@@ -33,7 +33,7 @@ public class AddFacebook extends NbActivity {
 		   }
 		});
 		
-		webview.loadUrl(APIConstants.URL_CONNECT_FACEBOOK);
+		webview.loadUrl(APIConstants.buildUrl(APIConstants.PATH_CONNECT_FACEBOOK));
 	}
 	
 }

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 # -*- coding: utf-8 -*-
 
 """
@@ -7,7 +7,7 @@ Based on a Perl plugin by an unknown author.
 Show postgres lock statistics.
 """
 
-from munin.postgres import MuninPostgresPlugin
+from vendor.munin.postgres import MuninPostgresPlugin
 
 class MuninPostgresLocksPlugin(MuninPostgresPlugin):
     dbname_in_args = False

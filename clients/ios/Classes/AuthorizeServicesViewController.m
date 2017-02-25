@@ -63,7 +63,7 @@
     if (self.fromStory && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
                                          initWithTitle: @"Cancel"
-                                         style: UIBarButtonSystemItemCancel
+                                         style: UIBarButtonItemStylePlain
                                          target: self
                                          action: @selector(doCancelButton)];
         self.navigationItem.leftBarButtonItem = cancelButton;

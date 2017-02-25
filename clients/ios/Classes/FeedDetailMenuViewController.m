@@ -132,6 +132,7 @@
         [options addObject:[@"Rename this site" uppercaseString]];
         [options addObject:[@"Mute this site" uppercaseString]];
         [options addObject:[@"Train this site" uppercaseString]];
+        [options addObject:[@"Notifications" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
     }
     
@@ -188,6 +189,8 @@
     } else if (indexPath.row == 4) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
     } else if (indexPath.row == 5) {
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_notifications.png"];
+    } else if (indexPath.row == 6) {
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch.png"];
     }
     
@@ -224,6 +227,9 @@
     } else if (indexPath.row == 4) {
         [appDelegate.feedDetailViewController openTrainSite];
     } else if (indexPath.row == 5) {
+        [appDelegate.feedDetailViewController
+         openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+    } else if (indexPath.row == 6) {
         [appDelegate.feedDetailViewController instafetchFeed];
     }
     

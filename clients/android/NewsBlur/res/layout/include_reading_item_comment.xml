@@ -2,43 +2,26 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
         android:baselineAligned="false" >
 
         <Button
             android:id="@+id/share_story_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="44dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_width="170dp"
+            android:layout_height="36dp"
             style="?storyButtons"
-            android:textSize="13sp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:drawableLeft="@drawable/share_icon"
             android:text="@string/share_this" />
         
         <Button
             android:id="@+id/save_story_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="44dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_width="170dp"
+            android:layout_height="36dp"
             style="?storyButtons"
-            android:textSize="13sp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:drawableLeft="@drawable/clock"
             android:text="@string/save_this" />
 
     </LinearLayout>
@@ -60,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="12dp"
-                android:background="@color/lightgray"/>
+                android:background="@color/gray80"/>
 
             <TextView
                 android:layout_width="fill_parent"
@@ -77,8 +60,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/reading_friend_comment_total"
-                android:background="@color/lightgray"/>
+                android:background="@color/gray80"/>
 
         </LinearLayout>
 
@@ -103,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="12dp"
-                android:background="@color/lightgray"/>
+                android:background="@color/gray80"/>
 
             <TextView
                 android:layout_width="fill_parent"
@@ -120,8 +102,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/reading_friend_comment_total"
-                android:background="@color/lightgray"/>
+                android:background="@color/gray80"/>
 
         </LinearLayout>
 
@@ -146,7 +127,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="12dp"
-                android:background="@color/lightgray"/>
+                android:background="@color/gray80"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -163,8 +144,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/reading_public_comment_total"
-                android:background="@color/lightgray"/>
+                android:background="@color/gray80"/>
 
         </LinearLayout>
 

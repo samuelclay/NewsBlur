@@ -22,7 +22,6 @@
 #import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "AFHTTPRequestOperation.h"
-#import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
 #import "SBJson4.h"
@@ -67,7 +66,6 @@ static UIFont *userLabelFont;
 @synthesize stillVisibleFeeds;
 @synthesize visibleFolders;
 @synthesize viewShowingAllFeeds;
-@synthesize pull;
 @synthesize lastUpdate;
 @synthesize imageCache;
 @synthesize currentRowAtIndexPath;
@@ -102,12 +100,13 @@ static UIFont *userLabelFont;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
-    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
-    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    [pull setDelegate:self];
-    [self.feedTitlesTable addSubview:pull];
-
+    
+    self.refreshControl = [UIRefreshControl new];
+    self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
+    [self.feedTitlesTable addSubview:self.refreshControl];
+    
     userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
     imageCache = [[NSCache alloc] init];
@@ -231,7 +230,7 @@ static UIFont *userLabelFont;
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
-    [self layoutHeaderCounts:nil];
+    [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
 
     self.interactiveFeedDetailTransition = NO;
@@ -450,11 +449,10 @@ static UIFont *userLabelFont;
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [pull finishedLoading];
     
     // User clicking on another link before the page loads is OK.
     [self informError:[request error]];
-    self.inPullToRefresh_ = NO;
+    [self finishRefresh];
     
     self.isOffline = YES;
 
@@ -463,6 +461,7 @@ static UIFont *userLabelFont;
     }
 
     [self showOfflineNotifier];
+    [self loadNotificationStory];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
@@ -471,11 +470,9 @@ static UIFont *userLabelFont;
         NSLog(@"Showing login");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] >= 400) {
-        [pull finishedLoading];
         if ([request responseStatusCode] == 429) {
             [self informError:@"Slow down. You're rate-limited."];
         } else if ([request responseStatusCode] == 503) {
-            [pull finishedLoading];
             [self informError:@"In maintenance mode"];
         } else {
             [self informError:@"The server barfed!"];
@@ -546,7 +543,6 @@ static UIFont *userLabelFont;
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
-    [pull finishedLoading];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
     if (appDelegate.activeUsername) {
@@ -719,32 +715,6 @@ static UIFont *userLabelFont;
         appDelegate.categoryFeeds = [[results objectForKey:@"categories"] objectForKey:@"feeds"];
     }
     
-    // test for latest version of app
-    NSString *serveriPhoneBuild = [results objectForKey:@"latest_ios_build"];
-    NSString *currentiPhoneBuild = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
-    NSString *serveriPhoneVersion = [results objectForKey:@"latest_ios_version"];
-    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    BOOL unseenBuild = [serveriPhoneBuild integerValue] > [userPreferences integerForKey:@"last_seen_latest_ios_build"];
-
-    if ([currentiPhoneBuild integerValue] < [serveriPhoneBuild integerValue] && unseenBuild) {
-        NSLog(@"Build: %ld - %@ (seen: %ld)", (long)[serveriPhoneBuild integerValue], currentiPhoneBuild, (long)[userPreferences integerForKey:@"last_seen_latest_ios_build"]);
-        [userPreferences setInteger:[serveriPhoneBuild integerValue] forKey:@"last_seen_latest_ios_build"];
-        [userPreferences setObject:serveriPhoneVersion forKey:@"last_seen_latest_ios_version"];
-        [userPreferences synchronize];
-        
-        NSString *title = [NSString stringWithFormat:@
-                           "You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", 
-                           serveriPhoneVersion, 
-                           currentiPhoneVersion];
-        UIAlertView *upgradeConfirm = [[UIAlertView alloc] initWithTitle:title 
-                                                                 message:nil 
-                                                                delegate:self 
-                                                       cancelButtonTitle:@"Cancel" 
-                                                       otherButtonTitles:@"Upgrade!", nil];
-        [upgradeConfirm show];
-        [upgradeConfirm setTag:2];
-    }
-    
     if (!self.isOffline) {
         // start up the first time user experience
         if ([[results objectForKey:@"social_feeds"] count] == 0 &&
@@ -754,7 +724,6 @@ static UIFont *userLabelFont;
         }
         
         if (self.inPullToRefresh_) {
-            self.inPullToRefresh_ = NO;
             [self showSyncingNotifier];
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
                 [self refreshFeedList];
@@ -771,35 +740,16 @@ static UIFont *userLabelFont;
     self.intelligenceControl.hidden = NO;
     
     [self showExplainerOnEmptyFeedlist];
-    [self layoutHeaderCounts:nil];
+    [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
+    [self checkForFeedNotifications];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
     }
-    
+    [self loadNotificationStory];
+
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 2) {
-        if (buttonIndex == 0) {
-            return;
-        } else {
-            NSURL *url;
-            NSString *currentVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-            NSString *serverVersion = [userPreferences stringForKey:@"last_seen_latest_ios_version"];
-
-            if ([currentVersion containsString:@"b"] && [serverVersion containsString:@"b"]) {
-                url = [NSURL URLWithString:@"https://www.newsblur.com/ios/download"];
-            } else {
-                //  this doesn't work in simulator!!! because simulator has no app store
-                url = [NSURL URLWithString:@"itms://itunes.apple.com/us/app/mensa-essen/id463981119?ls=1&mt=8"];
-            }
-            [[UIApplication sharedApplication] openURL:url];
-        }
-    }
 }
 
 - (void)loadOfflineFeeds:(BOOL)failed {
@@ -835,7 +785,7 @@ static UIFont *userLabelFont;
             results = [NSJSONSerialization
                        JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
                                            dataUsingEncoding:NSUTF8StringEncoding]
-                       options:nil error:nil];
+                       options:0 error:nil];
             break;
         }
         
@@ -846,6 +796,14 @@ static UIFont *userLabelFont;
             [_self fetchFeedList:NO];
         });
     }];
+}
+
+- (void)loadNotificationStory {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (appDelegate.tryFeedFeedId && !appDelegate.isTryFeedView) {
+            [appDelegate loadFeed:appDelegate.tryFeedFeedId withStory:appDelegate.tryFeedStoryId animated:NO];
+        }
+    });
 }
 
 - (void)showUserProfile {
@@ -972,6 +930,7 @@ static UIFont *userLabelFont;
     }
     
     [self resizeFontSize];
+    [self resetupGestures];
 }
 
 - (void)resizeFontSize {
@@ -1003,8 +962,8 @@ static UIFont *userLabelFont;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.intelligenceControl.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
-    self.pull.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
-    self.pull.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
@@ -1012,7 +971,7 @@ static UIFont *userLabelFont;
     barButton = self.settingsBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]] forState:UIControlStateNormal];
     
-    [self layoutHeaderCounts:nil];
+    [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
@@ -1135,7 +1094,8 @@ static UIFont *userLabelFont;
     }
     
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
+    BOOL newCell = cell == nil;
+    if (newCell) {
         cell = [[FeedTableCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
@@ -1152,6 +1112,10 @@ static UIFont *userLabelFont;
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSaved       = isSaved;
+    
+    if (newCell) {
+        [cell setupGestures];
+    }
     
     if (isSavedStoriesFeed) {
         cell.positiveCount = 0;
@@ -1191,7 +1155,7 @@ static UIFont *userLabelFont;
     
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
-    self.currentSection = nil;
+    self.currentSection = 0;
     
     NSString *folderName;
     if (indexPath.section == 0) {
@@ -1371,6 +1335,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSString *feedId = [NSString stringWithFormat:@"%@",
@@ -1378,12 +1343,15 @@ heightForHeaderInSection:(NSInteger)section {
                          objectAtIndex:indexPath.row]];
 
     if (state == MCSwipeTableViewCellState1) {
+        
         if (indexPath.section == 1) {
             // Profile
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feedId];
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [feed objectForKey:@"user_id"]];
             appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
             [appDelegate showUserProfileModal:cell];
+        } else if ([[preferences stringForKey:@"feed_swipe_left"] isEqualToString:@"notifications"]) {
+            [appDelegate openNotificationsWithFeed:feedId sender:cell];
         } else {
             // Train
             appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
@@ -1392,7 +1360,6 @@ heightForHeaderInSection:(NSInteger)section {
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read
         [self markFeedRead:feedId cutoffDays:0];
-        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
             [self.stillVisibleFeeds setObject:indexPath forKey:feedId];
         }
@@ -1729,6 +1696,11 @@ heightForHeaderInSection:(NSInteger)section {
     }
 }
 
+- (void)resetupGestures {
+    while ([self.feedTitlesTable dequeueReusableCellWithIdentifier:@"FeedCellIdentifier"]) {}
+    [self.feedTitlesTable reloadData];
+}
+
 - (void)calculateFeedLocations {
     self.activeFeedLocations = [NSMutableDictionary dictionary];
     self.visibleFolders = [NSMutableDictionary dictionary];
@@ -1841,10 +1813,14 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark -
 #pragma mark PullToRefresh
 
-// called when the user pulls-to-refresh
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+- (void)refresh:(UIRefreshControl *)refreshControl {
     self.inPullToRefresh_ = YES;
     [appDelegate reloadFeedsView:NO];
+}
+
+- (void)finishRefresh {
+    self.inPullToRefresh_ = NO;
+    [self.refreshControl endRefreshing];
 }
 
 - (void)refreshFeedList {
@@ -1896,10 +1872,8 @@ heightForHeaderInSection:(NSInteger)section {
         NSLog(@"Showing login after refresh");
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] == 503) {
-        [pull finishedLoading];
         return [self informError:@"In maintenance mode"];
     } else if ([request responseStatusCode] >= 500) {
-        [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }
     
@@ -1977,11 +1951,6 @@ heightForHeaderInSection:(NSInteger)section {
             [self loadFavicons];
         });
     });
-}
-
-// called when the date shown needs to be updated, optional
-- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
-    return self.lastUpdate;
 }
 
 - (void)resetToolbar {
@@ -2089,6 +2058,31 @@ heightForHeaderInSection:(NSInteger)section {
                                               userInfoBarButton, nil];
 }
 
+- (void)checkForFeedNotifications {
+    NSMutableArray *notificationFeedIds = [NSMutableArray array];
+    
+    for (NSDictionary *feed in appDelegate.dictFeeds.allValues) {
+        NSArray *types = [feed objectForKey:@"notification_types"];
+        if (types) {
+            for (NSString *notificationType in types) {
+                if ([notificationType isEqualToString:@"ios"]) {
+                    [appDelegate registerForRemoteNotifications];
+                }
+            }
+            if ([types count]) {
+                [notificationFeedIds addObject:[feed objectForKey:@"id"]];
+            }
+        }
+    }
+    
+    appDelegate.notificationFeedIds = [notificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NSString *feed1Title = [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj1]] objectForKey:@"feed_title"] lowercaseString];
+        NSString *feed2Title = [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj2]] objectForKey:@"feed_title"] lowercaseString];
+        
+        return [feed1Title compare:feed2Title];
+    }];
+}
+
 - (void)refreshHeaderCounts {
     if (!appDelegate.activeUsername) {
         userAvatarButton.customView.hidden = YES;
@@ -2133,6 +2127,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.notifier.title = @"Counting is difficult...";
     [self.notifier setProgress:0];
     [self.notifier show];
+    [self finishRefresh];
 }
 
 - (void)showSyncingNotifier {
@@ -2140,6 +2135,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.notifier.title = @"Syncing stories...";
     [self.notifier setProgress:0];
     [self.notifier show];
+    [self finishRefresh];
 }
 
 - (void)showDoneNotifier {
@@ -2147,6 +2143,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.notifier.title = @"All done";
     [self.notifier setProgress:0];
     [self.notifier show];
+    [self finishRefresh];
 }
 
 - (void)showSyncingNotifier:(float)progress hoursBack:(int)hours {

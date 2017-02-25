@@ -33,6 +33,7 @@ public abstract class SubService {
     }
 
     public void start(final int startId) {
+        if (parent.stopSync()) return;
         parent.incrementRunningChild();
         this.startId = startId;
         Runnable r = new Runnable() {

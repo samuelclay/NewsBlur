@@ -306,14 +306,22 @@ blockquote {
             div.NB-tab-inner {
                 display: inline-block;
                 line-height: 44px;
+                white-space: nowrap;
+                overflow: hidden;
+                width: 100%;
+                padding: 0 4px;
+                box-sizing: border-box;
                 
                 @media screen and (max-width: 580px) {
                     line-height: 28px;
                 }
             }
             
+            .NB-header-username {
+                display: inline-block;
+            }
+            
             img.NB-arrow {
-                float: right;
                 margin-right: -8px;
                 margin-left: 4px;
                 
@@ -329,11 +337,12 @@ blockquote {
             
             img,
             .NB-icon {
-                float: left;
+                display: inline-block;
                 margin-top: 13px;
-                margin-right: 7px;
+                margin-right: 4px;
                 width: 17px;
                 height: 17px; 
+                vertical-align: top;
 
                 @media screen and (max-width: 580px) {
                     float: none;
@@ -341,7 +350,7 @@ blockquote {
                     margin: 10px auto 0;
                 }
             }
-            
+                        
             &.NB-blurblog-tab {
                 background: image-url('header/icon_activity_active.png') no-repeat -9999px -9999px;
             }

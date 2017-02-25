@@ -1,6 +1,8 @@
 package com.newsblur.fragment;
 
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.LoaderManager;
 import android.content.Loader;
@@ -12,7 +14,6 @@ import android.app.DialogFragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,7 +46,6 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
@@ -77,6 +77,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
 	}
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            float textSize = PrefsUtils.getListTextSize(getActivity());
+            adapter.setTextSize(textSize);
+            adapter.notifyDataSetChanged();
+        }
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -118,6 +128,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     adapter.setFeedCursor(cursor);
                     checkOpenFolderPreferences();
                     firstCursorSeenYet = true;
+                    pushUnreadCounts();
                     break;
                 case SAVEDCOUNT_LOADER:
                     adapter.setStarredCountCursor(cursor);
@@ -173,19 +184,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
         ButterKnife.bind(this, v);
 
-        list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
+        list.setGroupIndicator(UIUtils.getDrawable(getActivity(), R.drawable.transparent));
         list.setOnCreateContextMenuListener(this);
         list.setOnChildClickListener(this);
         list.setOnGroupClickListener(this);
         list.setOnGroupCollapseListener(this);
         list.setOnGroupExpandListener(this);
 
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        list.setIndicatorBounds(
-                display.getWidth() - UIUtils.dp2px(getActivity(), 20),
-                display.getWidth() - UIUtils.dp2px(getActivity(), 10));
-
-        list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
         adapter.listBackref = new WeakReference(list); // see note in adapter about backref
         list.setAdapter(adapter);
 
@@ -225,6 +230,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+        int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 
 		switch(type) {
@@ -234,6 +240,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
             inflater.inflate(R.menu.context_folder, menu);
+
+            if (adapter.isFolderRoot(groupPosition)) {
+                menu.removeItem(R.id.menu_mute_folder);
+                menu.removeItem(R.id.menu_unmute_folder);
+            }
+
 			break;
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
@@ -242,8 +254,17 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
                 menu.removeItem(R.id.menu_choose_folders);
+                menu.removeItem(R.id.menu_unmute_feed);
+                menu.removeItem(R.id.menu_mute_feed);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
+
+                Feed feed = adapter.getFeed(groupPosition, childPosition);
+                if (feed.active) {
+                    menu.removeItem(R.id.menu_unmute_feed);
+                } else {
+                    menu.removeItem(R.id.menu_mute_feed);
+                }
             }
 			break;
 		}
@@ -270,25 +291,31 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
-            FeedSet fs = adapter.getChild(groupPosition, childPosition);
+            FeedSet fs = adapter.getGroup(groupPosition);
             markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_choose_folders) {
             DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
             chooseFoldersFragment.show(getFragmentManager(), "dialog");
+        } else if (item.getItemId() == R.id.menu_mute_feed) {
+            Set<String> feedIds = new HashSet<String>();
+            feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
+            FeedUtils.muteFeeds(getActivity(), feedIds);
+        } else if (item.getItemId() == R.id.menu_unmute_feed) {
+            Set<String> feedIds = new HashSet<String>();
+            feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
+            FeedUtils.unmuteFeeds(getActivity(), feedIds);
+        } else if (item.getItemId() == R.id.menu_mute_folder) {
+            FeedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+        } else if (item.getItemId() == R.id.menu_unmute_folder) {
+            FeedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         }
 
 		return super.onContextItemSelected(item);
 	}
 
     private void markFeedsAsRead(FeedSet fs) {
-        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(getActivity());
-        if (confirmation.feedSetRequiresConfirmation(fs)) {
-            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
-            dialog.show(getFragmentManager(), "dialog");
-        } else {
-            FeedUtils.markFeedsRead(fs, null, null, getActivity());
-        }
+        FeedUtils.markRead(getActivity(), fs, null, null, R.array.mark_all_read_options, false);
     }
 
 	public void changeState(StateFilter state) {
@@ -397,5 +424,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		}
 		return true;
 	}
+
+    public void setTextSize(Float size) {
+        if (adapter != null) {
+            adapter.setTextSize(size);
+            adapter.notifyDataSetChanged();
+        }
+
+    }
 
 }

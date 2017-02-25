@@ -780,7 +780,7 @@
             [offlineStories addObject:[NSJSONSerialization
                                        JSONObjectWithData:[[story objectForKey:@"story_json"]
                                                            dataUsingEncoding:NSUTF8StringEncoding]
-                                       options:nil error:nil]];
+                                       options:0 error:nil]];
         }
         [cursor close];
         
@@ -821,14 +821,12 @@
 }
 
 - (void)showOfflineNotifier {
-//    [self.notifier hide];
     self.notifier.style = NBOfflineStyle;
     self.notifier.title = @"Offline";
     [self.notifier show];
 }
 
 - (void)showLoadingNotifier {
-    [self.notifier hide];
     self.notifier.style = NBLoadingStyle;
     self.notifier.title = @"Fetching recent stories...";
     [self.notifier show];
@@ -1109,6 +1107,11 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
+        BOOL offlineEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+        if (!offlineEnabled) {
+            NSLog(@"Not saved stories in db, offline not supported.");
+            return;
+        }
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             for (NSDictionary *story in confirmedNewStories) {
                 [db executeUpdate:@"INSERT into stories"
@@ -2154,6 +2157,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)openTrainSite {
     [appDelegate openTrainSite];
+}
+
+- (void)openNotificationsWithFeed:(NSString *)feedId {
+    [appDelegate openNotificationsWithFeed:feedId];
 }
 
 - (void)openRenameSite {

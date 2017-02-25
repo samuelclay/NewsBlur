@@ -70,7 +70,13 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-
+}
+.NB-static-form .NB-label-right {
+    margin: 0 0 24px 206px;
+    width: 200px;    
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .NB-static-form input.error,

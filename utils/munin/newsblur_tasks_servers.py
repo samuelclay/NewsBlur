@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/srv/newsblur/venv/newsblur/bin/python
 from utils.munin.base import MuninGraph
 import datetime
 from django.conf import settings
@@ -42,7 +42,7 @@ class NBMuninGraph(MuninGraph):
             },
         }])
         
-        return stats['result']
+        return list(stats)
         
     @property
     def total(self):
@@ -62,7 +62,7 @@ class NBMuninGraph(MuninGraph):
             },
         }])
         
-        return stats['result']
+        return list(stats)
         
 
 if __name__ == '__main__':

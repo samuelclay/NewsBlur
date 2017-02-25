@@ -1,38 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Android v4.8.0b2.
-    android:versionCode="120"
-    android:versionName="4.8.0b2" >
-=======
-    android:versionCode="112"
-    android:versionName="4.6.1b2" >
->>>>>>> Android v4.6.1b2.
-=======
-    android:versionCode="121"
-=======
-    android:versionCode="122"
->>>>>>> Forgot to issue v4.8.0b3 with latest changes.
-    android:versionName="4.8.0b3" >
->>>>>>> Android v4.8.0b3.
-=======
-    android:versionCode="123"
-    android:versionName="4.8.0" >
->>>>>>> v4.8.0
-=======
-    android:versionCode="123"
-    android:versionName="4.8.0" >
->>>>>>> v4.8.0
+    android:versionCode="133"
+    android:versionName="5.1.0b1" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="16"
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -51,6 +24,7 @@
         <activity
             android:name=".activity.InitActivity"
             android:label="@string/newsblur"
+            android:theme="@style/initStyle"
             android:noHistory="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -166,12 +140,6 @@
         </receiver>
 
         <receiver android:name=".service.ServiceScheduleReceiver" />
-
-        <receiver android:name=".service.NetStateReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

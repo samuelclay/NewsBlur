@@ -10,7 +10,7 @@
 
 @interface NBLoadingCell : UITableViewCell
 
-@property (nonatomic, readwrite) BOOL *animating;
+@property (nonatomic, readwrite) BOOL animating;
 
 - (void)animate;
 - (void)endAnimation;

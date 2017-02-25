@@ -25,8 +25,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         
         $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
         this.$s.$feed_link_loader.css({'display': 'block'});
-        NEWSBLUR.assets.feeds.bind('reset', _.bind(function() {
-            this.make_feeds();
+        NEWSBLUR.assets.feeds.bind('reset', _.bind(function(options) {
+            this.make_feeds(options);
     
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
@@ -80,7 +80,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             this.$s.$feed_link_loader.css({'display': 'none'});
         }, this));
         
-        if (!this.options.feed_chooser) {
+        if (!this.options.feed_chooser && !options.feed_selector) {
             if (NEWSBLUR.Globals.is_authenticated && 
                 NEWSBLUR.assets.flags['has_chosen_feeds']) {
                 _.delay(function() {
@@ -247,14 +247,19 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
     load_url_next_param: function(route_found) {
         var next = $.getQueryString('next') || $.getQueryString('test');
+        // console.log(['load_url_next_param', next, route_found]);
         if (next == 'optout') {
             NEWSBLUR.reader.open_account_modal({'animate_email': true});
         } else if (next == 'goodies') {
             NEWSBLUR.reader.open_goodies_modal();
+        } else if (next == 'newsletters') {
+            NEWSBLUR.reader.open_newsletters_modal();
         } else if (next == 'friends') {
             NEWSBLUR.reader.open_friends_modal();
         } else if (next == 'account') {
             NEWSBLUR.reader.open_account_modal();
+        } else if (next == 'opml') {
+            NEWSBLUR.reader.open_intro_modal({page_number: 2});
         } else if (next == 'organizer') {
             NEWSBLUR.reader.open_organizer_modal();
         } else if (next == 'chooser') {
@@ -263,6 +268,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
         } else if (next == 'password') {
             NEWSBLUR.reader.open_account_modal({'change_password': true});
+        } else if (next == 'notifications') {
+            _.delay(function() {
+                NEWSBLUR.reader.open_notifications_modal(NEWSBLUR.assets.active_feed && NEWSBLUR.assets.active_feed.id);
+            }, 200);
         }
 
         var url = $.getQueryString('url') || $.getQueryString('add');

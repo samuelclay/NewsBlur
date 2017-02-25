@@ -5,13 +5,15 @@
 
 {% block body %}
     
-    <p style="font-size: 18px; color:#555555; margin-top: 0;margin-bottom: 10px;padding-top:0px;line-height: 28px;">
-        <a href="{{ share_user_profile.blurblog_url }}"><img src="{{ share_user_profile.email_photo_url }}" style="width: 36px; height: 36px;margin: 0 12px 0 0;border-radius: 1px;border: none;float: left;vertical-align: middle"></a> {{ from_name }} shares "<a href="{{ story.story_permalink|safe }}">{{ story.story_title }}</a>"{% if feed %} from <img src="{{ feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ feed.feed_title }}{% endif %}{% if comments %}:</p>
-    <p>{{ comments }}
-    {% endif %}
-    </p>
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        <a href="{{ share_user_profile.blurblog_url }}"><img src="{{ share_user_profile.email_photo_url }}" style="width: 36px; height: 36px;margin: 0 12px 0 0;border-radius: 1px;border: none;float: left;vertical-align: middle"></a> {{ from_name }} shares "<a href="{{ story.story_permalink|safe }}">{{ story.story_title }}</a>"{% if feed %} from <img src="{{ feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ feed.feed_title }}{% endif %}{% if comments %}:
+    </h2>
     
-    <div style="margin: 24px 0 12px; border-top: 3px solid #404040; padding: 4px 0;"></div>
+    <p>{{ comments }}</p>
+    {% else %}</h2>
+    {% endif %}
+    
+    <hr>
 
     <h2>{{ story.story_title }}</h2>
 
@@ -19,8 +21,10 @@
 
     <p>{{ story.story_content|safe }}</p>
     
-    <div style="margin: 24px 0 12px; border-top: 3px solid #404040; padding: 4px 0;"></div>
+    <hr>
     
 {% endblock %}
 
 {% block footer %}{% endblock footer %}
+
+{% block optout %}{% endblock %}

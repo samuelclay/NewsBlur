@@ -52,6 +52,8 @@
     self.profileTable.dataSource = self;
     self.profileTable.delegate = self;
     self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.profileTable.backgroundView = nil;
+    self.profileTable.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
 //    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     ProfileBadge *badge = [[ProfileBadge alloc] init];
@@ -193,22 +195,13 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CGRect vb = self.view.bounds;
-    // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
-    int width = 300 - 20;
-    if (vb.size.width == 480) {
-        width = 460 - 20;
-    } else if (vb.size.width == 540) {
-        width = 478 - 20;
-    }
-
     if (indexPath.section == 0 || indexPath.section == 2) {
         return 180;
     } else {
         SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
         int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
                                withUserProfile:self.userProfile
-                                     withWidth:width];
+                                     withWidth:self.view.frame.size.width - 20];
         return height;
     }
 }
@@ -239,7 +232,7 @@
                     reuseIdentifier:@"ActivityCellIdentifier"];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
-        cell.accessoryType=  UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
           withUserProfile:self.userProfile
                 withWidth:vb.size.width];

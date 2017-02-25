@@ -50,8 +50,6 @@ static UIFont *textFont = nil;
         self.selectedBackgroundView = selectedBackground;
 
         [self.contentView addSubview:cellContent];
-
-        [self setupGestures];
     }
 
     return self;
@@ -91,8 +89,13 @@ static UIFont *textFont = nil;
         return;
     }
     
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL isNotifications = [[preferences stringForKey:@"feed_swipe_left"]
+                            isEqualToString:@"notifications"];
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
-    [self setFirstStateIconName:self.isSocial ? @"menu_icn_fetch_subscribers.png" : @"train.png"
+    [self setFirstStateIconName:(self.isSocial ? @"menu_icn_fetch_subscribers.png" :
+                                 isNotifications ? @"menu_icn_notifications.png" :
+                                 @"train.png")
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil
@@ -189,7 +192,7 @@ static UIFont *textFont = nil;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor:boldFontDescriptor size:0.0];
+        font = [UIFont fontWithDescriptor:boldFontDescriptor size:fontDescriptor.pointSize];
     } else {
         font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
     }

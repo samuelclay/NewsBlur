@@ -37,7 +37,7 @@
     if (!self.window || !self.superview.window) return;
     if (!animating) return;
     self.backgroundColor = UIColorFromLightDarkRGB(0x5C89C9, 0x666666);
-    [UIView animateWithDuration:.650f delay:0.f options:nil animations:^{
+    [UIView animateWithDuration:.650f delay:0.f options:0 animations:^{
         self.backgroundColor = UIColorFromLightDarkRGB(0xE1EBFF, 0x222222);
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:1.05f animations:^{

@@ -275,20 +275,29 @@ reader, and feed importer. To run the test suite:
 
 You got the downtime message either through email or SMS. This is the order of operations for determining what's wrong.
 
- 0. Ensure you have `secrets-newsblur/configs/hosts` installed in your `/etc/hosts` so server hostnames 
+ 0a. If downtime goes over 5 minutes, go to Twitter and say you're handling it. Be transparent about what it is,
+    NewsBlur's followers are largely technical. Also the 502 page points users to Twitter for status updates.
+ 
+ 0b. Ensure you have `secrets-newsblur/configs/hosts` installed in your `/etc/hosts` so server hostnames 
     work.
 
  1. Check www.newsblur.com to confirm it's down.
     
-    If you don't get a 502 page, then NewsBlur isn't even reachable and you just need to contact the
-    hosting provider and yell at them.
+    If you don't get a 502 page, then NewsBlur isn't even reachable and you just need to contact [the
+    hosting provider](http://cloud.digitalocean.com/support) and yell at them. 
     
  2. Check [Sentry](https://app.getsentry.com/newsblur/app/) and see if the answer is at the top of the 
     list.
  
     This will show if a database (redis, mongo, postgres) can't be found.
 
- 3. Check the various databases:
+ 3. Check which servers can't be reached on HAProxy stats page. Basic auth can be found in secrets/configs/haproxy.conf.
+ 
+    Typically it'll be mongo, but any of the redis or postgres servers can be unreachable due to
+    acts of god. Otherwise, a frequent cause is lack of disk space. There are monitors on every DB
+    server watching for disk space, emailing me when they're running low, but it still happens.
+ 
+ 4. Check the various databases:
 
      a. If Redis server (db_redis, db_redis_story, db_redis_pubsub) can't connect, redis is probably down.
         
@@ -313,6 +322,14 @@ You got the downtime message either through email or SMS. This is the order of o
         it's ephemeral and used for, you guessed it, analytics). You can easily provision a new mongodb
         server and point to that machine.
         
+        If mongo is out of space, which happens, the servers need to be re-synced every 2-3 months to 
+        compress the data bloat. Simply `rm -fr /var/lib/mongodb/*` and re-start Mongo. It will re-sync.
+        
+        If both secondaries are down, then the primary Mongo will go down. You'll need a secondary mongo
+        in the sync state at the very least before the primary will accept reads. It shouldn't take long to
+        get into that state, but you'll need a mongodb machine setup. You can immediately reuse the 
+        non-working secondary if disk space is the only issue.
+        
      c. If postgresql (db_pgsql) can't connect, postgres is probably down.
         
         This is the rarest of the rare and has in fact never happened. Machine failure. If you can salvage
@@ -329,7 +346,6 @@ You got the downtime message either through email or SMS. This is the order of o
     
        ```
        fab all setup_hosts
-       fab ec2task setup_hosts
        ```
     
     d. Changes should be instant, but you can also bounce every machine with:
@@ -337,10 +353,9 @@ You got the downtime message either through email or SMS. This is the order of o
        ```
        fab web deploy:fast=True # fast=True just kill -9's processes.
        fab task celery
-       fab ec2task celery
        ```
       
-    e. Monitor tlnb.py and tlnbt.py for lots of reading and feed fetching.    
+    e. Monitor `utils/tlnb.py` and `utils/tlnbt.py` for lots of reading and feed fetching.
 
   5. If feeds aren't fetching, check that the `tasked_feeds` queue is empty. You can drain it by running:
   
@@ -348,7 +363,11 @@ You got the downtime message either through email or SMS. This is the order of o
     Feed.drain_task_feeds()
     ```
     
-    This happens when a deploy on the task servers hits faults and the task servers lose their connection without giving the tasked feeds back to the queue. Feeds that fall through this crack are automatically fixed after 24 hours, but if many feeds fall through due to a bad deploy, you'll want to accelerate that check by just draining the tasked feeds pool, adding those feeds back into the queue.
+    This happens when a deploy on the task servers hits faults and the task servers lose their 
+    connection without giving the tasked feeds back to the queue. Feeds that fall through this 
+    crack are automatically fixed after 24 hours, but if many feeds fall through due to a bad 
+    deploy or electrical failure, you'll want to accelerate that check by just draining the 
+    tasked feeds pool, adding those feeds back into the queue. This command is idempotent.
       
 ## Author
 

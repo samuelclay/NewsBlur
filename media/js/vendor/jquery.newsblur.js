@@ -197,6 +197,7 @@ NEWSBLUR.log = function(msg) {
               me.forceHide = null;
             };
             me._autohider = function(e) {
+              // console.log(['autohide', $(e.target), $(e.target).closest(me[0]), $(e.target).parents(), me[0], _.include($(e.target).parents(), me[0])]);
               if (me._autoignore) return;
               if (options.clickable && (me[0] == e.target || _.include($(e.target).parents(), me[0]))) return;
               if (options.onHide && !options.onHide(e, _.bind(me.forceHide, me))) return;
@@ -440,7 +441,7 @@ NEWSBLUR.log = function(msg) {
 
             while (e = r.exec(q))
                 params[d(e[1])] = d(e[2]);
-            console.log(['get query string', name, params, params[name]]);
+            // console.log(['get query string', name, params, params[name]]);
             return params[name];
         },
         

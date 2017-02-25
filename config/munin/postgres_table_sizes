@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur/bin/python
 
 """ Monitors the total table size (data + indexes)
     for all tables in the specified database."""
 
-from munin.postgres import MuninPostgresPlugin
+from vendor.munin.postgres import MuninPostgresPlugin
 
 class PostgresTableSizes(MuninPostgresPlugin):
     vlabel = "Table Size"

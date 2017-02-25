@@ -3,12 +3,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     className: "NB-filter-popover",
     
     options: {
-        'width': 264,
+        'width': 304,
         'anchor': '.NB-feedbar-options',
-        'placement': 'bottom -left',
+        'placement': 'bottom right',
         'offset': {
             top: 18,
-            left: 0
+            left: -110
         },
         'overlay_top': true,
         'popover_class': 'NB-filter-popover-container',
@@ -19,11 +19,14 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     events: {
         "click .NB-view-setting-option": "change_view_setting",
         "click .NB-filter-popover-filter-icon": "open_site_settings",
-        "click .NB-filter-popover-stats-icon": "open_site_statistics"
+        "click .NB-filter-popover-stats-icon": "open_site_statistics",
+        "click .NB-filter-popover-notifications-icon": "open_notifications"
     },
     
     initialize: function(options) {
         this.options = _.extend({}, this.options, options);
+        this.options.offset.left = -1 * $(".NB-feedbar-options").width() - 16;
+        
         if (NEWSBLUR.reader.active_feed == "read") {
             this.options['show_readfilter'] = false;
         }
@@ -72,6 +75,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, "Stories arrive in real-time")
                 ])),
+                (feed.get('average_stories_per_month') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-average' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('div', { className: 'NB-stat' }, Inflector.pluralize("story", feed.get('average_stories_per_month'), true) + " per month")
+                ])),
                 (feed.get('updated') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-updated' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, "Updated " + feed.get('updated') + ' ago')
@@ -80,6 +87,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, "Fetched every " + NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay')))
                 ]))
+            ])),
+            (feed && NEWSBLUR.Globals.is_staff && $.make('div', { className: 'NB-popover-section' }, [
+                $.make('div', { className: 'NB-section-icon NB-filter-popover-notifications-icon' }),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Notifications'),
+                $.make('div', { className: 'NB-feedbar-options-notifications' }, [
+                    new NEWSBLUR.Views.FeedNotificationView({model: feed, popover: true}).render().$el
+                ])
             ]))
         ]));
         
@@ -148,6 +162,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             console.log(["stats"]);
             NEWSBLUR.reader.open_feed_statistics_modal();
         });
+    },
+
+    open_notifications: function() {
+        this.close(_.bind(function() {
+            NEWSBLUR.reader.open_notifications_modal(this.options.feed_id);
+        }, this));
     }
 
     

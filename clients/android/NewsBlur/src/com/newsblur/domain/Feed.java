@@ -3,9 +3,9 @@ package com.newsblur.domain;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -57,7 +57,15 @@ public class Feed implements Comparable<Feed>, Serializable {
 	public String title;
 
 	@SerializedName("updated_seconds_ago")
-	public String lastUpdated;
+	public int lastUpdated;
+
+    // NB: deserialized but not stored
+    @SerializedName("notification_types")
+    public List<String> notificationTypes;
+
+    // NB: only stored if notificationTypes was set to include android
+    @SerializedName("notification_filter")
+    public String notificationFilter;
 
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
@@ -76,6 +84,9 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_SUBSCRIBERS, subscribers);
 		values.put(DatabaseConstants.FEED_TITLE, title);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
+        if (isNotifyAndroid()) {
+            values.put(DatabaseConstants.FEED_NOTIFICATION_FILTER, notificationFilter);
+        }
 		return values;
 	}
 
@@ -84,7 +95,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 			cursor.moveToFirst();
 		}
 		Feed feed = new Feed();
-		feed.active = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)));
+		feed.active = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)).equals("1");
 		feed.address = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
 		feed.faviconColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
         feed.faviconFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
@@ -93,12 +104,13 @@ public class Feed implements Comparable<Feed>, Serializable {
 		feed.faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
 		feed.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID));
 		feed.feedLink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_LINK));
-		feed.lastUpdated = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
 		feed.negativeCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_NEGATIVE_COUNT));
 		feed.neutralCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_NEUTRAL_COUNT));
 		feed.positiveCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
 		feed.subscribers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
 		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
+        feed.lastUpdated = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
+        feed.notificationFilter = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_FILTER));
 		return feed;
 	}
 
@@ -129,5 +141,17 @@ public class Feed implements Comparable<Feed>, Serializable {
     public int compareTo(Feed f) {
         return title.compareToIgnoreCase(f.title);
     }
+
+    private boolean isNotifyAndroid() {
+        if (notificationTypes == null) return false;
+        for (String type : notificationTypes) {
+            if (type.equals(NOTIFY_TYPE_ANDROID)) return true;
+        }
+        return false;
+    }
+
+    private static final String NOTIFY_TYPE_ANDROID = "android";
+    public static final String NOTIFY_FILTER_UNREAD = "unread";
+    public static final String NOTIFY_FILTER_FOCUS = "focus";
 
 }

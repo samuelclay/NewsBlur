@@ -12,5 +12,10 @@
 
     <item android:id="@+id/menu_choose_folders"
           android:title="@string/menu_choose_folders" />
-    
+
+    <item android:id="@+id/menu_mute_feed"
+          android:title="@string/menu_mute_feed" />
+
+    <item android:id="@+id/menu_unmute_feed"
+          android:title="@string/menu_unmute_feed" />
 </menu>

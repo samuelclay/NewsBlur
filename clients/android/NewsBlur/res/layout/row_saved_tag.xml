@@ -43,9 +43,8 @@
         android:textStyle="bold"
         android:layout_toLeftOf="@id/row_saved_tag_sum"
         android:layout_toRightOf="@id/row_tag_icon"
-        style="?selectorRowFeedName"
         android:paddingBottom="7dp"
     	android:paddingTop="7dp" 
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
 </RelativeLayout>

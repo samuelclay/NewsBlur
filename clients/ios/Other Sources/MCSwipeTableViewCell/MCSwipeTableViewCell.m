@@ -30,6 +30,8 @@ static NSTimeInterval const kMCDurationHightLimit = 0.1; // Highest duration whe
 
 @implementation MCSwipeTableViewCell
 
+@synthesize shouldDrag;
+
 #pragma mark - Initialization
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
@@ -101,7 +103,7 @@ secondStateIconName:(NSString *)secondIconName
     _isDragging = NO;
     
     // By default the cells are draggable
-    _shouldDrag = YES;
+    shouldDrag = YES;
     
     // By default the icons are animating
     _shouldAnimatesIcons = YES;
@@ -160,10 +162,12 @@ secondStateIconName:(NSString *)secondIconName
 - (void)handlePanGestureRecognizer:(UIPanGestureRecognizer *)gesture {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     
-    _shouldDrag = [prefs boolForKey:@"enable_feed_cell_swipe"];
+    if (shouldDrag) {
+        shouldDrag = [prefs boolForKey:@"enable_feed_cell_swipe"];
+    }
 
     // The user do not want you to be dragged!
-    if (!_shouldDrag) return;
+    if (!shouldDrag) return;
     
     UIGestureRecognizerState state = [gesture state];
     CGPoint translation = [gesture translationInView:self];

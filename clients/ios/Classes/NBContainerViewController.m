@@ -24,6 +24,7 @@
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"
+#import "NotificationsViewController.h"
 #import "StoriesCollection.h"
 #import "UserTagsViewController.h"
 
@@ -56,7 +57,6 @@
 @property (readwrite) BOOL isHidingStory;
 @property (readwrite) BOOL feedDetailIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
-@property (readwrite) UIDeviceOrientation rotatingToOrientation;
 @property (nonatomic) UIBackgroundTaskIdentifier reorientBackgroundTask;
 
 @end
@@ -204,7 +204,6 @@
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-        self.rotatingToOrientation = orientation;
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
@@ -213,19 +212,12 @@
             leftBorder.hidden = NO;
         }
         
-        if (!self.feedDetailIsVisible) {
-            [self layoutDashboardScreen];
-        } else if (!self.originalViewIsVisible) {
-            [self layoutFeedDetailScreen];
-        }
+        [self adjustLayout];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
-        if (!self.feedDetailIsVisible) {
-            [self layoutDashboardScreen];
-        } else if (!self.originalViewIsVisible) {
-            [self layoutFeedDetailScreen];
-        }
+        [self adjustLayout];
+        
         if (self.feedDetailIsVisible) {
             // Defer this in the background, to avoid misaligning the detail views
             if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
@@ -239,6 +231,18 @@
             }
         }
     }];
+}
+
+- (void)adjustLayout {
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        return;
+    }
+    
+    if (!self.feedDetailIsVisible) {
+        [self layoutDashboardScreen];
+    } else if (!self.originalViewIsVisible) {
+        [self layoutFeedDetailScreen];
+    }
 }
 
 - (void)delayedReorientPages {
@@ -342,6 +346,23 @@
     } else {
         CGRect frame = [sender CGRectValue];
         [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPageControl.view sourceRect:frame];
+    }
+}
+
+
+- (void)showNotificationsPopoverWithFeed:(NSString *)feedId sender:(id)sender {
+    self.appDelegate.notificationsViewController.feedId = feedId;
+    if ([sender class] == [UIBarButtonItem class]) {
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) barButtonItem:sender];
+    } else if ([sender class] == [FeedTableCell class]) {
+        FeedTableCell *cell = (FeedTableCell *)sender;
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
+    } else if ([sender class] == [FeedDetailTableCell class]) {
+        FeedDetailTableCell *cell = (FeedDetailTableCell *)sender;
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
+    } else {
+        CGRect frame = [sender CGRectValue];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPageControl.view sourceRect:frame];
     }
 }
 

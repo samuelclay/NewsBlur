@@ -1,8 +1,14 @@
+import datetime
 import mongoengine as mongo
 from collections import defaultdict
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
 from apps.rss_feeds.models import Feed
+from apps.analyzer.tasks import EmailPopularityQuery
+from utils import log as logging
 
 class FeatureCategory(models.Model):
     user = models.ForeignKey(User)
@@ -22,6 +28,62 @@ class Category(models.Model):
     
     def __unicode__(self):
         return '%s (%s)' % (self.category, self.count)
+
+
+class MPopularityQuery(mongo.Document):
+    email = mongo.StringField()
+    query = mongo.StringField()
+    is_emailed = mongo.BooleanField()
+    creation_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'popularity_query',
+        'allow_inheritance': False,
+    }
+    
+    def __unicode__(self):
+        return "%s - \"%s\"" % (self.email, self.query)
+
+    def queue_email(self):
+        EmailPopularityQuery.delay(pk=self.pk)
+    
+    @classmethod
+    def ensure_all_sent(cls, queue=True):
+        for query in cls.objects.all().order_by('creation_date'):
+            query.ensure_sent(queue=queue)
+            
+    def ensure_sent(self, queue=True):
+        if self.is_emailed:
+            logging.debug(" ---> Already sent %s" % self)
+            return
+        
+        if queue:
+            self.queue_email()
+        else:
+            self.send_email()
+        
+    def send_email(self, limit=5000):
+        filename = Feed.xls_query_popularity(self.query, limit=limit)
+        xlsx = open(filename, "r")
+        
+        params = {
+            'query': self.query
+        }
+        text    = render_to_string('mail/email_popularity_query.txt', params)
+        html    = render_to_string('mail/email_popularity_query.xhtml', params)
+        subject = "Keyword popularity spreadsheet: \"%s\"" % self.query
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['<%s>' % (self.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.attach(filename, xlsx.read(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        msg.send()
+        
+        self.is_emailed = True
+        self.save()
+        
+        logging.debug(" -> ~BB~FM~SBSent email for popularity query: %s" % self)
+        
 
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()

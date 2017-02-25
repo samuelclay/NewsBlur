@@ -15,7 +15,6 @@ class MCategory(mongo.Document):
         'collection': 'category',
         'indexes': ['title'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
     }
     
     def __unicode__(self):
@@ -100,7 +99,6 @@ class MCategorySite(mongo.Document):
         'collection': 'category_site',
         'indexes': ['feed_id', 'category_title'],
         'allow_inheritance': False,
-        'index_drop_dups': True,
     }
     
     def __unicode__(self):

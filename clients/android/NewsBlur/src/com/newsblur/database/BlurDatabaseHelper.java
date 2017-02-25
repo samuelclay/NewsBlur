@@ -4,10 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
-import static android.database.DatabaseUtils.dumpCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,7 +20,6 @@ import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.StoriesResponse;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefsUtils;
@@ -99,8 +96,15 @@ public class BlurDatabaseHelper {
     }
 
     public Set<String> getAllFeeds() {
+        return getAllFeeds(false);
+    }
+
+    private Set<String> getAllFeeds(boolean activeOnly) {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
+        if (activeOnly) {
+            q1 = q1 + " WHERE " + DatabaseConstants.FEED_ACTIVE + " = 1";
+        }
         Cursor c = dbRO.rawQuery(q1, null);
         LinkedHashSet<String> feedIds = new LinkedHashSet<String>(c.getCount());
         while (c.moveToNext()) {
@@ -108,6 +112,10 @@ public class BlurDatabaseHelper {
         }
         c.close();
         return feedIds;
+    }
+
+    public Set<String> getAllActiveFeeds() {
+        return getAllFeeds(true);
     }
 
     private List<String> getAllSocialFeeds() {
@@ -291,6 +299,19 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
+    public Set<String> getAllStoryThumbnails() {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_THUMBNAIL_URL}, null, null, null, null, null);
+        Set<String> urls = new HashSet<String>(c.getCount());
+        while (c.moveToNext()) {
+            String url = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_THUMBNAIL_URL));
+            if (url != null) {
+                urls.add(url);
+            }
+        }
+        c.close();
+        return urls;
+    }
+
     public void insertStories(StoriesResponse apiResponse, boolean forImmediateReading) {
         StateFilter intelState = PrefsUtils.getStateFilter(context);
         synchronized (RW_MUTEX) {
@@ -325,8 +346,10 @@ public class BlurDatabaseHelper {
                 // handle story content
                 List<ContentValues> socialStoryValues = new ArrayList<ContentValues>();
                 for (Story story : apiResponse.stories) {
+                    // pick a thumbnail for the story
+                    story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
+                    // insert the story data
                     ContentValues values = story.getValues();
-                    // immediate insert the story data
                     dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                     // if a story was shared by a user, also insert it into the social table under their userid, too
                     for (String sharedUserId : story.sharedUserIds) {
@@ -491,6 +514,22 @@ public class BlurDatabaseHelper {
                 values.put(DatabaseConstants.STORY_READ, true);
                 for (String hash : hashes) {
                     dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
+    public void setFeedsActive(Set<String> feedIds, boolean active) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.FEED_ACTIVE, active);
+                for (String feedId : feedIds) {
+                    dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});
                 }
                 dbRW.setTransactionSuccessful();
             } finally {
@@ -744,9 +783,26 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }
 
-    public Cursor getActions(boolean includeDone) {
+    public Cursor getActions() {
         String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE;
         return dbRO.rawQuery(q, null);
+    }
+
+    public void incrementActionTried(String actionId) {
+        synchronized (RW_MUTEX) {
+            String q = "UPDATE " + DatabaseConstants.ACTION_TABLE +
+                       " SET " + DatabaseConstants.ACTION_TRIED + " = " + DatabaseConstants.ACTION_TRIED + " + 1" +
+                       " WHERE " + DatabaseConstants.ACTION_ID + " = ?";
+            dbRW.execSQL(q, new String[]{actionId});
+        }
+    }
+
+    public int getUntriedActionCount() {
+        String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE + " WHERE " + DatabaseConstants.ACTION_TRIED + " < 1";
+        Cursor c = dbRO.rawQuery(q, null);
+        int result = c.getCount();
+        c.close();
+        return result;
     }
 
     public void clearAction(String actionId) {
@@ -921,6 +977,14 @@ public class BlurDatabaseHelper {
         return c;
     }
 
+    public Cursor getNotifyFocusStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_FOCUS_STORY_QUERY, null, null);
+    }
+
+    public Cursor getNotifyUnreadStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_UNREAD_STORY_QUERY, null, null);
+    }
+
     public Loader<Cursor> getActiveStoriesLoader(final FeedSet fs) {
         final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return new QueryCursorLoader(context) {
@@ -947,7 +1011,7 @@ public class BlurDatabaseHelper {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
-        StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE);
+        StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
         
         if (fs.isAllRead()) {
             q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
@@ -1033,6 +1097,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            if (stateFilter == StateFilter.SAVED) stateFilter = StateFilter.SOME;
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.isAllRead()) {
@@ -1060,6 +1125,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
             sel.append(DatabaseConstants.JOIN_STORIES_ON_SOCIALFEED_MAP);
+            if (stateFilter == StateFilter.SAVED) stateFilter = StateFilter.SOME;
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else {
@@ -1214,11 +1280,7 @@ public class BlurDatabaseHelper {
         if (AppConstants.VERBOSE_LOG_DB) {
             Log.d(this.getClass().getName(), String.format("DB rawQuery: '%s' with args: %s", sql, java.util.Arrays.toString(selectionArgs)));
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            return dbRO.rawQuery(sql, selectionArgs, cancellationSignal);
-        } else {
-            return dbRO.rawQuery(sql, selectionArgs);
-        }
+        return dbRO.rawQuery(sql, selectionArgs, cancellationSignal);
     }
 
     /**
@@ -1226,11 +1288,7 @@ public class BlurDatabaseHelper {
      * only if the device's platform provides support.
      */
     private Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
-        } else {
-            return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-        }
+        return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
     }
 
 }

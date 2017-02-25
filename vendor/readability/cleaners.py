@@ -2,7 +2,7 @@
 import re
 from lxml.html.clean import Cleaner
 
-bad_attrs = ['style', '[-a-z]*color', 'background[-a-z]*', 'on*']
+bad_attrs = ['width', 'height', 'style', '[-a-z]*color', 'background[-a-z]*', 'on*']
 single_quoted = "'[^']+'"
 double_quoted = '"[^"]+"'
 non_space = '[^ "\'>]+'
@@ -20,7 +20,8 @@ def clean_attributes(html):
     return html
 
 def normalize_spaces(s):
-    if not s: return ''
+    if not s:
+        return ''
     """replace any sequence of whitespace
     characters with a single space"""
     return ' '.join(s.split())

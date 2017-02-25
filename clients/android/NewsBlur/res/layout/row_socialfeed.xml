@@ -24,7 +24,7 @@
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:textColor="@color/white"
+            style="?feedRowNeutCountText"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -63,9 +63,8 @@
         android:textStyle="bold"
         android:layout_toLeftOf="@id/row_foldersums"
         android:layout_toRightOf="@id/row_socialfeed_icon"
-        style="?selectorRowFeedName"
         android:paddingBottom="7dp"
     	android:paddingTop="7dp" 
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
 </RelativeLayout>

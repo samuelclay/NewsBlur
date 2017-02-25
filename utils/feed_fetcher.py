@@ -15,12 +15,13 @@ import urlparse
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
-from io import BytesIO as StringIO
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
+from apps.notifications.tasks import QueueNotifications, MUserFeedNotification
 from apps.push.models import PushSubscription
+from apps.social.models import MSocialServices
 from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
@@ -33,6 +34,7 @@ from django.utils.html import linebreaks
 from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
+import tweepy
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -76,14 +78,6 @@ class FetchFeed:
             modified = None
             etag = None
         
-        USER_AGENT = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
-                      '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                      'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                      'Safari/534.48.3)' % (
-                          self.feed.num_subscribers,
-                          's' if self.feed.num_subscribers != 1 else '',
-                          self.feed.permalink,
-                     ))
         if self.options.get('feed_xml'):
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
                           self.feed.title[:30], len(self.options.get('feed_xml'))))
@@ -104,14 +98,22 @@ class FetchFeed:
                               (self.feed.title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(youtube_feed)
-
+        elif re.match('(https?)?://twitter.com/\w+/?$', qurl(address, remove=['_'])):
+            # try:
+            twitter_feed = self.fetch_twitter(address)
+            # except Exception, e:
+            #     logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %e' %
+            #                   (self.feed.title[:30], address, e))
+            #     twitter_feed = None
+            if not twitter_feed:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s' % 
+                              (self.feed.title[:30], address))
+                return FEED_ERRHTTP, None
+            self.fpf = feedparser.parse(twitter_feed)
+        
         if not self.fpf:
             try:
-                headers = {
-                    'User-Agent': USER_AGENT,
-                    'Accept-encoding': 'gzip, deflate',
-                    'A-IM': 'feed',
-                }
+                headers = self.feed.fetch_headers()
                 if etag:
                     headers['If-None-Match'] = etag
                 if modified:
@@ -123,22 +125,29 @@ class FetchFeed:
                     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     modified_header = '%s, %02d %s %04d %02d:%02d:%02d GMT' % (short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5])
                     headers['If-Modified-Since'] = modified_header
+                if etag or modified:
+                    headers['A-IM'] = 'feed'
                 raw_feed = requests.get(address, headers=headers)
-                if raw_feed.content:
+                if raw_feed.status_code >= 400:
+                    logging.debug(" ---> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s" % (self.feed.title[:30], raw_feed.status_code, raw_feed.headers))
+                    raw_feed = requests.get(address, headers=self.feed.fetch_headers(fake=True))
+                if raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers['Content-Location'] = raw_feed.url
                     self.fpf = feedparser.parse(smart_unicode(raw_feed.content),
                                                 response_headers=response_headers)
+                    if self.options.get('debug', False):
+                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
             except Exception, e:
                 logging.debug(" ---> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.title[:30], unicode(e)[:100]))
             
-            if not self.fpf:
+            if not self.fpf or self.options.get('force_fp', False):
                 try:
                     self.fpf = feedparser.parse(address,
-                                                agent=USER_AGENT,
+                                                agent=self.feed.user_agent,
                                                 etag=etag,
                                                 modified=modified)
-                except (TypeError, ValueError, KeyError, EOFError), e:
+                except (TypeError, ValueError, KeyError, EOFError, MemoryError), e:
                     logging.debug(u'   ***> [%-30s] ~FRFeed fetch error: %s' % 
                                   (self.feed.title[:30], e))
                     pass
@@ -147,8 +156,8 @@ class FetchFeed:
             try:
                 logging.debug(u'   ***> [%-30s] ~FRTurning off headers...' % 
                               (self.feed.title[:30]))
-                self.fpf = feedparser.parse(address, agent=USER_AGENT)
-            except (TypeError, ValueError, KeyError, EOFError), e:
+                self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
+            except (TypeError, ValueError, KeyError, EOFError, MemoryError), e:
                 logging.debug(u'   ***> [%-30s] ~FRFetch failed: %s.' % 
                               (self.feed.title[:30], e))
                 return FEED_ERRHTTP, None
@@ -299,6 +308,166 @@ class FetchFeed:
             rss.add_item(**story_data)
         
         return rss.writeString('utf-8')
+    
+    def fetch_twitter(self, address):
+        username = None
+        try:
+            username_groups = re.search('twitter.com/(\w+)/?', address)
+            if not username_groups:
+                return
+            username = username_groups.group(1)
+        except IndexError:
+            return
+        
+        twitter_api = None
+        social_services = None
+        if self.options.get('requesting_user_id', None):
+            social_services = MSocialServices.get_user(self.options.get('requesting_user_id'))
+            try:
+                twitter_api = social_services.twitter_api()
+            except tweepy.error.TweepError, e:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                return
+        else:
+            usersubs = UserSubscription.objects.filter(feed=self.feed)
+            if not usersubs:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No subscriptions' % 
+                              (self.feed.title[:30], address))
+                return
+            for sub in usersubs:
+                social_services = MSocialServices.get_user(sub.user_id)
+                try:
+                    twitter_api = social_services.twitter_api()
+                except tweepy.error.TweepError, e:
+                    logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
+                                  (self.feed.title[:30], address, e))
+                    continue
+        
+        if not twitter_api:
+            logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No twitter API for %s' % 
+                          (self.feed.title[:30], address, usersubs[0].user.username))
+            return
+        
+        try:
+            twitter_user = twitter_api.get_user(username)
+        except TypeError, e:
+            logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed, disconnecting twitter: %s: %s' % 
+                          (self.feed.title[:30], address, e))
+            social_services.disconnect_twitter()
+            return
+        except tweepy.error.TweepError, e:
+            message = str(e).lower()
+            if ((len(e.args) >= 2 and e.args[2] == 63) or
+                ('temporarily locked' in message)):
+                # Suspended
+                logging.debug(u'   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            elif 'suspended' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            elif 'not found' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            elif 'over capacity' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                return
+            else:
+                raise
+        
+        try:
+            tweets = twitter_user.timeline()
+        except tweepy.error.TweepError, e:
+            if 'Not authorized' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            elif 'User not found' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
+            else:
+                raise e
+                
+        
+        data = {}
+        data['title'] = "%s on Twitter" % username
+        data['link'] = "https://twitter.com/%s" % username
+        data['description'] = "%s on Twitter" % username
+        data['lastBuildDate'] = datetime.datetime.utcnow()
+        data['generator'] = 'NewsBlur Twitter API Decrapifier - %s' % settings.NEWSBLUR_URL
+        data['docs'] = None
+        data['feed_url'] = address
+        rss = feedgenerator.Atom1Feed(**data)
+
+        for tweet in tweets:
+            categories = set()
+            entities = ""
+
+            for media in tweet.entities.get('media', []):
+                if 'media_url_https' not in media: continue
+                if media['type'] == 'photo':
+                    entities += "<img src=\"%s\"> " % media['media_url_https']
+                    if 'photo' not in categories:
+                        categories.add('photo')
+
+            content = """<div class="NB-twitter-rss">
+                             <div class="NB-twitter-rss-tweet">%s</div><hr />
+                             <div class="NB-twitter-rss-entities">%s</div>
+                             <div class="NB-twitter-rss-author">
+                                 Posted by
+                                     <a href="https://twitter.com/%s"><img src="%s" style="height: 32px" /> %s</a>
+                                on %s.</div>
+                             <div class="NB-twitter-rss-stats">%s %s%s %s</div>
+                        </div>""" % (
+                linkify(linebreaks(tweet.text)),
+                entities,
+                username,
+                tweet.user.profile_image_url_https,
+                username,
+                tweet.created_at.strftime("%c"),
+                ("<br /><br />" if tweet.favorite_count or tweet.retweet_count else ""),
+                ("<b>%s</b> %s" % (tweet.favorite_count, "like" if tweet.favorite_count == 1 else "likes")) if tweet.favorite_count else "",
+                (", " if tweet.favorite_count and tweet.retweet_count else ""),
+                ("<b>%s</b> %s" % (tweet.retweet_count, "retweet" if tweet.retweet_count == 1 else "retweets")) if tweet.retweet_count else "",
+            )
+            
+            if tweet.text.startswith('RT @'):
+                categories.add('retweet')
+            elif tweet.in_reply_to_status_id or tweet.text.startswith('@'):
+                categories.add('reply')
+            else:
+                categories.add('tweet')
+            if tweet.text.startswith('RT @'):
+                categories.add('retweet')
+            if tweet.favorite_count:
+                categories.add('liked')
+            if tweet.retweet_count:
+                categories.add('retweeted')            
+            if 'http' in tweet.text:
+                categories.add('link')
+            
+            story_data = {
+                'title': tweet.text,
+                'link': "https://twitter.com/%s/status/%s" % (username, tweet.id),
+                'description': content,
+                'author_name': username,
+                'categories': list(categories),
+                'unique_id': "tweet:%s" % tweet.id,
+                'pubdate': tweet.created_at,
+            }
+            rss.add_item(**story_data)
+        
+        return rss.writeString('utf-8')
         
 class ProcessFeed:
     def __init__(self, feed_id, fpf, options):
@@ -388,7 +557,7 @@ class ProcessFeed:
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
-                    self.feed.save_feed_history(553, 'SAX Exception', self.fpf.bozo_exception)
+                    self.feed.save_feed_history(553, 'Not an RSS feed', self.fpf.bozo_exception)
                 else:
                     self.feed = feed
                 self.feed = self.feed.save()
@@ -462,7 +631,7 @@ class ProcessFeed:
         story_hashes = []
         stories = []
         for entry in self.fpf.entries:
-            story = pre_process_story(entry)
+            story = pre_process_story(entry, self.fpf.encoding)
             if story.get('published') < start_date:
                 start_date = story.get('published')
             if replace_guids:
@@ -494,6 +663,7 @@ class ProcessFeed:
                                                   verbose=self.options['verbose'],
                                                   updates_off=self.options['updates_off'])
 
+        # PubSubHubbub
         if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
@@ -526,7 +696,12 @@ class ProcessFeed:
                               self.feed.title[:30]))
                 self.feed.is_push = False
                 self.feed = self.feed.save()
-
+        
+        # Push notifications
+        if ret_values['new'] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
+            QueueNotifications.delay(self.feed.pk, ret_values['new'])
+            
+        # All Done
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
                       '~FG~SB' if ret_values['new'] else '', ret_values['new'],
@@ -569,10 +744,7 @@ class Dispatcher:
 
     def refresh_feed(self, feed_id):
         """Update feed, since it may have changed"""
-        try:
-            return Feed.objects.using('default').get(pk=feed_id)
-        except Feed.DoesNotExist:
-            return
+        return Feed.get_by_id(feed_id)
         
     def process_feed_wrapper(self, feed_queue):
         delta = None
@@ -608,7 +780,7 @@ class Dispatcher:
                     random_weight = random.randint(1, max(weight, 1))
                     quick = float(self.options.get('quick', 0))
                     rand = random.random()
-                    if random_weight < 100 and rand < quick:
+                    if random_weight < 1000 and rand < quick:
                         skip = True
                 elif False and feed.feed_address.startswith("http://news.google.com/news"):
                     skip = True
@@ -775,7 +947,7 @@ class Dispatcher:
                 logging.debug("   ---> [%-30s] ~FRIntegrityError on feed: %s" % (feed.title[:30], feed.feed_address,))
             
             if ret_entries and ret_entries['new']:
-                self.publish_to_subscribers(feed)
+                self.publish_to_subscribers(feed, ret_entries['new'])
                 
             done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FM~SB%.4ss~FY~SN (~FB%s~FY) [%s]' % (
                 identity, feed.title[:30], delta,
@@ -794,10 +966,10 @@ class Dispatcher:
         
         # time_taken = datetime.datetime.utcnow() - self.time_start
     
-    def publish_to_subscribers(self, feed):
+    def publish_to_subscribers(self, feed, new_count):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-            listeners_count = r.publish(str(feed.pk), 'story:new')
+            listeners_count = r.publish(str(feed.pk), 'story:new_count:%s' % new_count)
             if listeners_count:
                 logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))
         except redis.ConnectionError:

@@ -543,6 +543,28 @@
 			<string>story_detail_swipe_left_edge</string>
 		</dict>
 		<dict>
+			<key>FooterText</key>
+			<string>Quickly access the intelligence trainer or site notifications from the feed list.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe from left on feed</string>
+			<key>Titles</key>
+			<array>
+				<string>Train intelligence</string>
+				<string>Notifications</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>notifications</string>
+			<key>Values</key>
+			<array>
+				<string>trainer</string>
+				<string>notifications</string>
+			</array>
+			<key>Key</key>
+			<string>feed_swipe_left</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Reading Stories</string>
 			<key>Type</key>
@@ -570,6 +592,7 @@
 				<string>Safari</string>
 				<string>Chrome</string>
 				<string>Opera Mini</string>
+				<string>Firefox</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>inapp</string>
@@ -580,6 +603,7 @@
 				<string>safari</string>
 				<string>chrome</string>
 				<string>opera_mini</string>
+				<string>firefox</string>
 			</array>
 			<key>Key</key>
 			<string>story_browser</string>

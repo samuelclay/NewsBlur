@@ -18,7 +18,12 @@
         activityLabel = nil;
         faviconView = nil;
         self.separatorInset = UIEdgeInsetsMake(0, 52, 0, 0);
-        
+        self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+        UIView *bgView = [[UIView alloc] init];
+        bgView.backgroundColor = UIColorFromRGB(0xffffff);
+        self.backgroundView = bgView;
+//        self.contentView.backgroundColor = [UIColor clearColor];
+
         // create favicon and label in view
         UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];
         self.faviconView = favicon;

@@ -1,16 +1,15 @@
 import datetime
 import re
 import redis
-from cgi import escape
-from django.db import models
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.template.loader import render_to_string
 from django.utils.html import linebreaks
 from apps.rss_feeds.models import Feed, MStory, MFetchHistory
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from apps.profile.models import Profile
+from apps.profile.models import Profile, MSentEmail
 from utils import log as logging
 from utils.story_functions import linkify
 from utils.scrubber import Scrubber
@@ -18,12 +17,12 @@ from utils.scrubber import Scrubber
 class EmailNewsletter:
     
     def receive_newsletter(self, params):
-        user = self.user_from_email(params['recipient'])
+        user = self._user_from_email(params['recipient'])
         if not user:
             return
         
-        sender_name, sender_username, sender_domain = self.split_sender(params['from'])
-        feed_address = self.feed_address(user, "%s@%s" % (sender_username, sender_domain))
+        sender_name, sender_username, sender_domain = self._split_sender(params['from'])
+        feed_address = self._feed_address(user, "%s@%s" % (sender_username, sender_domain))
         
         usf = UserSubscriptionFolders.objects.get(user=user)
         usf.add_folder('', 'Newsletters')
@@ -40,6 +39,7 @@ class EmailNewsletter:
             logging.user(user, "~FCCreating newsletter feed: ~SB%s" % (feed))
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(user.username, 'reload:%s' % feed.pk)
+            self._check_if_first_newsletter(user)
         
         if feed.feed_title != sender_name:
             feed.feed_title = sender_name
@@ -53,10 +53,15 @@ class EmailNewsletter:
                 feed_address=feed_address,
                 folder='Newsletters'
             )
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(user.username, 'reload:feeds')            
         
         story_hash = MStory.ensure_story_hash(params['signature'], feed.pk)
-        story_content = self.get_content(params)
-        story_content = self.clean_content(story_content)
+        story_content = self._get_content(params)
+        plain_story_content = self._get_content(params, force_plain=True)
+        if len(plain_story_content) > len(story_content):
+            story_content = plain_story_content
+        story_content = self._clean_content(story_content)
         story_params = {
             "story_feed_id": feed.pk,
             "story_date": datetime.datetime.fromtimestamp(int(params['timestamp'])),
@@ -69,6 +74,7 @@ class EmailNewsletter:
                                             kwargs={'story_hash': story_hash})),
             "story_guid": params['signature'],
         }
+        print story_params
         try:
             story = MStory.objects.get(story_hash=story_hash)
         except MStory.DoesNotExist:
@@ -78,15 +84,48 @@ class EmailNewsletter:
         usersub.needs_unread_recalc = True
         usersub.save()
         
-        self.publish_to_subscribers(feed)
+        self._publish_to_subscribers(feed, story.story_hash)
         
         MFetchHistory.add(feed_id=feed.pk, fetch_type='push')
         logging.user(user, "~FCNewsletter feed story: ~SB%s~SN / ~SB%s" % (story.story_title, feed))
         
         return story
+    
+    def _check_if_first_newsletter(self, user, force=False):
+        if not user.email:
+            return
+
+        subs = UserSubscription.objects.filter(user=user)
+        found_newsletter = False
+        for sub in subs:
+            if sub.feed.is_newsletter:
+                found_newsletter = True
+                break
+        if not found_newsletter and not force: 
+            return        
         
-    def user_from_email(self, email):
-        tokens = re.search('(\w+)\+(\w+)@newsletters.newsblur.com', email)
+        params = dict(receiver_user_id=user.pk, email_type='first_newsletter')
+        try:
+            MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            MSentEmail.objects.create(**params)
+                
+        text    = render_to_string('mail/email_first_newsletter.txt', {})
+        html    = render_to_string('mail/email_first_newsletter.xhtml', {})
+        subject = "Your email newsletters are now being sent to NewsBlur"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(user, "~BB~FM~SBSending first newsletter email to: %s" % user.email)
+        
+    def _user_from_email(self, email):
+        tokens = re.search('(\w+)[\+\-\.](\w+)@newsletters.newsblur.com', email)
         if not tokens:
             return
         
@@ -101,10 +140,10 @@ class EmailNewsletter:
         
         return profile.user
     
-    def feed_address(self, user, sender):
+    def _feed_address(self, user, sender):
         return 'newsletter:%s:%s' % (user.pk, sender)
     
-    def split_sender(self, sender):
+    def _split_sender(self, sender):
         tokens = re.search('(.*?) <(.*?)@(.*?)>', sender)
 
         if not tokens:
@@ -116,24 +155,29 @@ class EmailNewsletter:
         
         return sender_name, sender_username, sender_domain
     
-    def get_content(self, params):
-        if 'body-html' in params:
+    def _get_content(self, params, force_plain=False):
+        if 'body-enriched' in params and not force_plain:
+            return params['body-enriched']
+        if 'body-html' in params and not force_plain:
             return params['body-html']
-        if 'stripped-html' in params:
-            return linkify(linebreaks(params['stripped-html']))
+        if 'stripped-html' in params and not force_plain:
+            return params['stripped-html']
         if 'body-plain' in params:
             return linkify(linebreaks(params['body-plain']))
     
-    def clean_content(self, content):
+    def _clean_content(self, content):
+        original = content
         scrubber = Scrubber()
         content = scrubber.scrub(content)
+        if len(content) < len(original)*0.01:
+            content = original
         content = content.replace('!important', '')
         return content
         
-    def publish_to_subscribers(self, feed):
+    def _publish_to_subscribers(self, feed, story_hash):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-            listeners_count = r.publish(str(feed.pk), 'story:new')
+            listeners_count = r.publish("%s:story" % feed.pk, 'story:new:%s' % story_hash)
             if listeners_count:
                 logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))
         except redis.ConnectionError:

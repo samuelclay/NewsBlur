@@ -60,6 +60,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     },
     
     render: function(data) {
+        if (!this.story) return;
+        
         if (data && (data.story_id != this.story.get('id') || 
                      data.feed_id != this.story.get('story_feed_id'))) {
             return;
@@ -159,6 +161,9 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
     select_story: function(story, selected) {
         if (!selected) return;
+        
+        this.hide_loading();
+        
         if ((NEWSBLUR.reader.story_view == 'text' &&
              _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')))) {
             if (NEWSBLUR.reader.flags['temporary_story_view']) {

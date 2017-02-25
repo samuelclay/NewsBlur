@@ -97,7 +97,10 @@ def read_streams(streams):
                 if not data:
                     streams.remove(stream)
                     break
-                combination_message = "[%-6s] %s" % (stream.name[:6], data)
+                try:
+                    combination_message = "[%-6s] %s" % (stream.name[:6], data)
+                except UnicodeDecodeError:
+                    continue
                 sys.stdout.write(combination_message)
                 break
 
