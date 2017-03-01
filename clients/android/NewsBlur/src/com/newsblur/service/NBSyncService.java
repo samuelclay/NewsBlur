@@ -569,6 +569,8 @@ public class NBSyncService extends Service {
                 return;
             }
 
+            com.newsblur.util.Log.i(this.getClass().getName(), "recounting dirty feed sets: " + dirtySets.size());
+
             // if we are offline, the best we can do is perform a local unread recount and
             // save the true one for when we go back online.
             if (!NetworkUtils.isOnline(this)) {
