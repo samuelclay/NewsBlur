@@ -20,11 +20,11 @@ public class NewsBlurResponse {
     public boolean isError() {
         if (isProtocolError) return true;
         if ((message != null) && (!message.equals(""))) {
-            Log.d(this.getClass().getName(), "Response interpreted as error due to 'message' field: " + message);
+            com.newsblur.util.Log.d(this.getClass().getName(), "Response interpreted as error due to 'message' field: " + message);
             return true;
         }
         if ((errors != null) && (errors.length > 0) && (errors[0] != null)) {
-            Log.d(this.getClass().getName(), "Response interpreted as error due to 'errors' field: " + errors[0]);
+            com.newsblur.util.Log.d(this.getClass().getName(), "Response interpreted as error due to 'errors' field: " + errors[0]);
             return true;
         }
         return false;

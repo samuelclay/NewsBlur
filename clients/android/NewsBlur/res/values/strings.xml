@@ -149,6 +149,8 @@
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
+    <string name="menu_feedback_post">Create a support post</string>
+    <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_loginas">Login as...</string>
 
     <string name="loginas_title">Login As User</string>

@@ -54,7 +54,7 @@ public class APIResponse {
             this.responseCode = response.code();
 
             if (responseCode != expectedReturnCode) {
-                Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.url().toString() + " - expected " + expectedReturnCode);
+                com.newsblur.util.Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.url().toString() + " - expected " + expectedReturnCode);
                 this.isError = true;
                 return;
             }
@@ -66,7 +66,7 @@ public class APIResponse {
                 this.responseBody = response.body().string();
                 readTime = System.currentTimeMillis() - startTime;
             } catch (Exception e) {
-                Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.url().toString(), e);
+                com.newsblur.util.Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.url().toString(), e);
                 this.isError = true;
                 return;
             }
@@ -88,7 +88,7 @@ public class APIResponse {
             }
 
         } catch (IOException ioe) {
-            Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url().toString(), ioe);
+            com.newsblur.util.Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url().toString(), ioe);
             this.isError = true;
             return;
         }
