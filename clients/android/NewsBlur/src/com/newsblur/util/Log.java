@@ -49,7 +49,7 @@ public class Log {
     }
 
     public static void i(String tag, String m) {
-        android.util.Log.d(tag, m);
+        android.util.Log.i(tag, m);
         add(I, tag, m, null);
     }
 
