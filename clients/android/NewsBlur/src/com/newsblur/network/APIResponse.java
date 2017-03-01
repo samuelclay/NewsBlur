@@ -83,9 +83,7 @@ public class APIResponse {
                 }
             }
 
-            if (AppConstants.VERBOSE_LOG_NET) {
-                Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.url().toString(), connectTime, readTime, responseBody.length()));
-            }
+            com.newsblur.util.Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.url().toString(), connectTime, readTime, responseBody.length()));
 
         } catch (IOException ioe) {
             com.newsblur.util.Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url().toString(), ioe);
