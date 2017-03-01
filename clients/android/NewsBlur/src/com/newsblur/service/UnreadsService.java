@@ -61,6 +61,7 @@ public class UnreadsService extends SubService {
         // the set of unreads from the API, we will mark them as read. note that this collection
         // will be searched many times for new unreads, so it should be a Set, not a List.
         Set<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashesAsSet();
+        com.newsblur.util.Log.i(this.getClass().getName(), "starting unread count: " + oldUnreadHashes.size());
 
         // a place to store and then sort unread hashes we aim to fetch. note the member format
         // is made to match the format of the API response (a list of [hash, date] tuples). it
@@ -69,6 +70,7 @@ public class UnreadsService extends SubService {
 
         // process the api response, both bookkeeping no-longer-unread stories and populating
         // the sortation list we will use to create the fetch list for step two
+        int count = 0;
         feedloop: for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
             // the API gives us a list of unreads, split up by feed ID. the unreads are tuples of
             // story hash and date
@@ -84,8 +86,12 @@ public class UnreadsService extends SubService {
                 } else {
                     oldUnreadHashes.remove(newUnread[0]);
                 }
+                count++;
             }
         }
+        com.newsblur.util.Log.i(this.getClass().getName(), "new unread count:      " + count);
+        com.newsblur.util.Log.i(this.getClass().getName(), "new unreads found:     " + sortationList.size());
+        com.newsblur.util.Log.i(this.getClass().getName(), "unreads to retire:     " + oldUnreadHashes.size());
 
         // now sort the unreads we need to fetch so they are fetched roughly in the order
         // the user is likely to read them.  if the user reads newest first, those come first.

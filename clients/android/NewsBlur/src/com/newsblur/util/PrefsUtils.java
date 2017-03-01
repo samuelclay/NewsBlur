@@ -62,7 +62,7 @@ public class PrefsUtils {
 
         String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
-            Log.i(PrefsUtils.class.getName(), "detected new version of app:" + version);
+            com.newsblur.util.Log.i(PrefsUtils.class.getName(), "detected new version of app:" + version);
             return true;
         }
         return false;
@@ -88,17 +88,48 @@ public class PrefsUtils {
 
     public static String createFeedbackLink(Context context) {
         StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
-        s.append("<give us some feedback!>%0A%0A");
-        s.append("%0Aapp version: ").append(getVersion(context));
-        s.append("%0Aandroid version: ").append(Build.VERSION.RELEASE).append(" (" + Build.DISPLAY + ")");
-        s.append("%0Adevice: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
-        s.append("%0Asqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
-        s.append("%0Ausername: ").append(getUserDetails(context).username);
-        s.append("%0Aserver: ").append(APIConstants.isCustomServer() ? "default" : "custom");
-        s.append("%0Amemory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
-        s.append("%0Aspeed: ").append(NBSyncService.getSpeedInfo());
-        s.append("%0Apending actions: ").append(NBSyncService.getPendingInfo());
-        s.append("%0Apremium: ");
+        s.append("<give us some feedback!>%0A%0A%0A");
+        String info = getDebugInfo(context);
+        s.append(info.replace("\n", "%0A"));
+        return s.toString();
+    }
+
+    public static void sendLogEmail(Context context) {
+        File f = com.newsblur.util.Log.getLogfile();
+        if (f == null) return;
+        android.net.Uri localPath = android.net.Uri.fromFile(f);
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("*/*");
+        i.putExtra(Intent.EXTRA_EMAIL, new String[]{"android@newsblur.com"});
+        i.putExtra(Intent.EXTRA_SUBJECT, "Android logs");
+        i.putExtra(Intent.EXTRA_TEXT, getDebugInfo(context));
+        i.putExtra(Intent.EXTRA_STREAM, localPath);
+        if (i.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(i);
+        }
+    }
+
+    private static String getDebugInfo(Context context) {
+        StringBuilder s = new StringBuilder();
+        s.append("app version: ").append(getVersion(context));
+        s.append("\n");
+        s.append("android version: ").append(Build.VERSION.RELEASE).append(" (" + Build.DISPLAY + ")");
+        s.append("\n");
+        s.append("device: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
+        s.append("\n");
+        s.append("sqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
+        s.append("\n");
+        s.append("username: ").append(getUserDetails(context).username);
+        s.append("\n");
+        s.append("server: ").append(APIConstants.isCustomServer() ? "default" : "custom");
+        s.append("\n");
+        s.append("memory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
+        s.append("\n");
+        s.append("speed: ").append(NBSyncService.getSpeedInfo());
+        s.append("\n");
+        s.append("pending actions: ").append(NBSyncService.getPendingInfo());
+        s.append("\n");
+        s.append("premium: ");
         if (NBSyncService.isPremium == Boolean.TRUE) {
             s.append("yes");
         } else if (NBSyncService.isPremium == Boolean.FALSE) {
@@ -106,9 +137,13 @@ public class PrefsUtils {
         } else {
             s.append("unknown");
         }
-        s.append("%0Aprefetch: ").append(isOfflineEnabled(context) ? "yes" : "no");
-        s.append("%0Akeepread: ").append(isKeepOldStories(context) ? "yes" : "no");
-        s.append("%0Athumbs: ").append(isShowThumbnails(context) ? "yes" : "no");
+        s.append("\n");
+        s.append("prefetch: ").append(isOfflineEnabled(context) ? "yes" : "no");
+        s.append("\n");
+        s.append("keepread: ").append(isKeepOldStories(context) ? "yes" : "no");
+        s.append("\n");
+        s.append("thumbs: ").append(isShowThumbnails(context) ? "yes" : "no");
+        s.append("\n");
         return s.toString();
     }
 

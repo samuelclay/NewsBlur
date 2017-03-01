@@ -279,10 +279,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		if (cursor != null) {
             if (NBSyncService.ResetSession) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
+                com.newsblur.util.Log.i(this.getClass().getName(), "discarding stale load");
                 triggerRefresh(1, 0);
                 return;
             }
             cursorSeenYet = true;
+            com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
             if (cursor.getCount() < 1) {
                 triggerRefresh(1, 0);
             }
