@@ -95,7 +95,7 @@ public class APIManager {
 	public LoginResponse login(final String username, final String password) {
         // This call should be pretty rare, but is expensive on the server side.  Log it
         // at an above-debug level so it will be noticed if it ever gets called too often.
-        Log.i(this.getClass().getName(), "calling login API");
+        com.newsblur.util.Log.i(this.getClass().getName(), "calling login API");
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
@@ -111,7 +111,7 @@ public class APIManager {
         ContentValues values = new ContentValues();
         values.put(APIConstants.PARAMETER_USER, username);
         String urlString = buildUrl(APIConstants.PATH_LOGINAS) + "?" + builderGetParametersString(values);
-        Log.i(this.getClass().getName(), "doing superuser swap: " + urlString);
+        com.newsblur.util.Log.i(this.getClass().getName(), "doing superuser swap: " + urlString);
         // This API returns a redirect that means the call worked, but we do not want to follow it.  To
         // just get the cookie from the 302 and stop, we directly use a one-off OkHttpClient.
         Request.Builder requestBuilder = new Request.Builder().url(urlString);
@@ -692,13 +692,13 @@ public class APIManager {
      */
     private void backoffSleep(int tryCount) {
         if (tryCount == 0) return;
-        Log.i(this.getClass().getName(), "API call failed, pausing before retry number " + tryCount);
+        com.newsblur.util.Log.i(this.getClass().getName(), "API call failed, pausing before retry number " + tryCount);
         try {
             // simply double the base sleep time for each subsequent try
             long factor = Math.round(Math.pow(2.0d, tryCount));
             Thread.sleep(AppConstants.API_BACKOFF_BASE_MILLIS * factor);
         } catch (InterruptedException ie) {
-            Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
+            com.newsblur.util.Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
         }
     }
 

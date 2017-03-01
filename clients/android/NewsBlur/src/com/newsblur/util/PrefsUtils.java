@@ -62,7 +62,7 @@ public class PrefsUtils {
 
         String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
         if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
-            Log.i(PrefsUtils.class.getName(), "detected new version of app:" + version);
+            com.newsblur.util.Log.i(PrefsUtils.class.getName(), "detected new version of app:" + version);
             return true;
         }
         return false;

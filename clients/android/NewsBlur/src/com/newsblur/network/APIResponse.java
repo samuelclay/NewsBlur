@@ -98,6 +98,7 @@ public class APIResponse {
      * Construct and empty/offline response.  Signals that the call was not made.
      */
     public APIResponse(Context context) {
+        com.newsblur.util.Log.w(this.getClass().getName(), "failing an offline API response");
         this.isError = true;
     }
 

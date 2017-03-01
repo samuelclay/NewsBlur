@@ -971,6 +971,7 @@ public class NBSyncService extends Service {
      * session gets cleared before the next one is populated.
      */
     public static void resetReadingSession() {
+        com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting reading session reset");
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
             ResetSession = true;
