@@ -143,7 +143,13 @@ public class FeedUtils {
     }
 
     private static void setStoryReadState(Story story, Context context, boolean read) {
-        dbHelper.touchStory(story.storyHash);
+        try {
+            // this shouldn't throw errors, but crash logs suggest something is racing it for DB resources.
+            // capture logs in hopes of finding the correlated action
+            dbHelper.touchStory(story.storyHash);
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(FeedUtils.class.getName(), "error touching story state in DB", e);
+        }
         if (story.read == read) { return; }
 
         // tell the sync service we need to mark read

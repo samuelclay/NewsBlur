@@ -24,7 +24,17 @@
 
     <item android:id="@+id/menu_feedback"
           android:title="@string/menu_feedback"
-          android:showAsAction="never" />
+          android:showAsAction="never" >
+        <menu>
+            <item android:id="@+id/menu_feedback_post"
+                  android:title="@string/menu_feedback_post"
+                  android:showAsAction="never" />
+            <item android:id="@+id/menu_feedback_email"
+                  android:title="@string/menu_feedback_email"
+                  android:showAsAction="never" />
+
+        </menu>
+    </item>
 
     <item android:id="@+id/menu_loginas"
           android:title="@string/menu_loginas"

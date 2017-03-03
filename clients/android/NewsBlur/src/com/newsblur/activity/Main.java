@@ -238,7 +238,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
             return true;
-        } else if (item.getItemId() == R.id.menu_feedback) {
+        } else if (item.getItemId() == R.id.menu_feedback_email) {
+            PrefsUtils.sendLogEmail(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_feedback_post) {
             try {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));

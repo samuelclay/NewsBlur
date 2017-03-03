@@ -56,7 +56,7 @@ public class BlurDatabaseHelper {
     private SQLiteDatabase dbRW;
 
     public BlurDatabaseHelper(Context context) {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "new DB conn requested");
+        com.newsblur.util.Log.d(this.getClass().getName(), "new DB conn requested");
         this.context = context;
         synchronized (RW_MUTEX) {
             dbWrapper = new BlurDatabase(context);
@@ -78,7 +78,9 @@ public class BlurDatabaseHelper {
     }
 
     public void dropAndRecreateTables() {
+        com.newsblur.util.Log.i(this.getClass().getName(), "dropping and recreating all tables . . .");
         synchronized (RW_MUTEX) {dbWrapper.dropAndRecreateTables();}
+        com.newsblur.util.Log.i(this.getClass().getName(), ". . . tables recreated.");
     }
 
     public String getEngineVersion() {

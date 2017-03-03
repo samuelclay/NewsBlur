@@ -54,7 +54,7 @@ public class APIResponse {
             this.responseCode = response.code();
 
             if (responseCode != expectedReturnCode) {
-                Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.url().toString() + " - expected " + expectedReturnCode);
+                com.newsblur.util.Log.e(this.getClass().getName(), "API returned error code " + response.code() + " calling " + request.url().toString() + " - expected " + expectedReturnCode);
                 this.isError = true;
                 return;
             }
@@ -66,7 +66,7 @@ public class APIResponse {
                 this.responseBody = response.body().string();
                 readTime = System.currentTimeMillis() - startTime;
             } catch (Exception e) {
-                Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.url().toString(), e);
+                com.newsblur.util.Log.e(this.getClass().getName(), e.getClass().getName() + " (" + e.getMessage() + ") reading " + request.url().toString(), e);
                 this.isError = true;
                 return;
             }
@@ -83,12 +83,10 @@ public class APIResponse {
                 }
             }
 
-            if (AppConstants.VERBOSE_LOG_NET) {
-                Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.url().toString(), connectTime, readTime, responseBody.length()));
-            }
+            com.newsblur.util.Log.d(this.getClass().getName(), String.format("called %s in %dms and %dms to read %dB", request.url().toString(), connectTime, readTime, responseBody.length()));
 
         } catch (IOException ioe) {
-            Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url().toString(), ioe);
+            com.newsblur.util.Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url().toString(), ioe);
             this.isError = true;
             return;
         }
@@ -98,6 +96,7 @@ public class APIResponse {
      * Construct and empty/offline response.  Signals that the call was not made.
      */
     public APIResponse(Context context) {
+        com.newsblur.util.Log.w(this.getClass().getName(), "failing an offline API response");
         this.isError = true;
     }
 
