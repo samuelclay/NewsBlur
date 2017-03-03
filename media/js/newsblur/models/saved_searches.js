@@ -1,8 +1,43 @@
 NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
     
     initialize: function() {
-        this.set('feed_title', this.get('tag'));
+        var feed_title = this.feed_title();
+        this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" on <b>" + feed_title + "</b>");
         this.views = [];
+    },
+    
+    feed_title: function() {
+        var feed_title;
+        var feed_id = this.get('feed_id');
+
+        if (feed_id == 'river:') {
+            feed_title = "All Site Stories";
+        } else if (_.isNumber(feed_id) || _.string.startsWith(feed_id, 'river:')) {
+            feed_title = NEWSBLUR.assets.get_feed(this.get('feed_id')).get('feed_title');
+        } else if (feed_id == "read") {
+            feed_title = "Read Stories";
+        } else if (_.string.startsWith(feed_id, 'starred:')) {
+            feed_title = "Saved Stories";
+            var tag = feed_id.replace('starred:', '');
+            var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
+                console.log(['tag?', feed.tag_slug(), tag]);
+                return feed.tag_slug() == tag || feed.get('tag') == tag;
+            });
+            if (model) {
+                feed_title = feed_title + " - " + model.get('tag');
+            }
+        }
+
+        return feed_title;
+        
+        if (_.string.startsWith(this.get('feed_id'), 'saved:') ||
+        _.string.startsWith(this.get('feed_id'), 'read')) {
+            feed_title = NEWSBLUR.reader.active_fake_folder_title();
+        } else if (NEWSBLUR.reader.active_folder) {
+            feed_title = NEWSBLUR.reader.active_folder.get('folder_title');
+        } else if (NEWSBLUR.reader.active_feed) {
+            
+        }
     },
     
     is_social: function() {
@@ -14,6 +49,10 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
     },
     
     is_starred: function() {
+        return false;
+    },
+    
+    is_search: function() {
         return true;
     },
     
@@ -37,16 +76,15 @@ NEWSBLUR.Collections.SearchesFeeds = Backbone.Collection.extend({
     
     parse: function(models) {
         _.each(models, function(feed) {
-            feed.id = 'search:' + feed.get('saved_search') + ':' + feed.feed_id;
-            // feed.selected = false;
+            feed.id = 'search:' + feed.feed_id + ":" + feed.query;
         });
         return models;
     },
     
     comparator: function(a, b) {
         var sort_order = NEWSBLUR.reader.model.preference('feed_order');
-        var title_a = a.get('feed_title') || '';
-        var title_b = b.get('feed_title') || '';
+        var title_a = a.get('query') || '';
+        var title_b = b.get('query') || '';
         title_a = title_a.toLowerCase();
         title_b = title_b.toLowerCase();
 

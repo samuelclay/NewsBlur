@@ -2924,8 +2924,7 @@ class MStarredStoryCounts(mongo.Document):
 class MSavedSearch(mongo.Document):
     user_id = mongo.IntField()
     query = mongo.StringField(max_length=1024)
-    feed_id = mongo.IntField()
-    folder = mongo.StringField()
+    feed_id = mongo.StringField()
     slug = mongo.StringField(max_length=128)
 
     meta = {
@@ -2949,14 +2948,28 @@ class MSavedSearch(mongo.Document):
     def user_searches(cls, user_id):
         searches = cls.objects.filter(user_id=user_id)
         searches = sorted([{'query': s.query, 
-                            'count': s.count, 
                             'feed_address': s.rss_url, 
                             'feed_id': s.feed_id,
-                            'folder': s.folder,
                            } for s in searches],
                           key=lambda x: (x.get('query', '') or '').lower())
         return searches
     
+    @classmethod
+    def save_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query, 
+                      slug=slugify(query))
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FRSaved search already exists: ~SB%s" % query)
+        except cls.DoesNotExist:
+            logging.user(user, "~FCCreating a saved search: ~SB%s~SN/~SB%s" % (feed_id, query))
+            saved_search = cls.objects.create(**params)
+        
+        return saved_search
+        
     
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)

@@ -457,9 +457,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.folders.reset(_.compact(subscriptions.folders), {parse: true});
             self.starred_count = subscriptions.starred_count;
             self.starred_feeds.reset(subscriptions.starred_counts, {parse: true});
-            self.searches_feeds.reset(subscriptions.saved_searches, {parse: true});
             self.social_feeds.reset(subscriptions.social_feeds, {parse: true});
             self.user_profile.set(subscriptions.social_profile);
+            self.searches_feeds.reset(subscriptions.saved_searches, {parse: true});
             self.social_services = subscriptions.social_services;
             
             if (selected && self.feeds.get(selected)) {
@@ -1484,6 +1484,26 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     save_feed_order: function(folders, callback) {
         this.make_request('/reader/save_feed_order', {'folders': $.toJSON(folders)}, callback);
+    },
+    
+    save_search: function(feed_id, query, callback) {
+        var self = this;
+        var pre_callback = function(data) {
+            if (data.saved_searches) {
+                self.searches_feeds.reset(data.saved_searches, {parse: true});
+            }
+            
+            if (callback) callback(data);
+        };
+        
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/save_search', {
+                'feed_id': feed_id,
+                'query': query
+            }, pre_callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }        
     },
     
     get_feed_statistics: function(feed_id, callback) {

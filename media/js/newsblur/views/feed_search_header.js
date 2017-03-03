@@ -53,7 +53,9 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
     // ==========
     
     save_search: function(e) {
-        
+        NEWSBLUR.assets.save_search(NEWSBLUR.reader.active_feed, NEWSBLUR.reader.flags.search, function(e) {
+            console.log(['Saved searches', e]);
+        })
     }
     
 });

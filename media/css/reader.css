@@ -4382,6 +4382,7 @@ body {
     border-top: 1px solid #B7BBAA;
 }
 .NB-feeds-header-read.NB-feeds-header,
+.NB-feeds-header-searches.NB-feeds-header,
 .NB-feeds-header-starred.NB-feeds-header {
     border-bottom: 1px solid #B7BBAA;
 }
@@ -4436,6 +4437,35 @@ body {
   display: none;
 }
 
+
+/* =========================== */
+/* = Header - Saved Searches = */
+/* =========================== */
+
+.NB-feeds-header-searches .NB-feeds-header-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_search_black.png') no-repeat 1px 1px;
+    background-size: 14px;
+}
+
+.NB-feeds-header-searches .NB-feeds-header-count {
+    background-color: #506B9A;
+    margin-top: 4px;
+    margin-right: 3px;
+    display: block;
+}
+
+.NB-searches-feeds .feed {
+    border-top: 1px solid #E9EBEE;
+    border-bottom: 1px solid #E9EBEE;
+    background-color: #E9EBEE;
+}
+.NB-feeds-header-searches.NB-empty .NB-feeds-header-count {
+  display: none;
+}
+
+.NB-searches-folder .NB-searches-feeds.NB-feedlist .feed {
+    display: block;
+}
 /* ===================== */
 /* = Header - Try Feed = */
 /* ===================== */

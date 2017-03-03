@@ -2483,3 +2483,18 @@ def load_tutorial(request):
         return {
             'newsblur_feed': newsblur_feed.canonical()
         }
+
+@required_params('query', 'feed_id')
+@json.json_view
+def save_search(request):
+    feed_id = request.POST['feed_id']
+    query = request.POST['query']
+    
+    MSavedSearch.save_search(user_id=request.user.pk, feed_id=feed_id, query=query)
+    
+    saved_searches = MSavedSearch.user_searches(request.user.pk)
+    
+    return {
+        'saved_searches': saved_searches,
+    }
+    

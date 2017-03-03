@@ -58,4 +58,5 @@ urlpatterns = patterns('',
     url(r'^send_story_email', views.send_story_email, name='send-story-email'),
     url(r'^retrain_all_sites', views.retrain_all_sites, name='retrain-all-sites'),
     url(r'^load_tutorial', views.load_tutorial, name='load-tutorial'),
+    url(r'^save_search', views.save_search, name='save-search'),
 )

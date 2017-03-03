@@ -46,6 +46,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.social_feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.starred_feeds.bind('change:selected', this.scroll_to_selected, this);
+        NEWSBLUR.assets.searches_feeds.bind('change:selected', this.scroll_to_selected, this);
         if (!NEWSBLUR.assets.folders.size()) {
             NEWSBLUR.assets.load_feeds();
         }
