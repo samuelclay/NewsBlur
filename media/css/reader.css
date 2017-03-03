@@ -11943,29 +11943,6 @@ form.opml_import_form input {
     -ms-transition: all .22s ease-in-out;
 }
 
-.NB-search-save {
-    display: none;
-    position: absolute;
-    right: 16px;
-    top: 3px;
-    z-index: 1;
-    height: 10px;
-    background-color: #c9cac5;
-    border-radius: 2px;
-    color: #FFFFFF;
-    padding: 1px 6px;
-    font-size: 8px;
-    text-transform: uppercase;
-    cursor: pointer;
-    opacity: .7;
-    -webkit-transition: all .22s ease-in-out;
-    -moz-transition: all .22s ease-in-out;
-    -o-transition: all .22s ease-in-out;
-    -ms-transition: all .22s ease-in-out;
-}
-.NB-search-save:hover {
-    opacity: 1;
-}
 
 .NB-search-close:hover {
     opacity: 1;
@@ -11993,6 +11970,55 @@ form.opml_import_form input {
 }
 .NB-searching .NB-story-title-search-input {
     width: 154px;
+}
+
+.NB-search-header {
+    overflow: hidden;
+    padding: 8px 8px 8px 36px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
+    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
+    background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
+    border-bottom: 1px solid #C2C5BE;
+    background-color: #F3F3EE;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
+    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
+    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
+}
+
+.NB-search-header .NB-search-header-save {
+    float: right;
+    font-size: 9px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 1px 8px;
+    font-weight: bold;
+    line-height: 14px;
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    z-index: 1;
+    margin: 0 0 0 8px;
+    color: rgba(0, 0, 0, .5);
+        
+    background-color: #F0F1EC;
+}
+
+.NB-search-header .NB-search-header-save:hover,
+.NB-search-header .NB-search-header-save.NB-active {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.NB-search-header .NB-search-header-icon {
+    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
+    background-size: 16px;
+    vertical-align: bottom;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 8px;
+    left: 12px;
+}
+.NB-search-header .NB-search-header-title {
+    font-size: 12px;
 }
 
 /* ================== */

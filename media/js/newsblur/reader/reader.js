@@ -53,7 +53,8 @@
                 $feed_floater: $('.NB-feed-story-view-floater'),
                 $feedbar: $('.NB-feedbar'),
                 $add_button: $('.NB-task-add'),
-                $taskbar_options: $('.NB-taskbar-options')
+                $taskbar_options: $('.NB-taskbar-options'),
+                $search_header: $('.NB-search-header')
             };
             this.flags = {
                 'bouncing_callout': false,
@@ -137,6 +138,7 @@
             NEWSBLUR.app.dashboard_river = new NEWSBLUR.Views.DashboardRiver();
             NEWSBLUR.app.taskbar_info = new NEWSBLUR.Views.ReaderTaskbarInfo().render();
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
+            NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
             
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
@@ -2725,6 +2727,8 @@
         },
         
         make_feed_title_in_stories: function(options) {
+            NEWSBLUR.app.search_header.render();
+            
             if ((this.flags.search || this.flags.searching)
                 && NEWSBLUR.app.story_titles_header.search_has_focus()) {
                 console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
@@ -2739,6 +2743,26 @@
                 feed_id: this.active_feed,
                 layout: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')
             });
+        },
+        
+        active_fake_folder_title: function() {
+            var title = "All Site Stories";
+            if (NEWSBLUR.reader.active_feed == "read") {
+                title = "Read Stories";
+            } else if (NEWSBLUR.reader.flags['starred_view']) {
+                title = "Saved Stories";
+                if (NEWSBLUR.reader.flags['starred_tag']) {
+                    title = title + " - " + NEWSBLUR.reader.flags['starred_tag'];
+                }
+            } else if (NEWSBLUR.reader.flags['social_view']) {
+                if (NEWSBLUR.reader.flags['global_blurblogs']) {
+                    title = "Global Shared Stories";
+                } else {
+                    title = "All Shared Stories";
+                }
+            }
+    
+            return title;
         },
         
         open_feed_intelligence_modal: function(score, feed_id, feed_loaded) {
