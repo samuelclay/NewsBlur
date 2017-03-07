@@ -4443,6 +4443,15 @@ body {
 /* = Header - Saved Searches = */
 /* =========================== */
 
+.NB-feeds-header-searches {
+    cursor: default;
+    background-image: inherit;
+    background-color: #EAECE5;
+}
+.NB-feeds-header.NB-feeds-header-searches:hover {
+    background-image: inherit;
+    background-color: #EAECE5;
+}
 .NB-feeds-header-searches .NB-feeds-header-icon {
     background: transparent url('/media/embed/icons/circular/g_icn_search_black.png') no-repeat 1px 1px;
     background-size: 14px;
