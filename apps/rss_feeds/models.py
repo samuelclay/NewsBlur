@@ -2929,7 +2929,10 @@ class MSavedSearch(mongo.Document):
 
     meta = {
         'collection': 'saved_searches',
-        'indexes': ['user_id'],
+        'indexes': ['user_id',
+                    {'fields': ['user_id', 'feed_id', 'query'], 
+                     'unique': True,
+                     'types': False, }],
         'ordering': ['query'],
         'allow_inheritance': False,
     }
@@ -2982,6 +2985,9 @@ class MSavedSearch(mongo.Document):
             saved_search.delete()
         except cls.DoesNotExist:
             logging.user(user, "~FRCan't delete saved search, missing: ~SB%s~SN/~SB%s" % (feed_id, query))
+        except cls.MultipleObjectsReturned:
+            logging.user(user, "~FRFound multiple saved searches, deleting: ~SB%s~SN/~SB%s" % (feed_id, query))
+            cls.objects(**params).delete()
         
     
 class MFetchHistory(mongo.Document):
