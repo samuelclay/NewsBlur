@@ -53,9 +53,13 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
     // ==========
     
     save_search: function(e) {
-        NEWSBLUR.assets.save_search(NEWSBLUR.reader.active_feed, NEWSBLUR.reader.flags.search, function(e) {
+        var feed_id = NEWSBLUR.reader.active_feed;
+        if (_.isNumber(feed_id)) {
+            feed_id = "feed:" + feed_id;
+        }
+        NEWSBLUR.assets.save_search(feed_id, NEWSBLUR.reader.flags.search, function(e) {
             console.log(['Saved searches', e]);
-        })
+        });
     }
     
 });

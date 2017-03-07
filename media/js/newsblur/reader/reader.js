@@ -1327,6 +1327,7 @@
             this.model.feeds.deselect();
             this.model.stories.deselect();
             this.model.starred_feeds.deselect();
+            this.model.searches_feeds.deselect();
             if (_.string.contains(this.active_feed, 'social:')) {
                 this.model.social_feeds.deselect();
             }
@@ -4666,7 +4667,7 @@
             
             if (_.contains(['starred', 'read'], feed_id)) {
                 // Umm, no. Not yet.
-            } else if (feed) {
+            } else if (feed && feed.unread_counts) {
                 return feed.unread_counts();
             } else if (this.flags['river_view'] && !this.flags['social_view']) {
                 var collection;

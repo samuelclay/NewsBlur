@@ -2,7 +2,9 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
     
     initialize: function() {
         var feed_title = this.feed_title();
+        var favicon_url = this.favicon_url();
         this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" on <b>" + feed_title + "</b>");
+        this.set('favicon_url', favicon_url);
         this.views = [];
     },
     
@@ -12,8 +14,9 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
 
         if (feed_id == 'river:') {
             feed_title = "All Site Stories";
-        } else if (_.isNumber(feed_id) || _.string.startsWith(feed_id, 'river:')) {
-            feed_title = NEWSBLUR.assets.get_feed(this.get('feed_id')).get('feed_title');
+        } else if (_.string.startsWith(feed_id, 'river:')) {
+            console.log(['river feed?', feed_id, NEWSBLUR.assets.get_feed(feed_id)]);
+            feed_title = NEWSBLUR.assets.get_feed(feed_id).get('folder_title');
         } else if (feed_id == "read") {
             feed_title = "Read Stories";
         } else if (_.string.startsWith(feed_id, 'starred:')) {
@@ -26,6 +29,10 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
             if (model) {
                 feed_title = feed_title + " - " + model.get('tag');
             }
+        } else if (_.string.startsWith(feed_id, 'feed:')){
+            feed_title = NEWSBLUR.assets.get_feed(parseInt(this.get('feed_id').replace('feed:', ''), 10)).get('feed_title');
+        } else if (_.string.startsWith(feed_id, 'social:')){
+            feed_title = NEWSBLUR.assets.get_feed(this.get('feed_id')).get('feed_title');
         }
 
         return feed_title;
@@ -38,6 +45,31 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
         } else if (NEWSBLUR.reader.active_feed) {
             
         }
+    },
+    
+    favicon_url: function() {
+        var url;
+        var feed_id = this.get('feed_id');
+        
+        if (feed_id == 'river:') {
+            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-allstories.png';
+        } else if (_.string.startsWith(feed_id, 'river:')) {
+            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_folder.png';
+        } else if (feed_id == "read") {
+            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_unread.png';
+        } else if (_.string.startsWith(feed_id, 'starred:')) {
+            url = NEWSBLUR.Globals.MEDIA_URL + 'img/reader/tag.png';
+        } else if (_.string.startsWith(feed_id, 'feed:')) {
+            url = $.favicon(parseInt(feed_id.replace('feed:', ''), 10));
+        } else if (_.string.startsWith(feed_id, 'social:')) {
+            url = $.favicon(NEWSBLUR.assets.get_feed(feed_id));
+        }
+        
+        if (!url) {
+            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_search_black.png';
+        }
+        
+        return url;
     },
     
     is_social: function() {

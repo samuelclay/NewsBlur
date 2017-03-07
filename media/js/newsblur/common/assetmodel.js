@@ -1057,6 +1057,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             return this.starred_feeds.get(feed_id);
         } else if (_.string.startsWith(feed_id, 'search:')) {
             return this.searches_feeds.get(feed_id);
+        } else if (_.string.startsWith(feed_id, 'river:')) {
+            return this.get_folder(feed_id);
         } else {
             return this.feeds.get(feed_id);
         }
@@ -1102,6 +1104,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     get_folder: function(folder_name) {
+        if (_.string.startsWith(folder_name, 'river:')) {
+            folder_name = folder_name.replace('river:', '');
+        }
         return this.folders.find_folder(folder_name.toLowerCase());
     },
     
