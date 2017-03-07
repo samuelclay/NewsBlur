@@ -1093,14 +1093,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return this.starred_feeds;
     },
     
-    get_searches_feeds: function(feed_id, query) {
+    get_search_feeds: function(feed_id, query) {
         var self = this;
         
-        if (!feed_id && !query) {
-            return this.searches_feeds;
-        }
-        
         return this.searches_feeds.detect(function(feed) {
+            if (!query) {
+                return feed.id == feed_id;
+            }
             return feed.get('query') == query && feed.get('feed_id') == feed_id;
         });
     },

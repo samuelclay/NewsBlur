@@ -17,7 +17,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             NEWSBLUR.reader.active_folder && 
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
         
-        if (NEWSBLUR.reader.flags.search || NEWSBLUR.reader.flags.searching) {
+        if (NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) {
             this.$el.removeClass("NB-hidden");
 
             var $title = this.make_title();
@@ -53,7 +53,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
     },
     
     is_saved: function() {
-        return !!NEWSBLUR.assets.get_searches_feeds(this.saved_feed_id(), NEWSBLUR.reader.flags.search);
+        return !!NEWSBLUR.assets.get_search_feeds(this.saved_feed_id(), NEWSBLUR.reader.flags.search);
     },
     
     saved_feed_id: function() {

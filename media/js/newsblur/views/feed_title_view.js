@@ -455,6 +455,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         
         var feed_type = this.model.is_social() ? 'socialfeed' : 
                         this.model.is_starred() ? 'starred' : 
+                        this.model.is_search() ? 'search' : 
                         'feed';
         e.preventDefault();
         e.stopPropagation();

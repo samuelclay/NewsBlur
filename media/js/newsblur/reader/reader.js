@@ -3533,6 +3533,16 @@
                 ]);
                 $manage_menu.data('feed_id', feed_id);
                 $manage_menu.data('$feed', $item);
+            } else if (type == 'search') {
+                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-feed' }, [
+                    $.make('li', { className: 'NB-menu-separator-inverse' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-delete-search' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete saved search')
+                    ])
+                ]);
+                $manage_menu.data('feed_id', feed_id);
+                $manage_menu.data('$feed', $item);
             } else if (type == 'folder') {
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-folder' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
@@ -3814,6 +3824,9 @@
             } else if (type == 'starred') {
                 feed_id = options.feed_id;
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
+            } else if (type == 'search') {
+                feed_id = options.feed_id;
+                inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
                 story_id = options.story_id;
                 if ($item.hasClass('NB-hover-inverse')) inverse = true; 
@@ -3861,7 +3874,7 @@
                 }
                 $('.NB-task-manage').addClass('NB-hover');
             } else if (type == 'feed' || type == 'folder' || type == 'story' || 
-                       type == 'socialfeed' || type == 'starred') {
+                       type == 'socialfeed' || type == 'starred' || type == 'search') {
                 var left, top;
                 // NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
                 if (inverse) {
@@ -3869,8 +3882,8 @@
                     if (type == 'feed') {
                         left = toplevel ? 2 : -22;
                         top = toplevel ? 1 : 3;
-                    } else if (type == 'socialfeed' || type == 'starred') {
-                        left = 2;
+                    } else if (type == 'socialfeed' || type == 'starred' || type == 'search') {
+                        left = 0;
                         top = 2;
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -21;
@@ -3899,7 +3912,7 @@
                         left = toplevel ? 0 : -2;
                         top = toplevel ? 20 : 19;
                         $align = $('.NB-feedlist-manage-icon', $item);
-                    } else if (type == 'socialfeed' || type == 'starred') {
+                    } else if (type == 'socialfeed' || type == 'starred' || type == 'search') {
                         left = toplevel ? 0 : -18;
                         top = toplevel ? 20 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
@@ -3925,7 +3938,7 @@
             
             // Create and position the arrow tab
             if (type == 'feed' || type == 'folder' || type == 'story' || 
-                type == 'socialfeed' || type == 'starred') {
+                type == 'socialfeed' || type == 'starred' || type == 'search') {
                 var $arrow = $.make('div', { className: 'NB-menu-manage-arrow' }, [
                     $.make('div', { className: 'NB-icon' })
                 ]);
@@ -3992,7 +4005,7 @@
             // Hide menu on scroll.
             var $scroll;
             this.flags['feed_list_showing_manage_menu'] = true;
-            if (type == 'feed' || type == 'socialfeed' || type == 'starred') {
+            if (type == 'feed' || type == 'socialfeed' || type == 'starred' || type == 'search') {
                 $scroll = this.$s.$feed_list.parent();
             } else if (type == 'story') {
                 $scroll = this.$s.$story_titles.add(this.$s.$feed_scroll);
@@ -4075,6 +4088,14 @@
             var feed = this.model.get_feed(feed_id);
             var feed_view = feed.get_view($feed);
             feed.delete_feed({view: feed_view});
+        },
+
+        manage_menu_delete_search: function(search_model_id, $feed) {
+            var search_model = NEWSBLUR.assets.get_search_feeds(search_model_id);
+            NEWSBLUR.assets.delete_saved_search(search_model.get('feed_id'), search_model.get('query'), _.bind(function(e) {
+                console.log(['Saved searches', e]);
+            }, this));
+            
         },
         
         show_confirm_unfollow_menu_item: function() {
@@ -5956,6 +5977,12 @@
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 var $feed = $t.parents('.NB-menu-manage').data('$feed');
                 self.manage_menu_delete_feed(feed_id, $feed);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-delete-search' }, function($t, $p){
+                e.preventDefault();
+                var search_model_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                self.manage_menu_delete_search(search_model_id, $feed);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-socialfeed-delete-confirm' }, function($t, $p){
                 e.preventDefault();
