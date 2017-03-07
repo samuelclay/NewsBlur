@@ -18,7 +18,7 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
             feed_title = NEWSBLUR.assets.get_feed(feed_id).get('folder_title');
         } else if (feed_id == "read") {
             feed_title = "Read Stories";
-        } else if (_.string.startsWith(feed_id, 'starred:')) {
+        } else if (_.string.startsWith(feed_id, 'starred')) {
             feed_title = "Saved Stories";
             var tag = feed_id.replace('starred:', '');
             var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
@@ -55,6 +55,8 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
             url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_folder.png';
         } else if (feed_id == "read") {
             url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_unread.png';
+        } else if (feed_id == "starred") {
+            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/clock.png';
         } else if (_.string.startsWith(feed_id, 'starred:')) {
             url = NEWSBLUR.Globals.MEDIA_URL + 'img/reader/tag.png';
         } else if (_.string.startsWith(feed_id, 'feed:')) {

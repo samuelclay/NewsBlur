@@ -1739,6 +1739,8 @@
                 this.open_river_stories(options.$feed, feed_model, options);
             } else if (feed_id == "read") {
                 this.open_read_stories(options);
+            } else if (feed_id == 'starred') {
+                this.open_starred_stories(options);
             } else if (_.string.startsWith(feed_id, 'starred:')) {
                 options.tag = feed_model.tag_slug();
                 this.open_starred_stories(options);
@@ -1810,7 +1812,11 @@
                 }
             } else {
                 this.active_feed = 'starred';
-                this.$s.$starred_header.addClass('NB-selected');
+                if (options.feed) {
+                    options.feed.set('selected', true);
+                } else {
+                    this.$s.$starred_header.addClass('NB-selected');
+                }
                 this.flags['starred_tag'] = null;
             }
             this.flags['starred_view'] = true;

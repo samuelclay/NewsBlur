@@ -4383,7 +4383,8 @@ body {
 }
 .NB-feeds-header-read.NB-feeds-header,
 .NB-feeds-header-searches.NB-feeds-header,
-.NB-feeds-header-starred.NB-feeds-header {
+.NB-feeds-header-starred.NB-feeds-header,
+.NB-searches-folder {
     border-bottom: 1px solid #B7BBAA;
 }
 .NB-feeds-header-river-container .NB-feeds-header.NB-empty .NB-feeds-header-count {
