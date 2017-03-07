@@ -2423,7 +2423,7 @@
             if ((order == 'newest' && direction == 'newer') || (order == 'oldest' && direction == 'older')) {
                 var stories = this.model.stories.select(function(story) {
                     return direction == 'newer' ? story.get('story_timestamp') >= cutoff_timestamp :
-                                                  story.get('story_timestamp') >= cutoff_timestamp;
+                                                  story.get('story_timestamp') <= cutoff_timestamp;
                 });
                 feeds = _.unique(_.map(stories, function(story) { return story.get('story_feed_id'); }));
             }
