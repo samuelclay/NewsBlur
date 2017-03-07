@@ -215,7 +215,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                 depth: 0,
                 saved_search: true
             }).render();
-            feed.views.push(feed_view);
+            feed.list_view = feed_view;
             return feed_view.el;
         }));
 
@@ -314,7 +314,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var $feed_lists = this.$s.$feed_lists;
         var model = NEWSBLUR.assets.feeds.selected() || 
                     NEWSBLUR.assets.social_feeds.selected() ||
-                    NEWSBLUR.assets.starred_feeds.selected();
+                    NEWSBLUR.assets.starred_feeds.selected() ||
+                    NEWSBLUR.assets.searches_feeds.selected();
         if (!model) return;
         var feed_view = model.get("selected_title_view");
         if (!feed_view) {

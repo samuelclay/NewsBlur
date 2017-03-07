@@ -216,7 +216,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             return story.score() < 0;
         });
         
-        NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name, temp_unread_view_name, NEWSBLUR.reader.flags['unread_threshold_temporarily']]);
+        // NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name, temp_unread_view_name, NEWSBLUR.reader.flags['unread_threshold_temporarily']]);
         
         // First click, open neutral. Second click, open negative.
         if (temp_unread_view_name == 'positive' && 

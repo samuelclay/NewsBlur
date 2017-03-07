@@ -17,6 +17,10 @@ NEWSBLUR.Models.StarredFeed = Backbone.Model.extend({
         return true;
     },
     
+    is_search: function() {
+        return false;
+    },
+    
     unread_counts: function() {
         return {
             ps: this.get('count') || 0,

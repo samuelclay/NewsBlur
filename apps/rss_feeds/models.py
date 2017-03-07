@@ -2970,6 +2970,19 @@ class MSavedSearch(mongo.Document):
         
         return saved_search
         
+    @classmethod
+    def delete_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query)
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FCDeleting saved search: ~SB%s" % query)
+            saved_search.delete()
+        except cls.DoesNotExist:
+            logging.user(user, "~FRCan't delete saved search, missing: ~SB%s~SN/~SB%s" % (feed_id, query))
+        
     
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)

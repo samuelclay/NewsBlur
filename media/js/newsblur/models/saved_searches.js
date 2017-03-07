@@ -3,9 +3,9 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
     initialize: function() {
         var feed_title = this.feed_title();
         var favicon_url = this.favicon_url();
-        this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" on <b>" + feed_title + "</b>");
+        this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" in <b>" + feed_title + "</b>");
         this.set('favicon_url', favicon_url);
-        this.views = [];
+        this.list_view;
     },
     
     feed_title: function() {
@@ -15,7 +15,6 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
         if (feed_id == 'river:') {
             feed_title = "All Site Stories";
         } else if (_.string.startsWith(feed_id, 'river:')) {
-            console.log(['river feed?', feed_id, NEWSBLUR.assets.get_feed(feed_id)]);
             feed_title = NEWSBLUR.assets.get_feed(feed_id).get('folder_title');
         } else if (feed_id == "read") {
             feed_title = "Read Stories";
@@ -23,7 +22,6 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
             feed_title = "Saved Stories";
             var tag = feed_id.replace('starred:', '');
             var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
-                console.log(['tag?', feed.tag_slug(), tag]);
                 return feed.tag_slug() == tag || feed.get('tag') == tag;
             });
             if (model) {

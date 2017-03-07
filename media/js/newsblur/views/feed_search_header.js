@@ -19,8 +19,12 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         
         if (NEWSBLUR.reader.flags.search || NEWSBLUR.reader.flags.searching) {
             this.$el.removeClass("NB-hidden");
+
             var $title = this.make_title();
             this.$(".NB-search-header-title").html($title);
+
+            var saved = this.is_saved() ? 'Saved' : 'Save Search';
+            this.$(".NB-search-header-save").text(saved);
         } else {
             this.unload();
         }
@@ -48,18 +52,33 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         return $view;
     },
     
+    is_saved: function() {
+        return !!NEWSBLUR.assets.get_searches_feeds(this.saved_feed_id(), NEWSBLUR.reader.flags.search);
+    },
+    
+    saved_feed_id: function() {
+        var feed_id = NEWSBLUR.reader.active_feed;
+        if (_.isNumber(feed_id)) {
+            feed_id = "feed:" + feed_id;
+        }
+        return feed_id;
+    },
+    
     // ==========
     // = Events =
     // ==========
     
     save_search: function(e) {
-        var feed_id = NEWSBLUR.reader.active_feed;
-        if (_.isNumber(feed_id)) {
-            feed_id = "feed:" + feed_id;
+        var feed_id = this.saved_feed_id();
+        if (this.is_saved()) {
+            NEWSBLUR.assets.delete_saved_search(feed_id, NEWSBLUR.reader.flags.search, function(e) {
+                console.log(['Saved searches', e]);
+            });
+        } else {
+            NEWSBLUR.assets.save_search(feed_id, NEWSBLUR.reader.flags.search, function(e) {
+                console.log(['Saved searches', e]);
+            });
         }
-        NEWSBLUR.assets.save_search(feed_id, NEWSBLUR.reader.flags.search, function(e) {
-            console.log(['Saved searches', e]);
-        });
     }
     
 });

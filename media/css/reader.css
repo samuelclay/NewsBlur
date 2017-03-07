@@ -4459,6 +4459,9 @@ body {
     border-bottom: 1px solid #E9EBEE;
     background-color: #E9EBEE;
 }
+.NB-searches-feeds .feed_title {
+    padding-right: 4px;
+}
 .NB-feeds-header-searches.NB-empty .NB-feeds-header-count {
   display: none;
 }
@@ -4466,6 +4469,7 @@ body {
 .NB-searches-folder .NB-searches-feeds.NB-feedlist .feed {
     display: block;
 }
+
 /* ===================== */
 /* = Header - Try Feed = */
 /* ===================== */
