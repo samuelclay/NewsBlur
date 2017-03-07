@@ -359,6 +359,11 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         if (folder) {
             $selected_view = folder.folder_view.$el;
             $selected_view = $selected_view.find('.folder_title').eq(0);
+        } else {
+            folder = NEWSBLUR.assets.searches_feeds.selected();
+            if (folder) {
+                $selected_view = folder.list_view.$el;
+            }
         }
         
         if (!$selected_view && NEWSBLUR.reader.active_feed == 'river:') {

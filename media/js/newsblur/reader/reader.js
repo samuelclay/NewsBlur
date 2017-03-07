@@ -1731,20 +1731,21 @@
             options['search'] = query;
             options['router'] = true;
             search_model.set('selected', true);
+            options.feed = options.search_model;
             
             if (feed_id == 'river:') {
-                this.open_river_stories(options);
+                this.open_river_stories(options.$feed, feed_model, options);
             } else if (_.string.startsWith(feed_id, 'river:')) {
-                NEWSBLUR.reader.open_river_stories(options.$feed, feed_model, options);
+                this.open_river_stories(options.$feed, feed_model, options);
             } else if (feed_id == "read") {
                 this.open_read_stories(options);
             } else if (_.string.startsWith(feed_id, 'starred:')) {
+                options.tag = feed_model.tag_slug();
                 this.open_starred_stories(options);
             } else if (_.string.startsWith(feed_id, 'feed:')) {
-                options.feed = options.search_model;
                 this.open_feed(parseInt(feed_id.replace('feed:', ''), 10), options);
             } else if (_.string.startsWith(feed_id, 'social:')) {
-                this.open_social_stories(options);
+                this.open_social_stories(feed_id, options);
             }
             
             window.history.replaceState({}, "", $.updateQueryString('search', query, window.location.pathname));
@@ -1802,7 +1803,11 @@
             if (options.tag) {
                 this.active_feed = options.model.id;
                 this.flags['starred_tag'] = options.model.get('tag');
-                options.model.set('selected', true);
+                if (options.feed) {
+                    options.feed.set('selected', true);
+                } else {
+                    options.model.set('selected', true);
+                }
             } else {
                 this.active_feed = 'starred';
                 this.$s.$starred_header.addClass('NB-selected');
@@ -1937,8 +1942,6 @@
             options = options || {};
             var $story_titles = this.$s.$story_titles;
             $folder = $folder || this.$s.$feed_list;
-            var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
-                              this.active_folder && this.active_folder.folder_view;
             var folder_title = folder && folder.get('folder_title') || "Everything";
             
             this.reset_feed(options);
@@ -1950,10 +1953,20 @@
             this.hide_splash_page();
             if (!folder || folder.get('fake') || !folder.get('folder_title')) {
                 this.active_feed = 'river:';
-                this.$s.$river_sites_header.addClass('NB-selected');
+                if (options.feed) {
+                    options.feed.set('selected', true);
+                } else {
+                    this.$s.$river_sites_header.addClass('NB-selected');
+                }
             } else {
                 this.active_feed = 'river:' + folder_title;
-                folder_view.model.set('selected', true);
+                if (options.feed) {
+                    options.feed.set('selected', true);
+                } else {
+                    var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
+                                      this.active_folder && this.active_folder.folder_view;
+                    folder_view.model.set('selected', true);
+                }
             }
             this.active_folder = folder || NEWSBLUR.assets.folders;
             
@@ -2193,7 +2206,11 @@
             
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
-            feed.set('selected', true, options);
+            if (options.feed) {
+                options.feed.set('selected', true, options);                
+            } else {
+                feed.set('selected', true, options);                
+            }
             this.set_correct_story_view_for_feed(this.active_feed);
             this.make_feed_title_in_stories();
             this.$s.$body.addClass('NB-view-river');
