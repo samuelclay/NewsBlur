@@ -813,6 +813,36 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending launch TT email for user: %s months, %s" % (months_ago, self.user.email))
+
+    def send_launch_turntouch_end_email(self, force=False):
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending launch TT end email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
+            return
+        
+        params = dict(receiver_user_id=self.user.pk, email_type='launch_turntouch_end')
+        try:
+            sent_email = MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                logging.user(self.user, "~FM~SB~FRNot~FM sending launch TT end email for user, sent already: %s" % self.user.email)
+                return
+        except MSentEmail.DoesNotExist:
+            sent_email = MSentEmail.objects.create(**params)
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_launch_turntouch_end.txt', data)
+        html    = render_to_string('mail/email_launch_turntouch_end.xhtml', data)
+        subject = "Last day to back Turn Touch: NewsBlur's beautiful remote"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending launch TT end email for user: %s months, %s" % (months_ago, self.user.email))
     
     def grace_period_email_sent(self, force=False):
         emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
