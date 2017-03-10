@@ -13,7 +13,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     select_story: function(story, selected) {
-        console.log(['select_story', this, this.collection, story, selected]);
+        // console.log(['select_story', this, this.collection, story, selected]);
         if (this.collection) this.collection.detect_selected_story(this, selected);
     },
     
@@ -550,7 +550,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     detect_selected_story: function(selected_story, selected) {
         if (selected) {
-            console.log(['detect_selected_story', selected, selected_story, this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
+            // console.log(['detect_selected_story', selected, selected_story, this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
             this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;

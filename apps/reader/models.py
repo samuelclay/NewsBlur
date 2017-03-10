@@ -327,6 +327,30 @@ class UserSubscription(models.Model):
         rt.expire(unread_ranked_stories_keys, 60*60)
         
         return story_hashes, unread_feed_story_hashes
+    
+    @classmethod
+    def truncate_river(cls, user_id, feed_ids, read_filter, cache_prefix=""):
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
+        
+        feeds_string = ','.join(str(f) for f in sorted(feed_ids))[:30]
+        ranked_stories_keys         = '%szU:%s:feeds:%s'  % (cache_prefix, user_id, feeds_string)
+        unread_ranked_stories_keys  = '%szhU:%s:feeds:%s' % (cache_prefix, user_id, feeds_string)
+        stories_cached = rt.exists(ranked_stories_keys)
+        unreads_cached = rt.exists(unread_ranked_stories_keys)
+        truncated = 0
+        if stories_cached:
+            truncated += rt.zcard(ranked_stories_keys)
+            rt.delete(ranked_stories_keys)
+        else:
+            logging.debug(" ***> ~FRNo stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+            
+        if unreads_cached:
+            truncated += rt.zcard(unread_ranked_stories_keys)
+            rt.delete(unread_ranked_stories_keys)
+        else:
+            logging.debug(" ***> ~FRNo unread stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+        
+        return truncated
         
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True,
@@ -1565,6 +1589,16 @@ class UserSubscriptionFolders(models.Model):
         for i, f in enumerate(usf):
             print "%s/%s: %s" % (i, total, f)
             f.add_missing_feeds()
+    
+    @classmethod
+    def add_missing_feeds_for_user(cls, user_id):
+        user = User.objects.get(pk=user_id)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            return
+        
+        usf.add_missing_feeds()
         
     def add_missing_feeds(self):
         all_feeds = self.flat()

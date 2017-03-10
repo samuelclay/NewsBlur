@@ -60,7 +60,10 @@ class TextImporter:
             text = resp.text
         except (LookupError, TypeError):
             text = resp.content
-
+        
+        # if self.debug:
+        #     logging.user(self.request, "~FBOriginal text's website: %s" % text)
+        
         if resp.encoding and resp.encoding != 'utf-8':
             try:
                 text = text.encode(resp.encoding)
@@ -72,8 +75,7 @@ class TextImporter:
             text = text.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
 
         original_text_doc = readability.Document(text, url=resp.url,
-                                                 debug=self.debug,
-                                                 positive_keywords=["postContent", "postField"])
+                                                 positive_keywords="postContent, postField")
         try:
             content = original_text_doc.summary(html_partial=True)
         except (readability.Unparseable, ParserError), e:

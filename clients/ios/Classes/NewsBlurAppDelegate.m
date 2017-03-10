@@ -1624,10 +1624,12 @@
 - (void)showOriginalStory:(NSURL *)url {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
-    if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"safari"]) {
+    NSString *storyBrowser = [preferences stringForKey:@"story_browser"];
+    if ([storyBrowser isEqualToString:@"safari"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+//        [[UIApplication sharedApplication] openURL:url];
         return;
-    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"chrome"] &&
+    } else if ([storyBrowser isEqualToString:@"chrome"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
         NSString *openingURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         NSURL *callbackURL = [NSURL URLWithString:@"newsblur://"];
@@ -1642,7 +1644,7 @@
         
         [[UIApplication sharedApplication] openURL:activityURL options:@{} completionHandler:nil];
         return;
-    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"opera_mini"] &&
+    } else if ([storyBrowser isEqualToString:@"opera_mini"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"opera-http://"]]) {
 
                    
@@ -1656,7 +1658,11 @@
                    
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL] options:@{} completionHandler:nil];
         return;
-    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"inappsafari"]) {
+    } else if ([storyBrowser isEqualToString:@"firefox"]) {
+        NSString *encodedURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+        NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://?url=", encodedURL];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL]];
+    } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
                                                         entersReaderIfAvailable:NO];
         self.safariViewController.delegate = self;

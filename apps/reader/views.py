@@ -229,9 +229,9 @@ def autologin(request, username, secret):
 def load_feeds(request):
     user             = get_user(request)
     feeds            = {}
-    include_favicons = request.REQUEST.get('include_favicons', False)
-    flat             = request.REQUEST.get('flat', False)
-    update_counts    = request.REQUEST.get('update_counts', False)
+    include_favicons = is_true(request.REQUEST.get('include_favicons', False))
+    flat             = is_true(request.REQUEST.get('flat', False))
+    update_counts    = is_true(request.REQUEST.get('update_counts', False))
     version          = int(request.REQUEST.get('v', 1))
     
     if include_favicons == 'false': include_favicons = False
@@ -1235,10 +1235,6 @@ def load_river_stories__redis(request):
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
     
-    if limit == 4 and not initial_dashboard:
-        logging.user(request, "~FRIgnoring ~FCdashboard river stories")
-        return dict(code=-1, message="Had to turn off dashboard river for now.", stories=[])
-        
     if story_hashes:
         unread_feed_story_hashes = None
         read_filter = 'all'
@@ -1398,6 +1394,15 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
     
+    # Clean stories to remove potentially old stories on dashboard
+    if initial_dashboard:
+        new_stories = []
+        month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        for story in stories:
+            if story['story_date'] >= month_ago:
+                new_stories.append(story)
+        stories = new_stories
+        
     # if page >= 1:
     #     import random
     #     time.sleep(random.randint(3, 6))
@@ -1415,7 +1420,24 @@ def load_river_stories__redis(request):
     
     return data
     
-
+@json.json_view
+def complete_river(request):
+    user              = get_user(request)
+    feed_ids          = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
+    page              = int(request.POST.get('page', 1))
+    read_filter       = request.POST.get('read_filter', 'unread')
+    stories_truncated = 0
+    
+    usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+                                               read_filter=read_filter)
+    feed_ids = [sub.feed_id for sub in usersubs]
+    if feed_ids:
+        stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter)
+    
+    logging.user(request, "~FC~BBRiver complete on page ~SB%s~SN, truncating ~SB%s~SN stories from ~SB%s~SN feeds" % (page, stories_truncated, len(feed_ids)))
+    
+    return dict(code=1, message="Truncated %s stories from %s" % (stories_truncated, len(feed_ids)))
+    
 @json.json_view
 def unread_story_hashes__old(request):
     user              = get_user(request)

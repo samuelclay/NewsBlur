@@ -254,6 +254,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
                 menu.removeItem(R.id.menu_choose_folders);
+                menu.removeItem(R.id.menu_unmute_feed);
+                menu.removeItem(R.id.menu_mute_feed);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
 

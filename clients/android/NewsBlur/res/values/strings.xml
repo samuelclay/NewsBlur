@@ -6,7 +6,9 @@
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
     <string name="login_button_login">Log In</string>
-    <string name="forgot_password"><u>I forgot my password</u></string>
+    <string name="login_forgot_password"><u>I forgot my password</u></string>
+    <string name="login_custom_server"><u>I have a custom server</u></string>
+    <string name="login_custom_server_hint">https://www.newsblur.com</string>
     <string name="login_message_error">There was problem logging in to NewsBlur.</string>
     <string name="login_logging_in">Logging in…</string>
     <string name="login_logged_in">Logged in!</string>
@@ -147,6 +149,8 @@
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
+    <string name="menu_feedback_post">Create a support post</string>
+    <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_loginas">Login as...</string>
 
     <string name="loginas_title">Login As User</string>

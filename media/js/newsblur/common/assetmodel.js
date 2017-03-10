@@ -142,36 +142,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
     },
     
-    mark_story_as_read: function(story, feed, callback) {
-        var self = this;
-        var read = story.get('read_status');
-        
-        if (!story.get('read_status')) {
-            story.set('read_status', 1);
-            
-            if (NEWSBLUR.Globals.is_authenticated) {
-                if (!(feed.id in this.queued_read_stories)) { this.queued_read_stories[feed.id] = []; }
-                this.queued_read_stories[feed.id].push(story.id);
-                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story.id]);
-            
-                this.make_request('/reader/mark_story_as_read', {
-                    story_id: this.queued_read_stories[feed.id],
-                    feed_id: feed.id
-                }, null, null, {
-                    'ajax_group': 'queue_clear',
-                    'beforeSend': function() {
-                        self.queued_read_stories = {};
-                    }
-                });
-            }
-        }
-        
-        $.isFunction(callback) && callback(read);
-    },
-    
     mark_story_hash_as_read: function(story, callback) {
         var self = this;
-        var read = story.get('read_status');
+        var previously_read = story.get('read_status');
         
         if (!story.get('read_status')) {
             story.set('read_status', 1);
@@ -192,7 +165,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
         }
         
-        $.isFunction(callback) && callback(read);
+        $.isFunction(callback) && callback(previously_read);
     },
     
     mark_social_story_as_read: function(story, social_feed, callback) {
@@ -311,37 +284,51 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_counts', {}, pre_callback, pre_callback, {request_type: 'GET'});
     },
     
-    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, mark_active, callback) {
+    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
                        ? _.select(feed_id, function(f) { return f; })
                        : [feed_id];
         
+        this.stories.each(function(story) {
+            if (direction == "older" && 
+                cutoff_timestamp && 
+                story.get('story_timestamp') > cutoff_timestamp) {
+                return;
+            } else if (direction == "newer" && 
+                cutoff_timestamp && 
+                story.get('story_timestamp') < cutoff_timestamp) {
+                return;
+            }
+            if (!story.get('read_status')) {
+                story.set('read_status', true);
+                var score = story.score();
+                var feed = self.get_feed(story.get('story_feed_id'));
+                if (!feed) return;
+                if (score > 0) {
+                    feed.set('ps', feed.get('ps') - 1);
+                } else if (score == 0) {
+                    feed.set('nt', feed.get('nt') - 1);
+                } else if (score < 0) {
+                    feed.set('ng', feed.get('ng') - 1);
+                }
+            }
+        });
+
+        if (!cutoff_timestamp) {
+            _.each(feed_ids, function(feed_id) {
+                var feed = self.get_feed(feed_id);
+                if (!feed) return;
+            
+                feed.set({'ps': 0, 'nt': 0, 'ng': 0});
+            });
+        }
+
         this.make_request('/reader/mark_feed_as_read', {
             feed_id: feed_ids,
             cutoff_timestamp: cutoff_timestamp,
             direction: direction
         }, callback);
-        
-        _.each(feed_ids, function(feed_id) {
-            var feed = self.get_feed(feed_id);
-            if (!feed) return;
-            feed.set({'ps': 0, 'nt': 0, 'ng': 0});
-        });
-        if (mark_active) {
-            this.stories.each(function(story) {
-                if ((!direction || direction == "older") && 
-                    cutoff_timestamp && 
-                    parseInt(story.get('story_timestamp'), 10) > cutoff_timestamp) {
-                    return;
-                } else if (direction == "newer" && 
-                    cutoff_timestamp && 
-                    parseInt(story.get('story_timestamp'), 10) < cutoff_timestamp) {
-                    return;
-                }
-                story.set('read_status', true);
-            });
-        }
     },
     
     mark_story_as_shared: function(params, callback, error_callback) {
@@ -730,6 +717,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
     },
     
+    complete_river: function(feed_id, feeds, page, callback) {
+        this.make_request('/reader/complete_river', {
+            feeds: feeds,
+            page: page,
+            read_filter: this.view_setting(feed_id, 'read_filter')
+        }, callback, callback, {
+            'ajax_group': 'feed_page'
+        });
+    },
+    
     fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
         var self = this;
         
@@ -1108,7 +1105,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     get_story: function(story_id) {
         var self = this;
-        return this.stories.get(story_id);
+        var story = this.stories.get(story_id);
+        if (!story) {
+            story = this.stories.detect(function (story) {
+                return story.get('story_hash') == story_id;
+            });
+        }
+        return story;
     },
     
     get_user: function(user_id) {

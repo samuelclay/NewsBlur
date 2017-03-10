@@ -70,7 +70,8 @@ def load_social_stories(request, user_id, username=None):
             stories = []
             message = "You must be a premium subscriber to search."
     elif socialsub and (read_filter == 'unread' or order == 'oldest'):
-        story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit, cutoff_date=user.profile.unread_cutoff)
+        cutoff_date = max(socialsub.mark_read_date, user.profile.unread_cutoff)
+        story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit, cutoff_date=cutoff_date)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
         if story_hashes:
             mstories = MSharedStory.objects(user_id=social_user.pk,
@@ -80,7 +81,7 @@ def load_social_stories(request, user_id, username=None):
         mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
         stories = Feed.format_stories(mstories)
 
-    if not stories:
+    if not stories or False: # False is to force a recount even if 0 stories
         return dict(stories=[], message=message)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)

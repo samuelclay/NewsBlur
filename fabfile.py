@@ -249,7 +249,7 @@ def setup_node():
     setup_node_app()
     config_node()
     
-def setup_db(engine=None, skip_common=False):
+def setup_db(engine=None, skip_common=False, skip_benchmark=True):
     if not skip_common:
         setup_common()
         setup_db_firewall()
@@ -278,7 +278,8 @@ def setup_db(engine=None, skip_common=False):
     setup_db_munin()
     setup_db_monitor()
     setup_usage_monitor()
-    benchmark()
+    if not skip_benchmark:
+        benchmark()
     done()
 
     # if env.user == 'ubuntu':
@@ -466,10 +467,10 @@ def setup_psycopg():
 #             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 def setup_virtualenv():
+    sudo('rm -fr ~/.cache') # Clean `sudo pip`
     sudo('pip install --upgrade virtualenv')
     sudo('pip install --upgrade virtualenvwrapper')
     setup_local_files()
-    sudo('rm -fr ~/.cache') # Clean `sudo pip`
     with prefix('WORKON_HOME=%s' % os.path.join(env.NEWSBLUR_PATH, 'venv')):
         with prefix('source /usr/local/bin/virtualenvwrapper.sh'):
             with cd(env.NEWSBLUR_PATH):
@@ -699,7 +700,7 @@ def setup_sudoers(user=None):
     sudo('chmod 0440 /etc/sudoers.d/sclay')
 
 def setup_nginx():
-    NGINX_VERSION = '1.6.2'
+    NGINX_VERSION = '1.11.8'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
@@ -880,7 +881,7 @@ def upgrade_django():
 def upgrade_pil():
     with virtualenv():
         pull()
-        sudo('pip install --upgrade pillow')
+        run('pip install --upgrade pillow')
         # celery_stop()
         sudo('apt-get remove -y python-imaging')
         sudo('supervisorctl reload')
@@ -1076,7 +1077,7 @@ def setup_mongo_mms():
         sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
-    redis_version = '3.0.3'
+    redis_version = '3.2.6'
     with cd(env.VENDOR_PATH):
         run('wget http://download.redis.io/releases/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -1093,6 +1094,13 @@ def setup_redis(slave=False):
     # sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
     # run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
     # sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
+    sudo('echo "#!/bin/sh -e\n\nif test -f /sys/kernel/mm/transparent_hugepage/enabled; then\n\
+       echo never > /sys/kernel/mm/transparent_hugepage/enabled\n\
+    fi\n\
+    if test -f /sys/kernel/mm/transparent_hugepage/defrag; then\n\
+       echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
+    fi\n\n\
+    exit 0" | sudo tee /etc/rc.local')
     sudo("echo 1 | sudo tee /proc/sys/vm/overcommit_memory")
     sudo('echo "vm.overcommit_memory = 1" | sudo tee -a /etc/sysctl.conf')
     sudo("sysctl vm.overcommit_memory=1")
@@ -1144,7 +1152,7 @@ def copy_munin_data(from_server):
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), '~/.ssh/newsblur.key.pub')
     run('chmod 600 ~/.ssh/newsblur*')
 
-    put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
+    # put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
     sudo('/etc/init.d/nginx reload')
 
     run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/var/lib/munin/ /srv/munin" % from_server)
@@ -1154,8 +1162,14 @@ def copy_munin_data(from_server):
     sudo("chown munin.munin -R /var/lib/munin")
 
     run("sudo rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/etc/munin/ /srv/munin-etc" % from_server)
+    sudo('rm -fr /etc/munin')
     sudo("mv /srv/munin-etc /etc/munin")
     sudo("chown munin.munin -R /etc/munin")
+
+    run("sudo rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/var/cache/munin/www/ /srv/munin-www" % from_server)
+    sudo('rm -fr /var/cache/munin/www')
+    sudo("mv /srv/munin-www /var/cache/munin/www")
+    sudo("chown munin.munin -R /var/cache/munin/www")
 
     sudo("/etc/init.d/munin restart")
     sudo("/etc/init.d/munin-node restart")
@@ -1232,8 +1246,10 @@ def setup_usage_monitor():
     
 @parallel
 def setup_redis_monitor():
+    run('sleep 5') # Wait for redis to startup so the log file is there
     sudo('ln -fs %s/utils/monitor_redis_bgsave.py /etc/cron.daily/monitor_redis_bgsave' % env.NEWSBLUR_PATH)
-    sudo('/etc/cron.daily/monitor_redis_bgsave')
+    with settings(warn_only=True):
+        sudo('/etc/cron.daily/monitor_redis_bgsave')
     
 # ================
 # = Setup - Task =

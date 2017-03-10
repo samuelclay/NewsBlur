@@ -8,6 +8,7 @@ import android.provider.BaseColumns;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import com.newsblur.domain.Feed;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
@@ -42,6 +43,7 @@ public class DatabaseConstants {
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
     public static final String FEED_NOTIFICATION_TYPES = "notification_types";
+    public static final String FEED_NOTIFICATION_FILTER = "notification_filter";
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
@@ -97,8 +99,6 @@ public class DatabaseConstants {
     public static final String STORY_LAST_READ_DATE = "last_read_date";
     public static final String STORY_SEARCH_HIT = "search_hit";
     public static final String STORY_THUMBNAIL_URL = "thumbnail_url";
-	public static final String STORY_NOTIFY = "notify";
-	public static final String STORY_NOTIFIED = "notified";
 
     public static final String READING_SESSION_TABLE = "reading_session";
     public static final String READING_SESSION_STORY_HASH = "session_story_hash";
@@ -170,7 +170,8 @@ public class DatabaseConstants {
 		FEED_SUBSCRIBERS + TEXT + ", " +
 		FEED_TITLE + TEXT + ", " + 
 		FEED_UPDATED_SECONDS + INTEGER + ", " +
-        FEED_NOTIFICATION_TYPES + TEXT +
+        FEED_NOTIFICATION_TYPES + TEXT + ", " +
+        FEED_NOTIFICATION_FILTER + TEXT +
 		")";
 	
 	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 
@@ -235,8 +236,6 @@ public class DatabaseConstants {
 		STORY_PERMALINK + TEXT + ", " + 
 		STORY_READ + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
-		STORY_NOTIFY + INTEGER + ", " +
-		STORY_NOTIFIED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
         STORY_IMAGE_URLS + TEXT + ", " +
@@ -295,7 +294,7 @@ public class DatabaseConstants {
         STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_USER_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
-        STORY_LAST_READ_DATE, STORY_THUMBNAIL_URL, STORY_NOTIFY, STORY_NOTIFIED,
+        STORY_LAST_READ_DATE, STORY_THUMBNAIL_URL,
 	};
 
     private static final String STORY_COLUMNS = 
@@ -320,10 +319,19 @@ public class DatabaseConstants {
         ")" + 
         STORY_QUERY_BASE_2;
 
-    public static final String NOTIFY_STORY_QUERY_BASE = 
+    public static String NOTIFY_FOCUS_STORY_QUERY = 
         STORY_QUERY_BASE_1 +
-        STORY_NOTIFY + " > 0 AND " + STORY_NOTIFIED + " < 1" +
-        STORY_QUERY_BASE_2;
+        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "')" +
+        " AND " + STORY_INTELLIGENCE_TOTAL + " > 0 " +
+        STORY_QUERY_BASE_2 +
+        " ORDER BY " + STORY_TIMESTAMP + " DESC";
+
+    public static String NOTIFY_UNREAD_STORY_QUERY = 
+        STORY_QUERY_BASE_1 +
+        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "')" +
+        " AND " + STORY_INTELLIGENCE_TOTAL + " >= 0 " +
+        STORY_QUERY_BASE_2 +
+        " ORDER BY " + STORY_TIMESTAMP + " DESC";
 
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;

@@ -923,7 +923,7 @@ class MSocialSubscription(mongo.Document):
 
         read_dates = dict()
         for us in socialsubs:
-            read_dates[us.subscription_user_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))            
+            read_dates[us.subscription_user_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
 
         for sub_user_id_group in chunks(subscription_user_ids, 20):
             pipeline = r.pipeline()
@@ -1277,7 +1277,7 @@ class MSocialSubscription(mongo.Document):
             self.mark_read_date = date_delta
 
         unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
-                                               cutoff_date=user_profile.unread_cutoff)
+                                               cutoff_date=date_delta)
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
                                           story_hash__in=unread_story_hashes)
         story_feed_ids = set()

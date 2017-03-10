@@ -31,6 +31,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FileCache;
 import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.NotificationUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
@@ -82,6 +83,7 @@ public class NBSyncService extends Service {
     /** Informational flag only, as to whether we were offline last time we cycled. */
     public volatile static boolean OfflineNow = false;
 
+    public volatile static Boolean isAuth = null;
     public volatile static Boolean isPremium = null;
     public volatile static Boolean isStaff = null;
 
@@ -124,8 +126,6 @@ public class NBSyncService extends Service {
     Set<String> orphanFeedIds;
     Set<String> disabledFeedIds;
 
-    Set<String> notifyFeedIds;
-
     private ExecutorService primaryExecutor;
     CleanupService cleanupService;
     OriginalTextService originalTextService;
@@ -135,6 +135,7 @@ public class NBSyncService extends Service {
     PowerManager.WakeLock wl = null;
 	APIManager apiManager;
     BlurDatabaseHelper dbHelper;
+    FileCache iconCache;
     private int lastStartIdCompleted = -1;
 
     /** The time of the last hard API failure we encountered. Used to implement back-off so that the sync
@@ -163,10 +164,12 @@ public class NBSyncService extends Service {
         if (apiManager == null) {
             apiManager = new APIManager(this);
             dbHelper = new BlurDatabaseHelper(this);
+            iconCache = FileCache.asIconCache(this);
             cleanupService = new CleanupService(this);
             originalTextService = new OriginalTextService(this);
             unreadsService = new UnreadsService(this);
             imagePrefetchService = new ImagePrefetchService(this);
+            com.newsblur.util.Log.offerContext(this);
         }
     }
 
@@ -254,10 +257,12 @@ public class NBSyncService extends Service {
 
             checkRecounts();
 
+            pushNotifications();
+
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
 
         } catch (Exception e) {
-            Log.e(this.getClass().getName(), "Sync error.", e);
+            com.newsblur.util.Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
             decrementRunningChild(startId);
         }
@@ -292,9 +297,9 @@ public class NBSyncService extends Service {
             if (upgraded || autoVac) {
                 HousekeepingRunning = true;
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
-                Log.i(this.getClass().getName(), "rebuilding DB . . .");
+                com.newsblur.util.Log.i(this.getClass().getName(), "rebuilding DB . . .");
                 dbHelper.vacuum();
-                Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
+                com.newsblur.util.Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
                 PrefsUtils.updateLastVacuumTime(this);
             }
         } finally {
@@ -327,7 +332,7 @@ public class NBSyncService extends Service {
                 try {
                     ra = ReadingAction.fromCursor(c);
                 } catch (IllegalArgumentException e) {
-                    Log.e(this.getClass().getName(), "error unfreezing ReadingAction", e);
+                    com.newsblur.util.Log.e(this.getClass().getName(), "error unfreezing ReadingAction", e);
                     dbHelper.clearAction(id);
                     continue actionsloop;
                 }
@@ -335,20 +340,20 @@ public class NBSyncService extends Service {
                 // don't block story loading unless this is a brand new action
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
                     
-                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "attempting action: " + ra.toContentValues().toString());
+                com.newsblur.util.Log.d(this.getClass().getName(), "attempting action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(apiManager);
 
                 if (response == null) {
-                    Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
+                    com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
                     dbHelper.clearAction(id);
                 } else if (response.isProtocolError) {
                     // the network failed or we got a non-200, so be sure we retry
-                    Log.i(this.getClass().getName(), "Holding reading action with server-side or network error.");
+                    com.newsblur.util.Log.i(this.getClass().getName(), "Holding reading action with server-side or network error.");
                     dbHelper.incrementActionTried(id);
                     noteHardAPIFailure();
                     continue actionsloop;
                 } else if (response.isError()) {
-                    Log.e(this.getClass().getName(), "Discarding reading action with user error.");
+                    com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with user error.");
                     dbHelper.clearAction(id);
                     String message = response.getErrorMessage(null);
                     if (message != null) NbActivity.toastError(message);
@@ -409,6 +414,8 @@ public class NBSyncService extends Service {
             return;
         }
 
+        com.newsblur.util.Log.i(this.getClass().getName(), "ready to sync feed list");
+
         FFSyncRunning = true;
         NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
@@ -417,7 +424,6 @@ public class NBSyncService extends Service {
         Set<String> debugFeedIdsFromFeeds = new HashSet<String>();
         orphanFeedIds = new HashSet<String>();
         disabledFeedIds = new HashSet<String>();
-        notifyFeedIds = new HashSet<String>();
 
         try {
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -427,11 +433,16 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            // if the response says we aren't logged in, clear the DB and prompt for login. We test this
-            // here, since this the first sync call we make on launch if we believe we are cookied.
             if (! feedResponse.isAuthenticated) {
-                PrefsUtils.logout(this);
+                // we should not have got this far without being logged in, so the server either
+                // expired or ignored out cookie. keep track of this.
+                isAuth = false;
+                com.newsblur.util.Log.w(this.getClass().getName(), "Server ignored or rejected auth cookie.");
+                DoFeedsFolders = true;
+                noteHardAPIFailure();
                 return;
+            } else {
+                isAuth = true;
             }
 
             if (HaltNow) return;
@@ -473,9 +484,6 @@ public class NBSyncService extends Service {
                     disabledFeedIds.add(feed.feedId);
                 }
                 feedValues.add(feed.getValues());
-                if (feed.isNotify()) {
-                    notifyFeedIds.add(feed.feedId);
-                }
             }
             // also add the implied zero-id feed
             feedValues.add(Feed.getZeroFeed().getValues());
@@ -523,6 +531,8 @@ public class NBSyncService extends Service {
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();
 
+            com.newsblur.util.Log.i(this.getClass().getName(), "got feed list: " + getSpeedInfo());
+
             UnreadsService.doMetadata();
             unreadsService.start(startId);
             cleanupService.start(startId);
@@ -559,6 +569,8 @@ public class NBSyncService extends Service {
                 return;
             }
 
+            com.newsblur.util.Log.i(this.getClass().getName(), "recounting dirty feed sets: " + dirtySets.size());
+
             // if we are offline, the best we can do is perform a local unread recount and
             // save the true one for when we go back online.
             if (!NetworkUtils.isOnline(this)) {
@@ -577,7 +589,7 @@ public class NBSyncService extends Service {
 
                 UnreadCountResponse apiResponse = apiManager.getFeedUnreadCounts(apiIds);
                 if ((apiResponse == null) || (apiResponse.isError())) {
-                    Log.w(this.getClass().getName(), "Bad response to feed_unread_count");
+                    com.newsblur.util.Log.w(this.getClass().getName(), "Bad response to feed_unread_count");
                     return;
                 }
                 if (apiResponse.feeds != null ) {
@@ -628,7 +640,7 @@ public class NBSyncService extends Service {
         }
         try {
             if (ExhaustedFeeds.contains(fs)) {
-                Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
+                com.newsblur.util.Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
                 finished = true;
                 return;
             }
@@ -714,11 +726,11 @@ public class NBSyncService extends Service {
 
     private boolean isStoryResponseGood(StoriesResponse response) {
         if (response == null) {
-            Log.e(this.getClass().getName(), "Null response received while loading stories.");
+            com.newsblur.util.Log.e(this.getClass().getName(), "Null response received while loading stories.");
             return false;
         }
         if (response.stories == null) {
-            Log.e(this.getClass().getName(), "Null stories member received while loading stories.");
+            com.newsblur.util.Log.e(this.getClass().getName(), "Null stories member received while loading stories.");
             return false;
         }
         return true;
@@ -767,11 +779,26 @@ public class NBSyncService extends Service {
             }
         }
 
+        com.newsblur.util.Log.d(NBSyncService.class.getName(), "got stories from main fetch loop: " + apiResponse.stories.length);
         dbHelper.insertStories(apiResponse, true);
     }
 
     void insertStories(StoriesResponse apiResponse) {
+        com.newsblur.util.Log.d(NBSyncService.class.getName(), "got stories from sub sync: " + apiResponse.stories.length);
         dbHelper.insertStories(apiResponse, false);
+    }
+
+    void pushNotifications() {
+        // don't notify stories until the queue is flushed so they don't churn
+        if (unreadsService.StoryHashQueue.size() > 0) return;
+        // don't slow down active story loading
+        if (PendingFeed != null) return;
+
+        Cursor cFocus = dbHelper.getNotifyFocusStoriesCursor();
+        Cursor cUnread = dbHelper.getNotifyUnreadStoriesCursor();
+        NotificationUtils.notifyStories(cFocus, cUnread, this, iconCache);
+        closeQuietly(cFocus);
+        closeQuietly(cUnread);
     }
 
     void incrementRunningChild() {
@@ -800,7 +827,7 @@ public class NBSyncService extends Service {
 
     static boolean stopSync(Context context) {
         if (HaltNow) {
-            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "stopping sync, soft interrupt set.");
+            com.newsblur.util.Log.i(NBSyncService.class.getName(), "stopping sync, soft interrupt set.");
             return true;
         }
         if (context == null) return false;
@@ -816,13 +843,14 @@ public class NBSyncService extends Service {
     }
 
     private void noteHardAPIFailure() {
+        com.newsblur.util.Log.w(this.getClass().getName(), "hard API failure");
         lastAPIFailure = System.currentTimeMillis();
     }
 
     private boolean backoffBackgroundCalls() {
         if (NbActivity.getActiveActivityCount() > 0) return false;
         if (System.currentTimeMillis() > (lastAPIFailure + AppConstants.API_BACKGROUND_BACKOFF_MILLIS)) return false;
-        Log.i(this.getClass().getName(), "abandoning background sync due to recent API failures.");
+        com.newsblur.util.Log.i(this.getClass().getName(), "abandoning background sync due to recent API failures.");
         return true;
     }
 
@@ -909,7 +937,7 @@ public class NBSyncService extends Service {
      */
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, int callerSeen) {
         if (ExhaustedFeeds.contains(fs)) {
-            if (AppConstants.VERBOSE_LOG) Log.i(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
+            com.newsblur.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
             return false;
         }
 
@@ -945,6 +973,7 @@ public class NBSyncService extends Service {
      * session gets cleared before the next one is populated.
      */
     public static void resetReadingSession() {
+        com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting reading session reset");
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
             ResetSession = true;
@@ -955,7 +984,7 @@ public class NBSyncService extends Service {
      * Reset the API pagniation state for the given feedset, presumably because the order or filter changed.
      */
     public static void resetFetchState(FeedSet fs) {
-        Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
+        com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
         ResetFeed = fs;
     }
 
@@ -978,7 +1007,7 @@ public class NBSyncService extends Service {
     }
 
     public static void softInterrupt() {
-        if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "soft stop");
+        com.newsblur.util.Log.i(NBSyncService.class.getName(), "soft stop");
         HaltNow = true;
     }
 
@@ -1023,7 +1052,7 @@ public class NBSyncService extends Service {
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
             super.onDestroy();
         } catch (Exception ex) {
-            Log.e(this.getClass().getName(), "unclean shutdown", ex);
+            com.newsblur.util.Log.e(this.getClass().getName(), "unclean shutdown", ex);
         }
     }
 
