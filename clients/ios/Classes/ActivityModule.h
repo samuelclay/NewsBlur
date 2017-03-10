@@ -32,8 +32,8 @@
 - (void)refreshWithActivities:(NSArray *)activities;
 
 - (void)fetchActivitiesDetail:(int)page;
-- (void)finishLoadActivities:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)finishLoadActivities:(NSURLSessionDataTask *)request;
+- (void)requestFailed:(NSURLSessionDataTask *)request;
 
 - (void)checkScroll;
 

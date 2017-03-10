@@ -354,15 +354,13 @@ SFSafariViewControllerDelegate>  {
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff;
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older;
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff;
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
-- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)finishMarkAsRead:(NSDictionary *)story;
 - (void)finishMarkAsUnread:(NSDictionary *)story;
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnread:(NSURLSessionDataTask *)request;
+- (void)finishMarkAsSaved:(NSURLSessionDataTask *)request;
+- (void)failedMarkAsSaved:(NSURLSessionDataTask *)request;
+- (void)finishMarkAsUnsaved:(NSURLSessionDataTask *)request;
+- (void)failedMarkAsUnsaved:(NSURLSessionDataTask *)request;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
@@ -400,7 +398,6 @@ SFSafariViewControllerDelegate>  {
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
-- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId;
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;

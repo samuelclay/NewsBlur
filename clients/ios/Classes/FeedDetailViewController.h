@@ -108,10 +108,10 @@
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
+- (void)finishMarkAsSaved:(NSURLSessionDataTask *)request;
+- (void)failedMarkAsSaved:(NSURLSessionDataTask *)request;
+- (void)finishMarkAsUnsaved:(NSURLSessionDataTask *)request;
+- (void)failedMarkAsUnsaved:(NSURLSessionDataTask *)request;
+- (void)failedMarkAsUnread:(NSURLSessionDataTask *)request;
 
 @end

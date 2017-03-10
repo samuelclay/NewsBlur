@@ -2864,7 +2864,7 @@
                           @"remove_like_author"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
+        [self.feedsViewController refreshFeedList:feedId];
     }];
     [request setFailedBlock:^{
         [self requestClassifierResponse:_request withFeed:feedId];
@@ -2912,7 +2912,7 @@
                           @"remove_like_tag"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
+        [self.feedsViewController refreshFeedList:feedId];
     }];
     [request setFailedBlock:^{
         [self requestClassifierResponse:_request withFeed:feedId];
@@ -2964,7 +2964,7 @@
                           @"remove_like_title"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
+        [self.feedsViewController refreshFeedList:feedId];
     }];
     [request setFailedBlock:^{
         [self requestClassifierResponse:_request withFeed:feedId];
@@ -3001,41 +3001,36 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIFormDataRequest *_request = request;
-    [request setPostValue:feedId
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:feedId
                    forKey:feedScore >= 1 ? @"like_feed" :
                           feedScore <= -1 ? @"dislike_feed" :
                           @"remove_like_feed"];
-    [request setPostValue:feedId forKey:@"feed_id"];
-    [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
-    }];
-    [request setFailedBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
-    }];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [params setObject:feedId forKey:@"feed_id"];
     
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedRequest:task.response];
+    }];
+
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
 }
 
-- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId {
+- (void)failedRequest:(NSURLResponse *)response {
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     BaseViewController *view;
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
         view = self.storyPageControl.currentPage;
     }
-    if ([request responseStatusCode] == 503) {
+    if (httpResponse.statusCode == 503) {
         return [view informError:@"In maintenance mode"];
-    } else if ([request responseStatusCode] != 200) {
+    } else if (httpResponse.statusCode != 200) {
         return [view informError:@"The server barfed!"];
     }
-    
-    [self.feedsViewController refreshFeedList:feedId];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -3411,31 +3406,21 @@
     }
     NSLog(@"Marking %lu queued read stories as read...", (unsigned long)[completedHashes count]);
     NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIHTTPRequest *_request = request;
-    [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
-    [request setDelegate:self];
-    [request setValidatesSecureCertificate:NO];
-    [request setCompletionBlock:^{
-        if ([_request responseStatusCode] == 200) {
-            NSLog(@"Completed clearing %@ hashes", completedHashesStr);
-            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
-                               "WHERE story_hash in (\"%@\")", completedHashesStr]];
-            [self pruneQueuedReadHashes];
-        } else {
-            NSLog(@"Failed mark read queued.");
-            self.hasQueuedReadStories = YES;
-            [self pruneQueuedReadHashes];
-        }
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[hashes JSONRepresentation] forKey:@"feeds_stories"];
+    
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Completed clearing %@ hashes", completedHashesStr);
+        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
+                           "WHERE story_hash in (\"%@\")", completedHashesStr]];
+        [self pruneQueuedReadHashes];
         if (callback) callback();
-    }];
-    [request setFailedBlock:^{
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed mark read queued.");
         self.hasQueuedReadStories = YES;
         [self pruneQueuedReadHashes];
         if (callback) callback();
     }];
-    [request startAsynchronous];
 }
 
 - (void)pruneQueuedReadHashes {

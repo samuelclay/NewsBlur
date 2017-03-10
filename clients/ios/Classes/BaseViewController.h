@@ -1,18 +1,13 @@
 #import <UIKit/UIKit.h>
-#import "ASIHTTPRequest.h"
-#import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
+#import "AFNetworking.h"
 
 @interface BaseViewController : UIViewController {
 	
-	NSMutableArray* requests;
+    AFHTTPSessionManager *manager;
 	
 }
 
-- (ASIHTTPRequest*) requestWithURL:(NSString*) s;
-- (ASIFormDataRequest*) formRequestWithURL:(NSString*) s;
-- (void) addRequest:(ASIHTTPRequest*)request;
-- (void) clearFinishedRequests;
 - (void) cancelRequests;
 
 - (void)informError:(id)error;
