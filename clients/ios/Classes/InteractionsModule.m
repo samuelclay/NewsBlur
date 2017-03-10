@@ -11,7 +11,6 @@
 #import "InteractionCell.h"
 #import "SmallInteractionCell.h"
 #import <QuartzCore/QuartzCore.h>
-#import "ASIHTTPRequest.h"
 #import "UserProfileViewController.h"
 #import "DashboardViewController.h"
 

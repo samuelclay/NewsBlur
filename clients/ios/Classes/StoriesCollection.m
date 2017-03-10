@@ -745,34 +745,28 @@
     [request startAsynchronous];
 }
 
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self failedMarkAsSaved:request];
+- (void)finishMarkAsSaved:(NSURLResponse *)response {
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    if (httpResponse.statusCode != 200) {
+        return [self failedMarkAsSaved:response];
     }
     
-    [self updateSavedStoryCounts:request];
+    [self updateSavedStoryCounts:response];
     
-    [appDelegate finishMarkAsSaved:request];
+    [appDelegate finishMarkAsSaved:response];
 }
 
-- (void)updateSavedStoryCounts:(ASIFormDataRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
+- (void)updateSavedStoryCounts:(NSDictionary *)results {
     NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
     NSMutableDictionary *allFolders = [appDelegate.dictFolders mutableCopy];
     [allFolders setValue:savedStories forKey:@"saved_stories"];
     appDelegate.dictFolders = allFolders;
 }
 
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
+- (void)failedMarkAsSaved:(NSURLResponse *)response {
     [self markStory:request.userInfo asSaved:NO];
     
-    [appDelegate failedMarkAsSaved:request];
+    [appDelegate failedMarkAsSaved:response];
 }
 
 - (void)syncStoryAsUnsaved:(NSDictionary *)story {    

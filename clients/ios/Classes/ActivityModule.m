@@ -11,7 +11,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "UserProfileViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "ASIHTTPRequest.h"
 #import "ActivityCell.h"
 #import "SmallActivityCell.h"
 

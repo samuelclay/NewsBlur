@@ -12,7 +12,7 @@
 
 @class ASIHTTPRequest;
 
-@interface FirstTimeUserAddFriendsViewController  : UIViewController <ASIHTTPRequestDelegate, UIWebViewDelegate> {
+@interface FirstTimeUserAddFriendsViewController  : UIViewController <UIWebViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 

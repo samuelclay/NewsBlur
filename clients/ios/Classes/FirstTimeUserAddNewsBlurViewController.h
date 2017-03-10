@@ -10,7 +10,7 @@
 
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddNewsBlurViewController  : UIViewController <ASIHTTPRequestDelegate> {
+@interface FirstTimeUserAddNewsBlurViewController  : UIViewController {
     NewsBlurAppDelegate *appDelegate;
 }
 

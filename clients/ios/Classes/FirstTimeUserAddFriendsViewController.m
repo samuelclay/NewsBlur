@@ -9,7 +9,6 @@
 #import "FirstTimeUserAddFriendsViewController.h"
 #import "FirstTimeUserAddNewsBlurViewController.h"
 #import "AuthorizeServicesViewController.h"
-#import "ASIHTTPRequest.h"
 
 @interface FirstTimeUserAddFriendsViewController ()
 
