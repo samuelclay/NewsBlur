@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ASIHTTPRequest.h"
 
 @class NewsBlurAppDelegate;
 @class ProfileBadge;
 
 @interface UserProfileViewController : UIViewController 
-<UITableViewDataSource, UITableViewDelegate, ASIHTTPRequestDelegate> {
+<UITableViewDataSource, UITableViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     UILabel *followingCount;
