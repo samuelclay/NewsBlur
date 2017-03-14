@@ -11,7 +11,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface AddSiteViewController : UIViewController 
+@interface AddSiteViewController : BaseViewController
 <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 
 - (void)reload;
