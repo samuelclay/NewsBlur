@@ -1000,18 +1000,27 @@ def copy_postgres_to_standby(master='db01'):
     # new: sudo su postgres
     # new: ssh-keygen
     # Copy old:/var/lib/postgresql/.ssh/id_dsa.pub to new:/var/lib/postgresql/.ssh/authorized_keys and vice-versa
+    #   old: cat /var/lib/postgresql/.ssh/id_rsa.pub
+    #   new: echo "" > /var/lib/postgresql/.ssh/authorized_keys
     # new: ssh old
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
-    # new: sudo su postgres -c "rsync -a --stats --progress postgres@db01:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"
+    # new: sudo su postgres -c "rsync -a --stats --progress postgres@db02:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"
     # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
     
     # Don't forget to add 'setup_postgres_backups' to new
     
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
+
+def disable_thp():
+    put('config/disable_transparent_hugepages.sh', '/etc/init.d/disable-transparent-hugepages', use_sudo=True)
+    sudo('chmod 755 /etc/init.d/disable-transparent-hugepages')
+    sudo('update-rc.d disable-transparent-hugepages defaults')
     
 def setup_mongo():
     MONGODB_VERSION = "3.2.10"
     pull()
+    disable_thp()
+    sudo('systemctl enable rc-local.service') # Enable rc.local
     sudo('echo "#!/bin/sh -e\n\nif test -f /sys/kernel/mm/transparent_hugepage/enabled; then\n\
        echo never > /sys/kernel/mm/transparent_hugepage/enabled\n\
     fi\n\
@@ -1094,6 +1103,8 @@ def setup_redis(slave=False):
     # sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
     # run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
     # sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
+    disable_thp()
+    sudo('systemctl enable rc-local.service') # Enable rc.local
     sudo('echo "#!/bin/sh -e\n\nif test -f /sys/kernel/mm/transparent_hugepage/enabled; then\n\
        echo never > /sys/kernel/mm/transparent_hugepage/enabled\n\
     fi\n\
@@ -1221,14 +1232,14 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "1.7.1"
+    ES_VERSION = "5.2.2"
     sudo('apt-get update')
-    sudo('apt-get install openjdk-7-jre -y')
+    sudo('apt-get install openjdk-8-jre -y')
 
     with cd(env.VENDOR_PATH):
         run('mkdir -p elasticsearch-%s' % ES_VERSION)
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
-        run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
+        run('wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
         if not files.exists('/usr/share/elasticsearch/plugins/head'):
             sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
