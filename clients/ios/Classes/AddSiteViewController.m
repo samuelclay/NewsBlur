@@ -43,12 +43,12 @@
     [self.inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
     // If you want to show a disclosure arrow; don't really need it, though.
-//    UIImageView *disclosureImage = [[UIImageView alloc]
-//                                initWithImage:[UIImage imageNamed:@"accessory_disclosure.png"]];
-//    disclosureImage.frame = CGRectMake(0, 0, 24, 20);
-//    [disclosureImage setContentMode:UIViewContentModeLeft];
-//    [inFolderInput setRightView:disclosureImage];
-//    [inFolderInput setRightViewMode:UITextFieldViewModeAlways];
+    //    UIImageView *disclosureImage = [[UIImageView alloc]
+    //                                initWithImage:[UIImage imageNamed:@"accessory_disclosure.png"]];
+    //    disclosureImage.frame = CGRectMake(0, 0, 24, 20);
+    //    [disclosureImage setContentMode:UIViewContentModeLeft];
+    //    [inFolderInput setRightView:disclosureImage];
+    //    [inFolderInput setRightViewMode:UITextFieldViewModeAlways];
     
     UIImageView *folderImage2 = [[UIImageView alloc]
                                  initWithImage:[UIImage imageNamed:@"g_icn_folder_rss_sm.png"]];
@@ -80,7 +80,7 @@
     self.siteTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     // eliminate extra separators at bottom of site table (e.g., while animating)
     self.siteTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
+    
     [super viewWillAppear:animated];
 }
 
@@ -158,10 +158,10 @@
         if (self.siteAddressInput.returnKeyType == UIReturnKeySearch) {
             [self checkSiteAddress];
         } else {
-            [self addSite];            
+            [self addSite];
         }
     }
-	return YES;
+    return YES;
 }
 
 - (IBAction)checkSiteAddress {
@@ -195,46 +195,33 @@
     [self.siteActivityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/feed_autocomplete?term=%@&v=2",
                            self.appDelegate.url, [phrase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIHTTPRequest requestWithURL:url];
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(autocompleteSite:)];
-    [request startAsynchronous];
-}
-
-- (void)autocompleteSite:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
     
-
-    NSString *query = [NSString stringWithFormat:@"%@", [results objectForKey:@"term"]];
-    NSString *phrase = self.siteAddressInput.text;
-    
-    // cache the results
-    [self.searchResults_ setValue:[results objectForKey:@"feeds"] forKey:query];
-
-    if ([phrase isEqualToString:query]) {
-        self.autocompleteResults = [results objectForKey:@"feeds"];
-        [self reloadSearchResults];       
-    }
-    
-//    NSRange range = [query rangeOfString : activeTerm_];
-//    BOOL found = (range.location != NSNotFound);
+    [manager POST:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSString *query = [NSString stringWithFormat:@"%@", [responseObject objectForKey:@"term"]];
+        NSString *phrase = self.siteAddressInput.text;
+        
+        // cache the results
+        [self.searchResults_ setValue:[responseObject objectForKey:@"feeds"] forKey:query];
+        
+        if ([phrase isEqualToString:query]) {
+            self.autocompleteResults = [responseObject objectForKey:@"feeds"];
+            [self reloadSearchResults];
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
 }
 
 - (void)reloadSearchResults {
     if ([self.siteAddressInput.text length] > 0 && [self.autocompleteResults count] > 0) {
-        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
+        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction
                          animations:^{
                              [self.siteScrollView setAlpha:1];
                          } completion:nil];
     } else {
-        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
+        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction
                          animations:^{
                              [self.siteScrollView setAlpha:0];
                          } completion:nil];
@@ -256,46 +243,44 @@
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *parent_folder = [self extractParentFolder];
-    [request setPostValue:parent_folder forKey:@"folder"]; 
-    [request setPostValue:[self.siteAddressInput text] forKey:@"url"];
+    [params setObject:parent_folder forKey:@"folder"];
+    [params setObject:[self.siteAddressInput text] forKey:@"url"];
     if (self.addFolderButton.selected && [self.addFolderInput.text length]) {
-        [request setPostValue:[self.addFolderInput text] forKey:@"new_folder"];
-    }
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(requestFinished:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
-}
-
-
-- (void)requestFinished:(ASIHTTPRequest *)request {
-    [self.addingLabel setHidden:YES];
-    [self.activityIndicator stopAnimating];
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
-    // int statusCode = [request responseStatusCode];
-    int code = [[results valueForKey:@"code"] intValue];
-    if (code == -1) {
-        [self.errorLabel setText:[results valueForKey:@"message"]];   
-        [self.errorLabel setHidden:NO];
-    } else {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.appDelegate hidePopover];
-        } else {
-            [self.appDelegate hidePopoverAnimated:YES];
-        }
-        [self.appDelegate reloadFeedsView:NO];
+        [params setObject:[self.addFolderInput text] forKey:@"new_folder"];
     }
     
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        [self.addingLabel setHidden:YES];
+        [self.activityIndicator stopAnimating];
+        
+        int code = [[responseObject valueForKey:@"code"] intValue];
+        if (code == -1) {
+            [self.errorLabel setText:[responseObject valueForKey:@"message"]];
+            [self.errorLabel setHidden:NO];
+        } else {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                [self.appDelegate hidePopover];
+            } else {
+                [self.appDelegate hidePopoverAnimated:YES];
+            }
+            [self.appDelegate reloadFeedsView:NO];
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        [self.addingLabel setHidden:YES];
+        [self.errorLabel setHidden:NO];
+        [self.activityIndicator stopAnimating];
+        NSLog(@"Error: %@", error);
+        [self.errorLabel setText:error.localizedDescription];
+        self.siteTable.hidden = YES;
+        [self preferredContentSize];
+        
+    }];
 }
 
 - (NSString *)extractParentFolder {
@@ -325,7 +310,7 @@
                                                                     self.view.frame.size.width,
                                                                     self.siteScrollView.frame.size.height);
                          } completion:nil];
-
+        
     } else {
         self.addFolderButton.selected = NO;
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction
@@ -338,17 +323,6 @@
                          } completion:nil];
     }
     
-    [self preferredContentSize];
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    [self.addingLabel setHidden:YES];
-    [self.errorLabel setHidden:NO];
-    [self.activityIndicator stopAnimating];
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [self.errorLabel setText:error.localizedDescription];
-    self.siteTable.hidden = YES;
     [self preferredContentSize];
 }
 
@@ -407,13 +381,13 @@
     return [self.autocompleteResults count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView 
+- (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *AddSiteAutocompleteCellIdentifier = @"AddSiteAutocompleteCellIdentifier";
     
-	AddSiteAutocompleteCell *cell = (AddSiteAutocompleteCell *)[tableView dequeueReusableCellWithIdentifier:AddSiteAutocompleteCellIdentifier];
-	if (cell == nil) {
-		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"AddSiteAutocompleteCell"
+    AddSiteAutocompleteCell *cell = (AddSiteAutocompleteCell *)[tableView dequeueReusableCellWithIdentifier:AddSiteAutocompleteCellIdentifier];
+    if (cell == nil) {
+        NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"AddSiteAutocompleteCell"
                                                      owner:self
                                                    options:nil];
         for (id oneObject in nib) {
@@ -425,13 +399,13 @@
         if (cell == nil) {
             cell = [AddSiteAutocompleteCell new];
         }
-	}
+    }
     
     NSDictionary *result = [self.autocompleteResults objectAtIndex:indexPath.row];
     int subs = [[result objectForKey:@"num_subscribers"] intValue];
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-	[numberFormatter setPositiveFormat:@"#,###"];
-	NSNumber *theScore = [NSNumber numberWithInt:subs];
+    [numberFormatter setPositiveFormat:@"#,###"];
+    NSNumber *theScore = [NSNumber numberWithInt:subs];
     NSString *favicon = [result objectForKey:@"favicon"];
     UIImage *faviconImage;
     if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
@@ -440,13 +414,13 @@
     } else {
         faviconImage = [UIImage imageNamed:@"world.png"];
     }
-
+    
     cell.feedTitle.text = [result objectForKey:@"label"];
     cell.feedTitle.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     cell.feedUrl.text = [result objectForKey:@"value"];
     cell.feedUrl.textColor = UIColorFromFixedRGB(NEWSBLUR_LINK_COLOR);
     cell.feedSubs.text = [[NSString stringWithFormat:@"%@ subscriber%@",
-                          [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"] uppercaseString];
+                           [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"] uppercaseString];
     cell.feedSubs.textColor = UIColorFromRGB(0x808080);
     cell.feedFavicon.image = faviconImage;
     cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
@@ -454,7 +428,7 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView 
+- (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *result = [self.autocompleteResults objectAtIndex:indexPath.row];
     [self.siteAddressInput setText:[result objectForKey:@"value"]];
