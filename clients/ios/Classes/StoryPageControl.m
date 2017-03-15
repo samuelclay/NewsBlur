@@ -954,7 +954,7 @@
     }
 }
 
-- (void)requestFailed:(id)request {
+- (void)requestFailed:(NSError*)request {
     [self informError:@"The server barfed!"];
 }
 
