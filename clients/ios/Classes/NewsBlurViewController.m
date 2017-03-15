@@ -413,31 +413,39 @@ static UIFont *userLabelFont;
 }
 
 -(void)fetchFeedList:(BOOL)showLoader {
-    NSURL *urlFeedList;
+    NSString *urlString;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
     
     if (self.inPullToRefresh_) {
-        urlFeedList = [NSURL URLWithString:
-                      [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
-                      self.appDelegate.url]];
+        urlString = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
+                      self.appDelegate.url];
     } else {
-        urlFeedList = [NSURL URLWithString:
-                       [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
-                        self.appDelegate.url]];
+        urlString = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
+                        self.appDelegate.url];
     }
     
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setDidFinishSelector:@selector(finishLoadingFeedList:)];
-    [request setDidFailSelector:@selector(finishedWithError:)];
-    [request setTimeOutSeconds:15];
-    [request startAsynchronous];
+          setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    
+    [manager POST:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        [self finishLoadingFeedList:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self finishedWithError:error];
+    }];
+    
+//    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
+//    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
+//     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+//    [request setValidatesSecureCertificate:NO];
+//    [request setDelegate:self];
+//    [request setResponseEncoding:NSUTF8StringEncoding];
+//    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+//    [request setDidFinishSelector:@selector(finishLoadingFeedList:)];
+//    [request setDidFailSelector:@selector(finishedWithError:)];
+//    [request setTimeOutSeconds:15];
+//    [request startAsynchronous];
 
     self.lastUpdate = [NSDate date];
     if (showLoader) {
@@ -446,11 +454,11 @@ static UIFont *userLabelFont;
     [self showRefreshNotifier];
 }
 
-- (void)finishedWithError:(ASIHTTPRequest *)request {    
+- (void)finishedWithError:(NSError *)request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     // User clicking on another link before the page loads is OK.
-    [self informError:[request error]];
+    [self informError:request];
     [self finishRefresh];
     
     self.isOffline = YES;
@@ -464,14 +472,15 @@ static UIFont *userLabelFont;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
-- (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] == 403) {
+- (void)finishLoadingFeedList:(id)responseObject {
+
+    if ([responseObject statusCode] == 403) {
         NSLog(@"Showing login");
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] >= 400) {
-        if ([request responseStatusCode] == 429) {
+    } else if ([responseObject statusCode] >= 400) {
+        if ([responseObject statusCode] == 429) {
             [self informError:@"Slow down. You're rate-limited."];
-        } else if ([request responseStatusCode] == 503) {
+        } else if ([responseObject statusCode] == 503) {
             [self informError:@"In maintenance mode"];
         } else {
             [self informError:@"The server barfed!"];
@@ -491,7 +500,7 @@ static UIFont *userLabelFont;
     appDelegate.unreadStoryHashes = [NSMutableDictionary dictionary];
 
     self.isOffline = NO;
-    NSString *responseString = [request responseString];   
+    NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
     NSDictionary *results = [NSJSONSerialization 
@@ -1387,28 +1396,48 @@ heightForHeaderInSection:(NSInteger)section {
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    
     for (NSString *feedId in feedIds) {
-        [request addPostValue:feedId forKey:@"feed_id"];
+        [params setObject:feedId forKey:@"feed_id"];
     }
     if (days) {
-        [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
-                       forKey:@"cutoff_timestamp"];
+        [params setObject:[NSNumber numberWithInteger:cutoffTimestamp]
+                            forKey:@"cutoff_timestamp"];
     }
-    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-    [request setUserInfo:@{@"feeds": feedIds,
-                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
     
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        [self finishMarkAllAsRead:responseObject];
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        [self requestFailedMarkStoryRead:error];
+    }];
+    
+//    NSURL *url = [NSURL URLWithString:urlString];
+//    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+//    for (NSString *feedId in feedIds) {
+//        [request addPostValue:feedId forKey:@"feed_id"];
+//    }
+//    if (days) {
+//        [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
+//                       forKey:@"cutoff_timestamp"];
+//    }
+//    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+//    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+//    [request setUserInfo:@{@"feeds": feedIds,
+//                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
+//    [request setDelegate:self];
+//    [request startAsynchronous];
+//    
     if (!days) {
         for (NSString *feedId in feedIds) {
             [appDelegate markFeedAllRead:feedId];
         }
     } else {
-        //        [self showRefreshNotifier];
+        
     }
 }
 
@@ -1419,16 +1448,29 @@ heightForHeaderInSection:(NSInteger)section {
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[NSNumber numberWithInteger:days]
-                   forKey:@"days"];
-    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-    [request setUserInfo:@{@"feeds": feedIds,
-                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[NSNumber numberWithInteger:days] forKey:@"days"];
+    
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        [self finishMarkAllAsRead:responseObject];
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        [self requestFailedMarkStoryRead:error];
+    }];
+    
+//    NSURL *url = [NSURL URLWithString:urlString];
+//    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+//    [request setPostValue:[NSNumber numberWithInteger:days]
+//                   forKey:@"days"];
+//    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+//    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+//    [request setUserInfo:@{@"feeds": feedIds,
+//                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
+//    [request setDelegate:self];
+//    [request startAsynchronous];
     
     if (!days) {
         for (NSString *feedId in feedIds) {
@@ -1443,41 +1485,52 @@ heightForHeaderInSection:(NSInteger)section {
     NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
-    [request setDelegate:self];
-    [request setUserInfo:@{@"stories": feedsStories}];
-    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-    [request startAsynchronous];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
+    
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAllAsRead:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailedMarkStoryRead:error];
+    }];
+    
+//    NSURL *url = [NSURL URLWithString:urlString];
+//    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+//    [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
+//    [request setDelegate:self];
+//    [request setUserInfo:@{@"stories": feedsStories}];
+//    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+//    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+//    [request startAsynchronous];
 }
 
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    [appDelegate markStoriesRead:[request.userInfo objectForKey:@"stories"]
-                         inFeeds:[request.userInfo objectForKey:@"feeds"]
-                 cutoffTimestamp:[[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]];
+- (void)requestFailedMarkStoryRead:(NSError*)error {
+    [appDelegate markStoriesRead:[error.userInfo objectForKey:@"stories"]
+                         inFeeds:[error.userInfo objectForKey:@"feeds"]
+                 cutoffTimestamp:[[error.userInfo objectForKey:@"cutoffTimestamp"] integerValue]];
     [self showOfflineNotifier];
     self.isOffline = YES;
     [self.feedTitlesTable reloadData];
 }
 
-- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
-    if (request.responseStatusCode != 200) {
-        [self requestFailedMarkStoryRead:request];
+- (void)finishMarkAllAsRead:(id)responseObject {
+    
+    if ([responseObject statusCode] != 200) {
+        [self requestFailedMarkStoryRead:responseObject];
         return;
     }
     
     self.isOffline = NO;
-    
-    if ([[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]) {
+
+    if ([[responseObject objectForKey:@"cutoffTimestamp"] integerValue]) {
         id feed;
-        if ([[request.userInfo objectForKey:@"feeds"] count] == 1) {
-            feed = [[request.userInfo objectForKey:@"feeds"] objectAtIndex:0];
+        if ([[[responseObject userInfo] objectForKey:@"feeds"] count] == 1) {
+            feed = [[[responseObject userInfo] objectForKey:@"feeds"] objectAtIndex:0];
         }
         [self refreshFeedList:feed];
-    } else if ([request.userInfo objectForKey:@"feeds"]) {
-        [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
+    } else if ([[responseObject userInfo] objectForKey:@"feeds"]) {
+        [appDelegate markFeedReadInCache:[[responseObject userInfo] objectForKey:@"feeds"]];
     }
 }
 
@@ -1737,13 +1790,20 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)loadFavicons {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
     
-    [request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [manager POST:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self saveAndDrawFavicons:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+    
+//    NSURL *url = [NSURL URLWithString:urlString];
+//    ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
+//    
+//    [request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
+//    [request setDidFailSelector:@selector(requestFailed:)];
+//    [request setDelegate:self];
+//    [request startAsynchronous];
 }
 
 - (void)loadAvatars {
@@ -1769,8 +1829,8 @@ heightForHeaderInSection:(NSInteger)section {
 
 
 
-- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
-    __block NSString *responseString = [request responseString];
+- (void)saveAndDrawFavicons:(id)request {
+    __block NSString *responseString = [[NSString alloc] initWithData:request encoding:NSUTF8StringEncoding];
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
@@ -1803,8 +1863,7 @@ heightForHeaderInSection:(NSInteger)section {
     
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+- (void)requestFailed:(NSError *)error{
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
 }
@@ -1837,26 +1896,31 @@ heightForHeaderInSection:(NSInteger)section {
         urlString = [NSString stringWithFormat:@"%@/reader/refresh_feeds",
                      self.appDelegate.url];
     }
-    NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
     if (!feedId) {
         [self.appDelegate cancelOfflineQueue];
     }
     
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
-    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    if (feedId) {
-        [request setUserInfo:@{@"feedId": [NSString stringWithFormat:@"%@", feedId]}];
-    }
-    [request setDidFinishSelector:@selector(finishRefreshingFeedList:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
+    [manager POST:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishRefreshingFeedList:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+    
+//    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
+//    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
+//     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+//    [request setValidatesSecureCertificate:NO];
+//    [request setDelegate:self];
+//    [request setResponseEncoding:NSUTF8StringEncoding];
+//    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+//    if (feedId) {
+//        [request setUserInfo:@{@"feedId": [NSString stringWithFormat:@"%@", feedId]}];
+//    }
+//    [request setDidFinishSelector:@selector(finishRefreshingFeedList:)];
+//    [request setDidFailSelector:@selector(requestFailed:)];
+//    [request setTimeOutSeconds:30];
+//    [request startAsynchronous];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!feedId) {
@@ -1866,13 +1930,13 @@ heightForHeaderInSection:(NSInteger)section {
     
 }
 
-- (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] == 403) {
+- (void)finishRefreshingFeedList:(id)request {
+    if ([request statusCode] == 403) {
         NSLog(@"Showing login after refresh");
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] == 503) {
+    } else if ([request statusCode] == 503) {
         return [self informError:@"In maintenance mode"];
-    } else if ([request responseStatusCode] >= 500) {
+    } else if ([request statusCode] >= 500) {
         return [self informError:@"The server barfed!"];
     }
     
@@ -1944,7 +2008,7 @@ heightForHeaderInSection:(NSInteger)section {
             [appDelegate.folderCountCache removeAllObjects];
             [self.feedTitlesTable reloadData];
             [self refreshHeaderCounts];
-            if (![request.userInfo objectForKey:@"feedId"]) {
+            if (![[request userInfo] objectForKey:@"feedId"]) {
                 [self.appDelegate startOfflineQueue];
             }
             [self loadFavicons];
