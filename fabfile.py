@@ -1004,12 +1004,15 @@ def copy_postgres_to_standby(master='db01'):
     #   new: echo "" > /var/lib/postgresql/.ssh/authorized_keys
     # new: ssh old
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
-    # new: sudo su postgres -c "rsync -a --stats --progress postgres@db02:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"
+    sudo('mkdir /var/lib/postgresql/9.4/archive')
+    sudo('chown postgres.postgres /var/lib/postgresql/9.4/archive')
+    sudo('su postgres -c "rsync -a --stats --progress postgres@db02:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"')
+    put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
+    sudo('systemctl start postgresql')
     # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
     
     # Don't forget to add 'setup_postgres_backups' to new
     
-    put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
 
 def disable_thp():
     put('config/disable_transparent_hugepages.sh', '/etc/init.d/disable-transparent-hugepages', use_sudo=True)
@@ -1232,14 +1235,15 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "5.2.2"
+    ES_VERSION = "2.4.4"
     sudo('apt-get update')
-    sudo('apt-get install openjdk-8-jre -y')
+    sudo('apt-get install openjdk-7-jre -y')
 
     with cd(env.VENDOR_PATH):
         run('mkdir -p elasticsearch-%s' % ES_VERSION)
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
-        run('wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
+        # run('wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-%s.deb' % ES_VERSION) # For v5+
+        run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION) # For v1-v2
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
         if not files.exists('/usr/share/elasticsearch/plugins/head'):
             sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
