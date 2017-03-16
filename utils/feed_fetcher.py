@@ -419,7 +419,10 @@ class FetchFeed:
                     entities += "<img src=\"%s\"> " % media['media_url_https']
                     if 'photo' not in categories:
                         categories.add('photo')
-
+            
+            content_tweet = tweet
+            if hasattr(tweet, 'retweeted_status'):
+                content_tweet = tweet.retweeted_status
             content = """<div class="NB-twitter-rss">
                              <div class="NB-twitter-rss-tweet">%s</div><hr />
                              <div class="NB-twitter-rss-entities">%s</div>
@@ -429,16 +432,16 @@ class FetchFeed:
                                 on %s.</div>
                              <div class="NB-twitter-rss-stats">%s %s%s %s</div>
                         </div>""" % (
-                linkify(linebreaks(tweet.text)),
+                linkify(linebreaks(content_tweet.text)),
                 entities,
                 username,
-                tweet.user.profile_image_url_https,
+                content_tweet.user.profile_image_url_https,
                 username,
-                tweet.created_at.strftime("%c"),
-                ("<br /><br />" if tweet.favorite_count or tweet.retweet_count else ""),
-                ("<b>%s</b> %s" % (tweet.favorite_count, "like" if tweet.favorite_count == 1 else "likes")) if tweet.favorite_count else "",
-                (", " if tweet.favorite_count and tweet.retweet_count else ""),
-                ("<b>%s</b> %s" % (tweet.retweet_count, "retweet" if tweet.retweet_count == 1 else "retweets")) if tweet.retweet_count else "",
+                content_tweet.created_at.strftime("%c"),
+                ("<br /><br />" if content_tweet.favorite_count or content_tweet.retweet_count else ""),
+                ("<b>%s</b> %s" % (content_tweet.favorite_count, "like" if content_tweet.favorite_count == 1 else "likes")) if content_tweet.favorite_count else "",
+                (", " if content_tweet.favorite_count and content_tweet.retweet_count else ""),
+                ("<b>%s</b> %s" % (content_tweet.retweet_count, "retweet" if content_tweet.retweet_count == 1 else "retweets")) if content_tweet.retweet_count else "",
             )
             
             if tweet.text.startswith('RT @'):
