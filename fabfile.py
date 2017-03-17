@@ -976,10 +976,17 @@ def setup_postgres(standby=False):
     sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
     put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
     put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
+    sudo('mkdir /var/lib/postgresql/9.4/archive')
+    sudo('chown -R postgres.postgres /etc/postgresql/9.4/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/archive')
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
     sudo('sysctl -p')
+    sudo('rm /lib/systemd/system/postgresql.service') # Ubuntu 16 has wrong default
+    sudo('systemctl daemon-reload')
+    sudo('systemctl enable postgresql')
 
     if standby:
         put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/recovery.conf', use_sudo=True)
@@ -1007,7 +1014,7 @@ def copy_postgres_to_standby(master='db01'):
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
     sudo('mkdir /var/lib/postgresql/9.4/archive')
     sudo('chown postgres.postgres /var/lib/postgresql/9.4/archive')
-    sudo('su postgres -c "rsync -a --stats --progress postgres@db02:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"')
+    sudo('su postgres -c "rsync -a --stats --progress postgres@db_pgsql:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"')
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     sudo('systemctl start postgresql')
     # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
@@ -1237,6 +1244,7 @@ def setup_original_page_server():
 
 def setup_elasticsearch():
     ES_VERSION = "2.4.4"
+    sudo('add-apt-repository -y ppa:openjdk-r/ppa')
     sudo('apt-get update')
     sudo('apt-get install openjdk-7-jre -y')
 
@@ -1247,7 +1255,7 @@ def setup_elasticsearch():
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION) # For v1-v2
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
         if not files.exists('/usr/share/elasticsearch/plugins/head'):
-            sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
+            sudo('/usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head')
 
 def setup_db_search():
     put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
