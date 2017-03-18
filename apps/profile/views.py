@@ -590,7 +590,7 @@ def delete_starred_stories(request):
 @ajax_login_required
 @json.json_view
 def delete_all_sites(request):
-    request.user.profile.send_opml_export_email(reason="You have deleted all of your sites, so here's a backup just in case.")
+    request.user.profile.send_opml_export_email(reason="You have deleted all of your sites, so here's a backup of all of your subscriptions just in case.")
     
     subs = UserSubscription.objects.filter(user=request.user)
     sub_count = subs.count()
