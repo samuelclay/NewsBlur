@@ -251,7 +251,7 @@ def load_feed_settings(request, feed_id):
     
     return stats
 
-@ratelimit(minutes=10, requests=10)
+@ratelimit(minutes=5, requests=30)
 @json.json_view
 def exception_retry(request):
     user = get_user(request)

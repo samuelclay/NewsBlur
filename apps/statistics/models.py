@@ -262,7 +262,10 @@ class MFeedback(mongo.Document):
         except (urllib2.HTTPError), e:
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
-        data = json.decode(data[1:-1])
+        start = data.index('[')
+        end = data.rfind(']')+1
+        data = json.decode(data[start:end])
+        print data
         i    = 0
         if len(data):
             cls.objects.delete()
