@@ -155,11 +155,11 @@
                            appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:self.feedId forKey:@"feed_id"];
+    [params setObject:self.feedId forKey:@"feed_id"];
     for (NSString *notificationType in notificationTypes) {
         [request addPostValue:notificationType forKey:@"notification_types"];
     }
-    [request setPostValue:notificationFilter forKey:@"notification_filter"];
+    [params setObject:notificationFilter forKey:@"notification_filter"];
     [request setCompletionBlock:^{
         NSLog(@"Saved notifications %@: %@ / %@", self.feedId, notificationTypes, notificationFilter);
     }];

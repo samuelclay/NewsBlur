@@ -15,7 +15,7 @@
 
 @end
 
-@interface MoveSiteViewController : UIViewController 
+@interface MoveSiteViewController : BaseViewController
 <UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
 }

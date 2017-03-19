@@ -195,9 +195,7 @@
     [self.siteActivityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/feed_autocomplete?term=%@&v=2",
                            self.appDelegate.url, [phrase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-    
-    [manager POST:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
+    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSString *query = [NSString stringWithFormat:@"%@", [responseObject objectForKey:@"term"]];
         NSString *phrase = self.siteAddressInput.text;
         
@@ -208,9 +206,8 @@
             self.autocompleteResults = [responseObject objectForKey:@"feeds"];
             [self reloadSearchResults];
         }
-        
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
+        [self.siteActivityIndicator stopAnimating];
     }];
 }
 

@@ -1718,15 +1718,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
     
-    [request setPostValue:[self.activeStory
+    [params setObject:[self.activeStory
                    objectForKey:@"id"] 
            forKey:@"story_id"];
-    [request setPostValue:[self.activeStory
+    [params setObject:[self.activeStory
                            objectForKey:@"story_feed_id"] 
                    forKey:@"story_feed_id"];
     
 
-    [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
+    [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     
     [request setDidFinishSelector:@selector(finishLikeComment:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -2035,7 +2035,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[appDelegate.storiesCollection.activeFeed
+    [params setObject:[appDelegate.storiesCollection.activeFeed
                            objectForKey:@"user_id"] 
                    forKey:@"user_id"];
 

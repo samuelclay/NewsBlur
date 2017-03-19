@@ -360,8 +360,8 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
 
-    [request setPostValue:feedIdStr forKey:@"feed_id"]; 
-    [request setPostValue:storyIdStr forKey:@"story_id"];
+    [params setObject:feedIdStr forKey:@"feed_id"]; 
+    [params setObject:storyIdStr forKey:@"story_id"];
     
     if (facebookButton.selected) {
         [request addPostValue:@"facebook" forKey:@"post_to_services"];     
@@ -375,21 +375,21 @@
     
     if (appDelegate.storiesCollection.isSocialRiverView) {
         if ([[appDelegate.activeStory objectForKey:@"friend_user_ids"] count] > 0) {
-            [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"friend_user_ids"][0]] forKey:@"source_user_id"];
+            [params setObject:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"friend_user_ids"][0]] forKey:@"source_user_id"];
         } else if ([[appDelegate.activeStory objectForKey:@"public_user_ids"] count] > 0) {
-            [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"public_user_ids"][0]] forKey:@"source_user_id"];
+            [params setObject:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"public_user_ids"][0]] forKey:@"source_user_id"];
         }
     } else {
         if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
             NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
-            [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
+            [params setObject:sourceUserIdStr forKey:@"source_user_id"]; 
         }
     }
 
     
     NSString *comments = commentField.text;
     if ([comments length]) {
-        [request setPostValue:comments forKey:@"comments"]; 
+        [params setObject:comments forKey:@"comments"]; 
     }
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishShareThisStory:)];
@@ -438,13 +438,13 @@
     
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:feedIdStr forKey:@"story_feed_id"]; 
-    [request setPostValue:storyIdStr forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
-    [request setPostValue:commentField.text forKey:@"reply_comments"]; 
+    [params setObject:feedIdStr forKey:@"story_feed_id"]; 
+    [params setObject:storyIdStr forKey:@"story_id"];
+    [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
+    [params setObject:commentField.text forKey:@"reply_comments"]; 
     
     if (self.activeReplyId) {
-        [request setPostValue:activeReplyId forKey:@"reply_id"]; 
+        [params setObject:activeReplyId forKey:@"reply_id"]; 
     }
     
     [request setDelegate:self];

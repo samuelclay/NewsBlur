@@ -96,21 +96,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false&include_inactive=true", self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.delegate = self;
-    request.didFinishSelector = @selector(finishLoadingInactiveFeeds:);
-    request.didFailSelector = @selector(finishedWithError:);
-    request.timeOutSeconds = 30;
-    [request startAsynchronous];
+    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishLoadingInactiveFeeds:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self finishedWithError:error];
+    }];
 }
 
-- (void)finishLoadingInactiveFeeds:(ASIHTTPRequest *)request {
-    NSString *responseString = request.responseString;
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error = nil;
-    NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
-    
+- (void)finishLoadingInactiveFeeds:(NSDictionary *)results {
     self.dictFolders = results[@"flat_folders_with_inactive"];
     self.inactiveFeeds = results[@"inactive_feeds"];
     
@@ -126,8 +119,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
-- (void)finishedWithError:(ASIHTTPRequest *)request {
-    NSError *error = request.error;
+- (void)finishedWithError:(NSError *)error {
     NSLog(@"informError: %@", error);
     NSString *errorMessage = [error localizedDescription];
     
@@ -138,6 +130,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [HUD setMode:MBProgressHUDModeCustomView];
     HUD.labelText = errorMessage;
     [HUD hide:YES afterDelay:1];
+    
     [self rebuildItemsAnimated:YES];
 }
 
@@ -464,17 +457,16 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feeds_by_folder_to_folder", self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
-    [request setPostValue:toFolder.identifier forKey:@"to_folder"];
-    [request setCompletionBlock:^(void) {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
+    [params setObject:toFolder.identifier forKey:@"to_folder"];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         HUD.labelText = @"Reloading...";
         [self.appDelegate reloadFeedsView:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self finishedWithError:error];
     }];
-    request.didFailSelector = @selector(finishedWithError:);
-    request.timeOutSeconds = 30;
-    [request startAsynchronous];
+    
 }
 
 - (void)showMoveMenu {
@@ -521,7 +513,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_feeds_by_folder", self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
+    [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
     [request setCompletionBlock:^(void) {
         HUD.labelText = @"Reloading...";
         [self.appDelegate reloadFeedsView:YES];

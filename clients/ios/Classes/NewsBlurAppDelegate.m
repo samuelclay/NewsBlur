@@ -437,7 +437,7 @@
     [request setValidatesSecureCertificate:NO];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setPostValue:token
+    [params setObject:token
                    forKey:@"apns_token"];
     [request setFailedBlock:^(void) {
         NSLog(@"Failed to set APNS token");
@@ -2123,7 +2123,7 @@
                            self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:storyHash
+    [params setObject:storyHash
                    forKey:@"story_hash"];
     [request setCompletionBlock:^{
         NSLog(@"Marked as read: %@", storyHash);
@@ -2145,7 +2145,7 @@
                            self.url];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:storyHash
+    [params setObject:storyHash
                    forKey:@"story_hash"];
     [request setCompletionBlock:^{
         NSLog(@"Marked as starred: %@", storyHash);
@@ -2858,11 +2858,11 @@
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
-    [request setPostValue:author
+    [params setObject:author
                    forKey:authorScore >= 1 ? @"like_author" :
                           authorScore <= -1 ? @"dislike_author" :
                           @"remove_like_author"];
-    [request setPostValue:feedId forKey:@"feed_id"];
+    [params setObject:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
         [self.feedsViewController refreshFeedList:feedId];
     }];
@@ -2906,11 +2906,11 @@
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
-    [request setPostValue:tag
+    [params setObject:tag
                    forKey:tagScore >= 1 ? @"like_tag" :
                           tagScore <= -1 ? @"dislike_tag" :
                           @"remove_like_tag"];
-    [request setPostValue:feedId forKey:@"feed_id"];
+    [params setObject:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
         [self.feedsViewController refreshFeedList:feedId];
     }];
@@ -2958,11 +2958,11 @@
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     __weak ASIFormDataRequest *_request = request;
-    [request setPostValue:title
+    [params setObject:title
                    forKey:titleScore >= 1 ? @"like_title" :
                           titleScore <= -1 ? @"dislike_title" :
                           @"remove_like_title"];
-    [request setPostValue:feedId forKey:@"feed_id"];
+    [params setObject:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
         [self.feedsViewController refreshFeedList:feedId];
     }];

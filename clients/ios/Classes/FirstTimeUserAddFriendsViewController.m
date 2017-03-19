@@ -205,9 +205,9 @@
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     
     if (button.on) {
-        [request setPostValue:@"false" forKey:@"autofollow_friends"];
+        [params setObject:@"false" forKey:@"autofollow_friends"];
     } else {
-        [request setPostValue:@"true" forKey:@"autofollow_friends"];
+        [params setObject:@"true" forKey:@"autofollow_friends"];
     }
     
     [request setDelegate:self];

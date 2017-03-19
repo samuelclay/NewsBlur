@@ -115,7 +115,7 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:@"social:popular" forKey:@"user_id"];     
+    [params setObject:@"social:popular" forKey:@"user_id"];     
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddSite:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -128,9 +128,9 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:siteUrl forKey:@"url"]; 
-    [request setPostValue:@"true" forKey:@"auto_active"]; 
-    [request setPostValue:@"true" forKey:@"skip_fetch"]; 
+    [params setObject:siteUrl forKey:@"url"]; 
+    [params setObject:@"true" forKey:@"auto_active"]; 
+    [params setObject:@"true" forKey:@"skip_fetch"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddSite:)];
     [request setDidFailSelector:@selector(requestFailed:)];

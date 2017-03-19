@@ -346,7 +346,7 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[story objectForKey:@"story_hash"]
+    [params setObject:[story objectForKey:@"story_hash"]
                    forKey:@"story_hash"];
     
     [request setDidFinishSelector:@selector(finishMarkAsRead:)];
@@ -375,9 +375,9 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[story objectForKey:@"story_hash"]
+    [params setObject:[story objectForKey:@"story_hash"]
                    forKey:@"story_id"];
-    [request setPostValue:[story objectForKey:@"story_feed_id"]
+    [params setObject:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
     
     [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
@@ -726,9 +726,9 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[story objectForKey:@"story_hash"]
+    [params setObject:[story objectForKey:@"story_hash"]
                    forKey:@"story_id"];
-    [request setPostValue:[story objectForKey:@"story_feed_id"]
+    [params setObject:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
     for (NSString *userTag in [story objectForKey:@"user_tags"]) {
         [request addPostValue:userTag
@@ -775,10 +775,10 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[story
+    [params setObject:[story
                            objectForKey:@"story_hash"]
                    forKey:@"story_id"];
-    [request setPostValue:[story
+    [params setObject:[story
                            objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
     

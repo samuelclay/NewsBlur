@@ -149,7 +149,6 @@
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];
-    // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         return;
@@ -168,7 +167,6 @@
                                  JSONObjectWithData:responseData
                                  options:kNilOptions 
                                  error:&error];
-        // int statusCode = [request responseStatusCode];
         int code = [[results valueForKey:@"code"] intValue];
         if (code == -1) {
             return;

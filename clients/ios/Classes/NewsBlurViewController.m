@@ -1393,7 +1393,7 @@ heightForHeaderInSection:(NSInteger)section {
         [request addPostValue:feedId forKey:@"feed_id"];
     }
     if (days) {
-        [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
+        [params setObject:[NSNumber numberWithInteger:cutoffTimestamp]
                        forKey:@"cutoff_timestamp"];
     }
     [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
@@ -1421,7 +1421,7 @@ heightForHeaderInSection:(NSInteger)section {
                            self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[NSNumber numberWithInteger:days]
+    [params setObject:[NSNumber numberWithInteger:days]
                    forKey:@"days"];
     [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
     [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
@@ -1445,7 +1445,7 @@ heightForHeaderInSection:(NSInteger)section {
                            self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
+    [params setObject:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
     [request setDelegate:self];
     [request setUserInfo:@{@"stories": feedsStories}];
     [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];

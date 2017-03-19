@@ -139,24 +139,20 @@
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *fromFolder = [appDelegate extractFolderName:[fromFolderInput text]];
     NSString *toFolder = [appDelegate extractFolderName:[toFolderInput text]];
-    [request setPostValue:fromFolder forKey:@"in_folder"]; 
-    [request setPostValue:toFolder forKey:@"to_folder"]; 
-    [request setPostValue:[appDelegate.storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(requestFinished:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [params setObject:fromFolder forKey:@"in_folder"];
+    [params setObject:toFolder forKey:@"to_folder"]; 
+    [params setObject:[appDelegate.storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self requestFinished:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)requestFinished:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] >= 500) {
-        return [self requestFailed:request];
-    }
-    
+- (void)requestFinished:(NSDictionary *)results {
     [self.movingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
@@ -193,9 +189,9 @@
     NSString *folderName = [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder];
     NSString *fromFolder = [appDelegate extractFolderName:[fromFolderInput text]];
     NSString *toFolder = [appDelegate extractFolderName:[toFolderInput text]];
-    [request setPostValue:fromFolder forKey:@"in_folder"]; 
-    [request setPostValue:toFolder forKey:@"to_folder"]; 
-    [request setPostValue:folderName forKey:@"folder_name"];
+    [params setObject:fromFolder forKey:@"in_folder"]; 
+    [params setObject:toFolder forKey:@"to_folder"]; 
+    [params setObject:folderName forKey:@"folder_name"];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishMoveFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -224,7 +220,7 @@
     
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
+- (void)requestFailed:(NSError *)error {
     [self.movingLabel setHidden:YES];
     [self.errorLabel setHidden:NO];
     [self.activityIndicator stopAnimating];

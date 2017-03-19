@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 
 @interface ActivityModule : UIView
     <UITableViewDelegate, 

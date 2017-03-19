@@ -328,7 +328,7 @@
     
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setDelegate:self];
-    [request setPostValue:[self.activeProfile objectForKey:@"user_id"] forKey:@"user_id"];
+    [params setObject:[self.activeProfile objectForKey:@"user_id"] forKey:@"user_id"];
     if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
         [request setDidFinishSelector:@selector(finishFollowing:)];        
     } else {

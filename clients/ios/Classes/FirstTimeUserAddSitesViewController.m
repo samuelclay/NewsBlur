@@ -165,7 +165,7 @@
                            self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:@"true" forKey:@"auto_active"];
+    [params setObject:@"true" forKey:@"auto_active"];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishImportFromGoogleReader:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -261,7 +261,7 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:siteUrl forKey:@"url"]; 
+    [params setObject:siteUrl forKey:@"url"]; 
     
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddFolder:)];
