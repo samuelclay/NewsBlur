@@ -30,7 +30,6 @@
 #import "FeedChooserViewController.h"
 #import "UserProfileViewController.h"
 #import "AFHTTPRequestOperation.h"
-#import "ASINetworkQueue.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FirstTimeUserViewController.h"
@@ -116,6 +115,7 @@
 @synthesize firstTimeUserAddFriendsViewController;
 @synthesize firstTimeUserAddNewsBlurViewController;
 
+@synthesize networkManager;
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
@@ -189,8 +189,6 @@
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-
     [self registerDefaultsFromSettingsBundle];
     
     self.navigationController.delegate = self;
@@ -198,13 +196,9 @@
     self.storiesCollection = [StoriesCollection new];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPad App v%@",
-                                                   currentiPhoneVersion]];
         [window addSubview:self.masterContainerViewController.view];
         self.window.rootViewController = self.masterContainerViewController;
     } else {
-        [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPhone App v%@",
-                                                   currentiPhoneVersion]];
         [window addSubview:self.navigationController.view];
         self.window.rootViewController = self.navigationController;
     }
@@ -1050,6 +1044,29 @@
     [self.navigationController.topViewController becomeFirstResponder];
 }
 
+#pragma mark - Network
+
+- (void)cancelRequests {
+    [self clearNetworkManager];
+}
+
+- (void)clearNetworkManager {
+    [networkManager invalidateSessionCancelingTasks:YES];
+    networkManager = [AFHTTPSessionManager manager];
+    networkManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    
+    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary]
+                                      objectForKey:@"CFBundleVersion"];
+    NSString *UA;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        UA = [NSString stringWithFormat:@"NewsBlur iPad App v%@", currentiPhoneVersion];
+    } else {
+        UA = [NSString stringWithFormat:@"NewsBlur iPhone App v%@", currentiPhoneVersion];
+    }
+    [networkManager.requestSerializer setValue:UA forHTTPHeaderField:@"User-Agent"];
+}
+
+
 #pragma mark -
 
 - (void)reloadFeedsView:(BOOL)showLoader {
@@ -1268,27 +1285,14 @@
     [alertController addAction:[UIAlertAction actionWithTitle: @"Logout" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"Logging out...");
-        NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
                           self.url];
-        NSURL *url = [NSURL URLWithString:urlS];
-        
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setValidatesSecureCertificate:NO];
-        [request setDelegate:self];
-        [request setResponseEncoding:NSUTF8StringEncoding];
-        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setFailedBlock:^(void) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-        }];
-        [request setCompletionBlock:^(void) {
-            NSLog(@"Logout successful");
+        [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self showLogin];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
         }];
-        [request setTimeOutSeconds:30];
-        [request startAsynchronous];
-        
-        [ASIHTTPRequest setSessionCookies:nil];
         
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -1319,32 +1323,16 @@
 }
 
 - (void)refreshUserProfile:(void(^)())callback {
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/social/load_user_profile",
-                                       self.url]];
-    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
-    __weak ASIHTTPRequest *request = _request;
-    [request setValidatesSecureCertificate:NO];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setFailedBlock:^(void) {
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_profile",
+                           self.url];
+    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        self.dictUserProfile = [responseObject objectForKey:@"user_profile"];
+        self.dictSocialServices = [responseObject objectForKey:@"services"];
+        callback();
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed user profile");
         callback();
     }];
-    [request setCompletionBlock:^(void) {
-        NSString *responseString = [request responseString];
-        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
-        NSError *error;
-        NSDictionary *results = [NSJSONSerialization
-                                 JSONObjectWithData:responseData
-                                 options:kNilOptions
-                                 error:&error];
-        
-        self.dictUserProfile = [results objectForKey:@"user_profile"];
-        self.dictSocialServices = [results objectForKey:@"services"];
-        callback();
-    }];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
 }
 
 - (void)refreshFeedCount:(id)feedId {
@@ -2205,7 +2193,7 @@
     }
 }
 
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+- (void)requestFailedMarkStoryRead:(NSError *)error {
     //    [self informError:@"Failed to mark story as read"];
     NSArray *feedIds = [request.userInfo objectForKey:@"feeds"];
     NSDictionary *stories = [request.userInfo objectForKey:@"stories"];
@@ -2213,10 +2201,8 @@
     [self markStoriesRead:stories inFeeds:feedIds cutoffTimestamp:0];
 }
 
-- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
-    if (request.responseStatusCode != 200) {
-        [self requestFailedMarkStoryRead:request];
-    }
+- (void)finishMarkAllAsRead:(NSDictionary *)params {
+
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
@@ -2247,38 +2233,38 @@
     originalStoryCount += 1;
 }
 
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
-    if (![storyPageControl failedMarkAsUnread:request]) {
-        [feedDetailViewController failedMarkAsUnread:request];
-        [dashboardViewController.storiesModule failedMarkAsUnread:request];
+- (void)failedMarkAsUnread:(NSDictionary *)params {
+    if (![storyPageControl failedMarkAsUnread:params]) {
+        [feedDetailViewController failedMarkAsUnread:params];
+        [dashboardViewController.storiesModule failedMarkAsUnread:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
 }
 
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
-    [storyPageControl finishMarkAsSaved:request];
-    [feedDetailViewController finishMarkAsSaved:request];
+- (void)finishMarkAsSaved:(NSDictionary *)params {
+    [storyPageControl finishMarkAsSaved:params];
+    [feedDetailViewController finishMarkAsSaved:params];
 }
 
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
-    if (![storyPageControl failedMarkAsSaved:request]) {
-        [feedDetailViewController failedMarkAsSaved:request];
-        [dashboardViewController.storiesModule failedMarkAsSaved:request];
+- (void)failedMarkAsSaved:(NSDictionary *)params {
+    if (![storyPageControl failedMarkAsSaved:params]) {
+        [feedDetailViewController failedMarkAsSaved:params];
+        [dashboardViewController.storiesModule failedMarkAsSaved:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
 }
 
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
-    [storyPageControl finishMarkAsUnsaved:request];
-    [feedDetailViewController finishMarkAsUnsaved:request];
+- (void)finishMarkAsUnsaved:(NSDictionary *)params {
+    [storyPageControl finishMarkAsUnsaved:params];
+    [feedDetailViewController finishMarkAsUnsaved:params];
 }
 
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
-    if (![storyPageControl failedMarkAsUnsaved:request]) {
-        [feedDetailViewController failedMarkAsUnsaved:request];
-        [dashboardViewController.storiesModule failedMarkAsUnsaved:request];
+- (void)failedMarkAsUnsaved:(NSDictionary *)params {
+    if (![storyPageControl failedMarkAsUnsaved:params]) {
+        [feedDetailViewController failedMarkAsUnsaved:params];
+        [dashboardViewController.storiesModule failedMarkAsUnsaved:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
@@ -3008,7 +2994,7 @@
                           @"remove_like_feed"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedRequest:task.response];
@@ -3031,12 +3017,6 @@
     } else if (httpResponse.statusCode != 200) {
         return [view informError:@"The server barfed!"];
     }
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [self informError:error];
 }
 
 #pragma mark -

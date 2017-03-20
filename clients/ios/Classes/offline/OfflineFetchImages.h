@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "NewsBlurAppDelegate.h"
 #import "FMDatabaseQueue.h"
-#import "ASINetworkQueue.h"
 
 @interface OfflineFetchImages : NSOperation
 

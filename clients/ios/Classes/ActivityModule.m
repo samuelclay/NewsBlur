@@ -29,7 +29,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // initialize code here
+        self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -47,7 +47,6 @@
 }
     
 - (void)refreshWithActivities:(NSArray *)activities {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
     appDelegate.userActivitiesArray = activities;
 
     [self.activitiesTable reloadData];
@@ -100,11 +99,10 @@
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
         
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            [self finishLoadActivities:task];
+        [appDelegate.manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [self finishLoadActivities:responseObject];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [self requestFailed:task];
+            [appDelegate informError:error];
         }];
     }
 }
@@ -141,12 +139,6 @@
     
     [self refreshWithActivities:appDelegate.userActivitiesArray];
 } 
-
-- (void)requestFailed:(NSURLSessionDataTask *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
-}
 
 #pragma mark -
 #pragma mark Table View - Interactions List

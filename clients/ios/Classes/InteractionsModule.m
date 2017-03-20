@@ -103,26 +103,16 @@
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
 
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setValidatesSecureCertificate:NO];
-
-        [request setDidFinishSelector:@selector(finishLoadInteractions:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request setDelegate:self];
-        [request startAsynchronous];
+        appDelegate.manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [self finishLoadInteractions:responseObject];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [appDelegate informError:error];
+        }
     }
 }
 
-- (void)finishLoadInteractions:(ASIHTTPRequest *)request {
+- (void)finishLoadInteractions:(NSDictionary *)results {
     self.pageFetching = NO;
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
     
     NSArray *newInteractions = [results objectForKey:@"interactions"];
     
@@ -155,12 +145,6 @@
     
     [self refreshWithInteractions:appDelegate.userInteractionsArray];
 } 
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
-}
 
 #pragma mark -
 #pragma mark Table View - Interactions List

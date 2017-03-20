@@ -8,15 +8,10 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        manager = [AFHTTPSessionManager manager];
+
     }
     
     return self;
-}
-
-- (void) cancelRequests {
-    [manager invalidateSessionCancelingTasks:YES];
-    manager = [AFHTTPSessionManager manager];
 }
 
 #pragma mark -
@@ -114,14 +109,5 @@
                                        withTransitionCoordinator:coordinator];
     }
 }
-
-#pragma mark -
-#pragma mark Memory management
-
-- (void)dealloc {
-	[self cancelRequests];
-	
-}
-
 
 @end

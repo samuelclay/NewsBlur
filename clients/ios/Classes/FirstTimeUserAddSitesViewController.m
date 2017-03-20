@@ -114,31 +114,22 @@
     if (self.selectedCategories_.count) {
         NSString *urlString = [NSString stringWithFormat:@"%@/categories/subscribe",
                                self.appDelegate.url];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        NSMutableDictionary *params = [NSMutableDictionary dictionary];
+        NSMutableArray *categories = [NSMutableArray array];
         
-        for(NSObject *category in self.selectedCategories_) {
-            [request addPostValue:category forKey:@"category"];
+        for (NSObject *category in self.selectedCategories_) {
+            [categories addObject:category];
         }
+        [params setObject:categories forKey:@"category"];
 
-        [request setDelegate:self];
-        [request setDidFinishSelector:@selector(finishAddingCategories:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request startAsynchronous];
+        [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [self informError:error];
+        }];
     }
 }
 
-- (void)finishAddingCategories:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    NSLog(@"results are %@", results);
-}
-    
 #pragma mark -
 #pragma mark Import Google Reader
 
@@ -163,29 +154,22 @@
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/import/import_from_google_reader/",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:@"true" forKey:@"auto_active"];
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishImportFromGoogleReader:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishImportFromGoogleReader:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self importFromGoogleReaderFailed:error];
+    }];
 }
 
-- (void)importFromGoogleReaderFailed:(NSString *)error {
+- (void)importFromGoogleReaderFailed:(NSError *)error {
     [self.googleReaderButton setTitle:@"Retry Google Reader" forState:UIControlStateNormal];
     self.instructionLabel.textColor = [UIColor redColor];
-    self.instructionLabel.text = error;
+    self.instructionLabel.text = error.localizedDescription;
 }
 
-- (void)finishImportFromGoogleReader:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
+- (void)finishImportFromGoogleReader:(NSDictionary *)results {
     NSLog(@"results are %@", results);
     
     self.importedFeedCount_ = [[results objectForKey:@"feed_count"] intValue];
@@ -242,31 +226,20 @@
     [self.categoriesTable reloadData];
 }
 
-- (void)finishAddFolder:(ASIHTTPRequest *)request {
-    NSLog(@"Successfully added.");
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
-}
-
 #pragma mark -
 #pragma mark Add Site
 
 - (void)addSite:(NSString *)siteUrl {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:siteUrl forKey:@"url"];
     
-    [params setObject:siteUrl forKey:@"url"]; 
-    
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddFolder:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self informError:error];
+    }];
 }
 
 #pragma mark -

@@ -1,14 +1,8 @@
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
-#import "AFNetworking.h"
 
 @interface BaseViewController : UIViewController {
-	
-    AFHTTPSessionManager *manager;
-	
 }
-
-- (void) cancelRequests;
 
 - (void)informError:(id)error;
 - (void)informError:(id)error details:(NSString *)details;

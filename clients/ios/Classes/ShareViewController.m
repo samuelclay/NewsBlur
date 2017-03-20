@@ -353,9 +353,8 @@
     [appDelegate.storyPageControl showShareHUD:@"Sharing"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
                            self.appDelegate.url];
-
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    NSMutableArray *services = [NSMutableArray array];
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
@@ -364,14 +363,12 @@
     [params setObject:storyIdStr forKey:@"story_id"];
     
     if (facebookButton.selected) {
-        [request addPostValue:@"facebook" forKey:@"post_to_services"];     
+        [services addObject:@"facebook"];
     }
     if (twitterButton.selected) {
-        [request addPostValue:@"twitter" forKey:@"post_to_services"];
+        [services addObject:@"twitter"];
     }
-    if (appdotnetButton.selected) {
-        [request addPostValue:@"appdotnet" forKey:@"post_to_services"];
-    }
+    [params setObject:services forKey:@"post_to_services"];
     
     if (appDelegate.storiesCollection.isSocialRiverView) {
         if ([[appDelegate.activeStory objectForKey:@"friend_user_ids"] count] > 0) {
@@ -391,26 +388,16 @@
     if ([comments length]) {
         [params setObject:comments forKey:@"comments"]; 
     }
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishShareThisStory:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishShareThisStory:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+
     [appDelegate hideShareView:YES];
 }
 
-- (void)finishShareThisStory:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
-    if (request.responseStatusCode != 200) {
-        return [self requestFailed:request];
-    }
-    
+- (void)finishShareThisStory:(NSDictionary *)results {
     NSArray *userProfiles = [results objectForKey:@"user_profiles"];
     appDelegate.storiesCollection.activeFeedUserProfiles = [DataUtilities
                                                             updateUserProfiles:appDelegate.storiesCollection.activeFeedUserProfiles
@@ -473,15 +460,15 @@
     [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSString *error;
+- (void)requestFailed:(NSError *)error {
+    NSString *errorMessage;
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
-    if ([request error]) {
-        error = [NSString stringWithFormat:@"%@", [request error]];
+    if (error) {
+        errorMessage = error.localizedDescription
     } else {
-        error = @"The server barfed!";
+        errorMessage = @"The server barfed!";
     }
     NSLog(@"Error: %@", error);
     [appDelegate.storyPageControl.currentPage informError:error];

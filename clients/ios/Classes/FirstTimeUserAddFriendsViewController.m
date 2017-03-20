@@ -115,30 +115,20 @@
 - (void)connectToSocial {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishConnectFromSocial:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishConnectFromSocial:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+- (void)requestFailed:(NSError *)error {
     NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
+    [self informError:error];
 }
 
-- (void)finishConnectFromSocial:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    NSLog(@"results are %@", results);
+- (void)finishConnectFromSocial:(NSDictionary *)results {
+    NSLog(@"Connect to social results: %@", results);
     
     BOOL facebookSync = [[[[results objectForKey:@"services"] objectForKey:@"facebook"] objectForKey:@"syncing"] boolValue];
     BOOL twitterSync = [[[[results objectForKey:@"services"] objectForKey:@"twitter"] objectForKey:@"syncing"] boolValue];
@@ -196,49 +186,25 @@
 - (IBAction)toggleAutoFollowFriends:(id)sender {
     UISwitch *button = (UISwitch *)sender;
     
-    NSURL *preferenceURL = [NSURL URLWithString:
+    NSURL *urlString = [NSURL URLWithString:
                           [NSString stringWithFormat:@"%@/profile/set_preference",
                            self.appDelegate.url]];
-    
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:preferenceURL];
-    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+
     if (button.on) {
         [params setObject:@"false" forKey:@"autofollow_friends"];
     } else {
         [params setObject:@"true" forKey:@"autofollow_friends"];
     }
     
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setDidFinishSelector:@selector(finishToggleAutoFollowFriends:)];
-    [request setDidFailSelector:@selector(finishedWithError:)];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishToggleAutoFollowFriends:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)finishedWithError:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    NSLog(@"results are %@", results);
-    
-}
-
-- (void)finishToggleAutoFollowFriends:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
+- (void)finishToggleAutoFollowFriends:(NSDictionary *)results {
     NSLog(@"results are %@", results);
 }
 

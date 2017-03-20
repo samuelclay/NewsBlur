@@ -155,14 +155,7 @@
 - (void)requestFinished:(NSDictionary *)results {
     [self.movingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    // int statusCode = [request responseStatusCode];
+
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         [self.errorLabel setText:[results valueForKey:@"message"]];   
@@ -184,31 +177,24 @@
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_folder_to_folder",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *folderName = [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder];
     NSString *fromFolder = [appDelegate extractFolderName:[fromFolderInput text]];
     NSString *toFolder = [appDelegate extractFolderName:[toFolderInput text]];
     [params setObject:fromFolder forKey:@"in_folder"]; 
     [params setObject:toFolder forKey:@"to_folder"]; 
     [params setObject:folderName forKey:@"folder_name"];
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishMoveFolder:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMoveFolder:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)finishMoveFolder:(ASIHTTPRequest *)request {
+- (void)finishMoveFolder:(NSDictionary *)results {
     [self.movingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    // int statusCode = [request responseStatusCode];
+
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         [self.errorLabel setText:[results valueForKey:@"message"]];   
@@ -224,9 +210,7 @@
     [self.movingLabel setHidden:YES];
     [self.errorLabel setHidden:NO];
     [self.activityIndicator stopAnimating];
-    NSError *error = [request error];
     NSLog(@"Error: %@", error);
-    NSLog(@"Error: %@", [request responseString]);
     [self.errorLabel setText:error.localizedDescription];
 }
 

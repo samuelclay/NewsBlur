@@ -11,6 +11,7 @@
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
 #import "EventWindow.h"
+#import "AFNetworking.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -90,6 +91,8 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
+
+    AFHTTPSessionManager *networkManager;
 
     NSString * activeUsername;
     NSString * activeUserProfileId;
@@ -192,6 +195,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
 
+@property (nonatomic) AFHTTPSessionManager *networkManager;
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
 @property (nonatomic, readwrite) TMCache *cachedFavicons;
 @property (nonatomic, readwrite) TMCache *cachedStoryImages;
@@ -313,6 +317,8 @@ SFSafariViewControllerDelegate>  {
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
+- (void)cancelRequests;
+- (void)clearManager;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
@@ -356,11 +362,11 @@ SFSafariViewControllerDelegate>  {
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff;
 - (void)finishMarkAsRead:(NSDictionary *)story;
 - (void)finishMarkAsUnread:(NSDictionary *)story;
-- (void)failedMarkAsUnread:(NSURLSessionDataTask *)request;
-- (void)finishMarkAsSaved:(NSURLSessionDataTask *)request;
-- (void)failedMarkAsSaved:(NSURLSessionDataTask *)request;
-- (void)finishMarkAsUnsaved:(NSURLSessionDataTask *)request;
-- (void)failedMarkAsUnsaved:(NSURLSessionDataTask *)request;
+- (void)failedMarkAsUnread:(NSDictionary *)params;
+- (void)finishMarkAsSaved:(NSDictionary *)params;
+- (void)failedMarkAsSaved:(NSDictionary *)params;
+- (void)finishMarkAsUnsaved:(NSDictionary *)params;
+- (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;

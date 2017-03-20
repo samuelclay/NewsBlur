@@ -83,7 +83,6 @@ UIActionSheetDelegate> {
 - (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)subscribeToBlurblog;
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex;
 - (NSString *)getHeader;
 - (NSString *)getShareBar;

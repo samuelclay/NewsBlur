@@ -1714,39 +1714,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                self.appDelegate.url];
     }
     
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    
-    [params setObject:[self.activeStory
-                   objectForKey:@"id"] 
-           forKey:@"story_id"];
-    [params setObject:[self.activeStory
-                           objectForKey:@"story_feed_id"] 
-                   forKey:@"story_feed_id"];
-    
-
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
+    [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"story_feed_id"];
     [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     
-    [request setDidFinishSelector:@selector(finishLikeComment:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishLikeComment:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)finishLikeComment:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
-    if (request.responseStatusCode != 200) {
-        return [self requestFailed:request];
-    }
-    
+- (void)finishLikeComment:(NSDictionary *)results {
     // add the comment into the activeStory dictionary
     NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
 
@@ -1774,16 +1754,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 
-- (void)requestFailed:(ASIHTTPRequest *)request {    
-    NSLog(@"Error in story detail: %@", [request error]);
-    NSString *error;
+- (void)requestFailed:(NSError *)error {
+    NSLog(@"Error in story detail: %@", error);
+    NSString *errorMessage;
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
-    if ([request error]) {
-        error = [NSString stringWithFormat:@"%@", [request error]];
+    if (error) {
+        errorMessage = error.localizedDescription;
     } else {
-        error = @"The server barfed!";
+        errorMessage = @"The server barfed!";
     }
     [self informError:error];
 }
@@ -2031,21 +2011,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.storyPageControl showShareHUD:@"Following"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
                      self.appDelegate.url];
-    
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[appDelegate.storiesCollection.activeFeed
                            objectForKey:@"user_id"] 
                    forKey:@"user_id"];
 
-    [request setDidFinishSelector:@selector(finishSubscribeToBlurblog:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-} 
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishSubscribeToBlurblog:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+}
 
-- (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request {
+- (void)finishSubscribeToBlurblog:(NSDictionary *)results {
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
@@ -2291,9 +2269,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
                            self.appDelegate.url];
-    ASIFormDataRequest *request = [self formRequestWithURL:urlString];
-    [request addPostValue:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
-    [request addPostValue:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
+    [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
     [request setUserInfo:@{@"storyId": [self.activeStory objectForKey:@"id"]}];
     [request setDidFinishSelector:@selector(finishFetchTextView:)];
     [request setDidFailSelector:@selector(failedFetchText:)];

@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 
 @interface InteractionsModule : UIView <UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
@@ -32,8 +32,6 @@
 - (void)refreshWithInteractions:(NSArray *)interactions;
 
 - (void)fetchInteractionsDetail:(int)page;
-- (void)finishLoadInteractions:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 
 - (void)checkScroll;
 

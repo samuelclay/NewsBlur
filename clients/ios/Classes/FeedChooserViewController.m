@@ -511,16 +511,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_feeds_by_folder", self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
-    [request setCompletionBlock:^(void) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         HUD.labelText = @"Reloading...";
         [self.appDelegate reloadFeedsView:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self finishedWithError:error];
     }];
-    request.didFailSelector = @selector(finishedWithError:);
-    request.timeOutSeconds = 30;
-    [request startAsynchronous];
 }
 
 - (void)deleteFeeds {
@@ -560,23 +558,23 @@ static const CGFloat kFolderTitleHeight = 36.0;
     HUD.labelText = @"Updating...";
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSArray *mutedIndexPaths = self.tableView.indexPathsForSelectedRows;
+    NSMutableArray *feeds = [NSMutableArray array];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
         if (![mutedIndexPaths containsObject:indexPath]) {
-            [request addPostValue:item.identifier forKey:@"approved_feeds"];
+            [feeds addObject:item.identifier];
         }
     }];
     
-    [request setCompletionBlock:^(void) {
+    [params setObject:feeds forKey:@"approved_feeds"];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
         [self dismissViewControllerAnimated:YES completion:nil];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self finishedWithError:error];
     }];
-    request.didFailSelector = @selector(finishedWithError:);
-    request.timeOutSeconds = 30;
-    [request startAsynchronous];
 }
 
 - (BOOL)didChangeActiveFeeds {

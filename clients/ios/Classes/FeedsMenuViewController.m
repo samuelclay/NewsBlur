@@ -222,27 +222,16 @@
     [alertController addAction:[UIAlertAction actionWithTitle: @"Login" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         NSString *username = alertController.textFields[0].text;
-        NSString *urlS = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
                           self.appDelegate.url, username];
-        NSURL *url = [NSURL URLWithString:urlS];
-        
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setValidatesSecureCertificate:NO];
-        [request setDelegate:self];
-        [request setResponseEncoding:NSUTF8StringEncoding];
-        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setFailedBlock:^(void) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-        }];
-        [request setCompletionBlock:^(void) {
+
+        [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSLog(@"Login as %@ successful", username);
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [appDelegate reloadFeedsView:YES];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [self informError:error];
         }];
-        [request setTimeOutSeconds:30];
-        [request startAsynchronous];
-        
-        [ASIHTTPRequest setSessionCookies:nil];
         
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:appDelegate.feedsViewController.view animated:YES];

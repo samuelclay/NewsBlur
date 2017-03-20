@@ -1387,21 +1387,17 @@ heightForHeaderInSection:(NSInteger)section {
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    for (NSString *feedId in feedIds) {
-        [request addPostValue:feedId forKey:@"feed_id"];
-    }
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:feedIds forKey:@"feed_id"];
     if (days) {
         [params setObject:[NSNumber numberWithInteger:cutoffTimestamp]
                        forKey:@"cutoff_timestamp"];
     }
-    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-    [request setUserInfo:@{@"feeds": feedIds,
-                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAllAsRead:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailedMarkStoryRead:error withParams:params];
+    }];
     
     if (!days) {
         for (NSString *feedId in feedIds) {
@@ -1420,15 +1416,16 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
                            self.appDelegate.url];
     NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[NSNumber numberWithInteger:days]
-                   forKey:@"days"];
-    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-    [request setUserInfo:@{@"feeds": feedIds,
-                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
+               forKey:@"days"];
+
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAllAsRead:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailedMarkStoryRead:error withParams:params];
+    }];
     
     if (!days) {
         for (NSString *feedId in feedIds) {
@@ -1443,6 +1440,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                            self.appDelegate.url];
+    
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [params setObject:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
@@ -1453,31 +1451,26 @@ heightForHeaderInSection:(NSInteger)section {
     [request startAsynchronous];
 }
 
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    [appDelegate markStoriesRead:[request.userInfo objectForKey:@"stories"]
-                         inFeeds:[request.userInfo objectForKey:@"feeds"]
-                 cutoffTimestamp:[[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]];
+- (void)requestFailedMarkStoryRead:(NSError *)error withParams:(NSDictionary *)params {
+    [appDelegate markStoriesRead:[params objectForKey:@"stories"]
+                         inFeeds:[params objectForKey:@"feed_id"]
+                 cutoffTimestamp:[[params objectForKey:@"cutoff_timestamp"] integerValue]];
     [self showOfflineNotifier];
     self.isOffline = YES;
     [self.feedTitlesTable reloadData];
 }
 
-- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
-    if (request.responseStatusCode != 200) {
-        [self requestFailedMarkStoryRead:request];
-        return;
-    }
-    
+- (void)finishMarkAllAsRead:(NSDictionary *)params {
     self.isOffline = NO;
     
-    if ([[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]) {
+    if ([[params objectForKey:@"cutoff_timestamp"] integerValue]) {
         id feed;
-        if ([[request.userInfo objectForKey:@"feeds"] count] == 1) {
-            feed = [[request.userInfo objectForKey:@"feeds"] objectAtIndex:0];
+        if ([[params objectForKey:@"feed_id"] count] == 1) {
+            feed = [[params objectForKey:@"feed_id"] objectAtIndex:0];
         }
         [self refreshFeedList:feed];
-    } else if ([request.userInfo objectForKey:@"feeds"]) {
-        [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
+    } else if ([params objectForKey:@"feed_id"]) {
+        [appDelegate markFeedReadInCache:[params objectForKey:@"feed_id"]];
     }
 }
 

@@ -1041,18 +1041,14 @@
     [appDelegate openTrainStory:self.fontSettingsButton];
 }
 
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self requestFailed:request];
-    }
-    
+- (void)finishMarkAsSaved:(NSDictionary *)params {
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
 }
 
-- (BOOL)failedMarkAsSaved:(ASIFormDataRequest *)request {
-    if (![[request.userInfo objectForKey:@"story_hash"]
+- (BOOL)failedMarkAsSaved:(NSDictionary *)params {
+    if (![[params objectForKey:@"story_hash"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
@@ -1061,20 +1057,16 @@
     return YES;
 }
 
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self requestFailed:request];
-    }
-    
-    [appDelegate.storiesCollection markStory:[request.userInfo objectForKey:@"story"] asSaved:NO];
+- (void)finishMarkAsUnsaved:(NSDictionary *)params {
+    [appDelegate.storiesCollection markStory:[params objectForKey:@"story"] asSaved:NO];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];
 }
 
 
-- (BOOL)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
-    if (![[request.userInfo objectForKey:@"story_hash"]
+- (BOOL)failedMarkAsUnsaved:(NSDictionary *)params {
+    if (![[params objectForKey:@"story_hash"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
@@ -1083,8 +1075,8 @@
     return YES;
 }
 
-- (BOOL)failedMarkAsUnread:(ASIFormDataRequest *)request {
-    if (![[request.userInfo objectForKey:@"story_hash"]
+- (BOOL)failedMarkAsUnread:(NSDictionary *)params {
+    if (![[params objectForKey:@"story_hash"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }

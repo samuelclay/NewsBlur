@@ -153,21 +153,20 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/notifications/feed/",
                            appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:self.feedId forKey:@"feed_id"];
+    NSMutableArray *notifications = [NSMutableArray array];
     for (NSString *notificationType in notificationTypes) {
-        [request addPostValue:notificationType forKey:@"notification_types"];
+        [notifications addObject:notificationType];
     }
+    [params setObject:notifications forKey:@"notification_types"];
     [params setObject:notificationFilter forKey:@"notification_filter"];
-    [request setCompletionBlock:^{
+    
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Saved notifications %@: %@ / %@", self.feedId, notificationTypes, notificationFilter);
-    }];
-    [request setFailedBlock:^{
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to save notifications: %@ / %@", notificationTypes, notificationFilter);
     }];
-    [request setDelegate:self];
-    [request startAsynchronous];
 }
 
 @end

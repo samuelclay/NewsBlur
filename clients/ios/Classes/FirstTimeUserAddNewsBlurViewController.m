@@ -112,45 +112,34 @@
 - (void)addPopular {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow/",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     [params setObject:@"social:popular" forKey:@"user_id"];     
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddSite:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishAddSite:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self informError:error];
+    }];
 }
 
 - (void)addSite:(NSString *)siteUrl {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url/",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
+
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:siteUrl forKey:@"url"]; 
     [params setObject:@"true" forKey:@"auto_active"]; 
     [params setObject:@"true" forKey:@"skip_fetch"]; 
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddSite:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishAddSite:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self informError:error];
+    }];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
-}
-
-- (void)finishAddSite:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
+- (void)finishAddSite:(NSDictionary *)results {
     NSLog(@"results are %@", results);
 }
 

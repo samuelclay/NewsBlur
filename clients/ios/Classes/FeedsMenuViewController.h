@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
 
-@interface FeedsMenuViewController : UIViewController 
+@interface FeedsMenuViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }

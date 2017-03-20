@@ -10,7 +10,6 @@
 #import "NewsBlurAppDelegate.h"
 
 @interface ShareViewController : BaseViewController <UITextViewDelegate> {
-    NewsBlurAppDelegate *appDelegate;
     NSString *activeReplyId;
 }
 

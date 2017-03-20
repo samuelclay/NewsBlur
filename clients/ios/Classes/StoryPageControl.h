@@ -8,18 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
-#import "NewsBlurAppDelegate.h"
 #import "THCircularProgressView.h"
 #import "NBNotifier.h"
-
-@class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 
 @interface StoryPageControl : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
     
-    NewsBlurAppDelegate *appDelegate;
-
     THCircularProgressView *circularProgressView;
     UIButton *buttonPrevious;
     UIButton *buttonNext;
@@ -38,7 +32,6 @@
     CGFloat scrollPct;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) StoryDetailViewController *currentPage;
 @property (nonatomic) StoryDetailViewController *nextPage;
 @property (nonatomic) StoryDetailViewController *previousPage;
@@ -96,7 +89,6 @@
 - (void)animateIntoPlace:(BOOL)animated;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 
 - (void)setNextPreviousButtons;
 - (void)setTextButton;
@@ -121,5 +113,11 @@
 - (IBAction)doPreviousStory:(id)sender;
 - (IBAction)tapProgressBar:(id)sender;
 - (IBAction)toggleTextView:(id)sender;
+
+- (void)finishMarkAsSaved:(NSDictionary *)params;
+- (BOOL)failedMarkAsSaved:(NSDictionary *)params;
+- (void)finishMarkAsUnsaved:(NSDictionary *)params;
+- (BOOL)failedMarkAsUnsaved:(NSDictionary *)params;
+- (BOOL)failedMarkAsUnread:(NSDictionary *)params;
 
 @end

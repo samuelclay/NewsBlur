@@ -113,27 +113,17 @@
                            "&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
                            self.appDelegate.url,
                            appDelegate.activeUserProfileId];
-    NSURL *url = [NSURL URLWithString:urlString];
 
-    request = [ASIHTTPRequest requestWithURL:url];
-
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(requestFinished:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self requestFinished:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self informError:error];
+    }];
 }
 
-- (void)requestFinished:(ASIHTTPRequest *)_request {
+- (void)requestFinished:(NSDictionary *)results {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSString *responseString = [_request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
 
-    // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");
@@ -158,12 +148,6 @@
 
     [self.profileTable reloadData];
     [self.view addSubview:self.profileTable];
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)_request {
-    NSError *error = [_request error];
-    NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
 }
 
 #pragma mark -
