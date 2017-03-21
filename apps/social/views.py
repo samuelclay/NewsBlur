@@ -574,7 +574,7 @@ def mark_story_as_shared(request):
             'message': 'Only premium users can share multiple stories per day from the same site.'
         })
     
-    quota = 20
+    quota = 50
     if not request.user.profile.is_premium:
         quota = 3
     if MSharedStory.feed_quota(request.user.pk, story.story_hash, quota=quota):
