@@ -332,6 +332,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      */
     public void pushUnreadCounts() {
         ((Main) getActivity()).updateUnreadCounts((adapter.totalNeutCount+adapter.totalSocialNeutCount), (adapter.totalPosCount+adapter.totalSocialPosiCount));
+        ((Main) getActivity()).updateFeedCount(adapter.lastFeedCount);
     }
 
 	@Override
