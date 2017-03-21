@@ -339,7 +339,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         Intent i = null;
         if (adapter.isFolderRoot(groupPosition)) {
-			i = new Intent(getActivity(), AllStoriesItemsList.class);
+            if (currentState == StateFilter.SAVED) {
+                // the existence of this row in saved mode is something of a framework artifact and may
+                // confuse users. redirect them to the activity corresponding to what they will actually see
+                i = new Intent(getActivity(), SavedStoriesItemsList.class);
+            } else {
+			    i = new Intent(getActivity(), AllStoriesItemsList.class);
+            }
         } else if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) {
             i = new Intent(getActivity(), GlobalSharedStoriesItemsList.class);
         } else if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
