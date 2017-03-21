@@ -1571,12 +1571,14 @@ class MSharedStory(mongo.DynamicDocument):
         self.delete()
     
     @classmethod
-    def feed_quota(cls, user_id, feed_id, story_hash, days=1, quota=1):
+    def feed_quota(cls, user_id, story_hash, feed_id=None, days=1, quota=1):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
-        shared_count = cls.objects.filter(user_id=user_id,
-                                          shared_date__gte=day_ago, 
-                                          story_feed_id=feed_id,
-                                          story_hash__nin=[story_hash]).count()
+        params = dict(user_id=user_id,
+                      shared_date__gte=day_ago, 
+                      story_hash__nin=[story_hash])
+        if feed_id:
+            params['story_feed_id'] = feed_id
+        shared_count = cls.objects.filter(**params).count()
 
         return shared_count >= quota
     
