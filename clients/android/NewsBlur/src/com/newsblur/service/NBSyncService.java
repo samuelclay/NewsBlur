@@ -625,20 +625,44 @@ public class NBSyncService extends Service {
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
     private void syncPendingFeedStories() {
-        // before anything else, see if we need to quickly reset fetch state for a feed
-        if (ResetFeed != null) {
-            ExhaustedFeeds.remove(ResetFeed);
-            FeedStoriesSeen.remove(ResetFeed);
-            FeedPagesSeen.remove(ResetFeed);
-            ResetFeed = null;
-        }
+        // track whether we actually tried to handle the feedset and found we had nothing
+        // more to do, in which case we will clear it
+        boolean finished = false;
 
         FeedSet fs = PendingFeed;
-        boolean finished = false;
-        if (fs == null) {
-            return;
-        }
+
         try {
+            if (fs == null) {
+                return;
+            }
+
+            // before anything else, see if we need to quickly reset fetch state for a feed. we
+            // do this as part of the loop to prevent-mid loop state corruption
+            if (ResetFeed != null) {
+                ExhaustedFeeds.remove(ResetFeed);
+                FeedStoriesSeen.remove(ResetFeed);
+                FeedPagesSeen.remove(ResetFeed);
+                ResetFeed = null;
+            }
+
+            // now see if we need to reset the reading session table because the FeedSet was
+            // switched out
+            boolean doReset = false;
+            synchronized (PENDING_FEED_MUTEX) {
+                if (ResetSession) {
+                    doReset = true;
+                    ResetSession = false;
+                }
+            }
+            if (doReset) {
+                // the next fetch will be the start of a new reading session; clear it so it
+                // will be re-primed
+                dbHelper.clearStorySession();
+                // don't just rely on the auto-prepare code when fetching stories, it might be called
+                // after we insert our first page and not trigger
+                dbHelper.prepareReadingSession(fs);
+            }
+            
             if (ExhaustedFeeds.contains(fs)) {
                 com.newsblur.util.Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
                 finished = true;
@@ -656,22 +680,9 @@ public class NBSyncService extends Service {
             StoryOrder order = PrefsUtils.getStoryOrder(this, fs);
             ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
 
-            boolean doReset = false;
-            synchronized (PENDING_FEED_MUTEX) {
-                if (ResetSession) {
-                    doReset = true;
-                    ResetSession = false;
-                }
-            }
-            if (doReset) {
-                // the next fetch will be the start of a new reading session; clear it so it
-                // will be re-primed
-                dbHelper.clearStorySession();
-                // don't just rely on the auto-prepare code when fetching stories, it might be called
-                // after we insert our first page and not trigger
-                dbHelper.prepareReadingSession(fs);
-            }
-            
+            StorySyncRunning = true;
+            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+
             while (totalStoriesSeen < PendingFeedTarget) {
                 if (stopSync()) return;
                 // this is a good heuristic for double-checking if we have left the story list
@@ -681,9 +692,6 @@ public class NBSyncService extends Service {
                 if (!fs.equals(PendingFeed)) {
                     return; 
                 }
-
-                StorySyncRunning = true;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
                 pageNumber++;
                 StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
@@ -697,7 +705,7 @@ public class NBSyncService extends Service {
                 insertStories(apiResponse, fs);
                 // re-do any very recent actions that were incorrectly overwritten by this page
                 finishActions();
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
             
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
@@ -714,10 +722,10 @@ public class NBSyncService extends Service {
             finished = true;
 
         } finally {
-            if (StorySyncRunning) {
-                StorySyncRunning = false;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
-            }
+            StorySyncRunning = false;
+            // even if we didn't do much of a sync, a fragment might be waiting to even see if we
+            // tried, so still signal a status change and that story data (empty or not) are ready
+            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS | NbActivity.UPDATE_STORY);
             synchronized (PENDING_FEED_MUTEX) {
                 if (finished && fs.equals(PendingFeed)) PendingFeed = null;
             }
@@ -935,24 +943,26 @@ public class NBSyncService extends Service {
      * @param totalSeen the number of stories the caller thinks they have seen for the FeedSet
      *        or a negative number if the caller trusts us to track for them
      */
-    public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, int callerSeen) {
-        if (ExhaustedFeeds.contains(fs)) {
-            com.newsblur.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
-            return false;
-        }
-
+    public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, Integer callerSeen) {
         synchronized (PENDING_FEED_MUTEX) {
+            if (ExhaustedFeeds.contains(fs) && (!ResetSession)) {
+                com.newsblur.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
+                return false;
+            }
             Integer alreadyPending = 0;
             if (fs.equals(PendingFeed)) alreadyPending = PendingFeedTarget;
             Integer alreadySeen = FeedStoriesSeen.get(fs);
             if (alreadySeen == null) alreadySeen = 0;
-            if (callerSeen < alreadySeen) {
+            if ((callerSeen != null) && (callerSeen < alreadySeen)) {
                 // the caller is probably filtering and thinks they have fewer than we do, so
                 // update our count to agree with them, and force-allow another requet
                 alreadySeen = callerSeen;
                 FeedStoriesSeen.put(fs, callerSeen);
                 alreadyPending = 0;
             }
+
+            PendingFeed = fs;
+            PendingFeedTarget = desiredStoryCount;
 
             if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
             if (desiredStoryCount <= alreadySeen) {
@@ -962,8 +972,6 @@ public class NBSyncService extends Service {
                 return false;
             }
             
-            PendingFeed = fs;
-            PendingFeedTarget = desiredStoryCount;
         }
         return true;
     }
