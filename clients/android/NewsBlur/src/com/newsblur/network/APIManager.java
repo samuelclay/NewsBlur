@@ -600,10 +600,6 @@ public class APIManager {
 			return new APIResponse(context);
 		}
 
-		if (AppConstants.VERBOSE_LOG) {
-			Log.d(this.getClass().getName(), "API GET " + urlString);
-		}
-
 		Request.Builder requestBuilder = new Request.Builder().url(urlString);
 		addCookieHeader(requestBuilder);
 		requestBuilder.header("User-Agent", this.customUserAgent);
