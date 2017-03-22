@@ -1961,7 +1961,7 @@ def delete_folder(request):
     in_folder = request.POST.get('in_folder', None)
     feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
 
-    request.user.profile.send_opml_export_email(reason="You have deleted an entire folder of feeds, so here's a backup just in case.")
+    request.user.profile.send_opml_export_email(reason="You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case.")
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
@@ -1981,7 +1981,7 @@ def delete_folder(request):
 def delete_feeds_by_folder(request):
     feeds_by_folder = json.decode(request.POST['feeds_by_folder'])
 
-    request.user.profile.send_opml_export_email(reason="You have deleted a number of feeds at once, so here's a backup just in case.")
+    request.user.profile.send_opml_export_email(reason="You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case.")
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
@@ -2084,7 +2084,7 @@ def move_feeds_by_folder_to_folder(request):
     to_folder = request.POST['to_folder']
     new_folder = request.POST.get('new_folder', None)
 
-    request.user.profile.send_opml_export_email(reason="You have moved a number of feeds at once, so here's a backup just in case.")
+    request.user.profile.send_opml_export_email(reason="You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case.")
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
 

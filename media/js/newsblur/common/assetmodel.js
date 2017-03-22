@@ -102,7 +102,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                         self.make_request(url, data, callback, error_callback, options);
                     } else {
                         console.log(['Woah! Lost auth cookie, letting user know...']);
-                        NEWSBLUR.reader.show_authentication_lost();
+                        // NEWSBLUR.reader.show_authentication_lost();
                     }
                     return;
                 }
@@ -612,7 +612,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     check_authentication_lost: function(data) {
         if (!NEWSBLUR.Globals.is_authenticated) return false;
         if (_.isUndefined(data.authenticated)) return false;
-        if (NEWSBLUR.Globals.is_authenticated != data.authenticated) {
+        if (NEWSBLUR.Globals.is_authenticated != data.authenticated && data.authenticated === false) {
             return true;
         }
         return false;

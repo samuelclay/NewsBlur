@@ -310,7 +310,7 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         if (_.isUndefined(data.authenticated)) return;
         if (NEWSBLUR.Globals.is_authenticated != data.authenticated) {
             console.log(['Woah! Lost auth cookie, letting user know...']);
-            NEWSBLUR.reader.show_authentication_lost();
+            // NEWSBLUR.reader.show_authentication_lost();
         }
     },
     
