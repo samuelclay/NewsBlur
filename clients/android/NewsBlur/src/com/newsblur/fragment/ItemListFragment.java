@@ -130,17 +130,26 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	}
 
     @Override
-    public synchronized void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onStart() {
+        super.onStart();
         stopLoading = false;
-        if (getLoaderManager().getLoader(ITEMLIST_LOADER) == null) {
-            getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
-        }
+        getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
     }
 
-    private void triggerRefresh(int desiredStoryCount, int totalSeen) {
+    @Override
+    public void onPause() {
+        // a pause/resume cycle will depopulate and repopulate the list and trigger bad scroll
+        // readings and cause zero-index refreshes, wasting massive cycles. hold the refresh logic
+        // until the loaders reset
+        cursorSeenYet = false;
+        super.onPause();
+    }
+
+    private void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
+        // ask the sync service for as many stories as we want
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
-        if (gotSome) triggerSync();
+        // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
+        if (gotSome || (totalSeen == null)) triggerSync();
     }
 
     /**
@@ -280,7 +289,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             if (NBSyncService.ResetSession) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
                 com.newsblur.util.Log.i(this.getClass().getName(), "discarding stale load");
-                triggerRefresh(1, 0);
+                triggerRefresh(1, null);
                 return;
             }
             cursorSeenYet = true;
