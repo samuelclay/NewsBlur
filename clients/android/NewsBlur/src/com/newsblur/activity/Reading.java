@@ -635,7 +635,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         
 	private void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
-            int currentCount = (stories == null) ? 0 : stories.getCount();
+            Integer currentCount = null;
+            if (stories != null) currentCount = stories.getCount();
             boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, currentCount);
             if (gotSome) triggerSync();
 		}
