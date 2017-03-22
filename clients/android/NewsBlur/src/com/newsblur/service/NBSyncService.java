@@ -405,7 +405,11 @@ public class NBSyncService extends Service {
     private void syncMetadata(int startId) {
         if (stopSync()) return;
         if (backoffBackgroundCalls()) return;
-        if (dbHelper.getUntriedActionCount() > 0) return;
+        int untriedActions = dbHelper.getUntriedActionCount();
+        if (untriedActions > 0) {
+            com.newsblur.util.Log.i(this.getClass().getName(), untriedActions + " outstanding actions, yielding metadata sync");
+            return;
+        }
 
         if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
             PrefsUtils.updateLastSyncTime(this);
