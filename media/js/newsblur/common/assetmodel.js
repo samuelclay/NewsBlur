@@ -1819,11 +1819,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/oauth/unfollow_twitter_account', {'username': username}, callback);
     },
     
-    fetch_original_text: function(story_id, feed_id, callback, error_callback) {
-        var story = this.get_story(story_id);
+    fetch_original_text: function(story_hash, callback, error_callback) {
+        var story = this.get_story(story_hash);
         this.make_request('/rss_feeds/original_text', {
-            story_id: story_id,
-            feed_id: feed_id
+            story_hash: story_hash,
         }, function(data) {
             story.set('original_text', data.original_text);
             callback(data);

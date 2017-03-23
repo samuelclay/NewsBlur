@@ -53,8 +53,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         this.$el.scrollTop(0);
         this.story_detail.attach_handlers();
         this.show_loading();
-        NEWSBLUR.assets.fetch_original_text(story.get('id'), story.get('story_feed_id'), 
-                                            this.render, this.error);
+        NEWSBLUR.assets.fetch_original_text(story.get('story_hash'), this.render, this.error);
                                             
         return this;
     },

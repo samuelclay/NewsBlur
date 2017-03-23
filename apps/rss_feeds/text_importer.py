@@ -93,7 +93,8 @@ class TextImporter:
                 self.story.original_text_z = zlib.compress(smart_str(content))
                 try:
                     self.story.save()
-                except NotUniqueError:
+                except NotUniqueError, e:
+                    logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: %s" % (e)), warn_color=False)
                     pass
             logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
                 len(content),
