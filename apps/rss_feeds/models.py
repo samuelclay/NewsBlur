@@ -2648,7 +2648,7 @@ class MStory(mongo.Document):
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         
-        if not original_text_z or force or True:
+        if not original_text_z or force:
             feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
