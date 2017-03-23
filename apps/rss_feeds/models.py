@@ -2597,24 +2597,35 @@ class MStory(mongo.Document):
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
     
-    def extract_image_urls(self, force=False):
-        if self.image_urls and not force:
+    def extract_image_urls(self, force=False, text=False):
+        if self.image_urls and not force and not text:
             return self.image_urls
         
-        story_content = self.story_content
-        if not story_content and self.story_content_z:
-            story_content = zlib.decompress(self.story_content_z)
+        story_content = None
+        if not text:
+            story_content = self.story_content
+            if not story_content and self.story_content_z:
+                story_content = zlib.decompress(self.story_content_z)
+        elif text:
+            if self.original_text_z:
+                story_content = zlib.decompress(self.original_text_z)
         if not story_content:
             return
         
         try:
             soup = BeautifulSoup(story_content)
         except ValueError:
-            return
-        
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+
         images = soup.findAll('img')
         if not images:
-            return
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
         
         image_urls = []
         for image in images:
@@ -2626,8 +2637,11 @@ class MStory(mongo.Document):
             image_urls.append(image_url)
 
         if not image_urls:
-            return
-            
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+        
         self.image_urls = image_urls
         return self.image_urls
 
@@ -2638,6 +2652,8 @@ class MStory(mongo.Document):
             feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
+            self.extract_image_urls(force=force, text=True)
+            self.save()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
             original_text = zlib.decompress(original_text_z)

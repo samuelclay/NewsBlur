@@ -103,7 +103,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                         self.make_request(url, data, callback, error_callback, options);
                     } else {
                         console.log(['Woah! Lost auth cookie, letting user know...']);
-                        NEWSBLUR.reader.show_authentication_lost();
+                        // NEWSBLUR.reader.show_authentication_lost();
                     }
                     return;
                 }
@@ -614,7 +614,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     check_authentication_lost: function(data) {
         if (!NEWSBLUR.Globals.is_authenticated) return false;
         if (_.isUndefined(data.authenticated)) return false;
-        if (NEWSBLUR.Globals.is_authenticated != data.authenticated) {
+        if (NEWSBLUR.Globals.is_authenticated != data.authenticated && data.authenticated === false) {
             return true;
         }
         return false;
@@ -1881,11 +1881,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/oauth/unfollow_twitter_account', {'username': username}, callback);
     },
     
-    fetch_original_text: function(story_id, feed_id, callback, error_callback) {
-        var story = this.get_story(story_id);
+    fetch_original_text: function(story_hash, callback, error_callback) {
+        var story = this.get_story(story_hash);
         this.make_request('/rss_feeds/original_text', {
-            story_id: story_id,
-            feed_id: feed_id
+            story_hash: story_hash,
         }, function(data) {
             story.set('original_text', data.original_text);
             callback(data);

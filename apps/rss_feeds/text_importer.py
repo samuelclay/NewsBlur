@@ -10,6 +10,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 from django.utils.encoding import smart_str
+from BeautifulSoup import BeautifulSoup
 
 BROKEN_URLS = [
     "gamespot.com",
@@ -87,13 +88,17 @@ class TextImporter:
         except TypeError:
             title = ""
         url = resp.url
-
+        
+        if content:
+            content = self.rewrite_content(content)
+        
         if content:
             if self.story and not skip_save:
                 self.story.original_text_z = zlib.compress(smart_str(content))
                 try:
                     self.story.save()
-                except NotUniqueError:
+                except NotUniqueError, e:
+                    logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: %s" % (e)), warn_color=False)
                     pass
             logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
                 len(content),
@@ -109,6 +114,15 @@ class TextImporter:
 
         return content
 
+    def rewrite_content(self, content):
+        soup = BeautifulSoup(content)
+        
+        for noscript in soup.findAll('noscript'):
+            if len(noscript.contents) > 0:
+                noscript.replaceWith(noscript.contents[0])
+        
+        return unicode(soup)
+    
     @timelimit(10)
     def fetch_request(self):
         url = self.story_url

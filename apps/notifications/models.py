@@ -5,6 +5,7 @@ import mongoengine as mongo
 import boto
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 # from django.utils.html import strip_tags
@@ -17,8 +18,9 @@ from utils import log as logging
 from utils import mongoengine_fields
 from HTMLParser import HTMLParser
 from vendor.apns import APNs, Payload
-from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulSoup, Tag
 import types
+import urlparse
 
 class NotificationFrequency(enum.Enum):
     immediately = 1
@@ -255,9 +257,11 @@ class MUserFeedNotification(mongo.Document):
     def send_email(self, story, usersub):
         if not self.is_email: return
         feed = usersub.feed
+        story_content = self.sanitize_story(story['story_content'])
         
         params  = {
             "story": story,
+            "story_content": story_content,
             "feed": feed,
             "feed_title": usersub.user_title or feed.feed_title,
             "favicon_border": feed.favicon_color,
@@ -278,6 +282,31 @@ class MUserFeedNotification(mongo.Document):
             logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], usersub.feed.feed_title[:50]))
+    
+    def sanitize_story(self, story_content):
+        soup = BeautifulSoup(story_content.strip())
+        fqdn = Site.objects.get_current().domain
+        
+        for iframe in soup("iframe"):
+            url = dict(iframe.attrs).get('src', "")
+            youtube_id = self.extract_youtube_id(url)
+            if youtube_id:
+                a = Tag(soup, 'a', [('href', url)])
+                img = Tag(soup, 'img', [('style', "display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id)), ('src', 'http://img.youtube.com/vi/%s/0.jpg' % youtube_id)])
+                a.insert(0, img)
+                iframe.replaceWith(a)
+        
+        return unicode(soup)
+    
+    def extract_youtube_id(self, url):
+        youtube_id = None
+
+        if 'youtube.com' in url:
+            youtube_parts = urlparse.urlparse(url)
+            if '/embed/' in youtube_parts.path:
+                youtube_id = youtube_parts.path.replace('/embed/', '')
+                
+        return youtube_id
         
     def story_score(self, story, classifiers):
         score = compute_story_score(story, classifier_titles=classifiers.get('titles', []), 

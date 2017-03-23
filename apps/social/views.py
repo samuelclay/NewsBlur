@@ -568,11 +568,25 @@ def mark_story_as_shared(request):
             'message': 'You cannot share newsletters. Somebody could unsubscribe you!'
         })
         
-    if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, feed_id, story.story_hash):
+    if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, story.story_hash, feed_id=feed_id):
         return json.json_response(request, {
             'code': -1, 
             'message': 'Only premium users can share multiple stories per day from the same site.'
         })
+    
+    quota = 100
+    if not request.user.profile.is_premium:
+        quota = 3
+    if MSharedStory.feed_quota(request.user.pk, story.story_hash, quota=quota):
+        logging.user(request, "~FRNOT ~FCSharing ~FM%s~FC, over quota: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
+        message = 'You can only share up to %s stories per day.' % quota
+        if not request.user.profile.is_premium:
+            message = 'You can only share up to %s stories per day as a free user. Upgrade to premium to share more.' % quota
+        return json.json_response(request, {
+            'code': -1, 
+            'message': message
+        })
+    
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
                                                story_hash=story['story_hash'])\

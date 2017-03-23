@@ -566,7 +566,8 @@ def config_pgbouncer():
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
-def kill_pgbouncer(bounce=True):
+@parallel
+def kill_pgbouncer(start=True):
     # sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
         sudo('/etc/init.d/pgbouncer stop')
@@ -575,7 +576,7 @@ def kill_pgbouncer(bounce=True):
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer')
         run('sleep 2')
-    if bounce:
+    if start and start != "False":
         run('sudo /etc/init.d/pgbouncer start', pty=False)
 
 def config_monit_task():
@@ -975,13 +976,21 @@ def setup_postgres(standby=False):
     sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
     put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
     put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
+    sudo('mkdir /var/lib/postgresql/9.4/archive')
+    sudo('chown -R postgres.postgres /etc/postgresql/9.4/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/archive')
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
     sudo('sysctl -p')
+    sudo('rm /lib/systemd/system/postgresql.service') # Ubuntu 16 has wrong default
+    sudo('systemctl daemon-reload')
+    sudo('systemctl enable postgresql')
 
     if standby:
         put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/recovery.conf', use_sudo=True)
+        sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/recovery.conf')
 
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
@@ -1000,18 +1009,30 @@ def copy_postgres_to_standby(master='db01'):
     # new: sudo su postgres
     # new: ssh-keygen
     # Copy old:/var/lib/postgresql/.ssh/id_dsa.pub to new:/var/lib/postgresql/.ssh/authorized_keys and vice-versa
+    #   old: cat /var/lib/postgresql/.ssh/id_rsa.pub
+    #   new: echo "" > /var/lib/postgresql/.ssh/authorized_keys
     # new: ssh old
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
-    # new: sudo su postgres -c "rsync -a --stats --progress postgres@db01:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"
+    sudo('mkdir /var/lib/postgresql/9.4/archive')
+    sudo('chown postgres.postgres /var/lib/postgresql/9.4/archive')
+    sudo('su postgres -c "rsync -a --stats --progress postgres@db_pgsql:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"')
+    put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
+    sudo('systemctl start postgresql')
     # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
     
     # Don't forget to add 'setup_postgres_backups' to new
     
-    put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
+
+def disable_thp():
+    put('config/disable_transparent_hugepages.sh', '/etc/init.d/disable-transparent-hugepages', use_sudo=True)
+    sudo('chmod 755 /etc/init.d/disable-transparent-hugepages')
+    sudo('update-rc.d disable-transparent-hugepages defaults')
     
 def setup_mongo():
     MONGODB_VERSION = "3.2.10"
     pull()
+    disable_thp()
+    sudo('systemctl enable rc-local.service') # Enable rc.local
     sudo('echo "#!/bin/sh -e\n\nif test -f /sys/kernel/mm/transparent_hugepage/enabled; then\n\
        echo never > /sys/kernel/mm/transparent_hugepage/enabled\n\
     fi\n\
@@ -1094,6 +1115,8 @@ def setup_redis(slave=False):
     # sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
     # run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
     # sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
+    disable_thp()
+    sudo('systemctl enable rc-local.service') # Enable rc.local
     sudo('echo "#!/bin/sh -e\n\nif test -f /sys/kernel/mm/transparent_hugepage/enabled; then\n\
        echo never > /sys/kernel/mm/transparent_hugepage/enabled\n\
     fi\n\
@@ -1221,17 +1244,19 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "1.7.1"
+    ES_VERSION = "2.4.4"
+    sudo('add-apt-repository -y ppa:openjdk-r/ppa')
     sudo('apt-get update')
     sudo('apt-get install openjdk-7-jre -y')
 
     with cd(env.VENDOR_PATH):
         run('mkdir -p elasticsearch-%s' % ES_VERSION)
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
-        run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
+        # run('wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-%s.deb' % ES_VERSION) # For v5+
+        run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION) # For v1-v2
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
         if not files.exists('/usr/share/elasticsearch/plugins/head'):
-            sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head')
+            sudo('/usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head')
 
 def setup_db_search():
     put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
