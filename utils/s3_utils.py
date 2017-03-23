@@ -16,6 +16,18 @@ ACCESS_KEY  = settings.S3_ACCESS_KEY
 SECRET      = settings.S3_SECRET
 BUCKET_NAME = settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
 
+import ssl
+
+_old_match_hostname = ssl.match_hostname
+
+def _new_match_hostname(cert, hostname):
+   if hostname.endswith('.s3.amazonaws.com'):
+      pos = hostname.find('.s3.amazonaws.com')
+      hostname = hostname[:pos].replace('.', '') + hostname[pos:]
+   return _old_match_hostname(cert, hostname)
+
+ssl.match_hostname = _new_match_hostname
+
 def save_file_in_s3(filename):
     conn   = S3Connection(ACCESS_KEY, SECRET)
     bucket = conn.get_bucket(BUCKET_NAME)
