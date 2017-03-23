@@ -2598,7 +2598,7 @@ class MStory(mongo.Document):
         self.save()
     
     def extract_image_urls(self, force=False, text=False):
-        if self.image_urls and not force:
+        if self.image_urls and not force and not text:
             return self.image_urls
         
         story_content = None
@@ -2641,14 +2641,14 @@ class MStory(mongo.Document):
                 return self.extract_image_urls(force=force, text=True)
             else:
                 return
-            
+        
         self.image_urls = image_urls
         return self.image_urls
 
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         
-        if not original_text_z or force:
+        if not original_text_z or force or True:
             feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
