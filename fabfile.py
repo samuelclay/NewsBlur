@@ -567,7 +567,7 @@ def config_pgbouncer():
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
 @parallel
-def kill_pgbouncer(bounce=True):
+def kill_pgbouncer(start=True):
     # sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
         sudo('/etc/init.d/pgbouncer stop')
@@ -576,7 +576,7 @@ def kill_pgbouncer(bounce=True):
     with settings(warn_only=True):
         sudo('pkill -9 pgbouncer')
         run('sleep 2')
-    if bounce:
+    if start and start != "False":
         run('sudo /etc/init.d/pgbouncer start', pty=False)
 
 def config_monit_task():
