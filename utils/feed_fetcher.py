@@ -337,8 +337,10 @@ class FetchFeed:
                 return
             for sub in usersubs:
                 social_services = MSocialServices.get_user(sub.user_id)
+                if not social_services.twitter_uid: continue
                 try:
                     twitter_api = social_services.twitter_api()
+                    break
                 except tweepy.error.TweepError, e:
                     logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
                                   (self.feed.title[:30], address, e))
