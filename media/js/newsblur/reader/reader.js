@@ -1417,7 +1417,7 @@
                         feed.set("selected_title_view", selected_title_view, {silent: true});
                     }
                 }
-                if (options.feed) {
+                if (options.feed && options.feed.set) {
                     options.feed.set('selected', true, options);
                 } else {
                     feed.set('selected', true, options);
