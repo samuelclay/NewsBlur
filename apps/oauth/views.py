@@ -636,9 +636,17 @@ def api_share_new_story(request):
     logging.user(request.user, "~FBFinding feed (api_share_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
     story_hash = MStory.guid_hash_unsaved(story_url)
-    if not user.profile.is_premium and MSharedStory.feed_quota(user.pk, original_feed and original_feed.pk or 0, story_hash):
+    feed_id = (original_feed and original_feed.pk or 0)
+    if not user.profile.is_premium and MSharedStory.feed_quota(user.pk, story_hash, feed_id=feed_id):
         return {"errors": [{
             'message': 'Only premium users can share multiple stories per day from the same site.'
+        }]}
+    
+    quota = 3
+    if MSharedStory.feed_quota(user.pk, story_hash, quota=quota):
+        logging.user(request, "~BM~FRNOT ~FYSharing story from ~SB~FCIFTTT~FY, over quota: ~SB%s: %s" % (story_url, comments))        
+        return {"errors": [{
+            'message': 'You can only share %s stories per day.' % quota
         }]}
         
     if not story_content or not story_title:

@@ -2597,24 +2597,35 @@ class MStory(mongo.Document):
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
     
-    def extract_image_urls(self, force=False):
-        if self.image_urls and not force:
+    def extract_image_urls(self, force=False, text=False):
+        if self.image_urls and not force and not text:
             return self.image_urls
         
-        story_content = self.story_content
-        if not story_content and self.story_content_z:
-            story_content = zlib.decompress(self.story_content_z)
+        story_content = None
+        if not text:
+            story_content = self.story_content
+            if not story_content and self.story_content_z:
+                story_content = zlib.decompress(self.story_content_z)
+        elif text:
+            if self.original_text_z:
+                story_content = zlib.decompress(self.original_text_z)
         if not story_content:
             return
         
         try:
             soup = BeautifulSoup(story_content)
         except ValueError:
-            return
-        
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+
         images = soup.findAll('img')
         if not images:
-            return
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
         
         image_urls = []
         for image in images:
@@ -2626,8 +2637,11 @@ class MStory(mongo.Document):
             image_urls.append(image_url)
 
         if not image_urls:
-            return
-            
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+        
         self.image_urls = image_urls
         return self.image_urls
 
@@ -2638,6 +2652,8 @@ class MStory(mongo.Document):
             feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
+            self.extract_image_urls(force=force, text=True)
+            self.save()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
             original_text = zlib.decompress(original_text_z)
@@ -2921,7 +2937,75 @@ class MStarredStoryCounts(mongo.Document):
         if story_count and story_count.count <= 0:
             story_count.delete()
 
+class MSavedSearch(mongo.Document):
+    user_id = mongo.IntField()
+    query = mongo.StringField(max_length=1024)
+    feed_id = mongo.StringField()
+    slug = mongo.StringField(max_length=128)
 
+    meta = {
+        'collection': 'saved_searches',
+        'indexes': ['user_id',
+                    {'fields': ['user_id', 'feed_id', 'query'], 
+                     'unique': True,
+                     'types': False, }],
+        'ordering': ['query'],
+        'allow_inheritance': False,
+    }
+
+    @property
+    def rss_url(self, secret_token=None):
+        if not secret_token:
+            user = User.objects.select_related('profile').get(pk=self.user_id)
+            secret_token = user.profile.secret_token
+        
+        slug = self.slug if self.slug else ""
+        return "%s/reader/saved_search/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
+                                                   secret_token, slug)
+    
+    @classmethod
+    def user_searches(cls, user_id):
+        searches = cls.objects.filter(user_id=user_id)
+        searches = sorted([{'query': s.query, 
+                            'feed_address': s.rss_url, 
+                            'feed_id': s.feed_id,
+                           } for s in searches],
+                          key=lambda x: (x.get('query', '') or '').lower())
+        return searches
+    
+    @classmethod
+    def save_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query, 
+                      slug=slugify(query))
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FRSaved search already exists: ~SB%s" % query)
+        except cls.DoesNotExist:
+            logging.user(user, "~FCCreating a saved search: ~SB%s~SN/~SB%s" % (feed_id, query))
+            saved_search = cls.objects.create(**params)
+        
+        return saved_search
+        
+    @classmethod
+    def delete_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query)
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FCDeleting saved search: ~SB%s" % query)
+            saved_search.delete()
+        except cls.DoesNotExist:
+            logging.user(user, "~FRCan't delete saved search, missing: ~SB%s~SN/~SB%s" % (feed_id, query))
+        except cls.MultipleObjectsReturned:
+            logging.user(user, "~FRFound multiple saved searches, deleting: ~SB%s~SN/~SB%s" % (feed_id, query))
+            cls.objects(**params).delete()
+        
+    
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()

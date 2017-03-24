@@ -35,7 +35,7 @@ from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_f
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
-from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
+from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.notifications.models import MUserFeedNotification
 from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics
@@ -279,6 +279,8 @@ def load_feeds(request):
     if not starred_count and len(starred_counts):
         starred_count = MStarredStory.objects(user_id=user.pk).count()
     
+    saved_searches = MSavedSearch.user_searches(user.pk)
+    
     social_params = {
         'user_id': user.pk,
         'include_favicon': include_favicons,
@@ -306,6 +308,7 @@ def load_feeds(request):
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
         'starred_counts': starred_counts,
+        'saved_searches': saved_searches,
         'categories': categories
     }
     return data
@@ -2480,3 +2483,31 @@ def load_tutorial(request):
         return {
             'newsblur_feed': newsblur_feed.canonical()
         }
+
+@required_params('query', 'feed_id')
+@json.json_view
+def save_search(request):
+    feed_id = request.POST['feed_id']
+    query = request.POST['query']
+    
+    MSavedSearch.save_search(user_id=request.user.pk, feed_id=feed_id, query=query)
+    
+    saved_searches = MSavedSearch.user_searches(request.user.pk)
+    
+    return {
+        'saved_searches': saved_searches,
+    }
+
+@required_params('query', 'feed_id')
+@json.json_view
+def delete_search(request):
+    feed_id = request.POST['feed_id']
+    query = request.POST['query']
+
+    MSavedSearch.delete_search(user_id=request.user.pk, feed_id=feed_id, query=query)
+
+    saved_searches = MSavedSearch.user_searches(request.user.pk)
+
+    return {
+        'saved_searches': saved_searches,
+    }
