@@ -413,31 +413,24 @@ static UIFont *userLabelFont;
 }
 
 -(void)fetchFeedList:(BOOL)showLoader {
-    NSURL *urlFeedList;
+    NSString *urlFeedList;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
     
     if (self.inPullToRefresh_) {
-        urlFeedList = [NSURL URLWithString:
-                      [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
-                      self.appDelegate.url]];
+        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
+                      self.appDelegate.url];
     } else {
-        urlFeedList = [NSURL URLWithString:
-                       [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
-                        self.appDelegate.url]];
+        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
+                        self.appDelegate.url];
     }
     
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
-    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setDidFinishSelector:@selector(finishLoadingFeedList:)];
-    [request setDidFailSelector:@selector(finishedWithError:)];
-    [request setTimeOutSeconds:15];
-    [request startAsynchronous];
+    [appDelegate.networkManager GET:urlFeedList parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishLoadingFeedList:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self finishedWithError:error statusCode:httpResponse.statusCode];
+    }];
 
     self.lastUpdate = [NSDate date];
     if (showLoader) {
@@ -446,32 +439,14 @@ static UIFont *userLabelFont;
     [self showRefreshNotifier];
 }
 
-- (void)finishedWithError:(ASIHTTPRequest *)request {    
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    
-    // User clicking on another link before the page loads is OK.
-    [self informError:[request error]];
-    [self finishRefresh];
-    
-    self.isOffline = YES;
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController refreshStories];
-    }
-
-    [self showOfflineNotifier];
-    [self loadNotificationStory];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
-}
-
-- (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] == 403) {
+- (void)finishedWithError:(NSError *)error statusCode:(NSInteger)statusCode {
+    if (statusCode == 403) {
         NSLog(@"Showing login");
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] >= 400) {
-        if ([request responseStatusCode] == 429) {
+    } else if (statusCode >= 400) {
+        if (statusCode == 429) {
             [self informError:@"Slow down. You're rate-limited."];
-        } else if ([request responseStatusCode] == 503) {
+        } else if (statusCode == 503) {
             [self informError:@"In maintenance mode"];
         } else {
             [self informError:@"The server barfed!"];
@@ -485,19 +460,30 @@ static UIFont *userLabelFont;
         }
         return;
     }
+
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     
+    // User clicking on another link before the page loads is OK.
+    [self informError:error];
+    [self finishRefresh];
+    
+    self.isOffline = YES;
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController refreshStories];
+    }
+
+    [self showOfflineNotifier];
+    [self loadNotificationStory];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
+}
+
+- (void)finishLoadingFeedList:(NSDictionary *)results {
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
     appDelegate.unreadStoryHashes = [NSMutableDictionary dictionary];
 
     self.isOffline = NO;
-    NSString *responseString = [request responseString];   
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
 
