@@ -163,6 +163,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
+        // this is going to cause us to lose access to any previous cursor and the next one might be
+        // stale, so wipe the listview. the adapter will be recreated in onLoadFinished as usual
+        if (adapter != null) adapter.notifyDataSetInvalidated();
+        if (itemList != null) itemList.setAdapter(null);
+        adapter = null;
         cursorSeenYet = false;
         FeedUtils.dbHelper.clearStorySession();
     }

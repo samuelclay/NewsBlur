@@ -67,6 +67,7 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
         synchronized (this) {
             if (cancellationSignal != null) {
                 cancellationSignal.cancel();
+                cancellationSignal = null;
             }
         }
     }
@@ -121,12 +122,11 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-        //clearCursor();
+        clearCursor();
     }
 
     private void clearCursor() {
         if (cursor != null && !cursor.isClosed()) {
-            com.newsblur.util.Log.d(this.getClass().getName(), "cleaning cursor");
             cursor.close();
         }
         cursor = null;
