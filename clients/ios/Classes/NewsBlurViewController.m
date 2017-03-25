@@ -1716,13 +1716,12 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)loadFavicons {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
-    
-    [request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self saveAndDrawFavicons:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
 - (void)loadAvatars {
@@ -1748,18 +1747,9 @@ heightForHeaderInSection:(NSInteger)section {
 
 
 
-- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
-    __block NSString *responseString = [request responseString];
-    
+- (void)saveAndDrawFavicons:(NSDictionary *)results {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
-        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
-        NSError *error;
-        NSDictionary *results = [NSJSONSerialization
-                                 JSONObjectWithData:responseData
-                                 options:kNilOptions
-                                 error:&error];
-        
         for (id feed_id in results) {
 //            NSMutableDictionary *feed = [[appDelegate.dictFeeds objectForKey:feed_id] mutableCopy]; 
 //            [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
@@ -1779,11 +1769,9 @@ heightForHeaderInSection:(NSInteger)section {
             [self loadAvatars];
         });
     });
-    
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+- (void)requestFailed:(NSError *)error {
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
 }
@@ -1816,26 +1804,26 @@ heightForHeaderInSection:(NSInteger)section {
         urlString = [NSString stringWithFormat:@"%@/reader/refresh_feeds",
                      self.appDelegate.url];
     }
-    NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
     if (!feedId) {
         [self.appDelegate cancelOfflineQueue];
     }
     
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
-    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    if (feedId) {
-        [request setUserInfo:@{@"feedId": [NSString stringWithFormat:@"%@", feedId]}];
-    }
-    [request setDidFinishSelector:@selector(finishRefreshingFeedList:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishRefreshingFeedList:responseObject feedId:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+
+        if ([httpResponse statusCode] == 403) {
+            NSLog(@"Showing login after refresh");
+            return [appDelegate showLogin];
+        } else if ([httpResponse statusCode] == 503) {
+            return [self informError:@"In maintenance mode"];
+        } else if ([httpResponse statusCode] >= 500) {
+            return [self informError:@"The server barfed!"];
+        }
+        [self requestFailed:error];
+    }];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!feedId) {
@@ -1845,26 +1833,9 @@ heightForHeaderInSection:(NSInteger)section {
     
 }
 
-- (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] == 403) {
-        NSLog(@"Showing login after refresh");
-        return [appDelegate showLogin];
-    } else if ([request responseStatusCode] == 503) {
-        return [self informError:@"In maintenance mode"];
-    } else if ([request responseStatusCode] >= 500) {
-        return [self informError:@"The server barfed!"];
-    }
-    
+- (void)finishRefreshingFeedList:(NSDictionary *)results feedId:(NSString *)feedId {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        NSString *responseString = [request responseString];
-        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-        NSError *error;
-        NSDictionary *results = [NSJSONSerialization
-                                 JSONObjectWithData:responseData
-                                 options:kNilOptions 
-                                 error:&error];
-        
         NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
         NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
         for (id feed in newFeedCounts) {
@@ -1923,7 +1894,7 @@ heightForHeaderInSection:(NSInteger)section {
             [appDelegate.folderCountCache removeAllObjects];
             [self.feedTitlesTable reloadData];
             [self refreshHeaderCounts];
-            if (![request.userInfo objectForKey:@"feedId"]) {
+            if (!feedId) {
                 [self.appDelegate startOfflineQueue];
             }
             [self loadFavicons];

@@ -423,8 +423,7 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
     
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedIdStr forKey:@"story_feed_id"]; 
     [params setObject:storyIdStr forKey:@"story_id"];
     [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
@@ -434,27 +433,18 @@
         [params setObject:activeReplyId forKey:@"reply_id"]; 
     }
     
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddReply:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishAddReply:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+
     [appDelegate hideShareView:NO];
 }
 
-- (void)finishAddReply:(ASIHTTPRequest *)request {
+- (void)finishAddReply:(NSDictionary *)results {
     NSLog(@"Successfully added.");
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
 
-    if (request.responseStatusCode != 200) {
-        return [self requestFailed:request];
-    }
-    
     // add the comment into the activeStory dictionary
     NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
     [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
@@ -466,7 +456,7 @@
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
     if (error) {
-        errorMessage = error.localizedDescription
+        errorMessage = error.localizedDescription;
     } else {
         errorMessage = @"The server barfed!";
     }

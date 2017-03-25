@@ -2272,14 +2272,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
     [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
-    [request setUserInfo:@{@"storyId": [self.activeStory objectForKey:@"id"]}];
-    [request setDidFinishSelector:@selector(finishFetchTextView:)];
-    [request setDidFailSelector:@selector(failedFetchText:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    NSString *storyId = [self.activeStory objectForKey:@"id"];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishFetchTextView:responseObject storyId:storyId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedFetchText:error];
+    }];
 }
 
-- (void)failedFetchText:(ASIHTTPRequest *)request {
+- (void)failedFetchText:(NSError *)error {
     [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
@@ -2289,22 +2290,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.storyPageControl setTextButton:self];
 }
 
-- (void)finishFetchTextView:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
-    
+- (void)finishFetchTextView:(NSDictionary *)results storyId:(NSString *)storyId {
     if ([[results objectForKey:@"failed"] boolValue]) {
-        [self failedFetchText:request];
+        [self failedFetchText:nil];
         return;
     }
     
-    if (![[request.userInfo objectForKey:@"storyId"]
-          isEqualToString:[self.activeStory objectForKey:@"id"]]) {
+    if (![storyId isEqualToString:[self.activeStory objectForKey:@"id"]]) {
         [self.appDelegate.storyPageControl hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;

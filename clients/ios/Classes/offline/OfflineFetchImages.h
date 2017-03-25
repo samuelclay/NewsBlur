@@ -17,8 +17,5 @@
 
 - (BOOL)fetchImages;
 - (NSArray *)uncachedImageUrls;
-- (void)storeCachedImage:(ASIHTTPRequest *)request;
-- (void)storeFailedImage:(ASIHTTPRequest *)request;
-- (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
 
 @end
