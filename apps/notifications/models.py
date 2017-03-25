@@ -295,6 +295,8 @@ class MUserFeedNotification(mongo.Document):
                 img = Tag(soup, 'img', [('style', "display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id)), ('src', 'http://img.youtube.com/vi/%s/0.jpg' % youtube_id)])
                 a.insert(0, img)
                 iframe.replaceWith(a)
+            else:
+                iframe.extract()
         
         return unicode(soup)
     
