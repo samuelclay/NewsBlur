@@ -296,7 +296,7 @@ class PageImporter(object):
             return True
     
     def save_page_s3(self, html):
-        k = Key(settings.S3_PAGES_BUCKET)
+        k = Key(settings.S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME))
         k.key = self.feed.s3_pages_key
         k.set_metadata('Content-Encoding', 'gzip')
         k.set_metadata('Content-Type', 'text/html')
@@ -318,7 +318,7 @@ class PageImporter(object):
         return True
     
     def delete_page_s3(self):
-        k = Key(settings.S3_PAGES_BUCKET)
+        k = Key(settings.S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME))
         k.key = self.feed.s3_pages_key
         k.delete()
         

@@ -97,7 +97,7 @@ class IconImporter(object):
     def save_to_s3(self, image_str):
         expires = datetime.datetime.now() + datetime.timedelta(days=60)
         expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        k = Key(settings.S3_ICONS_BUCKET)
+        k = Key(settings.S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME))
         k.key = self.feed.s3_icons_key
         k.set_metadata('Content-Type', 'image/png')
         k.set_metadata('Expires', expires)
@@ -195,7 +195,7 @@ class IconImporter(object):
         if self.page_data:
             content = self.page_data
         elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
-            key = settings.S3_PAGES_BUCKET.get_key(self.feed.s3_pages_key)
+            key = settings.S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME).get_key(self.feed.s3_pages_key)
             compressed_content = key.get_contents_as_string()
             stream = StringIO(compressed_content)
             gz = gzip.GzipFile(fileobj=stream)

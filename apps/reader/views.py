@@ -801,7 +801,7 @@ def load_feed_page(request, feed_id):
         
         if settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
             if settings.PROXY_S3_PAGES:
-                key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
+                key = settings.S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME).get_key(feed.s3_pages_key)
                 if key:
                     compressed_data = key.get_contents_as_string()
                     response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
