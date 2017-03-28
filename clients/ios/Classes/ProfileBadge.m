@@ -324,31 +324,22 @@
                                self.appDelegate.url];
     }
     
-    NSURL *url = [NSURL URLWithString:urlString];
-    
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setDelegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[self.activeProfile objectForKey:@"user_id"] forKey:@"user_id"];
-    if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
-        [request setDidFinishSelector:@selector(finishFollowing:)];        
-    } else {
-        [request setDidFinishSelector:@selector(finishUnfollowing:)];
-    }
-    [request setDidFailSelector:@selector(requestFailed:)];
     
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
+            [self finishFollowing:responseObject];
+        } else {
+            [self finishUnfollowing:responseObject];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)finishFollowing:(ASIHTTPRequest *)request {
-
+- (void)finishFollowing:(NSDictionary *)results {
     [self.activityIndicator stopAnimating];
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
 
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
@@ -372,15 +363,9 @@
 }
 
 
-- (void)finishUnfollowing:(ASIHTTPRequest *)request {
+- (void)finishUnfollowing:(NSDictionary *)results {
     [self.activityIndicator stopAnimating];
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
+
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");
@@ -404,9 +389,8 @@
     [self refreshWithProfile:newProfile showStats:self.shouldShowStats withWidth:0];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
+- (void)requestFailed:(NSError *)error {
     [self.activityIndicator stopAnimating];
-    NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
 }

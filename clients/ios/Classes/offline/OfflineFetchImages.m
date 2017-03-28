@@ -70,17 +70,15 @@
     
     NSMutableArray *downloadRequests = [NSMutableArray array];
     for (NSArray *urlArray in urls) {
-        NSURL *url = [NSURL URLWithString:[urlArray objectAtIndex:0]];
+        NSString *urlString = [urlArray objectAtIndex:0];
         NSString *storyHash = [urlArray objectAtIndex:1];
         NSString *storyTimestamp = [urlArray objectAtIndex:2];
         
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setValidatesSecureCertificate:NO];
-        [request setUserInfo:@{@"story_hash": storyHash, @"story_timestamp": storyTimestamp}];
-        [request setDelegate:self];
-        [request setDidFinishSelector:@selector(storeCachedImage:)];
-        [request setDidFailSelector:@selector(storeFailedImage:)];
-        [request setTimeOutSeconds:5];
+        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [self storeCachedImage:responseObject storyHash:storyHash storyTimestamp:storyTimestamp];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [self storeFailedImage:storyHash];
+        }];
         [downloadRequests addObject:request];
     }
     [imageDownloadOperationQueue setQueueDidFinishSelector:@selector(cachedImageQueueFinished:)];
@@ -206,9 +204,7 @@
     });
 }
 
-- (void)storeFailedImage:(ASIHTTPRequest *)request {
-    NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
-    
+- (void)storeFailedImage:(NSString *)storyHash {
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         [db executeUpdate:@"UPDATE cached_images SET "
          "image_cached = 1, failed = 1 WHERE story_hash = ?",
