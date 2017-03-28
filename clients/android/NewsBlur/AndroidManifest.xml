@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
     android:versionCode="135"
-    android:versionName="5.1.0" >
+    android:versionName="5.2.0_b2" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -140,6 +140,8 @@
         </receiver>
 
         <receiver android:name=".service.ServiceScheduleReceiver" />
+        
+        <receiver android:name=".util.DismissalReceiver" android:exported="false" />
 
     </application>
 

@@ -45,11 +45,16 @@ public class NotificationUtils {
                 nm.cancel(story.hashCode());
                 continue;
             }
+            if (FeedUtils.dbHelper.isStoryDismissed(story.storyHash)) {
+                nm.cancel(story.hashCode());
+                continue;
+            }
             if (count < MAX_CONCUR_NOTIFY) {
                 Notification n = buildStoryNotification(story, storiesFocus, context, iconCache);
                 nm.notify(story.hashCode(), n);
             } else {
                 nm.cancel(story.hashCode());
+                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
             }
             count++;
         }
@@ -59,15 +64,19 @@ public class NotificationUtils {
                 nm.cancel(story.hashCode());
                 continue;
             }
+            if (FeedUtils.dbHelper.isStoryDismissed(story.storyHash)) {
+                nm.cancel(story.hashCode());
+                continue;
+            }
             if (count < MAX_CONCUR_NOTIFY) {
                 Notification n = buildStoryNotification(story, storiesUnread, context, iconCache);
                 nm.notify(story.hashCode(), n);
             } else {
                 nm.cancel(story.hashCode());
+                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
             }
             count++;
         }
-        com.newsblur.util.Log.d(NotificationUtils.class.getName(), "now showing notifications: " + count);
     }
 
     private static Notification buildStoryNotification(Story story, Cursor cursor, Context context, FileCache iconCache) {
@@ -84,6 +93,10 @@ public class NotificationUtils {
         // set the requestCode to the story hashcode to prevent the PI re-using the wrong Intent
         PendingIntent pendingIntent = PendingIntent.getActivity(context, story.hashCode(), i, 0);
 
+        Intent dismissIntent = new Intent(context, DismissalReceiver.class);
+        dismissIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), story.hashCode(), dismissIntent, 0);
+
         String feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         StringBuilder title = new StringBuilder();
         title.append(feedTitle).append(": ").append(story.title);
@@ -96,6 +109,7 @@ public class NotificationUtils {
             .setContentText(story.shortContent)
             .setSmallIcon(R.drawable.logo_monochrome)
             .setContentIntent(pendingIntent)
+            .setDeleteIntent(dismissPendingIntent)
             .setAutoCancel(true)
             .setWhen(story.timestamp);
         if (feedIcon != null) {
@@ -112,5 +126,6 @@ public class NotificationUtils {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancelAll();
     }
+
 
 }

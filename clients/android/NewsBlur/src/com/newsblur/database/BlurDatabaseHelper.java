@@ -1254,6 +1254,33 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }
 
+    public void putStoryDismissed(String storyHash) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.NOTIFY_DISMISS_STORY_HASH, storyHash);
+        values.put(DatabaseConstants.NOTIFY_DISMISS_TIME, Calendar.getInstance().getTime().getTime());
+        synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.NOTIFY_DISMISS_TABLE, null, values);}
+    }
+
+    public boolean isStoryDismissed(String storyHash) {
+        String[] selArgs = new String[] {storyHash};
+        String selection = DatabaseConstants.NOTIFY_DISMISS_STORY_HASH + " = ?";
+        Cursor c = dbRO.query(DatabaseConstants.NOTIFY_DISMISS_TABLE, null, selection, selArgs, null, null, null);
+        boolean result = (c.getCount() > 0);
+        closeQuietly(c);
+        return result;
+    }
+
+    public void cleanupDismissals() {
+        Calendar cutoffDate = Calendar.getInstance();
+        cutoffDate.add(Calendar.MONTH, -1);
+        synchronized (RW_MUTEX) {
+            int count = dbRW.delete(DatabaseConstants.NOTIFY_DISMISS_TABLE, 
+                        DatabaseConstants.STORY_TIMESTAMP + " < ?",
+                        new String[]{Long.toString(cutoffDate.getTime().getTime())});
+            com.newsblur.util.Log.d(this.getClass().getName(), "cleaned up dismissals: " + count);
+        }
+    }
+
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {;}
