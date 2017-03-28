@@ -50,8 +50,10 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
                 // being called back.  if the instrumentation is ever removed, do not remove this call.
                 count = c.getCount();
             }
-            long time = System.nanoTime() - startTime;
-            com.newsblur.util.Log.d(this.getClass().getName(), "cursor load: " + (time/1000000L) + "ms to load " + count + " rows");
+            if (AppConstants.VERBOSE_LOG) {
+                long time = System.nanoTime() - startTime;
+                com.newsblur.util.Log.d(this.getClass().getName(), "cursor load: " + (time/1000000L) + "ms to load " + count + " rows");
+            }
             return c;
         } finally {
             synchronized (this) {

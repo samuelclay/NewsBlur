@@ -31,6 +31,10 @@ public class NotificationUtils {
 
     private NotificationUtils() {} // util class - no instances
 
+    /**
+     * @param storiesFocus a cursor of unread, focus stories to notify, ordered newest to oldest
+     * @param storiesUnread a cursor of unread, neutral stories to notify, ordered newest to oldest
+     */
     public static synchronized void notifyStories(Cursor storiesFocus, Cursor storiesUnread, Context context, FileCache iconCache) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -63,6 +67,7 @@ public class NotificationUtils {
             }
             count++;
         }
+        com.newsblur.util.Log.d(NotificationUtils.class.getName(), "now showing notifications: " + count);
     }
 
     private static Notification buildStoryNotification(Story story, Cursor cursor, Context context, FileCache iconCache) {
