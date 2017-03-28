@@ -397,11 +397,19 @@ def setup_user():
     run('echo `cat authorized_keys` >> ~sclay/.ssh/authorized_keys')
     run('rm authorized_keys')
 
-def copy_ssh_keys():
-    put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), "local_keys")
-    run("echo \"\n\" >> ~sclay/.ssh/authorized_keys")
-    run("echo `cat local_keys` >> ~sclay/.ssh/authorized_keys")
-    run("rm local_keys")
+def copy_ssh_keys(username='sclay', private=False):
+    sudo('mkdir -p ~%s/.ssh' % username)
+    
+    put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), 'local.key.pub')
+    sudo('mv local.key.pub ~%s/.ssh/newsblur.key.pub' % username)
+    if private:
+        put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key'), 'local.key')
+        sudo('mv local.key ~%s/.ssh/newsblur.key' % username)
+    
+    sudo("echo \"\n\" >> ~%s/.ssh/authorized_keys" % username)
+    sudo("echo `cat ~%s/.ssh/newsblur.key.pub` >> ~%s/.ssh/authorized_keys" % (username, username))
+    sudo('chown -R %s.%s ~%s/.ssh' % (username, username, username))
+    sudo('chmod 600 ~%s/.ssh/newsblur*' % username)
 
 def setup_repo():
     sudo('mkdir -p /srv')
@@ -1005,17 +1013,13 @@ def copy_postgres_to_standby(master='db01'):
     
     # Make sure you can ssh from master to slave and back with the postgres user account.
     # Need to give postgres accounts keys in authroized_keys.
-    
-    # new: sudo su postgres
-    # new: ssh-keygen
-    # Copy old:/var/lib/postgresql/.ssh/id_dsa.pub to new:/var/lib/postgresql/.ssh/authorized_keys and vice-versa
-    #   old: cat /var/lib/postgresql/.ssh/id_rsa.pub
-    #   new: echo "" > /var/lib/postgresql/.ssh/authorized_keys
+
+    # local: fab host:old copy_ssh_keys:postgres,private=True
     # new: ssh old
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
-    sudo('mkdir /var/lib/postgresql/9.4/archive')
+    sudo('mkdir -p /var/lib/postgresql/9.4/archive')
     sudo('chown postgres.postgres /var/lib/postgresql/9.4/archive')
-    sudo('su postgres -c "rsync -a --stats --progress postgres@db_pgsql:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"')
+    sudo('su postgres -c "rsync -Pav -e \'ssh -i ~postgres/.ssh/newsblur.key\' --stats --progress postgres@%s:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"' % master)
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     sudo('systemctl start postgresql')
     # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
