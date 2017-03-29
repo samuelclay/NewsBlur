@@ -141,7 +141,9 @@
 
         <receiver android:name=".service.ServiceScheduleReceiver" />
         
-        <receiver android:name=".util.DismissalReceiver" android:exported="false" />
+        <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
+        <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
+        <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
 
     </application>
 
