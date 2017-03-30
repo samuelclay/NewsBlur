@@ -86,11 +86,13 @@ public class Log {
          .append(lvl)
          .append(tag)
          .append(" ");
+        s.append(m);
         if (t != null) {
+            s.append(" ");
             s.append(t.getMessage());
             s.append(" ");
+            s.append(android.util.Log.getStackTraceString(t));
         }
-        s.append(m);
         q.offer(s.toString());
         Runnable r = new Runnable() {
             public void run() {
