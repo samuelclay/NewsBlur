@@ -401,15 +401,15 @@ def copy_ssh_keys(username='sclay', private=False):
     sudo('mkdir -p ~%s/.ssh' % username)
     
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), 'local.key.pub')
-    sudo('mv local.key.pub ~%s/.ssh/newsblur.key.pub' % username)
+    sudo('mv local.key.pub ~%s/.ssh/id_rsa.pub' % username)
     if private:
         put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key'), 'local.key')
-        sudo('mv local.key ~%s/.ssh/newsblur.key' % username)
+        sudo('mv local.key ~%s/.ssh/id_rsa' % username)
     
     sudo("echo \"\n\" >> ~%s/.ssh/authorized_keys" % username)
-    sudo("echo `cat ~%s/.ssh/newsblur.key.pub` >> ~%s/.ssh/authorized_keys" % (username, username))
+    sudo("echo `cat ~%s/.ssh/id_rsa.pub` >> ~%s/.ssh/authorized_keys" % (username, username))
     sudo('chown -R %s.%s ~%s/.ssh' % (username, username, username))
-    sudo('chmod 600 ~%s/.ssh/newsblur*' % username)
+    sudo('chmod 600 ~%s/.ssh/id_rsa*' % username)
 
 def setup_repo():
     sudo('mkdir -p /srv')
@@ -1019,7 +1019,8 @@ def copy_postgres_to_standby(master='db01'):
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
     sudo('mkdir -p /var/lib/postgresql/9.4/archive')
     sudo('chown postgres.postgres /var/lib/postgresql/9.4/archive')
-    sudo('su postgres -c "rsync -Pav -e \'ssh -i ~postgres/.ssh/newsblur.key\' --stats --progress postgres@%s:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"' % master)
+    with settings(warn_only=True):
+        sudo('su postgres -c "rsync -Pav -e \'ssh -i ~postgres/.ssh/newsblur.key\' --stats --progress postgres@%s:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"' % master)
     put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
     sudo('systemctl start postgresql')
     # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
