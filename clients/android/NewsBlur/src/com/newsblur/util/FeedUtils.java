@@ -174,21 +174,15 @@ public class FeedUtils {
      * the app, such as from a notifiation handler.  You must use setStoryReadState(Story, Context, boolean)
      * when calling from within the UI.
      */
-    public static void setStoryReadStateExternal(final String storyHash, final Context context, final boolean read) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                ReadingAction ra = (read ? ReadingAction.markStoryRead(storyHash) : ReadingAction.markStoryUnread(storyHash));
-                dbHelper.enqueueAction(ra);
+    public static void setStoryReadStateExternal(String storyHash, Context context, boolean read) {
+        ReadingAction ra = (read ? ReadingAction.markStoryRead(storyHash) : ReadingAction.markStoryUnread(storyHash));
+        dbHelper.enqueueAction(ra);
 
-                String feedId = inferFeedId(storyHash);
-                FeedSet impactedFeed = FeedSet.singleFeed(feedId);
-                NBSyncService.addRecountCandidates(impactedFeed);
+        String feedId = inferFeedId(storyHash);
+        FeedSet impactedFeed = FeedSet.singleFeed(feedId);
+        NBSyncService.addRecountCandidates(impactedFeed);
 
-                triggerSync(context);
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        triggerSync(context);
     }
 
     /**

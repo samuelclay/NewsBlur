@@ -139,5 +139,10 @@ public class NotificationUtils {
         nm.cancelAll();
     }
 
+    public static void cancel(Context context, int nid) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancel(nid);
+    }
+
 
 }
