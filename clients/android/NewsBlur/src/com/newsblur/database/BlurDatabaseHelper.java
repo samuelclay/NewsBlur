@@ -1275,7 +1275,7 @@ public class BlurDatabaseHelper {
         cutoffDate.add(Calendar.MONTH, -1);
         synchronized (RW_MUTEX) {
             int count = dbRW.delete(DatabaseConstants.NOTIFY_DISMISS_TABLE, 
-                        DatabaseConstants.STORY_TIMESTAMP + " < ?",
+                        DatabaseConstants.NOTIFY_DISMISS_TIME + " < ?",
                         new String[]{Long.toString(cutoffDate.getTime().getTime())});
             com.newsblur.util.Log.d(this.getClass().getName(), "cleaned up dismissals: " + count);
         }
