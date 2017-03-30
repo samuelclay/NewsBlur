@@ -355,7 +355,7 @@ class Profile(models.Model):
     def cancel_premium(self):
         paypal_cancel = self.cancel_premium_paypal()
         stripe_cancel = self.cancel_premium_stripe()
-        return paypal_cancel or stripe_cancel
+        return stripe_cancel or paypal_cancel
     
     def cancel_premium_paypal(self, second_most_recent_only=False):
         transactions = PayPalIPN.objects.filter(custom=self.user.username,
@@ -408,6 +408,14 @@ class Profile(models.Model):
         
         return True
     
+    @property
+    def latest_paypal_email(self):
+        ipn = PayPalIPN.objects.filter(custom=self.user.username)
+        if not len(ipn):
+            return
+        
+        return ipn[0].payer_email
+        
     @classmethod
     def clear_dead_spammers(self, days=30, confirm=False):
         users = User.objects.filter(date_joined__gte=datetime.datetime.now()-datetime.timedelta(days=days)).order_by('-date_joined')
