@@ -803,6 +803,8 @@ public class NBSyncService extends Service {
     }
 
     void pushNotifications() {
+        if (! PrefsUtils.isEnableNotifications(this)) return;
+
         // don't notify stories until the queue is flushed so they don't churn
         if (unreadsService.StoryHashQueue.size() > 0) return;
         // don't slow down active story loading
