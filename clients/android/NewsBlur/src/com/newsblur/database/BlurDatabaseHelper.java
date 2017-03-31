@@ -987,6 +987,22 @@ public class BlurDatabaseHelper {
         return rawQuery(DatabaseConstants.NOTIFY_UNREAD_STORY_QUERY, null, null);
     }
 
+    public Set<String> getNotifyFeeds() {
+        String q = "SELECT " + DatabaseConstants.FEED_ID + " FROM " + DatabaseConstants.FEED_TABLE +
+                   " WHERE " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "'" +
+                   " OR " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "'";
+        Cursor c = dbRO.rawQuery(q, null);
+        Set<String> feedIds = new HashSet<String>(c.getCount());
+        while (c.moveToNext()) {
+            String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_ID));
+            if (id != null) {
+                feedIds.add(id);
+            }
+        }
+        c.close();
+        return feedIds;
+    }
+
     public Loader<Cursor> getActiveStoriesLoader(final FeedSet fs) {
         final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return new QueryCursorLoader(context) {

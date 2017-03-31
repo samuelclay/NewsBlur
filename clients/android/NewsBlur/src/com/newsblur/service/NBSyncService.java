@@ -180,7 +180,7 @@ public class NBSyncService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, final int startId) {
         // only perform a sync if the app is actually running or background syncs are enabled
-        if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
+        if ((NbActivity.getActiveActivityCount() > 0) || PrefsUtils.isBackgroundNeeded(this)) {
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
             Runnable r = new Runnable() {
@@ -231,7 +231,9 @@ public class NBSyncService extends Service {
             housekeeping();
 
             // check to see if we are on an allowable network only after ensuring we have CPU
-            if (!(PrefsUtils.isBackgroundNetworkAllowed(this) || (NbActivity.getActiveActivityCount() > 0))) {
+            if (!( (NbActivity.getActiveActivityCount() > 0) ||
+                   PrefsUtils.isEnableNotifications(this) || 
+                   PrefsUtils.isBackgroundNetworkAllowed(this) )) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
                 return;
             }

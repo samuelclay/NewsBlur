@@ -10,6 +10,7 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
 
@@ -93,6 +94,15 @@ public class UnreadsService extends SubService {
         com.newsblur.util.Log.i(this.getClass().getName(), "new unreads found:     " + sortationList.size());
         com.newsblur.util.Log.i(this.getClass().getName(), "unreads to retire:     " + oldUnreadHashes.size());
 
+        if (parent.stopSync()) return;
+
+        // any stories that we previously thought to be unread but were not found in the
+        // list, mark them read now
+
+        parent.dbHelper.markStoryHashesRead(oldUnreadHashes);
+
+        if (parent.stopSync()) return;
+
         // now sort the unreads we need to fetch so they are fetched roughly in the order
         // the user is likely to read them.  if the user reads newest first, those come first.
         final boolean sortNewest = (PrefsUtils.getDefaultStoryOrder(parent) == StoryOrder.NEWEST);
@@ -120,24 +130,29 @@ public class UnreadsService extends SubService {
             StoryHashQueue.add(tuple[0]);
         }
 
-        if (parent.stopSync()) return;
-
-        // any stories that we previously thought to be unread but were not found in the
-        // list, mark them read now
-        parent.dbHelper.markStoryHashesRead(oldUnreadHashes);
     }
 
     private void getNewUnreadStories() {
-        int totalCount = StoryHashQueue.size();
+        Set<String> notifyFeeds = parent.dbHelper.getNotifyFeeds();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) return;
-            if(!PrefsUtils.isOfflineEnabled(parent)) return;
+
+            boolean isOfflineEnabled = PrefsUtils.isOfflineEnabled(parent);
+            boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);
+            if (! (isOfflineEnabled || isEnableNotifications)) return;
+
             gotWork();
             startExpensiveCycle();
 
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
+            List<String> hashSkips = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : StoryHashQueue) {
-                hashBatch.add(hash);
+                if( isOfflineEnabled ||
+                   (isEnableNotifications && notifyFeeds.contains(FeedUtils.inferFeedId(hash))) ) {
+                    hashBatch.add(hash);
+                } else {
+                    hashSkips.add(hash);
+                }
                 if (hashBatch.size() >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break batchloop;
             }
             StoriesResponse response = parent.apiManager.getStoriesByHash(hashBatch);
@@ -148,6 +163,9 @@ public class UnreadsService extends SubService {
 
             parent.insertStories(response);
             for (String hash : hashBatch) {
+                StoryHashQueue.remove(hash);
+            } 
+            for (String hash : hashSkips) {
                 StoryHashQueue.remove(hash);
             } 
 
