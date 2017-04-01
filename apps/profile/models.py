@@ -449,7 +449,7 @@ class Profile(models.Model):
         
         if verbose:
             feed = Feed.get_by_id(feed_id)
-            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed.title[:30], feed_id, user_id))
+            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed.log_title[:30], feed_id, user_id))
         
         if feed_id:
             feed_ids = [feed_id]
@@ -511,7 +511,7 @@ class Profile(models.Model):
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
-                          (feed.title[:30], total, active, premium, active_premium))
+                          (feed.log_title[:30], total, active, premium, active_premium))
 
     @classmethod
     def count_all_feed_subscribers_for_user(self, user):
