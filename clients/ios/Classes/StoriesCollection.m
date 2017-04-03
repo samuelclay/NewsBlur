@@ -726,7 +726,8 @@
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsSaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [appDelegate informError:error];
+        [self markStory:params asSaved:NO];
+        [appDelegate failedMarkAsSaved:params];
     }];
 }
 
@@ -743,33 +744,22 @@
     appDelegate.dictFolders = allFolders;
 }
 
-- (void)failedMarkAsSaved:(NSURLResponse *)response {
-    [self markStory:request.userInfo asSaved:NO];
-    
-    [appDelegate failedMarkAsSaved:response];
-}
-
-- (void)syncStoryAsUnsaved:(NSDictionary *)story {    
+- (void)syncStoryAsUnsaved:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[story
-                           objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
+                       objectForKey:@"story_hash"]
+               forKey:@"story_id"];
     [params setObject:[story
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setUserInfo:@{@"story_feed_id":[story
-                                             objectForKey:@"story_feed_id"],
-                           @"story_hash":[story
-                                          objectForKey:@"story_hash"]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
+                       objectForKey:@"story_feed_id"]
+               forKey:@"feed_id"];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAsUnsaved:responseObject withParams:params];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self markStory:params asSaved:YES];
+        [appDelegate failedMarkAsUnsaved:params];
+    }];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)results withParams:(NSDictionary *)params {

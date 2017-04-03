@@ -11,7 +11,6 @@
 #import "NewsBlurViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
-#import "AFHTTPRequestOperation.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
 
@@ -66,31 +65,22 @@
     }
     
     __block NSCondition *lock = [NSCondition new];
-    __weak __typeof(&*self)weakSelf = self;
 
     [lock lock];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?include_hidden=true&page=0&h=%@",
-                                       self.appDelegate.url, [hashes componentsJoinedByString:@"&h="]]];
-    if (request) request = nil;
-
-    request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];
-    [request setResponseSerializer:[AFJSONResponseSerializer serializer]];
-    [request setCompletionBlockWithSuccess:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-        if (!strongSelf) return;
-        [strongSelf storeAllUnreadStories:responseObject withHashes:hashes];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/river_stories?include_hidden=true&page=0&h=%@",
+                           self.appDelegate.url, [hashes componentsJoinedByString:@"&h="]];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    
+    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self storeAllUnreadStories:responseObject withHashes:hashes];
         [lock signal];
-    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed fetch all unreads: %@", error);
         [lock signal];
     }];
-    [request setCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, (unsigned long)NULL)];
-
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [request start];
-    [request waitUntilFinished];
     
-    [request.outputStream close];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
     [lock unlock];

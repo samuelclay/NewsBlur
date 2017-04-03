@@ -29,7 +29,6 @@
 #import "FontSettingsViewController.h"
 #import "FeedChooserViewController.h"
 #import "UserProfileViewController.h"
-#import "AFHTTPRequestOperation.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FirstTimeUserViewController.h"
@@ -424,31 +423,14 @@
     }
     
     NSLog(@" -> APNS token: %@", token);
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/notifications/apns_token/",
-                                       self.url]];
-    ASIFormDataRequest *_request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIFormDataRequest *request = _request;
-    [request setValidatesSecureCertificate:NO];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [params setObject:token
-                   forKey:@"apns_token"];
-    [request setFailedBlock:^(void) {
+    NSString *url = [NSString stringWithFormat:@"%@/notifications/apns_token/", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:token forKey:@"apns_token"];
+    [networkManager POST:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@" -> APNS: %@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to set APNS token");
     }];
-    [request setCompletionBlock:^(void) {
-        NSString *responseString = [request responseString];
-        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
-        NSError *error;
-        NSDictionary *results = [NSJSONSerialization
-                                 JSONObjectWithData:responseData
-                                 options:kNilOptions
-                                 error:&error];
-        NSLog(@" -> APNS: %@/%@", results, error);
-    }];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
-
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -1287,7 +1269,7 @@
         NSLog(@"Logging out...");
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
                           self.url];
-        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self showLogin];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1325,7 +1307,7 @@
 - (void)refreshUserProfile:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_profile",
                            self.url];
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.dictUserProfile = [responseObject objectForKey:@"user_profile"];
         self.dictSocialServices = [responseObject objectForKey:@"services"];
         callback();
@@ -2109,42 +2091,34 @@
 - (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [params setObject:storyHash
-                   forKey:@"story_hash"];
-    [request setCompletionBlock:^{
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:storyHash forKey:@"story_hash"];
+    
+    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Marked as read: %@", storyHash);
         callback();
-    }];
-    [request setFailedBlock:^{
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed marked as read, queueing: %@", storyHash);
         NSMutableDictionary *stories = [NSMutableDictionary dictionary];
         [stories setObject:@[storyHash] forKey:feed];
         [self queueReadStories:stories];
         callback();
     }];
-    [request setDelegate:self];
-    [request startAsynchronous];
 }
 
 - (void)markStoryAsStarred:(NSString *)storyHash withCallback:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hash_as_starred",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [params setObject:storyHash
-                   forKey:@"story_hash"];
-    [request setCompletionBlock:^{
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:storyHash forKey:@"story_hash"];
+    
+    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Marked as starred: %@", storyHash);
         callback();
-    }];
-    [request setFailedBlock:^{
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed marked as starred: %@", storyHash);
         callback();
     }];
-    [request setDelegate:self];
-    [request startAsynchronous];
 }
 
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff {
@@ -2191,18 +2165,6 @@
             [self markFeedReadInCache:[feedsStories allKeys]];
         }
     }
-}
-
-- (void)requestFailedMarkStoryRead:(NSError *)error {
-    //    [self informError:@"Failed to mark story as read"];
-    NSArray *feedIds = [request.userInfo objectForKey:@"feeds"];
-    NSDictionary *stories = [request.userInfo objectForKey:@"stories"];
-    
-    [self markStoriesRead:stories inFeeds:feedIds cutoffTimestamp:0];
-}
-
-- (void)finishMarkAllAsRead:(NSDictionary *)params {
-
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
@@ -2817,6 +2779,22 @@
 #pragma mark -
 #pragma mark Classifiers
 
+- (void)failedClassifierSave:(NSURLSessionDataTask *)task {
+    BaseViewController *view;
+    if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
+        view = self.trainerViewController;
+    } else {
+        view = self.storyPageControl.currentPage;
+    }
+    
+    NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+    if (response.statusCode == 503) {
+        [view informError:@"In maintenance mode"];
+    } else {
+        [view informError:@"The server barfed!"];
+    }
+}
+
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId {
     int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
@@ -2841,23 +2819,19 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIFormDataRequest *_request = request;
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:author
-                   forKey:authorScore >= 1 ? @"like_author" :
-                          authorScore <= -1 ? @"dislike_author" :
-                          @"remove_like_author"];
+               forKey:authorScore >= 1 ? @"like_author" :
+     authorScore <= -1 ? @"dislike_author" :
+     @"remove_like_author"];
     [params setObject:feedId forKey:@"feed_id"];
-    [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
-    }];
-    [request setFailedBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
-    }];
-    [request setDelegate:self];
-    [request startAsynchronous];
     
+    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
 }
@@ -2889,22 +2863,18 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIFormDataRequest *_request = request;
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:tag
-                   forKey:tagScore >= 1 ? @"like_tag" :
-                          tagScore <= -1 ? @"dislike_tag" :
-                          @"remove_like_tag"];
+               forKey:tagScore >= 1 ? @"like_tag" :
+     tagScore <= -1 ? @"dislike_tag" :
+     @"remove_like_tag"];
     [params setObject:feedId forKey:@"feed_id"];
-    [request setCompletionBlock:^{
+    
+    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
     }];
-    [request setFailedBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
-    }];
-    [request setDelegate:self];
-    [request startAsynchronous];
     
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
@@ -2941,23 +2911,19 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIFormDataRequest *_request = request;
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:title
-                   forKey:titleScore >= 1 ? @"like_title" :
-                          titleScore <= -1 ? @"dislike_title" :
-                          @"remove_like_title"];
+               forKey:titleScore >= 1 ? @"like_title" :
+     titleScore <= -1 ? @"dislike_title" :
+     @"remove_like_title"];
     [params setObject:feedId forKey:@"feed_id"];
-    [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
-    }];
-    [request setFailedBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
-    }];
-    [request setDelegate:self];
-    [request startAsynchronous];
     
+    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
 }

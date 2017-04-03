@@ -15,7 +15,6 @@
 #import "UserProfileViewController.h"
 #import "ShareViewController.h"
 #import "StoryPageControl.h"
-#import "AFHTTPRequestOperation.h"
 #import "Base64.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
@@ -1979,10 +1978,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                                @"Copying..." : @"Saving..."];
     
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
-    AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc]
-                                                initWithRequest:urlRequest];
-    [requestOperation setResponseSerializer:[AFImageResponseSerializer serializer]];
-    [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager setResponseSerializer:[AFImageResponseSerializer serializer]];
+    [manager GET:url.absoluteString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         UIImage *image = responseObject;
         if (buttonIndex == actionSheetCopyImageIndex) {
             [UIPasteboard generalPasteboard].image = image;
@@ -1991,11 +1989,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
             [self flashCheckmarkHud:@"saved"];
         }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         [self informError:@"Could not fetch image"];
     }];
-    [requestOperation start];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

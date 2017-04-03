@@ -99,7 +99,7 @@
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
         
-        [appDelegate.manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [self finishLoadActivities:responseObject];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [appDelegate informError:error];

@@ -13,7 +13,6 @@
 @interface OfflineFetchImages : NSOperation
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
-@property (readwrite) ASINetworkQueue *imageDownloadOperationQueue;
 
 - (BOOL)fetchImages;
 - (NSArray *)uncachedImageUrls;

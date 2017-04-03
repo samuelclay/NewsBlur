@@ -10,10 +10,11 @@
 #import "BaseViewController.h"
 #import "THCircularProgressView.h"
 #import "NBNotifier.h"
+#import "StoryDetailViewController.h"
 
 @interface StoryPageControl : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
-    
+    NewsBlurAppDelegate *appDelegate;
     THCircularProgressView *circularProgressView;
     UIButton *buttonPrevious;
     UIButton *buttonNext;

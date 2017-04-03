@@ -30,7 +30,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
+        appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -73,8 +73,6 @@
 #pragma mark Get Interactions
 
 - (void)fetchInteractionsDetail:(int)page {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    
     // if there is no social profile, we are DONE
 //    if ([[appDelegate.dictSocialProfile allKeys] count] == 0) {
 //        self.pageFinished = YES;
@@ -103,11 +101,11 @@
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
 
-        appDelegate.manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [self finishLoadInteractions:responseObject];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [appDelegate informError:error];
-        }
+        }];
     }
 }
 

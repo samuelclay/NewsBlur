@@ -23,7 +23,6 @@
 @synthesize activitiesArray;
 @synthesize activitiesUsername;
 @synthesize userProfile;
-@synthesize request;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -37,8 +36,6 @@
 - (void)dealloc {
     self.profileTable.dataSource = nil;
     self.profileTable.delegate = nil;
-    request.delegate = nil;
-    [request cancel];
 }
 
 - (void)viewDidLoad {

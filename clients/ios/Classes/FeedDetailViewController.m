@@ -31,7 +31,6 @@
 #import "NBBarButtonItem.h"
 #import "UIImage+Resize.h"
 #import "TMCache.h"
-#import "AFHTTPRequestOperation.h"
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
 #import "NSNull+JSON.h"
@@ -565,36 +564,35 @@
 - (void)cacheStoryImages:(NSArray *)storyImageUrls {
     NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
         for (NSString *storyImageUrl in storyImageUrls) {
-//            NSLog(@"Fetching image: %@", storyImageUrl);
-            NSMutableURLRequest *request = [NSMutableURLRequest
-                                            requestWithURL:[NSURL URLWithString:storyImageUrl]];
-            [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-            [request setTimeoutInterval:5.0];
-            AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc]
-                                                        initWithRequest:request];
-            [requestOperation setResponseSerializer:[AFImageResponseSerializer serializer]];
-            [requestOperation start];
-            [requestOperation waitUntilFinished];
+            NSLog(@"Fetching image: %@", storyImageUrl);
+            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            [manager.requestSerializer setTimeoutInterval:5];
+            manager.responseSerializer = [AFImageResponseSerializer serializer];
             
-            UIImage *image = (UIImage *)requestOperation.responseObject;
-            
-            if (!image || image.size.height < 50 || image.size.width < 50) {
-                [appDelegate.cachedStoryImages setObject:[NSNull null]
+            [manager GET:storyImageUrl parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                UIImage *image = (UIImage *)responseObject;
+                
+                if (!image || image.size.height < 50 || image.size.width < 50) {
+                    [appDelegate.cachedStoryImages setObject:[NSNull null]
+                                                      forKey:storyImageUrl];
+//                    continue;
+                    return;
+                }
+                
+                CGSize maxImageSize = CGSizeMake(300, 300);
+                image = [image imageByScalingAndCroppingForSize:maxImageSize];
+                [appDelegate.cachedStoryImages setObject:image
                                                   forKey:storyImageUrl];
-                continue;
-            }
-            
-            CGSize maxImageSize = CGSizeMake(300, 300);
-            image = [image imageByScalingAndCroppingForSize:maxImageSize];
-            [appDelegate.cachedStoryImages setObject:image
-                                              forKey:storyImageUrl];
-            if (self.isDashboardModule) {
-                [appDelegate.dashboardViewController.storiesModule
-                 showStoryImage:storyImageUrl];
-            } else {
-                [appDelegate.feedDetailViewController
-                 showStoryImage:storyImageUrl];
-            }
+                if (self.isDashboardModule) {
+                    [appDelegate.dashboardViewController.storiesModule
+                     showStoryImage:storyImageUrl];
+                } else {
+                    [appDelegate.feedDetailViewController
+                     showStoryImage:storyImageUrl];
+                }
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                
+            }];
         }
     }];
     [cacheImagesOperation setQualityOfService:NSQualityOfServiceBackground];

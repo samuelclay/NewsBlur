@@ -14,7 +14,6 @@
 #import "Utilities.h"
 
 @implementation OfflineFetchImages
-@synthesize imageDownloadOperationQueue;
 @synthesize appDelegate;
 
 - (void)main {
@@ -29,27 +28,18 @@
 - (BOOL)fetchImages {
     if (self.isCancelled) {
         NSLog(@"Images cancelled.");
-        [imageDownloadOperationQueue cancelAllOperations];
         return NO;
     }
 
 //    NSLog(@"Fetching images...");
     NSArray *urls = [self uncachedImageUrls];
     
-    if (imageDownloadOperationQueue) {
-        [imageDownloadOperationQueue cancelAllOperations];
-        imageDownloadOperationQueue = nil;
-    }
-    imageDownloadOperationQueue = [[ASINetworkQueue alloc] init];
-    imageDownloadOperationQueue.maxConcurrentOperationCount = 8;
-    imageDownloadOperationQueue.delegate = self;
-    
     if (![[[NSUserDefaults standardUserDefaults]
            objectForKey:@"offline_image_download"] boolValue] ||
         ![[[NSUserDefaults standardUserDefaults]
            objectForKey:@"offline_allowed"] boolValue] ||
         [urls count] == 0) {
-        NSLog(@"Finished caching images. %d total", appDelegate.totalUncachedImagesCount);
+        NSLog(@"Finished caching images. %ld total", (long)appDelegate.totalUncachedImagesCount);
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
@@ -68,29 +58,31 @@
     }
 
     
-    NSMutableArray *downloadRequests = [NSMutableArray array];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager.requestSerializer setTimeoutInterval:5];
+    manager.responseSerializer = [AFImageResponseSerializer serializer];
+    dispatch_group_t group = dispatch_group_create();
+    
     for (NSArray *urlArray in urls) {
         NSString *urlString = [urlArray objectAtIndex:0];
         NSString *storyHash = [urlArray objectAtIndex:1];
         NSString *storyTimestamp = [urlArray objectAtIndex:2];
-        
+        dispatch_group_enter(group);
         [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            [self storeCachedImage:responseObject storyHash:storyHash storyTimestamp:storyTimestamp];
+            UIImage *image = (UIImage *)responseObject;
+            [self storeCachedImage:urlString withImage:image storyHash:storyHash storyTimestamp:storyTimestamp];
+            dispatch_group_leave(group);
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [self storeFailedImage:storyHash];
+            dispatch_group_leave(group);
         }];
-        [downloadRequests addObject:request];
     }
-    [imageDownloadOperationQueue setQueueDidFinishSelector:@selector(cachedImageQueueFinished:)];
-    [imageDownloadOperationQueue setShouldCancelAllRequestsOnFailure:NO];
-    [imageDownloadOperationQueue go];
+    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
+                                                           (unsigned long)NULL), ^{
+        [self cachedImageQueueFinished];
+    });
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [imageDownloadOperationQueue addOperations:downloadRequests waitUntilFinished:YES];
     
-    for (ASIHTTPRequest *request in downloadRequests) {
-        [request setRawResponseData:nil];
-    }
-    [imageDownloadOperationQueue reset];
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [appDelegate.feedsViewController hideNotifier];
     //    });
@@ -153,33 +145,25 @@
     });
 }
 
-- (void)storeCachedImage:(ASIHTTPRequest *)request {
+- (void)storeCachedImage:(NSString *)imageUrl withImage:(UIImage *)image storyHash:(NSString *)storyHash storyTimestamp:(NSInteger)storyTimestamp {
     if (self.isCancelled) {
         NSLog(@"Image cancelled.");
-        [request clearDelegatesAndCancel];
         return;
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^{
         
-        NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
-        int storyTimestamp = [[[request userInfo] objectForKey:@"story_timestamp"] intValue];
-        
-        if ([request responseStatusCode] == 200) {
-            NSData *responseData = [request responseData];
-            NSString *md5Url = [Utilities md5:[[request originalURL] absoluteString]];
+        NSData *responseData = UIImageJPEGRepresentation(image, 0.6);
+        NSString *md5Url = [Utilities md5:imageUrl];
 //            NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
-            
-            NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-            NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", md5Url, [[[request originalURL] absoluteString] pathExtension]]];
-            
-            [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
-        } else {
-            NSLog(@"Failed to fetch: %@ / %@", [[request originalURL] absoluteString], storyHash);
-        }
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+        NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", md5Url, [imageUrl pathExtension]]];
+        
+        [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
         
         [appDelegate.database inDatabase:^(FMDatabase *db) {
             [db executeUpdate:@"UPDATE cached_images SET "
@@ -212,7 +196,7 @@
     }];
 }
 
-- (void)cachedImageQueueFinished:(ASINetworkQueue *)queue {
+- (void)cachedImageQueueFinished {
     NSLog(@"Queue finished: %d total (%d remaining)", appDelegate.totalUncachedImagesCount, appDelegate.remainingUncachedImagesCount);
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self fetchImages];

@@ -27,7 +27,6 @@
 
 @implementation StoryPageControl
 
-@synthesize appDelegate;
 @synthesize currentPage, nextPage, previousPage;
 @synthesize circularProgressView;
 @synthesize separatorBarButton;
@@ -65,6 +64,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
@@ -557,7 +557,7 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
 }
 
 - (void)updateTraverseBackground {
@@ -621,15 +621,15 @@
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
-        if (self.appDelegate.storiesCollection.feedPage < 100 &&
-            !self.appDelegate.feedDetailViewController.pageFinished &&
-            !self.appDelegate.feedDetailViewController.pageFetching) {
-            [self.appDelegate.feedDetailViewController fetchNextPage:^() {
+        if (appDelegate.storiesCollection.feedPage < 100 &&
+            !appDelegate.feedDetailViewController.pageFinished &&
+            !appDelegate.feedDetailViewController.pageFetching) {
+            [appDelegate.feedDetailViewController fetchNextPage:^() {
 //                NSLog(@"Fetched next page, %d stories", [appDelegate.activeFeedStoryLocations count]);
                 [self applyNewIndex:newIndex pageController:pageController];
             }];
-        } else if (!self.appDelegate.feedDetailViewController.pageFinished &&
-                   !self.appDelegate.feedDetailViewController.pageFetching) {
+        } else if (!appDelegate.feedDetailViewController.pageFinished &&
+                   !appDelegate.feedDetailViewController.pageFetching) {
             [appDelegate.navigationController
              popToViewController:[appDelegate.navigationController.viewControllers
                                   objectAtIndex:0]
@@ -979,7 +979,7 @@
     buttonNext.enabled = YES;
     NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
-    BOOL pageFinished = self.appDelegate.feedDetailViewController.pageFinished;
+    BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
     if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
         nextIndex != -1) {
         [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
@@ -1153,10 +1153,10 @@
 
 
 - (IBAction)toggleFontSize:(id)sender {
-    UINavigationController *fontSettingsNavigationController = self.appDelegate.fontSettingsNavigationController;
+    UINavigationController *fontSettingsNavigationController = appDelegate.fontSettingsNavigationController;
 
     [fontSettingsNavigationController popToRootViewControllerAnimated:NO];
-    [self.appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {
@@ -1220,10 +1220,10 @@
 #pragma mark Story Traversal
 
 - (IBAction)doNextUnreadStory:(id)sender {
-    FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
+    FeedDetailViewController *fdvc = appDelegate.feedDetailViewController;
     NSInteger nextLocation = [appDelegate.storiesCollection locationOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
-    BOOL pageFinished = self.appDelegate.feedDetailViewController.pageFinished;
+    BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
 
     [self.loadingIndicator stopAnimating];
     
