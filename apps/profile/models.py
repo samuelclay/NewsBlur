@@ -355,7 +355,7 @@ class Profile(models.Model):
     def cancel_premium(self):
         paypal_cancel = self.cancel_premium_paypal()
         stripe_cancel = self.cancel_premium_stripe()
-        return paypal_cancel or stripe_cancel
+        return stripe_cancel or paypal_cancel
     
     def cancel_premium_paypal(self, second_most_recent_only=False):
         transactions = PayPalIPN.objects.filter(custom=self.user.username,
@@ -408,6 +408,14 @@ class Profile(models.Model):
         
         return True
     
+    @property
+    def latest_paypal_email(self):
+        ipn = PayPalIPN.objects.filter(custom=self.user.username)
+        if not len(ipn):
+            return
+        
+        return ipn[0].payer_email
+        
     @classmethod
     def clear_dead_spammers(self, days=30, confirm=False):
         users = User.objects.filter(date_joined__gte=datetime.datetime.now()-datetime.timedelta(days=days)).order_by('-date_joined')
@@ -441,7 +449,7 @@ class Profile(models.Model):
         
         if verbose:
             feed = Feed.get_by_id(feed_id)
-            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed.title[:30], feed_id, user_id))
+            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers for feed:~SB~FM%s~SN~FB user:~SB~FM%s" % (feed.log_title[:30], feed_id, user_id))
         
         if feed_id:
             feed_ids = [feed_id]
@@ -503,7 +511,7 @@ class Profile(models.Model):
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
-                          (feed.title[:30], total, active, premium, active_premium))
+                          (feed.log_title[:30], total, active, premium, active_premium))
 
     @classmethod
     def count_all_feed_subscribers_for_user(self, user):

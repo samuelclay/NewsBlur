@@ -2,6 +2,7 @@ import datetime
 import time
 import re
 import redis
+import pymongo
 from operator import itemgetter
 from pprint import pprint
 from utils import log as logging
@@ -753,9 +754,13 @@ class UserSubscription(models.Model):
                                                     cutoff_date=self.user.profile.unread_cutoff)
         
             if not stories:
-                stories_db = MStory.objects(story_hash__in=unread_story_hashes)
-                stories = Feed.format_stories(stories_db, self.feed_id)
-        
+                try:
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)
+                    stories = Feed.format_stories(stories_db, self.feed_id)
+                except pymongo.errors.OperationFailure, e:
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:100]
+                    stories = Feed.format_stories(stories_db, self.feed_id)
+                    
             unread_stories = []
             for story in stories:
                 if story['story_date'] < date_delta:

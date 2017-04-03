@@ -705,9 +705,9 @@ if DEBUG:
 S3_CONN = None
 if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
     S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET, calling_format=OrdinaryCallingFormat())
-    if BACKED_BY_AWS.get('pages_on_s3'):
-        S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
-    if BACKED_BY_AWS.get('icons_on_s3'):
-        S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
+    # if BACKED_BY_AWS.get('pages_on_s3'):
+    #     S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
+    # if BACKED_BY_AWS.get('icons_on_s3'):
+    #     S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
 
 django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_\-]+|\[[a-f0-9]*:[a-f0-9:]+\])(:\d+)?$")
