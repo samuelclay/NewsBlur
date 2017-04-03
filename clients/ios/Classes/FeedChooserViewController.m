@@ -42,6 +42,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.optionsItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"nav_icn_settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showOptionsMenu)];
@@ -96,7 +98,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false&include_inactive=true", self.appDelegate.url];
-    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishLoadingInactiveFeeds:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self finishedWithError:error];
@@ -460,7 +462,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
     [params setObject:toFolder.identifier forKey:@"to_folder"];
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         HUD.labelText = @"Reloading...";
         [self.appDelegate reloadFeedsView:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

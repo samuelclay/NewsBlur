@@ -207,7 +207,7 @@
     [params setObject:@"login" forKey:@"submit"];
     [params setObject:@"1" forKey:@"api"];
 
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
 
         int code = [[responseObject valueForKey:@"code"] intValue];
@@ -252,7 +252,7 @@
     [params setObject:@"login" forKey:@"submit"];
     [params setObject:@"1" forKey:@"api"];
     
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
 
         int code = [[responseObject valueForKey:@"code"] intValue];

@@ -115,7 +115,7 @@
 - (void)connectToSocial {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
                            self.appDelegate.url];
-    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishConnectFromSocial:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
@@ -186,9 +186,7 @@
 - (IBAction)toggleAutoFollowFriends:(id)sender {
     UISwitch *button = (UISwitch *)sender;
     
-    NSURL *urlString = [NSURL URLWithString:
-                          [NSString stringWithFormat:@"%@/profile/set_preference",
-                           self.appDelegate.url]];
+    NSURL *urlString = [NSString stringWithFormat:@"%@/profile/set_preference", self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
 
     if (button.on) {
@@ -197,7 +195,7 @@
         [params setObject:@"true" forKey:@"autofollow_friends"];
     }
     
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishToggleAutoFollowFriends:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];

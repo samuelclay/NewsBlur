@@ -27,11 +27,14 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+        
     }
     return self;
 }
 
 - (void)viewDidLoad {
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Add Site" style:UIBarButtonItemStyleDone target:self action:@selector(addSite)];
     
@@ -120,9 +123,9 @@
 
 - (IBAction)doCancelButton {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.appDelegate hidePopover];
+        [appDelegate hidePopover];
     } else {
-        [self.appDelegate hidePopoverAnimated:YES];
+        [appDelegate hidePopoverAnimated:YES];
     }
 }
 
@@ -194,8 +197,8 @@
     
     [self.siteActivityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/feed_autocomplete?term=%@&v=2",
-                           self.appDelegate.url, [phrase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                           appDelegate.url, [phrase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSString *query = [NSString stringWithFormat:@"%@", [responseObject objectForKey:@"term"]];
         NSString *phrase = self.siteAddressInput.text;
         
@@ -239,7 +242,7 @@
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url",
-                           self.appDelegate.url];
+                           appDelegate.url];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *parent_folder = [self extractParentFolder];
@@ -249,7 +252,7 @@
         [params setObject:[self.addFolderInput text] forKey:@"new_folder"];
     }
     
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         [self.addingLabel setHidden:YES];
         [self.activityIndicator stopAnimating];
@@ -260,11 +263,11 @@
             [self.errorLabel setHidden:NO];
         } else {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                [self.appDelegate hidePopover];
+                [appDelegate hidePopover];
             } else {
-                [self.appDelegate hidePopoverAnimated:YES];
+                [appDelegate hidePopoverAnimated:YES];
             }
-            [self.appDelegate reloadFeedsView:NO];
+            [appDelegate reloadFeedsView:NO];
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -324,7 +327,7 @@
 }
 
 - (NSArray *)folders {
-    return _.without([self.appDelegate dictFoldersArray],
+    return _.without([appDelegate dictFoldersArray],
                      @[@"saved_stories",
                        @"read_stories",
                        @"river_blurblogs",
@@ -367,7 +370,7 @@
         viewController.checkedRow = [folders indexOfObject:self.inFolderInput.text] + 1;
     }
     
-    [self.appDelegate.addSiteNavigationController pushViewController:viewController animated:YES];
+    [appDelegate.addSiteNavigationController pushViewController:viewController animated:YES];
 }
 
 #pragma mark -

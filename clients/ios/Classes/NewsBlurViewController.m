@@ -1380,7 +1380,7 @@ heightForHeaderInSection:(NSInteger)section {
                        forKey:@"cutoff_timestamp"];
     }
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishMarkAllAsRead:responseObject];
+        [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
     }];
@@ -1401,14 +1401,13 @@ heightForHeaderInSection:(NSInteger)section {
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
 
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[NSNumber numberWithInteger:days]
                forKey:@"days"];
 
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishMarkAllAsRead:responseObject];
+        [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
     }];
@@ -1426,15 +1425,14 @@ heightForHeaderInSection:(NSInteger)section {
     NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                            self.appDelegate.url];
-    
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
-    [request setDelegate:self];
-    [request setUserInfo:@{@"stories": feedsStories}];
-    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-    [request startAsynchronous];
+    
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAllAsRead:params];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailedMarkStoryRead:error withParams:params];
+    }];
 }
 
 - (void)requestFailedMarkStoryRead:(NSError *)error withParams:(NSDictionary *)params {
@@ -1447,6 +1445,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)finishMarkAllAsRead:(NSDictionary *)params {
+    // This seems fishy post-ASI rewrite. This needs to know about a cutoff timestamp which it is never given.
     self.isOffline = NO;
     
     if ([[params objectForKey:@"cutoff_timestamp"] integerValue]) {

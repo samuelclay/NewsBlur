@@ -521,7 +521,7 @@
     storiesCollection.searchQuery = nil;
     [self.searchBar setText:@""];
     [self.notifier hideIn:0];
-    [self cancelRequests];
+//    [self cancelRequests];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];
 }
@@ -705,10 +705,12 @@
                             theFeedDetailURL,
                             [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
-    [self cancelRequests];
-    [manager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+//    [self cancelRequests];
+    NSString *feedId = [[storiesCollection activeFeed] objectForKey:@"id"];
+    NSInteger feedPage = storiesCollection.feedPage;
+    [appDelegate.networkManager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         if (!storiesCollection.activeFeed) return;
-        [self finishedLoadingFeed:responseObject withResponse:task.response];
+        [self finishedLoadingFeed:responseObject withResponse:task.response feedPage:feedPage feedId:feedId];
         if (callback) {
             callback();
         }
@@ -720,7 +722,6 @@
         [self showOfflineNotifier];
         [self.storyTitlesTable reloadData];
     }];
-    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage], @"feedId": [[storiesCollection activeFeed] objectForKey:@"id"]}];
 }
 
 - (void)loadOfflineStories {
@@ -908,11 +909,11 @@
                             [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
 
-    [self cancelRequests];
+//    [self cancelRequests];
     
     
-    NSURLSessionDataTask *request = [manager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        [self finishedLoadingFeed:responseObject withResponse:task.response];
+    [appDelegate.networkManager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        [self finishedLoadingFeed:responseObject withResponse:task.response feedPage:storiesCollection.feedPage feedId:nil];
         if (callback) {
             callback();
         }
@@ -935,7 +936,7 @@
 #pragma mark -
 #pragma mark Processing Stories
 
-- (void)finishedLoadingFeed:(NSDictionary *)results withResponse:(NSURLResponse *)response {
+- (void)finishedLoadingFeed:(NSDictionary *)results withResponse:(NSURLResponse *)response feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId {
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     if (httpResponse.statusCode >= 500 || httpResponse.statusCode == 404) {
         self.isOnline = NO;
@@ -964,18 +965,16 @@
 //        [results objectForKey:@"message"]) {
 //        [self informError:nil details:[results objectForKey:@"message"]];
 //    }
-    id feedId = [results objectForKey:@"feed_id"];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSString *receivedFeedId = [NSString stringWithFormat:@"%@", [results objectForKey:@"feed_id"]];
     
-    // Ignoring below during AFNetworking 3.0 migration because we don't know the feed id anymore.
-//    if (!(storiesCollection.isRiverView ||
-//          storiesCollection.isSavedView ||
-//          storiesCollection.isReadView ||
-//          storiesCollection.isSocialView ||
-//          storiesCollection.isSocialRiverView)
-//        && request.tag != [feedId intValue]) {
-//        return;
-//    }
+    if (!(storiesCollection.isRiverView ||
+          storiesCollection.isSavedView ||
+          storiesCollection.isReadView ||
+          storiesCollection.isSocialView ||
+          storiesCollection.isSocialRiverView)
+        && receivedFeedId != sentFeedId) {
+        return;
+    }
     if (storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
@@ -999,7 +998,7 @@
             [storiesCollection.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
         }
     } else if (newClassifiers) {
-        [storiesCollection.activeClassifiers setObject:newClassifiers forKey:feedIdStr];
+        [storiesCollection.activeClassifiers setObject:newClassifiers forKey:receivedFeedId];
     }
     storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
     storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
@@ -1790,7 +1789,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *direction = older ? @"older" : @"newest";
     [params setObject:direction forKey:@"direction"];
     
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         [appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
         // is there a better way to refresh the detail view?
         [self reloadStories];
@@ -1911,7 +1910,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [params setObject:newTitle forKey:@"feed_title"];
     }
 
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
         if (storiesCollection.isRiverView) {
             [appDelegate renameFolder:newTitle];
@@ -1942,7 +1941,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [params setObject:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
     [params setObject:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
 
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
@@ -1968,7 +1967,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                                                       extractParentFolderName:storiesCollection.activeFolder]]
                forKey:@"in_folder"];
     
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
@@ -1993,7 +1992,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
 
     [params setObject:activeIdentifiers forKey:@"approved_feeds"];
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
         [self.appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]
                                                           animated:YES];
@@ -2031,7 +2030,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [params setObject:feedIdentifier forKey:@"feed_id"];
     }
     
-    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         
         int code = [[responseObject valueForKey:@"code"] intValue];
@@ -2208,11 +2207,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            stringWithFormat:@"%@/reader/refresh_feed/%@", 
                            self.appDelegate.url,
                            [storiesCollection.activeFeed objectForKey:@"id"]];
-    [self cancelRequests];
-    [manager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+//    [self cancelRequests];
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         [self renderStories:[responseObject objectForKey:@"stories"]];
     } failure:^(NSURLSessionTask *operation, NSError *error) {
-        NSLog(@"Fail: %@", request);
+        NSLog(@"Fail: %@", error);
         [self informError:[operation error]];
         [self fetchFeedDetail:1 withCallback:nil];
     }];
@@ -2241,7 +2240,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            self.appDelegate.url,
                            feedIdsQuery];
 
-    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self saveAndDrawFavicons:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];

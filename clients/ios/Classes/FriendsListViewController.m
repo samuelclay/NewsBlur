@@ -118,7 +118,7 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/social/find_friends?query=%@&limit=10",
                            self.appDelegate.url,
                            query];
-    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self requestFinished:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self informError:error];
@@ -128,7 +128,7 @@
 - (void)loadSuggestedFriendsList {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
                            self.appDelegate.url];
-    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self loadSuggestedFriendsListFinished:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self informError:error];

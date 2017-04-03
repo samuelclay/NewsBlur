@@ -12,7 +12,9 @@
 @class NewsBlurAppDelegate;
 
 @interface AddSiteViewController : BaseViewController
-<UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
+<UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource> {
+    NewsBlurAppDelegate *appDelegate;
+}
 
 - (void)reload;
 - (IBAction)addSite;
@@ -24,7 +26,6 @@
 - (IBAction)toggleAddFolder:(id)sender;
 - (NSArray *)folders;
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITextField *inFolderInput;
 @property (nonatomic) IBOutlet UITextField *addFolderInput;
 @property (nonatomic) IBOutlet UITextField *siteAddressInput;
