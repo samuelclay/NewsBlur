@@ -50,7 +50,7 @@
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
 @class StoriesCollection;
-@class TMCache;
+@class PINCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -152,8 +152,8 @@ SFSafariViewControllerDelegate>  {
     UIImageView *splashView;
     NSMutableDictionary *activeCachedImages;
     
-    TMCache *cachedFavicons;
-    TMCache *cachedStoryImages;
+    PINCache *cachedFavicons;
+    PINCache *cachedStoryImages;
 }
 
 @property (nonatomic) IBOutlet EventWindow *window;
@@ -197,8 +197,8 @@ SFSafariViewControllerDelegate>  {
 
 @property (nonatomic) AFHTTPSessionManager *networkManager;
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
-@property (nonatomic, readwrite) TMCache *cachedFavicons;
-@property (nonatomic, readwrite) TMCache *cachedStoryImages;
+@property (nonatomic, readwrite) PINCache *cachedFavicons;
+@property (nonatomic, readwrite) PINCache *cachedStoryImages;
 
 @property (nonatomic, readonly) NSString *url;
 @property (nonatomic, readonly) NSString *host;

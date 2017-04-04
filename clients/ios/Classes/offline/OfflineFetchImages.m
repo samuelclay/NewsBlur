@@ -31,7 +31,7 @@
         return NO;
     }
 
-//    NSLog(@"Fetching images...");
+    NSLog(@"Fetching images...");
     NSArray *urls = [self uncachedImageUrls];
     
     if (![[[NSUserDefaults standardUserDefaults]
@@ -58,21 +58,27 @@
     }
 
     
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     [manager.requestSerializer setTimeoutInterval:5];
     manager.responseSerializer = [AFImageResponseSerializer serializer];
+    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+
     dispatch_group_t group = dispatch_group_create();
     
     for (NSArray *urlArray in urls) {
-        NSString *urlString = [urlArray objectAtIndex:0];
+        NSString *urlString = [[urlArray objectAtIndex:0] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         NSString *storyHash = [urlArray objectAtIndex:1];
-        NSString *storyTimestamp = [urlArray objectAtIndex:2];
+        NSInteger storyTimestamp = [[urlArray objectAtIndex:2] integerValue];
         dispatch_group_enter(group);
-        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@" ---> Fetching offline image: %@", urlString);
+        [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSLog(@" ---> Fetched %@: %@", storyHash, urlString);
             UIImage *image = (UIImage *)responseObject;
             [self storeCachedImage:urlString withImage:image storyHash:storyHash storyTimestamp:storyTimestamp];
             dispatch_group_leave(group);
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            NSLog(@" ---> Failed to fetch image %@: %@", storyHash, urlString);
             [self storeFailedImage:storyHash];
             dispatch_group_leave(group);
         }];
@@ -81,6 +87,7 @@
                                                            (unsigned long)NULL), ^{
         [self cachedImageQueueFinished];
     });
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     //    dispatch_async(dispatch_get_main_queue(), ^{

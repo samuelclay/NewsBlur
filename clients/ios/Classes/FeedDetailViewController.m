@@ -30,7 +30,7 @@
 #import "FMDatabase.h"
 #import "NBBarButtonItem.h"
 #import "UIImage+Resize.h"
-#import "TMCache.h"
+#import "PINCache.h"
 #import "DashboardViewController.h"
 #import "StoriesCollection.h"
 #import "NSNull+JSON.h"
@@ -563,19 +563,18 @@
 
 - (void)cacheStoryImages:(NSArray *)storyImageUrls {
     NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        [manager.requestSerializer setTimeoutInterval:5];
+        manager.responseSerializer = [AFImageResponseSerializer serializer];
+
         for (NSString *storyImageUrl in storyImageUrls) {
             NSLog(@"Fetching image: %@", storyImageUrl);
-            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-            [manager.requestSerializer setTimeoutInterval:5];
-            manager.responseSerializer = [AFImageResponseSerializer serializer];
-            
             [manager GET:storyImageUrl parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 UIImage *image = (UIImage *)responseObject;
                 
                 if (!image || image.size.height < 50 || image.size.width < 50) {
                     [appDelegate.cachedStoryImages setObject:[NSNull null]
                                                       forKey:storyImageUrl];
-//                    continue;
                     return;
                 }
                 
@@ -704,20 +703,29 @@
                             [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
 //    [self cancelRequests];
-    NSString *feedId = [[storiesCollection activeFeed] objectForKey:@"id"];
+    NSString *feedId = [NSString stringWithFormat:@"%@", [[storiesCollection activeFeed] objectForKey:@"id"]];
     NSInteger feedPage = storiesCollection.feedPage;
     [appDelegate.networkManager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         if (!storiesCollection.activeFeed) return;
-        [self finishedLoadingFeed:responseObject withResponse:task.response feedPage:feedPage feedId:feedId];
+        [self finishedLoadingFeed:responseObject feedPage:feedPage feedId:feedId];
         if (callback) {
             callback();
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)operation.response;
         NSLog(@"in failed block %@", operation);
         self.isOnline = NO;
-        storiesCollection.feedPage = 1;
+        self.isShowingFetching = NO;
+        //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showOfflineNotifier];
+        if (httpResponse.statusCode == 503) {
+            [self informError:@"In maintenance mode"];
+            self.pageFinished = YES;
+        } else if (httpResponse.statusCode >= 500) {
+            [self informError:@"The server barfed."];
+        }
+        
         [self.storyTitlesTable reloadData];
     }];
 }
@@ -911,7 +919,7 @@
     
     
     [appDelegate.networkManager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        [self finishedLoadingFeed:responseObject withResponse:task.response feedPage:storiesCollection.feedPage feedId:nil];
+        [self finishedLoadingFeed:responseObject feedPage:storiesCollection.feedPage feedId:nil];
         if (callback) {
             callback();
         }
@@ -934,24 +942,7 @@
 #pragma mark -
 #pragma mark Processing Stories
 
-- (void)finishedLoadingFeed:(NSDictionary *)results withResponse:(NSURLResponse *)response feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId {
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    if (httpResponse.statusCode >= 500 || httpResponse.statusCode == 404) {
-        self.isOnline = NO;
-        self.isShowingFetching = NO;
-//        storiesCollection.feedPage = 1;
-        [self loadOfflineStories];
-        [self showOfflineNotifier];
-        if (httpResponse.statusCode == 503) {
-            [self informError:@"In maintenance mode"];
-            self.pageFinished = YES;
-        } else {
-            [self informError:@"The server barfed."];
-        }
-        [self.storyTitlesTable reloadData];
-        
-        return;
-    }
+- (void)finishedLoadingFeed:(NSDictionary *)results feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId {
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
@@ -970,7 +961,7 @@
           storiesCollection.isReadView ||
           storiesCollection.isSocialView ||
           storiesCollection.isSocialRiverView)
-        && receivedFeedId != sentFeedId) {
+        && ![receivedFeedId isEqualToString:sentFeedId]) {
         return;
     }
     if (storiesCollection.isSocialView ||

@@ -243,9 +243,6 @@
 		FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */; };
 		FF191E4F18A323F400473252 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF191E4E18A323F400473252 /* Images.xcassets */; };
 		FF1C4E171A3FB1F4000995E3 /* NBActivityItemSource.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C4E161A3FB1F4000995E3 /* NBActivityItemSource.m */; };
-		FF1F13D318A9C2BE00FDA816 /* TMCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13CE18A9C2BE00FDA816 /* TMCache.m */; };
-		FF1F13D418A9C2BE00FDA816 /* TMDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13D018A9C2BE00FDA816 /* TMDiskCache.m */; };
-		FF1F13D518A9C2BE00FDA816 /* TMMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13D218A9C2BE00FDA816 /* TMMemoryCache.m */; };
 		FF1F13D818AAC97900FDA816 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13D718AAC97900FDA816 /* UIImage+Resize.m */; };
 		FF21B1111C821E150053938A /* disclosure_border_dark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF21B10F1C821E150053938A /* disclosure_border_dark@2x.png */; };
 		FF21B1121C821E150053938A /* disclosure_border_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = FF21B1101C821E150053938A /* disclosure_border_dark.png */; };
@@ -291,6 +288,9 @@
 		FF2924CB1E92DF7C00FCFA63 /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924BA1E92DF7C00FCFA63 /* UIProgressView+AFNetworking.m */; };
 		FF2924CC1E92DF7C00FCFA63 /* UIRefreshControl+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924BC1E92DF7C00FCFA63 /* UIRefreshControl+AFNetworking.m */; };
 		FF2924CD1E92DF7C00FCFA63 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924BE1E92DF7C00FCFA63 /* UIWebView+AFNetworking.m */; };
+		FF2924E51E932D2900FCFA63 /* PINCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924DF1E932D2900FCFA63 /* PINCache.m */; };
+		FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E21E932D2900FCFA63 /* PINDiskCache.m */; };
+		FF2924E71E932D2900FCFA63 /* PINMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E41E932D2900FCFA63 /* PINMemoryCache.m */; };
 		FF29708B16DD7AA400E92F85 /* segment_active.png in Resources */ = {isa = PBXBuildFile; fileRef = FF29708916DD7AA400E92F85 /* segment_active.png */; };
 		FF29708C16DD7AA400E92F85 /* segment_inactive.png in Resources */ = {isa = PBXBuildFile; fileRef = FF29708A16DD7AA400E92F85 /* segment_inactive.png */; };
 		FF29708E16DD7C8A00E92F85 /* segment_left_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = FF29708D16DD7C8A00E92F85 /* segment_left_selected.png */; };
@@ -873,12 +873,6 @@
 		FF191E4E18A323F400473252 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NewsBlur/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		FF1C4E151A3FB1F4000995E3 /* NBActivityItemSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBActivityItemSource.h; sourceTree = "<group>"; };
 		FF1C4E161A3FB1F4000995E3 /* NBActivityItemSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBActivityItemSource.m; sourceTree = "<group>"; };
-		FF1F13CD18A9C2BE00FDA816 /* TMCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMCache.h; sourceTree = "<group>"; };
-		FF1F13CE18A9C2BE00FDA816 /* TMCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TMCache.m; sourceTree = "<group>"; };
-		FF1F13CF18A9C2BE00FDA816 /* TMDiskCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMDiskCache.h; sourceTree = "<group>"; };
-		FF1F13D018A9C2BE00FDA816 /* TMDiskCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TMDiskCache.m; sourceTree = "<group>"; };
-		FF1F13D118A9C2BE00FDA816 /* TMMemoryCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMMemoryCache.h; sourceTree = "<group>"; };
-		FF1F13D218A9C2BE00FDA816 /* TMMemoryCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TMMemoryCache.m; sourceTree = "<group>"; };
 		FF1F13D618AAC97900FDA816 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Resize.h"; path = "Other Sources/UIImage+Resize.h"; sourceTree = "<group>"; };
 		FF1F13D718AAC97900FDA816 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Resize.m"; path = "Other Sources/UIImage+Resize.m"; sourceTree = "<group>"; };
 		FF21B10F1C821E150053938A /* disclosure_border_dark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "disclosure_border_dark@2x.png"; sourceTree = "<group>"; };
@@ -949,6 +943,14 @@
 		FF2924BC1E92DF7C00FCFA63 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
 		FF2924BD1E92DF7C00FCFA63 /* UIWebView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+AFNetworking.h"; sourceTree = "<group>"; };
 		FF2924BE1E92DF7C00FCFA63 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
+		FF2924DD1E932D2900FCFA63 /* Nullability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Nullability.h; sourceTree = "<group>"; };
+		FF2924DE1E932D2900FCFA63 /* PINCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCache.h; sourceTree = "<group>"; };
+		FF2924DF1E932D2900FCFA63 /* PINCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINCache.m; sourceTree = "<group>"; };
+		FF2924E01E932D2900FCFA63 /* PINCacheObjectSubscripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCacheObjectSubscripting.h; sourceTree = "<group>"; };
+		FF2924E11E932D2900FCFA63 /* PINDiskCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINDiskCache.h; sourceTree = "<group>"; };
+		FF2924E21E932D2900FCFA63 /* PINDiskCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINDiskCache.m; sourceTree = "<group>"; };
+		FF2924E31E932D2900FCFA63 /* PINMemoryCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINMemoryCache.h; sourceTree = "<group>"; };
+		FF2924E41E932D2900FCFA63 /* PINMemoryCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINMemoryCache.m; sourceTree = "<group>"; };
 		FF29708916DD7AA400E92F85 /* segment_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = segment_active.png; sourceTree = "<group>"; };
 		FF29708A16DD7AA400E92F85 /* segment_inactive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = segment_inactive.png; sourceTree = "<group>"; };
 		FF29708D16DD7C8A00E92F85 /* segment_left_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = segment_left_selected.png; sourceTree = "<group>"; };
@@ -1469,7 +1471,7 @@
 				FF2EB77E1AA65504002549A7 /* InAppSettingsKit */,
 				FF753CC2175858FC00344EC9 /* fmdb */,
 				FF22FE5316E53ADC0046165A /* Underscore */,
-				FF1F13CC18A9C2BE00FDA816 /* TMCache */,
+				FF2924CE1E93293F00FCFA63 /* PINCache */,
 				43A4C3E615B0099B008787B5 /* NewsBlur_Prefix.pch */,
 				43A4C3B915B00966008787B5 /* ABTableViewCell.h */,
 				43A4C3BA15B00966008787B5 /* ABTableViewCell.m */,
@@ -2100,20 +2102,6 @@
 			path = "Other Sources/NJKWebViewProgress";
 			sourceTree = "<group>";
 		};
-		FF1F13CC18A9C2BE00FDA816 /* TMCache */ = {
-			isa = PBXGroup;
-			children = (
-				FF1F13CD18A9C2BE00FDA816 /* TMCache.h */,
-				FF1F13CE18A9C2BE00FDA816 /* TMCache.m */,
-				FF1F13CF18A9C2BE00FDA816 /* TMDiskCache.h */,
-				FF1F13D018A9C2BE00FDA816 /* TMDiskCache.m */,
-				FF1F13D118A9C2BE00FDA816 /* TMMemoryCache.h */,
-				FF1F13D218A9C2BE00FDA816 /* TMMemoryCache.m */,
-			);
-			name = TMCache;
-			path = "Other Sources/TMCache";
-			sourceTree = "<group>";
-		};
 		FF22FE5216E52BAD0046165A /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -2170,6 +2158,22 @@
 				FF22FE5D16E53ADC0046165A /* USDictionaryWrapper.m */,
 			);
 			path = Underscore;
+			sourceTree = "<group>";
+		};
+		FF2924CE1E93293F00FCFA63 /* PINCache */ = {
+			isa = PBXGroup;
+			children = (
+				FF2924DD1E932D2900FCFA63 /* Nullability.h */,
+				FF2924DE1E932D2900FCFA63 /* PINCache.h */,
+				FF2924DF1E932D2900FCFA63 /* PINCache.m */,
+				FF2924E01E932D2900FCFA63 /* PINCacheObjectSubscripting.h */,
+				FF2924E11E932D2900FCFA63 /* PINDiskCache.h */,
+				FF2924E21E932D2900FCFA63 /* PINDiskCache.m */,
+				FF2924E31E932D2900FCFA63 /* PINMemoryCache.h */,
+				FF2924E41E932D2900FCFA63 /* PINMemoryCache.m */,
+			);
+			name = PINCache;
+			path = "Other Sources/PINCache";
 			sourceTree = "<group>";
 		};
 		FF29708816DD7AA400E92F85 /* segmented */ = {
@@ -2963,6 +2967,7 @@
 				787A0CDB11CE65330056422D /* FeedDetailViewController.m in Sources */,
 				FF2EB7B51AA65504002549A7 /* IASKSettingsStore.m in Sources */,
 				7842ECF811D44A530066CF9D /* StoryDetailViewController.m in Sources */,
+				FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */,
 				7843F50511EEB1A000675F64 /* FeedDetailTableCell.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,
@@ -3010,12 +3015,12 @@
 				FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */,
 				FF2EB7BD1AA65504002549A7 /* IASKSwitch.m in Sources */,
 				43A4C3E315B00966008787B5 /* StringHelper.m in Sources */,
-				FF1F13D518A9C2BE00FDA816 /* TMMemoryCache.m in Sources */,
 				FF2924C91E92DF7C00FCFA63 /* UIButton+AFNetworking.m in Sources */,
 				43A4C3E415B00966008787B5 /* TransparentToolbar.m in Sources */,
 				FFD6604C1BACA45D006E4B8D /* THCircularProgressView.m in Sources */,
 				FF2924C61E92DF7C00FCFA63 /* AFURLResponseSerialization.m in Sources */,
 				FFA0484419CA73B700618DC4 /* UIView+ViewController.m in Sources */,
+				FF2924E51E932D2900FCFA63 /* PINCache.m in Sources */,
 				17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */,
 				43A4C3E515B00966008787B5 /* UIView+TKCategory.m in Sources */,
 				FF2924C11E92DF7C00FCFA63 /* AFImageDownloader.m in Sources */,
@@ -3031,7 +3036,6 @@
 				FF5ACC2E1DE63C6D00FBD044 /* MultiSelectSegmentedControl.m in Sources */,
 				FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */,
 				FF2EB7B11AA65504002549A7 /* IASKAppSettingsWebViewController.m in Sources */,
-				FF1F13D418A9C2BE00FDA816 /* TMDiskCache.m in Sources */,
 				FF2EB7BB1AA65504002549A7 /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
 				FF03AFFD19F881380063002A /* ARChromeActivity.m in Sources */,
@@ -3046,6 +3050,7 @@
 				438FEDE815D5B15F00E3B3C9 /* FollowGrid.m in Sources */,
 				FF8D1ED21BAA311000725D8A /* SBJson4Writer.m in Sources */,
 				43B232C015D5F61700D035B4 /* AuthorizeServicesViewController.m in Sources */,
+				FF2924E71E932D2900FCFA63 /* PINMemoryCache.m in Sources */,
 				FF2924BF1E92DF7C00FCFA63 /* AFAutoPurgingImageCache.m in Sources */,
 				FF2924C21E92DF7C00FCFA63 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				FF2EB7B71AA65504002549A7 /* IASKSettingsStoreUserDefaults.m in Sources */,
@@ -3070,7 +3075,6 @@
 				FF5ACC271DE5FA3E00FBD044 /* NotificationFeedCell.m in Sources */,
 				FFA045B619CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m in Sources */,
 				FF2924CC1E92DF7C00FCFA63 /* UIRefreshControl+AFNetworking.m in Sources */,
-				FF1F13D318A9C2BE00FDA816 /* TMCache.m in Sources */,
 				FF22FE5E16E53ADC0046165A /* Underscore+Functional.m in Sources */,
 				17C074961C14C46B00CFCDB7 /* ThemeManager.m in Sources */,
 				FF22FE5F16E53ADC0046165A /* Underscore.m in Sources */,

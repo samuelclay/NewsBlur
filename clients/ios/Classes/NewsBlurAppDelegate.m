@@ -54,7 +54,7 @@
 #import "OfflineFetchImages.h"
 #import "OfflineCleanImages.h"
 #import "NBBarButtonItem.h"
-#import "TMCache.h"
+#import "PINCache.h"
 #import "StoriesCollection.h"
 #import "NSString+HTML.h"
 #import "UIView+ViewController.h"
@@ -202,13 +202,14 @@
         self.window.rootViewController = self.navigationController;
     }
     
+    [self clearNetworkManager];
     
     [window makeKeyAndVisible];
     
     [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
-    [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
+    [self.cachedStoryImages removeAllObjects:nil];
     [feedsViewController loadOfflineFeeds:NO];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
@@ -223,8 +224,8 @@
 
 //    [self showFirstTimeUser];
     
-    cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons"];
-    cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages"];
+    cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
+    cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
     [NSURLCache setSharedURLCache:urlCache];
@@ -307,8 +308,8 @@
 - (void)finishBackground {
     if (!backgroundCompletionHandler) return;
     
-    NSLog(@"Background fetch complete. Found data: %d/%d = %d",
-          self.totalUnfetchedStoryCount, self.totalUncachedImagesCount,
+    NSLog(@"Background fetch complete. Found data: %ld/%ld = %d",
+          (long)self.totalUnfetchedStoryCount, (long)self.totalUncachedImagesCount,
           self.totalUnfetchedStoryCount || self.totalUncachedImagesCount);
     if (self.totalUnfetchedStoryCount || self.totalUncachedImagesCount) {
         backgroundCompletionHandler(UIBackgroundFetchResultNewData);
