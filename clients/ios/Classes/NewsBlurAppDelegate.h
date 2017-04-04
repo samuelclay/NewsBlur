@@ -407,7 +407,7 @@ SFSafariViewControllerDelegate>  {
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
-- (void)setupDatabase:(FMDatabase *)db;
+- (void)setupDatabase:(FMDatabase *)db force:(BOOL)force;
 - (void)cancelOfflineQueue;
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;

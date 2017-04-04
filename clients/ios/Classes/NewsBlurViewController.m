@@ -1014,19 +1014,15 @@ static UIFont *userLabelFont;
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
             });
-            [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-                [db executeUpdate:@"DROP TABLE unread_hashes"];
-                [db executeUpdate:@"DROP TABLE unread_counts"];
-                [db executeUpdate:@"DROP TABLE accounts"];
-                [db executeUpdate:@"DROP TABLE stories"];
-                [db executeUpdate:@"DROP TABLE cached_images"];
-                [appDelegate setupDatabase:db];
+            [appDelegate.database inDatabase:^(FMDatabase *db) {
+                [db executeUpdate:@"VACUUM"];
+                [appDelegate setupDatabase:db force:YES];
+                [appDelegate deleteAllCachedImages];
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
+                                                              forKey:specifier.key];
+                });
             }];
-            [appDelegate deleteAllCachedImages];
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
-                                                          forKey:specifier.key];
-            });
         });
 	}
 }

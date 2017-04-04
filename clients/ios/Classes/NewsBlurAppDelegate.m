@@ -63,6 +63,7 @@
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
 #import "UIViewController+HidePopover.h"
+#import "PINCache.h"
 #import <float.h>
 #import <UserNotifications/UserNotifications.h>
 
@@ -1037,6 +1038,7 @@
     [networkManager invalidateSessionCancelingTasks:YES];
     networkManager = [AFHTTPSessionManager manager];
     networkManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    [networkManager.requestSerializer setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary]
                                       objectForKey:@"CFBundleVersion"];
@@ -3040,12 +3042,12 @@
     database = [FMDatabaseQueue databaseQueueWithPath:path];
     [database inDatabase:^(FMDatabase *db) {
 //        db.traceExecution = YES;
-        [self setupDatabase:db];
+        [self setupDatabase:db force:NO];
     }];
 }
 
-- (void)setupDatabase:(FMDatabase *)db {
-    if ([self databaseSchemaVersion:db] < CURRENT_DB_VERSION) {
+- (void)setupDatabase:(FMDatabase *)db force:(BOOL)force {
+    if ([self databaseSchemaVersion:db] < CURRENT_DB_VERSION || force) {
         // FMDB cannot execute this query because FMDB tries to use prepared statements
         [db closeOpenResultSets];
         [db executeUpdate:@"drop table if exists `stories`"];
@@ -3426,6 +3428,32 @@
 }
 
 - (void)deleteAllCachedImages {
+    NSUInteger memorySize = 1024 * 1024 * 64;
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:memorySize diskCapacity:memorySize diskPath:nil];
+    [NSURLCache setSharedURLCache:sharedCache];
+    NSLog(@"cap: %ld", [[NSURLCache sharedURLCache] diskCapacity]);
+    
+    NSInteger sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];
+    float sizeInMB = sizeInteger / (1024.0f * 1024.0f);
+    NSLog(@"size: %ld,  %f", (long)sizeInteger, sizeInMB);
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];
+    sizeInMB = sizeInteger / (1024.0f * 1024.0f);
+    NSLog(@"size: %ld,  %f", (long)sizeInteger, sizeInMB);
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];
+    sizeInMB = sizeInteger / (1024.0f * 1024.0f);
+    NSLog(@"size: %ld,  %f", (long)sizeInteger, sizeInMB);
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+
+    [[PINCache sharedCache] removeAllObjects];
+    [self.cachedStoryImages removeAllObjects];
+    
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     NSError *error = nil;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -3445,8 +3473,9 @@
     }
     
     NSLog(@"Deleted %d images.", removed);
+    
+    
 }
-
 @end
 
 #pragma mark -

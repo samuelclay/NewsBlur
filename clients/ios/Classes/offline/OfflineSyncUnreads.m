@@ -57,7 +57,7 @@
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
 //        NSLog(@"Storing unread story hashes...");
         [db executeUpdate:@"DROP TABLE unread_hashes"];
-        [appDelegate setupDatabase:db];
+        [appDelegate setupDatabase:db force:NO];
         NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
         for (NSString *feed in [hashes allKeys]) {
             NSArray *story_hashes = [hashes objectForKey:feed];

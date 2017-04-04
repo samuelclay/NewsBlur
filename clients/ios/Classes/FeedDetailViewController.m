@@ -1120,7 +1120,8 @@
     NSMutableArray *storyImageUrls = [NSMutableArray array];
     for (NSDictionary *story in newStories) {
         if ([story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
-            [storyImageUrls addObject:[[story objectForKey:@"image_urls"] objectAtIndex:0]];
+            [storyImageUrls addObject:[[[story objectForKey:@"image_urls"] objectAtIndex:0]
+                                       stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
         }
     }
     [self performSelector:@selector(cacheStoryImages:) withObject:storyImageUrls afterDelay:0.2];
