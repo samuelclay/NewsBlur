@@ -1771,7 +1771,7 @@ def mark_story_hash_as_unread(request):
 @json.json_view
 def mark_feed_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    feed_ids = request.REQUEST.getlist('feed_id')
+    feed_ids = request.REQUEST.getlist('feed_id') or request.POST.getlist('feed_id[]')
     cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
     direction = request.REQUEST.get('direction', 'older')
     multiple = len(feed_ids) > 1
