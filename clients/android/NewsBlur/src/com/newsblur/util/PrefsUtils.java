@@ -140,6 +140,8 @@ public class PrefsUtils {
         s.append("\n");
         s.append("prefetch: ").append(isOfflineEnabled(context) ? "yes" : "no");
         s.append("\n");
+        s.append("notifications: ").append(isEnableNotifications(context) ? "yes" : "no");
+        s.append("\n");
         s.append("keepread: ").append(isKeepOldStories(context) ? "yes" : "no");
         s.append("\n");
         s.append("thumbs: ").append(isShowThumbnails(context) ? "yes" : "no");
@@ -677,5 +679,14 @@ public class PrefsUtils {
     public static GestureAction getRightToLeftGestureAction(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return GestureAction.valueOf(prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString()));
+    }
+
+    public static boolean isEnableNotifications(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false);
+    }
+
+    public static boolean isBackgroundNeeded(Context context) {
+        return (isEnableNotifications(context) || isOfflineEnabled(context));
     }
 }

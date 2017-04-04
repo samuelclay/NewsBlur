@@ -78,4 +78,6 @@ public class PrefConstants {
 
     public static final String LTR_GESTURE_ACTION = "ltr_gesture_action";
     public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
+
+    public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
 }

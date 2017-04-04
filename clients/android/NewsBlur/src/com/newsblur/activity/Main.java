@@ -148,7 +148,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         unreadCountNeutText.setText(Integer.toString(neutCount));
         unreadCountPosiText.setText(Integer.toString(posiCount));
 
-        if ((neutCount+posiCount) <= 0) {
+    }
+
+    /**
+     * A callback for the feed list fragment so it can tell us how many feeds (not folders)
+     * are being displayed based on mode, etc.  This lets us adjust our wrapper UI without
+     * having to expensively recalculate those totals from the DB.
+     */
+    public void updateFeedCount(int feedCount) {
+        if (feedCount < 1 ) {
             if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 emptyViewImage.setVisibility(View.INVISIBLE);
                 emptyViewText.setVisibility(View.INVISIBLE);
@@ -156,6 +164,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 emptyViewImage.setVisibility(View.VISIBLE);
                 if (folderFeedList.currentState == StateFilter.BEST) {
                     emptyViewText.setText(R.string.empty_list_view_no_focus_stories);
+                } else if (folderFeedList.currentState == StateFilter.SAVED) {
+                    emptyViewText.setText(R.string.empty_list_view_no_saved_stories);
                 } else {
                     emptyViewText.setText(R.string.empty_list_view_no_unread_stories);
                 }

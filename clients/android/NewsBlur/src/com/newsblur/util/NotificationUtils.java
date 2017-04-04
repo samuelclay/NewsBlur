@@ -31,6 +31,10 @@ public class NotificationUtils {
 
     private NotificationUtils() {} // util class - no instances
 
+    /**
+     * @param storiesFocus a cursor of unread, focus stories to notify, ordered newest to oldest
+     * @param storiesUnread a cursor of unread, neutral stories to notify, ordered newest to oldest
+     */
     public static synchronized void notifyStories(Cursor storiesFocus, Cursor storiesUnread, Context context, FileCache iconCache) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -41,11 +45,16 @@ public class NotificationUtils {
                 nm.cancel(story.hashCode());
                 continue;
             }
+            if (FeedUtils.dbHelper.isStoryDismissed(story.storyHash)) {
+                nm.cancel(story.hashCode());
+                continue;
+            }
             if (count < MAX_CONCUR_NOTIFY) {
                 Notification n = buildStoryNotification(story, storiesFocus, context, iconCache);
                 nm.notify(story.hashCode(), n);
             } else {
                 nm.cancel(story.hashCode());
+                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
             }
             count++;
         }
@@ -55,16 +64,23 @@ public class NotificationUtils {
                 nm.cancel(story.hashCode());
                 continue;
             }
+            if (FeedUtils.dbHelper.isStoryDismissed(story.storyHash)) {
+                nm.cancel(story.hashCode());
+                continue;
+            }
             if (count < MAX_CONCUR_NOTIFY) {
                 Notification n = buildStoryNotification(story, storiesUnread, context, iconCache);
                 nm.notify(story.hashCode(), n);
             } else {
                 nm.cancel(story.hashCode());
+                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
             }
             count++;
         }
     }
 
+    // addAction deprecated in 23 but replacement not avail until 21
+    @SuppressWarnings("deprecation")
     private static Notification buildStoryNotification(Story story, Cursor cursor, Context context, FileCache iconCache) {
         Intent i = new Intent(context, FeedReading.class);
         // the action is unused, but bugs in some platform versions ignore extras if it is unset
@@ -79,6 +95,18 @@ public class NotificationUtils {
         // set the requestCode to the story hashcode to prevent the PI re-using the wrong Intent
         PendingIntent pendingIntent = PendingIntent.getActivity(context, story.hashCode(), i, 0);
 
+        Intent dismissIntent = new Intent(context, NotifyDismissReceiver.class);
+        dismissIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), story.hashCode(), dismissIntent, 0);
+
+        Intent saveIntent = new Intent(context, NotifySaveReceiver.class);
+        saveIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
+        PendingIntent savePendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), story.hashCode(), saveIntent, 0);
+
+        Intent markreadIntent = new Intent(context, NotifyMarkreadReceiver.class);
+        markreadIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
+        PendingIntent markreadPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), story.hashCode(), markreadIntent, 0);
+
         String feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         StringBuilder title = new StringBuilder();
         title.append(feedTitle).append(": ").append(story.title);
@@ -91,8 +119,11 @@ public class NotificationUtils {
             .setContentText(story.shortContent)
             .setSmallIcon(R.drawable.logo_monochrome)
             .setContentIntent(pendingIntent)
+            .setDeleteIntent(dismissPendingIntent)
             .setAutoCancel(true)
-            .setWhen(story.timestamp);
+            .setWhen(story.timestamp)
+            .addAction(0, "Save", savePendingIntent)
+            .addAction(0, "Mark Read", markreadPendingIntent);
         if (feedIcon != null) {
             nb.setLargeIcon(feedIcon);
         }
@@ -107,5 +138,11 @@ public class NotificationUtils {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancelAll();
     }
+
+    public static void cancel(Context context, int nid) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancel(nid);
+    }
+
 
 }

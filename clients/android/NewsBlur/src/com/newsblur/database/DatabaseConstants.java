@@ -147,6 +147,11 @@ public class DatabaseConstants {
     public static final String STARREDCOUNTS_TAG = "tag";
     public static final String STARREDCOUNTS_FEEDID = "feed_id";
 
+    public static final String NOTIFY_DISMISS_TABLE = "notify_dimiss";
+    public static final String NOTIFY_DISMISS_STORY_HASH = "story_hash";
+    public static final String NOTIFY_DISMISS_TIME = "time";
+
+
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
         FOLDER_PARENT_NAMES + TEXT + ", " +
@@ -286,6 +291,11 @@ public class DatabaseConstants {
         STARREDCOUNTS_COUNT + INTEGER + " NOT NULL, " +
 	    STARREDCOUNTS_TAG + TEXT + ", " +
 	    STARREDCOUNTS_FEEDID + TEXT +
+        ")";
+
+    static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
+        NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +
+        NOTIFY_DISMISS_TIME + INTEGER + " NOT NULL " +
         ")";
 
 	private static final String[] BASE_STORY_COLUMNS = {

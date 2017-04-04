@@ -5,9 +5,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Queue;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +34,7 @@ public class Log {
 
     private static final String LOG_NAME_INTERNAL = "logbuffer.txt";
     private static final int MAX_LINE_SIZE = 4 * 1024;
-    private static final int TRIM_LINES = 256;                 // trim the log down to 256 lines
+    private static final int TRIM_LINES = 384;                 // trim the log down to 384 lines
     private static final long MAX_SIZE = 512L * MAX_LINE_SIZE; // when it is at least 512 lines long
 
     private static Queue<String> q;
@@ -39,6 +43,11 @@ public class Log {
     static {
         q = new ConcurrentLinkedQueue<String>();
         executor = Executors.newFixedThreadPool(1);
+    }
+    private static DateFormat dateFormat = null;
+    static {
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     private Log() {} // util class - no instances
@@ -72,16 +81,18 @@ public class Log {
         if (q.size() > TRIM_LINES) return;
         if (m != null && m.length() > MAX_LINE_SIZE) m = m.substring(0, MAX_LINE_SIZE);
         StringBuilder s = new StringBuilder();
-        s.append(Long.toString(System.currentTimeMillis()))
-         .append(" ")
+        synchronized (dateFormat) {s.append(dateFormat.format(new Date()));}
+        s.append(" ")
          .append(lvl)
          .append(tag)
          .append(" ");
+        s.append(m);
         if (t != null) {
+            s.append(" ");
             s.append(t.getMessage());
             s.append(" ");
+            s.append(android.util.Log.getStackTraceString(t));
         }
-        s.append(m);
         q.offer(s.toString());
         Runnable r = new Runnable() {
             public void run() {
