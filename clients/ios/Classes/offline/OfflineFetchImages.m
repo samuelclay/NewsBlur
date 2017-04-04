@@ -71,24 +71,24 @@
         NSString *storyHash = [urlArray objectAtIndex:1];
         NSInteger storyTimestamp = [[urlArray objectAtIndex:2] integerValue];
         dispatch_group_enter(group);
-        NSLog(@" ---> Fetching offline image: %@", urlString);
+//        NSLog(@" ---> Fetching offline image: %@", urlString);
         [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            NSLog(@" ---> Fetched %@: %@", storyHash, urlString);
+//            NSLog(@" ---> Fetched %@: %@", storyHash, urlString);
             UIImage *image = (UIImage *)responseObject;
             [self storeCachedImage:urlString withImage:image storyHash:storyHash storyTimestamp:storyTimestamp];
             dispatch_group_leave(group);
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            NSLog(@" ---> Failed to fetch image %@: %@", storyHash, urlString);
+//            NSLog(@" ---> Failed to fetch image %@: %@", storyHash, urlString);
             [self storeFailedImage:storyHash];
             dispatch_group_leave(group);
         }];
     }
-    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
-                                                           (unsigned long)NULL), ^{
-        [self cachedImageQueueFinished];
-    });
-    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    NSLog(@"Queue finished: %ld total (%ld remaining)", (long)appDelegate.totalUncachedImagesCount, (long)appDelegate.remainingUncachedImagesCount);
+    [self updateProgress];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [appDelegate.feedsViewController hideNotifier];
@@ -128,7 +128,6 @@
         }
         
         [cursor close];
-        [self updateProgress];
     }];
     
     return urls;
@@ -137,9 +136,9 @@
 - (void)updateProgress {
     if (self.isCancelled) return;
     
-    int start = (int)[[NSDate date] timeIntervalSince1970];
-    int end = appDelegate.latestCachedImageDate;
-    int seconds = start - (end ? end : start);
+    NSInteger start = (NSInteger)[[NSDate date] timeIntervalSince1970];
+    NSInteger end = appDelegate.latestCachedImageDate;
+    NSInteger seconds = start - (end ? end : start);
     __block int hours = (int)round(seconds / 60.f / 60.f);
     
     __block float progress = 0.f;
@@ -188,9 +187,11 @@
             }
         }
         
-        appDelegate.remainingUncachedImagesCount--;
-        if (appDelegate.remainingUncachedImagesCount % 10 == 0) {
-            [self updateProgress];
+        @synchronized (self) {
+            appDelegate.remainingUncachedImagesCount--;
+            if (appDelegate.remainingUncachedImagesCount % 10 == 0) {
+                [self updateProgress];
+            }
         }
     });
 }
@@ -201,15 +202,6 @@
          "image_cached = 1, failed = 1 WHERE story_hash = ?",
          storyHash];
     }];
-}
-
-- (void)cachedImageQueueFinished {
-    NSLog(@"Queue finished: %d total (%d remaining)", appDelegate.totalUncachedImagesCount, appDelegate.remainingUncachedImagesCount);
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    [self fetchImages];
-    //    dispatch_async(dispatch_get_main_queue(), ^{
-    //        [self.feedsViewController hideNotifier];
-    //    });
 }
 
 @end
