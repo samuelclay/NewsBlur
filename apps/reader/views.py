@@ -331,6 +331,7 @@ def load_feeds_flat(request):
     include_favicons = is_true(request.REQUEST.get('include_favicons', False))
     update_counts    = is_true(request.REQUEST.get('update_counts', True))
     include_inactive = is_true(request.REQUEST.get('include_inactive', False))
+    background_ios   = is_true(request.REQUEST.get('background_ios', False))
     
     feeds = {}
     inactive_feeds = {}
@@ -406,8 +407,9 @@ def load_feeds_flat(request):
     if not user_subs:
         categories = MCategory.serialize()
         
-    logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s" % (
-            len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else ''))
+    logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s" % (
+            len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
+            ' ~BB(background fetch)' if background_ios else ''))
 
     data = {
         "flat_folders": flat_folders, 
