@@ -424,6 +424,10 @@ static UIFont *userLabelFont;
                         self.appDelegate.url];
     }
     
+    if (appDelegate.backgroundCompletionHandler) {
+        urlFeedList = [urlFeedList stringByAppendingString:@"&background_ios=true"];
+    }
+    
     [appDelegate.networkManager GET:urlFeedList parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -433,7 +437,7 @@ static UIFont *userLabelFont;
 
     self.lastUpdate = [NSDate date];
     if (showLoader) {
-        [self.notifier hide];
+//        [self.notifier hide];
     }
     [self showRefreshNotifier];
 }
