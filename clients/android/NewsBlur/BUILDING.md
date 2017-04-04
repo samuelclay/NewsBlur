@@ -6,6 +6,8 @@ It is the goal of this repository to stay agnostic to build environments or tool
 
 ## How to Build from the Command Line with Ant
 
+**TODO: this section may be out of date, as GOOG no longer support ant builds**
+
 *an abridged version of the official guide found [here](https://developer.android.com/tools/building/building-cmdline.html)*
 
 *this type of build will use the vendored dependencies in `clients/android/NewsBlur/libs`*
@@ -21,10 +23,13 @@ It is the goal of this repository to stay agnostic to build environments or tool
 
 *this type of build will pull dependencies as prescribed in the gradle configuration*
 
-1. install gradle v2.8 or better
+1. install gradle v3.3 or better
+2. ensure that all Android license agreements have been accepted via `$ANDROID_HOME/tools/bin/sdkmanager tools` or similar
 2. build a test APK with `gradle build` (.apk will be in `/build/outputs/apk/` under the working directory)
 
 ## How to Build from Android Studio
+
+**TODO: this section may be out of date, as GOOG regularly update the Android Studio UI**
 
 *this type of build will pull dependencies as prescribed in the gradle configuration*
 

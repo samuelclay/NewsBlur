@@ -89,6 +89,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private int savedStoriesTotalCount;
 
+    /** A simple count of how many feeds/children are actually being displayed. */
+    public int lastFeedCount = 0;
+
     /** Flat names of folders explicity closed by the user. */
     private Set<String> closedFolders = new HashSet<String>();
 
@@ -439,6 +442,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             totalSocialNeutCount += checkNegativeUnreads(f.neutralCount);
             totalSocialPosiCount += checkNegativeUnreads(f.positiveCount);
         }
+        recountChildren();
         notifyDataSetChanged();
 	}
 
@@ -539,6 +543,17 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 folderPosCounts.add(getFolderPositiveCountRecursive(folder, null));
             }
         }
+        recountChildren();
+    }
+
+    private void recountChildren() {
+        int newFeedCount = 0;
+        newFeedCount += socialFeedsOrdered.size();
+        newFeedCount += starredCountsByTag.size();
+        for (List<Feed> folder : activeFolderChildren) {
+            newFeedCount += folder.size();
+        }
+        lastFeedCount = newFeedCount;
     }
 
     /**

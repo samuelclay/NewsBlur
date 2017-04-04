@@ -125,4 +125,13 @@
             android:defaultValue="@string/rtl_gesture_action_value" />
     </PreferenceCategory>
 
+    <PreferenceCategory 
+        android:title="@string/settings_notifications">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_notifications"
+            android:title="@string/settings_enable_notifications" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
 </PreferenceScreen>

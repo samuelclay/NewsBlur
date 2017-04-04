@@ -29,6 +29,9 @@ public class CleanupService extends SubService {
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old story texts");
         parent.dbHelper.cleanupStoryText();
 
+        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up notification dismissals");
+        parent.dbHelper.cleanupDismissals();
+
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up story image cache");
         FileCache imageCache = FileCache.asStoryImageCache(parent);
         imageCache.cleanupUnusedOrOld(parent.dbHelper.getAllStoryImages());

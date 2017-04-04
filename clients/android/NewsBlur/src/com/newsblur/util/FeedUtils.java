@@ -78,10 +78,14 @@ public class FeedUtils {
     }
 
 	public static void setStorySaved(final Story story, final boolean saved, final Context context) {
+        setStorySaved(story.storyHash, saved, context);
+    }
+
+	public static void setStorySaved(final String storyHash, final boolean saved, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                ReadingAction ra = (saved ? ReadingAction.saveStory(story.storyHash) : ReadingAction.unsaveStory(story.storyHash));
+                ReadingAction ra = (saved ? ReadingAction.saveStory(storyHash) : ReadingAction.unsaveStory(storyHash));
                 ra.doLocal(dbHelper);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
                 dbHelper.enqueueAction(ra);
@@ -162,6 +166,23 @@ public class FeedUtils {
 
         triggerSync(context);
         NBSyncService.addRecountCandidates(impactedFeeds);
+    }
+
+    /**
+     * Mark a story (un)read when only the hash is known. This can and will cause a brief mismatch in
+     * unread counts, or a longer mismatch if offline.  This method should only be used from outside
+     * the app, such as from a notifiation handler.  You must use setStoryReadState(Story, Context, boolean)
+     * when calling from within the UI.
+     */
+    public static void setStoryReadStateExternal(String storyHash, Context context, boolean read) {
+        ReadingAction ra = (read ? ReadingAction.markStoryRead(storyHash) : ReadingAction.markStoryUnread(storyHash));
+        dbHelper.enqueueAction(ra);
+
+        String feedId = inferFeedId(storyHash);
+        FeedSet impactedFeed = FeedSet.singleFeed(feedId);
+        NBSyncService.addRecountCandidates(impactedFeed);
+
+        triggerSync(context);
     }
 
     /**

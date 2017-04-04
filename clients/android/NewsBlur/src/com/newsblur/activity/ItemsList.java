@@ -224,11 +224,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         }
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
-            NBSyncService.resetReadingSession();
-            NBSyncService.resetFetchState(fs);
             itemListFragment.resetEmptyState();
             itemListFragment.hasUpdated();
             itemListFragment.scrollToTop();
+            NBSyncService.resetReadingSession();
+            NBSyncService.resetFetchState(fs);
         }
     }
 

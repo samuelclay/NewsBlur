@@ -149,7 +149,7 @@
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
-    <string name="menu_feedback_post">Create a support post</string>
+    <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_loginas">Login as...</string>
 
@@ -162,6 +162,7 @@
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
+    <string name="empty_list_view_no_saved_stories">You have no saved stories.\n\nSwitch to All or Unread.</string>
     
     <string name="login_registration_register">Register</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
@@ -261,6 +262,8 @@
     <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
     <string name="settings_show_content_preview">Show Content Preview Text</string>
     <string name="settings_show_thumbnails">Show Image Preview Thumbnails</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_enable_notifications">Enable Notifications</string>
 
     <string name="story">Story</string>
     <string name="text">Text</string>
