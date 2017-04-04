@@ -134,4 +134,15 @@
         </CheckBoxPreference>
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/fonts">
+        <ListPreference
+            android:key="font"
+            android:title="@string/font"
+            android:dialogTitle="@string/font"
+            android:entries="@array/default_font_entries"
+            android:entryValues="@array/default_font_values"
+            android:defaultValue="@string/default_font_value" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
