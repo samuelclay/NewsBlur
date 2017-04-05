@@ -1772,9 +1772,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [feedIds addObject:[storiesCollection.activeFeed objectForKey:@"id"]];
     }
     
-    for (id feedId in feedIds) {
-        [params setObject:feedId forKey:@"feed_id"];
-    }
+    [params setObject:feedIds forKey:@"feed_id"];
     [params setObject:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
     NSString *direction = older ? @"older" : @"newest";
     [params setObject:direction forKey:@"direction"];
