@@ -102,11 +102,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     protected void onResume() {
         super.onResume();
 
-        // immediately clear the story session to prevent bleed-over into the next
-        FeedUtils.clearStorySession();
-        // also queue a clear right before the feedset switches, so no in-flight stoires bleed
         NBSyncService.resetReadingSession();
-
         NBSyncService.flushRecounts();
 
         updateStatusIndicators();

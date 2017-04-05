@@ -77,8 +77,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		super.onCreate(savedInstanceState);
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
-        // tell the sync service to discard the reading session at the start of the next sync, just in case
-        NBSyncService.resetReadingSession();
+        triggerRefresh(1, null);
     }
 
 	@Override
@@ -163,11 +162,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
-        // this is going to cause us to lose access to any previous cursor and the next one might be
-        // stale, so wipe the listview. the adapter will be recreated in onLoadFinished as usual
         if (adapter != null) adapter.notifyDataSetInvalidated();
-        if (itemList != null) itemList.setAdapter(null);
-        adapter = null;
         cursorSeenYet = false;
         FeedUtils.dbHelper.clearStorySession();
     }
@@ -291,16 +286,18 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (stopLoading) return;
 		if (cursor != null) {
-            if (NBSyncService.ResetSession) {
+            if (! NBSyncService.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
-                com.newsblur.util.Log.i(this.getClass().getName(), "discarding stale load");
-                triggerRefresh(1, null);
-                return;
-            }
-            cursorSeenYet = true;
-            com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
-            if (cursor.getCount() < 1) {
-                triggerRefresh(1, 0);
+                com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
+                adapter.setShowNone(true);
+                setLoading(true);
+            } else {
+                cursorSeenYet = true;
+                com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
+                if (cursor.getCount() < 1) {
+                    triggerRefresh(1, 0);
+                }
+                adapter.setShowNone(false);
             }
             adapter.swapCursor(cursor);
 		}

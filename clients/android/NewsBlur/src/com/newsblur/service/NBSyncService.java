@@ -98,6 +98,9 @@ public class NBSyncService extends Service {
     private static FeedSet PendingFeed;
     private static Integer PendingFeedTarget = 0;
 
+    /** The lats feed set that was loaded/primed into the session table. */
+    private static FeedSet LastFeedSet;
+
     /** Feed sets that the API has said to have no more pages left. */
     private static Set<FeedSet> ExhaustedFeeds;
     static { ExhaustedFeeds = new HashSet<FeedSet>(); }
@@ -110,9 +113,6 @@ public class NBSyncService extends Service {
 
     /** Feed to reset to zero-state, so it is fetched fresh, presumably with new filters. */
     private static FeedSet ResetFeed;
-
-    /** Flag to reset the reading session table. */
-    public static boolean ResetSession = false;
 
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
@@ -642,31 +642,25 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            // before anything else, see if we need to quickly reset fetch state for a feed. we
-            // do this as part of the loop to prevent-mid loop state corruption
-            if (ResetFeed != null) {
-                ExhaustedFeeds.remove(ResetFeed);
-                FeedStoriesSeen.remove(ResetFeed);
-                FeedPagesSeen.remove(ResetFeed);
-                ResetFeed = null;
-            }
-
-            // now see if we need to reset the reading session table because the FeedSet was
-            // switched out
-            boolean doReset = false;
-            synchronized (PENDING_FEED_MUTEX) {
-                if (ResetSession) {
-                    doReset = true;
-                    ResetSession = false;
-                }
-            }
-            if (doReset) {
+            if (! fs.equals(LastFeedSet)) {
                 // the next fetch will be the start of a new reading session; clear it so it
                 // will be re-primed
                 dbHelper.clearStorySession();
                 // don't just rely on the auto-prepare code when fetching stories, it might be called
                 // after we insert our first page and not trigger
                 dbHelper.prepareReadingSession(fs);
+                // note which feedset we are loading so we can trigger another reset when it changes
+                LastFeedSet = fs;
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
+            }
+
+            // see if we need to quickly reset fetch state for a feed. we
+            // do this before the loop to prevent-mid loop state corruption
+            if (ResetFeed != null) {
+                ExhaustedFeeds.remove(ResetFeed);
+                FeedStoriesSeen.remove(ResetFeed);
+                FeedPagesSeen.remove(ResetFeed);
+                ResetFeed = null;
             }
             
             if (ExhaustedFeeds.contains(fs)) {
@@ -904,11 +898,16 @@ public class NBSyncService extends Service {
         return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
+    public static boolean isFeedSetReady(FeedSet fs) {
+        return fs.equals(LastFeedSet);
+    }
+
     public static boolean isFeedSetExhausted(FeedSet fs) {
         return ExhaustedFeeds.contains(fs);
     }
 
     public static boolean isFeedSetStoriesFresh(FeedSet fs) {
+        if (! isFeedSetReady(fs)) return false;
         Integer count = FeedStoriesSeen.get(fs);
         if (count == null) return false;
         if (count < 1) return false;
@@ -953,7 +952,7 @@ public class NBSyncService extends Service {
      */
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, Integer callerSeen) {
         synchronized (PENDING_FEED_MUTEX) {
-            if (ExhaustedFeeds.contains(fs) && (!ResetSession)) {
+            if (ExhaustedFeeds.contains(fs) && (fs.equals(LastFeedSet))) {
                 com.newsblur.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
                 return false;
             }
@@ -985,14 +984,12 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Gracefully stop the loading of the current FeedSet, and set a flag so that the reading
-     * session gets cleared before the next one is populated.
+     * Gracefully stop the loading of the current FeedSet.
      */
     public static void resetReadingSession() {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting reading session reset");
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
-            ResetSession = true;
         }
     }
 
