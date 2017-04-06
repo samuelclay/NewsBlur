@@ -70,6 +70,17 @@
         [self.notificationTypeControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.notificationTypeControl];
+        
+        self.textLabel.backgroundColor = [UIColor clearColor];
+        self.textLabel.textColor = UIColorFromRGB(0x303030);
+        self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+        self.textLabel.shadowOffset = CGSizeMake(0, 1);
+        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+        self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
+        self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
+        self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+        self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+        self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     }
     
     return self;
@@ -81,17 +92,12 @@
     self.imageView.frame = CGRectMake(10.0, 10.0, 16.0, 16.0);
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
+    [self.textLabel sizeToFit];
     CGRect frame = self.textLabel.frame;
     frame.origin.x = 35.0;
     frame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
     self.textLabel.frame = frame;
-    
-    self.textLabel.backgroundColor = [UIColor clearColor];
-    self.textLabel.textColor = UIColorFromRGB(0x303030);
-    self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-    self.textLabel.shadowOffset = CGSizeMake(0, 1);
-    
-    CGRect textFrame = self.textLabel.frame;
+        CGRect textFrame = self.textLabel.frame;
     textFrame.origin.y = 10;
     self.textLabel.frame = textFrame;
 
@@ -99,15 +105,6 @@
     detailFrame.origin.y = 10;
     self.detailTextLabel.frame = detailFrame;
 
-    self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-    self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
-    
-    self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
-    
-    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    
     CGFloat detailTextLabelWidth = self.detailTextLabel.attributedText.size.width;
     CGRect detailTextLabelFrame = self.detailTextLabel.frame;
     CGFloat detailTextLabelExtraWidth = detailTextLabelWidth - detailTextLabelFrame.size.width;
@@ -117,7 +114,7 @@
         self.detailTextLabel.frame = detailTextLabelFrame;
         
         CGRect textLabelFrame = self.textLabel.frame;
-        textLabelFrame.size.width -= detailTextLabelExtraWidth;
+        textLabelFrame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
         self.textLabel.frame = textLabelFrame;
     }
     
