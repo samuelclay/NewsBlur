@@ -450,16 +450,9 @@
     [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
 }
 
-- (void)requestFailed:(NSError *)error {
-    NSString *errorMessage;
-    
+- (void)requestFailed:(NSError *)error {    
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    
-    if (error) {
-        errorMessage = error.localizedDescription;
-    } else {
-        errorMessage = @"The server barfed!";
-    }
+
     NSLog(@"Error: %@", error);
     [appDelegate.storyPageControl.currentPage informError:error];
 }

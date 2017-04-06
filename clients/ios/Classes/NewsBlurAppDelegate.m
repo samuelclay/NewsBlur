@@ -1668,7 +1668,7 @@
     } else if ([storyBrowser isEqualToString:@"firefox"]) {
         NSString *encodedURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://?url=", encodedURL];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL] options:@{} completionHandler:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
                                                         entersReaderIfAvailable:NO];
@@ -3382,7 +3382,6 @@
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
     NSMutableArray *completedHashes = [NSMutableArray array];
     for (NSArray *storyHashes in [hashes allValues]) {
         [completedHashes addObjectsFromArray:storyHashes];

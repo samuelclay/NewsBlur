@@ -1755,15 +1755,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)requestFailed:(NSError *)error {
     NSLog(@"Error in story detail: %@", error);
-    NSString *errorMessage;
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    
-    if (error) {
-        errorMessage = error.localizedDescription;
-    } else {
-        errorMessage = @"The server barfed!";
-    }
+
     [self informError:error];
 }
 
@@ -1977,7 +1971,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.storyPageControl showShareHUD:buttonIndex == actionSheetCopyImageIndex ?
                                                @"Copying..." : @"Saving..."];
     
-    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager setResponseSerializer:[AFImageResponseSerializer serializer]];
     [manager GET:url.absoluteString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {

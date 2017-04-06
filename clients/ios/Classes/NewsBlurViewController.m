@@ -1394,8 +1394,6 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markEverythingReadWithDays:(NSInteger)days {
-    NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
-    cutoffTimestamp -= (days * 60*60*24);
     NSArray *feedIds = [appDelegate allFeedIds];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
