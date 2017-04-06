@@ -33,6 +33,7 @@
         [selectedBackground setBackgroundColor:UIColorFromRGB(0xECEEEA)];
         [self setSelectedBackgroundView:selectedBackground];
         
+        NSDictionary *controlAttrs = @{NSForegroundColorAttributeName: [UIColor lightGrayColor]};
         self.filterControl = [[UISegmentedControl alloc] initWithItems:@[@"Unread Stories",
                                                                          @"Focus Stories"]];
         self.filterControl.tintColor = UIColorFromRGB(0x8F918B);
@@ -44,6 +45,7 @@
         [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
         [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:0];
         [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:1];
+        [self.filterControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.filterControl];
         
@@ -65,6 +67,7 @@
         [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:1];
         [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:2];
         [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:3];
+        [self.notificationTypeControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.notificationTypeControl];
     }
@@ -161,9 +164,12 @@
     }
     [params setObject:notifications forKey:@"notification_types"];
     [params setObject:notificationFilter forKey:@"notification_filter"];
-    
+
+    [appDelegate updateNotifications:params feed:self.feedId];
+
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Saved notifications %@: %@ / %@", self.feedId, notificationTypes, notificationFilter);
+        [appDelegate checkForFeedNotifications];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to save notifications: %@ / %@", notificationTypes, notificationFilter);
     }];

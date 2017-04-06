@@ -1008,6 +1008,40 @@
     }
 }
 
+- (void)updateNotifications:(NSDictionary *)params feed:(NSString *)feedId {
+    NSMutableDictionary *feed = [[self.dictFeeds objectForKey:feedId] mutableCopy];
+    
+    [feed setObject:params[@"notification_types"] forKey:@"notification_types"];
+    [feed setObject:params[@"notification_filter"] forKey:@"notification_filter"];
+    
+    [self.dictFeeds setObject:feed forKey:feedId];
+}
+
+- (void)checkForFeedNotifications {
+    NSMutableArray *foundNotificationFeedIds = [NSMutableArray array];
+    
+    for (NSDictionary *feed in self.dictFeeds.allValues) {
+        NSArray *types = [feed objectForKey:@"notification_types"];
+        if (types) {
+            for (NSString *notificationType in types) {
+                if ([notificationType isEqualToString:@"ios"]) {
+                    [self registerForRemoteNotifications];
+                }
+            }
+            if ([types count]) {
+                [foundNotificationFeedIds addObject:[feed objectForKey:@"id"]];
+            }
+        }
+    }
+    
+    self.notificationFeedIds = [foundNotificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NSString *feed1Title = [[[self.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj1]] objectForKey:@"feed_title"] lowercaseString];
+        NSString *feed2Title = [[[self.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj2]] objectForKey:@"feed_title"] lowercaseString];
+        
+        return [feed1Title compare:feed2Title];
+    }];
+}
+
 - (void)openUserTagsStory:(id)sender {
     if (!self.userTagsViewController) {
         self.userTagsViewController = [[UserTagsViewController alloc] init];

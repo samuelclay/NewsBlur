@@ -730,7 +730,7 @@ static UIFont *userLabelFont;
     [self showExplainerOnEmptyFeedlist];
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
-    [self checkForFeedNotifications];
+    [appDelegate checkForFeedNotifications];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
@@ -2003,31 +2003,6 @@ heightForHeaderInSection:(NSInteger)section {
                                               spacer,
                                               userAvatarButton,
                                               userInfoBarButton, nil];
-}
-
-- (void)checkForFeedNotifications {
-    NSMutableArray *notificationFeedIds = [NSMutableArray array];
-    
-    for (NSDictionary *feed in appDelegate.dictFeeds.allValues) {
-        NSArray *types = [feed objectForKey:@"notification_types"];
-        if (types) {
-            for (NSString *notificationType in types) {
-                if ([notificationType isEqualToString:@"ios"]) {
-                    [appDelegate registerForRemoteNotifications];
-                }
-            }
-            if ([types count]) {
-                [notificationFeedIds addObject:[feed objectForKey:@"id"]];
-            }
-        }
-    }
-    
-    appDelegate.notificationFeedIds = [notificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-        NSString *feed1Title = [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj1]] objectForKey:@"feed_title"] lowercaseString];
-        NSString *feed2Title = [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", obj2]] objectForKey:@"feed_title"] lowercaseString];
-        
-        return [feed1Title compare:feed2Title];
-    }];
 }
 
 - (void)refreshHeaderCounts {
