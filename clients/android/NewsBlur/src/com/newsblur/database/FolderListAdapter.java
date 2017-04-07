@@ -547,6 +547,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     private void recountChildren() {
+        if (activeFolderChildren == null) return;
         int newFeedCount = 0;
         newFeedCount += socialFeedsOrdered.size();
         newFeedCount += starredCountsByTag.size();
