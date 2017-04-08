@@ -77,6 +77,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		super.onCreate(savedInstanceState);
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
+        // warm up the sync service as soon as possible since it will init the story session DB
         triggerRefresh(1, null);
     }
 
@@ -291,6 +292,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
                 adapter.setShowNone(true);
                 setLoading(true);
+                triggerRefresh(1, null);
             } else {
                 cursorSeenYet = true;
                 com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
