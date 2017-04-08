@@ -11,7 +11,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "UserProfileViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "ASIHTTPRequest.h"
 #import "ActivityCell.h"
 #import "SmallActivityCell.h"
 
@@ -19,7 +18,6 @@
 
 @synthesize appDelegate;
 @synthesize activitiesTable;
-@synthesize popoverController;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize activitiesPage;
@@ -102,26 +100,18 @@
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
         
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setValidatesSecureCertificate:NO];
-        [request setDidFinishSelector:@selector(finishLoadActivities:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request setDelegate:self];
-        [request startAsynchronous];
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [self finishLoadActivities:task];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [self requestFailed:task];
+        }];
     }
 }
 
-- (void)finishLoadActivities:(ASIHTTPRequest *)request {
+- (void)finishLoadActivities:(NSDictionary *)results {
     self.pageFetching = NO;
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
+
     // check for last page
     if (![[results objectForKey:@"has_next_page"] intValue]) {
         self.pageFinished = YES;
@@ -152,7 +142,7 @@
     [self refreshWithActivities:appDelegate.userActivitiesArray];
 } 
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
+- (void)requestFailed:(NSURLSessionDataTask *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];

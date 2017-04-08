@@ -10,8 +10,6 @@
 #import "AddSiteAutocompleteCell.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
-#import "ASIHTTPRequest.h"
-#import "ASIFormDataRequest.h"
 #import "NBContainerViewController.h"
 #import "MenuViewController.h"
 #import "SBJson4.h"
@@ -196,7 +194,7 @@
     
     [self.siteActivityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/feed_autocomplete?term=%@&v=2",
-                           self.appDelegate.url, [phrase stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                           self.appDelegate.url, [phrase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIHTTPRequest requestWithURL:url];
     [request setDelegate:self];

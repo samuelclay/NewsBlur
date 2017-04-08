@@ -9,7 +9,6 @@
 #import "FriendsListViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "UserProfileViewController.h"
-#import "ASIHTTPRequest.h"
 #import "ProfileBadge.h"
 #import "MBProgressHUD.h"
 #import "UISearchBar+Field.h"

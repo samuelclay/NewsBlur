@@ -11,7 +11,6 @@
 #import "InteractionCell.h"
 #import "SmallInteractionCell.h"
 #import <QuartzCore/QuartzCore.h>
-#import "ASIHTTPRequest.h"
 #import "UserProfileViewController.h"
 #import "DashboardViewController.h"
 
@@ -23,7 +22,6 @@
 @synthesize appDelegate;
 @synthesize interactionsTable;
 @synthesize interactionsArray;
-@synthesize popoverController;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize interactionsPage;

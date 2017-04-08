@@ -11,7 +11,6 @@
 #import "ProfileBadge.h"
 #import "SmallActivityCell.h"
 #import "FollowGrid.h"
-#import "ASIHTTPRequest.h"
 #import "Utilities.h"
 #import "MBProgressHUD.h"
 #import <QuartzCore/QuartzCore.h>

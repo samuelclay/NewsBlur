@@ -101,11 +101,6 @@
 - (void)setNextPreviousButtons;
 - (void)setTextButton;
 - (void)setTextButton:(StoryDetailViewController *)storyViewController;
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
-- (BOOL)failedMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (BOOL)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (BOOL)failedMarkAsUnread:(ASIFormDataRequest *)request;
 - (void)subscribeToBlurblog;
 
 - (IBAction)toggleFontSize:(id)sender;

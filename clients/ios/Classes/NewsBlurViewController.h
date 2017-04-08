@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 #import "FolderTitleView.h"
-#import "ASIHTTPRequest.h"
 #import "BaseViewController.h"
 #import "NBNotifier.h"
 #import "IASKAppSettingsViewController.h"
@@ -20,7 +19,7 @@
 @interface NewsBlurViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
 UIAlertViewDelegate,
-ASIHTTPRequestDelegate, NSCacheDelegate,
+NSCacheDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,
 MCSwipeTableViewCellDelegate,
@@ -84,10 +83,7 @@ UIGestureRecognizerDelegate> {
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
-- (void)finishedWithError:(ASIHTTPRequest *)request;
-- (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;
-- (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
 - (IBAction)selectIntelligence;
@@ -95,8 +91,6 @@ UIGestureRecognizerDelegate> {
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
 - (void)markEverythingReadWithDays:(NSInteger)days;
 - (void)markVisibleStoriesRead;
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
-- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)didCollapseFolder:(UIButton *)button;
 - (BOOL)isFeedVisible:(id)feedId;
 - (void)changeToAllMode;
@@ -109,8 +103,6 @@ UIGestureRecognizerDelegate> {
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (void)loadFavicons;
 - (void)loadAvatars;
-- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)refreshFeedList;
 - (void)refreshFeedList:(id)feedId;
 - (void)loadOfflineFeeds:(BOOL)failed;

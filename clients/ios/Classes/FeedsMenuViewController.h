@@ -13,13 +13,11 @@
 @interface FeedsMenuViewController : UIViewController 
 <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
-    UIAlertView *loginAsAlert;
 }
 
 @property (nonatomic, strong) NSArray *menuOptions;
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
-@property (nonatomic) IBOutlet UIAlertView *loginAsAlert;
 @property (nonatomic) IBOutlet UISegmentedControl *themeSegmentedControl;
 
 - (IBAction)changeTheme:(id)sender;

@@ -12,7 +12,6 @@
 #import "NBContainerViewController.h"
 #import "NewsBlurViewController.h"
 #import "FeedDetailTableCell.h"
-#import "ASIFormDataRequest.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
@@ -704,39 +703,24 @@
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            [storiesCollection.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
     [self cancelRequests];
-    __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setValidatesSecureCertificate:NO];
-    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage]}];
-    [request setFailedBlock:^(void) {
-        NSLog(@"in failed block %@", request);
-        if (request.isCancelled) {
-            NSLog(@"Cancelled");
-            return;
-        } else {
-            self.isOnline = NO;
-            storiesCollection.feedPage = 1;
-            [self loadOfflineStories];
-            [self showOfflineNotifier];
-        }
-        [self.storyTitlesTable reloadData];
-    }];
-    [request setCompletionBlock:^(void) {
+    [manager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         if (!storiesCollection.activeFeed) return;
-        [self finishedLoadingFeed:request];
+        [self finishedLoadingFeed:responseObject withResponse:task.response];
         if (callback) {
             callback();
         }
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        NSLog(@"in failed block %@", operation);
+        self.isOnline = NO;
+        storiesCollection.feedPage = 1;
+        [self loadOfflineStories];
+        [self showOfflineNotifier];
+        [self.storyTitlesTable reloadData];
     }];
-    [request setTimeOutSeconds:30];
-    [request setTag:[[[storiesCollection activeFeed] objectForKey:@"id"] intValue]];
-    [request startAsynchronous];
-    [requests addObject:request];
+    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage], @"feedId": [[storiesCollection activeFeed] objectForKey:@"id"]}];
 }
 
 - (void)loadOfflineStories {
@@ -921,52 +905,45 @@
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
                             theFeedDetailURL,
-                            [storiesCollection.searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
 
     [self cancelRequests];
-    __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage]}];
-    [request setFailedBlock:^(void) {
-        if (request.isCancelled) {
-            NSLog(@"Cancelled");
-            return;
-        } else {
-            self.isOnline = NO;
-            self.isShowingFetching = NO;
-//            storiesCollection.feedPage = 1;
-            [self loadOfflineStories];
-            [self showOfflineNotifier];
-        }
-    }];
-    [request setCompletionBlock:^(void) {
-        [self finishedLoadingFeed:request];
+    
+    
+    NSURLSessionDataTask *request = [manager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        [self finishedLoadingFeed:responseObject withResponse:task.response];
         if (callback) {
             callback();
         }
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)operation.response;
+        self.isOnline = NO;
+        self.isShowingFetching = NO;
+        //            storiesCollection.feedPage = 1;
+        [self loadOfflineStories];
+        [self showOfflineNotifier];
+        if (httpResponse.statusCode == 503) {
+            [self informError:@"In maintenance mode"];
+            self.pageFinished = YES;
+        } else if (httpResponse.statusCode >= 500) {
+            [self informError:@"The server barfed."];
+        }
     }];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
 }
 
 #pragma mark -
 #pragma mark Processing Stories
 
-- (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
-    if (request.isCancelled) {
-        NSLog(@"Cancelled");
-        return;
-    } else if ([request responseStatusCode] >= 500 || [request responseStatusCode] == 404) {
+- (void)finishedLoadingFeed:(NSDictionary *)results withResponse:(NSURLResponse *)response {
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    if (httpResponse.statusCode >= 500 || httpResponse.statusCode == 404) {
         self.isOnline = NO;
         self.isShowingFetching = NO;
 //        storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showOfflineNotifier];
-        if ([request responseStatusCode] == 503) {
+        if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
             self.pageFinished = YES;
         } else {
@@ -979,14 +956,7 @@
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
-    storiesCollection.feedPage = [[request.userInfo objectForKey:@"feedPage"] intValue];
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
+    // storiesCollection.feedPage = [[request.userInfo objectForKey:@"feedPage"] intValue];
     
 //    if (storiesCollection.isSavedView &&
 //        ![[results objectForKey:@"stories"] count] &&
@@ -997,14 +967,15 @@
     id feedId = [results objectForKey:@"feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     
-    if (!(storiesCollection.isRiverView ||
-          storiesCollection.isSavedView ||
-          storiesCollection.isReadView ||
-          storiesCollection.isSocialView ||
-          storiesCollection.isSocialRiverView)
-        && request.tag != [feedId intValue]) {
-        return;
-    }
+    // Ignoring below during AFNetworking 3.0 migration because we don't know the feed id anymore.
+//    if (!(storiesCollection.isRiverView ||
+//          storiesCollection.isSavedView ||
+//          storiesCollection.isReadView ||
+//          storiesCollection.isSocialView ||
+//          storiesCollection.isSocialRiverView)
+//        && request.tag != [feedId intValue]) {
+//        return;
+//    }
     if (storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
@@ -1791,9 +1762,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSMutableArray *feedIds = [NSMutableArray array];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     if (storiesCollection.isRiverView) {
         if ([storiesCollection.activeFolder isEqual:@"everything"]) {
@@ -1814,33 +1784,19 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     for (id feedId in feedIds) {
-        [request addPostValue:feedId forKey:@"feed_id"];
+        [params setObject:feedId forKey:@"feed_id"];
     }
-    
+    [params setObject:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
     NSString *direction = older ? @"older" : @"newest";
-    [request setPostValue:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
-    [request setPostValue:direction forKey:@"direction"];
-    [request setDidFinishSelector:@selector(finishMarkOlderNewerAsRead:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setUserInfo:@{@"feeds" : feedIds, @"cutoffTimestamp" : @(cutoffTimestamp), @"older" : @(older)}];
-    [request setDelegate:self];
-    [request startAsynchronous];
-}
-
-- (void)finishMarkOlderNewerAsRead:(ASIFormDataRequest *)request {
-    if (request.responseStatusCode != 200) {
-        [self requestFailed:request];
-        return;
-    }
+    [params setObject:direction forKey:@"direction"];
     
-    if ([request.userInfo objectForKey:@"feeds"]) {
-        [appDelegate markFeedReadInCache:request.userInfo[@"feeds"] cutoffTimestamp:[request.userInfo[@"cutoffTimestamp"] integerValue] older:[request.userInfo[@"older"] boolValue]];
-    }
-    
-    // is there a better way to refresh the detail view?
-    [self reloadStories];
-//    [appDelegate reloadFeedsView:YES];
-//    [appDelegate loadFeedDetailView];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        [appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
+        // is there a better way to refresh the detail view?
+        [self reloadStories];
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [self requestFailed:error];
+    }];
 }
 
 - (IBAction)doOpenMarkReadMenu:(id)sender {
@@ -1944,20 +1900,18 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (storiesCollection.isRiverView) {
         urlString = [NSString stringWithFormat:@"%@/reader/rename_folder", self.appDelegate.url];
     }
-    NSURL *url = [NSURL URLWithString:urlString];
-    
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setDelegate:self];
+
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     if (storiesCollection.isRiverView) {
-        [request addPostValue:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"folder_name"];
-        [request addPostValue:[appDelegate extractParentFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
-        [request addPostValue:newTitle forKey:@"new_folder_name"];
+        [params setObject:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"folder_name"];
+        [params setObject:[appDelegate extractParentFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
+        [params setObject:newTitle forKey:@"new_folder_name"];
     } else {
-        [request addPostValue:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
-        [request addPostValue:newTitle forKey:@"feed_title"];
+        [params setObject:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
+        [params setObject:newTitle forKey:@"feed_title"];
     }
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setCompletionBlock:^(void) {
+
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
         if (storiesCollection.isRiverView) {
             [appDelegate renameFolder:newTitle];
@@ -1972,11 +1926,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
         [self.navigationController.view setNeedsDisplay];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
-        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
     }];
-    [request setTimeOutSeconds:30];
-    [request setTag:[[storiesCollection.activeFeed objectForKey:@"id"] intValue]];
-    [request startAsynchronous];
 }
 
 - (void)deleteSite {
@@ -1984,26 +1936,22 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Deleting...";
     
-    NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_feed", 
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_feed",
                                   self.appDelegate.url];
-    NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
-    
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
-    [request setDelegate:self];
-    [request addPostValue:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
-    [request addPostValue:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setCompletionBlock:^(void) {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
+    [params setObject:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
+
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
+        [appDelegate.navigationController
+         popToViewController:[appDelegate.navigationController.viewControllers
+                              objectAtIndex:0]
          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
     }];
-    [request setTimeOutSeconds:30];
-    [request setTag:[[storiesCollection.activeFeed objectForKey:@"id"] intValue]];
-    [request startAsynchronous];
 }
 
 - (void)deleteFolder {
@@ -2011,28 +1959,25 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Deleting...";
     
-    NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_folder", 
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_folder",
                                   self.appDelegate.url];
-    NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[appDelegate extractFolderName:storiesCollection.activeFolder]
+               forKey:@"folder_to_delete"];
+    [params setObject:[appDelegate extractFolderName:[appDelegate
+                                                      extractParentFolderName:storiesCollection.activeFolder]]
+               forKey:@"in_folder"];
     
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
-    [request setDelegate:self];
-    [request addPostValue:[appDelegate extractFolderName:storiesCollection.activeFolder]
-                   forKey:@"folder_to_delete"];
-    [request addPostValue:[appDelegate extractFolderName:[appDelegate
-                                                          extractParentFolderName:storiesCollection.activeFolder]]
-                   forKey:@"in_folder"];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setCompletionBlock:^(void) {
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
+        [appDelegate.navigationController
+         popToViewController:[appDelegate.navigationController.viewControllers
+                              objectAtIndex:0]
          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
     }];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
 }
 
 - (void)muteSite {
@@ -2044,80 +1989,59 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *thisIdentifier = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
     [activeIdentifiers removeObject:thisIdentifier];
     
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    for (id identifier in activeIdentifiers) {
-        [request addPostValue:identifier forKey:@"approved_feeds"];
-    }
-    [request setCompletionBlock:^(void) {
+
+    [params setObject:activeIdentifiers forKey:@"approved_feeds"];
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
         [self.appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]
-         animated:YES];
+                                                          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
     }];
-    request.didFailSelector = @selector(requestFailed:);
-    request.timeOutSeconds = 30;
-    [request startAsynchronous];
 }
 
 - (void)performMoveToFolder:(id)toFolder {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    ASIFormDataRequest *request = nil;
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    NSString *urlString;
     
     if (self.appDelegate.storiesCollection.isRiverView) {
         HUD.labelText = @"Moving folder...";
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_folder_to_folder", self.appDelegate.url];
-        NSURL *url = [NSURL URLWithString:urlString];
-        request = [ASIFormDataRequest requestWithURL:url];
+        urlString = [NSString stringWithFormat:@"%@/reader/move_folder_to_folder", self.appDelegate.url];
         NSString *activeFolder = self.appDelegate.storiesCollection.activeFolder;
         NSString *parentFolderName = [self.appDelegate extractParentFolderName:activeFolder];
         NSString *fromFolder = [self.appDelegate extractFolderName:parentFolderName];
         NSString *toFolderIdentifier = [self.appDelegate extractFolderName:toFolder];
         NSString *folderName = [self.appDelegate extractFolderName:activeFolder];
-        [request setPostValue:fromFolder forKey:@"in_folder"];
-        [request setPostValue:toFolderIdentifier forKey:@"to_folder"];
-        [request setPostValue:folderName forKey:@"folder_name"];
+        [params setObject:fromFolder forKey:@"in_folder"];
+        [params setObject:toFolderIdentifier forKey:@"to_folder"];
+        [params setObject:folderName forKey:@"folder_name"];
     } else {
         HUD.labelText = @"Moving site...";
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder", self.appDelegate.url];
-        NSURL *url = [NSURL URLWithString:urlString];
-        request = [ASIFormDataRequest requestWithURL:url];
+        urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder", self.appDelegate.url];
         NSString *fromFolder = [self.appDelegate extractFolderName:self.appDelegate.storiesCollection.activeFolder];
         NSString *toFolderIdentifier = [self.appDelegate extractFolderName:toFolder];
         NSString *feedIdentifier = [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"];
-        [request setPostValue:fromFolder forKey:@"in_folder"];
-        [request setPostValue:toFolderIdentifier forKey:@"to_folder"];
-        [request setPostValue:feedIdentifier forKey:@"feed_id"];
+        [params setObject:fromFolder forKey:@"in_folder"];
+        [params setObject:toFolderIdentifier forKey:@"to_folder"];
+        [params setObject:feedIdentifier forKey:@"feed_id"];
     }
     
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(moveToFolderFinished:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setUserInfo:@{@"toFolder" : toFolder}];
-    [request startAsynchronous];
-}
-
-- (void)moveToFolderFinished:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] >= 500) {
-        return [self requestFailed:request];
-    }
-    
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
-    int code = [[results valueForKey:@"code"] intValue];
-    if (code != -1) {
-        self.appDelegate.storiesCollection.activeFolder = request.userInfo[@"toFolder"];
-        [self.appDelegate reloadFeedsView:NO];
-    }
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        
+        int code = [[responseObject valueForKey:@"code"] intValue];
+        if (code != -1) {
+            self.appDelegate.storiesCollection.activeFolder = toFolder;
+            [self.appDelegate reloadFeedsView:NO];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
 - (void)openMoveView {
@@ -2248,27 +2172,27 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #pragma mark -
 #pragma mark Story Actions - save
 
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
+- (void)finishMarkAsSaved:(NSURLSessionDataTask *)request {
 
 }
 
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
+- (void)failedMarkAsSaved:(NSURLSessionDataTask *)request {
     [self informError:@"Failed to save story"];
     
     [self.storyTitlesTable reloadData];
 }
 
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
+- (void)finishMarkAsUnsaved:(NSURLSessionDataTask *)request {
 
 }
 
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
+- (void)failedMarkAsUnsaved:(NSURLSessionDataTask *)request {
     [self informError:@"Failed to unsave story"];
 
     [self.storyTitlesTable reloadData];
 }
 
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
+- (void)failedMarkAsUnread:(NSURLSessionDataTask *)request {
     [self informError:@"Failed to unread story"];
     
     [self.storyTitlesTable reloadData];
@@ -2285,39 +2209,19 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            self.appDelegate.url,
                            [storiesCollection.activeFeed objectForKey:@"id"]];
     [self cancelRequests];
-    ASIHTTPRequest *request = [self requestWithURL:urlString];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setDidFinishSelector:@selector(finishedRefreshingFeed:)];
-    [request setDidFailSelector:@selector(failRefreshingFeed:)];
-    [request setTimeOutSeconds:60];
-    [request startAsynchronous];
+    [manager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        [self renderStories:[responseObject objectForKey:@"stories"]];
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        NSLog(@"Fail: %@", request);
+        [self informError:[operation error]];
+        [self fetchFeedDetail:1 withCallback:nil];
+    }];
     
     [storiesCollection setStories:nil];
     storiesCollection.feedPage = 1;
     self.pageFetching = YES;
     [self.storyTitlesTable reloadData];
     [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-}
-
-- (void)finishedRefreshingFeed:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
-    [self renderStories:[results objectForKey:@"stories"]];    
-}
-
-- (void)failRefreshingFeed:(ASIHTTPRequest *)request {
-    NSLog(@"Fail: %@", request);
-    [self informError:[request error]];
-    [self fetchFeedDetail:1 withCallback:nil];
 }
 
 #pragma mark -
@@ -2336,25 +2240,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons%@",
                            self.appDelegate.url,
                            feedIdsQuery];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
 
-    [request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self saveAndDrawFavicons:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
-
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
+- (void)saveAndDrawFavicons:(NSDictionary *)results {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
         for (id feed_id in results) {
@@ -2377,9 +2271,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
+- (void)requestFailed:(NSError *)error {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
 }

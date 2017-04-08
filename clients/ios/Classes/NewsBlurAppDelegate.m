@@ -1264,13 +1264,39 @@
 }
 
 - (void)confirmLogout {
-    UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" 
-                                                            message:nil 
-                                                           delegate:self 
-                                                  cancelButtonTitle:@"Cancel" 
-                                                  otherButtonTitles:@"Logout", nil];
-    [logoutConfirm show];
-    [logoutConfirm setTag:1];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Positive?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle: @"Logout" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+        NSLog(@"Logging out...");
+        NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
+                          self.url];
+        NSURL *url = [NSURL URLWithString:urlS];
+        
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setValidatesSecureCertificate:NO];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }];
+        [request setCompletionBlock:^(void) {
+            NSLog(@"Logout successful");
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [self showLogin];
+        }];
+        [request setTimeOutSeconds:30];
+        [request startAsynchronous];
+        
+        [ASIHTTPRequest setSessionCookies:nil];
+        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        HUD.labelText = @"Logging out...";
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                        style:UIAlertActionStyleCancel handler:nil]];
+    [self.feedsViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showConnectToService:(NSString *)serviceName {
@@ -1323,41 +1349,6 @@
 
 - (void)refreshFeedCount:(id)feedId {
     [feedsViewController fadeFeed:feedId];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 1) { // this is logout
-        if (buttonIndex == 0) {
-            return;
-        } else {
-            NSLog(@"Logging out...");
-            NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
-                              self.url];
-            NSURL *url = [NSURL URLWithString:urlS];
-            
-            __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-            [request setValidatesSecureCertificate:NO];
-            [request setDelegate:self];
-            [request setResponseEncoding:NSUTF8StringEncoding];
-            [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-            [request setFailedBlock:^(void) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-            }];
-            [request setCompletionBlock:^(void) {
-                NSLog(@"Logout successful");
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self showLogin];
-            }];
-            [request setTimeOutSeconds:30];
-            [request startAsynchronous];
-            
-            [ASIHTTPRequest setSessionCookies:nil];
-            
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            HUD.labelText = @"Logging out...";
-        }
-    }
 }
 
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
@@ -1635,14 +1626,15 @@
     
     NSString *storyBrowser = [preferences stringForKey:@"story_browser"];
     if ([storyBrowser isEqualToString:@"safari"]) {
-        [[UIApplication sharedApplication] openURL:url];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+//        [[UIApplication sharedApplication] openURL:url];
         return;
     } else if ([storyBrowser isEqualToString:@"chrome"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
-        NSString *openingURL = [url.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *openingURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         NSURL *callbackURL = [NSURL URLWithString:@"newsblur://"];
-        NSString *callback = [callbackURL.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSString *sourceName = [[[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *callback = [callbackURL.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+        NSString *sourceName = [[[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         
         NSURL *activityURL = [NSURL URLWithString:
                               [NSString stringWithFormat:@"googlechrome-x-callback://x-callback-url/open/?url=%@&x-success=%@&x-source=%@",
@@ -1650,7 +1642,7 @@
                                callback,
                                sourceName]];
         
-        [[UIApplication sharedApplication] openURL:activityURL];
+        [[UIApplication sharedApplication] openURL:activityURL options:@{} completionHandler:nil];
         return;
     } else if ([storyBrowser isEqualToString:@"opera_mini"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"opera-http://"]]) {
@@ -1664,7 +1656,7 @@
                         withString:                         @"opera-http"];
         }
                    
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL] options:@{} completionHandler:nil];
         return;
     } else if ([storyBrowser isEqualToString:@"firefox"]) {
         NSString *encodedURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
@@ -2872,7 +2864,7 @@
                           @"remove_like_author"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
+        [self.feedsViewController refreshFeedList:feedId];
     }];
     [request setFailedBlock:^{
         [self requestClassifierResponse:_request withFeed:feedId];
@@ -2920,7 +2912,7 @@
                           @"remove_like_tag"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
+        [self.feedsViewController refreshFeedList:feedId];
     }];
     [request setFailedBlock:^{
         [self requestClassifierResponse:_request withFeed:feedId];
@@ -2972,7 +2964,7 @@
                           @"remove_like_title"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
+        [self.feedsViewController refreshFeedList:feedId];
     }];
     [request setFailedBlock:^{
         [self requestClassifierResponse:_request withFeed:feedId];
@@ -3009,41 +3001,36 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIFormDataRequest *_request = request;
-    [request setPostValue:feedId
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:feedId
                    forKey:feedScore >= 1 ? @"like_feed" :
                           feedScore <= -1 ? @"dislike_feed" :
                           @"remove_like_feed"];
-    [request setPostValue:feedId forKey:@"feed_id"];
-    [request setCompletionBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
-    }];
-    [request setFailedBlock:^{
-        [self requestClassifierResponse:_request withFeed:feedId];
-    }];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [params setObject:feedId forKey:@"feed_id"];
     
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedRequest:task.response];
+    }];
+
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
 }
 
-- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId {
+- (void)failedRequest:(NSURLResponse *)response {
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     BaseViewController *view;
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
         view = self.storyPageControl.currentPage;
     }
-    if ([request responseStatusCode] == 503) {
+    if (httpResponse.statusCode == 503) {
         return [view informError:@"In maintenance mode"];
-    } else if ([request responseStatusCode] != 200) {
+    } else if (httpResponse.statusCode != 200) {
         return [view informError:@"The server barfed!"];
     }
-    
-    [self.feedsViewController refreshFeedList:feedId];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -3419,31 +3406,21 @@
     }
     NSLog(@"Marking %lu queued read stories as read...", (unsigned long)[completedHashes count]);
     NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    __weak ASIHTTPRequest *_request = request;
-    [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
-    [request setDelegate:self];
-    [request setValidatesSecureCertificate:NO];
-    [request setCompletionBlock:^{
-        if ([_request responseStatusCode] == 200) {
-            NSLog(@"Completed clearing %@ hashes", completedHashesStr);
-            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
-                               "WHERE story_hash in (\"%@\")", completedHashesStr]];
-            [self pruneQueuedReadHashes];
-        } else {
-            NSLog(@"Failed mark read queued.");
-            self.hasQueuedReadStories = YES;
-            [self pruneQueuedReadHashes];
-        }
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[hashes JSONRepresentation] forKey:@"feeds_stories"];
+    
+    [manager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Completed clearing %@ hashes", completedHashesStr);
+        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
+                           "WHERE story_hash in (\"%@\")", completedHashesStr]];
+        [self pruneQueuedReadHashes];
         if (callback) callback();
-    }];
-    [request setFailedBlock:^{
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed mark read queued.");
         self.hasQueuedReadStories = YES;
         [self pruneQueuedReadHashes];
         if (callback) callback();
     }];
-    [request startAsynchronous];
 }
 
 - (void)pruneQueuedReadHashes {

@@ -9,7 +9,6 @@
 #import "ProfileBadge.h"
 #import "NewsBlurAppDelegate.h"
 #import "Utilities.h"
-#import "ASIHTTPRequest.h"
 #import "UIImageView+AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
 

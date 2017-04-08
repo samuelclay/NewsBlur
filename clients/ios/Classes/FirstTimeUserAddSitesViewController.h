@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddSitesViewController  : UIViewController <ASIHTTPRequestDelegate, UITableViewDataSource, UITableViewDelegate> {
+@interface FirstTimeUserAddSitesViewController  : UIViewController <UITableViewDataSource, UITableViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 

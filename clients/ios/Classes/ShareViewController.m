@@ -14,7 +14,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
 #import "DataUtilities.h"
-#import "ASIHTTPRequest.h"
 #import "StoriesCollection.h"
 #import "NSString+HTML.h"
 
