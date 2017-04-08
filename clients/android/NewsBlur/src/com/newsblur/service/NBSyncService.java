@@ -972,6 +972,10 @@ public class NBSyncService extends Service {
             PendingFeedTarget = desiredStoryCount;
 
             if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
+
+            if (!fs.equals(LastFeedSet)) {
+                return true;
+            }
             if (desiredStoryCount <= alreadySeen) {
                 return false;
             }
