@@ -243,19 +243,30 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         synchronized (STORIES_MUTEX) {
             if (cursor == null) return;
 
+            //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
             readingAdapter.swapCursor(cursor);
-            stories = cursor;
 
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
                 setupPager();
             }
 
-            try {
-                readingAdapter.notifyDataSetChanged();
-            } catch (IllegalStateException ise) {
-                // sometimes the pager is already shutting down by the time the callback finishes
-                finish();
+            if (! NBSyncService.isFeedSetReady(fs)) {
+                // not only is the session table stale, our fragment is being re-used by the system
+                // to show a totally different feedset. trash anything that might have stale story
+                // data and let them get recreated when a good cursor comes in
+                com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
+                pager.setVisibility(View.INVISIBLE);
+                stories = null;
+                triggerRefresh(AppConstants.READING_STORY_PRELOAD);
+                return;
+            }
+
+            stories = cursor;
+
+            com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
+            if (cursor.getCount() < 1) {
+                triggerRefresh(AppConstants.READING_STORY_PRELOAD);
             }
 
             // see if we are just starting and need to jump to a target story
