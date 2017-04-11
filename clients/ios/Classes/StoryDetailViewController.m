@@ -1993,6 +1993,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                     if (success) {
                         [self flashCheckmarkHud:@"saved"];
                     } else {
+                        [MBProgressHUD hideHUDForView:self.webView animated:NO];
                         [self informError:error];
                     }
                 });

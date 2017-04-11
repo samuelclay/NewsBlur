@@ -130,10 +130,10 @@
 - (void)updateProgress {
     if (self.isCancelled) return;
     
-    int start = (int)[[NSDate date] timeIntervalSince1970];
-    int end = appDelegate.latestFetchedStoryDate;
-    int seconds = start - (end ? end : start);
-    __block int hours = (int)round(seconds / 60.f / 60.f);
+    NSInteger start = (int)[[NSDate date] timeIntervalSince1970];
+    NSInteger end = appDelegate.latestFetchedStoryDate;
+    NSInteger seconds = start - (end ? end : start);
+    __block NSInteger hours = (int)round(seconds / 60.f / 60.f);
     
     __block float progress = 0.f;
     if (appDelegate.totalUnfetchedStoryCount) {

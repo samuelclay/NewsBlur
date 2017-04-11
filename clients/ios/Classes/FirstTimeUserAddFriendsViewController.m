@@ -186,7 +186,7 @@
 - (IBAction)toggleAutoFollowFriends:(id)sender {
     UISwitch *button = (UISwitch *)sender;
     
-    NSURL *urlString = [NSString stringWithFormat:@"%@/profile/set_preference", self.appDelegate.url];
+    NSString *urlString = [NSString stringWithFormat:@"%@/profile/set_preference", self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
 
     if (button.on) {

@@ -2066,13 +2066,13 @@ heightForHeaderInSection:(NSInteger)section {
     [self finishRefresh];
 }
 
-- (void)showSyncingNotifier:(float)progress hoursBack:(int)hours {
+- (void)showSyncingNotifier:(float)progress hoursBack:(NSInteger)hours {
 //    [self.notifier hide];
     self.notifier.style = NBSyncingProgressStyle;
     if (hours < 2) {
         self.notifier.title = @"Storing past hour";
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Storing past %d hours", hours];
+        self.notifier.title = [NSString stringWithFormat:@"Storing past %ld hours", (long)hours];
     } else if (hours < 48) {
         self.notifier.title = @"Storing yesterday";
     } else {
@@ -2083,13 +2083,13 @@ heightForHeaderInSection:(NSInteger)section {
     [self.notifier show];
 }
 
-- (void)showCachingNotifier:(float)progress hoursBack:(int)hours {
+- (void)showCachingNotifier:(float)progress hoursBack:(NSInteger)hours {
     //    [self.notifier hide];
     self.notifier.style = NBSyncingProgressStyle;
     if (hours < 2) {
         self.notifier.title = @"Images from last hour";
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Images from %d hours ago", hours];
+        self.notifier.title = [NSString stringWithFormat:@"Images from %ld hours ago", (long)hours];
     } else if (hours < 48) {
         self.notifier.title = @"Images from yesterday";
     } else {

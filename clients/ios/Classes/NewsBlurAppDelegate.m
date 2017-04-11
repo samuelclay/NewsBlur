@@ -1790,7 +1790,9 @@
 }
 
 - (BOOL)isFeedInTextView:(id)feedId {
-    return [self.dictTextFeeds objectForKey:feedId];
+    id text = [self.dictTextFeeds objectForKey:feedId];
+    if (text != nil) return text;
+    return NO;
 }
 
 - (void)toggleFeedTextView:(id)feedId {

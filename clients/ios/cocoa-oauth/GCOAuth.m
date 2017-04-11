@@ -164,7 +164,7 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
     NSURL *URL = self.URL;
 
 	// Use CFURLCopyPath so that the path is preserved with trailing slash, then escape the percents ourselves
-    NSString *pathWithPrevervedTrailingSlash = [CFBridgingRelease(CFURLCopyPath((CFURLRef)URL)) stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *pathWithPrevervedTrailingSlash = [CFBridgingRelease(CFURLCopyPath((CFURLRef)URL)) stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSString *URLString = [NSString stringWithFormat:@"%@://%@%@",
                            [[URL scheme] lowercaseString],
@@ -393,11 +393,6 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
 
 @implementation NSString (GCOAuthAdditions)
 - (NSString *)pcen {
-    CFStringRef string = CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                                 (CFStringRef)self,
-                                                                 NULL,
-                                                                 CFSTR("!*'();:@&=+$,/?%#[]"),
-                                                                 kCFStringEncodingUTF8);
-    return [(NSString *)string autorelease];
+    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 @end
