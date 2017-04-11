@@ -568,7 +568,7 @@
         manager.responseSerializer = [AFImageResponseSerializer serializer];
 
         for (NSString *storyImageUrl in storyImageUrls) {
-            NSLog(@"Fetching image: %@", storyImageUrl);
+//            NSLog(@"Fetching image: %@", storyImageUrl);
             [manager GET:storyImageUrl parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 UIImage *image = (UIImage *)responseObject;
                 
@@ -1868,16 +1868,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 1) {
-        // Rename
-        if (buttonIndex != alertView.cancelButtonIndex) {
-            NSString *newTitle = [[alertView textFieldAtIndex:0] text];
-            [self renameTo:newTitle];
-        }
-    }
-}
-
 - (void)renameTo:(NSString *)newTitle {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -2079,17 +2069,29 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                        [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder] : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
     NSString *subtitle = (appDelegate.storiesCollection.isRiverView ?
                           nil : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_address"]);
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                        message:subtitle
-                                                       delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                              otherButtonTitles:@"Rename", nil];
-    [alertView setTag:1];
-    [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
-    [[alertView textFieldAtIndex:0] setText:appDelegate.storiesCollection.isRiverView ?
-                                            [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder] :
-                                            [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
-    [alertView show];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:subtitle preferredStyle:UIAlertControllerStyleAlert];
+    [alert setModalPresentationStyle:UIModalPresentationPopover];
+    UIAlertAction *rename = [UIAlertAction actionWithTitle:@"Rename" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        NSString *newTitle = alert.textFields[0].text;
+        [self renameTo:newTitle];
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.text = appDelegate.storiesCollection.isRiverView ?
+        [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder] :
+        [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
+    }];
+    [alert addAction:rename];
+    [alert addAction:cancel];
+    
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:NO completion:^{
+            [self presentViewController:alert animated:YES completion:nil];
+        }];
+    }
+//    [self.appDelegate showAlert:alert withViewController:self];
 }
 
 - (void)showUserProfile {
@@ -2159,27 +2161,27 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #pragma mark -
 #pragma mark Story Actions - save
 
-- (void)finishMarkAsSaved:(NSURLSessionDataTask *)request {
+- (void)finishMarkAsSaved:(NSDictionary *)params {
 
 }
 
-- (void)failedMarkAsSaved:(NSURLSessionDataTask *)request {
+- (void)failedMarkAsSaved:(NSDictionary *)params {
     [self informError:@"Failed to save story"];
     
     [self.storyTitlesTable reloadData];
 }
 
-- (void)finishMarkAsUnsaved:(NSURLSessionDataTask *)request {
+- (void)finishMarkAsUnsaved:(NSDictionary *)params {
 
 }
 
-- (void)failedMarkAsUnsaved:(NSURLSessionDataTask *)request {
+- (void)failedMarkAsUnsaved:(NSDictionary *)params {
     [self informError:@"Failed to unsave story"];
 
     [self.storyTitlesTable reloadData];
 }
 
-- (void)failedMarkAsUnread:(NSURLSessionDataTask *)request {
+- (void)failedMarkAsUnread:(NSDictionary *)params {
     [self informError:@"Failed to unread story"];
     
     [self.storyTitlesTable reloadData];

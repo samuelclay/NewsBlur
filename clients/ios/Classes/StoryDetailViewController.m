@@ -7,6 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <Photos/Photos.h>
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
@@ -290,9 +291,11 @@
 - (void)viewWillLayoutSubviews {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [super viewWillLayoutSubviews];
-    [appDelegate.storyPageControl layoutForInterfaceOrientation:orientation];
-    [self changeWebViewWidth];
-    [self drawFeedGradient];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [appDelegate.storyPageControl layoutForInterfaceOrientation:orientation];
+        [self changeWebViewWidth];
+        [self drawFeedGradient];
+    });
 
 //    NSLog(@"viewWillLayoutSubviews: %.2f", self.webView.scrollView.bounds.size.width);
 }
@@ -1880,17 +1883,28 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     title = title.length ? title : alt;
     activeLongPressUrl = [NSURL URLWithString:src];
     
-    UIActionSheet *actions = [[UIActionSheet alloc] initWithTitle:title.length ? title : nil
-                                                         delegate:self
-                                                cancelButtonTitle:@"Done"
-                                           destructiveButtonTitle:nil
-                                                otherButtonTitles:nil];
-    actionSheetViewImageIndex = [actions addButtonWithTitle:@"View and zoom"];
-    actionSheetCopyImageIndex = [actions addButtonWithTitle:@"Copy image"];
-    actionSheetSaveImageIndex = [actions addButtonWithTitle:@"Save to camera roll"];
-    [actions showFromRect:CGRectMake(pt.x, pt.y, 1, 1)
-                   inView:appDelegate.storyPageControl.view animated:YES];
-//    [actions showInView:appDelegate.storyPageControl.view];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title.length ? title : nil
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    [alert addAction:[UIAlertAction actionWithTitle:@"View and zoom" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [appDelegate showOriginalStory:activeLongPressUrl];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Copy image" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self fetchImage:activeLongPressUrl copy:YES save:NO];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Save to camera roll" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self fetchImage:activeLongPressUrl copy:NO save:YES];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    
+    [alert setModalPresentationStyle:UIModalPresentationPopover];
+    
+    UIPopoverPresentationController *popover = [alert popoverPresentationController];
+    popover.sourceRect = CGRectMake(pt.x, pt.y, 1, 1);
+    popover.sourceView = appDelegate.storyPageControl.view;
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)showLinkContextMenu:(CGPoint)pt {
@@ -1957,30 +1971,32 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return pt;
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == actionSheetViewImageIndex) {
-        [appDelegate showOriginalStory:activeLongPressUrl];
-    } else if (buttonIndex == actionSheetCopyImageIndex ||
-               buttonIndex == actionSheetSaveImageIndex) {
-        [self fetchImage:activeLongPressUrl buttonIndex:buttonIndex];
-    }
-}
-
-- (void)fetchImage:(NSURL *)url buttonIndex:(NSInteger)buttonIndex {
+- (void)fetchImage:(NSURL *)url copy:(BOOL)copy save:(BOOL)save {
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [appDelegate.storyPageControl showShareHUD:buttonIndex == actionSheetCopyImageIndex ?
+    [appDelegate.storyPageControl showShareHUD:copy ?
                                                @"Copying..." : @"Saving..."];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager setResponseSerializer:[AFImageResponseSerializer serializer]];
     [manager GET:url.absoluteString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         UIImage *image = responseObject;
-        if (buttonIndex == actionSheetCopyImageIndex) {
+        if (copy) {
             [UIPasteboard generalPasteboard].image = image;
             [self flashCheckmarkHud:@"copied"];
-        } else if (buttonIndex == actionSheetSaveImageIndex) {
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
-            [self flashCheckmarkHud:@"saved"];
+        }
+        if (save) {
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+                changeRequest.creationDate = [NSDate date];
+            } completionHandler:^(BOOL success, NSError * _Nullable error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (success) {
+                        [self flashCheckmarkHud:@"saved"];
+                    } else {
+                        [self informError:error];
+                    }
+                });
+            }];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];

@@ -18,7 +18,7 @@
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailViewController : BaseViewController 
-<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate,
+<UITableViewDelegate, UITableViewDataSource,
  UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate> {
@@ -104,10 +104,10 @@
 - (void)changeActiveStoryTitleCellLayout;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
-- (void)finishMarkAsSaved:(NSURLSessionDataTask *)request;
-- (void)failedMarkAsSaved:(NSURLSessionDataTask *)request;
-- (void)finishMarkAsUnsaved:(NSURLSessionDataTask *)request;
-- (void)failedMarkAsUnsaved:(NSURLSessionDataTask *)request;
-- (void)failedMarkAsUnread:(NSURLSessionDataTask *)request;
+- (void)finishMarkAsSaved:(NSDictionary *)params;
+- (void)failedMarkAsSaved:(NSDictionary *)params;
+- (void)finishMarkAsUnsaved:(NSDictionary *)params;
+- (void)failedMarkAsUnsaved:(NSDictionary *)params;
+- (void)failedMarkAsUnread:(NSDictionary *)params;
 
 @end

@@ -137,7 +137,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
 }
 
 - (void)rebuildItemsAnimated:(BOOL)animated {
-    NewsBlurAppDelegate *appDelegate = self.appDelegate;
     FeedChooserItem *section = nil;
     
     NSMutableArray *sections = [NSMutableArray array];

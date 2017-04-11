@@ -1341,6 +1341,14 @@
     }
 }
 
+- (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController presentViewController:alert animated:YES completion:nil];
+    } else {
+        [vc presentViewController:alert animated:YES completion:nil];
+    }
+}
+
 - (void)refreshUserProfile:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_profile",
                            self.url];

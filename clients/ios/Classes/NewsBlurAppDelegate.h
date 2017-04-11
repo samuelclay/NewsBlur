@@ -53,7 +53,7 @@
 @class PINCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
+<UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
 SFSafariViewControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
@@ -320,7 +320,6 @@ SFSafariViewControllerDelegate>  {
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
 - (void)cancelRequests;
-- (void)clearManager;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
@@ -339,6 +338,7 @@ SFSafariViewControllerDelegate>  {
 - (BOOL)isPortrait;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
+- (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc;
 - (void)refreshUserProfile:(void(^)())callback;
 - (void)refreshFeedCount:(id)feedId;
 

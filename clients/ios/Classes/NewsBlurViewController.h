@@ -18,7 +18,6 @@
 
 @interface NewsBlurViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
-UIAlertViewDelegate,
 NSCacheDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,

@@ -27,9 +27,6 @@ UIActionSheetDelegate> {
     BOOL inDoubleTap;
     BOOL hasScrolled;
     NSURL *activeLongPressUrl;
-    NSInteger actionSheetViewImageIndex;
-    NSInteger actionSheetCopyImageIndex;
-    NSInteger actionSheetSaveImageIndex;
     CGSize preRotateSize;
     CGFloat scrollPct;
     

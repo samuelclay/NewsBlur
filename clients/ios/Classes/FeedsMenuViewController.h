@@ -12,7 +12,7 @@
 @class NewsBlurAppDelegate;
 
 @interface FeedsMenuViewController : BaseViewController
-<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate> {
+<UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
 }
 
