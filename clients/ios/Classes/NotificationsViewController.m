@@ -56,6 +56,8 @@
     notificationFeedIds = [appDelegate.notificationFeedIds copy];
     [notificationsTable reloadData];
     
+    [notificationsTable setContentOffset:CGPointZero];
+    
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
 }
 
