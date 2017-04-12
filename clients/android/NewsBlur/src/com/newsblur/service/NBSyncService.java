@@ -83,7 +83,7 @@ public class NBSyncService extends Service {
     /** Informational flag only, as to whether we were offline last time we cycled. */
     public volatile static boolean OfflineNow = false;
 
-    public volatile static Boolean isAuth = null;
+    public volatile static int authFails = 0;
     public volatile static Boolean isPremium = null;
     public volatile static Boolean isStaff = null;
 
@@ -442,13 +442,16 @@ public class NBSyncService extends Service {
             if (! feedResponse.isAuthenticated) {
                 // we should not have got this far without being logged in, so the server either
                 // expired or ignored out cookie. keep track of this.
-                isAuth = false;
+                authFails += 1;
                 com.newsblur.util.Log.w(this.getClass().getName(), "Server ignored or rejected auth cookie.");
+                if (authFails >= AppConstants.MAX_API_TRIES) {
+                    com.newsblur.util.Log.w(this.getClass().getName(), "too many auth fails, resetting cookie");
+                    PrefsUtils.logout(this);
+                }
                 DoFeedsFolders = true;
-                noteHardAPIFailure();
                 return;
             } else {
-                isAuth = true;
+                authFails = 0;
             }
 
             if (HaltNow) return;
