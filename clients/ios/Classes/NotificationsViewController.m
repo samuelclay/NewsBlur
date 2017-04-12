@@ -53,6 +53,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    notificationFeedIds = [appDelegate.notificationFeedIds copy];
     [notificationsTable reloadData];
     
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
@@ -152,7 +153,7 @@ viewForHeaderInSection:(NSInteger)section {
     if (self.feedId && section == 0) {
         return 1;
     }
-    return MAX(appDelegate.notificationFeedIds.count, 1);
+    return MAX(notificationFeedIds.count, 1);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -168,7 +169,7 @@ viewForHeaderInSection:(NSInteger)section {
                 reuseIdentifier:CellIdentifier];
     }
     
-    if (appDelegate.notificationFeedIds.count == 0) {
+    if (notificationFeedIds.count == 0) {
         UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
         [cell.contentView addSubview:msg];
         msg.text = @"No results.";
@@ -187,7 +188,7 @@ viewForHeaderInSection:(NSInteger)section {
             feed = [appDelegate.dictFeeds objectForKey:feedId];
         } else {
             feedIdStr = [NSString stringWithFormat:@"%@",
-                         appDelegate.notificationFeedIds[indexPath.row]];
+                         notificationFeedIds[indexPath.row]];
             feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
         }
         cell.feedId = feedIdStr;
