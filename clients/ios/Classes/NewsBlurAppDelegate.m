@@ -660,6 +660,7 @@
 }
 
 
+
 - (void)showMuteSites {
     [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
 }
@@ -994,8 +995,6 @@
     UINavigationController *navController = self.navigationController;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        //        [navController presentViewController:trainerViewController animated:YES completion:nil];
         [self.masterContainerViewController showNotificationsPopoverWithFeed:feedId sender:sender];
     } else {
         if (self.notificationsNavigationController == nil) {
