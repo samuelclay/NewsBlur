@@ -375,7 +375,7 @@
     
     fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
     if (!fontStyleClass) {
-        fontStyleClass = @"NB-helvetica";
+        fontStyleClass = @"GothamNarrow-Book";
     }
     
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];

@@ -66,7 +66,7 @@
     NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
     
     if (!fontStyle) {
-        fontStyle = @"NB-helvetica";
+        fontStyle = @"GothamNarrow-Book";
     }
     
     if ([font[@"style"] isEqualToString:fontStyle]) {
