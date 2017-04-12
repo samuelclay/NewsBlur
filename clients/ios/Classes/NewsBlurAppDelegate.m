@@ -1790,7 +1790,7 @@
 
 - (BOOL)isFeedInTextView:(id)feedId {
     id text = [self.dictTextFeeds objectForKey:feedId];
-    if (text != nil) return text;
+    if (text != nil) return YES;
     return NO;
 }
 
@@ -3473,7 +3473,7 @@
     NSUInteger memorySize = 1024 * 1024 * 64;
     NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:memorySize diskCapacity:memorySize diskPath:nil];
     [NSURLCache setSharedURLCache:sharedCache];
-    NSLog(@"cap: %ld", [[NSURLCache sharedURLCache] diskCapacity]);
+    NSLog(@"cap: %ld", (unsigned long)[[NSURLCache sharedURLCache] diskCapacity]);
     
     NSInteger sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];
     float sizeInMB = sizeInteger / (1024.0f * 1024.0f);
