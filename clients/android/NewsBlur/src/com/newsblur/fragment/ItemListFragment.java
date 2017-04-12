@@ -77,6 +77,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 		super.onCreate(savedInstanceState);
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
+
+        if (getFeedSet() == null) {
+            com.newsblur.util.Log.w(this.getClass().getName(), "item list started without FeedSet.");
+            activity.finish();
+        }
+
         // warm up the sync service as soon as possible since it will init the story session DB
         triggerRefresh(1, null);
     }
