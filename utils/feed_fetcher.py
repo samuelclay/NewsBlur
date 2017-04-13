@@ -394,17 +394,18 @@ class FetchFeed:
         try:
             tweets = twitter_user.timeline()
         except tweepy.error.TweepError, e:
-            if 'Not authorized' in e.args[0]:
+            message = str(e).lower()
+            if 'not authorized' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], address, e))
                 social_services.disconnect_twitter()
                 return
-            elif 'User not found' in e.args[0]:
+            elif 'user not found' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], address, e))
                 social_services.disconnect_twitter()
                 return
-            elif 'blocked from viewing' in e.args[0]:
+            elif 'blocked from viewing' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
                               (self.feed.log_title[:30], e))
                 return
