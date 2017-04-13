@@ -614,10 +614,11 @@ class Feed(models.Model):
                 
         return bool(feed_address), feed
 
-    def save_feed_history(self, status_code, message, exception=None):
+    def save_feed_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(feed_id=self.pk, 
                                           fetch_type='feed',
                                           code=int(status_code),
+                                          date=date,
                                           message=message,
                                           exception=exception)
             
@@ -631,10 +632,11 @@ class Feed(models.Model):
             self.active = True
             self.save()
         
-    def save_page_history(self, status_code, message, exception=None):
+    def save_page_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(feed_id=self.pk, 
                                           fetch_type='page',
                                           code=int(status_code),
+                                          date=date,
                                           message=message,
                                           exception=exception)
             
@@ -645,6 +647,13 @@ class Feed(models.Model):
             self.has_page = True
             self.active = True
             self.save()
+    
+    def save_raw_feed(self, raw_feed, fetch_date):
+        MFetchHistory.add(feed_id=self.pk, 
+                          fetch_type='raw_feed', 
+                          code=200,
+                          message=raw_feed,
+                          date=fetch_date)
         
     def count_errors_in_history(self, exception_type='feed', status_code=None, fetch_history=None):
         if not fetch_history:
@@ -3016,6 +3025,7 @@ class MFetchHistory(mongo.Document):
     feed_fetch_history = mongo.DynamicField()
     page_fetch_history = mongo.DynamicField()
     push_history = mongo.DynamicField()
+    raw_feed_history = mongo.DynamicField()
     
     meta = {
         'db_alias': 'nbanalytics',
@@ -3063,11 +3073,15 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.page_fetch_history or []
         elif fetch_type == 'push':
             history = fetch_history.push_history or []
+        elif fetch_type == 'raw_feed':
+            history = fetch_history.raw_feed_history or []
 
         history = [[date, code, message]] + history
         any_exceptions = any([c for d, c, m in history if c not in [200, 304]])
         if any_exceptions:
             history = history[:25]
+        elif fetch_type == 'raw_feed':            
+            history = history[:10]
         else:
             history = history[:5]
 
@@ -3077,6 +3091,8 @@ class MFetchHistory(mongo.Document):
             fetch_history.page_fetch_history = history
         elif fetch_type == 'push':
             fetch_history.push_history = history
+        elif fetch_type == 'raw_feed':
+            fetch_history.raw_feed_history = history
         
         fetch_history.save()
         
