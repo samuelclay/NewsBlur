@@ -292,6 +292,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                        : [feed_id];
         
         this.stories.each(function(story) {
+            if (!_.contains(feed_ids, story.get('story_feed_id'))) return;
             if (direction == "older" && 
                 cutoff_timestamp && 
                 story.get('story_timestamp') > cutoff_timestamp) {
@@ -1884,7 +1885,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     fetch_original_text: function(story_hash, callback, error_callback) {
         var story = this.get_story(story_hash);
         this.make_request('/rss_feeds/original_text', {
-            story_hash: story_hash,
+            story_hash: story_hash
         }, function(data) {
             story.set('original_text', data.original_text);
             callback(data);

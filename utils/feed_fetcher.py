@@ -22,7 +22,7 @@ from apps.rss_feeds.icon_importer import IconImporter
 from apps.notifications.tasks import QueueNotifications, MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.social.models import MSocialServices
-from apps.statistics.models import MAnalyticsFetcher
+from apps.statistics.models import MAnalyticsFetcher, MStatistics
 from utils import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
@@ -49,6 +49,7 @@ class FetchFeed:
         self.feed = Feed.get_by_id(feed_id)
         self.options = options
         self.fpf = None
+        self.raw_feed = None
     
     @timelimit(30)
     def fetch(self):
@@ -134,7 +135,8 @@ class FetchFeed:
                 if raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers['Content-Location'] = raw_feed.url
-                    self.fpf = feedparser.parse(smart_unicode(raw_feed.content),
+                    self.raw_feed = smart_unicode(raw_feed.content)
+                    self.fpf = feedparser.parse(self.raw_feed,
                                                 response_headers=response_headers)
                     if self.options.get('debug', False):
                         logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
@@ -392,17 +394,18 @@ class FetchFeed:
         try:
             tweets = twitter_user.timeline()
         except tweepy.error.TweepError, e:
-            if 'Not authorized' in e.args[0]:
+            message = str(e).lower()
+            if 'not authorized' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], address, e))
                 social_services.disconnect_twitter()
                 return
-            elif 'User not found' in e.args[0]:
+            elif 'user not found' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], address, e))
                 social_services.disconnect_twitter()
                 return
-            elif 'blocked from viewing' in e.args[0]:
+            elif 'blocked from viewing' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
                               (self.feed.log_title[:30], e))
                 return
@@ -486,10 +489,11 @@ class FetchFeed:
         return rss.writeString('utf-8')
         
 class ProcessFeed:
-    def __init__(self, feed_id, fpf, options):
+    def __init__(self, feed_id, fpf, options, raw_feed=None):
         self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
+        self.raw_feed = raw_feed
     
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
@@ -726,10 +730,13 @@ class ProcessFeed:
                       '~FR~SB' if ret_values['error'] else '', ret_values['error'],
                       len(self.fpf.entries)))
         self.feed.update_all_statistics(has_new_stories=bool(ret_values['new']), force=self.options['force'])
+        fetch_date = datetime.datetime.now()
         if ret_values['new']:
             self.feed.trim_feed()
             self.feed.expire_redis()
-        self.feed.save_feed_history(200, "OK")
+            if MStatistics.get('raw_feed', None) == self.feed.pk:
+                self.feed.save_raw_feed(self.raw_feed, fetch_date)
+        self.feed.save_feed_history(200, "OK", date=fetch_date)
 
         if self.options['verbose']:
             logging.debug(u'   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss' % (
@@ -814,9 +821,10 @@ class Dispatcher:
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 feed_fetch_duration = time.time() - start_duration
+                raw_feed = ffeed.raw_feed
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
-                    pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
+                    pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
                     ret_feed, ret_entries = pfeed.process()
                     feed = pfeed.feed
                     feed_process_duration = time.time() - start_duration
