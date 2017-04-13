@@ -81,6 +81,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         if (getFeedSet() == null) {
             com.newsblur.util.Log.w(this.getClass().getName(), "item list started without FeedSet.");
             activity.finish();
+            return;
         }
 
         // warm up the sync service as soon as possible since it will init the story session DB
