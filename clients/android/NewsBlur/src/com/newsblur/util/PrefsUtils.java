@@ -692,6 +692,6 @@ public class PrefsUtils {
 
     public static Font getFont(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return Font.getFont(prefs.getString(PrefConstants.FONT, Font.DEFAULT.toString()));
+        return Font.getFont(prefs.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString()));
     }
 }

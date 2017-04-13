@@ -367,7 +367,6 @@
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 
-    <string name="fonts">Fonts</string>
     <string name="font">Font</string>
     <string name="default_font">Default</string>
     <string name="whitney_font">Whitney</string>
